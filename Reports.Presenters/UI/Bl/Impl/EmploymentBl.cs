@@ -332,6 +332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var item in entity.Certifications)
                 {
                     model.Certifications.Add(new CertificationDto {
+                        Id = item.Id,
                         CertificateDateOfIssue = item.CertificateDateOfIssue,
                         CertificateNumber = item.CertificateNumber,
                         CertificationDate = item.CertificationDate,
@@ -342,6 +343,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
                     {
+                        Id = item.Id,
                         AdmissionYear = item.AdmissionYear,
                         Department = item.Department,
                         GraduationYear = item.GraduationYear,
@@ -357,6 +359,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
                     {
+                        Id = item.Id,
                         AdmissionYear = item.AdmissionYear,
                         GraduationYear = item.GraduationYear,
                         IssuedBy = item.IssuedBy,
@@ -369,6 +372,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.Training.Add(new TrainingDto
                     {
+                        Id = item.Id,
                         BeginningDate = item.BeginningDate,
                         CertificateIssuedBy = item.CertificateIssuedBy,
                         EndDate = item.EndDate,
@@ -400,6 +404,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -517,6 +522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
+                        Id = item.Id,
                         BeginningDate = item.BeginningDate,
                         Company = item.Company,
                         CompanyContacts = item.CompanyContacts,
@@ -605,6 +611,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.References.Add(new ReferenceDto
                     {
+                        Id = item.Id,
                         FirstName = item.FirstName,
                         LastName = item.LastName,
                         Patronymic = item.Patronymic,
@@ -2092,6 +2099,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             EmploymentCommonDao.SaveOrUpdateDocument<GeneralInfo>(entity);
         }
+        
         protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
             error = string.Empty;
@@ -2334,7 +2342,64 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
+        /// <summary>
+        /// Удаляем строки на странице Образования
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteEducationRow(EducationModel model)
+        {
+            Education entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Education>(model.UserId);
+            if (id.HasValue)
+            {
+                entity = EmploymentEducationDao.Get(id.Value);
+            }
 
+            switch (model.Operation)
+            {
+                case 1:
+                    foreach (var item in entity.HigherEducationDiplomas)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.HigherEducationDiplomas.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 2:
+                    foreach (var item in entity.PostGraduateEducationDiplomas)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.PostGraduateEducationDiplomas.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 3:
+                    foreach (var item in entity.Certifications)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.Certifications.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 4:
+                    foreach (var item in entity.Training)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.Training.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Education>(entity);
+        }
         protected bool SetFamilyEntity(Family entity, FamilyModel viewModel, out string error)
         {
             error = string.Empty;
@@ -2402,7 +2467,26 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
-        
+
+        /// <summary>
+        /// Удаление строки из раздела о семейном положении (пока дети удаляются)
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteFamilyMember(FamilyModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<Family>(model.UserId);
+            Family entity = EmploymentCommonDao.GetEntityById<Family>(id);
+            foreach (var item in entity.FamilyMembers)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.FamilyMembers.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Family>(entity);
+        }
+
         protected bool SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel, out string error)
         {
             error = string.Empty;
@@ -2481,6 +2565,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             #endregion
 
             return true;
+        }
+        /// <summary>
+        /// Удаляем строку из таблицы на странице с трудовым опытом
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteExperiensRow(ExperienceModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<Experience>(model.UserId);
+            Experience entity = EmploymentCommonDao.GetEntityById<Experience>(id);
+            foreach (var item in entity.ExperienceItems)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.ExperienceItems.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Experience>(entity);
         }
 
         protected bool SetContactsEntity(Contacts entity, ContactsModel viewModel, out string error)
@@ -2579,6 +2681,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
+        /// <summary>
+        /// Удаляем строку из таблицы на странице службы безопасности
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteBackgroundRow(BackgroundCheckModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(model.UserId);
+            BackgroundCheck entity = EmploymentCommonDao.GetEntityById<BackgroundCheck>(id);
+            foreach (var item in entity.References)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.References.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity);
+        }
         #region Deleted
         /*
         protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)

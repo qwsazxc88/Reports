@@ -111,11 +111,11 @@
         <th>
             <div id="sort1"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
         </th>
-
+        @*
         <th>
             Анкета
         </th>
-
+        *@
         <th>
             <div id="sort2"><a href="#" onclick = "SortChanged(2);">Город<br />места<br />работы</a></div>
         </th>
@@ -215,11 +215,11 @@
             <td rowspan="2">
                 <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable })' style="cursor:hand">@candidate.Name</a>
             </td>
-
+            
             <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                 <span class="buttonLink">Разделы</span>
             </td>
-
+            
             <td>
                 &nbsp;@candidate.WorkCity
             </td>

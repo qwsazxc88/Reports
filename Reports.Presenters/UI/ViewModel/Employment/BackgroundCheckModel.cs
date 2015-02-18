@@ -102,6 +102,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int PersonalDataProcessingScanAttachmentId { get; set; }
         public string InfoValidityScanAttachmentFilename { get; set; }
         public int InfoValidityScanAttachmentId { get; set; }
+        public int RowID { get; set; }
 
         public BackgroundCheckModel()
         {

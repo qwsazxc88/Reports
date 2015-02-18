@@ -8,6 +8,8 @@
 
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+    <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
 
     <fieldset class="bordered doc-wrap panel">
@@ -48,6 +50,7 @@
                         <th>
                             Сканы
                         </th>
+                        <th></th>
                     </tr>
                     
                     @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
@@ -91,9 +94,9 @@
                                     <br /><a href="">Удалить</a>
                                 </div>
                             </td>
-                            @*<td id="delete-foreign-language">
-                                <a href="" data-index=@i>Удалить</a>
-                            </td>*@
+                            <td id="delete-foreign-language">
+                                <a href="#" onclick="DeleteEducationRow(1, @Model.HigherEducationDiplomas[i].Id)">Удалить строку</a>
+                            </td>
                         </tr>
                     }                    
 
@@ -134,6 +137,7 @@
                         <th>
                             Сканы
                         </th>
+                        <th></th>
                     </tr>
                     
                     @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
@@ -168,9 +172,9 @@
                                     <br /><a href="">Удалить</a>
                                 </div>
                             </td>
-                            @*<td id="delete-foreign-language">
-                                <a href="" data-index=@i>Удалить</a>
-                            </td>*@
+                            <td id="delete-foreign-language">
+                                <a href="#" onclick="DeleteEducationRow(2, @Model.PostGraduateEducationDiplomas[i].Id)">Удалить строку</a>
+                            </td>
                         </tr>
                     }                    
 
@@ -208,19 +212,26 @@
                             <th>
                                 Сканы
                             </th>
+                            <th></th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Certifications.Count; i++)
                         {
                             <tr>
                                 <td>
-                                    @Model.Certifications[i].CertificationDate
+                                    @if (@Model.Certifications[i].CertificationDate.HasValue)
+                                    {
+                                        @Model.Certifications[i].CertificationDate.Value.ToShortDateString();
+                                    }
                                 </td>
                                 <td>
                                     @Model.Certifications[i].CertificateNumber
                                 </td>
                                 <td>
-                                    @Model.Certifications[i].CertificateDateOfIssue
+                                    @if (@Model.Certifications[i].CertificateDateOfIssue.HasValue)
+                                    {
+                                        @Model.Certifications[i].CertificateDateOfIssue.Value.ToShortDateString();
+                                    }
                                 </td>
                                 <td>
                                     @Model.Certifications[i].InitiatingOrder
@@ -236,9 +247,9 @@
                                         <br /><a href="">Удалить</a>
                                     </div>
                                 </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <td id="delete-foreign-language">
+                                    <a href="#" onclick="DeleteEducationRow(3, @Model.Certifications[i].Id)">Удалить строку</a>
+                                </td>
                             </tr>
                         }                    
 
@@ -277,6 +288,7 @@
                             <th>
                                 Сканы
                             </th>
+                            <th></th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Training.Count; i++)
@@ -311,9 +323,9 @@
                                         <br /><a href="">Удалить</a>
                                     </div>
                                 </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <td id="delete-foreign-language">
+                                    <a href="#" onclick="DeleteEducationRow(4, @Model.Training[i].Id)">Удалить строку</a>
+                                </td>
                             </tr>
                         }                    
 
@@ -326,7 +338,7 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        <button type="submit" id="btn">Сохранить</button>
     </div>
 }
 
@@ -399,6 +411,14 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function DeleteEducationRow(Operation, Id) {
+        $("#Operation").val(Operation);
+        $("#RowID").val(Id);
+        //this.form.submit();
+        $("#btn").click();
+        //return true;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
         UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);

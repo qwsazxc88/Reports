@@ -31,6 +31,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public string MarriageCertificateScanAttachmentFilename { get; set; }
         public int MarriageCertificateScanAttachmentId { get; set; }
+        public int RowID { get; set; }
 
         public FamilyModel()
         {

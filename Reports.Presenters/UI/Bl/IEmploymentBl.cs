@@ -92,5 +92,9 @@ namespace Reports.Presenters.UI.Bl
         bool IsFixedTermContract(int userId);
         void DeleteNameChange(GeneralInfoModel model, int NameID);
         void DeleteLanguage(GeneralInfoModel model, int LanguageID);
+        void DeleteEducationRow(EducationModel model);
+        void DeleteExperiensRow(ExperienceModel model);
+        void DeleteBackgroundRow(BackgroundCheckModel model);
+        void DeleteFamilyMember(FamilyModel model);
     }
 }

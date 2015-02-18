@@ -19,6 +19,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Повышение квалификации")]
         public IList<TrainingDto> Training { get; set; } //ok
 
+        //для удаления записей на странице
+        public int Operation { get; set; }
+        public int RowID { get; set; }
+
         public EducationModel()
         {
             this.Version = 0;

@@ -8,6 +8,8 @@ namespace Reports.Core.Dto.Employment2
 {
     public class TrainingDto
     {
+        public int Id { get; set; }
+
         [Display(Name = "Наименование образовательного учреждения"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
