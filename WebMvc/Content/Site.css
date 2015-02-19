@@ -307,6 +307,26 @@ td.centered
     text-align: center;
 }
 
+/* TABLE-STATE
+----------------------------------------------------------*/
+table.state
+{
+  border: 1px solid Silver;
+  border-collapse: collapse;
+  color:Black;
+  font-size:10px;
+  width:100%;
+}
+
+table.state td 
+{
+  border: 1px solid Silver;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align:center;
+  width:8%;
+}
+
 /* MISC  
 ----------------------------------------------------------*/
 .clear

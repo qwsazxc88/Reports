@@ -162,7 +162,7 @@ namespace Reports.Core.Dao.Impl
                 {
                     // руководитель 2 уровня видит кандидатов, заявки на подбор которых создавали руководители 3 уровня его ветки
                     case 2:
-                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level = 3)
+                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level in (2, 3))
                             ";
                         break;
                     // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
@@ -383,6 +383,36 @@ namespace Reports.Core.Dao.Impl
             {
                 query.SetString("userName", userName);
             }
+        }
+        /// <summary>
+        /// Состояние кандидата
+        /// </summary>
+        /// <param name="CandidateID">Id кандидата</param>
+        /// <returns></returns>
+        public IList<CandidateStateDto> GetCandidateState(int CandidateID)
+        {
+            IQuery query = CreateCandidateStateQuery("SELECT * FROM vwEmploymentFillState WHERE Id = " + CandidateID.ToString());
+            return query.SetResultTransformer(Transformers.AliasToBean<CandidateStateDto>()).List<CandidateStateDto>();
+        }
+        public virtual IQuery CreateCandidateStateQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("GeneralFinal", NHibernateUtil.Boolean)
+                .AddScalar("PassportFinal", NHibernateUtil.Boolean)
+                .AddScalar("EducationFinal", NHibernateUtil.Boolean)
+                .AddScalar("FamilyFinal", NHibernateUtil.Boolean)
+                .AddScalar("MilitaryFinal", NHibernateUtil.Boolean)
+                .AddScalar("ExperienceFinal", NHibernateUtil.Boolean)
+                .AddScalar("ContactFinal", NHibernateUtil.Boolean)
+                .AddScalar("BackgroundFinal", NHibernateUtil.Boolean)
+                .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
+                .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
+                .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
+                .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)
+                ;
+
+            return query;
         }
     }
 }

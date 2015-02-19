@@ -33,6 +33,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int MarriageCertificateScanAttachmentId { get; set; }
         public int RowID { get; set; }
 
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
+
         public FamilyModel()
         {
             this.Version = 0;

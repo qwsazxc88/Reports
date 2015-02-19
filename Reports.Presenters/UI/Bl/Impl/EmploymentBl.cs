@@ -264,7 +264,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
                 model.INNScanAttachmentId = attachmentId;
                 model.INNScanAttachmentFilename = attachmentFilename;
-            }            
+            }
+
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+
             return model;
         }
 
@@ -314,6 +318,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -385,6 +391,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -468,6 +476,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -506,6 +516,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -543,6 +555,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -574,6 +588,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -637,6 +653,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -676,6 +694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -757,6 +777,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -813,6 +835,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 

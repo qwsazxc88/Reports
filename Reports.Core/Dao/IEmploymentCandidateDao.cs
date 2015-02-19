@@ -18,5 +18,6 @@ namespace Reports.Core.Dao
                 bool? sortDescending);
 
         IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
+        IList<CandidateStateDto> GetCandidateState(int CandidateID);
     }
 }

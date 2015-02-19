@@ -96,7 +96,7 @@ namespace WebMvc.Controllers
 
         #region General Info
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
@@ -571,7 +571,7 @@ namespace WebMvc.Controllers
         public ActionResult OnsiteTrainingReadOnly(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
-            return PartialView(model);
+            return model.IsFinal ? PartialView("OnsiteTrainingReadOnly", model) : PartialView("OnsiteTraining", model);
         }
 
         [HttpPost]

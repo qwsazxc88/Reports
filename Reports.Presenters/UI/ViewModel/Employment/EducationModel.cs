@@ -23,6 +23,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int Operation { get; set; }
         public int RowID { get; set; }
 
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
+
         public EducationModel()
         {
             this.Version = 0;

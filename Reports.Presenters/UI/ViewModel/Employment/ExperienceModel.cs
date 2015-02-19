@@ -44,6 +44,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int WorkBookSupplementScanAttachmentId { get; set; }
         public int RowID { get; set; }
 
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
+
         public ExperienceModel()
         {
             this.Version = 0;

@@ -104,6 +104,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int InfoValidityScanAttachmentId { get; set; }
         public int RowID { get; set; }
 
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
+
         public BackgroundCheckModel()
         {
             this.Version = 0;
