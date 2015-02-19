@@ -96,7 +96,7 @@ namespace WebMvc.Controllers
 
         #region General Info
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
