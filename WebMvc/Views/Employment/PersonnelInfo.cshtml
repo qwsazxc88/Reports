@@ -70,12 +70,13 @@
 }
 
 
-
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
+
         $('#tabs').tabs({ selected: -1,
             spinner: "Загрузка...",
             select: function (e, ui) {
@@ -110,10 +111,29 @@
                 if (ui.panel.id == "tabs8") {
                     $("#tabs8").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs8", "BackgroundCheckReadOnly", "/Employment/BackgroundCheckReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs8").ajaxStop(function () {
+                        UIHelpers.handleCheckboxState($("#IsApprovalSkipped"),
+                        {
+                            $target: $("#ApprovalStatus"),
+                            act: function () {
+                                this.$target.hide();
+                            }
+                        },
+                        {
+                            $target: $("#ApprovalStatus"),
+                            act: function () {
+                                this.$target.show();
+                            }
+                        },
+                        true);
+                    });
                 }
                 if (ui.panel.id == "tabs9") {
                     $("#tabs9").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs9", "OnsiteTrainingReadOnly", "/Employment/OnsiteTrainingReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs9").ajaxStop(function () {
+                        UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+                    });
                 }
                 if (ui.panel.id == "tabs10") {
                     $("#tabs10").text('Подождите, идет загрузка данных ...');
@@ -122,14 +142,26 @@
                 if (ui.panel.id == "tabs11") {
                     $("#tabs11").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs11").ajaxStop(function () {
+                        $('#isSecondaryJobContainer').buttonset();
+                        $('#isFrontContainer').buttonset();
+                    });
                 }
                 if (ui.panel.id == "tabs12") {
                     $("#tabs12").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs12", "PersonnelManagersReadOnly", "/Employment/PersonnelManagersReadOnly?Id=@Model.CandidateID", "GET");
+                    //после окончания выполнения запроса цепляем календари и обработчики
+                    $("#tabs12").ajaxStop(function () {
+                                                UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
+                                                $('#isHourlySalaryBasisContainer').buttonset();
+                                         });
                 }
             }
         });
         $('#tabs').tabs("select", 0);
+
     });
 
 

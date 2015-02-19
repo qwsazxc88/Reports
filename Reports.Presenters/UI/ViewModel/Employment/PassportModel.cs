@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto.Employment2;
 using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -99,6 +100,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public string InternalPassportScanAttachmentFilename { get; set; }
         public int InternalPassportScanAttachmentId { get; set; }
+
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
 
         public PassportModel()
         {

@@ -96,7 +96,7 @@ namespace WebMvc.Controllers
 
         #region General Info
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
@@ -239,12 +239,19 @@ namespace WebMvc.Controllers
         public ActionResult Education(EducationModel model)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.Operation == 0)
             {
-                EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
+                    ViewBag.Error = error;
+                }
             }
+            else
+            {
+                EmploymentBl.DeleteEducationRow(model);
+            }
+
             model = EmploymentBl.GetEducationModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
         }
@@ -328,11 +335,17 @@ namespace WebMvc.Controllers
         public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
+                    ViewBag.Error = error;
+                }
+            }
+            else
+            {
+                EmploymentBl.DeleteFamilyMember(model);
             }
             model = EmploymentBl.GetFamilyModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
@@ -407,10 +420,17 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
 
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
+                    ViewBag.Error = error;
+                }
+            }
+            else
+            {
+                EmploymentBl.DeleteExperiensRow(model);
             }
             model = EmploymentBl.GetExperienceModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
@@ -486,11 +506,17 @@ namespace WebMvc.Controllers
         public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                    ViewBag.Error = error;
+                }
+            }
+            else
+            {
+                EmploymentBl.DeleteBackgroundRow(model);
             }
             model = EmploymentBl.GetBackgroundCheckModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
@@ -545,7 +571,7 @@ namespace WebMvc.Controllers
         public ActionResult OnsiteTrainingReadOnly(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
-            return PartialView(model);
+            return model.IsFinal ? PartialView("OnsiteTrainingReadOnly", model) : PartialView("OnsiteTraining", model);
         }
 
         [HttpPost]
@@ -677,6 +703,7 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetPersonnelManagersModel(id);
             return PartialView(model);
+            //return View(model);
         }
 
         [HttpPost]

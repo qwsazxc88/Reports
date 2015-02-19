@@ -8,6 +8,8 @@ namespace Reports.Core.Dto.Employment2
 {
     public class ReferenceDto
     {
+        public int Id { get; set; }
+
         [Display(Name = "Фамилия")]
         public string LastName { get; set; }
 
