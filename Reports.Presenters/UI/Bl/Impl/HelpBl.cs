@@ -376,6 +376,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
@@ -390,6 +393,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
                 case UserRole.ConsultantOutsorsingManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
@@ -405,6 +411,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
             }
         }
@@ -767,6 +776,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
+                    }
                     break;
                 case UserRole.ConsultantOutsorsingManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
@@ -786,6 +801,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.NotEndWorkDate = DateTime.Now;
                         }
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
+                    }
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
@@ -798,6 +819,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
+                    }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
                     }
                     break;
             }

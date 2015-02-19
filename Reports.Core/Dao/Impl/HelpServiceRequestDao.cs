@@ -241,7 +241,7 @@ namespace Reports.Core.Dao.Impl
                     if (userId == 10)//расчетчики
                     {
                         sqlQuery = string.Format(sqlQuery, string.Empty);
-                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16) ";
+                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16, 21) ";
                     }
                     else
                     {
@@ -250,7 +250,7 @@ namespace Reports.Core.Dao.Impl
                     }
                 case UserRole.ConsultantOutsorsingManager://кадровики ОК
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20) ";
+                    return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
