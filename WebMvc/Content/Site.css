@@ -327,6 +327,30 @@ table.state td
   width:8%;
 }
 
+/* TABLE-BUTTONS
+----------------------------------------------------------*/
+table.buttonTable
+{
+  border: 1px solid Silver;
+  border-collapse: collapse;
+  color:Black;
+  width:100%;
+}
+
+table.buttonTable td 
+{
+  border: 1px solid Silver;
+  padding-left: 5px;
+  padding-right: 5px;
+  height:100%;
+  width:12%;
+}
+
+button.PrintButton
+{
+  height:65px;
+  width:100%;
+}
 /* MISC  
 ----------------------------------------------------------*/
 .clear
@@ -356,7 +380,7 @@ table.state td
 
 .buttonpanel
 {
-    display: inline-block;
+    display:inline-block;
     margin: 15px;    
 }
 .buttonpanel > *
