@@ -1,7 +1,13 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Трудовая деятельность";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Трудовая деятельность";
+    }
 }
 
 <span style="color:red;">@ViewBag.Error</span>
@@ -214,7 +220,7 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button id="btn" type="submit">Сохранить</button>
+        <button id="btnExperience" type="submit">Сохранить</button>
     </div>
 }
 
@@ -241,7 +247,7 @@
 <script type="text/javascript">
     function DeleteExperienceRow(Id) {
         $("#RowID").val(Id);
-        $("#btn").click();
+        $("#btnExperience").click();
     }
 
     $(document).ready(function () {

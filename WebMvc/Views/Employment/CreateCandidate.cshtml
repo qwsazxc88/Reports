@@ -41,6 +41,11 @@
             </div>
 
             <div class="formfield clear">
+                @Html.LabelFor(m => m.PersonnelId)<br />
+                @Html.DropDownListFor(m => m.PersonnelId, new SelectList(Model.Personnels, "Id", "Name"))
+            </div>
+
+            <div class="formfield clear">
                 @Html.LabelFor(m => m.IsFixedTermContract)<br />
                 @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
                 @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>

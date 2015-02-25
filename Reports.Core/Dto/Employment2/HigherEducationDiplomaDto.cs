@@ -9,6 +9,7 @@ namespace Reports.Core.Dto.Employment2
     public class HigherEducationDiplomaDto
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
 
         [Display(Name = "Наименование образовательного учреждения"),
             StringLength(100, ErrorMessage = "Не более 100 знаков."),

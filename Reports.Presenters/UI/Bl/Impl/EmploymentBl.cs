@@ -256,7 +256,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SNILS = entity.SNILS;
                 model.StatusId = entity.Status ?? 0;
                 model.Version = entity.Version;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
 
                 int attachmentId = 0;
@@ -314,7 +314,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Street = entity.Street;
                 model.StreetNumber = entity.StreetNumber;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -387,7 +387,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -472,7 +472,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsMarried = true;
                 }
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -512,7 +512,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReserveCategory = entity.ReserveCategory;
                 model.SpecialityCategory = entity.SpecialityCategory;
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -551,7 +551,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementDateOfIssue = entity.WorkBookSupplementDateOfIssue;
                 model.WorkBookSupplementNumber = entity.WorkBookSupplementNumber;
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -584,7 +584,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StreetNumber = entity.StreetNumber;
                 model.WorkPhone = entity.WorkPhone;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -642,8 +642,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.Smoking = entity.Smoking;
                 model.Sports = entity.Sports;
-                                
-                model.IsDraft = true;
+
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
 
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
@@ -683,7 +683,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApproveByTrainerAvailable = ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer
                     && !entity.IsFinal);
 
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             else
@@ -904,6 +904,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var model = new CreateCandidateModel();
             model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director )) == 0 ? true : false;
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            return model;
+        }
+
+        public CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model)
+        {
+            model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 ? true : false;
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
             return model;
         }
 
@@ -1734,6 +1742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             User currentUser = UserDao.Load(current.Id);
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
+            User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
 
             if ((currentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
@@ -1768,7 +1777,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 User = newUser,
                 AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : currentUser,
-                QuestionnaireDate = DateTime.Now                
+                QuestionnaireDate = DateTime.Now,
+                Personnels = PersonnelUser
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);

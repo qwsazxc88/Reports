@@ -32,6 +32,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "За руководителя")]
         public string OnBehalfOfManagerName { get; set; }
 
+        [Display(Name = "Сотрудник отдела кадров")]
+        public int PersonnelId { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
+
         // Id временного пользователя
         public int? UserId { get; set; }
         [Display(Name = "ФИО")]

@@ -24,6 +24,7 @@ namespace Reports.Presenters.UI.Bl
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
+        CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);
         PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error);
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);

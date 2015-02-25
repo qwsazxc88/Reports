@@ -1,13 +1,19 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Образование";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Образование";
+    }
 }
-
 <span style="color:red;">@ViewBag.Error</span>
 
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
@@ -371,7 +377,7 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit" id="btn">Сохранить</button>
+        <button type="submit" id="btnEducation">Сохранить</button>
     </div>
 }
 
@@ -389,7 +395,7 @@
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Profession" style="display:block;">Профессия основная</label><input type="text" name="Profession" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Department" style="display:block;">Факультет/отделение</label><input type="text" name="Department" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -404,7 +410,7 @@
         <label for="AdmissionYear" style="display:block;">Год поступления</label><input type="text" name="AdmissionYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="GraduationYear" style="display:block;">Год окончания</label><input type="text" name="GraduationYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -417,7 +423,7 @@
         <label for="CertificateNumber" style="display:block;">Номер документа</label><input type="text" name="CertificateNumber" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" id="CertificateDateOfIssue" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="InitiatingOrder" style="display:block;">Основание</label><input type="text" name="InitiatingOrder" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
- 
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -433,7 +439,7 @@
         <label for="BeginningDate">с </label><input type="text" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="EndDate">по </label><input type="text" name="EndDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="Speciality" style="display:block;">Специальность/квалификация</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
- 
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -448,7 +454,7 @@
         $("#Operation").val(Operation);
         $("#RowID").val(Id);
         //this.form.submit();
-        $("#btn").click();
+        $("#btnEducation").click();
         //return true;
     }
 
