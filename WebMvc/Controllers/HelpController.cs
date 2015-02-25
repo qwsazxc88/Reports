@@ -183,6 +183,7 @@ namespace WebMvc.Controllers
                 model.PeriodId = model.PeriodIdHidden;
                 model.TransferMethodTypeId = model.TransferMethodTypeIdHidden;
             }
+            model.NoteList = HelpBl.GetAllNodeTypesDto();
         }
         #endregion
         #region Service Questions
