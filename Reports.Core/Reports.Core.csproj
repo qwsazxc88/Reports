@@ -245,6 +245,7 @@
     <Compile Include="Dao\Impl\MissionTargetDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
+    <Compile Include="Dao\Impl\NoteTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
     <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
+    <Compile Include="Dao\INoteTypeDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
@@ -468,6 +470,7 @@
     <Compile Include="Domain\MissionTrainTicketType.cs" />
     <Compile Include="Domain\MissionTrainTicketTypeGradeValue.cs" />
     <Compile Include="Domain\MissionType.cs" />
+    <Compile Include="Domain\NoteType.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
     <Compile Include="Domain\RequestAttachment.cs" />
@@ -559,6 +562,7 @@
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
     <Compile Include="Dto\MissionUserDeptsListDto.cs" />
     <Compile Include="Dto\NameDto.cs" />
+    <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
@@ -1069,7 +1073,9 @@
     <EmbeddedResource Include="Domain\HelpServicePeriod.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\HelpServiceRequestComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -1103,6 +1109,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdDetailSet.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\NoteType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
-
+using System;
+using Reports.Core.Domain;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class HelpServiceRequestEditModel : HelpUserInfoModel, IContainId, IHelpServiceDictionariesStates
@@ -63,5 +64,19 @@ namespace Reports.Presenters.UI.ViewModel
         public bool ReloadPage { get; set; }
 
         public string Address { get; set; }
+
+        #region Поля для уволенных сотрудников
+        [Display(Name = "ФИО уволенного сотрудника")]
+        public string FiredUserName { get; set; }
+        public string FiredUserSurname { get; set; }
+        public string FiredUserPatronymic { get; set; }
+
+        [Display(Name = "Дата рождения")]
+        public string UserBirthDate { get; set; }
+
+        [Display(Name = "Примечание")]
+        public int Note { get; set; }
+        public IList<NoteTypeDto> NoteList { get; set; }
+        #endregion
     }
 }

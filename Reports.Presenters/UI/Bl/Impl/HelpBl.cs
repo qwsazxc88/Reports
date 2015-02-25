@@ -115,6 +115,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpQuestionSubtypeDao); }
             set { helpQuestionSubtypeDao = value; }
         }
+        protected INoteTypeDao noteTypeDao;
+        public INoteTypeDao NoteTypeDao
+        {
+            get { return Validate.Dependency(noteTypeDao); }
+            set { noteTypeDao = value; }
+        }
         protected IHelpQuestionRequestDao helpQuestionRequestDao;
         public IHelpQuestionRequestDao HelpQuestionRequestDao
         {
@@ -255,6 +261,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                  Creator = currUser,
                                  CreateDate = DateTime.Now,
                                  EditDate = DateTime.Now,
+                                 UserBirthDate= DateTime.Now
                              };
             }
             else
@@ -263,6 +270,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ProductionTimeTypeId = entity.ProductionTime.Id;
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
                 model.PeriodId = entity.Period == null? new int?() : entity.Period.Id;
+                model.FiredUserName = entity.FiredUserName;
+                model.FiredUserPatronymic = entity.FiredUserPatronymic;
+                model.FiredUserSurname = entity.FiredUserSurname;
+                model.UserBirthDate = entity.UserBirthDate.ToString("dd.MM.yyyy");
+                model.Note = entity.Note==null?0 : entity.Note.Id;
                 model.Requirements = entity.Requirements;
                 model.Version = entity.Version;
                 model.DocumentNumber = entity.Number.ToString();
@@ -290,7 +302,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.ConfirmWorkDate.HasValue)
                     model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
             }
-           
+            model.NoteList = noteTypeDao.GetAllNoteTypeDto();
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, entity, model);
@@ -591,6 +603,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpServiceRequest),
                         EditDate = DateTime.Now,
                         User = user,
+                        UserBirthDate=DateTime.Parse(model.UserBirthDate),
+                        FiredUserName=model.FiredUserName,
+                        FiredUserSurname=model.FiredUserSurname,
+                        FiredUserPatronymic=model.FiredUserPatronymic,
+                        Note=noteTypeDao.Load(model.Note)
                     };
                     ChangeEntityProperties(entity, model,fileDto,currUser,out error);
                     HelpServiceRequestDao.SaveAndFlush(entity);
@@ -661,6 +678,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
                 }
                 entity.Type = type;
+                entity.Note = noteTypeDao.Load(model.Note);
+                entity.FiredUserName = model.FiredUserName;
+                entity.FiredUserSurname = model.FiredUserSurname;
+                entity.FiredUserPatronymic = model.FiredUserPatronymic;
+                entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
                 entity.Requirements = type.IsRequirementsAvailable ? model.Requirements : null;
@@ -833,6 +855,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             HelpServiceType type = HelpServiceTypeDao.Load(typeId);
             SetDistionariesFlag(model, type);
+        }
+        public IList<NoteTypeDto> GetAllNodeTypesDto()
+        {
+            return noteTypeDao.GetAllNoteTypeDto();
         }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
