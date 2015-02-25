@@ -1,7 +1,13 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.PassportModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Паспортные данные";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Паспортные данные";
+    }
 }
 
 <span style="color:red;">@ViewBag.Error</span>

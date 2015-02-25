@@ -1,7 +1,13 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.BackgroundCheckModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Служба безопасности";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Служба безопасности";
+    }
 }
 
 <span style="color:red;">@ViewBag.Error</span>
@@ -298,7 +304,7 @@
     
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button id="btn" type="submit">Сохранить</button>
+        <button id="btnBC" type="submit">Сохранить</button>
     </div>
 }
 
@@ -325,7 +331,7 @@
 <script type="text/javascript">
     function DeleteBackgroundRow(Id) {
         $("#RowID").val(Id);
-        $("#btn").click();
+        $("#btnBC").click();
     }
 
     $(document).ready(function () {
@@ -342,7 +348,7 @@
             buttons:
             {
                 "OK": function () {
-                    processAddNameChange();
+                    processBCAddNameChange();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -351,7 +357,7 @@
             }
         });
 
-        var processAddNameChange = function()
+        var processBCAddNameChange = function()
         {
             var url = "@Url.Action("BackgroundCheckAddReference", "Employment")";
             var dataToSend = $("#add-reference-dialog form").serialize();

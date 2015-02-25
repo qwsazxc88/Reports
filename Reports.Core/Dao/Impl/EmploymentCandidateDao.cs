@@ -203,13 +203,16 @@ namespace Reports.Core.Dao.Impl
                         )
                         ", currentUser.Id);
             }
-
+            else if ((role & UserRole.PersonnelManager) > 0)//для кадровиков
+            {
+                sqlQueryPart += string.Format(@" candidate.PersonnelId in (SELECT PersonnelId FROM vwEmploymentPersonnels WHERE UserId = {0})", currentUser.Id);
+            }
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager)) > 0)
             {
-                // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
+                //сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
             }
             else
             {
@@ -410,6 +413,23 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
                 .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)
+                ;
+
+            return query;
+        }
+        public IList<CandidatePersonnelDto> GetPersonnels()
+        {
+            IQuery query = CreatePersonnelsQuery(@"SELECT 0 as Id, null as Name
+                                                   UNION ALL
+                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 
+                                                   ORDER BY Name");
+            return query.SetResultTransformer(Transformers.AliasToBean<CandidatePersonnelDto>()).List<CandidatePersonnelDto>();
+        }
+        public virtual IQuery CreatePersonnelsQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("Name", NHibernateUtil.String)
                 ;
 
             return query;

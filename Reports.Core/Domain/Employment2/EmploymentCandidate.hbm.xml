@@ -21,6 +21,7 @@
     <property name="Status" not-null="false"/>
     <property name="QuestionnaireDate" not-null="false"/>
     <many-to-one name="AppointmentCreator" class="User" column="AppointmentCreatorId" foreign-key="FK_Candidate_AppointmentCreator" index="Candidate_AppointmentCreator"  not-null="false"/>
+    <many-to-one name="Personnels" class="User" column="PersonnelId" foreign-key="FK_EmploymentCandidate_Users" index="EmploymentCandidate_Users"  not-null="false"/>
 
   </class>
 </hibernate-mapping>
