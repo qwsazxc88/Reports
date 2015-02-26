@@ -66,6 +66,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Address { get; set; }
 
         #region Поля для уволенных сотрудников
+        public bool IsForFiredUser { get; set; }
         [Display(Name = "ФИО уволенного сотрудника")]
         public string FiredUserName { get; set; }
         public string FiredUserSurname { get; set; }

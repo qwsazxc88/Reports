@@ -74,6 +74,15 @@
                                 </td>
                          </tr>
                          <tr>
+                         <td>
+                            @Html.LabelFor(model=>model.TypeId):
+                         </td>
+                         <td>
+                            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+                            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                        </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -105,6 +114,7 @@
                                 @if (Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
+                                    <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
                                 }                                                                                     
                             </td>
                             @*<td style = "text-align:right">
@@ -141,13 +151,13 @@
                         <div id="sort13" style="min-width:130px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
                     </th>
                     <th>
-                        <div id="sort14" style="min-width:130px"><a href="#"  onclick = "SortChanged(14);">примечание</a></div>
+                        <div id="sort14" style="min-width:130px"><a href="#"  onclick = "SortChanged(14);">Примечание</a></div>
                     </th>
                     <th>
                         <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
+                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
                     </th>
                     <th>
                         <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
@@ -200,11 +210,12 @@
                             <td>@doc.Position</td>
                             <td>@doc.ManagerName</td>
                             <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
-                            <td>@if (doc.Note==null) 
+                            <td>@if (doc.Note == null)
                                 {
                                        <p /> 
                                 }
-                                 else{ <p>@doc.NoteName</p> }
+                                else
+                                { <p>@doc.NoteName</p> }
                                  </td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
