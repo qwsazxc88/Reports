@@ -74,6 +74,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 inner join dbo.Users currentUser on currentUser.Id = :userId
                                 LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
+                                LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
                                 {0}";
