@@ -19,5 +19,6 @@ namespace Reports.Core.Dao
 
         IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
         IList<CandidateStateDto> GetCandidateState(int CandidateID);
+        IList<CandidatePersonnelDto> GetPersonnels();
     }
 }

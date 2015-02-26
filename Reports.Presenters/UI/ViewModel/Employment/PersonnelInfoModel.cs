@@ -12,5 +12,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsBackgroundCheckAvailable { get; set; }
         public bool IsManagersAvailable { get; set; }
         public bool IsPersonalManagersAvailable { get; set; }
+        public int TabIndex { get; set; }
     }
 }

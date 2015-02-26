@@ -116,4 +116,12 @@ namespace Reports.Core.Dto.Employment2
         public bool? ManagerApproval { get; set; }
         public bool? PersonnelManagerApproval { get; set; }
     }
+    /// <summary>
+    /// Список кадровиков
+    /// </summary>
+    public class CandidatePersonnelDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

@@ -1,7 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Общая информация";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Общая информация";
+    }
+    
 }
 
 <span style="color:red;">@ViewBag.Error</span>
@@ -407,6 +414,7 @@
     // BEGIN Add Name Change
 
     $(document).ready(function () {
+
         setActiveMenuItem("empGeneralInfo");
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
