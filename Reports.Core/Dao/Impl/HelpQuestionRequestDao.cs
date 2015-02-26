@@ -98,10 +98,7 @@ namespace Reports.Core.Dao.Impl
                                 left join helr on v.Id = helr.HelpQuestionRequestId and v.[SendDate] is not null
                                 left join [dbo].[Role] r on r.Id = helr.LastRedirectId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
-                                --LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
-                                --LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
-                                --LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
-                                --LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                inner join dbo.Users currentUser on currentUser.Id = :userId
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 {0}";
         
@@ -162,6 +159,7 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate, userName);
             if (!string.IsNullOrEmpty(number))
                 query.SetString("number", number);
+            query.SetInt32("userId", userId);
             List<HelpServiceQuestionDto> documentList = query
                 .SetResultTransformer(Transformers.AliasToBean(typeof(HelpServiceQuestionDto)))
                 .List<HelpServiceQuestionDto>().ToList();
@@ -255,26 +253,110 @@ namespace Reports.Core.Dao.Impl
                             //                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2", currentUser.Id);
                             //                            sqlFlag = @"case when v.UserDateAccept is not null 
                             //                                        and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
-                            if (depList == null || depList.Count() == 0)
-                                throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
-                            sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
-                            sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@"(u.Id = {3}) or (depM.Id in {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))",
-                                CoreUtils.CreateIn("(", depList), currentUser.Level, currentUser.IsMainManager ? 1 : 0, userId);
+                            //IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                            //if (depList == null || depList.Count() == 0)
+                            //    throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                            //sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
+                            //sqlQuery = string.Format(sqlQuery, sqlQueryPart);
+                            //return string.Format(@"(u.Id = {3}) or (depM.Id in {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))",
+                            //    CoreUtils.CreateIn("(", depList), currentUser.Level, currentUser.IsMainManager ? 1 : 0, userId);
+                            sqlQueryPart += " -1";
+                            sqlQuery = string.Format(sqlQuery, "");
+                            break;
                         case 4:
                         case 5:
                         case 6:
-                            if (currentUser.Department == null)
-                                throw new ArgumentException(string.Format(StrInvalidManagerDepartment, currentUser.Id));
-                            sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
-                            sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@"(u.Id = {3}) or (depM.Id = {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))", 
-                                currentUser.Department.Id,currentUser.Level,currentUser.IsMainManager?1:0,userId);
+                            //if (currentUser.Department == null)
+                            //    throw new ArgumentException(string.Format(StrInvalidManagerDepartment, currentUser.Id));
+                            //sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
+                            //sqlQuery = string.Format(sqlQuery, sqlQueryPart);
+                            //return string.Format(@"(u.Id = {3}) or (depM.Id = {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))", 
+                            //    currentUser.Department.Id,currentUser.Level,currentUser.IsMainManager?1:0,userId);
+                            sqlQuery = string.Format(sqlQuery, "");
+                            // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав уровней 4-6
+                            sqlQueryPart += @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
+                             inner join dbo.Users managerManagerAccount
+                               on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
+                                 and (managerManagerAccount.RoleId & 4) > 0
+                                 and managerManagerAccount.IsActive = 1
+                                 and
+                                 (
+                                   (
+                                     -- Руководители нижележащих уровней
+                                     managerManagerAccount.Level > currentUser.Level
+                                   )
+                                   or
+                                   (
+                                     -- Замы для уровней 4-6
+                                     managerManagerAccount.Level = currentUser.Level and managerManagerAccount.IsMainManager = 0
+                                   )
+                                 )
+                             inner join dbo.Department managerManagerAccountDept
+                               on managerManagerAccount.DepartmentId = managerManagerAccountDept.Id
+                                 -- Исключить состоящих в ветке руководства
+                                 and managerManagerAccountDept.Path not like N'9900424.9900426.9900427.%'
+                               
+                             -- по ветке
+                             inner join dbo.Department higherDept
+                               on managerManagerAccountDept.Path like higherDept.Path+N'%'
+                             where currentUser.DepartmentId = higherDept.Id
+                               -- Исключение своей учетной записи 7 уровня
+                               and not currentUser.Login = managerEmployeeAccount.Login + N'R'";
+
+                            // Выборка рядовых пользователей по ветке для применения автоматических прав
+                            sqlQueryPart += @"
+                                union
+                                select distinct employee.Id from Users employee
+                                    left join [dbo].[Users] employeeManagerAccount
+                                    on (employeeManagerAccount.RoleId & 4) > 0
+                                        and employeeManagerAccount.Login = u.Login+N'R'
+                                        and employeeManagerAccount.IsActive = 1
+                                    inner join dbo.Department employeeDept
+                                      on employee.DepartmentId = employeeDept.Id
+                                        -- Исключить состоящих в ветке руководства
+                                        and employeeDept.Path not like N'9900424.9900426.9900427.%'
+                                    inner join dbo.Department higherDept
+                                      on employeeDept.Path like higherDept.Path+N'%'
+                                where (employee.RoleId & 2) > 0
+                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
+                                    and currentUser.DepartmentId = higherDept.Id
+                                    and not currentUser.Login = employee.Login + N'R'";
+
+
+                            break;
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
                                 currentUser.Level));
                     }
+                    sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
+
+                    // Автороль должна действовать только для уровней ниже третьего
+                    sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += string.Format(@"
+                                or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
+                    sqlQueryPart += string.Format(@"
+                                or 
+                                (
+                                    (u.RoleId & 2) > 0
+                                    and
+                                    u.DepartmentId in
+                                    (
+                                        select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                            inner join Department targetDept
+                                                on targetDept.Id = mrr.TargetDepartmentId
+                                            inner join [dbo].[Department] branchDept
+                                                on branchDept.Path like targetDept.Path + '%'
+                                            inner join Users
+                                                on mrr.UserId = {0}
+                                            inner join Role
+                                                on mrr.RoleId = 1
+                                    )
+                                )
+                                ", userId);
+                    sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
+                    //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
+                    return sqlQueryPart;
                 case UserRole.ConsultantOutsorsingManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     //показываем вопросы руководителей, которые перенаправлены на эту роль
