@@ -56,6 +56,8 @@ namespace Reports.Presenters.Services.Impl
                 //    return SafetyZoneRoles.RegisterDoctor;
                 if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
                     return UserRole.ConsultantOutsorsingManager;
+                if (IsInRole(ReportRoleConstants.DismissedEmployee))
+                    return UserRole.DismissedEmployee;
                 return IsInRole(ReportRoleConstants.PersonnelManager) ?
                        UserRole.PersonnelManager :
                        UserRole.NoRole;
@@ -128,7 +130,8 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
                    || ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10)//для инфоуслуг от роли кадровики нужны только наши расчетчики
-                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                   || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpQuestionAvailable(IUser dto)
         {
@@ -140,7 +143,8 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantAccountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
                    //|| (dto.UserRole & UserRole.PersonnelManager) > 0
-                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                   || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpTemplateAvailable(IUser dto)
         {

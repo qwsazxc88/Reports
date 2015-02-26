@@ -9,6 +9,7 @@
 
 @using (Html.BeginForm())
 {
+    <div>Уважаемые пользователи! Перед заказом услуги прочитайте, пожалуйста, краткие рекомендации во вкладке «О ПРОГРАММЕ». В связи с большим объемом заказываемых услуг, для более оперативной их обработки, обращаем Ваше внимание, заказанная услуга, оформленная не правильно, будет отклоняться без оставления комментариев.</div>
     <table style="width:100%">
      <tr>
         <td colspan="2">
@@ -96,7 +97,7 @@
             <table style="width:100%">
                     <tr>
                             <td>
-                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee))
+                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee) || (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.DismissedEmployee))
                                 {
                                     <input type="button" value="Создать новую заявку на услугу" onclick="location.href='@Url.Action("ServiceRequestEdit", "Help", new { id = 0 })'"/>   
                                 }

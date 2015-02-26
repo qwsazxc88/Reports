@@ -60,7 +60,7 @@ namespace WebMvc.Controllers
         #region Service Requests
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager)]
+            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
         public ActionResult Index()
         {
             //UserRole.PersonnelManager
@@ -110,7 +110,7 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager)]
+         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);

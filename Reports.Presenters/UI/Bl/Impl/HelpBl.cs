@@ -232,7 +232,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (id == 0 && !userId.HasValue)
             {
-                if ((current.UserRole & UserRole.Employee) == UserRole.Employee)
+                if ((current.UserRole & UserRole.Employee) == UserRole.Employee || (current.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee)
                     userId = current.Id;
                 else
                     throw new ValidationException(StrNoUser);
@@ -313,7 +313,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -325,6 +325,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Creator.Id == current.Id)
                     {
                         if(!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            //if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                            model.IsSendAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
+                    break;
+                    case UserRole.DismissedEmployee:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
                         {
                             model.IsEditable = true;
                             model.IsSaveAvailable = true;
@@ -362,6 +376,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
@@ -376,6 +393,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
                 case UserRole.ConsultantOutsorsingManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
@@ -391,6 +411,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                             model.IsBeginWorkAvailable = true;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        model.IsBeginWorkAvailable = true;
                     break;
             }
         }
@@ -705,6 +728,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.DismissedEmployee:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                            entity.SendDate = DateTime.Now;
+                        if (entity.EndWorkDate.HasValue)
+                        {
+                            if (model.Operation == 4)
+                                entity.ConfirmWorkDate = DateTime.Now;
+                            else if (model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                            }
+                        }
+                    }
+                    break;
                 case UserRole.Manager:
                     if (entity.Creator.Id == currUser.Id)
                     {
@@ -735,6 +776,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
+                    }
                     break;
                 case UserRole.ConsultantOutsorsingManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
@@ -754,6 +801,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.NotEndWorkDate = DateTime.Now;
                         }
                     }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
+                    }
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
@@ -766,6 +819,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
+                    }
+                    //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
+                    if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
+                    {
+                        entity.BeginWorkDate = DateTime.Now;
+                        entity.Consultant = currUser;
                     }
                     break;
             }
@@ -951,7 +1010,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (id == 0 && !userId.HasValue)
             {
-                if ((current.UserRole & UserRole.Employee) == UserRole.Employee || (current.UserRole & UserRole.Manager) == UserRole.Manager)
+                if ((current.UserRole & UserRole.Employee) == UserRole.Employee || (current.UserRole & UserRole.Manager) == UserRole.Manager || (current.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee)
                     userId = current.Id;
                 else
                     throw new ValidationException(StrQuestionNoUser);
@@ -1006,6 +1065,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currRole)
             {
                 case UserRole.Employee:
+                    return entity.User.Id == current.Id;
+                case UserRole.DismissedEmployee:
                     return entity.User.Id == current.Id;
                 case UserRole.Manager:
                     if (entity.User.Department == null)
@@ -1162,7 +1223,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
@@ -1173,6 +1234,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentRole)
             {
                 case UserRole.Employee:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
+                    break;
+                case UserRole.DismissedEmployee:
                     if (entity.Creator.Id == current.Id)
                     {
                         if (!entity.SendDate.HasValue)
@@ -1437,6 +1513,69 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currRole)
             {
                 case UserRole.Employee:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
+                            entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
+                        if (entity.EndWorkDate.HasValue)
+                        {
+                            if (model.Operation == 4)
+                            {
+                                entity.ConfirmWorkDate = DateTime.Now;
+                                HelpQuestionHistoryEntity confirm = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 4,// confirm
+                                };
+                                entity.HistoryEntities.Add(confirm);
+                            }
+                            else if (model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                                HelpQuestionHistoryEntity reject = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 5,// reject
+                                };
+                                entity.HistoryEntities.Add(reject);
+                                model.Answer = null;
+                                model.Question = null;
+                                entity.Answer = null;
+                                entity.Question = null;
+                                entity.ConsultantRoleId = null;
+                            }
+                        }
+                    }
+                    break;
+                case UserRole.DismissedEmployee:
                     if (entity.Creator.Id == currUser.Id)
                     {
                         if (model.Operation == 1 && !entity.SendDate.HasValue)

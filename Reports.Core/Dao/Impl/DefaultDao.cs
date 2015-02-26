@@ -240,6 +240,7 @@ namespace Reports.Core.Dao.Impl
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
                                 v.Number as Number,
+                                v.SicklistNumber,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
                                 RequestStatusStandardSelector + @",
@@ -443,6 +444,12 @@ namespace Reports.Core.Dao.Impl
             {
                 #region Employees
                 case UserRole.Employee:
+                    // sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
+                #endregion
+
+                #region DismissedEmployee:
+                case UserRole.DismissedEmployee:
                     // sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
                 #endregion
@@ -832,6 +839,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 11:
                     sqlQuery += @" order by IsPersonnelFileSentToArchive";
+                    break;
+                case 12:
+                    sqlQuery += @" order by SicklistNumber";
                     break;
             }
             if (sortDescending.Value)

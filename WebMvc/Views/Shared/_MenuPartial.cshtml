@@ -12,12 +12,14 @@
 @*            <tr>*@
                 <div id="liTimesheet" class="mainOn"><a href="#"><span>Табель</span></a>
                 </div>  
-                <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
-                </div> 
-                <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                </div>  
+                @if ((dto.UserRole & UserRole.DismissedEmployee) == 0)
+                {
+                    <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)</div>   
+                    <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)</div>  
+                }
+                
                 <div id="liDeduction" class="mainMenuItem">
-                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                @if ((dto.UserRole & UserRole.Accountant) > 0
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     @Html.ActionLink("Удержания", "Index", "Deduction")
@@ -34,14 +36,14 @@
                      || (dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id.ToString() == ConfigurationManager.AppSettings["SuperPersonnelId"]
                     )
                 {
-                   if ((dto.UserRole & UserRole.Archivist) > 0)
+                    if ((dto.UserRole & UserRole.Archivist) > 0)
                     {
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
-                   else
-                   {
+                    else
+                    {
                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
-                   }
+                    }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -51,12 +53,13 @@
                 }
               @*  <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div> *@
-                @*<div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
-                </div>*@
+                    
+                @*<div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>*@
+
                 @if (UserDto.IsHelpServiceAvailable(dto))
-                 {
+                {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
-                 }
+                }
                 else if (UserDto.IsHelpQuestionAvailable(dto))
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 

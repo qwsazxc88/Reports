@@ -75,8 +75,9 @@
                 }
                 <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
                 </div>  
-                @*<div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
-                </div>*@
+
+                @*<div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>*@
+
                  @if (UserDto.IsHelpServiceAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 

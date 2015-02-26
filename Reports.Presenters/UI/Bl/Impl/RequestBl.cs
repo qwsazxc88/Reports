@@ -613,6 +613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                null,
                 model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
@@ -1987,6 +1988,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     break;
+                case UserRole.DismissedEmployee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+
+                        // Уволенный может прикрепить заявление на выдачу ТК при статусе "Черновик"                        
+                        model.IsWorkbookRequestAllowed = true;
+                    }
+
+                    if (model.IsPostedTo1C)
+                    {
+                        // Уволенный может прикрепить сканы подписанных приказа, Т2 и соглашения
+                        model.IsConfirmationAllowed = true;
+                        model.IsT2Allowed = true;
+                        model.IsDismissalAgreementAllowed = true;
+
+                        model.IsViewDismissalAgreementAllowed = true;
+                        model.IsViewF182NAllowed = true;
+                        model.IsViewF2NDFLAllowed = true;
+                    }
+
+                    break;
                 case UserRole.Manager:
                     //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
                     //model.IsPrintAvailable = formMan != null;
@@ -2387,6 +2413,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Dismissal, false);
             } 
+            #endregion
+
+            #region Согласование уволенным
+            if ((current.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee && current.Id == model.UserId
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.Dismissal, false);
+            }
             #endregion
 
             #region Согласование руководителем
@@ -3672,6 +3709,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.SicklistNumber,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -5361,6 +5399,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
+                case UserRole.DismissedEmployee:
+                    if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1}", user.Id, current.Id);
+                        return false;
+                    }
+                    break;
                 case UserRole.Manager:
 
                     bool canEdit = false;
@@ -5590,9 +5635,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerName = user.Manager.FullName;
 
             // Руководители до 4 уровня по ветке
-            IList<User> managers = GetManagersForEmployee(user.Id, 4)
+            IList<User> managers = null;
+            //для ветки руководства скб
+            if (user.Department.Path.StartsWith("9900424.9900426.9900427."))
+            {
+                //для приказов на командировки, авансовых отчетов убираем руководителей 4 уровня
+                if (model.GetType().Name == "MissionOrderEditModel" || model.GetType().Name == "MissionReportEditModel" || model.GetType().Name == "SicklistEditModel" ||
+                    model.GetType().Name == "MissionEditModel" || model.GetType().Name == "AbsenceEditModel" || model.GetType().Name == "VacationEditModel" ||
+                    model.GetType().Name == "ChildVacationEditModel" || model.GetType().Name == "DismissalEditModel" || model.GetType().Name == "ClearanceChecklistEditModel")
+                    //managers.Clear();
+                    managers = GetManagersForEmployee(user.Id, 4)
+                        //.Where<User>(manager => (manager.Level != 4 && manager.Department.Id != 4395) && (manager.Level != 6 && manager.Department.Id != 6409))
+                        .Where<User>(manager => (manager.Level == 2 && (manager.Id == 111 || manager.Id == 143)))
+                        .OrderByDescending<User, int?>(manager => manager.Level)
+                        .ToList<User>();
+                else
+                {
+                    managers = GetManagersForEmployee(user.Id, 4)
+                    .OrderByDescending<User, int?>(manager => manager.Level)
+                    .ToList<User>();
+                }
+            }
+            else
+            {
+                managers = GetManagersForEmployee(user.Id, 4)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
+            }
+                
+
+            
+
+
             // + руководители по ручным привязкам
             IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, manualRoleForManagersList);
             foreach (var manualRoleManager in manualRoleManagers)
@@ -7468,7 +7542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Accountant:
                     if (!deduction.SendTo1C.HasValue && !deduction.DeleteDate.HasValue)
                     {
-                        if(deduction.EditDate.Month >= DateTime.Today.Month)
+                        if (deduction.EditDate.Month == DateTime.Today.Month && deduction.EditDate.Year == DateTime.Today.Year)
                             model.IsEditable = true;
                         model.IsDeleteAvailable = true;
                     }
@@ -9502,7 +9576,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     // Определение подчиненности рядовых сотрудников
-                    else if ((user.RoleId & (int)UserRole.Employee) > 0
+                    else if (((user.RoleId & (int)UserRole.Employee) > 0 || (user.RoleId & (int)UserRole.DismissedEmployee) > 0)
                         && user.Department.Path.StartsWith(currentUser.Department.Path))
                     {
                         canEdit = true;
