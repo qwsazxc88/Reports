@@ -32,7 +32,7 @@ namespace Reports.Core.Dao.Impl
         public virtual IList<Department> LoadDepartmentsForUserId(int userId)
         {
             return Session.Query<ManualRoleRecord>()
-                .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == userId)
+                .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == userId && x.TargetDepartment.ItemLevel == 3)
                 .Select(x => x.TargetDepartment).Distinct()
                 .ToList();
         }
