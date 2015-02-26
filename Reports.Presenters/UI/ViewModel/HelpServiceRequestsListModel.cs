@@ -36,7 +36,10 @@ namespace Reports.Presenters.UI.ViewModel
 
         //[Display(Name = "Режим просмотра изменений")]
         //public bool IsCorrectionsOnlyModeOn { get; set; }
-
+        [Display(Name = "Вид услуги")]
+        public int TypeId { get; set; }
+        public int TypeIdHidden { get; set; }
+        public IList<IdNameDto> Types;
         public bool IsAddAvailable { get; set; }
         //public bool IsApproveAvailable { get; set; }
         //public bool IsApproveClick { get; set; }
