@@ -114,7 +114,7 @@
                 </div>
                 }*@
 
-                @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0 && (dto.UserRole & UserRole.DismissedEmployee) == 0)
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     if ((dto.UserRole & UserRole.OutsourcingManager) > 0)
                     {
