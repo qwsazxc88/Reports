@@ -40,6 +40,7 @@ namespace Reports.Core.Domain
         public virtual string FiredUserPatronymic { get; set; }
         public virtual DateTime? UserBirthDate { get; set; }
         public virtual NoteType Note { get; set; }
+        public virtual bool IsOriginalReceived { get; set; }
         #endregion
 
         #region Properties

@@ -41,8 +41,11 @@ namespace Reports.Core.Dao.Impl
                                 v.FiredUserSurname as FiredUserSurname,
                                 v.FiredUserPatronymic as FiredUserPatronymic,
                                 v.UserBirthDate as UserBirthDate,
+                                v.IsOriginalReceived as IsOriginalReceived,
                                 NT.Name as NoteName,
                                 v.CreateDate as CreateDate,
+                                v.EditDate as EditDate,
+                                v.EndWorkDate as EndWorkDate,
                                 v.ConfirmWorkDate as ConfirmWorkDate,
                                 t.Name as RequestType,
                                 m.Name as RequestTransferType,
@@ -88,6 +91,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ManagerName", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("EndWorkDate", NHibernateUtil.DateTime).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("ConfirmWorkDate", NHibernateUtil.DateTime).
                 AddScalar("RequestType", NHibernateUtil.String).
@@ -102,7 +107,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("FiredUserSurname",NHibernateUtil.String).
                 AddScalar("FiredUserPatronymic",NHibernateUtil.String).
                 AddScalar("NoteName",NHibernateUtil.String).
-                AddScalar("UserBirthDate",NHibernateUtil.Date)
+                AddScalar("UserBirthDate",NHibernateUtil.Date).
+                AddScalar("IsOriginalReceived",NHibernateUtil.Boolean)
                 ;  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,

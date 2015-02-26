@@ -16,6 +16,8 @@ namespace Reports.Core.Dto
         public string Dep7Name { get; set; }
         public int RequestNumber { get; set; }
         public DateTime CreateDate { get; set; }
+        public DateTime EditDate { get; set; }
+        public DateTime? EndWorkDate { get; set; }
         public DateTime? ConfirmWorkDate { get; set; }
         public string RequestType { get; set; }
         public string RequestTransferType { get; set; }
@@ -27,7 +29,7 @@ namespace Reports.Core.Dto
         public string ProdTimeName { get; set; }
         public int Note { get; set; }
         public string NoteName { get; set; }
-
+        public bool IsOriginalReceived { get; set; }
     }
       //AddScalar("Id", NHibernateUtil.Int32).
       //          AddScalar("UserId", NHibernateUtil.Int32).

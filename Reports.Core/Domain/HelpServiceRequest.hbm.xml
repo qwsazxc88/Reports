@@ -18,7 +18,7 @@
     <property name="FiredUserSurname" length="50" not-null="false"/>
     <property name="FiredUserPatronymic" length="50" not-null="false"/>
     <property name="UserBirthDate" not-null="false"/>
-
+    <property name="IsOriginalReceived" not-null="true"/>
     <many-to-one name="Note" class="NoteType" column="NoteId" foreign-key="FK_HelpServiceRequest_NoteType" index="HelpServiceRequest_NoteType" not-null="false"/>
     <many-to-one name="Type" class="HelpServiceType" column="TypeId" foreign-key="FK_HelpServiceRequest_HelpServiceType" index="HelpServiceRequest_HelpServiceType"  not-null="true"/>
   <many-to-one name="ProductionTime" class="HelpServiceProductionTime" column="ProductionTimeId" foreign-key="FK_HelpServiceRequest_HelpServiceProductionTime" index="HelpServiceRequest_HelpServiceProductionTime"  not-null="true"/>
