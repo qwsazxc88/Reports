@@ -144,8 +144,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             SetDictionariesToModel(model);
             //SetInitialStatus(model);
+            SetIsOriginalDocsVisible(model);
             SetIsAvailable(model);
             return model;
+        }
+        protected void SetIsOriginalDocsVisible(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> RolesToShow=new List<UserRole>();
+            RolesToShow.AddRange(new List<UserRole>{
+                UserRole.OutsourcingManager,
+                UserRole.PersonnelManager,
+                UserRole.ConsultantOutsourcing,
+                UserRole.ConsultantPersonnel
+               
+            });
+            model.IsOriginalDocsVisible = RolesToShow.Contains(CurrentUser.UserRole);
+        }
+        protected void SetIsOriginalDocsEditable(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> RolesToEdit = new List<UserRole>{
+                UserRole.ConsultantPersonnel,
+                UserRole.PersonnelManager
+            };
+            model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole);
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
@@ -182,6 +203,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetDictionariesToModel(model);
             User user = UserDao.Load(model.UserId);
+
             if (hasError)
                 model.Documents = new List<HelpServiceRequestDto>();
             else
@@ -204,6 +226,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortDescending,
                 model.Address,
                 model.TypeId);
+            SetIsOriginalDocsVisible(model);
+            SetIsOriginalDocsEditable(model);
         }
         #endregion
         #region Service Requests Edit

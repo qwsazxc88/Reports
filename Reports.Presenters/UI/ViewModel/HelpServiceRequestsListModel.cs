@@ -46,7 +46,8 @@ namespace Reports.Presenters.UI.ViewModel
         //public bool IsCorrectionsOnlyModeAvailable { get; set; }
 
         public IList<HelpServiceRequestDto> Documents { get; set; }
-
+        public bool IsOriginalDocsVisible { get; set; }
+        public bool IsOriginalDocsEditable { get; set; }
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
 
