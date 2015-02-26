@@ -7,6 +7,9 @@
         @Html.TextBoxFor(m => m.FiredUserSurname, Model.IsEditable ? (object)new { placeholder = "Фамилия", style = "width:100px" } : (object)new { disabled = "disabled" })
         @Html.TextBoxFor(m => m.FiredUserName, Model.IsEditable ?  (object)new { placeholder = "Имя", style = "width:100px" } : (object)new { disabled = "disabled" })
         @Html.TextBoxFor(m => m.FiredUserPatronymic, Model.IsEditable ? (object)new { placeholder = "Отчество", style = "width:100px" } : (object)new { disabled = "disabled" })
+        @Html.ValidationMessageFor(m => m.FiredUserSurname)
+        @Html.ValidationMessageFor(m => m.FiredUserName)
+        @Html.ValidationMessageFor(m => m.FiredUserPatronymic)
     </td>
 </tr>
 <tr>

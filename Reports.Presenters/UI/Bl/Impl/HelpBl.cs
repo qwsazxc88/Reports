@@ -154,6 +154,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
             model.Statuses = GetServiceRequestsStatuses();
+            List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Любой" });
+            model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         public List<IdNameDto> GetServiceRequestsStatuses()
         {
@@ -199,7 +202,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Number,
                 model.SortBy,
                 model.SortDescending,
-                model.Address);
+                model.Address,
+                model.TypeId);
         }
         #endregion
         #region Service Requests Edit
@@ -273,7 +277,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FiredUserName = entity.FiredUserName;
                 model.FiredUserPatronymic = entity.FiredUserPatronymic;
                 model.FiredUserSurname = entity.FiredUserSurname;
-                model.UserBirthDate = entity.UserBirthDate.ToString("dd.MM.yyyy");
+                model.UserBirthDate = entity.UserBirthDate==null?String.Empty : entity.UserBirthDate.Value.ToString("dd.MM.yyyy");
+                model.IsForFiredUser = (entity.UserBirthDate != null);//Если дата рождения заполнена - значит форма для уволенного сотрудника
                 model.Note = entity.Note==null?0 : entity.Note.Id;
                 model.Requirements = entity.Requirements;
                 model.Version = entity.Version;
@@ -603,12 +608,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpServiceRequest),
                         EditDate = DateTime.Now,
                         User = user,
-                        UserBirthDate=DateTime.Parse(model.UserBirthDate),
                         FiredUserName=model.FiredUserName,
                         FiredUserSurname=model.FiredUserSurname,
                         FiredUserPatronymic=model.FiredUserPatronymic,
                         Note=noteTypeDao.Load(model.Note)
                     };
+                    if (model.UserBirthDate != null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
+                    
                     ChangeEntityProperties(entity, model,fileDto,currUser,out error);
                     HelpServiceRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
@@ -682,7 +688,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FiredUserName = model.FiredUserName;
                 entity.FiredUserSurname = model.FiredUserSurname;
                 entity.FiredUserPatronymic = model.FiredUserPatronymic;
-                entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
+                if(model.UserBirthDate!=null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
                 entity.Requirements = type.IsRequirementsAvailable ? model.Requirements : null;

@@ -118,7 +118,9 @@ namespace Reports.Core.Dao.Impl
                 string number,
                 int sortBy,
                 bool? sortDescending,
-                string Address)
+                string Address,
+                int typeId=0
+            )
         {
             string sqlQuery = sqlSelectForHsList;
 
@@ -135,7 +137,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
-            
+            whereString = GetTypeWhere(whereString, typeId);
 
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
@@ -200,6 +202,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 12:
                     orderBy = @" order by ProdTimeName";
+                    break;
+                case 13:
+                    orderBy = @" order by FiredUserSurname";
+                    break;
+                case 14:
+                    orderBy = @" order by NoteName";
                     break;
             }
             if (sortDescending.Value)
