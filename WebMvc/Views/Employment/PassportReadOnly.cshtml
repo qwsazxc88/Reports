@@ -8,7 +8,10 @@
 <legend>Паспорт РФ</legend>
     <div class="formfield clearleft">
         @Html.LabelFor(m => m.DocumentTypeId)<br />
-        <span class="fakeFormField">@Model.DocumentTypeItems.Where(x => x.Value == Model.DocumentTypeId.ToString()).FirstOrDefault().Text&nbsp;</span>
+        @if (Model.DocumentTypeId != 0)
+        {
+            <span class="fakeFormField">@Model.DocumentTypeItems.Where(x => x.Value == Model.DocumentTypeId.ToString()).FirstOrDefault().Text&nbsp;</span>
+        }
     </div>
 
     @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
