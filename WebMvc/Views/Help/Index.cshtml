@@ -248,7 +248,7 @@
                             @if (Model.IsOriginalDocsVisible)
                             {
                                 <td>
-                                    @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived,Model.IsOriginalDocsEditable?)
+                                    @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived)
                                 </td>
                             }
                             <td style="background-color:@color">
