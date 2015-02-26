@@ -548,6 +548,9 @@ namespace Reports.Core
                     .Instance(SessionFactory)
                     .LifeStyle.Is(LifestyleType.Singleton));
 			//Kernel.AddComponentInstance("ISessionFactory", typeof(ISessionFactory), SessionFactory);
+            Register(Component.For(typeof(INoteTypeDao))
+                .ImplementedBy<NoteTypeDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

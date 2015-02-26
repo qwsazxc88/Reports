@@ -33,6 +33,10 @@
             <input type="hidden" id="UserName" name="UserName" value="@Model.UserName" />
         </td>
     </tr>
+    @if (Model is Reports.Presenters.UI.ViewModel.HelpServiceRequestEditModel)
+    {
+      @Html.Partial("FiredUserPartial",Model)
+    }
     <tr>
         <td>
             @Html.LabelFor(m => m.Position)

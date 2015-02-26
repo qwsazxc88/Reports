@@ -35,7 +35,11 @@ namespace Reports.Core.Domain
 
         public virtual IList<HelpServiceRequestComment> Comments { get; set; }
 
-      
+        public virtual string FiredUserName { get; set; }
+        public virtual string FiredUserSurname { get; set; }
+        public virtual string FiredUserPatronymic { get; set; }
+        public virtual DateTime UserBirthDate { get; set; }
+        public virtual NoteType Note { get; set; }
         #endregion
 
         #region Properties

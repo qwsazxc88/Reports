@@ -138,6 +138,12 @@
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>
                     <th>
+                        <div id="sort13" style="min-width:130px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
+                    </th>
+                    <th>
+                        <div id="sort14" style="min-width:130px"><a href="#"  onclick = "SortChanged(14);">примечание</a></div>
+                    </th>
+                    <th>
                         <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
                     </th>
                     <th>
@@ -193,6 +199,13 @@
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
                             <td>@doc.ManagerName</td>
+                            <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
+                            <td>@if (doc.Note==null) 
+                                {
+                                       <p /> 
+                                }
+                                 else{ <p>@doc.NoteName</p> }
+                                 </td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
                             <td style="text-align:left">

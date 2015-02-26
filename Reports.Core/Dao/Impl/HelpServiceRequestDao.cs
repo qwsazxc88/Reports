@@ -37,6 +37,11 @@ namespace Reports.Core.Dao.Impl
                                 case when v.CreatorId != v.UserId then crUser.Name else N'' end as ManagerName,
                                 dep.Name as Dep7Name,
                                 v.Number as RequestNumber,
+                                v.FiredUserName as FiredUserName,
+                                v.FiredUserSurname as FiredUserSurname,
+                                v.FiredUserPatronymic as FiredUserPatronymic,
+                                v.UserBirthDate as UserBirthDate,
+                                NT.Name as NoteName,
                                 v.CreateDate as CreateDate,
                                 v.ConfirmWorkDate as ConfirmWorkDate,
                                 t.Name as RequestType,
@@ -68,6 +73,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 inner join dbo.Users currentUser on currentUser.Id = :userId
+                                LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
                                 {0}";
@@ -91,7 +97,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("Address", NHibernateUtil.String).
                 AddScalar("Dep3Name", NHibernateUtil.String).
-                AddScalar("ProdTimeName", NHibernateUtil.String);  
+                AddScalar("ProdTimeName", NHibernateUtil.String).
+                AddScalar("FiredUserName",NHibernateUtil.String).
+                AddScalar("FiredUserSurname",NHibernateUtil.String).
+                AddScalar("FiredUserPatronymic",NHibernateUtil.String).
+                AddScalar("NoteName",NHibernateUtil.String).
+                AddScalar("UserBirthDate",NHibernateUtil.Date)
+                ;  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,
                 UserRole role,
