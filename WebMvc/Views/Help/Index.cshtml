@@ -74,6 +74,15 @@
                                 </td>
                          </tr>
                          <tr>
+                         <td>
+                            @Html.LabelFor(model=>model.TypeId):
+                         </td>
+                         <td>
+                            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+                            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                        </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -105,6 +114,7 @@
                                 @if (Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
+                                    <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
                                 }                                                                                     
                             </td>
                             @*<td style = "text-align:right">
@@ -138,10 +148,16 @@
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>
                     <th>
+                        <div id="sort13" style="min-width:130px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
+                    </th>
+                    <th>
+                        <div id="sort14" style="min-width:130px"><a href="#"  onclick = "SortChanged(14);">Примечание</a></div>
+                    </th>
+                    <th>
                         <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
+                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
                     </th>
                     <th>
                         <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
@@ -161,12 +177,19 @@
                     <th>
                         <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
                     </th>
+                    @if (Model.IsOriginalDocsVisible)
+                            {
+                                <th>
+                                   <div id="sort15"  style="min-width:130px"><a href="#"  onclick = "SortChanged(15);">Оригинал документов<br /> от сотрудника получен</a></div> 
+                                </th>
+                            }
                     <th>
                         <div id="sort10"  style="min-width:130px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
+                    int i=0;
                     foreach (var doc in Model.Documents)
                     {
                         string color = "white";
@@ -193,6 +216,14 @@
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
                             <td>@doc.ManagerName</td>
+                            <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
+                            <td>@if (doc.Note == null)
+                                {
+                                       <p /> 
+                                }
+                                else
+                                { <p>@doc.NoteName</p> }
+                                 </td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
@@ -202,22 +233,29 @@
                             <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
                             <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
                             *@
-                            <td>@doc.CreateDate.ToShortDateString() @doc.CreateDate.ToShortTimeString()</td>                            
-                            @if (@doc.ConfirmWorkDate == null)
+                            <td>@doc.EditDate.ToShortDateString() @doc.EditDate.ToShortTimeString()</td>                            
+                            @if (@doc.EndWorkDate == null)
                             {
                                 <td></td>
                             }
                             else
                             {
-                                <td>@doc.ConfirmWorkDate.Value.ToShortDateString() @doc.ConfirmWorkDate.Value.ToShortTimeString()</td>
+                                <td>@doc.EndWorkDate.Value.ToShortDateString() @doc.EndWorkDate.Value.ToShortTimeString()</td>
                             }
                             <td>@doc.RequestType</td>
                             <td>@doc.ProdTimeName</td>
                             <td>@doc.RequestTransferType</td>
+                            @if (Model.IsOriginalDocsVisible)
+                            {
+                                <td>
+                                    @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived, Model.IsOriginalDocsEditable ? null : (object)new { disabled = "disabled" })
+                                </td>
+                            }
                             <td style="background-color:@color">
                                 @doc.Status
                             </td>
                         </tr>
+                        i++;
                     }
                 }
             </table>

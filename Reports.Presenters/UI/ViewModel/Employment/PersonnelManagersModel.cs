@@ -125,6 +125,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int SignerId { get; set; }
         public IEnumerable<SelectListItem> Signers { get; set; }
 
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
+
         public PersonnelManagersModel()
         {
             this.Version = 0;

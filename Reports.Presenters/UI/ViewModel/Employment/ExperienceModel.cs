@@ -42,6 +42,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int WorkBookScanAttachmentId { get; set; }
         public string WorkBookSupplementScanAttachmentFilename { get; set; }
         public int WorkBookSupplementScanAttachmentId { get; set; }
+        public int RowID { get; set; }
+
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
 
         public ExperienceModel()
         {

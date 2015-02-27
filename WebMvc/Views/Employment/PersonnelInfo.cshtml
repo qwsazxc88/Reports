@@ -1,0 +1,769 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PersonnelInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Просмотр личных данных кандидата";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+
+
+@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Get, new { enctype = "multipart/form-data" }))
+{
+    <input type="hidden" id="CandidateID" name="CandidateID" value="@Model.CandidateID" />
+    <input type="hidden" id="IsCandidateInfoAvailable" name="IsCandidateInfoAvailable" value="@Model.IsCandidateInfoAvailable" />
+    <input type="hidden" id="IsBackgroundCheckAvailable" name="IsBackgroundCheckAvailable" value="@Model.IsBackgroundCheckAvailable" />
+    <input type="hidden" id="IsManagersAvailable" name="IsManagersAvailable" value="@Model.IsManagersAvailable" />
+    <input type="hidden" id="IsPersonalManagersAvailable" name="IsPersonalManagersAvailable" value="@Model.IsPersonalManagersAvailable" />
+    <input type="hidden" id="TabIndex" name="TabIndex" value="@Model.TabIndex" />
+}   
+    <div id="tabs">
+        <ul>
+            @if (Model.IsCandidateInfoAvailable)
+            {
+                <li><a href="#tabs1">Общая информация</a></li>
+                <li><a href="#tabs2">Паспортные данные</a></li>
+                <li><a href="#tabs3">Образование</a></li>
+                <li><a href="#tabs4">Состав семьи</a></li>
+                <li><a href="#tabs5">Воинский учет</a></li>
+                <li><a href="#tabs6">Трудовая деятельность</a></li>
+                <li><a href="#tabs7">Контактные данные</a></li>
+            }
+            @if (Model.IsBackgroundCheckAvailable)
+            {
+                <li><a href="#tabs8">Служба безопасности</a></li>
+            }
+            
+            @if ((dto.UserRole & UserRole.Security) == 0)
+            {
+                <li><a href="#tabs9">Обучение</a></li>
+            }
+
+            @if (Model.IsCandidateInfoAvailable && ((dto.UserRole & UserRole.Security) == 0))
+            {
+                <li><a href="#tabs10">Заявление о приеме</a></li>
+            }
+            @if (Model.IsManagersAvailable)
+            {
+                <li><a href="#tabs11">Руководители</a></li>
+            }
+            @if (Model.IsPersonalManagersAvailable)
+            {
+                <li><a href="#tabs12">Кадры</a></li>
+            }
+        </ul>
+
+        
+        <div id="tabs1">
+            @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }
+        </div>
+        
+        <div id="tabs2">
+            @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs3">
+            @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs4">
+            @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs5">
+            @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs6">
+            @using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs7">
+            @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs8">
+            @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+        </div>
+        <div id="tabs9"></div>
+        <div id="tabs10"></div>
+        <div id="tabs11"></div>
+        <div id="tabs12"></div>
+        
+        
+    </div>
+
+
+
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    //удаляем сканы
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
+    //удаляем запись о смене фимилии в общей информации
+    function DeleteNameChange(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
+        var CId = $("#CandidateID").val();
+        var url = actionUrl + "?NameID=" + Id + "&CandidateId=" + CId;
+
+        var dataToSend = $("#add-name-change-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#name-changes-container>table");
+                var $rows = $("#name-changes-container>table .name-change-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"name-change-row\"><td>" +
+                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    //удаляем запись о знании языков
+    function DeleteForeignLanguages(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteForeignLanguage", "Employment")";
+        var CId = $("#CandidateID").val();
+        var url = actionUrl + "?LanguageID=" + Id + "&CandidateId=" + CId;
+
+        var dataToSend = $("#add-foreign-language-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#foreign-languages-container>table");
+                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"foreign-language-row\"><td>" +
+                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") +  "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    //удляем запись из таблиц на вкладке образования
+    function DeleteEducationRow(Operation, Id) {
+        $("#Operation").val(Operation);
+        $("#RowID").val(Id);
+        //this.form.submit();
+        $("#btnEducation").click();
+        //return true;
+    }
+
+    //удаление из таблиц в составе семьи
+    function DeleteFamilyRow(Id, IsSpouse) {
+        $("#RowID").val(Id);
+        if (IsSpouse){
+            $("#IsMarried").val('false');
+        }
+        $("#btnFamily").click();
+    }
+
+    //удаление из таблиц в воинском учете
+    function DeleteExperienceRow(Id) {
+        $("#RowID").val(Id);
+        $("#btnExperience").click();
+    }
+
+    //удаление из таблиц в службе безопасности
+    function DeleteBackgroundRow(Id) {
+        $("#RowID").val(Id);
+        $("#btnBC").click();
+    }
+
+    $(document).ready(function () {
+        setActiveMenuItem("empRoster");
+        //создаем вкладки, с обработчиком переключения вкладок
+        $('#tabs').tabs({ selected: -1,
+            spinner: "Загрузка...",
+            select: function (e, ui) {
+                //первая вкладка
+                if (ui.panel.id == "tabs1") {
+                    $("#tabs1").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
+
+                    $("#tabs1").ajaxStop(function () {
+                        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+                        UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
+                        UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+                        $('#gender').buttonset();        
+
+                        //$("#aaa").click(function(){$("#tabs1").submit();});
+                        
+
+                        var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    processAddNameChange();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var processAddNameChange = function()
+                        {
+                            var ActionUrl = "@Url.Action("GeneralInfoAddNameChange", "Employment")";
+                            var Id = $("#CandidateID").val();
+                            var url = ActionUrl + "?CandidateId="+Id;
+                            var dataToSend = $("#add-name-change-dialog form").serialize();
+                            $.post(url, dataToSend, function(dataReceived){
+                                var $table = $("#name-changes-container>table");
+                                var $rows = $("#name-changes-container>table .name-change-row");
+                                $rows.remove();
+                                for (var i = 0; i < dataReceived.length; i++)
+                                {
+                                    $table.append(
+                                        "<tr class=\"name-change-row\"><td>" +
+                                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                                    );
+                                }
+                            }, "json");
+                        };
+
+                        // END Add Name Change
+
+
+                        // BEGIN Add Foreign Language
+
+                        var $addForeignLanguageDialog = $('#add-foreign-language-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    processAddForeignLanguage();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var processAddForeignLanguage = function()
+                        {
+                            var ActionUrl = "@Url.Action("GeneralInfoAddForeignLanguage", "Employment")";
+                            var Id = $("#CandidateID").val();
+                            var url = ActionUrl + "?CandidateId="+Id;
+                            var dataToSend = $("#add-foreign-language-dialog form").serialize();
+                            $.post(url, dataToSend, function(dataReceived){
+                                var $table = $("#foreign-languages-container>table");
+                                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                                $rows.remove();
+                                for (var i = 0; i < dataReceived.length; i++)
+                                {
+                                    $table.append(
+                                        "<tr class=\"foreign-language-row\"><td>" +
+                                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                                        (dataReceived[i].Level ? dataReceived[i].Level : "") + "</td><td>" +
+                                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                                    );
+                                }
+                            }, "json");
+                        };
+
+                        // END Add Foreign Language
+
+                        $("#add-name-change").click(function (e) {
+                            $addNameChangeDialog.dialog("open");
+                            e.preventDefault();
+                        });
+
+                        $("#add-foreign-language").click(function (e) {
+                            $addForeignLanguageDialog.dialog("open");
+                            e.preventDefault();
+                        });
+
+
+
+                        UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
+                            {
+                                $target: $("#Patronymic"),
+                                act: function () {
+                                    this.$target.val("");
+                                    this.$target.attr("disabled", "disabled");
+                                }
+                            },
+                            {
+                                $target: $("#Patronymic"),
+                                act: function () {
+                                    this.$target.removeAttr("disabled");
+                                }
+                            },
+                            true
+                        );
+
+                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+                                {
+                                    text: "РОССИЯ",
+                                    actOnSelect: function(){
+                                        $("#InsuredPersonTypeId").val("");
+                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+                                    },
+                                    actOnDeselect: function(){
+                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+                                    }
+                                },
+                                {
+                                    value: "",
+                                    actOnSelect: function(){
+                                        $("#InsuredPersonTypeId").val("");
+                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+                                    },
+                                    actOnDeselect: function(){
+                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+                                    }
+                                }
+                            ],        
+                            true
+                        );
+                    });
+                }
+
+                //вторая вкладка
+                if (ui.panel.id == "tabs2") {
+                    $("#tabs2").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs2", "PassportReadOnly", "/Employment/PassportReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs2").ajaxStop(function(){
+                        UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
+                    });
+                    
+                }
+
+                //третья вкладка
+                if (ui.panel.id == "tabs3") {
+                    $("#tabs3").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs3").ajaxStop(function(){
+                        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
+
+                        var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    $('#add-higher-education-diploma-dialog form').submit();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var $addPostGraduateEducationDiplomaDialog = $('#add-post-graduate-education-diploma-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    $('#add-post-graduate-education-diploma-dialog form').submit();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var $addCertificationDialog = $('#add-certification-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    $('#add-certification-dialog form').submit();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var $addTrainingDialog = $('#add-training-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    $('#add-training-dialog form').submit();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        $("#add-higher-education-diploma").click(function (e) {
+                            $addHigherEducationDiplomaDialog.dialog("open");
+                            e.preventDefault();
+                        });
+
+                        $("#add-post-graduate-education-diploma").click(function (e) {
+                            $addPostGraduateEducationDiplomaDialog.dialog("open");
+                            e.preventDefault();
+                        });
+
+                        $("#add-certification").click(function (e) {
+                            $addCertificationDialog.dialog("open");
+                            e.preventDefault();
+                        });
+
+                        $("#add-training").click(function (e) {
+                            $addTrainingDialog.dialog("open");
+                            e.preventDefault();
+                        });
+                    });
+                }
+
+                //четвертая
+                if (ui.panel.id == "tabs4") {
+                    $("#tabs4").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs4", "FamilyReadOnly", "/Employment/FamilyReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs4").ajaxStop(function(){
+                        UIHelpers.attachDatepickerToInputs($('#Spouse_DateOfBirth, #Father_DateOfBirth, #Mother_DateOfBirth'), "-120:+0;-120Y;-14Y", true);
+                        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-100:+0", true);
+
+                        UIHelpers.handleCheckboxState($("#IsMarried"),
+                            {
+                                $target: $("#spouse-row"),
+                                act: function () {
+                                    this.$target.show();
+                                }
+                            },
+                            {
+                                $target1: $("#spouse-row"),
+                                $target2: $("#spouse-row input, #spouse-row textarea"),
+                                act: function () {
+                                    this.$target1.hide();
+                                    this.$target2.val("");
+                                }
+                            },            
+                            true
+                        );
+
+                        var $addChildDialog = $('#add-child-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    processAddChild();
+                                    //$("#btnFamily").click();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var processAddChild = function()
+                        {
+                            var ActionUrl = "@Url.Action("FamilyAddChild", "Employment")";
+                            var Id = $("#CandidateID").val();
+                            var url = ActionUrl + "?CandidateId="+Id;
+                            var dataToSend = $("#add-child-dialog form").serialize();
+                            $.post(url, dataToSend, function(dataReceived){
+                                var $tbody = $("table#family-members-table>tbody")
+                                $("table#family-members-table>tbody>.child-row").remove();
+                                for (var i = 0; i < dataReceived.length; i++)
+                                {
+                                    $tbody.append(
+                                        "<tr><td>Ребенок</td><td>" +
+                                        (dataReceived[i].Name ? dataReceived[i].Name : "") + "</td><td>" +
+                                        (dataReceived[i].PassportData ? dataReceived[i].PassportData : "") + "</td><td>" +
+                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].DateOfBirth) + "</td><td>" +
+                                        (dataReceived[i].PlaceOfBirth ? dataReceived[i].PlaceOfBirth : "") + "</td><td>" +
+                                        (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
+                                        (dataReceived[i].Contacts ? dataReceived[i].Contacts : "") + "</td><td>" +
+                                        "<a onclick='DeleteFamilyRow(" + dataReceived[i].Id + ", false);' href='#' >Удалить</a></td></tr>"
+                                    );
+                                }
+                            }, "json");
+                        };
+
+                        $("#add-child").click(function (e) {
+                            $addChildDialog.dialog("open");
+                            e.preventDefault();
+                        });
+                    });
+                }
+
+                //пятая
+                if (ui.panel.id == "tabs5") {
+                    $("#tabs5").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs5", "MilitaryServiceReadOnly", "/Employment/MilitaryServiceReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs5").ajaxStop(function(){
+                        UIHelpers.attachDatepickerToInputs($('#MilitaryCardDate'), "-60:+0", true);
+                    });
+                }
+
+                //шестая
+                if (ui.panel.id == "tabs6") {
+                    $("#tabs6").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs6", "ExperienceReadOnly", "/Employment/ExperienceReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs6").ajaxStop(function(){
+                        UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
+
+                        var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    processAddExperienceItem();
+                                    //$("#btnExperience").click();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var processAddExperienceItem = function()
+                        {
+                            var ActionUrl = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
+                            var Id = $("#CandidateID").val();
+                            var url = ActionUrl + "?CandidateId="+Id;
+                            var dataToSend = $("#add-experience-item-dialog form").serialize();
+                            $.post(url, dataToSend, function(dataReceived){
+                                var $tbody = $("#experience-items-container>table>tbody")
+                                $tbody.empty();
+                                for (var i = 0; i < dataReceived.length; i++)
+                                {
+                                    $tbody.append(
+                                        "<tr><td>" +
+                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+                                        dataReceived[i].Company + "</td><td>" +
+                                        dataReceived[i].Position + "</td><td>" +
+                                        dataReceived[i].CompanyContacts + "</td><td>" +
+                                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+                                    );
+                                }
+                            }, "json");
+                        };
+
+                        $("#add-experience-item").click(function (e) {
+                            $addExperienceItemDialog.dialog("open");
+                            e.preventDefault();
+                        });
+                    });
+                }
+
+                //седьмая
+                if (ui.panel.id == "tabs7") {
+                    $("#tabs7").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs7", "ContactsReadOnly", "/Employment/ContactsReadOnly?Id=@Model.CandidateID", "GET");
+                }
+
+                //восьмая
+                if (ui.panel.id == "tabs8") {
+                    $("#tabs8").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs8", "BackgroundCheckReadOnly", "/Employment/BackgroundCheckReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs8").ajaxStop(function () {
+                        UIHelpers.handleCheckboxState($("#IsApprovalSkipped"),
+                        {
+                            $target: $("#ApprovalStatus"),
+                            act: function () {
+                                this.$target.hide();
+                            }
+                        },
+                        {
+                            $target: $("#ApprovalStatus"),
+                            act: function () {
+                                this.$target.show();
+                            }
+                        },
+                        true);
+
+                        UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
+
+                        var $addReferenceDialog = $('#add-reference-dialog').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            buttons:
+                            {
+                                "OK": function () {
+                                    processBCAddNameChange();
+                                    $(this).dialog("close");
+                                },
+                                "Отмена": function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+
+                        var processBCAddNameChange = function()
+                        {
+                            var ActionUrl = "@Url.Action("BackgroundCheckAddReference", "Employment")";
+                            var Id = $("#CandidateID").val();
+                            var url = ActionUrl + "?CandidateId="+Id;
+                            var dataToSend = $("#add-reference-dialog form").serialize();
+                            $.post(url, dataToSend, function(dataReceived){
+                                var $table = $("#reference-container>table");
+                                var $rows = $("#reference-container>table .reference-row");
+                                $rows.remove();
+                                for (var i = 0; i < dataReceived.length; i++)
+                                {
+                                    $table.append(
+                                        "<tr class=\"reference-row\"><td>" +
+                                        (dataReceived[i].LastName ? dataReceived[i].LastName : "") + "</td><td>" +
+                                        (dataReceived[i].FirstName ? dataReceived[i].FirstName : "") + "</td><td>" +
+                                        (dataReceived[i].Patronymic ? dataReceived[i].Patronymic : "") + "</td><td>" +
+                                        (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
+                                        (dataReceived[i].Position ? dataReceived[i].Position : "") + "</td><td>" +
+                                        (dataReceived[i].Phone ? dataReceived[i].Phone : "") + "</td><td>" +
+                                        (dataReceived[i].Relation ? dataReceived[i].Relation : "") + "</td><td>" +
+                                        "<a onclick='DeleteBackgroundRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+                                    );
+                                }
+                            }, "json");
+                        };
+
+                        $("#add-reference").click(function (e) {
+                            $addReferenceDialog.dialog("open");
+                            e.preventDefault();
+                        });
+                    });
+                }
+
+                //девятая
+                if (ui.panel.id == "tabs9") {
+                    $("#tabs9").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs9", "OnsiteTrainingReadOnly", "/Employment/OnsiteTrainingReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs9").ajaxStop(function () {
+                        UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+                    });
+                }
+
+                //десятая
+                if (ui.panel.id == "tabs10") {
+                    $("#tabs10").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs10", "ApplicationLetterReadOnly", "/Employment/ApplicationLetterReadOnly?Id=@Model.CandidateID", "GET");
+                }
+
+                //одиннадцатая
+                if (ui.panel.id == "tabs11") {
+                    $("#tabs11").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs11").ajaxStop(function () {
+                        $('#isSecondaryJobContainer').buttonset();
+                        $('#isFrontContainer').buttonset();
+                    });
+                }
+
+                //двенадцатая
+                if (ui.panel.id == "tabs12") {
+                    $("#tabs12").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs12", "PersonnelManagersReadOnly", "/Employment/PersonnelManagersReadOnly?Id=@Model.CandidateID", "GET");
+                    //после окончания выполнения запроса цепляем календари и обработчики
+                    $("#tabs12").ajaxStop(function () {
+                                                UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
+                                                $('#isHourlySalaryBasisContainer').buttonset();
+                                         });
+                }
+            }
+        });
+
+        //в зависимости от входного параметра встаем на нужную вкладку
+        var ti = $("#TabIndex").val();
+        if (ti.toString() == "1"){$('#tabs').tabs("select", 1);}
+        else if (ti.toString() == "2"){$('#tabs').tabs("select", 2);}
+        else if (ti.toString() == "3"){$('#tabs').tabs("select", 3);}
+        else if (ti.toString() == "4"){$('#tabs').tabs("select", 4);}
+        else if (ti.toString() == "5"){$('#tabs').tabs("select", 5);}
+        else if (ti.toString() == "6"){$('#tabs').tabs("select", 6);}
+        else if (ti.toString() == "7"){$('#tabs').tabs("select", 7);}
+        else if (ti.toString() == "8"){$('#tabs').tabs("select", 8);}
+        else if (ti.toString() == "9"){$('#tabs').tabs("select", 9);}
+        else if (ti.toString() == "10"){$('#tabs').tabs("select", 10);}
+        else if (ti.toString() == "11"){$('#tabs').tabs("select", 11);}
+        else {$('#tabs').tabs("select", 0)};
+    });
+
+    //функция отправки и получения ajax-запроса
+    function AjaxFormRequest(result_id,form_id,url,TypePost) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
+    }
+</script>

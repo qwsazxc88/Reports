@@ -67,7 +67,9 @@ namespace WebMvc.Controllers
             }
 
             string error;
-            if (!RequestBl.SaveDeductionEditModel(model,out error))
+            //чтобы письма рассылались только когда идет работа с рабочей базой
+            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            if (!RequestBl.SaveDeductionEditModel(model, EnableSendEmail, out error))
             {
 
                 if (model.ReloadPage)

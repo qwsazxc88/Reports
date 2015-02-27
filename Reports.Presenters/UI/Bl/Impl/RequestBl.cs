@@ -7638,7 +7638,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        public bool SaveDeductionEditModel(DeductionEditModel model, out string error)
+        public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
         {
             error = string.Empty;
             //User user = null;
@@ -7658,7 +7658,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EditDate = DateTime.Now,
                     };
                     ChangeEntityProperties(deduction,model);
-                    SendEmailToUser(model, deduction);
+
+                    if (EnableSendEmail)
+                        SendEmailToUser(model, deduction);
                     DeductionDao.SaveAndFlush(deduction);
                     model.Id = deduction.Id;
                 }
@@ -7690,7 +7692,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         deduction.EditDate = DateTime.Now;
                         deduction.Editor = UserDao.Load(current.Id);
-                        SendEmailToUser(model, deduction);
+                        if (EnableSendEmail)
+                            SendEmailToUser(model, deduction);
                         DeductionDao.SaveAndFlush(deduction);
                     }
                     if (deduction.DeleteDate.HasValue)

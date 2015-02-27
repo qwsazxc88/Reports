@@ -9,6 +9,8 @@ namespace Reports.Core.Dto.Employment2
 {
     public class FamilyMemberDto
     {
+        public int Id { get; set; }
+
         [Display(Name = "ФИО"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Name { get; set; }

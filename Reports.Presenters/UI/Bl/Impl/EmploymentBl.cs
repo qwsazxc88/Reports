@@ -233,7 +233,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 foreach (var item in entity.ForeignLanguages)
                 {
-                    model.ForeignLanguages.Add(new ForeignLanguageDto { LanguageName = item.LanguageName, Level = item.Level });
+                    model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
                 }
 
                 model.INN = entity.INN;
@@ -248,7 +248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 foreach (var item in entity.NameChanges)
                 {
-                    model.NameChanges.Add(new NameChangeDto { Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
+                    model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
 
                 model.Patronymic = entity.Patronymic;
@@ -256,7 +256,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SNILS = entity.SNILS;
                 model.StatusId = entity.Status ?? 0;
                 model.Version = entity.Version;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
 
                 int attachmentId = 0;
@@ -264,7 +264,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
                 model.INNScanAttachmentId = attachmentId;
                 model.INNScanAttachmentFilename = attachmentFilename;
-            }            
+            }
+
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+
             return model;
         }
 
@@ -310,10 +314,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Street = entity.Street;
                 model.StreetNumber = entity.StreetNumber;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -332,6 +338,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var item in entity.Certifications)
                 {
                     model.Certifications.Add(new CertificationDto {
+                        Id = item.Id,
                         CertificateDateOfIssue = item.CertificateDateOfIssue,
                         CertificateNumber = item.CertificateNumber,
                         CertificationDate = item.CertificationDate,
@@ -342,6 +349,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
                     {
+                        Id = item.Id,
                         AdmissionYear = item.AdmissionYear,
                         Department = item.Department,
                         GraduationYear = item.GraduationYear,
@@ -357,6 +365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
                     {
+                        Id = item.Id,
                         AdmissionYear = item.AdmissionYear,
                         GraduationYear = item.GraduationYear,
                         IssuedBy = item.IssuedBy,
@@ -369,6 +378,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.Training.Add(new TrainingDto
                     {
+                        Id = item.Id,
                         BeginningDate = item.BeginningDate,
                         CertificateIssuedBy = item.CertificateIssuedBy,
                         EndDate = item.EndDate,
@@ -377,10 +387,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -400,6 +412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -414,6 +427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -427,6 +441,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -440,6 +455,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -456,10 +472,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsMarried = true;
                 }
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -494,10 +512,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReserveCategory = entity.ReserveCategory;
                 model.SpecialityCategory = entity.SpecialityCategory;
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -517,6 +537,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
+                        Id = item.Id,
                         BeginningDate = item.BeginningDate,
                         Company = item.Company,
                         CompanyContacts = item.CompanyContacts,
@@ -530,10 +551,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementDateOfIssue = entity.WorkBookSupplementDateOfIssue;
                 model.WorkBookSupplementNumber = entity.WorkBookSupplementNumber;
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -561,10 +584,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StreetNumber = entity.StreetNumber;
                 model.WorkPhone = entity.WorkPhone;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -605,6 +630,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.References.Add(new ReferenceDto
                     {
+                        Id = item.Id,
                         FirstName = item.FirstName,
                         LastName = item.LastName,
                         Patronymic = item.Patronymic,
@@ -616,8 +642,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.Smoking = entity.Smoking;
                 model.Sports = entity.Sports;
-                                
-                model.IsDraft = true;
+
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
 
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
@@ -627,6 +653,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -655,7 +683,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApproveByTrainerAvailable = ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer
                     && !entity.IsFinal);
 
-                model.IsDraft = true;
+                model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
             else
@@ -666,6 +694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -747,6 +777,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -803,6 +835,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -870,6 +904,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var model = new CreateCandidateModel();
             model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director )) == 0 ? true : false;
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            return model;
+        }
+
+        public CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model)
+        {
+            model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 ? true : false;
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
             return model;
         }
 
@@ -1700,6 +1742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             User currentUser = UserDao.Load(current.Id);
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
+            User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
 
             if ((currentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
@@ -1722,7 +1765,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsFirstTimeLogin = true,
                 IsActive = true,
                 IsNew = true,
-                Name = string.Empty,
+                Name = model.Surname,//string.Empty,
                 RoleId = (int)UserRole.Candidate,
                 Department = department,
                 GivesCredit = false,
@@ -1734,13 +1777,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 User = newUser,
                 AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : currentUser,
-                QuestionnaireDate = DateTime.Now                
+                QuestionnaireDate = DateTime.Now,
+                Personnels = PersonnelUser
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             candidate.User.Login = "c" + candidate.Id.ToString();
-            candidate.User.Name = candidate.User.Login;
+            candidate.User.Name = model.Surname;//candidate.User.Login;
 
             // Create blank employment pages
             candidate.GeneralInfo = new GeneralInfo
@@ -2054,10 +2098,85 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
             }            
         }
-
+        /// <summary>
+        /// Удаление строки из раздела об изменении фамили
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="NameID"></param>
+        public void DeleteNameChange(GeneralInfoModel model, int NameID)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(model.UserId);
+            GeneralInfo entity = EmploymentCommonDao.GetEntityById<GeneralInfo>(id);
+            foreach (var nc in entity.NameChanges)
+            {
+                if (nc.Id == NameID)
+                {
+                    entity.NameChanges.Remove(nc);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<GeneralInfo>(entity);
+        }
+        /// <summary>
+        /// Удаление строки из раздела о владении языками
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="NameID"></param>
+        public void DeleteLanguage(GeneralInfoModel model, int LanguageID)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(model.UserId);
+            GeneralInfo entity = EmploymentCommonDao.GetEntityById<GeneralInfo>(id);
+            foreach (var fl in entity.ForeignLanguages)
+            {
+                if (fl.Id == LanguageID)
+                {
+                    entity.ForeignLanguages.Remove(fl);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<GeneralInfo>(entity);
+        }
+        
         protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
             error = string.Empty;
+            //даем сохранять смену фамилии и владение языками в режиме черновика, без требования поставить птицу о соглашении на обоработку своих личных данных
+            if (!viewModel.AgreedToPersonalDataProcessing)
+            {
+                if (entity.ForeignLanguages == null)
+                {
+                    entity.ForeignLanguages = new List<ForeignLanguage>();
+                }
+                if (viewModel.ForeignLanguages != null && viewModel.ForeignLanguages.Count > entity.ForeignLanguages.Count)
+                {
+                    int lastIndex = viewModel.ForeignLanguages.Count - 1;
+                    entity.ForeignLanguages.Add(new ForeignLanguage
+                    {
+                        LanguageName = viewModel.ForeignLanguages[lastIndex].LanguageName,
+                        Level = viewModel.ForeignLanguages[lastIndex].Level
+                    });
+                }
+
+                if (entity.NameChanges == null)
+                {
+                    entity.NameChanges = new List<NameChange>();
+                }
+                if (viewModel.NameChanges != null && viewModel.NameChanges.Count > entity.NameChanges.Count)
+                {
+                    int lastIndex = viewModel.NameChanges.Count - 1;
+                    entity.NameChanges.Add(new NameChange
+                    {
+                        Date = viewModel.NameChanges[lastIndex].Date,
+                        Place = viewModel.NameChanges[lastIndex].Place,
+                        PreviousName = viewModel.NameChanges[lastIndex].PreviousName,
+                        Reason = viewModel.NameChanges[lastIndex].Reason
+                    });
+                }
+
+                return true;
+            }
+
+
 
             if (viewModel.AgreedToPersonalDataProcessing)
             {
@@ -2260,7 +2379,64 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
+        /// <summary>
+        /// Удаляем строки на странице Образования
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteEducationRow(EducationModel model)
+        {
+            Education entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Education>(model.UserId);
+            if (id.HasValue)
+            {
+                entity = EmploymentEducationDao.Get(id.Value);
+            }
 
+            switch (model.Operation)
+            {
+                case 1:
+                    foreach (var item in entity.HigherEducationDiplomas)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.HigherEducationDiplomas.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 2:
+                    foreach (var item in entity.PostGraduateEducationDiplomas)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.PostGraduateEducationDiplomas.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 3:
+                    foreach (var item in entity.Certifications)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.Certifications.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 4:
+                    foreach (var item in entity.Training)
+                    {
+                        if (item.Id == model.RowID)
+                        {
+                            entity.Training.Remove(item);
+                            break;
+                        }
+                    }
+                    break;
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Education>(entity);
+        }
         protected bool SetFamilyEntity(Family entity, FamilyModel viewModel, out string error)
         {
             error = string.Empty;
@@ -2328,7 +2504,26 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
-        
+
+        /// <summary>
+        /// Удаление строки из раздела о семейном положении (пока дети удаляются)
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteFamilyMember(FamilyModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<Family>(model.UserId);
+            Family entity = EmploymentCommonDao.GetEntityById<Family>(id);
+            foreach (var item in entity.FamilyMembers)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.FamilyMembers.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Family>(entity);
+        }
+
         protected bool SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel, out string error)
         {
             error = string.Empty;
@@ -2407,6 +2602,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             #endregion
 
             return true;
+        }
+        /// <summary>
+        /// Удаляем строку из таблицы на странице с трудовым опытом
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteExperiensRow(ExperienceModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<Experience>(model.UserId);
+            Experience entity = EmploymentCommonDao.GetEntityById<Experience>(id);
+            foreach (var item in entity.ExperienceItems)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.ExperienceItems.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<Experience>(entity);
         }
 
         protected bool SetContactsEntity(Contacts entity, ContactsModel viewModel, out string error)
@@ -2505,6 +2718,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
+        /// <summary>
+        /// Удаляем строку из таблицы на странице службы безопасности
+        /// </summary>
+        /// <param name="model"></param>
+        public void DeleteBackgroundRow(BackgroundCheckModel model)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(model.UserId);
+            BackgroundCheck entity = EmploymentCommonDao.GetEntityById<BackgroundCheck>(id);
+            foreach (var item in entity.References)
+            {
+                if (item.Id == model.RowID)
+                {
+                    entity.References.Remove(item);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity);
+        }
         #region Deleted
         /*
         protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)

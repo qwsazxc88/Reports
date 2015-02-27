@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.RosterModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Реестр по приему";
 }
@@ -76,7 +79,10 @@
 
     @* END Выбор параметров *@
     
-    <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
+    {
+        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    }
     
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
@@ -111,11 +117,11 @@
         <th>
             <div id="sort1"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
         </th>
-
+        @*
         <th>
             Анкета
         </th>
-
+        *@
         <th>
             <div id="sort2"><a href="#" onclick = "SortChanged(2);">Город<br />места<br />работы</a></div>
         </th>
@@ -213,13 +219,13 @@
             </td>
         
             <td rowspan="2">
-                @candidate.Name
+                <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
             </td>
-
+            @*
             <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                 <span class="buttonLink">Разделы</span>
             </td>
-
+            *@
             <td>
                 &nbsp;@candidate.WorkCity
             </td>

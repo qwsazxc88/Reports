@@ -1,0 +1,169 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ManagersModel
+@{
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Руководители";
+}
+
+@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <b>Состояние приема кандидата</b>
+    <table class="state">
+        <tr>
+            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Обучение</td>
+            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Руководители</td>
+            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Кадры</td>
+        </tr>
+        <tr>
+            <td @if (Model.CandidateState[0].GeneralFinal)
+                {<text>style="background-color:Lime"</text>}>Общая информация</td>
+            <td @if (Model.CandidateState[0].PassportFinal)
+                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+            <td @if (Model.CandidateState[0].EducationFinal)
+                {<text>style="background-color:Lime"</text>}>Образование</td>
+            <td @if (Model.CandidateState[0].FamilyFinal)
+                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+            <td @if (Model.CandidateState[0].MilitaryFinal)
+                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+            <td @if (Model.CandidateState[0].ExperienceFinal)
+                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+            <td @if (Model.CandidateState[0].ContactFinal)
+                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+            <td @if (Model.CandidateState[0].BackgroundFinal)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td colspan="4" style="background-color:Silver">Согласование</td>
+        </tr>
+    </table>
+    
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Руководители</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
+            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
+        </div>
+        
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DepartmentName):
+        </div>
+        <div class="formfield">
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            @Html.HiddenFor(m => m.DepartmentName)
+            @Html.HiddenFor(m => m.DepartmentId)
+        </div>
+        <div class="formfield clear">
+            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
+            @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
+        </div>
+
+        <div class="formfield clear" id="isSecondaryJobContainer">
+            @Html.LabelFor(m => m.IsSecondaryJob)
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label for="IsSecondaryJobFalse">Основная</label>
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label for="IsSecondaryJobTrue">По совместительству</label>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
+            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
+            @Html.EditorFor(m => m.ProbationaryPeriod)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
+            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
+            @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
+            @Html.EditorFor(m => m.WorkCity)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+            @Html.EditorFor(m => m.PersonalAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.EditorFor(m => m.PositionAddition)
+        </div>
+        <div class="formfield clear" id="isFrontContainer">
+            @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label for="IsFrontTrue">Фронт</label>
+            @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label for="IsFrontFalse">Бэк</label>
+        </div>
+        @*
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Bonus)&nbsp;@Html.ValidationMessageFor(m => m.Bonus)<br />
+            @Html.EditorFor(m => m.Bonus)
+        </div>
+        *@
+        <div class="formfield clear">
+            @Html.EditorFor(m => m.IsLiable)@Html.LabelFor(m => m.IsLiable)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
+            @Html.EditorFor(m => m.RequestNumber)
+        </div>
+    </fieldset>
+    
+    <div class="clear">
+        @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.ManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingManagerName
+                @(Model.ManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.ManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
+        }
+        @if (Model.IsApproveByManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+@using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <div class="clear">
+        @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.HigherManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByHigherManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.HigherManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingHigherManagerName
+                @(Model.HigherManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.HigherManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
+        }
+        @if (Model.IsApproveByHigherManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+<script>
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
+    $(document).ready(function () {
+        setActiveMenuItem("empManagers");
+        $('#isSecondaryJobContainer').buttonset();
+        $('#isFrontContainer').buttonset();
+    });
+</script>

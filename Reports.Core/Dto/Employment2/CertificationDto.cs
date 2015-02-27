@@ -8,6 +8,9 @@ namespace Reports.Core.Dto.Employment2
 {
     public class CertificationDto
     {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Дата аттестации"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
@@ -21,7 +24,7 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Дата документа"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime CertificateDateOfIssue { get; set; }
+        public DateTime? CertificateDateOfIssue { get; set; }
 
         [Display(Name = "Основание"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
