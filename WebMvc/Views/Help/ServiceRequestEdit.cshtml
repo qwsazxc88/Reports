@@ -137,7 +137,7 @@
                                                                                                     {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
                                                                                               {<text>style="display:none"</text>}/>
                  
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
@@ -149,7 +149,7 @@
                         <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
                    }
               
-                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
                                                                                               {<text>style="display:none"</text>}/>
 
                 </td>

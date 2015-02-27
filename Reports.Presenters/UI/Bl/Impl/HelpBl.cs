@@ -277,7 +277,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpServiceRequestEditModel model = new HelpServiceRequestEditModel
             {
                 Id = id,
-                UserId = id == 0 ? userId.Value : entity.User.Id
+                UserId = id == 0 ? userId.Value : entity.User.Id,
+                IsUserEmployee=CurrentUser.UserRole==UserRole.Employee
             };
             User user = UserDao.Load(model.UserId);
             User currUser = UserDao.Load(current.Id);
@@ -522,6 +523,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
+            
             model.Email = user.Email;
             if(user.Department != null)
             {
