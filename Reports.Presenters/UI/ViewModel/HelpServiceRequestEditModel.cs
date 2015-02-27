@@ -59,6 +59,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsEndWorkAvailable { get; set; }
         public bool IsNotEndWorkAvailable { get; set; }
 
+        public bool IsUserEmployee { get; set; }
         public int Operation { get; set; }
 
         public bool ReloadPage { get; set; }
