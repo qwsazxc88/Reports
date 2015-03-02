@@ -187,7 +187,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Черновик сотрудника"),
                                                            new IdNameDto(2, "Услуга запрошена"),
                                                            new IdNameDto(3, "Услуга формируется"),
-                                                           new IdNameDto(4, "Услуга сформирована"),
+                                                           //new IdNameDto(4, "Услуга сформирована"),
                                                            new IdNameDto(5, "Услуга оказана")
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(5, "Одобрен членом правления"),
@@ -1395,7 +1395,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsBeginWorkAvailable = true;
                         }
                         if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
-                                model.IsEndAvailable = true;//могут закрывать тему 
+                                model.IsEndAvailable = true;//могут закрывать тему
+                        model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
