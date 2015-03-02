@@ -293,6 +293,8 @@ namespace Reports.Core.Dao.Impl
 
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    //чтобы руководитель видел заявки созданные на себя, как на руководителя
+                    sqlQueryPart += string.Format(@" or u.Id = {0} ", userId);
                     // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                     sqlQueryPart += string.Format(@"
                                 or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
