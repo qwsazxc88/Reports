@@ -63,14 +63,17 @@
             @Html.EditorFor(m => m.MilitaryCardDate)
         </div>
         
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
-        </div>
+        @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
         {
             <div class="formfield">
-                <br />Скан:
+                <br />Скан военного билета:
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MilitaryCardScanAttachmentFilename
                 </a>
@@ -130,14 +133,17 @@
             @Html.EditorFor(m => m.MobilizationTicketNumber)
         </div>
         
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
-        </div>
+        @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
         {
             <div class="formfield">
-                <br />Скан:
+                <br />Скан мобилизационного талона:
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MobilizationTicketScanAttachmentFilename
                 </a>
@@ -178,6 +184,22 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empMilitaryService");
         UIHelpers.attachDatepickerToInputs($('#MilitaryCardDate'), "-60:+0", true);

@@ -271,7 +271,7 @@
         @* ---- *@
 
     </fieldset>
-
+    @*
     @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
     {
         <br />
@@ -287,7 +287,10 @@
             @Model.InfoValidityScanAttachmentFilename
         </a>
     }
+    *@
 </div>
+
+
 
 <form id="CheckApproveForm" action="/Employment/BackgroundCheckReadOnly" target="tabs8" method="post">
         @Html.HiddenFor(m => m.UserId)

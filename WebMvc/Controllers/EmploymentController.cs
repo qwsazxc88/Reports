@@ -619,7 +619,9 @@ namespace WebMvc.Controllers
             }
             else
             {
-                return RedirectToAction("Roster");
+                BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel(userId);
+                return PartialView("BackgroundCheckReadOnly", model);
+                //return RedirectToAction("Roster");
             }
         }
         #endregion
@@ -732,6 +734,8 @@ namespace WebMvc.Controllers
             }
             else
             {
+                //model = EmploymentBl.GetManagersModel(model.UserId);
+                //return PartialView(model);
                 return RedirectToAction("Roster");
             }
         }
@@ -750,6 +754,8 @@ namespace WebMvc.Controllers
             }
             else
             {
+                //return View("ManagersReadOnly", EmploymentBl.GetManagersModel(userId));
+                //return View("Managers", EmploymentBl.GetManagersModel(userId));
                 return RedirectToAction("Roster");
             }
         }

@@ -450,6 +450,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             FamilyModel model = new FamilyModel { UserId = userId.Value };
             Family entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
             int? id = EmploymentCommonDao.GetDocumentId<Family>(userId.Value);
             if (id.HasValue)
             {
@@ -521,6 +524,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsMarried = true;
                 }
+
+                //сканы
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MarriageCertificateScan);
+                model.MarriageCertificateScanAttachmentId = attachmentId;
+                model.MarriageCertificateScanAttachmentFilename = attachmentFilename;
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ChildBirthCertificateScan);
+                model.ChildBirthCertificateScanAttachmentId = attachmentId;
+                model.ChildBirthCertificateScanAttachmentFilename = attachmentFilename;
+
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
@@ -535,6 +548,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             MilitaryServiceModel model = new MilitaryServiceModel { UserId = userId.Value };
             MilitaryService entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
             int? id = EmploymentCommonDao.GetDocumentId<MilitaryService>(userId.Value);
             if (id.HasValue)
             {
@@ -563,6 +579,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+
+                //сканы
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MilitaryCardScan);
+                model.MilitaryCardScanAttachmentId = attachmentId;
+                model.MilitaryCardScanAttachmentFilename = attachmentFilename;
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MobilizationTicketScan);
+                model.MobilizationTicketScanAttachmentId = attachmentId;
+                model.MobilizationTicketScanAttachmentFilename = attachmentFilename;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -575,6 +600,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ExperienceModel model = new ExperienceModel { UserId = userId.Value };
             Experience entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
             int? id = EmploymentCommonDao.GetDocumentId<Experience>(userId.Value);
             if (id.HasValue)
             {
@@ -602,6 +630,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+
+                //сканы
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.WorkbookScan);
+                model.WorkBookScanAttachmentId = attachmentId;
+                model.WorkBookScanAttachmentFilename = attachmentFilename;
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.WorkbookSupplementScan);
+                model.WorkBookSupplementScanAttachmentId = attachmentId;
+                model.WorkBookSupplementScanAttachmentFilename = attachmentFilename;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -647,6 +684,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             BackgroundCheckModel model = new BackgroundCheckModel { UserId = userId.Value };
             BackgroundCheck entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
             int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId.Value);
             if (id.HasValue)
             {
@@ -694,6 +734,15 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+
+                //сканы
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PersonalDataProcessingScan);
+                model.PersonalDataProcessingScanAttachmentId = attachmentId;
+                model.PersonalDataProcessingScanAttachmentFilename = attachmentFilename;
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InfoValidityScan);
+                model.InfoValidityScanAttachmentId = attachmentId;
+                model.InfoValidityScanAttachmentFilename = attachmentFilename;
 
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
@@ -2004,7 +2053,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "PassportModel":
                     SavePassportAttachments(viewModel as PassportModel, candidateId);
                     break;
-
+                case "EducationModel":
+                    SaveEducationAttachments(viewModel as EducationModel, candidateId);
+                    break;
                 case "FamilyModel":
                     SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
                     break;
@@ -2064,7 +2115,34 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        // TODO: EMPL SaveEducationAttachments
+        protected void SaveEducationAttachments(EducationModel model, int candidateId)
+        {
+            if (model.HigherEducationDiplomaScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.HigherEducationDiplomaScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.HigherEducationDiplomaScanId, fileDto, RequestAttachmentTypeEnum.HigherEducationDiplomaScan, out fileName);
+            }
+            if (model.PostGraduateEducationDiplomaScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PostGraduateEducationDiplomaScanFile);
+                string fileName = string.Empty;
+                //int? attachmentId = 
+                SaveAttachment(candidateId, model.PostGraduateEducationDiplomaScanId, fileDto, RequestAttachmentTypeEnum.PostGraduateEducationDiplomaScan, out fileName);
+            }
+            if (model.CertificationScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.CertificationScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.CertificationScanId, fileDto, RequestAttachmentTypeEnum.CertificationScan, out fileName);
+            }
+            if (model.TrainingScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.TrainingScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.TrainingScanId, fileDto, RequestAttachmentTypeEnum.Training, out fileName);
+            }
+        }
 
         protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
         {
@@ -2074,7 +2152,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
             }
-            // TODO: EMPL Загрузка сканов свидетельств о рождении
+
+            if (model.ChildBirthCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ChildBirthCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ChildBirthCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ChildBirthCertificateScan, out fileName);
+            }
         }
 
         protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
@@ -2549,7 +2633,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 FamilyMember spouse = SetFamilyMember(new FamilyMember(), FamilyRelationship.SPOUSE, viewModel.Spouse);
                 entity.FamilyMembers.Add(spouse);
             }
-            else if (viewModel.Spouse != null)
+            else if (viewModel.IsMarried && viewModel.Spouse != null)
             {
                 FamilyMember spouse = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.SPOUSE);
                 SetFamilyMember(spouse, FamilyRelationship.SPOUSE, viewModel.Spouse);
@@ -3424,6 +3508,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             switch (current.Level)
             {
+                case 2:
                 case 3:
                     // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
                     return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")

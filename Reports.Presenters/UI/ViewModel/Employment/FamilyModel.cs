@@ -28,9 +28,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Cohabitants { get; set; } //ok
 
         public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
-
         public string MarriageCertificateScanAttachmentFilename { get; set; }
         public int MarriageCertificateScanAttachmentId { get; set; }
+
+        public HttpPostedFileBase ChildBirthCertificateScanFile { get; set; }
+        public string ChildBirthCertificateScanAttachmentFilename { get; set; }
+        public int ChildBirthCertificateScanAttachmentId { get; set; }
+        
+
         public int RowID { get; set; }
 
         //состояние кандидата

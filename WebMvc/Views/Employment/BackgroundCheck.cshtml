@@ -222,10 +222,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
             {
@@ -266,10 +268,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст о достоверности сведений</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
             {
@@ -333,6 +337,23 @@
         $("#RowID").val(Id);
         $("#btnBC").click();
     }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
 
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");
