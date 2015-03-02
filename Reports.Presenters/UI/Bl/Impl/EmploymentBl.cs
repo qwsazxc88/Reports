@@ -261,9 +261,25 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
+                //скан фото
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Photo);
+                model.PhotoAttachmentId = attachmentId;
+                model.PhotoAttachmentFilename = attachmentFilename;
+
+                //скан инн
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
                 model.INNScanAttachmentId = attachmentId;
                 model.INNScanAttachmentFilename = attachmentFilename;
+
+                //скан снилс
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.SNILSScan);
+                model.SNILSScanAttachmentId = attachmentId;
+                model.SNILSScanAttachmentFilename = attachmentFilename;
+
+                //скан справик об  инвалидности
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.DisabilityCertificateScan);
+                model.DisabilityCertificateScanAttachmentId = attachmentId;
+                model.DisabilityCertificateScanAttachmentFilename = attachmentFilename;
             }
 
             //состояние кандидата
@@ -278,7 +294,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(candidateId, type);
             if (attach == null)
+            {
+                attachmentId = 0;
+                attachmentFilename = null;
                 return;
+            }
             attachmentId = attach.Id;
             attachmentFilename = attach.FileName;
         }
@@ -316,6 +336,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ZipCode = entity.ZipCode;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                //скан
+                int attachmentId = 0;
+                string attachmentFilename = string.Empty;
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InternalPassportScan);
+                model.InternalPassportScanAttachmentId = attachmentId;
+                model.InternalPassportScanAttachmentFilename = attachmentFilename;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -328,6 +354,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             EducationModel model = new EducationModel { UserId = userId.Value };
             Education entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
             int? id = EmploymentCommonDao.GetDocumentId<Education>(userId.Value);
             if (id.HasValue)
             {
@@ -345,6 +374,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         InitiatingOrder = item.InitiatingOrder
                     });
                 }
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CertificationScan);
+                model.CertificationScanId = attachmentId;
+                model.CertificationScanFileName = attachmentFilename;
+
                 foreach (var item in entity.HigherEducationDiplomas)
                 {
                     model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
@@ -361,6 +395,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.HigherEducationDiplomaScan);
+                model.HigherEducationDiplomaScanId = attachmentId;
+                model.HigherEducationDiplomaScanFileName = attachmentFilename;
+
                 foreach (var item in entity.PostGraduateEducationDiplomas)
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
@@ -374,6 +413,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PostGraduateEducationDiplomaScan);
+                model.PostGraduateEducationDiplomaScanId = attachmentId;
+                model.PostGraduateEducationDiplomaScanFileName = attachmentFilename;
+
                 foreach (var item in entity.Training)
                 {
                     model.Training.Add(new TrainingDto
@@ -387,6 +431,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Training);
+                model.TrainingScanId = attachmentId;
+                model.TrainingScanFileName = attachmentFilename;
+
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
             }
@@ -769,12 +818,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             EmploymentCandidate candidate = GetCandidate(userId.Value);
-
+            //согласовывает руководитель-инициатор
             model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
-                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
+                && candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id;
 
+            //утверждать кандидата может руководитель выше уровнем, чем руководитель-инициатор
+            //автоматическая привязка утверждающего
+            IList<User> managers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
+                .Where<User>(x => x.Level < candidate.AppointmentCreator.Level && x.Level != candidate.AppointmentCreator.Level && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
+                    .OrderByDescending<User, int?>(manager => manager.Level)
+                    .ToList<User>();
+            //ручная привязка утверждающего
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(candidate.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
+
+            
             model.IsApproveByHigherManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
-                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
+                && (managers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
+                    manualRoleManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0);
 
             LoadDictionaries(model);
             //состояние кандидата
@@ -1980,7 +2042,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.SNILSScanFile != null)
             {
-                UploadFileDto fileDto = GetFileContext(model.INNScanFile);
+                UploadFileDto fileDto = GetFileContext(model.SNILSScanFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.SNILSScanAttachmentId, fileDto, RequestAttachmentTypeEnum.SNILSScan, out fileName);
             }

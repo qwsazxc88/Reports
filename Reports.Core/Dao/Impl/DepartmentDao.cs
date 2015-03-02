@@ -86,7 +86,7 @@ namespace Reports.Core.Dao.Impl
                     return new List<User>();
                 }
                 managers = Session.Query<User>()
-                    .Where<User>(user => (user.RoleId & (int)UserRole.Manager) > 0 && department.Path.StartsWith(user.Department.Path) && user.IsActive == true)
+                    .Where<User>(user => (user.RoleId & (int)UserRole.Manager) > 0 && department.Path.StartsWith(user.Department.Path) /*&& user.IsActive == true*/)
                     .ToList<User>();
             }
             else

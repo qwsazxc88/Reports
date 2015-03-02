@@ -37,7 +37,9 @@ namespace Reports.Core
         // Согласует приказы на командировку
         ApprovesMissionOrders = 1,
         // Согласует табель
-        ApprovesCommonRequests = 2
+        ApprovesCommonRequests = 2,
+        //утверждает прием
+        ApprovesEmployment = 3
     }
 
     public class ReportRoleConstants

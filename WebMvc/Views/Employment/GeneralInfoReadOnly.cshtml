@@ -46,7 +46,17 @@
 
 <fieldset class="bordered doc-wrap panel">
 <legend>Общая информация</legend>
-    <div class="formfield clear">
+    <div class="formfield clearleft" style="float:right">
+        <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
+            <div style="width: 80px; height: 100px; background: gray;">
+                @if (@Model.PhotoAttachmentId != 0)
+                {
+                    <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                }
+            </div>
+        </fieldset>            
+    </div>
+    <div class="formfield">
         @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
         <span class="fakeFormField">@Model.LastName&nbsp;</span>
     </div>

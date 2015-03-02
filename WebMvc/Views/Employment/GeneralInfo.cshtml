@@ -8,7 +8,7 @@
         Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
         ViewBag.Title = "Прием - Общая информация";
     }
-    
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
 }
 
 <span style="color:red;">@ViewBag.Error</span>
@@ -60,10 +60,18 @@
         </div>
         <div class="formfield clearleft" style="float:right">
             <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
-                <div style="width: 96px; height: 96px; background: gray;"></div>
-                <input type="file" name="PhotoFile" />
+                <div style="width: 80px; height: 100px; background: gray;">
+                    @if (@Model.PhotoAttachmentId != 0)
+                    {
+                        <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                    }
+                </div>
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
-
+                    @if (@Model.PhotoAttachmentId == 0)
+                    {
+                        <input type="file" name="PhotoFile" />
+                    }
+                    @Model.PhotoAttachmentFilename
                 @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename))
                 {
                     <div class="formfield">

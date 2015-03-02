@@ -52,15 +52,17 @@
         {
             <span class="fakeFormField">@Model.DocumentTypeItems.Where(x => x.Value == Model.DocumentTypeId.ToString()).FirstOrDefault().Text&nbsp;</span>
         }
+        
+        @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.InternalPassportScanAttachmentFilename
+            </a>
+        }
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
-    {
-        <br />
-        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
-            @Model.InternalPassportScanAttachmentFilename
-        </a>
-    }
+        
 
     <div class="formfield clearleft">
         @Html.LabelFor(m => m.InternalPassportSeries)<br />

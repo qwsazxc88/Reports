@@ -123,15 +123,28 @@
                                 @Model.HigherEducationDiplomas[i].Department
                             </td>
                             <td>
-                                <div class="formfield">
-                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                </div>
+                                @if (@Model.HigherEducationDiplomas[i].HigherEducationDiplomaScanId == 0)
+                                {
+                                    <div class="formfield">
+                                        Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                                        @Model.HigherEducationDiplomaScanFileName</a>
+                                    <div class="formfield">
+                                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.HigherEducationDiplomaScanId);" />
+                                    </div>
+                                }
+                                @*
                                 <div class="formfield clear">
                                     <br /><a href="">Открыть</a>
                                 </div>
                                 <div class="formfield">
                                     <br /><a href="">Удалить</a>
                                 </div>
+                                *@
                             </td>
                             <td id="delete-foreign-language">
                                 <a href="#" onclick="DeleteEducationRow(1, @Model.HigherEducationDiplomas[i].Id)">Удалить строку</a>

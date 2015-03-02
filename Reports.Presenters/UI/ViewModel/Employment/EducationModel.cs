@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -25,6 +26,22 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         //состояние кандидата
         public IList<CandidateStateDto> CandidateState { get; set; }
+
+        public HttpPostedFileBase HigherEducationDiplomaScanFile { get; set; }
+        public int HigherEducationDiplomaScanId { get; set; }
+        public string HigherEducationDiplomaScanFileName { get; set; }
+
+        public HttpPostedFileBase PostGraduateEducationDiplomaScanFile { get; set; }
+        public int PostGraduateEducationDiplomaScanId { get; set; }
+        public string PostGraduateEducationDiplomaScanFileName { get; set; }
+
+        public HttpPostedFileBase CertificationScanFile { get; set; }
+        public int CertificationScanId { get; set; }
+        public string CertificationScanFileName { get; set; }
+
+        public HttpPostedFileBase TrainingScanFile { get; set; }
+        public int TrainingScanId { get; set; }
+        public string TrainingScanFileName { get; set; }
 
         public EducationModel()
         {

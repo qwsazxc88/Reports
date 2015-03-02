@@ -55,10 +55,12 @@
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
-        </div>
+        @if (Model.InternalPassportScanAttachmentId == 0)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
         {
@@ -73,13 +75,14 @@
                                                                                            {<text>style="display:none"</text>}*@/>
             </div>
         }
-
+        @*
         <div class="formfield">
             <br /><a href="">Открыть</a>
         </div>
         <div class="formfield">
             <br /><a href="">Удалить</a>
         </div>
+        *@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
             @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
@@ -171,6 +174,22 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
