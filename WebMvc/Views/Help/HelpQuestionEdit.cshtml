@@ -81,8 +81,12 @@
                    @if ((UserRole.ConsultantOutsourcing & dto.UserRole) > 0)
                    {
                     <input type="submit" value="Закрыть тему" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
-                                                                                             {<text>style="display:none"</text>}/>
-                    <input type="submit" value="База" onclick="Base()"/>
+                                                                                           {<text>style="display:none"</text>}/>
+                       if (!Model.IsBaseAvailable)
+                       {
+                        <input type="submit" value="База" onclick="Base()" @if (!Model.IsEndAvailable)
+                                                                         {<text>style="display:none"</text>}/>
+                       }
                    }
                    else
                    {
