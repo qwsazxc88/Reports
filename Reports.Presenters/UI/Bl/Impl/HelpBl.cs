@@ -155,7 +155,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UserRole.OutsourcingManager,
                 UserRole.PersonnelManager,
                 UserRole.ConsultantOutsourcing,
-                UserRole.ConsultantPersonnel
+                UserRole.ConsultantPersonnel,
+                UserRole.ConsultantOutsorsingManager
                
             });
             model.IsOriginalDocsVisible = RolesToShow.Contains(CurrentUser.UserRole);
@@ -163,8 +164,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetIsOriginalDocsEditable(HelpServiceRequestsListModel model)
         {
             List<UserRole> RolesToEdit = new List<UserRole>{
-                UserRole.ConsultantPersonnel,
-                UserRole.PersonnelManager
+                
+                UserRole.PersonnelManager,
+                 UserRole.ConsultantOutsorsingManager
             };
             model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole) || CurrentUser.Id==10;
         }
