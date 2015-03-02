@@ -176,6 +176,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetServiceRequestsStatuses();
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            types=FilteServiceRequestTypes(types);
             types.Insert(0,new HelpServiceType() { Id = 0, Name = "Любой" });
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
@@ -228,6 +229,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId);
             SetIsOriginalDocsVisible(model);
             SetIsOriginalDocsEditable(model);
+        }
+        public void SaveDocumentsToModel(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> ApprovedUsers = new List<UserRole>
+            {
+                UserRole.ConsultantPersonnel,
+                UserRole.PersonnelManager
+            };
+            if (!ApprovedUsers.Contains(CurrentUser.UserRole) || model.Documents==null) return;
+            foreach (var doc in model.Documents)
+            {
+                HelpServiceRequest entity = helpServiceRequestDao.FindById(doc.Id);
+                if (entity == null) continue;
+                entity.IsOriginalReceived = doc.IsOriginalReceived;
+                helpServiceRequestDao.SaveAndFlush(entity);
+            }
         }
         #endregion
         #region Service Requests Edit
@@ -459,7 +476,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
         }
-
+        protected List<HelpServiceType> FilteServiceRequestTypes(List<HelpServiceType> types)
+        {
+            //Фильтрация доступных для ролей услуг, возможно лучше добавить в базу таблицу со списком типов услуг для ролей
+            List<UserRole> ApprovedUsers=new List<UserRole>{ UserRole.PersonnelManager, UserRole.OutsourcingManager, UserRole.ConsultantOutsourcing, UserRole.ConsultantPersonnel};
+            List<int> ServiceTypesForApprovedUsers=new List<int>{22,23,24,25,26,27};
+            if(!ApprovedUsers.Contains(CurrentUser.UserRole))
+            {
+                types=types.Where(x=>!ServiceTypesForApprovedUsers.Contains(x.Id)).ToList();
+            }
+            return types;
+        }
         protected void SetFlagsState(HelpServiceRequestEditModel model, bool state)
         {
             model.IsBeginWorkAvailable = state;
@@ -476,6 +503,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            types = FilteServiceRequestTypes(types);
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
@@ -826,9 +854,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate = DateTime.Now;
                             entity.Consultant = currUser;
                         }
-                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id 
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -847,7 +878,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 6 && entity.BeginWorkDate.HasValue)
                         {
@@ -872,7 +906,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -1840,6 +1877,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.HistoryEntities.Add(redirect);
                             entity.Answer = null;
                             model.Answer = null;
+                        }
+                        if (model.Operation == 7)
+                        {
+                            entity.Base = true;
                         }
                     }
                     break;

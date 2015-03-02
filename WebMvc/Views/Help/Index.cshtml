@@ -115,7 +115,12 @@
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
                                     <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
-                                }                                                                                     
+                                } 
+                                @if (Model.IsOriginalDocsEditable)
+                                {
+                                    <input type="submit" value="Сохранить изменения" style="float:right" onclick="OriginalsChanged()" />
+                                    @Html.HiddenFor(m=>m.IsOriginalsReceivedChanged)
+                                }                                                                                    
                             </td>
                             @*<td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
@@ -139,52 +144,52 @@
                         № п/п
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                        <div id="sort1" style="min-width:100px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                     <th>
-                        <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
+                        <div id="sort2" style="min-width:100px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
                     </th>
                      <th>
-                        <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
+                        <div id="sort3" style="min-width:100px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>
                     <th>
-                        <div id="sort13" style="min-width:130px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
+                        <div id="sort13" style="min-width:100px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
                     </th>
                     <th>
-                        <div id="sort14" style="min-width:130px"><a href="#"  onclick = "SortChanged(14);">Примечание</a></div>
+                        <div id="sort14" style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">Примечание</a></div>
                     </th>
                     <th>
-                        <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
+                        <div id="sort11" style="min-width:100px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
+                        <div id="sort4"  style="min-width:180px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
+                        <div id="sort5"  style="min-width:40px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> запроса</a></div>
+                        <div id="sort6"  style="min-width:40px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> запроса</a></div>
                     </th>                    
                     <th>
-                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
+                        <div id="sort7"  style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
                     </th>
                     <th>
-                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
+                        <div id="sort8"  style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
                     </th>
                     <th>
-                        <div id="sort12"  style="min-width:130px"><a href="#"  onclick = "SortChanged(12);">Срок<br /> изготовления</a></div>
+                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Срок<br /> изготовления</a></div>
                     </th>
                     <th>
-                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
+                        <div id="sort9"  style="min-width:100px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
                     </th>
                     @if (Model.IsOriginalDocsVisible)
                             {
                                 <th>
-                                   <div id="sort15"  style="min-width:130px"><a href="#"  onclick = "SortChanged(15);">Оригинал документов<br /> от сотрудника получен</a></div> 
+                                   <div id="sort15"  style="min-width:100px"><a href="#"  onclick = "SortChanged(15);">Оригинал документов<br /> от сотрудника получен</a></div> 
                                 </th>
                             }
                     <th>
-                        <div id="sort10"  style="min-width:130px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
+                        <div id="sort10"  style="min-width:100px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -249,6 +254,7 @@
                             {
                                 <td>
                                     @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived, Model.IsOriginalDocsEditable ? null : (object)new { disabled = "disabled" })
+                                    @Html.HiddenFor(m => m.Documents[i].Id)
                                 </td>
                             }
                             <td style="background-color:@color">
@@ -273,7 +279,12 @@
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("helpAllRequests");
+        $("#IsOriginalsReceivedChanged").val(false);
     });
+    function OriginalsChanged()
+    {
+        $("#IsOriginalsReceivedChanged").val(true);
+    }
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
