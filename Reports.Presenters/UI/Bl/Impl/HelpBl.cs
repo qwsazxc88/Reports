@@ -1398,7 +1398,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
                                 model.IsEndAvailable = true;//могут закрывать тему
-                        model.IsBaseAvailable = entity.Base;
+                        if (!entity.EndWorkDate.HasValue) model.IsBaseAvailable = true;
+                        else  model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
