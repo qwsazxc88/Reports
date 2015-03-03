@@ -86,6 +86,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Ваше отношение к алкоголю")]
         public string Drinking { get; set; }
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public bool IsApproveBySecurityAvailable { get; set; }
 
         [Display(Name = "Без проверки")]

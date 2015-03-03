@@ -258,6 +258,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
 
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
@@ -336,6 +337,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ZipCode = entity.ZipCode;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
                 //скан
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
@@ -438,6 +440,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -536,6 +539,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -579,6 +583,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
 
                 //сканы
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MilitaryCardScan);
@@ -630,6 +635,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
 
                 //сканы
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.WorkbookScan);
@@ -672,6 +678,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ZipCode = entity.ZipCode;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -734,6 +741,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
 
                 //сканы
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PersonalDataProcessingScan);
@@ -2367,6 +2375,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.INN = viewModel.INN;
             entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
             entity.IsFinal = !viewModel.IsDraft;
+            entity.IsValidate = viewModel.IsValidate;
             entity.IsMale = viewModel.IsMale;
             entity.IsPatronymicAbsent = viewModel.IsPatronymicAbsent;
             entity.LastName = viewModel.LastName;
@@ -2423,6 +2432,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InternationalPassportNumber = viewModel.InternationalPassportNumber;
             entity.InternationalPassportSeries = viewModel.InternationalPassportSeries;
             entity.IsFinal = !viewModel.IsDraft;
+            entity.IsValidate = viewModel.IsValidate;
             entity.Region = viewModel.Region;
             entity.RegistrationDate = viewModel.RegistrationDate;
             entity.Street = viewModel.Street;
@@ -2521,6 +2531,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             entity.IsFinal = !viewModel.IsDraft;
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;
@@ -2645,7 +2656,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), FamilyRelationship.CHILD, viewModel.Children[lastIndex]));
             }
 
-            entity.IsFinal = !viewModel.IsDraft; 
+            entity.IsFinal = !viewModel.IsDraft;
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;
@@ -2702,7 +2714,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.RegistrationExpiration = viewModel.RegistrationExpiration;
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategory = viewModel.SpecialityCategory;
-            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo; 
+            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;
@@ -2744,7 +2757,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.WorkBookSeries = viewModel.WorkBookSeries;
             entity.WorkBookSupplementDateOfIssue = viewModel.WorkBookSupplementDateOfIssue;
             entity.WorkBookSupplementNumber = viewModel.WorkBookSupplementNumber;
-            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries; 
+            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries;
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;
@@ -2793,7 +2807,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.WorkPhone = viewModel.WorkPhone;
-            entity.ZipCode = viewModel.ZipCode; 
+            entity.ZipCode = viewModel.ZipCode;
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;
@@ -2858,7 +2873,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.IsFinal)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
-            } 
+            }
+            entity.IsValidate = viewModel.IsValidate;
             #endregion
 
             return true;

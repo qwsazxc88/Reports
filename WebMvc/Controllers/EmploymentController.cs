@@ -997,55 +997,106 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.INNScanFile, "INNScanFile");
             ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
             ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile");
+
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
+
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(PassportModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(EducationModel model)
         {
-            // Год поступления не больше года окончания
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(FamilyModel model)
         {
-            // 
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(MilitaryServiceModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(ExperienceModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(ContactsModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(BackgroundCheckModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 

@@ -27,6 +27,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string Cohabitants { get; set; } //ok
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
         public string MarriageCertificateScanAttachmentFilename { get; set; }
         public int MarriageCertificateScanAttachmentId { get; set; }
