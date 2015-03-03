@@ -37,6 +37,7 @@ namespace Reports.Core.Domain
         public virtual User ConsultantOutsorsingManager { get; set; }
         //public virtual User PersonnelManager { get; set; }
         public virtual int? ConsultantRoleId { get; set; }
+        public virtual bool Base { get; set; }
 
 
         public virtual IList<HelpQuestionHistoryEntity> HistoryEntities { get; set; }

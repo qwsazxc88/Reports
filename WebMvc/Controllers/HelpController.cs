@@ -71,15 +71,25 @@ namespace WebMvc.Controllers
         }
         [HttpPost]
         public ActionResult Index(HelpServiceRequestsListModel model)
-        {
+        { 
             //ModelState.Clear();
             bool hasError = !ValidateModel(model);
             //if (!hasError)
             //    SetMissionOrderFilterToSession(model);
+            if (model.IsOriginalsReceivedChanged)
+            {
+                HelpBl.SaveDocumentsToModel(model);
+                model.IsOriginalsReceivedChanged = false;
+            }
             HelpBl.SetServiceRequestsListModel(model, hasError);
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
+        }
+        [HttpPost]
+        public string SaveServiceDocuments()
+        {
+            return("test");
         }
         protected bool ValidateModel(BeginEndCreateDate model)
         {
