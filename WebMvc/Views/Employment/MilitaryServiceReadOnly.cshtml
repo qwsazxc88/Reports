@@ -57,7 +57,7 @@
         <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryCardDate)&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан военного билета:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.MilitaryCardScanAttachmentFilename
             </a>
@@ -113,14 +113,14 @@
         <span class="fakeFormField">@Html.DisplayFor(m => m.MobilizationTicketNumber)&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан мобилизационного талона:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.MobilizationTicketScanAttachmentFilename
             </a>
         }
     </div>
     
-    <fieldset class="bordered nomargin">
+    <fieldset class="bordered clear">
     <legend class="level2">Для форм Ф-6 и Ф-18</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PersonnelCategory)<br />

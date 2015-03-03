@@ -182,13 +182,13 @@ namespace Reports.Core.Dao.Impl
                 sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
                 // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                 sqlQueryPart += string.Format(@"
-                        or currentUser.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", currentUser.Id);
+                        or appointmentCreator.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 3)", currentUser.Id);
                 sqlQueryPart += string.Format(@"
                         or 
                         (
                             --(u.RoleId & 2) > 0
                             --and
-                            currentUser.DepartmentId in
+                            candidateUser.DepartmentId in
                             (
                                 select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
                                     inner join Department targetDept
@@ -197,8 +197,7 @@ namespace Reports.Core.Dao.Impl
                                         on branchDept.Path like targetDept.Path + '%'
                                     inner join Users
                                         on mrr.UserId = {0}
-                                    inner join Role
-                                        on mrr.RoleId = 1
+                                    where mrr.RoleId = 3
                             )
                         )
                         ", currentUser.Id);

@@ -20,6 +20,7 @@
     <property name="Email" length="50" not-null="false"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
     
   </class>
 </hibernate-mapping>
