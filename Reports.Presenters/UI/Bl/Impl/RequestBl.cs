@@ -613,6 +613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                null,
                 model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
@@ -3708,6 +3709,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.SicklistNumber,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -9577,7 +9579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     // Определение подчиненности рядовых сотрудников
-                    else if ((user.RoleId & (int)UserRole.Employee) > 0
+                    else if (((user.RoleId & (int)UserRole.Employee) > 0 || (user.RoleId & (int)UserRole.DismissedEmployee) > 0)
                         && user.Department.Path.StartsWith(currentUser.Department.Path))
                     {
                         canEdit = true;

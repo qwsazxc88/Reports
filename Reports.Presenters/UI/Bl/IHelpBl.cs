@@ -27,6 +27,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveHelpQuestionEditModel(HelpQuestionEditModel model, out string error);
         HelpQuestionRedirectModel GetQuestionRedirectModel(int id);
 
+        System.Collections.Generic.IList<NoteTypeDto> GetAllNodeTypesDto();
 
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);

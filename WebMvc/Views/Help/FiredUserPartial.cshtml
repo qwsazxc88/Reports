@@ -1,0 +1,32 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpServiceRequestEditModel
+<tr>
+    <td>
+        @Html.LabelFor(m => m.FiredUserName)
+    </td>
+    <td>
+        @Html.TextBoxFor(m => m.FiredUserSurname, Model.IsEditable ? (object)new { placeholder = "Фамилия", style = "width:100px" } : (object)new { disabled = "disabled" })
+        @Html.TextBoxFor(m => m.FiredUserName, Model.IsEditable ?  (object)new { placeholder = "Имя", style = "width:100px" } : (object)new { disabled = "disabled" })
+        @Html.TextBoxFor(m => m.FiredUserPatronymic, Model.IsEditable ? (object)new { placeholder = "Отчество", style = "width:100px" } : (object)new { disabled = "disabled" })
+        @Html.ValidationMessageFor(m => m.FiredUserSurname)
+        @Html.ValidationMessageFor(m => m.FiredUserName)
+        @Html.ValidationMessageFor(m => m.FiredUserPatronymic)
+    </td>
+</tr>
+<tr>
+    <td>
+        @Html.LabelFor(m => m.UserBirthDate)
+    </td>
+    <td>
+        @Html.TextBoxFor(m => m.UserBirthDate, Model.IsEditable ? (object)new { @class = "datepicker", style = "width:100px" } : (object)new { disabled = "disabled" })
+        @Html.ValidationMessageFor(m => m.UserBirthDate)
+    </td>
+</tr>
+<tr>
+    <td>
+        @Html.LabelFor(m => m.Note)
+    </td>
+    <td>
+        @Html.DropDownListFor(m => m.Note, new SelectList(Model.NoteList,"Id","Name",Model.Note),
+                               Model.IsEditable ? (object)new { style = "width:100px" } : (object)new { disabled = "disabled" })
+    </td>
+</tr>

@@ -230,7 +230,7 @@
                 @Html.LabelFor(m => m.BeginMissionDate):
             </td>
             <td>
-                @Html.TextBoxFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+                @Html.EditorFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
             </td>
         </tr>
          <tr>
@@ -238,7 +238,7 @@
                 @Html.LabelFor(m => m.EndMissionDate):
             </td>
             <td>
-                @Html.TextBoxFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+                @Html.EditorFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
             </td>
         </tr>
         <tr>
@@ -468,10 +468,10 @@
     <script type="text/javascript">
         var  actionEditTargetDialogUrl = "@Url.Action("EditTargetDialog", "MissionOrder")";
         $(document).ready(function () {
-            /*$("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
+            $("#BeginMissionDate").datepicker();
+            $("#EndMissionDate").datepicker();
             $(".hasDatepicker").width("75px");
-            $("#DaysCount").width("50px");*/
+            /*$("#DaysCount").width("50px");*/
             setActiveMenuItem("moAllOrders");
             var targets = JSON.parse($("#Targets").val());
             renderTargetsTable(targets);

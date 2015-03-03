@@ -14,8 +14,13 @@
     <property name="NotEndWorkDate" not-null="false"/>
     <property name="Number"  not-null="true"/>
     <property name="Address"  not-null="false"/>
-	  
-	<many-to-one name="Type" class="HelpServiceType" column="TypeId" foreign-key="FK_HelpServiceRequest_HelpServiceType" index="HelpServiceRequest_HelpServiceType"  not-null="true"/>
+    <property name="FiredUserName" length="50" not-null="false"/>
+    <property name="FiredUserSurname" length="50" not-null="false"/>
+    <property name="FiredUserPatronymic" length="50" not-null="false"/>
+    <property name="UserBirthDate" not-null="false"/>
+    <property name="IsOriginalReceived" not-null="true"/>
+    <many-to-one name="Note" class="NoteType" column="NoteId" foreign-key="FK_HelpServiceRequest_NoteType" index="HelpServiceRequest_NoteType" not-null="false"/>
+    <many-to-one name="Type" class="HelpServiceType" column="TypeId" foreign-key="FK_HelpServiceRequest_HelpServiceType" index="HelpServiceRequest_HelpServiceType"  not-null="true"/>
   <many-to-one name="ProductionTime" class="HelpServiceProductionTime" column="ProductionTimeId" foreign-key="FK_HelpServiceRequest_HelpServiceProductionTime" index="HelpServiceRequest_HelpServiceProductionTime"  not-null="true"/>
   <many-to-one name="TransferMethod" class="HelpServiceTransferMethod" column="TransferMethodId" foreign-key="FK_HelpServiceRequest_HelpServiceTransferMethod" index="HelpServiceRequest_HelpServiceTransferMethod"  not-null="true"/>
   <many-to-one name="Period" class="HelpServicePeriod" column="PeriodId" foreign-key="FK_HelpServiceRequest_HelpServicePeriod" index="HelpServiceRequest_HelpServicePeriod"  not-null="false"/>
