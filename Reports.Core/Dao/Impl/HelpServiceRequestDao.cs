@@ -304,7 +304,7 @@ namespace Reports.Core.Dao.Impl
                                         and employeeDept.Path not like N'9900424.9900426.9900427.%'
                                     inner join dbo.Department higherDept
                                       on employeeDept.Path like higherDept.Path+N'%'
-                                where (employee.RoleId & 2) > 0
+                                where ((employee.RoleId & 2) > 0 or employee.RoleId=2097152)
                                     and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
