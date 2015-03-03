@@ -35,6 +35,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase WorkBookScanFile { get; set; }
         public HttpPostedFileBase WorkBookSupplementScanFile { get; set; }
         

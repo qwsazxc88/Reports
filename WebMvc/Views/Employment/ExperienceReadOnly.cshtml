@@ -132,7 +132,7 @@
         </table>
         @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан трудовой книжки:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.WorkBookScanAttachmentFilename
             </a>
@@ -171,7 +171,7 @@
         </table>
         @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан вкладыша в трудовую книжку:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.WorkBookSupplementScanAttachmentFilename
             </a>

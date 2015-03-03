@@ -46,6 +46,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Email { get; set; } //ok
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         //состояние кандидата
         public IList<CandidateStateDto> CandidateState { get; set; }
 

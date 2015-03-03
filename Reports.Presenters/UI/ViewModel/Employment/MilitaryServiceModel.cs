@@ -81,6 +81,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int? ConscriptionStatus { get; set; } //ok
         public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase MilitaryCardScanFile { get; set; }
         public HttpPostedFileBase MobilizationTicketScanFile { get; set; }
 

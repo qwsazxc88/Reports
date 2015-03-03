@@ -179,7 +179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses = GetServiceRequestsStatuses();
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
             types=FilteServiceRequestTypes(types);
-            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Любой" });
+            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Все" });
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         public List<IdNameDto> GetServiceRequestsStatuses()

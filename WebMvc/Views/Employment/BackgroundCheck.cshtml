@@ -11,6 +11,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -222,10 +223,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
             {
@@ -266,10 +269,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст о достоверности сведений</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
             {
@@ -304,6 +309,8 @@
     
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button id="btnBC" type="submit">Сохранить</button>
     </div>
 }
@@ -333,6 +340,23 @@
         $("#RowID").val(Id);
         $("#btnBC").click();
     }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
 
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");

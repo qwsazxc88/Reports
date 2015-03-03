@@ -10,6 +10,7 @@
     }
 }
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -86,9 +87,6 @@
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
                         </th>
-                        <th>
-                            Сканы
-                        </th>
                         <th></th>
                     </tr>
                     
@@ -122,17 +120,7 @@
                             <td>
                                 @Model.HigherEducationDiplomas[i].Department
                             </td>
-                            <td>
-                                <div class="formfield">
-                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                </div>
-                                <div class="formfield clear">
-                                    <br /><a href="">Открыть</a>
-                                </div>
-                                <div class="formfield">
-                                    <br /><a href="">Удалить</a>
-                                </div>
-                            </td>
+
                             <td id="delete-foreign-language">
                                 <a href="#" onclick="DeleteEducationRow(1, @Model.HigherEducationDiplomas[i].Id)">Удалить строку</a>
                             </td>
@@ -142,6 +130,22 @@
                 </table>
             </div>
         }
+        <div style="float:right">
+            @if (@Model.HigherEducationDiplomaScanId == 0)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" />
+                </div>
+            }
+            else
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.HigherEducationDiplomaScanFileName</a>
+                
+                <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.HigherEducationDiplomaScanId);" />
+                
+            }        
+         </div>
         <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
     </fieldset>
     
@@ -173,9 +177,6 @@
                         <th>
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
                         </th>
-                        <th>
-                            Сканы
-                        </th>
                         <th></th>
                     </tr>
                     
@@ -200,17 +201,6 @@
                             <td>
                                 @Model.PostGraduateEducationDiplomas[i].Speciality
                             </td>
-                            <td>
-                                <div class="formfield">
-                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                </div>
-                                <div class="formfield clear">
-                                    <br /><a href="">Открыть</a>
-                                </div>
-                                <div class="formfield">
-                                    <br /><a href="">Удалить</a>
-                                </div>
-                            </td>
                             <td id="delete-foreign-language">
                                 <a href="#" onclick="DeleteEducationRow(2, @Model.PostGraduateEducationDiplomas[i].Id)">Удалить строку</a>
                             </td>
@@ -220,6 +210,21 @@
                 </table>
             </div>
         }
+        <div style="float:right">
+            @if (@Model.PostGraduateEducationDiplomaScanId == 0)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" />
+                </div>
+            }
+            else
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.PostGraduateEducationDiplomaScanFileName</a>
+                <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PostGraduateEducationDiplomaScanId);" />
+            }
+        </div>
+
         <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
     </fieldset>
     
@@ -248,9 +253,6 @@
                             <th>
                                 @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
                             </th>
-                            <th>
-                                Сканы
-                            </th>
                             <th></th>
                         </tr>
                     
@@ -275,17 +277,6 @@
                                 <td>
                                     @Model.Certifications[i].InitiatingOrder
                                 </td>
-                                <td>
-                                    <div class="formfield">
-                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                    </div>
-                                    <div class="formfield clear">
-                                        <br /><a href="">Открыть</a>
-                                    </div>
-                                    <div class="formfield">
-                                        <br /><a href="">Удалить</a>
-                                    </div>
-                                </td>
                                 <td id="delete-foreign-language">
                                     <a href="#" onclick="DeleteEducationRow(3, @Model.Certifications[i].Id)">Удалить строку</a>
                                 </td>
@@ -295,6 +286,20 @@
                     </table>
                 </div>
             }
+            <div style="float:right">
+                @if (@Model.CertificationScanId == 0)
+                {
+                    <div class="formfield">
+                        Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" />
+                    </div>
+                }
+                else
+                {
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
+                        @Model.CertificationScanFileName</a>
+                    <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.CertificationScanId);" />
+                }
+            </div>
             <a href="" id="add-certification">Добавить новую запись</a>
         </fieldset>
 
@@ -324,9 +329,6 @@
                             <th>
                                 @Html.LabelFor(m => m.Training[0].Speciality)
                             </th>
-                            <th>
-                                Сканы
-                            </th>
                             <th></th>
                         </tr>
                     
@@ -351,17 +353,6 @@
                                 <td>
                                     @Model.Training[i].Speciality
                                 </td>
-                                <td>
-                                    <div class="formfield">
-                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                    </div>
-                                    <div class="formfield clear">
-                                        <br /><a href="">Открыть</a>
-                                    </div>
-                                    <div class="formfield">
-                                        <br /><a href="">Удалить</a>
-                                    </div>
-                                </td>
                                 <td id="delete-foreign-language">
                                     <a href="#" onclick="DeleteEducationRow(4, @Model.Training[i].Id)">Удалить строку</a>
                                 </td>
@@ -371,12 +362,29 @@
                     </table>
                 </div>
             }
+            <div style="float:right">
+                @if (@Model.TrainingScanId == 0)
+                {
+                    <div class="formfield">
+                        Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" />
+                    </div>
+                }
+                else
+                {
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
+                        @Model.TrainingScanFileName</a>
+                    <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.TrainingScanId);" />
+                }
+            </div>
+
             <a href="" id="add-training">Добавить новую запись</a>
         </fieldset>
     </fieldset>
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button type="submit" id="btnEducation">Сохранить</button>
     </div>
 }
@@ -456,6 +464,22 @@
         //this.form.submit();
         $("#btnEducation").click();
         //return true;
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
     }
 
     $(document).ready(function () {

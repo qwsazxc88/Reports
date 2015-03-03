@@ -34,6 +34,7 @@ namespace Reports.Core.Domain
         // Скан паспорта
 
         public virtual bool IsFinal { get; set; }
+        public virtual bool IsValidate { get; set; }
         #endregion
 
         #region Constructors
