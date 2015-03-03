@@ -11,6 +11,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -221,14 +222,17 @@
     
     <fieldset>
 
-    <div class="formfield clear">
-        Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name=".MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
-    </div>
+    @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    {
+        <div class="formfield clear">
+            Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name="MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
+        </div>
+    }
 
     @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
     {
         <div class="formfield">
-            <br />Скан:
+            <br />Скан свидетельства о браке:
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.MarriageCertificateScanAttachmentFilename
             </a>
@@ -239,18 +243,30 @@
         </div>
     }
     
-    <div class="formfield clear">
-        Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="files" />
-    </div>
-    <div class="formfield">
-        <br /><a href="">Открыть</a>
-    </div>
-    <div class="formfield">
-        <br /><a href="">Удалить</a>
-    </div>
+    @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+    {
+        <div class="formfield clear">
+            Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="ChildBirthCertificateScanFile" />
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+    {
+        <div class="formfield">
+            <br />Скан свидетельства о рождении ребенка:
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ChildBirthCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.ChildBirthCertificateScanAttachmentFilename
+            </a>
+        </div>
+        <div class="formfield">
+            <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.ChildBirthCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                        {<text>style="display:none"</text>}*@/>
+        </div>
+    }
     
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button id="btnFamily" type="submit">Сохранить</button>
     </div>
 
@@ -280,6 +296,22 @@
             $("#IsMarried").val('false');
         }
         $("#btnFamily").click();
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
     }
 
     $(document).ready(function () {

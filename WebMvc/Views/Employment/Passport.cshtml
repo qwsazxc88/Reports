@@ -11,6 +11,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -55,10 +56,12 @@
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
-        </div>
+        @if (Model.InternalPassportScanAttachmentId == 0)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
         {
@@ -73,13 +76,14 @@
                                                                                            {<text>style="display:none"</text>}*@/>
             </div>
         }
-
+        @*
         <div class="formfield">
             <br /><a href="">Открыть</a>
         </div>
         <div class="formfield">
             <br /><a href="">Удалить</a>
         </div>
+        *@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
             @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
@@ -163,6 +167,8 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button type="submit">Сохранить</button>
     </div>
 
@@ -171,6 +177,22 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);

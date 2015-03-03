@@ -35,6 +35,7 @@ namespace Reports.Core.Domain
         // Скан мобилизационного талона
 
         public virtual bool IsFinal { get; set; }
+        public virtual bool IsValidate { get; set; }
         #endregion
 
         #region Constructors
