@@ -90,8 +90,15 @@
 
         ApplicationLetterScan = 271,
 
-        // ? = 281,
-        // ? = 282,
+        //документы распечатанные и отсканированные кандидатом в приеме
+        EmploymentContractScan = 272,
+        OrderOnReceptionScan = 273,
+        CandidateT2Scan = 274,
+        ContractMatResponsibleScan = 275,
+        PersonalDataScan = 276,
+        DataObligationScan = 277,
+        EmploymentFileScan = 278,
+        RegisterPersonalRecordScan = 279,
 
         // Dismissal Additional Documents Scans
 
@@ -100,6 +107,7 @@
         F182NScan = 203,
         F2NDFLScan = 204,
         WorkbookRequestScan = 205,
+        
 
         UnsignedT2Scan = 251,        
         UnsignedDismissalAgreementScan = 252
