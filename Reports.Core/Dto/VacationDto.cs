@@ -11,7 +11,9 @@ namespace Reports.Core.Dto
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Number { get; set; }
-
+        public string Position { get; set; }
+        public string Dep3Name { get; set; }
+        public string Dep7Name { get; set; }
         public string UserName { get; set; }
         public string RequestType { get; set; }
         public string RequestStatus { get; set; }

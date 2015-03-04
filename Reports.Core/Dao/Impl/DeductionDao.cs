@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
                                @"select 
                                 v.Id as Id,
                                 u.Id as UserId,
-                                v.Number,
+                                v.Number as Number,
                                 v.EditDate,
                                 dep3.Name as Dep3Name,
                                 v.Sum,
@@ -60,7 +60,8 @@ namespace Reports.Core.Dao.Impl
                                 string userName,
                                 //string sqlQuery,
                                 int sortedBy,
-                                bool? sortDescending
+                                bool? sortDescending,
+                                string Number
             )
         {
             string whereString = GetWhereForUserRole(role, userId);
@@ -70,6 +71,7 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetDocumentNumberWhere(whereString, Number);
             string sqlQuery = GetSqlQueryOrdered(sqlSelectForDeduction, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -96,7 +98,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Rn", NHibernateUtil.Int32).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
-                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Number", NHibernateUtil.String).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Sum", NHibernateUtil.Decimal).

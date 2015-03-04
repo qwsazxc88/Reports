@@ -50,6 +50,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsOriginalReceivedModified { get; set; }
         public bool IsOriginalReceivedEditable { get; set; }
+        [Display(Name="Номер документа")]
+        public string Number { get; set; }
+
 
     }
 
