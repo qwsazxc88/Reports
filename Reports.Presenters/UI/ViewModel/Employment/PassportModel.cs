@@ -96,6 +96,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string InternationalPassportIssuedBy { get; set; }
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase InternalPassportScanFile { get; set; }
 
         public string InternalPassportScanAttachmentFilename { get; set; }

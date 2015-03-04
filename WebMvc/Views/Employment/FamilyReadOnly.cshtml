@@ -179,9 +179,16 @@
 
     @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
     {
-        <br />
+        <br /><label>Скан свидетельства о браке:</label>
         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
             @Model.MarriageCertificateScanAttachmentFilename
+        </a>
+    }
+    @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+    {
+        <br /><label>Скан свидетельства о рождении ребенка:</label>
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ChildBirthCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.ChildBirthCertificateScanAttachmentFilename
         </a>
     }
     

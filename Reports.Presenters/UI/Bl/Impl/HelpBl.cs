@@ -178,8 +178,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetServiceRequestsStatuses();
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
-            //types=FilteServiceRequestTypes(types);
-            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Любой" });
+            types=FilteServiceRequestTypes(types);
+            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Все" });
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         public List<IdNameDto> GetServiceRequestsStatuses()
@@ -480,13 +480,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<HelpServiceType> FilteServiceRequestTypes(List<HelpServiceType> types)
         {
-            //Фильтрация доступных для ролей услуг, возможно лучше добавить в базу таблицу со списком типов услуг для ролей
-            List<UserRole> ApprovedUsers=new List<UserRole>{ UserRole.PersonnelManager, UserRole.OutsourcingManager, UserRole.ConsultantOutsourcing, UserRole.ConsultantPersonnel};
-            List<int> ServiceTypesForApprovedUsers=new List<int>{22,23,24,25,26,27};
-            if(!ApprovedUsers.Contains(CurrentUser.UserRole))
-            {
-                types=types.Where(x=>!ServiceTypesForApprovedUsers.Contains(x.Id)).ToList();
-            }
+            List<int> hiddenIds=new List<int>{15};
+            //Фильтрация доступных услуг
+            types=types.Where(x=>!hiddenIds.Contains(x.Id)).ToList();
+            
             return types;
         }
         protected void SetFlagsState(HelpServiceRequestEditModel model, bool state)
@@ -505,7 +502,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
-            //types = FilteServiceRequestTypes(types);
+            types = FilteServiceRequestTypes(types);
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).

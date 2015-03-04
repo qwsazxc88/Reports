@@ -11,6 +11,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -144,10 +145,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
+                </div>
+            }
             
             @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
             {
@@ -195,10 +198,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
             {
@@ -220,6 +225,8 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button id="btnExperience" type="submit">Сохранить</button>
     </div>
 }
@@ -248,6 +255,22 @@
     function DeleteExperienceRow(Id) {
         $("#RowID").val(Id);
         $("#btnExperience").click();
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
     }
 
     $(document).ready(function () {

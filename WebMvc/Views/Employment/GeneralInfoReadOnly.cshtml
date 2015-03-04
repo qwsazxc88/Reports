@@ -46,7 +46,17 @@
 
 <fieldset class="bordered doc-wrap panel">
 <legend>Общая информация</legend>
-    <div class="formfield clear">
+    <div class="formfield clearleft" style="float:right">
+        <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
+            <div style="width: 80px; height: 100px; background: gray;">
+                @if (@Model.PhotoAttachmentId != 0)
+                {
+                    <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                }
+            </div>
+        </fieldset>            
+    </div>
+    <div class="formfield">
         @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
         <span class="fakeFormField">@Model.LastName&nbsp;</span>
     </div>
@@ -177,7 +187,7 @@
         <span class="fakeFormField">@Model.INN&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан ИНН:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.INNScanAttachmentFilename
             </a>
@@ -188,7 +198,7 @@
         <span class="fakeFormField">@Model.SNILS&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан СНИЛС:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.SNILSScanAttachmentFilename
             </a>
@@ -220,7 +230,7 @@
         <div class="formfield">
             @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
             {
-                <br />
+                <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.DisabilityCertificateScanAttachmentFilename
                 </a>

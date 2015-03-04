@@ -11,6 +11,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -156,9 +157,11 @@
             </tr>
         </table>
     </fieldset>
-
+    @Html.ValidationMessageFor(m => m.IsValidate)
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button type="submit">Сохранить</button>
     </div>
 }
