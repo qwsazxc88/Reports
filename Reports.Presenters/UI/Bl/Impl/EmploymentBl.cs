@@ -284,7 +284,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
 
             return model;
         }
@@ -347,7 +348,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -444,7 +446,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -543,7 +546,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -596,7 +600,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -648,7 +653,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -682,7 +688,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -760,7 +767,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -801,7 +809,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -897,7 +906,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
         }
 
@@ -955,7 +965,75 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             LoadDictionaries(model);
             //состояние кандидата
-            model.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            return model;
+        }
+
+        public CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null)
+        {
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            CandidateDocumentsModel model = new CandidateDocumentsModel { UserId = userId.Value };
+            
+            
+            GeneralInfo entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentGeneralInfoDao.Get(id.Value);
+            }
+
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+
+            
+            if (entity != null)
+            {
+                int attachmentId = 0;
+                string attachmentFilename = string.Empty;
+                //трудовой договор
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentContractScan);
+                model.EmploymentContractFileId = attachmentId;
+                model.EmploymentContractFileName = attachmentFilename;
+
+                //приказ о приеме
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.OrderOnReceptionScan);
+                model.OrderOnReceptionFileId = attachmentId;
+                model.OrderOnReceptionFileName = attachmentFilename;
+
+                //Т2
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CandidateT2Scan);
+                model.T2FileId = attachmentId;
+                model.T2FileName = attachmentFilename;
+
+                //договор о мат. ответственности
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ContractMatResponsibleScan);
+                model.ContractMatResponsibleFileId = attachmentId;
+                model.ContractMatResponsibleFileName = attachmentFilename;
+
+                //ДС персональные данные
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PersonalDataScan);
+                model.PersonalDataFileId = attachmentId;
+                model.PersonalDataFileName = attachmentFilename;
+
+                //обязательство конфиденциальность
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.DataObligationScan);
+                model.DataObligationFileId = attachmentId;
+                model.DataObligationFileName = attachmentFilename;
+
+                //личный листок по учету кадров
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
+                model.EmploymentFileId = attachmentId;
+                model.EmploymentFileName = attachmentFilename;
+
+                //реестр личного дела
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.RegisterPersonalRecordScan);
+                model.RegisterPersonalRecordFileId = attachmentId;
+                model.RegisterPersonalRecordFileName = attachmentFilename;
+            }
+
+            
             return model;
         }
 
@@ -1003,6 +1081,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -1609,6 +1688,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -2224,6 +2304,68 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+            }
+        }
+
+        public void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model)
+        {
+            EmploymentCandidate candidate = GetCandidate(model.UserId);
+            int candidateId = candidate.Id;
+
+            if (model.EmploymentContractFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.EmploymentContractFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.EmploymentContractFileId, fileDto, RequestAttachmentTypeEnum.EmploymentContractScan, out fileName);
+            }
+
+            if (model.OrderOnReceptionFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.OrderOnReceptionFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.OrderOnReceptionFileId, fileDto, RequestAttachmentTypeEnum.OrderOnReceptionScan, out fileName);
+            }
+
+            if (model.T2File != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.T2File);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.T2FileId, fileDto, RequestAttachmentTypeEnum.CandidateT2Scan, out fileName);
+            }
+
+            if (model.ContractMatResponsibleFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ContractMatResponsibleFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ContractMatResponsibleFileId, fileDto, RequestAttachmentTypeEnum.ContractMatResponsibleScan, out fileName);
+            }
+
+            if (model.PersonalDataFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PersonalDataFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PersonalDataFileId, fileDto, RequestAttachmentTypeEnum.PersonalDataScan, out fileName);
+            }
+
+            if (model.DataObligationFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.DataObligationFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.DataObligationFileId, fileDto, RequestAttachmentTypeEnum.DataObligationScan, out fileName);
+            }
+
+            if (model.EmploymentFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.EmploymentFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.EmploymentFileId, fileDto, RequestAttachmentTypeEnum.EmploymentFileScan, out fileName);
+            }
+
+            if (model.RegisterPersonalRecordFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.RegisterPersonalRecordFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.RegisterPersonalRecordFileId, fileDto, RequestAttachmentTypeEnum.RegisterPersonalRecordScan, out fileName);
             }
         } 
         #endregion
