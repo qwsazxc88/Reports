@@ -753,6 +753,8 @@
     <Content Include="Views\Employment\ManagersReadOnly.cshtml" />
     <Content Include="Views\Employment\PersonnelManagersReadOnly.cshtml" />
     <Content Include="Views\Help\FiredUserPartial.cshtml" />
+    <Content Include="Views\Employment\CandidateDocuments.cshtml" />
+    <Content Include="Views\Employment\CandidateState.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

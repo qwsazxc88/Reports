@@ -875,6 +875,40 @@ namespace WebMvc.Controllers
         
         #endregion
 
+        #region CandidateDocuments
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
+        public ActionResult CandidateDocuments(int? id)
+        {
+            var model = EmploymentBl.GetCandidateDocumentsModel(id);
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
+                return View(model);
+            else
+                return PartialView(model);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.Candidate | UserRole.Manager)]
+        public ActionResult CandidateDocuments(CandidateDocumentsModel model)
+        {
+            //, IEnumerable<HttpPostedFileBase> files
+            string error = String.Empty;
+            if (model.DeleteAttachmentId == 0)
+                EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            else
+            {
+                DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                EmploymentBl.DeleteAttachment(modelDel);
+            }
+            model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
+            else
+                return View(model);
+        }
+        #endregion
+
         #region // Custom report
         /*
         [HttpGet]
