@@ -86,6 +86,15 @@
                             </tr>
                         }
                         <tr>
+                            <td>
+                                @Html.LabelFor(m=>m.Number)
+                            </td>
+                               
+                            <td>
+                             @Html.TextBoxFor(m=>m.Number)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -172,6 +181,15 @@
                         <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
                     </th>
                     <th>
+                        <div id="sort13"><a href="#"  onclick = "SortChanged(13);">Должность</a></div>
+                    </th>
+                    <th>
+                        <div id="sort14"><a href="#"  onclick = "SortChanged(14);">Подразделение<br /> 3 уровня</a></div>
+                    </th>
+                    <th>
+                        <div id="sort15"><a href="#"  onclick = "SortChanged(15);">Подразделение<br />7 уровня</a></div>
+                    </th>
+                    <th>
                         <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
                      <th style="width:80px">
@@ -219,6 +237,9 @@
                                 <a class="ui-notify-close" href='@Url.Action("DismissalEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
                             <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                             <td>@doc.Date</td>
                              <td>@doc.Number</td>
                             <td>@doc.RequestType</td>

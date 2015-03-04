@@ -45,7 +45,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("AirTicketType", NHibernateUtil.String).
-                AddScalar("TrainTicketType", NHibernateUtil.String);
+                AddScalar("TrainTicketType", NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String);
         }
 
         #region Constants
@@ -59,6 +60,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Id as UserId,
                                 u.Name as UserName,
                                 up.Name as Position,
+                                dep3.Name as Dep3Name,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
                                 v.EditDate as EditDate,
@@ -164,8 +166,9 @@ namespace Reports.Core.Dao.Impl
                                         and uManagerAccount.Login like u.Login+N'R'
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
-                                left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
+                                left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId 
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3
                                 {1}";
         #endregion
 
@@ -300,6 +303,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 24:
                     orderBy = @" order by IsRecalculated";
+                    break;
+                case 25:
+                    orderBy = @" order by Dep3Name";
                     break;
             }
             if (sortDescending.Value)

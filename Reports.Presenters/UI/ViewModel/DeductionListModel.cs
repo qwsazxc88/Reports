@@ -51,5 +51,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
+        [Display(Name="Номер документа")]
+        public string Number { get; set; }
     }
 }

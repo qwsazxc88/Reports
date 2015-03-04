@@ -219,6 +219,9 @@
                     <th>
                         <div id="sort22" style="min-width:130px"><a href="#" onclick = "SortChanged(22);">Должность</a></div>
                     </th>
+                    <th>
+                        <div id="sort25" style="min-width:210px"><a href="#"  onclick = "SortChanged(25);">Подразделение <br/>уровня 3</a></div>
+                    </th>
                      <th>
                         <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
                     </th>
@@ -324,6 +327,7 @@
                             <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" /></td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
+                            <td>@doc.Dep3Name</td>
                              <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>

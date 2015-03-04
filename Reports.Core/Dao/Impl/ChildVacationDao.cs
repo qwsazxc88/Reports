@@ -28,7 +28,8 @@ namespace Reports.Core.Dao.Impl
             DateTime? endDate,
             string userName, 
             int sortedBy,
-            bool? sortDescending)
+            bool? sortDescending,
+            string Number)
         {
             string sqlQuery = string.Format(sqlSelectForListChildVacation,
                                 DeleteRequestText,
@@ -42,7 +43,7 @@ namespace Reports.Core.Dao.Impl
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, vacationTypeId,
                 requestStatusId, beginDate, endDate,userName, 
-                sqlQuery, sortedBy, sortDescending);
+                sqlQuery, sortedBy, sortDescending, Number);
         }
 
         public override IQuery CreateQuery(string sqlQuery)
@@ -58,7 +59,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
-                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("Dep7Name",NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("Position",NHibernateUtil.String);
         }
 
         public IList<ChildVacation> LoadForIdsList(List<int> ids)
