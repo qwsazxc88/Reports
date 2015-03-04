@@ -107,7 +107,8 @@
                     Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" />
                 </div>
             }
-            else
+            
+            @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
             {
                 <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
@@ -189,7 +190,7 @@
                     Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" />
                 </div>
             }
-            else
+            @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
             {
                 <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
@@ -269,7 +270,7 @@
                         Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" />
                     </div>
                 }
-                else
+                @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
                 {
                     <br /><label>Скан:</label>
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
@@ -349,7 +350,7 @@
                         Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" />
                     </div>
                 }
-                else
+                @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
                 {
                     <br /><label>Скан:</label>
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
