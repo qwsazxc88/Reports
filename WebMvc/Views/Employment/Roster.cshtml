@@ -58,6 +58,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CandidateId):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.CandidateId)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -113,7 +121,9 @@
         <th>
             №<br />п/п
         </th>
-        
+        <th>
+            № <br />заявки
+        </th>
         <th>
             <div id="sort1"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
         </th>
@@ -213,12 +223,14 @@
   
         <tr>
         
-            <td rowspan="2">
+            <td >
                 @i
                 @Html.HiddenFor(m => m.Roster[i - 1].Id)
             </td>
-        
-            <td rowspan="2">
+            <td>
+                @candidate.Id.ToString()
+            </td>
+            <td>
                 <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
             </td>
             @*
@@ -319,43 +331,7 @@
 
             @{i++;}
         </tr>
-        <tr>
-            <td colspan="15" style="padding: 0;">
-                <div style="display:none;">
-                    @if (Model.IsCandidateInfoAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
-                    }
-
-                    @if (Model.IsBackgroundCheckAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
-                    }
-                    
-                    <span class="buttonLink">@Html.ActionLink("Обучение", "OnsiteTraining", new { id = candidate.UserId })</span>
-
-                    @if (Model.IsCandidateInfoAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
-                    }
-
-                    @if (Model.IsManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
-                    }
-                    @if (Model.IsPersonalManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
-                    }
-                </div>
-            </td>
-        </tr>
+        
     }
 
     </table>
@@ -378,6 +354,8 @@
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+        $(".hasDatepicker").width("75px");
+
 
         $(".selcheckByManager, #setAllByManager").click(function(){
 	        isApproveByManagerChanged = true;
@@ -451,9 +429,6 @@
             e.preventDefault();
         });
 
-        $("td.displayLinks > span").click(function () {
-            $(this).parent().parent().next().children().children().toggle();
-        });
     });
 
     function resetFilter() {
@@ -463,6 +438,7 @@
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');
         $("#DepartmentName").val('');
+        $("#CandidateId").val('');
 
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
