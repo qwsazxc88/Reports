@@ -12,7 +12,7 @@
     <property name="ConfirmWorkDate" not-null="false"/>
     <!--<property name="RejectWorkDate" not-null="false"/>-->
     <property name="Number"  not-null="true"/>
-	  
+    <property name="Base" not-null="true"/>
 	  <many-to-one name="Type" class="HelpQuestionType" column="TypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionType" index="HelpQuestionRequest_HelpQuestionType"  not-null="true"/>
     <many-to-one name="Subtype" class="HelpQuestionSubtype" column="SubtypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionSubtype" index="HelpQuestionRequest_HelpQuestionSubtype"  not-null="true"/>
     <property name="Question" length="8192" not-null="false"/>

@@ -48,6 +48,7 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<HelpServiceRequestDto> Documents { get; set; }
         public bool IsOriginalDocsVisible { get; set; }
         public bool IsOriginalDocsEditable { get; set; }
+        public bool IsOriginalsReceivedChanged { get; set; }
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
 

@@ -304,7 +304,7 @@ namespace Reports.Core.Dao.Impl
                                         and employeeDept.Path not like N'9900424.9900426.9900427.%'
                                     inner join dbo.Department higherDept
                                       on employeeDept.Path like higherDept.Path+N'%'
-                                where (employee.RoleId & 2) > 0
+                                where ((employee.RoleId & 2) > 0 or employee.RoleId=2097152)
                                     and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
@@ -319,6 +319,9 @@ namespace Reports.Core.Dao.Impl
 
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    // Нужно показывать свои заявки
+                    sqlQueryPart += string.Format(@"
+                                or u.Id={0}", userId);
                     // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                     sqlQueryPart += string.Format(@"
                                 or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
@@ -349,7 +352,7 @@ namespace Reports.Core.Dao.Impl
                     if (userId == 10)//расчетчики
                     {
                         sqlQuery = string.Format(sqlQuery, string.Empty);
-                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16) ";
+                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16, 22, 23, 24, 25, 26, 27) ";
                     }
                     else
                     {
@@ -358,7 +361,7 @@ namespace Reports.Core.Dao.Impl
                     }
                 case UserRole.ConsultantOutsorsingManager://кадровики ОК
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20) ";
+                    return @"  v.[TypeId] in (1, 3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
