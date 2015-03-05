@@ -792,8 +792,13 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
             if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
-                ViewBag.Error = error;
-                return View(model);
+                if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+                else
+                {
+                    ViewBag.Error = error;
+                    return View(model);
+                }
             }
             else
             {
@@ -1167,10 +1172,10 @@ namespace WebMvc.Controllers
             {
                 ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
             }
-            if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
-            {
-                ModelState.AddModelError("Level", "Требуется число от 2 до 7");
-            }
+            //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
+            //{
+            //    ModelState.AddModelError("Level", "Требуется число от 2 до 7");
+            //}
             return ModelState.IsValid;
         }
 
