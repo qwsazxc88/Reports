@@ -44,7 +44,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ApproverName { get; set; }
 
         //состояние кандидата
-        public IList<CandidateStateDto> CandidateState { get; set; }
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public OnsiteTrainingModel()
         {

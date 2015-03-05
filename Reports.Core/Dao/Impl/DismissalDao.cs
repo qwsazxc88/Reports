@@ -28,7 +28,8 @@ namespace Reports.Core.Dao.Impl
             DateTime? endDate,
             string userName, 
             int sortedBy,
-            bool? sortDescending
+            bool? sortDescending,
+            string Number
             )
         {
             string sqlQuery =
@@ -44,7 +45,7 @@ namespace Reports.Core.Dao.Impl
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
                 statusId, beginDate, endDate,userName, 
-                sqlQuery,sortedBy,sortDescending);
+                sqlQuery,sortedBy,sortDescending, Number);
 
             #region Deleted
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
@@ -177,7 +178,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
-                AddScalar("IsPersonnelFileSentToArchive", NHibernateUtil.Boolean);
+                AddScalar("IsPersonnelFileSentToArchive", NHibernateUtil.Boolean).
+                AddScalar("Dep7Name",NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("Position",NHibernateUtil.String);
         }
 
         public IList<Dismissal> LoadForIdsList(List<int> ids)

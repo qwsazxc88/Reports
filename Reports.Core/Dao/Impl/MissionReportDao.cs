@@ -22,6 +22,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Id as UserId,
                                 u.Name as UserName,
                                 up.Name as Position,
+                                dep3.Name as Dep3Name,
                                 dep.Name as Dep7Name,
                                 v.EditDate as EditDate,
                                 v.Number as ReportNumber,
@@ -82,7 +83,8 @@ namespace Reports.Core.Dao.Impl
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[Users] uBuh on uBuh.Id = v.AcceptAccountant
-                                inner join dbo.Department dep on u.DepartmentId = dep.Id";
+                                inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3";
                                 //{0}";
 
         public MissionReportDao(ISessionManager sessionManager)
@@ -428,6 +430,9 @@ namespace Reports.Core.Dao.Impl
                 case 18:
                     orderBy = @" order by UserSumReceived";
                     break;
+                case 19:
+                    orderBy = @" order by Dep3Name";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -466,6 +471,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("Position", NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("ReportNumber", NHibernateUtil.Int32).

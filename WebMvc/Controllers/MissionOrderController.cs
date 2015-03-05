@@ -1085,7 +1085,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager )]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Employee | UserRole.Manager)]
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
@@ -1240,7 +1240,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Manager | UserRole.Employee)]
         public ActionResult MissionUserCredsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
