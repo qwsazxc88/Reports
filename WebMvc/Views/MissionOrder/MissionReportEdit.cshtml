@@ -172,7 +172,13 @@
                     <input type="hidden" id="IsAccountantReject" name="IsAccountantReject" value="@Model.IsAccountantReject" />
                     <input type="hidden" id="IsAccountantRejectAvailable" name="IsAccountantRejectAvailable" value="@Model.IsAccountantRejectAvailable" />
                 </div>
-                
+                @if (!Model.IsAccountantRejectAvailable && !Model.IsSend1C)
+                {
+                <input style="float:right;" type="submit" value="Отменить согласование бухгалтера" onclick="return AccountantApproveCancel();" @*@if (!Model.IsAccountantApprovedHidden)
+                                                                                                                                               {<text>style="display:none"</text>}*@/>
+                }
+                <input type="hidden" id="IsAccountantApprovedCancel" name="IsAccountantApprovedCancel" value="@Model.IsAccountantApprovedCancel" />
+                <input type="hidden" id="IsSend1C" name="IsSend1C" value="@Model.IsSend1C" />
             </td>
         </tr>
         <tr>
@@ -388,6 +394,13 @@
             if(!ValidateForm())
                 return false;
             $("#IsAccountantReject").val('True');
+            return true;
+        }
+        function AccountantApproveCancel()
+        {
+            if(!ValidateForm())
+                return false;
+            $("#IsAccountantApprovedCancel").val('True');
             return true;
         }
         function renderCostsTable(costs) {
