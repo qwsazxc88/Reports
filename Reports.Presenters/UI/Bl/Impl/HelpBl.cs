@@ -431,6 +431,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
+                            model.IsNotEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
                         }
@@ -447,6 +448,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
+                            if (current.Id == 10)
+                            {
+                                model.IsNotEndWorkAvailable = true;
+                            }
                             model.IsEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
@@ -859,6 +864,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.EndWorkDate = DateTime.Now;
                             entity.ConfirmWorkDate = DateTime.Now;
                         }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -908,6 +919,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.EndWorkDate = DateTime.Now;
                             entity.ConfirmWorkDate = DateTime.Now;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue && currUser.Id == 10)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
                         }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
