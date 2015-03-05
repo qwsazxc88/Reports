@@ -18,6 +18,7 @@ namespace Reports.Core.Domain
         public virtual IList<Training> Training { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }
+        public virtual bool IsValidate { get; set; }
         #endregion
 
         #region Constructors

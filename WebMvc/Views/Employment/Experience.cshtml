@@ -1,13 +1,23 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Трудовая деятельность";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Трудовая деятельность";
+    }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
     
     <fieldset class="bordered doc-wrap panel">
@@ -34,6 +44,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
                                 </th> 
+                                @if (Model.ExperienceItems != null && Model.ExperienceItems.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -55,9 +69,12 @@
                                     <td>
                                         @Model.ExperienceItems[i].CompanyContacts
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.ExperienceItems != null && Model.ExperienceItems.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a href="#" onclick="DeleteExperienceRow(@Model.ExperienceItems[i].Id)">Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -97,10 +114,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
+                </div>
+            }
             
             @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
             {
@@ -110,10 +129,13 @@
                         @Model.WorkBookScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
@@ -148,10 +170,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
             {
@@ -161,10 +185,13 @@
                         @Model.WorkBookSupplementScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
@@ -173,7 +200,9 @@
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
+        <button id="btnExperience" type="submit">Сохранить</button>
     </div>
 }
 
@@ -198,6 +227,27 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function DeleteExperienceRow(Id) {
+        $("#RowID").val(Id);
+        $("#btnExperience").click();
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
         UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
@@ -236,8 +286,8 @@
                         UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
                         dataReceived[i].Company + "</td><td>" +
                         dataReceived[i].Position + "</td><td>" +
-                        dataReceived[i].CompanyContacts + 
-                        "</td></tr>"
+                        dataReceived[i].CompanyContacts + "</td><td>" +
+                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
                     );
                 }
             }, "json");

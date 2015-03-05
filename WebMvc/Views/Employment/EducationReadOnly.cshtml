@@ -1,8 +1,16 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Образование";
 }
+
+@Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <fieldset class="bordered doc-wrap panel">
 <legend>@Html.LabelFor(m => m.HigherEducationDiplomas)</legend>
@@ -79,6 +87,12 @@
 
             </table>
         </div>
+        if (Model.HigherEducationDiplomaScanFileName != null)
+        {
+            <br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.HigherEducationDiplomaScanFileName</a>
+        }
     }
     else
     {
@@ -145,6 +159,12 @@
 
             </table>
         </div>
+        if (Model.PostGraduateEducationDiplomaScanFileName != null)
+        {
+            <br /><br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.PostGraduateEducationDiplomaScanFileName</a>
+        }
     }
     else
     {
@@ -202,6 +222,12 @@
 
                 </table>
             </div>
+            if (Model.CertificationScanFileName != null)
+            {
+                <br /><br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
+                        @Model.CertificationScanFileName</a>
+            }
         }
         else
         {
@@ -266,6 +292,12 @@
 
                 </table>
             </div>
+            if (Model.TrainingScanFileName != null)
+            {
+                <br /><br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
+                        @Model.TrainingScanFileName</a>
+            }
         }
         else
         {

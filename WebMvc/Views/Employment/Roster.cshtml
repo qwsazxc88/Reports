@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.RosterModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Реестр по приему";
 }
@@ -55,6 +58,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CandidateId):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.CandidateId)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -76,7 +87,10 @@
 
     @* END Выбор параметров *@
     
-    <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
+    {
+        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    }
     
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
@@ -107,15 +121,17 @@
         <th>
             №<br />п/п
         </th>
-        
+        <th>
+            № <br />заявки
+        </th>
         <th>
             <div id="sort1"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
         </th>
-
+        @*
         <th>
             Анкета
         </th>
-
+        *@
         <th>
             <div id="sort2"><a href="#" onclick = "SortChanged(2);">Город<br />места<br />работы</a></div>
         </th>
@@ -207,19 +223,21 @@
   
         <tr>
         
-            <td rowspan="2">
+            <td >
                 @i
                 @Html.HiddenFor(m => m.Roster[i - 1].Id)
             </td>
-        
-            <td rowspan="2">
-                @candidate.Name
+            <td>
+                @candidate.Id.ToString()
             </td>
-
+            <td>
+                <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+            </td>
+            @*
             <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                 <span class="buttonLink">Разделы</span>
             </td>
-
+            *@
             <td>
                 &nbsp;@candidate.WorkCity
             </td>
@@ -313,43 +331,7 @@
 
             @{i++;}
         </tr>
-        <tr>
-            <td colspan="15" style="padding: 0;">
-                <div style="display:none;">
-                    @if (Model.IsCandidateInfoAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
-                    }
-
-                    @if (Model.IsBackgroundCheckAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
-                    }
-                    
-                    <span class="buttonLink">@Html.ActionLink("Обучение", "OnsiteTraining", new { id = candidate.UserId })</span>
-
-                    @if (Model.IsCandidateInfoAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
-                    }
-
-                    @if (Model.IsManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
-                    }
-                    @if (Model.IsPersonalManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
-                    }
-                </div>
-            </td>
-        </tr>
+        
     }
 
     </table>
@@ -372,6 +354,8 @@
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+        $(".hasDatepicker").width("75px");
+
 
         $(".selcheckByManager, #setAllByManager").click(function(){
 	        isApproveByManagerChanged = true;
@@ -445,9 +429,6 @@
             e.preventDefault();
         });
 
-        $("td.displayLinks > span").click(function () {
-            $(this).parent().parent().next().children().children().toggle();
-        });
     });
 
     function resetFilter() {
@@ -457,6 +438,7 @@
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');
         $("#DepartmentName").val('');
+        $("#CandidateId").val('');
 
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');

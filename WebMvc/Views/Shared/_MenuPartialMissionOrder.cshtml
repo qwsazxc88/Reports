@@ -132,7 +132,10 @@
                 <div class="menuitem" id="moAllPurchaseBookDoc">@Html.ActionLink("Книга покупок (документы)", "MissionPurchaseBookDocList", "MissionOrder")</div> 
                 <div class="menuitem" id="moAllPurchaseBookRecords">@Html.ActionLink("Книга покупок (отчет)", "MissionPurchaseBookRecordsList", "MissionOrder")</div> 
              }
-              @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+              @if ((dto.UserRole & UserRole.Accountant) > 0 
+                  || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                  || (dto.UserRole & UserRole.Employee) > 0
+                  || (dto.UserRole & UserRole.Manager) > 0)
               {
                 <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div> 
                 <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 

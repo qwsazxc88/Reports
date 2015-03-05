@@ -4,11 +4,14 @@
     ViewBag.Title = "Прием - Кадры";
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
 
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
+    
     
     <fieldset class="bordered doc-wrap panel floatleft">
     <legend>Кадры</legend>
@@ -125,15 +128,6 @@
             </div>
         </fieldset>
 
-        <div class="formfield clear">
-            Выбрать для загрузки скан листа ознакомления<br /><input type="file" name="files" />
-        </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
 
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />
@@ -144,15 +138,6 @@
             @Html.DropDownListFor(m => m.PersonalAccountContractorId, Model.PersonalAccountContractors)
         </div>
 
-        <div class="formfield clear">
-            Выбрать для загрузки скан листа ознакомления<br /><input type="file" name="files" />
-        </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
 
         <div class="formfield clear">
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />

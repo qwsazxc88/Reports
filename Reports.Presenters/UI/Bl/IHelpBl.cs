@@ -26,7 +26,8 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(HelpQuestionEditModel model);
         bool SaveHelpQuestionEditModel(HelpQuestionEditModel model, out string error);
         HelpQuestionRedirectModel GetQuestionRedirectModel(int id);
-
+        void SaveDocumentsToModel(HelpServiceRequestsListModel model);
+        System.Collections.Generic.IList<NoteTypeDto> GetAllNodeTypesDto();
 
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);

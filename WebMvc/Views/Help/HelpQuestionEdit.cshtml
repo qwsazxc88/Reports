@@ -81,14 +81,18 @@
                    @if ((UserRole.ConsultantOutsourcing & dto.UserRole) > 0)
                    {
                     <input type="submit" value="Закрыть тему" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
-                                                                                             {<text>style="display:none"</text>}/>
+                                                                                           {<text>style="display:none"</text>}/>
+                       if (!Model.IsBaseAvailable)
+                       {
+                        <input type="submit" value="База" onclick="Base()"/>
+                       }
                    }
                    else
                    {
                        <input type="submit" value="Ответом удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
                                                                                                            {<text>style="display:none"</text>}/>
                    }
-                 
+                   
                    <input type="submit" value="Принять вопрос в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить ответ" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
@@ -99,15 +103,15 @@
                    @if ((UserRole.Employee & dto.UserRole) > 0)
                    {
                        <input type="submit" value="Ответом не удовлетворен(а), задать новый вопрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
-                                                                                                                                                                    {<text>style="display:none"</text>}/>
+                                                                                                                                      {<text>style="display:none"</text>}/>
                    }
                 </td>
             </tr>
         </table>
     </div>
     <br />
-                                                                                                                                                                    if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
-                                                                                                                                                                    {
+                   if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
+                   {
         <div>
             <table style="width:100%">
              <tr>
@@ -155,7 +159,7 @@
             }
             </table>
         </div>
-                                                                                                                                                                    }
+                   }
 }
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
@@ -333,6 +337,10 @@
     }
      function disableSaveButton() {
         $(".ui-dialog-buttonpane button:contains('Перенаправить')").button("disable");
+    }
+    function Base()
+    {
+        $("#Operation").val(7);
     }
     function RedirectQuestion()
     {

@@ -86,6 +86,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Ваше отношение к алкоголю")]
         public string Drinking { get; set; }
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public bool IsApproveBySecurityAvailable { get; set; }
 
         [Display(Name = "Без проверки")]
@@ -102,6 +105,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int PersonalDataProcessingScanAttachmentId { get; set; }
         public string InfoValidityScanAttachmentFilename { get; set; }
         public int InfoValidityScanAttachmentId { get; set; }
+        public int RowID { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public BackgroundCheckModel()
         {

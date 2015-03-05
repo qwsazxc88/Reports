@@ -62,6 +62,14 @@
                             </tr>
                         }
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Number):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Number)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -107,20 +115,31 @@
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%">
                 <tr>
+                    <th>№<br />п/п</th>
                     <th>
-                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
                     </th>
                     <th>
+                        <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Должность</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8"><a href="#"  onclick = "SortChanged(8);">Подразделение<br /> 3 уровня</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9"><a href="#"  onclick = "SortChanged(9);">Подразделение<br />7 уровня</a></div>
+                    </th>
+                    
+                    <th>
                         <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
-                     <th style="width:80px">
+                     <th>
                         <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
                     </th>
                     <th>
-                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
@@ -134,13 +153,19 @@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
+                    var i=0;
                     foreach (var doc in Model.Documents)
                     {
+                        i++;
                         <tr>
+                            <td>@i</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action(doc.EditUrl, new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
                             <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                             <td>@doc.Date</td>
                             <td>@doc.Number</td>
                             <td>@doc.RequestType</td>
@@ -193,6 +218,7 @@
 //        $("#TypeId").val('0');
         $("#StatusId").val('0');
         $("#UserName").val('');
+        $("#Number").val('');
     }
  </script>   
 }
