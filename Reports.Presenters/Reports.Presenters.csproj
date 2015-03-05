@@ -173,6 +173,8 @@
     <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ApplicationLetterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\BackgroundCheckModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\CandidateDocumentsModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\CandidateStateModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ContactsModel.cs" />
     <Compile Include="UI\ViewModel\Employment\CustomReportModel.cs" />
     <Compile Include="UI\ViewModel\Employment\EducationModel.cs" />

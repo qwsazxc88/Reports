@@ -26,7 +26,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int? StatusId { get; set; } //ok
         public IEnumerable<SelectListItem> Statuses { get; set; }
 
-        [Display(Name = "ФИО сотрудника")]
+        [Display(Name = "ФИО сотрудника/кандидата")]
         public string UserName { get; set; }
 
         [Display(Name = "Период с")]
@@ -35,6 +35,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "по")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
+
+        [Display(Name = "Идентификатор личного дела")]
+        public int? CandidateId { get; set; }
 
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
@@ -45,6 +48,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // Согласование списком для вышестоящего руководителя
         public bool IsBulkApproveByHigherManagerAvailable { get; set; }
 
+        
         public RosterModel()
         {
             this.Roster = new List<CandidateDto>();

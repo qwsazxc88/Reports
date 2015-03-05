@@ -10,6 +10,8 @@
     }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
 @Html.ValidationMessageFor(m => m.IsValidate)
 
@@ -17,39 +19,6 @@
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
-    <b>Состояние приема кандидата</b>
-    <table class="state">
-        <tr>
-            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
-            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Обучение</td>
-            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Руководители</td>
-            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Кадры</td>
-        </tr>
-        <tr>
-            <td @if (Model.CandidateState[0].GeneralFinal)
-                {<text>style="background-color:Lime"</text>}>Общая информация</td>
-            <td @if (Model.CandidateState[0].PassportFinal)
-                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
-            <td @if (Model.CandidateState[0].EducationFinal)
-                {<text>style="background-color:Lime"</text>}>Образование</td>
-            <td @if (Model.CandidateState[0].FamilyFinal)
-                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
-            <td @if (Model.CandidateState[0].MilitaryFinal)
-                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
-            <td @if (Model.CandidateState[0].ExperienceFinal)
-                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
-            <td @if (Model.CandidateState[0].ContactFinal)
-                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
-            <td @if (Model.CandidateState[0].BackgroundFinal)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td colspan="4" style="background-color:Silver">Согласование</td>
-        </tr>
-    </table>
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Опыт работы</legend>
@@ -145,7 +114,7 @@
                     </td>
                 </tr>
             </table>
-            @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+            @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) && !Model.IsValidate)
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
@@ -160,10 +129,13 @@
                         @Model.WorkBookScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
@@ -198,7 +170,7 @@
                     </td>
                 </tr>
             </table>
-            @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+            @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename) && !Model.IsValidate)
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
@@ -213,10 +185,13 @@
                         @Model.WorkBookSupplementScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>

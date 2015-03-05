@@ -11,46 +11,16 @@
     
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
 @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+
 
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {    
     @Html.HiddenFor(m => m.Version)
     @Html.HiddenFor(m => m.UserId)
-    <b>Состояние приема кандидата</b>
-    <table class="state">
-        <tr>
-            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
-            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Обучение</td>
-            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Руководители</td>
-            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Кадры</td>
-        </tr>
-        <tr>
-            <td @if (Model.CandidateState[0].GeneralFinal)
-                {<text>style="background-color:Lime"</text>}>Общая информация</td>
-            <td @if (Model.CandidateState[0].PassportFinal)
-                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
-            <td @if (Model.CandidateState[0].EducationFinal)
-                {<text>style="background-color:Lime"</text>}>Образование</td>
-            <td @if (Model.CandidateState[0].FamilyFinal)
-                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
-            <td @if (Model.CandidateState[0].MilitaryFinal)
-                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
-            <td @if (Model.CandidateState[0].ExperienceFinal)
-                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
-            <td @if (Model.CandidateState[0].ContactFinal)
-                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
-            <td @if (Model.CandidateState[0].BackgroundFinal)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td colspan="4" style="background-color:Silver">Согласование</td>
-        </tr>
-    </table>
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Общая информация</legend>
@@ -67,14 +37,15 @@
                     }
                 </div>
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
-                    @if (@Model.PhotoAttachmentId == 0)
+                    @if (@Model.PhotoAttachmentId == 0 && !Model.IsValidate)
                     {
                         <input type="file" name="PhotoFile" />
+                        @Model.PhotoAttachmentFilename
                     }
-                    @Model.PhotoAttachmentFilename
-                @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename))
+                @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename) && !Model.IsValidate)
                 {
                     <div class="formfield">
+                        @*@Model.PhotoAttachmentFilename*@
                         <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
                                                                                                    {<text>style="display:none"</text>}*@/>
                     </div>
@@ -229,11 +200,12 @@
             @Html.LabelFor(m => m.INN)&nbsp;@Html.ValidationMessageFor(m => m.INN)<br />
             @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
-        </div>
-
+        @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
+            </div>
+        }
         @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
         {
             <div class="formfield">
@@ -242,21 +214,25 @@
                     @Model.INNScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
         
         <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
             @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
-        </div>
-
+        @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
+            </div>
+        }
         @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
         {
             <div class="formfield">
@@ -265,10 +241,13 @@
                     @Model.SNILSScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId); " @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
 
         <fieldset class="bordered nomargin clear">
@@ -293,10 +272,12 @@
                 @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
             </div>
-            <div class="formfield clear">
-                Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
-            </div>
-            
+            @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield clear">
+                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
+                </div>
+            }
             @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
             {
                 <div class="formfield">
@@ -305,10 +286,13 @@
                         @Model.DisabilityCertificateScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
