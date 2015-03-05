@@ -1,7 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Общая информация";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Общая информация";
+    }
+    
 }
 
 <span style="color:red;">@ViewBag.Error</span>
@@ -11,6 +18,39 @@
 {    
     @Html.HiddenFor(m => m.Version)
     @Html.HiddenFor(m => m.UserId)
+    <b>Состояние приема кандидата</b>
+    <table class="state">
+        <tr>
+            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Обучение</td>
+            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Руководители</td>
+            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Кадры</td>
+        </tr>
+        <tr>
+            <td @if (Model.CandidateState[0].GeneralFinal)
+                {<text>style="background-color:Lime"</text>}>Общая информация</td>
+            <td @if (Model.CandidateState[0].PassportFinal)
+                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+            <td @if (Model.CandidateState[0].EducationFinal)
+                {<text>style="background-color:Lime"</text>}>Образование</td>
+            <td @if (Model.CandidateState[0].FamilyFinal)
+                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+            <td @if (Model.CandidateState[0].MilitaryFinal)
+                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+            <td @if (Model.CandidateState[0].ExperienceFinal)
+                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+            <td @if (Model.CandidateState[0].ContactFinal)
+                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+            <td @if (Model.CandidateState[0].BackgroundFinal)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td colspan="4" style="background-color:Silver">Согласование</td>
+        </tr>
+    </table>
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Общая информация</legend>
@@ -20,10 +60,18 @@
         </div>
         <div class="formfield clearleft" style="float:right">
             <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
-                <div style="width: 96px; height: 96px; background: gray;"></div>
-                <input type="file" name="PhotoFile" />
+                <div style="width: 80px; height: 100px; background: gray;">
+                    @if (@Model.PhotoAttachmentId != 0)
+                    {
+                        <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                    }
+                </div>
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
-
+                    @if (@Model.PhotoAttachmentId == 0)
+                    {
+                        <input type="file" name="PhotoFile" />
+                    }
+                    @Model.PhotoAttachmentFilename
                 @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename))
                 {
                     <div class="formfield">
@@ -65,9 +113,15 @@
                                 <th>
                                     @Html.LabelFor(m => m.NameChanges[0].Reason)
                                 </th>
+                                @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                {
+                                    <th>
+                                        @*@Html.LabelFor(m => m.NameChanges[0].Id)*@
+                                    </th>
+                                }
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="name-changes">
                             @for (var i = 0; i < Model.NameChanges.Count; i++)
                             {
                                 <tr class="name-change-row">
@@ -83,9 +137,12 @@
                                     <td>
                                         @Model.NameChanges[i].Reason
                                     </td>
-                                    @*<td id="delete-name-change">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                    {
+                                        <td>
+                                            <a onclick="DeleteNameChange(@Model.NameChanges[i].Id);" href="#" data-index=@Model.NameChanges[i].Id>Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -137,6 +194,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.ForeignLanguages[0].Level)
                                 </th>
+                                @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -149,9 +210,12 @@
                                     <td>
                                         @Model.ForeignLanguages[i].Level
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a onclick="DeleteForeignLanguages(@Model.ForeignLanguages[i].Id);" href="#" data-index=@Model.ForeignLanguages[i].Id>Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -258,6 +322,8 @@
     
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button type="submit">Сохранить</button>
     </div>
 }
@@ -309,9 +375,56 @@
         return false;
     }
 
+    
+    function DeleteNameChange(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
+        var url = actionUrl + "?NameID=" + Id;
+
+        var dataToSend = $("#add-name-change-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#name-changes-container>table");
+                var $rows = $("#name-changes-container>table .name-change-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"name-change-row\"><td>" +
+                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    function DeleteForeignLanguages(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteForeignLanguage", "Employment")";
+        var url = actionUrl + "?LanguageID=" + Id;
+
+        var dataToSend = $("#add-foreign-language-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#foreign-languages-container>table");
+                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"foreign-language-row\"><td>" +
+                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") +  "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    
     // BEGIN Add Name Change
 
     $(document).ready(function () {
+
         setActiveMenuItem("empGeneralInfo");
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
@@ -352,14 +465,15 @@
                         (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
                         UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
                         (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
-                        (dataReceived[i].Reason ? dataReceived[i].Place : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
         };
 
         // END Add Name Change
+
 
         // BEGIN Add Foreign Language
 
@@ -395,8 +509,8 @@
                     $table.append(
                         "<tr class=\"foreign-language-row\"><td>" +
                         (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
-                        (dataReceived[i].Level ? dataReceived[i].Level : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") + "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
@@ -413,6 +527,8 @@
             $addForeignLanguageDialog.dialog("open");
             e.preventDefault();
         });
+
+
 
         UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
             {

@@ -86,6 +86,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsApproveByManagerAvailable { get; set; }
         public bool IsApproveByHigherManagerAvailable { get; set; }
+
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
         
         public ManagersModel()
         {

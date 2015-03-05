@@ -1,12 +1,52 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.OnsiteTrainingModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Обучение";
 }
 
 @using (Html.BeginForm("OnsiteTraining", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
+    if ((dto.UserRole & UserRole.Trainer) == 0)
+    {
+        <b>Состояние приема кандидата</b>
+        <table class="state">
+            <tr>
+                <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+                <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+                    {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+                <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+                    {<text>style="background-color:Lime"</text>}>Обучение</td>
+                <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+                    {<text>style="background-color:Lime"</text>}>Руководители</td>
+                <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+                    {<text>style="background-color:Lime"</text>}>Кадры</td>
+            </tr>
+            <tr>
+                <td @if (Model.CandidateState[0].GeneralFinal)
+                    {<text>style="background-color:Lime"</text>}>Общая информация</td>
+                <td @if (Model.CandidateState[0].PassportFinal)
+                    {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+                <td @if (Model.CandidateState[0].EducationFinal)
+                    {<text>style="background-color:Lime"</text>}>Образование</td>
+                <td @if (Model.CandidateState[0].FamilyFinal)
+                    {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+                <td @if (Model.CandidateState[0].MilitaryFinal)
+                    {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+                <td @if (Model.CandidateState[0].ExperienceFinal)
+                    {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+                <td @if (Model.CandidateState[0].ContactFinal)
+                    {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+                <td @if (Model.CandidateState[0].BackgroundFinal)
+                    {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+                <td colspan="4" style="background-color:Silver">Согласование</td>
+            </tr>
+        </table>
+    }
+    
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Обучение</legend>
@@ -87,13 +127,13 @@
     </table>
     </fieldset>
 
-    if (Model.IsApproveByTrainerAvailable)
-    {
+                if (Model.IsApproveByTrainerAvailable)
+                {
         <div class="clear">
             @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
             <button type="submit">Сохранить</button>
         </div>
-    }
+                }
 }
 
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>

@@ -24,5 +24,6 @@ namespace Reports.Core.Domain
         public virtual EmploymentStatus Status { get; set; }
         public virtual DateTime? QuestionnaireDate { get; set; }
         public virtual User AppointmentCreator { get; set; }
+        public virtual User Personnels { get; set; }
     }
 }

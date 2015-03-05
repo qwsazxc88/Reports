@@ -1,14 +1,56 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Образование";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Образование";
+    }
 }
-
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.IsValidate)
 
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+    <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
+    <b>Состояние приема кандидата</b>
+    <table class="state">
+        <tr>
+            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Обучение</td>
+            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Руководители</td>
+            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Кадры</td>
+        </tr>
+        <tr>
+            <td @if (Model.CandidateState[0].GeneralFinal)
+                {<text>style="background-color:Lime"</text>}>Общая информация</td>
+            <td @if (Model.CandidateState[0].PassportFinal)
+                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+            <td @if (Model.CandidateState[0].EducationFinal)
+                {<text>style="background-color:Lime"</text>}>Образование</td>
+            <td @if (Model.CandidateState[0].FamilyFinal)
+                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+            <td @if (Model.CandidateState[0].MilitaryFinal)
+                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+            <td @if (Model.CandidateState[0].ExperienceFinal)
+                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+            <td @if (Model.CandidateState[0].ContactFinal)
+                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+            <td @if (Model.CandidateState[0].BackgroundFinal)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td colspan="4" style="background-color:Silver">Согласование</td>
+        </tr>
+    </table>
 
     <fieldset class="bordered doc-wrap panel">
     <legend>@Html.LabelFor(m => m.HigherEducationDiplomas)</legend>
@@ -45,9 +87,7 @@
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
                         </th>
-                        <th>
-                            Сканы
-                        </th>
+                        <th></th>
                     </tr>
                     
                     @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
@@ -80,26 +120,32 @@
                             <td>
                                 @Model.HigherEducationDiplomas[i].Department
                             </td>
-                            <td>
-                                <div class="formfield">
-                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                </div>
-                                <div class="formfield clear">
-                                    <br /><a href="">Открыть</a>
-                                </div>
-                                <div class="formfield">
-                                    <br /><a href="">Удалить</a>
-                                </div>
+
+                            <td id="delete-foreign-language">
+                                <a href="#" onclick="DeleteEducationRow(1, @Model.HigherEducationDiplomas[i].Id)">Удалить строку</a>
                             </td>
-                            @*<td id="delete-foreign-language">
-                                <a href="" data-index=@i>Удалить</a>
-                            </td>*@
                         </tr>
                     }                    
 
                 </table>
             </div>
         }
+        <div style="float:right">
+            @if (@Model.HigherEducationDiplomaScanId == 0)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" />
+                </div>
+            }
+            else
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.HigherEducationDiplomaScanFileName</a>
+                
+                <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.HigherEducationDiplomaScanId);" />
+                
+            }        
+         </div>
         <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
     </fieldset>
     
@@ -131,9 +177,7 @@
                         <th>
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
                         </th>
-                        <th>
-                            Сканы
-                        </th>
+                        <th></th>
                     </tr>
                     
                     @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
@@ -157,26 +201,30 @@
                             <td>
                                 @Model.PostGraduateEducationDiplomas[i].Speciality
                             </td>
-                            <td>
-                                <div class="formfield">
-                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                </div>
-                                <div class="formfield clear">
-                                    <br /><a href="">Открыть</a>
-                                </div>
-                                <div class="formfield">
-                                    <br /><a href="">Удалить</a>
-                                </div>
+                            <td id="delete-foreign-language">
+                                <a href="#" onclick="DeleteEducationRow(2, @Model.PostGraduateEducationDiplomas[i].Id)">Удалить строку</a>
                             </td>
-                            @*<td id="delete-foreign-language">
-                                <a href="" data-index=@i>Удалить</a>
-                            </td>*@
                         </tr>
                     }                    
 
                 </table>
             </div>
         }
+        <div style="float:right">
+            @if (@Model.PostGraduateEducationDiplomaScanId == 0)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" />
+                </div>
+            }
+            else
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.PostGraduateEducationDiplomaScanFileName</a>
+                <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PostGraduateEducationDiplomaScanId);" />
+            }
+        </div>
+
         <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
     </fieldset>
     
@@ -205,46 +253,53 @@
                             <th>
                                 @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
                             </th>
-                            <th>
-                                Сканы
-                            </th>
+                            <th></th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Certifications.Count; i++)
                         {
                             <tr>
                                 <td>
-                                    @Model.Certifications[i].CertificationDate
+                                    @if (@Model.Certifications[i].CertificationDate.HasValue)
+                                    {
+                                        @Model.Certifications[i].CertificationDate.Value.ToShortDateString();
+                                    }
                                 </td>
                                 <td>
                                     @Model.Certifications[i].CertificateNumber
                                 </td>
                                 <td>
-                                    @Model.Certifications[i].CertificateDateOfIssue
+                                    @if (@Model.Certifications[i].CertificateDateOfIssue.HasValue)
+                                    {
+                                        @Model.Certifications[i].CertificateDateOfIssue.Value.ToShortDateString();
+                                    }
                                 </td>
                                 <td>
                                     @Model.Certifications[i].InitiatingOrder
                                 </td>
-                                <td>
-                                    <div class="formfield">
-                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                    </div>
-                                    <div class="formfield clear">
-                                        <br /><a href="">Открыть</a>
-                                    </div>
-                                    <div class="formfield">
-                                        <br /><a href="">Удалить</a>
-                                    </div>
+                                <td id="delete-foreign-language">
+                                    <a href="#" onclick="DeleteEducationRow(3, @Model.Certifications[i].Id)">Удалить строку</a>
                                 </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
                             </tr>
                         }                    
 
                     </table>
                 </div>
             }
+            <div style="float:right">
+                @if (@Model.CertificationScanId == 0)
+                {
+                    <div class="formfield">
+                        Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" />
+                    </div>
+                }
+                else
+                {
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
+                        @Model.CertificationScanFileName</a>
+                    <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.CertificationScanId);" />
+                }
+            </div>
             <a href="" id="add-certification">Добавить новую запись</a>
         </fieldset>
 
@@ -274,9 +329,7 @@
                             <th>
                                 @Html.LabelFor(m => m.Training[0].Speciality)
                             </th>
-                            <th>
-                                Сканы
-                            </th>
+                            <th></th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Training.Count; i++)
@@ -300,33 +353,39 @@
                                 <td>
                                     @Model.Training[i].Speciality
                                 </td>
-                                <td>
-                                    <div class="formfield">
-                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
-                                    </div>
-                                    <div class="formfield clear">
-                                        <br /><a href="">Открыть</a>
-                                    </div>
-                                    <div class="formfield">
-                                        <br /><a href="">Удалить</a>
-                                    </div>
+                                <td id="delete-foreign-language">
+                                    <a href="#" onclick="DeleteEducationRow(4, @Model.Training[i].Id)">Удалить строку</a>
                                 </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
                             </tr>
                         }                    
 
                     </table>
                 </div>
             }
+            <div style="float:right">
+                @if (@Model.TrainingScanId == 0)
+                {
+                    <div class="formfield">
+                        Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" />
+                    </div>
+                }
+                else
+                {
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
+                        @Model.TrainingScanFileName</a>
+                    <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.TrainingScanId);" />
+                }
+            </div>
+
             <a href="" id="add-training">Добавить новую запись</a>
         </fieldset>
     </fieldset>
 
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
+        <button type="submit" id="btnEducation">Сохранить</button>
     </div>
 }
 
@@ -344,7 +403,7 @@
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Profession" style="display:block;">Профессия основная</label><input type="text" name="Profession" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Department" style="display:block;">Факультет/отделение</label><input type="text" name="Department" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -359,7 +418,7 @@
         <label for="AdmissionYear" style="display:block;">Год поступления</label><input type="text" name="AdmissionYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="GraduationYear" style="display:block;">Год окончания</label><input type="text" name="GraduationYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -372,7 +431,7 @@
         <label for="CertificateNumber" style="display:block;">Номер документа</label><input type="text" name="CertificateNumber" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" id="CertificateDateOfIssue" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="InitiatingOrder" style="display:block;">Основание</label><input type="text" name="InitiatingOrder" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
- 
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -388,7 +447,7 @@
         <label for="BeginningDate">с </label><input type="text" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="EndDate">по </label><input type="text" name="EndDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="Speciality" style="display:block;">Специальность/квалификация</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
- 
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -399,6 +458,30 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function DeleteEducationRow(Operation, Id) {
+        $("#Operation").val(Operation);
+        $("#RowID").val(Id);
+        //this.form.submit();
+        $("#btnEducation").click();
+        //return true;
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
         UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);

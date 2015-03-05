@@ -1,12 +1,62 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Общая информация";
 }
 
+<b>Состояние приема кандидата</b>
+<table class="state">
+    <tr>
+        <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+        <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+            {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+        <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+            {<text>style="background-color:Lime"</text>}>Обучение</td>
+        <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+            {<text>style="background-color:Lime"</text>}>Руководители</td>
+        <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+            {<text>style="background-color:Lime"</text>}>Кадры</td>
+    </tr>
+    <tr>
+        <td @if (Model.CandidateState[0].GeneralFinal)
+            {<text>style="background-color:Lime"</text>}>Общая информация</td>
+        <td @if (Model.CandidateState[0].PassportFinal)
+            {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+        <td @if (Model.CandidateState[0].EducationFinal)
+            {<text>style="background-color:Lime"</text>}>Образование</td>
+        <td @if (Model.CandidateState[0].FamilyFinal)
+            {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+        <td @if (Model.CandidateState[0].MilitaryFinal)
+            {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+        <td @if (Model.CandidateState[0].ExperienceFinal)
+            {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+        <td @if (Model.CandidateState[0].ContactFinal)
+            {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+        <td @if (Model.CandidateState[0].BackgroundFinal)
+            {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+        <td colspan="4" style="background-color:Silver">Согласование</td>
+    </tr>
+</table>
+
 <fieldset class="bordered doc-wrap panel">
 <legend>Общая информация</legend>
-    <div class="formfield clear">
+    <div class="formfield clearleft" style="float:right">
+        <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
+            <div style="width: 80px; height: 100px; background: gray;">
+                @if (@Model.PhotoAttachmentId != 0)
+                {
+                    <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                }
+            </div>
+        </fieldset>            
+    </div>
+    <div class="formfield">
         @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
         <span class="fakeFormField">@Model.LastName&nbsp;</span>
     </div>
@@ -69,7 +119,7 @@
     
     <div class="formfield clear" id="gender">
         @Html.LabelFor(m => m.IsMale)<br />
-        <span class="fakeFormField">@(Model.IsMale? "М" : "Ж")&nbsp;</span>
+        <span class="fakeFormField">@(Model.IsMale ? "М" : "Ж")&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.CitizenshipId)<br />
@@ -137,7 +187,7 @@
         <span class="fakeFormField">@Model.INN&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан ИНН:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.INNScanAttachmentFilename
             </a>
@@ -148,7 +198,7 @@
         <span class="fakeFormField">@Model.SNILS&nbsp;</span>
         @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
         {
-            <br />
+            <br /><label>Скан СНИЛС:</label>
             <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
                 @Model.SNILSScanAttachmentFilename
             </a>
@@ -180,7 +230,7 @@
         <div class="formfield">
             @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
             {
-                <br />
+                <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.DisabilityCertificateScanAttachmentFilename
                 </a>

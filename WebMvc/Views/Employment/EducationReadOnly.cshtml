@@ -1,8 +1,48 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Образование";
 }
+
+<b>Состояние приема кандидата</b>
+    <table class="state">
+        <tr>
+            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Обучение</td>
+            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Руководители</td>
+            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
+                {<text>style="background-color:Lime"</text>}>Кадры</td>
+        </tr>
+        <tr>
+            <td @if (Model.CandidateState[0].GeneralFinal)
+                {<text>style="background-color:Lime"</text>}>Общая информация</td>
+            <td @if (Model.CandidateState[0].PassportFinal)
+                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
+            <td @if (Model.CandidateState[0].EducationFinal)
+                {<text>style="background-color:Lime"</text>}>Образование</td>
+            <td @if (Model.CandidateState[0].FamilyFinal)
+                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
+            <td @if (Model.CandidateState[0].MilitaryFinal)
+                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
+            <td @if (Model.CandidateState[0].ExperienceFinal)
+                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
+            <td @if (Model.CandidateState[0].ContactFinal)
+                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
+            <td @if (Model.CandidateState[0].BackgroundFinal)
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
+            <td colspan="4" style="background-color:Silver">Согласование</td>
+        </tr>
+    </table>
 
 <fieldset class="bordered doc-wrap panel">
 <legend>@Html.LabelFor(m => m.HigherEducationDiplomas)</legend>
@@ -79,6 +119,12 @@
 
             </table>
         </div>
+        if (Model.HigherEducationDiplomaScanFileName != null)
+        {
+            <br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.HigherEducationDiplomaScanFileName</a>
+        }
     }
     else
     {
@@ -145,6 +191,12 @@
 
             </table>
         </div>
+        if (Model.PostGraduateEducationDiplomaScanFileName != null)
+        {
+            <br /><br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                    @Model.PostGraduateEducationDiplomaScanFileName</a>
+        }
     }
     else
     {
@@ -202,6 +254,12 @@
 
                 </table>
             </div>
+            if (Model.CertificationScanFileName != null)
+            {
+                <br /><br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
+                        @Model.CertificationScanFileName</a>
+            }
         }
         else
         {
@@ -266,6 +324,12 @@
 
                 </table>
             </div>
+            if (Model.TrainingScanFileName != null)
+            {
+                <br /><br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
+                        @Model.TrainingScanFileName</a>
+            }
         }
         else
         {

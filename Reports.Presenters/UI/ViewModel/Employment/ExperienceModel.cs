@@ -35,6 +35,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase WorkBookScanFile { get; set; }
         public HttpPostedFileBase WorkBookSupplementScanFile { get; set; }
         
@@ -42,6 +45,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int WorkBookScanAttachmentId { get; set; }
         public string WorkBookSupplementScanAttachmentFilename { get; set; }
         public int WorkBookSupplementScanAttachmentId { get; set; }
+        public int RowID { get; set; }
+
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
 
         public ExperienceModel()
         {

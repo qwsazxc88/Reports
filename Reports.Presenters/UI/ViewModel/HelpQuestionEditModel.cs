@@ -41,7 +41,7 @@ namespace Reports.Presenters.UI.ViewModel
         //public bool IsConsultantEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
         public bool IsRedirectAvailable { get; set; }
-
+        public bool IsBaseAvailable { get; set; }
         public int Operation { get; set; }
         public int RedirectRoleId { get; set; }
 

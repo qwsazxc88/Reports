@@ -17,6 +17,7 @@ using System.Configuration;
 using System.Text;
 using System.Web.Security;
 using System.Diagnostics;
+using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
@@ -69,13 +70,17 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 model.UserId = EmploymentBl.CreateCandidate(model, out error);
-                ViewBag.Error = error;
+                //ViewBag.Error = error;
             }
 
             if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = error;
+                //ViewBag.Error = error;
+                ModelState.AddModelError("DepartmentId", error);
             }
+
+            if (ModelState.Count != 0)
+                model = EmploymentBl.GetCreateCandidateModel(model);
 
             return View(model);
         }
@@ -94,11 +99,24 @@ namespace WebMvc.Controllers
 
         #region General Info
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult GeneralInfoReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetGeneralInfoModel(id);
+            //для кадровиков на вкладках показываем анкету с полным функционалом, как у кандидата, в стадии черновика
+            //такая же схема применяется для всех страниц анкеты
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("GeneralInfo", model);
+            else
+                return PartialView(model);
         }
 
         [HttpPost]
@@ -112,37 +130,69 @@ namespace WebMvc.Controllers
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 ViewBag.Error = error;
             }
-            model = EmploymentBl.GetGeneralInfoModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
+            model = EmploymentBl.GetGeneralInfoModel(model.UserId);
+            //для кадровиков при обновлении встаем на нужную вкладку
+            //такая же схема применяется для всех страниц анкеты
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult GeneralInfoAddNameChange(NameChangeDto itemToAdd)
+        public ActionResult GeneralInfoAddNameChange(NameChangeDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
 
-            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(CandidateId);
             model.NameChanges.Add(itemToAdd);
             EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
             ViewBag.Error = error;
 
-            model = EmploymentBl.GetGeneralInfoModel();
+            model = EmploymentBl.GetGeneralInfoModel(CandidateId);
             return Json(model.NameChanges);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd)
+        public ActionResult GeneralInfoDeleteNameChange(int NameID, int? CandidateId)
         {
             string error = String.Empty;
 
-            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+            EmploymentBl.DeleteNameChange(model, NameID);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+            return Json(model.NameChanges);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd, int? CandidateId)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(CandidateId);
             model.ForeignLanguages.Add(itemToAdd);
             EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
             ViewBag.Error = error;
 
-            model = EmploymentBl.GetGeneralInfoModel();
+            model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+            return Json(model.ForeignLanguages);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoDeleteForeignLanguage(int LanguageID, int? CandidateId)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+            EmploymentBl.DeleteLanguage(model, LanguageID);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel(CandidateId);
             return Json(model.ForeignLanguages);
         }
         #endregion
@@ -156,6 +206,17 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult PassportReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetPassportModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("Passport", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Passport(PassportModel model, IEnumerable<HttpPostedFileBase> files)
@@ -167,8 +228,11 @@ namespace WebMvc.Controllers
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 ViewBag.Error = error;
             }
-            model = EmploymentBl.GetPassportModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
+            model = EmploymentBl.GetPassportModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=1");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
         #endregion
 
@@ -181,19 +245,40 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult EducationReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetEducationModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("Education", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Education(EducationModel model)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.Operation == 0)
             {
-                EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
+                    ViewBag.Error = error;
+                }
             }
-            model = EmploymentBl.GetEducationModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
+            else
+            {
+                EmploymentBl.DeleteEducationRow(model);
+            }
+
+            model = EmploymentBl.GetEducationModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -202,12 +287,15 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
 
-            EducationModel model = EmploymentBl.GetEducationModel();
+            EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
             model.Certifications.Add(itemToAdd);
             EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
-            model = EmploymentBl.GetEducationModel();
-            return View("Education", model);
+            model = EmploymentBl.GetEducationModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
+            else
+                return View("Education", model);
         }
 
         [HttpPost]
@@ -216,12 +304,15 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
 
-            EducationModel model = EmploymentBl.GetEducationModel();
+            EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
             model.HigherEducationDiplomas.Add(itemToAdd);
             EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
-            model = EmploymentBl.GetEducationModel();
-            return View("Education", model);
+            model = EmploymentBl.GetEducationModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
+            else
+                return View("Education", model);
         }
 
         [HttpPost]
@@ -230,12 +321,15 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
 
-            EducationModel model = EmploymentBl.GetEducationModel();
+            EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
             model.PostGraduateEducationDiplomas.Add(itemToAdd);
             EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
-            model = EmploymentBl.GetEducationModel();
-            return View("Education", model);
+            model = EmploymentBl.GetEducationModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
+            else
+                return View("Education", model);
         }
 
         [HttpPost]
@@ -244,12 +338,15 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
 
-            EducationModel model = EmploymentBl.GetEducationModel();
+            EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
             model.Training.Add(itemToAdd);
             EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
-            model = EmploymentBl.GetEducationModel();
-            return View("Education", model);
+            model = EmploymentBl.GetEducationModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
+            else
+                return View("Education", model);
         }
         #endregion
 
@@ -262,32 +359,52 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult FamilyReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetFamilyModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("Family", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
+                    ViewBag.Error = error;
+                }
             }
-            model = EmploymentBl.GetFamilyModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
+            else
+            {
+                EmploymentBl.DeleteFamilyMember(model);
+            }
+            model = EmploymentBl.GetFamilyModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=3");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult FamilyAddChild(FamilyMemberDto itemToAdd)
+        public ActionResult FamilyAddChild(FamilyMemberDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
 
-            FamilyModel model = EmploymentBl.GetFamilyModel();
+            FamilyModel model = EmploymentBl.GetFamilyModel(CandidateId);
             model.Children.Add(itemToAdd);
             EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
 
-            model = EmploymentBl.GetFamilyModel();
+            model = EmploymentBl.GetFamilyModel(model.UserId);
             return Json(model.Children);
         }
         #endregion
@@ -298,6 +415,16 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetMilitaryServiceModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        public ActionResult MilitaryServiceReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetMilitaryServiceModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("MilitaryService", model);
+            else
+                return PartialView(model);
         }
 
         [HttpPost]
@@ -311,8 +438,11 @@ namespace WebMvc.Controllers
                 EmploymentBl.ProcessSaving<MilitaryServiceModel, MilitaryService>(model, out error);
                 ViewBag.Error = error;
             }
-            model = EmploymentBl.GetMilitaryServiceModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
+            model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=4");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
         }
         #endregion
 
@@ -325,32 +455,53 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ExperienceReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetExperienceModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("Experience", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Experience(ExperienceModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
+                    ViewBag.Error = error;
+                }
             }
-            model = EmploymentBl.GetExperienceModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
+            else
+            {
+                EmploymentBl.DeleteExperiensRow(model);
+            }
+            model = EmploymentBl.GetExperienceModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=5");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult ExperienceAddExperienceItem(ExperienceItemDto itemToAdd)
+        public ActionResult ExperienceAddExperienceItem(ExperienceItemDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
 
-            ExperienceModel model = EmploymentBl.GetExperienceModel();
+            ExperienceModel model = EmploymentBl.GetExperienceModel(CandidateId);
             model.ExperienceItems.Add(itemToAdd);
             EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
 
-            model = EmploymentBl.GetExperienceModel();
+            model = EmploymentBl.GetExperienceModel(model.UserId);
             return Json(model.ExperienceItems);
         }
         #endregion
@@ -364,6 +515,17 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ContactsReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetContactsModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("Contacts", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Contacts(ContactsModel model)
@@ -375,8 +537,11 @@ namespace WebMvc.Controllers
                 EmploymentBl.ProcessSaving<ContactsModel, Contacts>(model, out error);
                 ViewBag.Error = error;
             }
-            model = EmploymentBl.GetContactsModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
+            model = EmploymentBl.GetContactsModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=6");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
         #endregion
 
@@ -389,38 +554,58 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult BackgroundCheckReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetBackgroundCheckModel(id);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return PartialView("BackgroundCheck", model);
+            else
+                return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
-
-            if (ValidateModel(model))
+            if (model.RowID == 0)
             {
-                EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
-                ViewBag.Error = error;
+                if (ValidateModel(model))
+                {
+                    EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                    ViewBag.Error = error;
+                }
             }
-            model = EmploymentBl.GetBackgroundCheckModel();
-            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
+            else
+            {
+                EmploymentBl.DeleteBackgroundRow(model);
+            }
+            model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult BackgroundCheckAddReference(ReferenceDto itemToAdd)
+        public ActionResult BackgroundCheckAddReference(ReferenceDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
 
-            BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
+            BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel(CandidateId);
             model.References.Add(itemToAdd);
             EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
 
-            model = EmploymentBl.GetBackgroundCheckModel();
+            model = EmploymentBl.GetBackgroundCheckModel(CandidateId);
             return Json(model.References);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckApprove(int userId, bool isApprovalSkipped, bool? approvalStatus)
+        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus)
         {
             string error = String.Empty;
 
@@ -430,11 +615,13 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;
                 BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
-                return View("BackgroundCheckReadOnly", model);
+                return PartialView("BackgroundCheckReadOnly", model);
             }
             else
             {
-                return RedirectToAction("Roster");
+                BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel(userId);
+                return PartialView("BackgroundCheckReadOnly", model);
+                //return RedirectToAction("Roster");
             }
         }
         #endregion
@@ -446,6 +633,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
             return model.IsFinal ? View("OnsiteTrainingReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult OnsiteTrainingReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetOnsiteTrainingModel(id);
+            return model.IsFinal ? PartialView("OnsiteTrainingReadOnly", model) : PartialView("OnsiteTraining", model);
         }
 
         [HttpPost]
@@ -482,6 +677,14 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ApplicationLetterReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetApplicationLetterModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
         public ActionResult ApplicationLetter(ApplicationLetterModel model)
@@ -505,6 +708,14 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult ManagersReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetManagersModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Manager)]
         public ActionResult Managers(ManagersModel model)
@@ -523,6 +734,8 @@ namespace WebMvc.Controllers
             }
             else
             {
+                //model = EmploymentBl.GetManagersModel(model.UserId);
+                //return PartialView(model);
                 return RedirectToAction("Roster");
             }
         }
@@ -541,6 +754,8 @@ namespace WebMvc.Controllers
             }
             else
             {
+                //return View("ManagersReadOnly", EmploymentBl.GetManagersModel(userId));
+                //return View("Managers", EmploymentBl.GetManagersModel(userId));
                 return RedirectToAction("Roster");
             }
         }
@@ -553,6 +768,15 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetPersonnelManagersModel(id);
             return View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult PersonnelManagersReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetPersonnelManagersModel(id);
+            return PartialView(model);
+            //return View(model);
         }
 
         [HttpPost]
@@ -600,6 +824,20 @@ namespace WebMvc.Controllers
                 EmploymentBl.SaveApprovals(roster, out error);
             }
             */
+            return View(model);
+        }
+        
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = ID;
+            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
+            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
+            model.IsManagersAvailable = IsManagersAvailable;
+            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
+            model.TabIndex = TabIndex;
             return View(model);
         }
 
@@ -711,9 +949,17 @@ namespace WebMvc.Controllers
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
+            if (model.Surname == null)
+                ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
+
+            if (model.DepartmentId == 0)
+                ModelState.AddModelError("DepartmentId", "Выберите структурное подразделение!");
+            if (model.PersonnelId == 0)
+                ModelState.AddModelError("PersonnelId", "Выберите сотрудника отдела кадров!");
+
             if (numberOfFilledFields < 2)
             {
-                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных.");
+                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных, кроме ФИО.");
             }
 
             if (model.DateOfBirth > DateTime.Now.AddYears(-minimumAge))
@@ -751,55 +997,106 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.INNScanFile, "INNScanFile");
             ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
             ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile");
+
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
+
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(PassportModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(EducationModel model)
         {
-            // Год поступления не больше года окончания
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(FamilyModel model)
         {
-            // 
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(MilitaryServiceModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(ExperienceModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(ContactsModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 
         [NonAction]
         protected bool ValidateModel(BackgroundCheckModel model)
         {
-
+            if (!model.IsDraft)
+            {
+                if (!model.IsValidate)
+                {
+                    ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+                }
+            }
             return ModelState.IsValid;
         }
 

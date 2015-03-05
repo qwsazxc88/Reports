@@ -8,6 +8,7 @@ namespace Reports.Core.Dto.Employment2
 {
     public class ForeignLanguageDto
     {
+        public int Id { get; set; }
         [Display(Name = "Язык")]
         public string LanguageName { get; set; }
 

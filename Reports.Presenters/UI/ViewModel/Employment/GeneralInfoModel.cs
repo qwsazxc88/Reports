@@ -100,6 +100,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase PhotoFile { get; set; }
         public HttpPostedFileBase INNScanFile { get; set; }
         public HttpPostedFileBase SNILSScanFile { get; set; }
@@ -113,6 +116,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int SNILSScanAttachmentId { get; set; }
         public string DisabilityCertificateScanAttachmentFilename { get; set; }
         public int DisabilityCertificateScanAttachmentId { get; set; }
+
+        //состояние кандидата
+        public IList<CandidateStateDto> CandidateState { get; set; }
                 
         public GeneralInfoModel()
         {
