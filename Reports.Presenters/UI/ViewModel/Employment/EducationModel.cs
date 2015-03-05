@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -18,6 +19,33 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Повышение квалификации")]
         public IList<TrainingDto> Training { get; set; } //ok
+
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
+        //для удаления записей на странице
+        public int Operation { get; set; }
+        public int RowID { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
+
+        public HttpPostedFileBase HigherEducationDiplomaScanFile { get; set; }
+        public int HigherEducationDiplomaScanId { get; set; }
+        public string HigherEducationDiplomaScanFileName { get; set; }
+
+        public HttpPostedFileBase PostGraduateEducationDiplomaScanFile { get; set; }
+        public int PostGraduateEducationDiplomaScanId { get; set; }
+        public string PostGraduateEducationDiplomaScanFileName { get; set; }
+
+        public HttpPostedFileBase CertificationScanFile { get; set; }
+        public int CertificationScanId { get; set; }
+        public string CertificationScanFileName { get; set; }
+
+        public HttpPostedFileBase TrainingScanFile { get; set; }
+        public int TrainingScanId { get; set; }
+        public string TrainingScanFileName { get; set; }
 
         public EducationModel()
         {

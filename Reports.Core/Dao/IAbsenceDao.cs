@@ -18,7 +18,8 @@ namespace Reports.Core.Dao
             DateTime? endDate,
             string userName, 
             int sortedBy,
-            bool? sortDescending);
+            bool? sortDescending,
+            string Number);
 
         IList<BeginEndDateDto> LoadForUserAndPeriod(DateTime beginDate, DateTime endDate, int userId);
     }

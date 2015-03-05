@@ -68,6 +68,7 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as RequestNumber,
                                 v.CreateDate as CreateDate,
                                 v.EndWorkDate as EndWorkDate,
+                                v.Base as Base,
                                 t.Name as QuestionType,
                                 s.Name as QuestionSubtype,
                                 hesc.SendCount as QuestionsCount,
@@ -125,7 +126,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("Dep3Name", NHibernateUtil.String);
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Base", NHibernateUtil.Boolean);
+                
         }
         public List<HelpServiceQuestionDto> GetDocuments(int userId,
                 UserRole role,
@@ -223,6 +226,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     orderBy = @" order by Dep3Name";
+                    break;
+                case 15:
+                    orderBy = @" order by Base";
                     break;
             }
             if (sortDescending.Value)

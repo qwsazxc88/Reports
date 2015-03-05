@@ -19,7 +19,8 @@ namespace Reports.Core.Dao
             string userName,
             //string sqlQuery,
             int sortedBy,
-            bool? sortDescending);
+            bool? sortDescending,
+            string Number);
 
         DateTime? GetMinDeductionPeriod();
     }

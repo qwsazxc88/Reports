@@ -307,6 +307,50 @@ td.centered
     text-align: center;
 }
 
+/* TABLE-STATE
+----------------------------------------------------------*/
+table.state
+{
+  border: 1px solid Silver;
+  border-collapse: collapse;
+  color:Black;
+  font-size:10px;
+  width:100%;
+}
+
+table.state td 
+{
+  border: 1px solid Silver;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align:center;
+  width:7%;
+}
+
+/* TABLE-BUTTONS
+----------------------------------------------------------*/
+table.buttonTable
+{
+  border: 1px solid Silver;
+  border-collapse: collapse;
+  color:Black;
+  width:100%;
+}
+
+table.buttonTable td 
+{
+  border: 1px solid Silver;
+  padding-left: 5px;
+  padding-right: 5px;
+  height:100%;
+  width:12%;
+}
+
+button.PrintButton
+{
+  height:65px;
+  width:100%;
+}
 /* MISC  
 ----------------------------------------------------------*/
 .clear
@@ -336,7 +380,7 @@ td.centered
 
 .buttonpanel
 {
-    display: inline-block;
+    display:inline-block;
     margin: 15px;    
 }
 .buttonpanel > *

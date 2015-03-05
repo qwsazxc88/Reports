@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto.Employment2;
+using System.Collections.Generic;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -43,6 +45,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DataType(DataType.EmailAddress),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Email { get; set; } //ok
+
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public ContactsModel()
         {

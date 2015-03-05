@@ -173,6 +173,8 @@
     <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ApplicationLetterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\BackgroundCheckModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\CandidateDocumentsModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\CandidateStateModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ContactsModel.cs" />
     <Compile Include="UI\ViewModel\Employment\CustomReportModel.cs" />
     <Compile Include="UI\ViewModel\Employment\EducationModel.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="UI\ViewModel\Employment\ManagersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\MilitaryServiceModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PassportModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PersonnelInfoModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PersonnelManagersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintPersonalDataObligationModel.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterModel.cs" />
@@ -267,6 +270,7 @@
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="UI\ViewModel\VacationPrintModel.cs" />
+    <Compile Include="Utils\Converters.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>
   <ItemGroup>

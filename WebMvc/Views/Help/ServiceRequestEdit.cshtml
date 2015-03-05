@@ -35,7 +35,7 @@
                     <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
                     <input type="hidden" id="IsNotEndWorkAvailable" name="IsNotEndWorkAvailable" value="@Model.IsNotEndWorkAvailable" />
                     <input type="hidden" id="IsConsultantOutsourcingEditable" name="IsConsultantOutsourcingEditable" value="@Model.IsConsultantOutsourcingEditable" />
-
+                    <input type="hidden" id="IsForFiredUser" name="IsForFiredUser" value="@Model.IsForFiredUser" />
                     <input type="hidden" id="IsAttachmentVisible" name="IsAttachmentVisible" value="@Model.IsAttachmentVisible" />
                     <input type="hidden" id="IsRequirementsVisible" name="IsRequirementsVisible" value="@Model.IsRequirementsVisible" />
                     <input type="hidden" id="IsPeriodVisible" name="IsPeriodVisible" value="@Model.IsPeriodVisible" />
@@ -137,7 +137,7 @@
                                                                                                     {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
                                                                                               {<text>style="display:none"</text>}/>
                  
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
@@ -149,7 +149,7 @@
                         <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
                    }
               
-                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
                                                                                               {<text>style="display:none"</text>}/>
 
                 </td>
@@ -175,6 +175,7 @@
       setActiveMenuItem("helpAllRequests");
       SelectTMT();
       $("#ManagerNameRow").hide();
+      $(".datepicker").datepicker({ changeYear: true, changeMonth: true});
    });
 //    function Delete() {
 //        $("#IsDelete").val("true");

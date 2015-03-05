@@ -33,7 +33,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForCandidateList =
             @"select candidate.Id Id
                 , candidate.UserId UserId
-                , generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic as Name
+                , isnull(generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic, candidateUser.Name) as Name
                 , managers.WorkCity WorkCity
                 , department.Name Department
                 , position.Name Position
@@ -118,12 +118,14 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                int CandidateId,
                 int sortBy,
                 bool? sortDescending)
         {
             string sqlQuery = sqlSelectForCandidateList;
             string whereString = GetWhereForUserRole(role, currentId);
             whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetCandidateIdWhere(whereString, CandidateId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -162,7 +164,7 @@ namespace Reports.Core.Dao.Impl
                 {
                     // руководитель 2 уровня видит кандидатов, заявки на подбор которых создавали руководители 3 уровня его ветки
                     case 2:
-                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level = 3)
+                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level in (2, 3))
                             ";
                         break;
                     // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
@@ -182,13 +184,13 @@ namespace Reports.Core.Dao.Impl
                 sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
                 // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                 sqlQueryPart += string.Format(@"
-                        or currentUser.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", currentUser.Id);
+                        or appointmentCreator.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 3)", currentUser.Id);
                 sqlQueryPart += string.Format(@"
                         or 
                         (
                             --(u.RoleId & 2) > 0
                             --and
-                            currentUser.DepartmentId in
+                            candidateUser.DepartmentId in
                             (
                                 select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
                                     inner join Department targetDept
@@ -197,19 +199,21 @@ namespace Reports.Core.Dao.Impl
                                         on branchDept.Path like targetDept.Path + '%'
                                     inner join Users
                                         on mrr.UserId = {0}
-                                    inner join Role
-                                        on mrr.RoleId = 1
+                                    where mrr.RoleId = 3
                             )
                         )
                         ", currentUser.Id);
             }
-
+            else if ((role & UserRole.PersonnelManager) > 0)//для кадровиков
+            {
+                sqlQueryPart += string.Format(@" candidate.PersonnelId in (SELECT PersonnelId FROM vwEmploymentPersonnels WHERE UserId = {0})", currentUser.Id);
+            }
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager)) > 0)
             {
-                // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
+                //сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
             }
             else
             {
@@ -224,6 +228,16 @@ namespace Reports.Core.Dao.Impl
             if (statusId > 0)
             {
                 whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
+            }
+
+            return whereString;
+        }
+
+        public string GetCandidateIdWhere(string whereString, int CandidatId)
+        {
+            if (CandidatId > 0)
+            {
+                whereString = string.Format(@"{0} candidate.Id = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), CandidatId);
             }
 
             return whereString;
@@ -383,6 +397,54 @@ namespace Reports.Core.Dao.Impl
             {
                 query.SetString("userName", userName);
             }
+        }
+        /// <summary>
+        /// Состояние кандидата
+        /// </summary>
+        /// <param name="CandidateID">Id кандидата</param>
+        /// <returns></returns>
+        public IList<CandidateStateDto> GetCandidateState(int CandidateID)
+        {
+            IQuery query = CreateCandidateStateQuery("SELECT * FROM vwEmploymentFillState WHERE Id = " + CandidateID.ToString());
+            return query.SetResultTransformer(Transformers.AliasToBean<CandidateStateDto>()).List<CandidateStateDto>();
+        }
+        public virtual IQuery CreateCandidateStateQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("GeneralFinal", NHibernateUtil.Boolean)
+                .AddScalar("PassportFinal", NHibernateUtil.Boolean)
+                .AddScalar("EducationFinal", NHibernateUtil.Boolean)
+                .AddScalar("FamilyFinal", NHibernateUtil.Boolean)
+                .AddScalar("MilitaryFinal", NHibernateUtil.Boolean)
+                .AddScalar("ExperienceFinal", NHibernateUtil.Boolean)
+                .AddScalar("ContactFinal", NHibernateUtil.Boolean)
+                .AddScalar("BackgroundFinal", NHibernateUtil.Boolean)
+                .AddScalar("CandidateDocuments", NHibernateUtil.Boolean)
+                .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
+                .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
+                .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
+                .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)
+                ;
+
+            return query;
+        }
+        public IList<CandidatePersonnelDto> GetPersonnels()
+        {
+            IQuery query = CreatePersonnelsQuery(@"SELECT 0 as Id, null as Name
+                                                   UNION ALL
+                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 
+                                                   ORDER BY Name");
+            return query.SetResultTransformer(Transformers.AliasToBean<CandidatePersonnelDto>()).List<CandidatePersonnelDto>();
+        }
+        public virtual IQuery CreatePersonnelsQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("Name", NHibernateUtil.String)
+                ;
+
+            return query;
         }
     }
 }

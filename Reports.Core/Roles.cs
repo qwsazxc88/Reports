@@ -7,28 +7,97 @@ namespace Reports.Core
      [Flags]
     public enum UserRole
     {
+         /// <summary>
+         /// Без роли
+         /// </summary>
         NoRole = 0,
+         /// <summary>
+         /// Администратор
+         /// </summary>
         Admin = 1,
+         /// <summary>
+         /// Сотрудник
+         /// </summary>
         Employee = 2, 
+         /// <summary>
+         /// Руководитель
+         /// </summary>
         Manager = 4,
+         /// <summary>
+         /// Кадровик
+         /// </summary>
         PersonnelManager = 8,
+         /// <summary>
+         /// Бюджет
+         /// </summary>
         BudgetManager = 16,
+         /// <summary>
+         /// Просмотр
+         /// </summary>
         OutsourcingManager = 32,
+         /// <summary>
+         /// Контролер
+         /// </summary>
         Inspector = 64,
+         /// <summary>
+         /// Начальник
+         /// </summary>
         Chief = 128,
+         /// <summary>
+         /// Бухгалтер
+         /// </summary>
         Accountant = 256,
+         /// <summary>
+         /// Член правления
+         /// </summary>
         Director = 512,
+         /// <summary>
+         /// Секретарь
+         /// </summary>
         Secretary = 1024,
+         /// <summary>
+         /// Сотрудник фин.департамента
+         /// </summary>
         Findep = 2048,
+         /// <summary>
+         /// Специалист по подбору персонала
+         /// </summary>
         StaffManager = 4096,
+         /// <summary>
+         /// Архивариус
+         /// </summary>
         Archivist = 8192,
+         /// <summary>
+         /// Кандидат
+         /// </summary>
         Candidate = 16384,
+         /// <summary>
+         /// Сотрудник службы безопасности
+         /// </summary>
         Security = 32768,
+         /// <summary>
+         /// Тренер
+         /// </summary>
         Trainer = 65536,
+         /// <summary>
+         /// Консультант
+         /// </summary>
         ConsultantOutsourcing = 131072,
+         /// <summary>
+         /// Консультант Банк
+         /// </summary>
         ConsultantPersonnel = 262144,
+         /// <summary>
+         /// Консультант Бухгалтер Банк
+         /// </summary>
         ConsultantAccountant = 524288,
+         /// <summary>
+         /// Консультант ОК
+         /// </summary>
         ConsultantOutsorsingManager = 1048576,
+         /// <summary>
+         /// Уволеный сотрудник
+         /// </summary>
         DismissedEmployee = 2097152
     }
 
@@ -37,7 +106,9 @@ namespace Reports.Core
         // Согласует приказы на командировку
         ApprovesMissionOrders = 1,
         // Согласует табель
-        ApprovesCommonRequests = 2
+        ApprovesCommonRequests = 2,
+        //утверждает прием
+        ApprovesEmployment = 3
     }
 
     public class ReportRoleConstants

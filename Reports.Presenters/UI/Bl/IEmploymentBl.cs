@@ -22,8 +22,10 @@ namespace Reports.Presenters.UI.Bl
         ApplicationLetterModel GetApplicationLetterModel(int? userId = null);
         ManagersModel GetManagersModel(int? userId = null);
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
+        CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
+        CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);
         PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error);
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
@@ -90,5 +92,12 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteAttachment(DeleteAttacmentModel model);
 
         bool IsFixedTermContract(int userId);
+        void DeleteNameChange(GeneralInfoModel model, int NameID);
+        void DeleteLanguage(GeneralInfoModel model, int LanguageID);
+        void DeleteEducationRow(EducationModel model);
+        void DeleteExperiensRow(ExperienceModel model);
+        void DeleteBackgroundRow(BackgroundCheckModel model);
+        void DeleteFamilyMember(FamilyModel model);
+        void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model);
     }
 }

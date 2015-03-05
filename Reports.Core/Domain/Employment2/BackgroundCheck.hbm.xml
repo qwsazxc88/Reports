@@ -38,6 +38,7 @@
     <many-to-one name="Approver" class="User" column="ApproverId" foreign-key="FK_BackgroundCheck_Approver" index="BackgroundCheck_Approver" not-null="false"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
 
   </class>
 </hibernate-mapping>

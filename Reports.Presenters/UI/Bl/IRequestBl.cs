@@ -119,7 +119,7 @@ namespace Reports.Presenters.UI.Bl
         DeductionEditModel GetDeductionEditModel(int id);
         void SetDeductionUserInfoModel(DeductionUserInfoModel model, int userId);
         void ReloadDictionariesToModel(DeductionEditModel model);
-        bool SaveDeductionEditModel(DeductionEditModel model, out string error);
+        bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error);
 
         TerraGraphicsSetShortNameModel SetShortNameModel();
         TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);

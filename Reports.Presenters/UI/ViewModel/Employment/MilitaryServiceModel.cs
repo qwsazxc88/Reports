@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto.Employment2;
 using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -80,6 +81,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int? ConscriptionStatus { get; set; } //ok
         public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
 
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
         public HttpPostedFileBase MilitaryCardScanFile { get; set; }
         public HttpPostedFileBase MobilizationTicketScanFile { get; set; }
 
@@ -87,6 +91,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int MilitaryCardScanAttachmentId { get; set; }
         public string MobilizationTicketScanAttachmentFilename { get; set; }
         public int MobilizationTicketScanAttachmentId { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public MilitaryServiceModel()
         {
