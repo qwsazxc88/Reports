@@ -20,7 +20,8 @@ namespace Reports.Core.Dao
             string userName, 
             string SicklistNumber,
             int sortedBy,
-            bool? sortDescending
+            bool? sortDescending,
+            string Number
             );
         bool ResetApprovals(int id);
         IList<Sicklist> LoadForIdsList(List<int> ids);

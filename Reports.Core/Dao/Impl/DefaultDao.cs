@@ -214,7 +214,20 @@ namespace Reports.Core.Dao.Impl
 
         protected const string sqlCurrentUserJoin = @"inner join dbo.Users currentUser
                                                         on currentUser.Id = :userId";
-        
+        protected const string sqlDepartamentStandartSelector = @"
+                                dep.Name as Dep7Name,
+                                dep3.Name as Dep3Name,        
+                                ";
+        protected const string sqlPositionStandartSelector = @"
+                                up.Name as Position,
+                                ";
+        protected const string sqlDepartamentJoin = @"
+                                inner join dbo.Department dep on u.DepartmentId = dep.Id                                
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
+                                ";
+        protected const string sqlPositionJoin = @"
+                                left join [dbo].[Position]  up on up.Id = u.PositionId
+                                ";
         protected const string sqlSelectForList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -225,12 +238,17 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
+                                sqlPositionStandartSelector +
+                                sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector +
                                 @"
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                + sqlDepartamentJoin
+                                + sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         protected const string sqlSelectForListSicklist =
                                 @"select v.Id as Id,
@@ -243,13 +261,18 @@ namespace Reports.Core.Dao.Impl
                                 v.SicklistNumber,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
+                                sqlDepartamentStandartSelector+
+                                sqlPositionStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 u.ExperienceIn1C as UserExperienceIn1C,
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                + sqlDepartamentJoin
+                                +sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         protected const string sqlSelectForListClearanceChecklist =
                                 @"select distinct v.Id as Id,
@@ -280,12 +303,17 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 N'Отпуск по уходу за ребенком'  as RequestType," +
+                                sqlPositionStandartSelector+
+                                sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 -- left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                + sqlDepartamentJoin
+                                + sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         protected const string sqlSelectForListVacation =
                                 @"select v.Id as Id,
@@ -297,12 +325,17 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType," +
+                                sqlPositionStandartSelector+
+                                sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                +sqlDepartamentJoin
+                                +sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         protected const string sqlSelectForListDismissal =
                                 @"select v.Id as Id,
@@ -314,13 +347,18 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
+                                sqlPositionStandartSelector+
+                                sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived,
                                 v.IsPersonnelFileSentToArchive as IsPersonnelFileSentToArchive
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                + sqlDepartamentJoin
+                                +sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         #endregion
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
@@ -437,7 +475,7 @@ namespace Reports.Core.Dao.Impl
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
         }
-
+        
         public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
         {
             switch (role)
@@ -690,6 +728,16 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public virtual string GetDocumentNumberWhere(string whereString, string docNumber)
+        {
+            if (!string.IsNullOrEmpty(docNumber))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("Number = {0} ", docNumber);
+            }
+            return whereString;
+        }
         public virtual string GetUserNameWhere(string whereString, string userName)
         {
             if(!string.IsNullOrEmpty(userName))
@@ -698,6 +746,14 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += "LOWER(u.[Name]) like :userName";
             }
+            return whereString;
+        }
+        public virtual string GetWhereForOnlyUser(string whereString, int userId)
+        {
+            if (whereString.Length > 0)
+                    whereString += @" and ";
+            whereString += String.Format("u.Id = {0}", userId);
+            
             return whereString;
         }
         public virtual string GetNumberWhere(string whereString, string number)
@@ -843,6 +899,15 @@ namespace Reports.Core.Dao.Impl
                 case 12:
                     sqlQuery += @" order by SicklistNumber";
                     break;
+                case 13:
+                    sqlQuery += @" order by Position";
+                    break;
+                case 14:
+                    sqlQuery += @"order by Dep3Name";
+                    break;
+                case 15:
+                    sqlQuery += @"order by Dep7Name";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
@@ -863,7 +928,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("RequestType", NHibernateUtil.String).
-                AddScalar("RequestStatus", NHibernateUtil.String);
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("Dep7Name",NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("Position",NHibernateUtil.String);
         }
 
         public virtual IList<VacationDto> GetDefaultDocuments(
@@ -878,7 +946,8 @@ namespace Reports.Core.Dao.Impl
                                 string userName, 
                                 string sqlQuery,
                                 int sortedBy,
-                                bool? sortDescending
+                                bool? sortDescending,
+                                string Number
             )
         {
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -888,6 +957,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetDocumentNumberWhere(whereString, Number);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,sortedBy,sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
