@@ -22,6 +22,7 @@ namespace Reports.Presenters.UI.Bl
         ApplicationLetterModel GetApplicationLetterModel(int? userId = null);
         ManagersModel GetManagersModel(int? userId = null);
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
+        CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
         CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);
@@ -97,5 +98,6 @@ namespace Reports.Presenters.UI.Bl
         void DeleteExperiensRow(ExperienceModel model);
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
+        void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model);
     }
 }

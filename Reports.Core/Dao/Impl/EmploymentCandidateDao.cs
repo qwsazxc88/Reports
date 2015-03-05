@@ -118,12 +118,14 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                int CandidateId,
                 int sortBy,
                 bool? sortDescending)
         {
             string sqlQuery = sqlSelectForCandidateList;
             string whereString = GetWhereForUserRole(role, currentId);
             whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetCandidateIdWhere(whereString, CandidateId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -226,6 +228,16 @@ namespace Reports.Core.Dao.Impl
             if (statusId > 0)
             {
                 whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
+            }
+
+            return whereString;
+        }
+
+        public string GetCandidateIdWhere(string whereString, int CandidatId)
+        {
+            if (CandidatId > 0)
+            {
+                whereString = string.Format(@"{0} candidate.Id = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), CandidatId);
             }
 
             return whereString;
@@ -408,6 +420,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ExperienceFinal", NHibernateUtil.Boolean)
                 .AddScalar("ContactFinal", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundFinal", NHibernateUtil.Boolean)
+                .AddScalar("CandidateDocuments", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)

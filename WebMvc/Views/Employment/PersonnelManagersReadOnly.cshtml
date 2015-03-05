@@ -5,6 +5,8 @@
     
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
 
     
@@ -12,41 +14,9 @@
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)    
-    <b>Состояние приема кандидата</b>
-        <table class="state">
-            <tr>
-                <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
-                <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
-                    {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-                <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
-                    {<text>style="background-color:Lime"</text>}>Обучение</td>
-                <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
-                    {<text>style="background-color:Lime"</text>}>Руководители</td>
-                <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
-                    {<text>style="background-color:Lime"</text>}>Кадры</td>
-            </tr>
-            <tr>
-                <td @if (Model.CandidateState[0].GeneralFinal)
-                    {<text>style="background-color:Lime"</text>}>Общая информация</td>
-                <td @if (Model.CandidateState[0].PassportFinal)
-                    {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
-                <td @if (Model.CandidateState[0].EducationFinal)
-                    {<text>style="background-color:Lime"</text>}>Образование</td>
-                <td @if (Model.CandidateState[0].FamilyFinal)
-                    {<text>style="background-color:Lime"</text>}>Состав семьи</td>
-                <td @if (Model.CandidateState[0].MilitaryFinal)
-                    {<text>style="background-color:Lime"</text>}>Воинский учет</td>
-                <td @if (Model.CandidateState[0].ExperienceFinal)
-                    {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
-                <td @if (Model.CandidateState[0].ContactFinal)
-                    {<text>style="background-color:Lime"</text>}>Контактные данные</td>
-                <td @if (Model.CandidateState[0].BackgroundFinal)
-                    {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-                <td colspan="4" style="background-color:Silver">Согласование</td>
-            </tr>
-        </table>
     
-    <fieldset class="bordered doc-wrap panel floatleft">
+    
+    <fieldset class="bordered doc-wrap panel">
     <legend>Кадры</legend>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.EmploymentOrderDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderDate)<br />
@@ -161,15 +131,6 @@
             </div>
         </fieldset>
 
-        <div class="formfield clear">
-            Выбрать для загрузки скан листа ознакомления<br /><input type="file" name="files" />
-        </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
 
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />
@@ -180,15 +141,6 @@
             @Html.DropDownListFor(m => m.PersonalAccountContractorId, Model.PersonalAccountContractors)
         </div>
 
-        <div class="formfield clear">
-            Выбрать для загрузки скан листа ознакомления<br /><input type="file" name="files" />
-        </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
 
         <div class="formfield clear">
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
@@ -209,34 +161,7 @@
 
     </fieldset>
     
-    <table class="buttonTable">
-        <tr>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать<br />ДС Персональные данные</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать<br />Обязательство конфиденциальность</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать<br />личного листка<br />по учету кадров</button>
-            </td>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintAttachments", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
-            </td>
-        </tr>
-    </table>
+    
     @*
     <div class="buttonpanel">
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>

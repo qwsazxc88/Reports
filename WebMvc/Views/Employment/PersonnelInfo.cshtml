@@ -42,6 +42,7 @@
             @if (Model.IsCandidateInfoAvailable && ((dto.UserRole & UserRole.Security) == 0))
             {
                 <li><a href="#tabs10">Заявление о приеме</a></li>
+                <li><a href="#tabs13">Документы</a></li>
             }
             @if (Model.IsManagersAvailable)
             {
@@ -81,6 +82,7 @@
         </div>
         <div id="tabs9"></div>
         <div id="tabs10"></div>
+        <div id="tabs13"></div>
         <div id="tabs11"></div>
         <div id="tabs12"></div>
         
@@ -106,6 +108,10 @@
                            }
                        }
                      );
+                     //обновляем вкладку после удаления скана
+                     var currenttab = $("#tabs").tabs("option", "selected");
+                     $('#tabs').tabs("select", Number(currenttab  + 1));
+                     $('#tabs').tabs("select", Number(currenttab));
         return false;
     }
 
@@ -203,7 +209,7 @@
                         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
                         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
                         $('#gender').buttonset();        
-
+                        //$("#TabIndex").val('0');
                         //$("#aaa").click(function(){$("#tabs1").submit();});
                         
 
@@ -732,23 +738,78 @@
                                                 $('#isHourlySalaryBasisContainer').buttonset();
                                          });
                 }
+
+                //документы
+                if (ui.panel.id == "tabs13") {
+                    $("#tabs13").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs13", "CandidateDocuments", "/Employment/CandidateDocuments?Id=@Model.CandidateID", "GET");
+                    //после окончания выполнения запроса цепляем календари и обработчики
+                    $("#tabs13").ajaxStop(function () {
+                                                $("#EmploymentContractFile").change(function () { this.form.submit(); });
+                                                $("#OrderOnReceptionFile").change(function () { this.form.submit(); });
+                                                $("#T2File").change(function () { this.form.submit(); });
+                                                $("#ContractMatResponsibleFile").change(function () { this.form.submit(); });
+                                                $("#PersonalDataFile").change(function () { this.form.submit(); });
+                                                $("#DataObligationFile").change(function () { this.form.submit(); });
+                                                $("#EmploymentFile").change(function () { this.form.submit(); });
+                                                $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
+
+                                                $("#btnDelete1").click(function () {
+                                                    var Id = $("#EmploymentContractFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete2").click(function () {
+                                                    var Id = $("#OrderOnReceptionFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete3").click(function () {
+                                                    var Id = $("#T2FileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete4").click(function () {
+                                                    var Id = $("#ContractMatResponsibleFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete5").click(function () {
+                                                    var Id = $("#PersonalDataFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete6").click(function () {
+                                                    var Id = $("#DataObligationFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete7").click(function () {
+                                                    var Id = $("#EmploymentFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete8").click(function () {
+                                                    var Id = $("#RegisterPersonalRecordFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+                                         });
+                }
             }
         });
 
         //в зависимости от входного параметра встаем на нужную вкладку
         var ti = $("#TabIndex").val();
-        if (ti.toString() == "1"){$('#tabs').tabs("select", 1);}
-        else if (ti.toString() == "2"){$('#tabs').tabs("select", 2);}
-        else if (ti.toString() == "3"){$('#tabs').tabs("select", 3);}
-        else if (ti.toString() == "4"){$('#tabs').tabs("select", 4);}
-        else if (ti.toString() == "5"){$('#tabs').tabs("select", 5);}
-        else if (ti.toString() == "6"){$('#tabs').tabs("select", 6);}
-        else if (ti.toString() == "7"){$('#tabs').tabs("select", 7);}
-        else if (ti.toString() == "8"){$('#tabs').tabs("select", 8);}
-        else if (ti.toString() == "9"){$('#tabs').tabs("select", 9);}
-        else if (ti.toString() == "10"){$('#tabs').tabs("select", 10);}
-        else if (ti.toString() == "11"){$('#tabs').tabs("select", 11);}
-        else {$('#tabs').tabs("select", 0)};
+        $('#tabs').tabs("select", Number(ti));
+
     });
 
     //функция отправки и получения ajax-запроса

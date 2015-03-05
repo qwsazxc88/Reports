@@ -118,7 +118,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int DisabilityCertificateScanAttachmentId { get; set; }
 
         //состояние кандидата
-        public IList<CandidateStateDto> CandidateState { get; set; }
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
                 
         public GeneralInfoModel()
         {

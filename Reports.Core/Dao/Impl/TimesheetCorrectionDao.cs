@@ -25,7 +25,9 @@ namespace Reports.Core.Dao.Impl
                DateTime? endDate,
                string userName, 
                int sortedBy,
-               bool? sortDescending)
+               bool? sortDescending,
+               string Number
+            )
         {
             string sqlQuery = string.Format(sqlSelectForList,
                     DeleteRequestText,
@@ -47,7 +49,7 @@ namespace Reports.Core.Dao.Impl
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
                 requestStatusId, beginDate, endDate,userName,
-                sqlQuery,sortedBy,sortDescending);
+                sqlQuery,sortedBy,sortDescending,Number);
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             //string whereString = GetWhereForUserRole(role, userId);
             //whereString = GetTypeWhere(whereString, typeId);

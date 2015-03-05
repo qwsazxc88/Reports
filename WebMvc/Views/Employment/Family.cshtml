@@ -10,6 +10,8 @@
     }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
 @Html.ValidationMessageFor(m => m.IsValidate)
 
@@ -18,39 +20,6 @@
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     <input type="hidden" id="cmd" name="cmd" />
     @Html.HiddenFor(m => m.UserId)
-    <b>Состояние приема кандидата</b>
-    <table class="state">
-        <tr>
-            <td colspan="8" style="background-color:Silver">Состояние заполнения анкетных данных</td>
-            <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Обучение</td>
-            <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Руководители</td>
-            <td @if (Model.CandidateState[0].PersonnelManagerApproval.HasValue && Model.CandidateState[0].PersonnelManagerApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Кадры</td>
-        </tr>
-        <tr>
-            <td @if (Model.CandidateState[0].GeneralFinal)
-                {<text>style="background-color:Lime"</text>}>Общая информация</td>
-            <td @if (Model.CandidateState[0].PassportFinal)
-                {<text>style="background-color:Lime"</text>}>Паспортные данные</td>
-            <td @if (Model.CandidateState[0].EducationFinal)
-                {<text>style="background-color:Lime"</text>}>Образование</td>
-            <td @if (Model.CandidateState[0].FamilyFinal)
-                {<text>style="background-color:Lime"</text>}>Состав семьи</td>
-            <td @if (Model.CandidateState[0].MilitaryFinal)
-                {<text>style="background-color:Lime"</text>}>Воинский учет</td>
-            <td @if (Model.CandidateState[0].ExperienceFinal)
-                {<text>style="background-color:Lime"</text>}>Трудовая деятельность</td>
-            <td @if (Model.CandidateState[0].ContactFinal)
-                {<text>style="background-color:Lime"</text>}>Контактные данные</td>
-            <td @if (Model.CandidateState[0].BackgroundFinal)
-                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
-            <td colspan="4" style="background-color:Silver">Согласование</td>
-        </tr>
-    </table>
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Состав семьи</legend>
@@ -222,7 +191,7 @@
     
     <fieldset>
 
-    @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename) && !Model.IsValidate)
     {
         <div class="formfield clear">
             Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name="MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
@@ -237,13 +206,16 @@
                 @Model.MarriageCertificateScanAttachmentFilename
             </a>
         </div>
-        <div class="formfield">
-            <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MarriageCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                        {<text>style="display:none"</text>}*@/>
-        </div>
+        if (!Model.IsValidate)
+        {
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MarriageCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                            {<text>style="display:none"</text>}*@/>
+            </div>
+        }
     }
     
-    @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+    @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename) && !Model.IsValidate)
     {
         <div class="formfield clear">
             Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="ChildBirthCertificateScanFile" />
@@ -257,10 +229,13 @@
                 @Model.ChildBirthCertificateScanAttachmentFilename
             </a>
         </div>
-        <div class="formfield">
-            <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.ChildBirthCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                        {<text>style="display:none"</text>}*@/>
-        </div>
+        if (!Model.IsValidate)
+        {
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.ChildBirthCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                            {<text>style="display:none"</text>}*@/>
+            </div>
+        }
     }
     
     <div class="clear">

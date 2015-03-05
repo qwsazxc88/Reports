@@ -14,5 +14,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string UserName { get; set; }
         public DateTime? BeginDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int? CandidateId { get; set; }
     }
 }
