@@ -168,7 +168,7 @@
                     <th>Дата</th>*@
                     <th>№<br />п/п</th>
                     <th>
-                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
@@ -185,11 +185,11 @@
                     <th>
                         <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
-                     <th style="width:80px">
+                     <th>
                         <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
                     </th>
                     <th>
-                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
@@ -199,8 +199,8 @@
                     </th>
                     @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
                     {
-                        <th><div id="sort8"><a href="#"  onclick = "SortChanged(8);">Есть изменение<br/> приказа</a></div></th>
-                        <th style="width:100px"><div id="sort9"><a href="#"  onclick = "SortChanged(9);">Пересчет</a></div></th>
+                        <th><div id="sort8"><a href="#"  onclick = "SortChanged(8);">Есть<br />изменение<br/> приказа</a></div></th>
+                        <th><div id="sort9"><a href="#"  onclick = "SortChanged(9);">Пересчет</a></div></th>
                     }
                    @* <th>
                         Дата окончания
@@ -282,6 +282,7 @@
         $("#StatusId").val('0');
          $("#UserName").val('');
         //$("#PaymentPercentType").val('0');
+        $("#Number").val('');
     }
 //    function setSelection()
 //    {
