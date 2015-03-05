@@ -609,6 +609,8 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            if (role==UserRole.Employee)
+                whereString = GetWhereForOnlyUser(whereString, userId);
             sqlQuery = GetUdSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateUdQuery(sqlQuery);

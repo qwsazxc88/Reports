@@ -475,7 +475,7 @@ namespace Reports.Core.Dao.Impl
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
         }
-
+        
         public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
         {
             switch (role)
@@ -746,6 +746,14 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += "LOWER(u.[Name]) like :userName";
             }
+            return whereString;
+        }
+        public virtual string GetWhereForOnlyUser(string whereString, int userId)
+        {
+            if (whereString.Length > 0)
+                    whereString += @" and ";
+            whereString += String.Format("u.Id = {0}", userId);
+            
             return whereString;
         }
         public virtual string GetNumberWhere(string whereString, string number)

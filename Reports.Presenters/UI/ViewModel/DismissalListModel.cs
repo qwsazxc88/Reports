@@ -51,7 +51,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsOriginalReceivedEditable { get; set; }
         public bool IsPersonnelFileSentToArchiveModified { get; set; }
         public bool IsPersonnelFileSentToArchiveEditable { get; set; }
-        [Display(Name="Номер документа")]
+        [Display(Name="Номер заявки")]
         public string Number { get; set; }
     }
 
