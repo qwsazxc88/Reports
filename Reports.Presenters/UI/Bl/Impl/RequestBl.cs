@@ -10620,6 +10620,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Hotels = entity.Hotels;
             model.ArchiveDate = FormatDate(entity.ArchiveDate);
             model.ArchiveNumber = entity.ArchiveNumber;
+            model.IsSend1C = entity.SendTo1C.HasValue;
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
@@ -11080,6 +11081,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptAccountant = UserDao.Load(current.Id);
                         SetMissionTransactionEditable(model, false);
                     }
+                }
+                if (model.IsAccountantApprovedCancel)
+                {
+                    entity.AccountantDateAccept = null;
+                    entity.AcceptAccountant = UserDao.Load(current.Id);
+                    model.IsAccountantApprovedCancel = false;
                 }
                 /*else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
                 {
