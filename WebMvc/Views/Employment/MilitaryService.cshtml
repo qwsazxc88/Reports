@@ -152,9 +152,8 @@
     </fieldset>
 
     <div class="clear">
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
-        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button type="submit">Сохранить</button>
     </div>
 }
