@@ -39,7 +39,7 @@
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
                     @if (@Model.PhotoAttachmentId == 0 && !Model.IsValidate)
                     {
-                        <input type="file" name="PhotoFile" />
+                        <input type="file" id="PhotoFile" name="PhotoFile" />
                         @Model.PhotoAttachmentFilename
                     }
                 @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename) && !Model.IsValidate)
@@ -56,6 +56,7 @@
         <div class="formfield">
             @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
             @Html.TextBoxFor(m => m.LastName)
+            <input type="hidden" id="LastName" name="LastName" value="@Model.LastName" />
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.FirstName)&nbsp;@Html.ValidationMessageFor(m => m.FirstName)<br />
@@ -309,7 +310,9 @@
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
         <button type="submit">Сохранить</button>
+        <button id="btn" type="button" onclick="AjaxFormRequest('tabs1', 'general-info-form', '/Employment/GeneralInfo', 'POST');">test</button>
     </div>
+
 }
 
 @* --- *@
@@ -414,6 +417,9 @@
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
         $('#gender').buttonset();        
+        
+        //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
+        
 
         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
         {

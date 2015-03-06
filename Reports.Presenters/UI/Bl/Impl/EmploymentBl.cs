@@ -289,6 +289,67 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return model;
         }
+        /// <summary>
+        /// Заполняем списками, если не прошла форма проверку
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public GeneralInfoModel GetGeneralInfoModel(GeneralInfoModel model)
+        {
+            //userId = userId ?? AuthenticationService.CurrentUser.Id;
+            //GeneralInfoModel model = new GeneralInfoModel { UserId = userId.Value };
+            LoadDictionaries(model);
+            GeneralInfo entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(model.UserId);
+            if (id.HasValue)
+            {
+                entity = EmploymentGeneralInfoDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                
+                foreach (var item in entity.ForeignLanguages)
+                {
+                    model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
+                }
+
+                
+                foreach (var item in entity.NameChanges)
+                {
+                    model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
+                }
+
+                
+
+                int attachmentId = 0;
+                string attachmentFilename = string.Empty;
+                //скан фото
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Photo);
+                model.PhotoAttachmentId = attachmentId;
+                model.PhotoAttachmentFilename = attachmentFilename;
+
+                //скан инн
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
+                model.INNScanAttachmentId = attachmentId;
+                model.INNScanAttachmentFilename = attachmentFilename;
+
+                //скан снилс
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.SNILSScan);
+                model.SNILSScanAttachmentId = attachmentId;
+                model.SNILSScanAttachmentFilename = attachmentFilename;
+
+                //скан справик об  инвалидности
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.DisabilityCertificateScan);
+                model.DisabilityCertificateScanAttachmentId = attachmentId;
+                model.DisabilityCertificateScanAttachmentFilename = attachmentFilename;
+            }
+
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+
+            return model;
+        }
 
         protected void GetAttachmentData(ref int attachmentId, ref string attachmentFilename, int candidateId, RequestAttachmentTypeEnum type)
         {

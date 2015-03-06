@@ -129,12 +129,15 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetGeneralInfoModel(model.UserId);
             }
-            model = EmploymentBl.GetGeneralInfoModel(model.UserId);
+            else
+                model = EmploymentBl.GetGeneralInfoModel(model);
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
+                //return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
+                return PartialView(model);
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }

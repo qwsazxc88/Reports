@@ -11,6 +11,8 @@ namespace Reports.Presenters.UI.Bl
     public interface IEmploymentBl : IBaseBl
     {
         GeneralInfoModel GetGeneralInfoModel(int? userId = null);
+        GeneralInfoModel GetGeneralInfoModel(GeneralInfoModel model);
+
         PassportModel GetPassportModel(int? userId = null);
         EducationModel GetEducationModel(int? userId = null);
         FamilyModel GetFamilyModel(int? userId = null);
