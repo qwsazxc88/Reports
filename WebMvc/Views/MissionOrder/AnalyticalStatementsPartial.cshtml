@@ -1,0 +1,21 @@
+﻿@model IList<Reports.Core.Dto.AnalyticalStatementDto>
+@{
+    
+int i=0;
+foreach (var el in Model)
+{
+    i++;
+    <tr>
+        <td>@i</td>
+        <td>@el.Name</td>
+        <td>@el.Position</td>
+        <td>@el.Dep3Name</td>
+        <td>@el.Dep7Name</td>
+        <td>@(el.ReportedBefore - el.OrderedBefore)</td>
+        <td>@el.Ordered</td>
+        <td>@el.Reported</td>
+        <td>@(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered)</td>
+    </tr>
+}
+
+}

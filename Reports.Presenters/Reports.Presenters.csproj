@@ -131,6 +131,7 @@
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AllRequestListModel.cs" />
+    <Compile Include="UI\ViewModel\AnalyticalStatementModel.cs" />
     <Compile Include="UI\ViewModel\AppointmentEditModel.cs" />
     <Compile Include="UI\ViewModel\AppointmentListModel.cs" />
     <Compile Include="UI\ViewModel\AppointmentReportEditModel.cs" />
