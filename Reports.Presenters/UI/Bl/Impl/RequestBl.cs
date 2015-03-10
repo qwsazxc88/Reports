@@ -47,7 +47,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IVacationCommentDao vacationCommentDao;
         //protected IRequestNextNumberDao requestNextNumberDao;
         protected IRoleDao roleDao;
-
+        protected IAnalyticalStatementDao analyticalStatementDao;
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
@@ -102,7 +102,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITerraGraphicDao terraGraphicDao;
 
 
-       
+        public IAnalyticalStatementDao AnalyticalStatementDao
+        {
+            get { return Validate.Dependency(analyticalStatementDao); }
+            set { analyticalStatementDao = value; }
+        }
         public IVacationTypeDao VacationTypeDao
         {
             get { return Validate.Dependency(vacationTypeDao); }
@@ -2793,6 +2797,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Mission
+        public AnalyticalStatementModel GetAnalyticalStatementModel()
+        {
+            IdNameReadonlyDto dep = GetDepartmentDto(UserDao.Load(CurrentUser.Id));
+            var result = new AnalyticalStatementModel
+            {
+                UserId = CurrentUser.Id,
+                DepartmentId=dep.Id,
+                DepartmentName=dep.Name,
+                DepartmentReadOnly=dep.IsReadOnly
+            };
+            return result;
+        }
+        public IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending)
+        {
+            return AnalyticalStatementDao.GetDocuments(
+                CurrentUser.Id,
+                CurrentUser.UserRole,
+                departamentId,
+                beginDate,
+                endDate,
+                name,
+                Number,
+                sortBy,
+                SortDescending);
+
+        }
         public MissionListModel GetMissionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);

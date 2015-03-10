@@ -759,6 +759,18 @@ namespace WebMvc.Controllers
             return RedirectToAction("Index");
 
         }
+        [HttpPost]
+        public ActionResult AnalyticalStatement(AnalyticalStatementModel model)
+        {
+            var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
+            return PartialView("AnalyticalStatementsPartial", Docs);
+        }
+        [HttpGet]
+        public ActionResult AnalyticalStatement()
+        {
+            var model = RequestBl.GetAnalyticalStatementModel();
+            return View(model);
+        }
         protected bool ValidateAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model)
         {
             //return false;
