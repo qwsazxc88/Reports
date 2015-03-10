@@ -110,19 +110,24 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult GeneralInfoReadOnly(int? id)
         {
-            var model = EmploymentBl.GetGeneralInfoModel(id);
+            GeneralInfoModel model = null;
             //для кадровиков на вкладках показываем анкету с полным функционалом, как у кандидата, в стадии черновика
             //такая же схема применяется для всех страниц анкеты
             if (Session["aaa"] != null)
             {
+                model = (GeneralInfoModel)Session["aaa"];
                 ModelState.Clear();
-                for (int i = 0; i < ((ModelState)Session["aaa"]).Errors.Count; i++)
+                for (int i = 0; i < ((ModelStateDictionary)Session["bbb"]).Count; i++)
                 {
-                    //ModelState.
-                    ModelState.AddModelError("AgreedToPersonalDataProcessing", ((ModelState)Session["aaa"]).Errors[i].ErrorMessage);
+                    ModelState.Add(((ModelStateDictionary)Session["bbb"]).ElementAt(i));
                 }
-                    //ModelState = (ModelState)Session["aaa"];
+
+                Session.Remove("aaa");
+                Session.Remove("bbb");
             }
+            else
+                model = EmploymentBl.GetGeneralInfoModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("GeneralInfo", model);
             else
@@ -134,7 +139,7 @@ namespace WebMvc.Controllers
         public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
-
+            HttpPostedFileBase image = Request.Files["PhotoFile"];
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
@@ -143,18 +148,51 @@ namespace WebMvc.Controllers
             }
             else
             {
+                if (Session["bbb"] != null)
+                    Session.Remove("bbb");
+                if (Session["bbb"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("bbb", mst);
+                }
+
                 model = EmploymentBl.GetGeneralInfoModel(model);
+                if (Session["aaa"] != null)
+                    Session.Remove("aaa");
                 if (Session["aaa"] == null)
-                    Session.Add("aaa", ModelState);
+                    Session.Add("aaa", model);
             }
+
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
                 //return PartialView(model);
+                //return View(model);
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult AddFile()
+        {
+            HttpPostedFileBase image = Request.Files["PhotoFile"];
+            //UploadFileDto fileDto = GetFileContext(fileInput);
+            //string fileName = fileInput.FileName;
+            //string fileName = string.Empty;
+            //SaveAttachment(candidateId, model.PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(19514);
+            //для кадровиков при обновлении встаем на нужную вкладку
+            //такая же схема применяется для всех страниц анкеты
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                //return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
+                return PartialView(model);
+            //return View(model);
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
+        }
+
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]

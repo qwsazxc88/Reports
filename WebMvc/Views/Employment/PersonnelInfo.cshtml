@@ -198,6 +198,7 @@
         //создаем вкладки, с обработчиком переключения вкладок
         $('#tabs').tabs({ selected: -1,
             spinner: "Загрузка...",
+            ajaxOption: {cache: true},
             select: function (e, ui) {
                 //первая вкладка
                 if (ui.panel.id == "tabs1") {
@@ -211,6 +212,8 @@
                         $('#gender').buttonset();        
                         
                         //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
+
+
 
                         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
                         {
@@ -824,6 +827,30 @@
             error: function(response) { //Если ошибка
             document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
                 }   
+        });
+    }
+
+    //функция отправки и получения ajax-запроса
+    function AjaxFormFileRequest(result_id,url,TypePost) {
+        var formData = new FormData();
+        var file = document.getElementById("PhotoFile").files[0];
+        formData.append("PhotoFile", file);
+        //formData.append("UserId", 2);
+
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function() { //Если все нормально
+            //document.getElementById(result_id).innerHTML = response;
+            alert('аминь!');
+                }
+//            error: function() { //Если ошибка
+//            //document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+//            alert('хреново');
+//                }   
         });
     }
 </script>
