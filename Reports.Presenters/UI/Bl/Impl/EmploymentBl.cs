@@ -1849,7 +1849,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Нерезидент", Value = "1"},
                 new SelectListItem {Text = "Высококвалифицированный иностранный специалист", Value = "2"},
                 new SelectListItem {Text = "Участник программы по переселению соотечественников", Value = "3"},
-                new SelectListItem {Text = "Член экипажа судна под флагом РФ", Value = "4"}
+                new SelectListItem {Text = "Член экипажа судна под флагом РФ", Value = "4"},
+                new SelectListItem {Text = "Беженец", Value = "5"}
             };
         }
 

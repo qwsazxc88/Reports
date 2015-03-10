@@ -113,6 +113,16 @@ namespace WebMvc.Controllers
             var model = EmploymentBl.GetGeneralInfoModel(id);
             //для кадровиков на вкладках показываем анкету с полным функционалом, как у кандидата, в стадии черновика
             //такая же схема применяется для всех страниц анкеты
+            if (Session["aaa"] != null)
+            {
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelState)Session["aaa"]).Errors.Count; i++)
+                {
+                    //ModelState.
+                    ModelState.AddModelError("AgreedToPersonalDataProcessing", ((ModelState)Session["aaa"]).Errors[i].ErrorMessage);
+                }
+                    //ModelState = (ModelState)Session["aaa"];
+            }
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("GeneralInfo", model);
             else
@@ -132,12 +142,16 @@ namespace WebMvc.Controllers
                 model = EmploymentBl.GetGeneralInfoModel(model.UserId);
             }
             else
+            {
                 model = EmploymentBl.GetGeneralInfoModel(model);
+                if (Session["aaa"] == null)
+                    Session.Add("aaa", ModelState);
+            }
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                //return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
-                return PartialView(model);
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
+                //return PartialView(model);
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
