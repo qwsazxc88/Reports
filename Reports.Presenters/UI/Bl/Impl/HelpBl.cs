@@ -507,7 +507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
-            types = FilteServiceRequestTypes(types);
+            //types = FilteServiceRequestTypes(types);
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
