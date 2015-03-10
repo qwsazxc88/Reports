@@ -19,9 +19,9 @@ namespace Reports.Core.Dao
 	                                U.Id as UserId,
 	                                MAX(U.Name) AS Name,
 	                                (SELECT SUM(AllSum) FROM [dbo].[MissionOrder] WHERE UserId=U.Id AND CreateDate<:DateStart ) AS OrderedBefore,
-	                                (SELECT SUM(AllSum) FROM [dbo].[MissionReport] WHERE  UserId=U.Id AND CreateDate<:DateStart) As ReportedBefore,
-	                                SUM(MO.AllSum) AS Ordered,
-	                                SUM(MR.AllSum) AS Reported,
+	                                (SELECT SUM(AccountantAllSum) FROM [dbo].[MissionReport] WHERE  UserId=U.Id AND CreateDate<:DateStart) As ReportedBefore,
+	                                SUM(MO.UserAllSum) AS Ordered,
+	                                SUM(MR.AccountantAllSum) AS Reported,
                                     MAX(dep.Name) as Dep7Name,
                                     MAX(dep3.Name) as Dep3Name, 
                                     MAX(up.Name) as Position

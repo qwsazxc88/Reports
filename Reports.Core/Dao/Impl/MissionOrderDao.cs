@@ -631,6 +631,27 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserSum", NHibernateUtil.Decimal).
                 AddScalar("Status", NHibernateUtil.String);
         }
+        public IList<AnalyticalStatementDetailsDto> GetAnalyticalStatementDetails(int userId)
+        {
+            IQuery sqlQuery=Session.CreateSQLQuery("exec GetAnalyticalStatementDetails " + userId)
+                .AddScalar("OrderDate", NHibernateUtil.DateTime)
+                .AddScalar("Ordered", NHibernateUtil.Single)
+                .AddScalar("OrderNumber", NHibernateUtil.Int32)
+                .AddScalar("ReportNumber", NHibernateUtil.Int32)
+                .AddScalar("ReportDate", NHibernateUtil.DateTime)
+                .AddScalar("ReportedSum", NHibernateUtil.Single)
+                .AddScalar("SendTo1C", NHibernateUtil.DateTime);
+            var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
+                .List<AnalyticalStatementDetailsDto>();
+            float SaldoStart = 0;
+            if (result != null)
+                foreach (var el in result)
+                {
+                    el.SaldoStart = SaldoStart;
+                    SaldoStart = SaldoStart-el.Ordered+(el.ReportedSum.HasValue?el.ReportedSum.Value:0)-(el.SendTo1C.HasValue?el.ReportedSum.Value-el.Ordered:0);
+                }
+            return result;
+        }
         public virtual string GetUdStatusWhere(string whereString, int statusId)
         {
             if (statusId != 0)

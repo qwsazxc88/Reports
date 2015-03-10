@@ -1,0 +1,156 @@
+﻿@model Reports.Presenters.UI.ViewModel.AnalyticalStatementDetailsModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Аналитическая ведомость";
+}
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+<form id="RequestData">
+<table style="width:100%">
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td>@Html.LabelFor(m => m.Date)</td>
+                    <td>@Html.DisplayFor(m => m.Date)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Organization)</td>
+                    <td>@Html.DisplayFor(m => m.Organization)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Number)</td>
+                    <td>@Html.DisplayFor(m => m.Number)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Employee)</td>
+                    <td>@Html.DisplayFor(m => m.Employee)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.StatementNumber)</td>
+                    <td>@Html.DisplayFor(m => m.StatementNumber)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Department)</td>
+                    <td>@Html.DisplayFor(m => m.Department)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Position)</td>
+                    <td>@Html.DisplayFor(m => m.Position)</td>
+                </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     
+     <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+            <span id="LoadingIndicator"></span>
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            </div>
+        </td>
+     </tr>
+ </table> 
+ </form>
+ <table  class="grid" width="100%">
+    <thead>
+        <tr>
+        <th>№<br />П/П</th>
+        <th><a>Наименование</a></th>
+        <th><a>Дата</a></th>
+        <th><a>Сальдо<br />начальное</a></th>
+        <th><a>Выдано</a></th>
+        <th><a>Принято</a></th>
+        <th><a>Сальдо<br />конечное</a></th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+       @{ int i = 0; }
+       @if (Model.Documents != null)
+       {
+           foreach (var el in Model.Documents)
+           {
+               i++;
+               <tr>
+                   <td>@i</td>
+                   <td>Приказ на командировку № @el.OrderNumber</td>
+                   <td>@el.OrderDate</td>
+                   <td>@el.SaldoStart</td>
+                   <td>@el.Ordered</td>
+                   <td></td>
+                   <td>@(el.SaldoStart - el.Ordered)</td>
+               </tr>
+                float saldoend=0;
+               if (el.ReportDate.HasValue)
+               {
+                   saldoend = (el.SaldoStart - el.Ordered + el.ReportedSum.Value);
+                <tr>
+                    <td></td>
+                    <td>Авансовый отчёт № @el.ReportNumber</td>
+                    <td>@el.ReportDate</td>
+                    <td>@(el.SaldoStart - el.Ordered)</td>
+                    <td></td>
+                    <td>@el.ReportedSum</td>
+                    <td>@saldoend</td>
+                </tr>
+               }
+               if (el.SendTo1C.HasValue && saldoend!=0)
+               {
+                <tr>
+                    <td></td>
+                    <td>@(saldoend<0?"Передано на удержание долга за сотрудником":"Возврат сотруднику долга за организацией")</td>
+                    <td>@(el.SendTo1C+TimeSpan.FromDays(1))</td>
+                    <td>@saldoend</td>
+                    <td>@saldoend</td>
+                    <td></td>
+                    <td>0</td>
+                </tr>
+               }
+           }
+       }
+    </tbody>
+</table>
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        setSortFields();
+        setActiveMenuItem("moAnaliticalStatementList");
+    });
+    
+    function setSortFields(){
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+    }
+    function SortChanged(sortedBy)
+    {
+        
+        if($("#SortBy").val() != sortedBy)
+           {
+           $("#sort"+$("#SortBy").val()).removeClass("sort-desc");
+           $("#sort"+$("#SortBy").val()).removeClass("sort-asc");
+            $("#SortDescending").val(''); 
+            }
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+         setSortFields()
+         GetDocs();
+         return false;
+    }
+    
+ </script> 
