@@ -86,6 +86,14 @@
                                 </td>
                             </tr>
                        @* }*@
+                       <tr>
+                        <td>
+                            @Html.LabelFor(m=>m.Number)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m=>m.Number)
+                        </td>
+                       </tr>
                          <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
@@ -135,44 +143,44 @@
                     <th>Дата</th>*@
                      <th>
                         @*<div id="sort1"><a href="#" onclick = "SortChanged(1);">*@
-                        № п/п
+                        №<br />п/п
                         @*</a></div>*@
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
+                        <div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br />заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort3" style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                        <div id="sort3" style="min-width:30px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
                      <th>
-                        <div id="sort4" style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение уровня 3</a></div>
+                        <div id="sort4" style="min-width:30px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br />уровня 3</a></div>
                     </th>
                     <th>
-                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Сумма</a></div>
+                        <div id="sort5"  style="min-width:30px"><a href="#"  onclick = "SortChanged(5);">Сумма</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:86px"><a href="#"  onclick = "SortChanged(6);">Период</a></div>
+                        <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Период</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:90px"><a href="#"  onclick = "SortChanged(7);">Ф.И.О.</a></div>
+                        <div id="sort7" style="min-width:30px"><a href="#"  onclick = "SortChanged(7);">Ф.И.О.</a></div>
                     </th>
                     <th>
-                        <div id="sort8" style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Должность</a></div>
+                        <div id="sort8" style="min-width:30px"><a href="#"  onclick = "SortChanged(8);">Должность</a></div>
                     </th>
                     <th>
-                        <div id="sort9" style="min-width:132px"><a href="#"  onclick = "SortChanged(9);">Вид удержания</a></div>
+                        <div id="sort9" style="min-width:30px"><a href="#"  onclick = "SortChanged(9);">Вид<br />удержания</a></div>
                     </th>
                     <th>
-                        <div id="sort10" style="min-width:222px"><a href="#"  onclick = "SortChanged(10);">Подразделение ККО/Отдел</a></div>
+                        <div id="sort10" style="min-width:30px"><a href="#"  onclick = "SortChanged(10);">Подразделение<br />ККО/Отдел</a></div>
                     </th>
                      <th>
-                        <div id="sort11" style="min-width:148px"><a href="#"  onclick = "SortChanged(11);">Дата увольнения</a></div>
+                        <div id="sort11" style="min-width:30px"><a href="#"  onclick = "SortChanged(11);">Дата<br />увольнения</a></div>
                     </th>
                     <th>
-                        <div id="sort12" style="min-width:96px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                        <div id="sort12" style="min-width:30px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
                     </th>
                      <th>
-                        <div id="sort13"  style="min-width:74px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
+                        <div id="sort13"  style="min-width:30px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
                     </th>
                     @*<th>
                         Дата окончания
@@ -241,6 +249,7 @@
         //$("#VacationTypeId").val('0');
         $("#RequestStatusId").val('0');
          $("#UserName").val('');
+         $("#Number").val('');
     }
      function onPrintClick() {
 

@@ -9,6 +9,7 @@ namespace Reports.Core.Dto
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
+        public string Dep3Name { get; set; }
         public string Dep7Name { get; set; }
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
@@ -46,6 +47,7 @@ namespace Reports.Core.Dto
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
+        public string Dep3Name { get; set; }
         public string Dep7Name { get; set; }
         public DateTime EditDate { get; set; }
         public int ReportNumber { get; set; }

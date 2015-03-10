@@ -1315,7 +1315,7 @@ namespace WebMvc.Controllers
          public ActionResult ChildVacationList(ChildVacationListModel model)
          {
              RequestBl.SetChildVacationListModel(model, !ValidateModel(model));
-             ModelState.Clear();
+             //ModelState.Clear();
              return View(model);
          }
          protected bool ValidateModel(ChildVacationListModel model)
@@ -1323,6 +1323,11 @@ namespace WebMvc.Controllers
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate.Value > model.EndDate.Value)
                  ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+             if (model.Number != null)
+             {
+                 try { Convert.ToInt32(model.Number); }                 
+                 catch{ ModelState.AddModelError("Number", "Номер заявки числовое поле");}
+             }
              return ModelState.IsValid;
          }
 

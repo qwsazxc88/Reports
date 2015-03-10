@@ -30,7 +30,8 @@ namespace Reports.Core.Dao.Impl
                string userName, 
                string SicklistNumber,
                int sortedBy,
-               bool? sortDescending
+               bool? sortDescending,
+               string docId
             )
         {
             string sqlQuery =
@@ -51,7 +52,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
-
+            whereString = GetDocumentNumberWhere(whereString, docId);
             //фильт по номеру больничного
             if (SicklistNumber != null)
             {
@@ -85,7 +86,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
-                AddScalar("SicklistNumber", NHibernateUtil.String);
+                AddScalar("SicklistNumber", NHibernateUtil.String).
+                AddScalar("Dep7Name",NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("Position",NHibernateUtil.String);
         }
 
         public bool ResetApprovals(int id)

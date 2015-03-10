@@ -92,7 +92,8 @@
                         </tr>
                         <tr>
                           <td colspan="2">
-                            <input type="submit" value="Выбрать"/>
+                            @*<input type="submit" value="Выбрать"/>*@
+                            <input type="button" value="Выбрать" onclick="$('#grid').remove(); this.form.submit();"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
                           </td>
                         </tr>
@@ -138,7 +139,7 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table id="grid" class="grid" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
@@ -297,6 +298,7 @@
          $("#StatusId").val('0');
          $("#UserName").val('');
          $("#Number").val('');
+         $("#TypeId").val('0');
     }
 </script>
 

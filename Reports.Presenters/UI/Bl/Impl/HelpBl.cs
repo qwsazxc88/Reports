@@ -179,7 +179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses = GetServiceRequestsStatuses();
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
             //types=FilteServiceRequestTypes(types);
-            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Любой" });
+            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Все" });
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         public List<IdNameDto> GetServiceRequestsStatuses()
@@ -431,6 +431,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
+                            model.IsNotEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
                         }
@@ -447,6 +448,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
+                            if (current.Id == 10)
+                            {
+                                model.IsNotEndWorkAvailable = true;
+                            }
                             model.IsEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
@@ -480,13 +485,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<HelpServiceType> FilteServiceRequestTypes(List<HelpServiceType> types)
         {
-            //Фильтрация доступных для ролей услуг, возможно лучше добавить в базу таблицу со списком типов услуг для ролей
-            List<UserRole> ApprovedUsers=new List<UserRole>{ UserRole.PersonnelManager, UserRole.OutsourcingManager, UserRole.ConsultantOutsourcing, UserRole.ConsultantPersonnel};
-            List<int> ServiceTypesForApprovedUsers=new List<int>{22,23,24,25,26,27};
-            if(!ApprovedUsers.Contains(CurrentUser.UserRole))
-            {
-                types=types.Where(x=>!ServiceTypesForApprovedUsers.Contains(x.Id)).ToList();
-            }
+            List<int> hiddenIds=new List<int>{15};
+            //Фильтрация доступных услуг
+            types=types.Where(x=>!hiddenIds.Contains(x.Id)).ToList();
+            
             return types;
         }
         protected void SetFlagsState(HelpServiceRequestEditModel model, bool state)
@@ -862,6 +864,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.EndWorkDate = DateTime.Now;
                             entity.ConfirmWorkDate = DateTime.Now;
                         }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -911,6 +919,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.EndWorkDate = DateTime.Now;
                             entity.ConfirmWorkDate = DateTime.Now;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue && currUser.Id == 10)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
                         }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу

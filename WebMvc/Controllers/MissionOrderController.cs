@@ -634,9 +634,9 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+            //if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
                 return View(model);
-            return RedirectToAction("MissionReportsList");
+            //return RedirectToAction("MissionReportsList");
         }
         protected void CorrectCheckboxes(MissionReportEditModel model)
         {
@@ -1085,7 +1085,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager )]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Employee | UserRole.Manager)]
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
@@ -1240,7 +1240,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Manager | UserRole.Employee)]
         public ActionResult MissionUserCredsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();

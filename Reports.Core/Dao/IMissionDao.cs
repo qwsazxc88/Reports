@@ -18,7 +18,8 @@ namespace Reports.Core.Dao
             DateTime? endDate,
             string userName, 
             int sortedBy,
-            bool? sortDescending);
+            bool? sortDescending,
+            string Number);
 
         int SetRecalculateDate(List<int> idsForApprove);
     }
