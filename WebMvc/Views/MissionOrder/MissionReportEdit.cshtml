@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.MissionReportEditModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Редактирование авансового отчета";
 }
@@ -172,7 +175,7 @@
                     <input type="hidden" id="IsAccountantReject" name="IsAccountantReject" value="@Model.IsAccountantReject" />
                     <input type="hidden" id="IsAccountantRejectAvailable" name="IsAccountantRejectAvailable" value="@Model.IsAccountantRejectAvailable" />
                 </div>
-                @if (!Model.IsAccountantRejectAvailable && !Model.IsSend1C)
+                @if (!Model.IsAccountantRejectAvailable && !Model.IsSend1C && (dto.UserRole & UserRole.Accountant) > 0)
                 {
                 <input style="float:right;" type="submit" value="Отменить согласование бухгалтера" onclick="return AccountantApproveCancel();" @*@if (!Model.IsAccountantApprovedHidden)
                                                                                                                                                {<text>style="display:none"</text>}*@/>
