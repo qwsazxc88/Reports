@@ -11471,6 +11471,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortDescending,showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
         }
+        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
+        {
+            var user=UserDao.Load(userId);
+            AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
+            {
+                Employee = user.Name,
+                Department =user.Department!=null? user.Department.Name:"",
+                Organization =user.Organization!=null? user.Organization.Name:"",
+                Position = user.Position!=null? user.Position.Name :"",
+                Documents=MissionOrderDao.GetAnalyticalStatementDetails(user.Id)
+            };
+            return model;
+        }
         public PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId, DateTime? beginDate,
             DateTime? endDate, string userName, int sortBy, bool? sortDescending,bool showDepts)
         {

@@ -766,6 +766,12 @@ namespace WebMvc.Controllers
             return PartialView("AnalyticalStatementsPartial", Docs);
         }
         [HttpGet]
+        public ActionResult AnalyticalStatementDetails(int userId)
+        {
+            var model = RequestBl.GetAnalyticalStatementDetails(userId);
+            return View(model);
+        }
+        [HttpGet]
         public ActionResult AnalyticalStatement()
         {
             var model = RequestBl.GetAnalyticalStatementModel();
