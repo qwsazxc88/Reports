@@ -7,7 +7,7 @@ foreach (var el in Model)
     i++;
     <tr>
         <td>@i</td>
-        <td>@el.Name</td>
+        <td>@Html.ActionLink(el.Name,"AnalyticalStatementDetails","MissionOrder", new{ userId=el.userId},null)</td>
         <td>@el.Position</td>
         <td>@el.Dep3Name</td>
         <td>@el.Dep7Name</td>
