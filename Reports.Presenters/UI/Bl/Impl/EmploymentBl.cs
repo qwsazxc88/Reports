@@ -414,6 +414,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PassportModel GetPassportModel(PassportModel model)
+        {
+            Passport entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Passport>(model.UserId);
+            if (id.HasValue)
+            {
+                entity = EmploymentPassportDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                //скан
+                int attachmentId = 0;
+                string attachmentFilename = string.Empty;
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InternalPassportScan);
+                model.InternalPassportScanAttachmentId = attachmentId;
+                model.InternalPassportScanAttachmentFilename = attachmentFilename;
+            }
+            LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            return model;
+        }
+
         public EducationModel GetEducationModel(int? userId = null)
         {
             userId = userId ?? AuthenticationService.CurrentUser.Id;

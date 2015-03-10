@@ -54,7 +54,6 @@
                                                                                                    {<text>style="display:none"</text>}*@/>
                     </div>
                 }
-                <button type="button" id="btnFileUpload" onclick="AjaxFormFileRequest('tabs1', '/Employment/AddFile', 'POST');">test</button>
             </fieldset>            
         </div>
         <div class="formfield">
@@ -314,7 +313,6 @@
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
         <button type="submit">Сохранить</button>
-        <button id="btn" type="button" onclick="AjaxFormRequest('tabs1', 'general-info-form', '/Employment/GeneralInfo', 'POST');">test</button>
     </div>
 
 }

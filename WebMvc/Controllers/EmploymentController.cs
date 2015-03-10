@@ -113,17 +113,17 @@ namespace WebMvc.Controllers
             GeneralInfoModel model = null;
             //для кадровиков на вкладках показываем анкету с полным функционалом, как у кандидата, в стадии черновика
             //такая же схема применяется для всех страниц анкеты
-            if (Session["aaa"] != null)
+            if (Session["GeneralInfoM"] != null)
             {
-                model = (GeneralInfoModel)Session["aaa"];
+                model = (GeneralInfoModel)Session["GeneralInfoM"];
                 ModelState.Clear();
-                for (int i = 0; i < ((ModelStateDictionary)Session["bbb"]).Count; i++)
+                for (int i = 0; i < ((ModelStateDictionary)Session["GeneralInfoMS"]).Count; i++)
                 {
-                    ModelState.Add(((ModelStateDictionary)Session["bbb"]).ElementAt(i));
+                    ModelState.Add(((ModelStateDictionary)Session["GeneralInfoMS"]).ElementAt(i));
                 }
 
-                Session.Remove("aaa");
-                Session.Remove("bbb");
+                Session.Remove("GeneralInfoM");
+                Session.Remove("GeneralInfoMS");
             }
             else
                 model = EmploymentBl.GetGeneralInfoModel(id);
@@ -139,7 +139,6 @@ namespace WebMvc.Controllers
         public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
-            HttpPostedFileBase image = Request.Files["PhotoFile"];
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
@@ -147,52 +146,29 @@ namespace WebMvc.Controllers
                 model = EmploymentBl.GetGeneralInfoModel(model.UserId);
             }
             else
-            {
-                if (Session["bbb"] != null)
-                    Session.Remove("bbb");
-                if (Session["bbb"] == null)
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["GeneralInfoMS"] != null)
+                    Session.Remove("GeneralInfoMS");
+                if (Session["GeneralInfoMS"] == null)
                 {
                     ModelStateDictionary mst = ModelState;
-                    Session.Add("bbb", mst);
+                    Session.Add("GeneralInfoMS", mst);
                 }
 
                 model = EmploymentBl.GetGeneralInfoModel(model);
-                if (Session["aaa"] != null)
-                    Session.Remove("aaa");
-                if (Session["aaa"] == null)
-                    Session.Add("aaa", model);
+                if (Session["GeneralInfoM"] != null)
+                    Session.Remove("GeneralInfoM");
+                if (Session["GeneralInfoM"] == null)
+                    Session.Add("GeneralInfoM", model);
             }
 
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
-                //return PartialView(model);
-                //return View(model);
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
-
-        [HttpPost]
-        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult AddFile()
-        {
-            HttpPostedFileBase image = Request.Files["PhotoFile"];
-            //UploadFileDto fileDto = GetFileContext(fileInput);
-            //string fileName = fileInput.FileName;
-            //string fileName = string.Empty;
-            //SaveAttachment(candidateId, model.PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
-            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(19514);
-            //для кадровиков при обновлении встаем на нужную вкладку
-            //такая же схема применяется для всех страниц анкеты
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                //return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
-                return PartialView(model);
-            //return View(model);
-            else
-                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
-        }
-
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
@@ -265,7 +241,22 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult PassportReadOnly(int? id)
         {
-            var model = EmploymentBl.GetPassportModel(id);
+            PassportModel model = null;
+            if (Session["PassportM"] != null)
+            {
+                model = (PassportModel)Session["PassportM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["PassportMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["PassportMS"]).ElementAt(i));
+                }
+
+                Session.Remove("PassportM");
+                Session.Remove("PassportMS");
+            }
+            else
+                model = EmploymentBl.GetPassportModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("Passport", model);
             else
@@ -282,8 +273,25 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetPassportModel(model.UserId);
             }
-            model = EmploymentBl.GetPassportModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["PassportMS"] != null)
+                    Session.Remove("PassportMS");
+                if (Session["PassportMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("PassportMS", mst);
+                }
+
+                model = EmploymentBl.GetPassportModel(model);
+                if (Session["PassportM"] != null)
+                    Session.Remove("PassportM");
+                if (Session["PassportM"] == null)
+                    Session.Add("PassportM", model);
+            }
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=1");
             else

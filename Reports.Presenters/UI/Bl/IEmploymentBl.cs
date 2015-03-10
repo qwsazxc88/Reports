@@ -14,6 +14,8 @@ namespace Reports.Presenters.UI.Bl
         GeneralInfoModel GetGeneralInfoModel(GeneralInfoModel model);
 
         PassportModel GetPassportModel(int? userId = null);
+        PassportModel GetPassportModel(PassportModel model);
+
         EducationModel GetEducationModel(int? userId = null);
         FamilyModel GetFamilyModel(int? userId = null);
         MilitaryServiceModel GetMilitaryServiceModel(int? userId = null);
