@@ -56,7 +56,7 @@
 
         
         <div id="tabs1">
-            @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }
+            @*@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }*@
         </div>
         
         <div id="tabs2">
@@ -198,6 +198,7 @@
         //создаем вкладки, с обработчиком переключения вкладок
         $('#tabs').tabs({ selected: -1,
             spinner: "Загрузка...",
+            ajaxOption: {cache: true},
             select: function (e, ui) {
                 //первая вкладка
                 if (ui.panel.id == "tabs1") {
@@ -209,9 +210,10 @@
                         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
                         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
                         $('#gender').buttonset();        
-                        //$("#TabIndex").val('0');
-                        //$("#aaa").click(function(){$("#tabs1").submit();});
                         
+                        //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
+
+
 
                         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
                         {
@@ -827,4 +829,5 @@
                 }   
         });
     }
+    
 </script>

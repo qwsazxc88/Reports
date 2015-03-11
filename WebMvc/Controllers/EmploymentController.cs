@@ -110,9 +110,24 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult GeneralInfoReadOnly(int? id)
         {
-            var model = EmploymentBl.GetGeneralInfoModel(id);
+            GeneralInfoModel model = null;
             //для кадровиков на вкладках показываем анкету с полным функционалом, как у кандидата, в стадии черновика
             //такая же схема применяется для всех страниц анкеты
+            if (Session["GeneralInfoM"] != null)
+            {
+                model = (GeneralInfoModel)Session["GeneralInfoM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["GeneralInfoMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["GeneralInfoMS"]).ElementAt(i));
+                }
+
+                Session.Remove("GeneralInfoM");
+                Session.Remove("GeneralInfoMS");
+            }
+            else
+                model = EmploymentBl.GetGeneralInfoModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("GeneralInfo", model);
             else
@@ -124,13 +139,29 @@ namespace WebMvc.Controllers
         public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
-
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetGeneralInfoModel(model.UserId);
             }
-            model = EmploymentBl.GetGeneralInfoModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["GeneralInfoMS"] != null)
+                    Session.Remove("GeneralInfoMS");
+                if (Session["GeneralInfoMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("GeneralInfoMS", mst);
+                }
+
+                model = EmploymentBl.GetGeneralInfoModel(model);
+                if (Session["GeneralInfoM"] != null)
+                    Session.Remove("GeneralInfoM");
+                if (Session["GeneralInfoM"] == null)
+                    Session.Add("GeneralInfoM", model);
+            }
+
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
@@ -210,7 +241,22 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult PassportReadOnly(int? id)
         {
-            var model = EmploymentBl.GetPassportModel(id);
+            PassportModel model = null;
+            if (Session["PassportM"] != null)
+            {
+                model = (PassportModel)Session["PassportM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["PassportMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["PassportMS"]).ElementAt(i));
+                }
+
+                Session.Remove("PassportM");
+                Session.Remove("PassportMS");
+            }
+            else
+                model = EmploymentBl.GetPassportModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("Passport", model);
             else
@@ -227,8 +273,25 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetPassportModel(model.UserId);
             }
-            model = EmploymentBl.GetPassportModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["PassportMS"] != null)
+                    Session.Remove("PassportMS");
+                if (Session["PassportMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("PassportMS", mst);
+                }
+
+                model = EmploymentBl.GetPassportModel(model);
+                if (Session["PassportM"] != null)
+                    Session.Remove("PassportM");
+                if (Session["PassportM"] == null)
+                    Session.Add("PassportM", model);
+            }
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=1");
             else
@@ -420,7 +483,21 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult MilitaryServiceReadOnly(int? id)
         {
-            var model = EmploymentBl.GetMilitaryServiceModel(id);
+            MilitaryServiceModel model = null;
+            if (Session["MilitaryServiceM"] != null)
+            {
+                model = (MilitaryServiceModel)Session["MilitaryServiceM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["MilitaryServiceMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["MilitaryServiceMS"]).ElementAt(i));
+                }
+
+                Session.Remove("MilitaryServiceM");
+                Session.Remove("MilitaryServiceMS");
+            }
+            else
+                model = EmploymentBl.GetMilitaryServiceModel(id);
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("MilitaryService", model);
             else
@@ -437,8 +514,25 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<MilitaryServiceModel, MilitaryService>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
             }
-            model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["MilitaryServiceMS"] != null)
+                    Session.Remove("MilitaryServiceMS");
+                if (Session["MilitaryServiceMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("MilitaryServiceMS", mst);
+                }
+
+                model = EmploymentBl.GetMilitaryServiceModel(model);
+                if (Session["MilitaryServiceM"] != null)
+                    Session.Remove("MilitaryServiceM");
+                if (Session["MilitaryServiceM"] == null)
+                    Session.Add("MilitaryServiceM", model);
+            }
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=4");
             else
@@ -459,7 +553,21 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult ExperienceReadOnly(int? id)
         {
-            var model = EmploymentBl.GetExperienceModel(id);
+            ExperienceModel model = null;
+            if (Session["ExperienceM"] != null)
+            {
+                model = (ExperienceModel)Session["ExperienceM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["ExperienceMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["ExperienceMS"]).ElementAt(i));
+                }
+
+                Session.Remove("ExperienceM");
+                Session.Remove("ExperienceMS");
+            }
+            else
+                model = EmploymentBl.GetExperienceModel(id);
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("Experience", model);
             else
@@ -478,13 +586,31 @@ namespace WebMvc.Controllers
                 {
                     EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
                     ViewBag.Error = error;
+                    model = EmploymentBl.GetExperienceModel(model.UserId);
+                }
+                else
+                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                    if (Session["ExperienceMS"] != null)
+                        Session.Remove("ExperienceMS");
+                    if (Session["ExperienceMS"] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("ExperienceMS", mst);
+                    }
+
+                    model = EmploymentBl.GetExperienceModel(model);
+                    if (Session["ExperienceM"] != null)
+                        Session.Remove("ExperienceM");
+                    if (Session["ExperienceM"] == null)
+                        Session.Add("ExperienceM", model);
                 }
             }
             else
             {
                 EmploymentBl.DeleteExperiensRow(model);
+                model = EmploymentBl.GetExperienceModel(model.UserId);
             }
-            model = EmploymentBl.GetExperienceModel(model.UserId);
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=5");
             else
@@ -519,7 +645,22 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult ContactsReadOnly(int? id)
         {
-            var model = EmploymentBl.GetContactsModel(id);
+            ContactsModel model = null;
+            if (Session["ContactsM"] != null)
+            {
+                model = (ContactsModel)Session["ContactsM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["ContactsMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["ContactsMS"]).ElementAt(i));
+                }
+
+                Session.Remove("ContactsM");
+                Session.Remove("ContactsMS");
+            }
+            else
+                model = EmploymentBl.GetContactsModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("Contacts", model);
             else
@@ -536,8 +677,25 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<ContactsModel, Contacts>(model, out error);
                 ViewBag.Error = error;
+                model = EmploymentBl.GetContactsModel(model.UserId);
             }
-            model = EmploymentBl.GetContactsModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["ContactsMS"] != null)
+                    Session.Remove("ContactsMS");
+                if (Session["ContactsMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("ContactsMS", mst);
+                }
+
+                model = EmploymentBl.GetContactsModel(model);
+                if (Session["ContactsM"] != null)
+                    Session.Remove("ContactsM");
+                if (Session["ContactsM"] == null)
+                    Session.Add("ContactsM", model);
+            }
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=6");
             else
@@ -558,7 +716,22 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult BackgroundCheckReadOnly(int? id)
         {
-            var model = EmploymentBl.GetBackgroundCheckModel(id);
+            BackgroundCheckModel model = null;
+            if (Session["BackgroundCheckM"] != null)
+            {
+                model = (BackgroundCheckModel)Session["BackgroundCheckM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["BackgroundCheckMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["BackgroundCheckMS"]).ElementAt(i));
+                }
+
+                Session.Remove("BackgroundCheckM");
+                Session.Remove("BackgroundCheckMS");
+            }
+            else
+                model = EmploymentBl.GetBackgroundCheckModel(id);
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("BackgroundCheck", model);
             else
@@ -576,13 +749,31 @@ namespace WebMvc.Controllers
                 {
                     EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
                     ViewBag.Error = error;
+                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                }
+                else
+                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                    if (Session["BackgroundCheckMS"] != null)
+                        Session.Remove("BackgroundCheckMS");
+                    if (Session["BackgroundCheckMS"] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("BackgroundCheckMS", mst);
+                    }
+
+                    model = EmploymentBl.GetBackgroundCheckModel(model);
+                    if (Session["BackgroundCheckM"] != null)
+                        Session.Remove("BackgroundCheckM");
+                    if (Session["BackgroundCheckM"] == null)
+                        Session.Add("BackgroundCheckM", model);
                 }
             }
             else
             {
                 EmploymentBl.DeleteBackgroundRow(model);
+                model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
             }
-            model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
             else
@@ -712,7 +903,21 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult ManagersReadOnly(int? id)
         {
-            var model = EmploymentBl.GetManagersModel(id);
+            ManagersModel model = null;
+            if (Session["ManagersM"] != null)
+            {
+                model = (ManagersModel)Session["ManagersM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["ManagersMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["ManagersMS"]).ElementAt(i));
+                }
+
+                Session.Remove("ManagersM");
+                Session.Remove("ManagersMS");
+            }
+            else
+                model = EmploymentBl.GetManagersModel(id);
             return PartialView(model);
         }
 
@@ -726,7 +931,25 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
                 EmploymentBl.ApproveCandidateByManager(model, out error);
+                model = EmploymentBl.GetManagersModel(model.UserId);
             }
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["ManagersMS"] != null)
+                    Session.Remove("ManagersMS");
+                if (Session["ManagersMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("ManagersMS", mst);
+                }
+
+                model = EmploymentBl.GetManagersModel(model);
+                if (Session["ManagersM"] != null)
+                    Session.Remove("ManagersM");
+                if (Session["ManagersM"] == null)
+                    Session.Add("ManagersM", model);
+            }
+
             if (!string.IsNullOrEmpty(error))
             {
                 ViewBag.Error = error;
@@ -774,7 +997,21 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult PersonnelManagersReadOnly(int? id)
         {
-            var model = EmploymentBl.GetPersonnelManagersModel(id);
+            PersonnelManagersModel model = null;
+            if (Session["PersonnelManagersM"] != null)
+            {
+                model = (PersonnelManagersModel)Session["PersonnelManagersM"];
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["PersonnelManagersMS"]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["PersonnelManagersMS"]).ElementAt(i));
+                }
+
+                Session.Remove("PersonnelManagersM");
+                Session.Remove("PersonnelManagersMS");
+            }
+            else
+                model = EmploymentBl.GetPersonnelManagersModel(id);
             return PartialView(model);
             //return View(model);
         }
@@ -788,8 +1025,26 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
+                model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
             }
-            model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                if (Session["PersonnelManagersMS"] != null)
+                    Session.Remove("PersonnelManagersMS");
+                if (Session["PersonnelManagersMS"] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("PersonnelManagersMS", mst);
+                }
+
+                model = EmploymentBl.GetPersonnelManagersModel(model);
+                if (Session["PersonnelManagersM"] != null)
+                    Session.Remove("PersonnelManagersM");
+                if (Session["PersonnelManagersM"] == null)
+                    Session.Add("PersonnelManagersM", model);
+            }
+
+            
             if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
