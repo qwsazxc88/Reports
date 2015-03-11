@@ -342,6 +342,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.DisabilityCertificateScan);
                 model.DisabilityCertificateScanAttachmentId = attachmentId;
                 model.DisabilityCertificateScanAttachmentFilename = attachmentFilename;
+
+                model.IsDraft = !entity.IsFinal;
+                model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
             }
 
             //состояние кандидата
@@ -430,6 +434,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InternalPassportScan);
                 model.InternalPassportScanAttachmentId = attachmentId;
                 model.InternalPassportScanAttachmentFilename = attachmentFilename;
+
+                model.IsDraft = !entity.IsFinal;
+                model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
             }
             LoadDictionaries(model);
             //состояние кандидата
