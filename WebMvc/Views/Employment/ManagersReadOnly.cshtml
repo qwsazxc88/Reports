@@ -44,7 +44,7 @@
             @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
             @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
         </div>
-        <div class="formfield">
+        <div class="formfield ">
             @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
             @Html.EditorFor(m => m.ProbationaryPeriod)
         </div>
