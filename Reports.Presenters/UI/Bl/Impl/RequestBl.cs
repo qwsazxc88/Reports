@@ -11481,14 +11481,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
         {
             var user=UserDao.Load(userId);
+            
             AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
-            {
-                Employee = user.Name,
-                Department =user.Department!=null? user.Department.Name:"",
-                Organization =user.Organization!=null? user.Organization.Name:"",
-                Position = user.Position!=null? user.Position.Name :"",
-                Documents=MissionOrderDao.GetAnalyticalStatementDetails(user.Id)
+            {                
+                Documents=MissionOrderDao.GetAnalyticalStatementDetails(user.Id)                 
             };
+            model.DateCreated = DateTime.Now.ToString("dd.MM.yyyy");
+            model.DocumentNumber = userId.ToString();
+            SetUserInfoModel(user, model);
             return model;
         }
         public PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId, DateTime? beginDate,

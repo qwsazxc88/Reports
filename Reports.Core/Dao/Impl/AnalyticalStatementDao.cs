@@ -96,7 +96,11 @@ namespace Reports.Core.Dao
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
                 AddToWhere += " U.Name='"+userName+"'";
             }
-            
+            if (!string.IsNullOrWhiteSpace(number))
+            {
+                if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
+                AddToWhere += " U.Id='" + number + "'";
+            }
             IQuery SqlQuery = CreateQuery(query+whereString+AddToWhere+groupByString);
             if (beginDate.HasValue) SqlQuery.SetDateTime("DateStart", beginDate.Value);
             if (endDate.HasValue) SqlQuery.SetDateTime("DateEnd", endDate.Value);
