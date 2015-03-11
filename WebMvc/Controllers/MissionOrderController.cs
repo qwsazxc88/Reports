@@ -634,9 +634,9 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+            //if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
                 return View(model);
-            return RedirectToAction("MissionReportsList");
+            //return RedirectToAction("MissionReportsList");
         }
         protected void CorrectCheckboxes(MissionReportEditModel model)
         {

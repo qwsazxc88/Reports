@@ -11,17 +11,35 @@ namespace Reports.Presenters.UI.Bl
     public interface IEmploymentBl : IBaseBl
     {
         GeneralInfoModel GetGeneralInfoModel(int? userId = null);
+        GeneralInfoModel GetGeneralInfoModel(GeneralInfoModel model);
+
         PassportModel GetPassportModel(int? userId = null);
+        PassportModel GetPassportModel(PassportModel model);
+
         EducationModel GetEducationModel(int? userId = null);
         FamilyModel GetFamilyModel(int? userId = null);
+
         MilitaryServiceModel GetMilitaryServiceModel(int? userId = null);
+        MilitaryServiceModel GetMilitaryServiceModel(MilitaryServiceModel model);
+
         ExperienceModel GetExperienceModel(int? userId = null);
+        ExperienceModel GetExperienceModel(ExperienceModel model);
+
         ContactsModel GetContactsModel(int? userId = null);
+        ContactsModel GetContactsModel(ContactsModel model);
+
         BackgroundCheckModel GetBackgroundCheckModel(int? userId = null);
+        BackgroundCheckModel GetBackgroundCheckModel(BackgroundCheckModel model);
+
         OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null);
         ApplicationLetterModel GetApplicationLetterModel(int? userId = null);
+
         ManagersModel GetManagersModel(int? userId = null);
+        ManagersModel GetManagersModel(ManagersModel model);
+
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
+        PersonnelManagersModel GetPersonnelManagersModel(PersonnelManagersModel model);
+
         CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();

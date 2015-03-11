@@ -187,7 +187,12 @@ namespace WebMvc.Controllers
                 if (model.Operation == 1)
                     ModelState.AddModelError(string.Empty,StrCannotSendRequestWithoutTemplate);
             }*/
-            
+
+            if (model.TypeId == 15)
+            {
+                ModelState.AddModelError("TypeId", "Данный вид услуги не доступен для создания заявки!");
+            }
+
             if(model.IsForFiredUser)
             {
                 if (String.IsNullOrWhiteSpace(model.UserBirthDate)) ModelState.AddModelError("UserBirthDate", "Не заполнена дата рождения");
