@@ -127,7 +127,7 @@
             </tr>
         </table>
     </fieldset>
-    @Html.ValidationMessageFor(m => m.IsValidate)
+
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)

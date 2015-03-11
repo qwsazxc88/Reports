@@ -120,7 +120,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
-                
+
         public GeneralInfoModel()
         {
             this.Version = 0;
