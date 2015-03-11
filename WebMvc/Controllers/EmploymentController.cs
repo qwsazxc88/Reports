@@ -170,6 +170,7 @@ namespace WebMvc.Controllers
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
 
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfoAddNameChange(NameChangeDto itemToAdd, int? CandidateId)
