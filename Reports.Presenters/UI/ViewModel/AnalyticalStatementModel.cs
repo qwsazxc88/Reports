@@ -26,7 +26,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
-        [Display(Name = "Номер заявки")]
+        [Display(Name = "Номер отчёта")]
         public string Number { get; set; }
     }
 }

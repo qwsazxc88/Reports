@@ -760,18 +760,24 @@ namespace WebMvc.Controllers
 
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director )]
         public ActionResult AnalyticalStatement(AnalyticalStatementModel model)
         {
             var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
             return PartialView("AnalyticalStatementsPartial", Docs);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director)]
         public ActionResult AnalyticalStatementDetails(int userId)
         {
             var model = RequestBl.GetAnalyticalStatementDetails(userId);
             return View(model);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director)]
         public ActionResult AnalyticalStatement()
         {
             var model = RequestBl.GetAnalyticalStatementModel();
