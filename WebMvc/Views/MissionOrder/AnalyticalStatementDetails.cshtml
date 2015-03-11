@@ -78,7 +78,7 @@
                <tr>
                    <td>@i</td>
                    <td>Приказ на командировку № @el.OrderNumber</td>
-                   <td>@el.OrderDate</td>
+                   <td>@el.OrderDate.ToString("dd.MM.yyyy")</td>
                    <td>@el.SaldoStart</td>
                    <td>@el.Ordered</td>
                    <td></td>
@@ -87,11 +87,11 @@
                 float saldoend=0;
                if (el.ReportDate.HasValue)
                {
-                   saldoend = (el.SaldoStart - el.Ordered + el.ReportedSum.Value);
+                   saldoend =(float)Math.Round( (double)(el.SaldoStart - el.Ordered + el.ReportedSum.Value),3);
                 <tr>
                     <td></td>
                     <td>Авансовый отчёт № @el.ReportNumber</td>
-                    <td>@el.ReportDate</td>
+                    <td>@el.ReportDate.Value.ToString("dd.MM.yyyy")</td>
                     <td>@(el.SaldoStart - el.Ordered)</td>
                     <td></td>
                     <td>@el.ReportedSum</td>
@@ -103,7 +103,7 @@
                 <tr>
                     <td></td>
                     <td>@(saldoend<0?"Передано на удержание долга за сотрудником":"Возврат сотруднику долга за организацией")</td>
-                    <td>@(el.SendTo1C+TimeSpan.FromDays(1))</td>
+                    <td>@((el.SendTo1C+TimeSpan.FromDays(1)).Value.ToString("dd.MM.yyyy"))</td>
                     <td>@saldoend</td>
                     <td>@saldoend</td>
                     <td></td>

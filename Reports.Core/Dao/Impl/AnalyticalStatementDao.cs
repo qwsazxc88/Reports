@@ -124,6 +124,8 @@ namespace Reports.Core.Dao
                     break;
                 case 8: res = res.OrderBy(x => (x.ReportedBefore - x.OrderedBefore+x.Reported-x.Ordered)).ToList();
                     break;
+                case 9: res = res.OrderBy(x => x.userId).ToList();
+                    break;
             }
             if(sortDescending.HasValue && sortDescending.Value) res=res.Reverse().ToList();
             return res;

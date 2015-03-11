@@ -7,6 +7,7 @@ foreach (var el in Model)
     i++;
     <tr>
         <td>@i</td>
+        <td>@el.userId</td>
         <td>@Html.ActionLink(el.Name,"AnalyticalStatementDetails","MissionOrder", new{ userId=el.userId},null)</td>
         <td>@el.Position</td>
         <td>@el.Dep3Name</td>
@@ -14,7 +15,7 @@ foreach (var el in Model)
         <td>@(el.ReportedBefore - el.OrderedBefore)</td>
         <td>@el.Ordered</td>
         <td>@el.Reported</td>
-        <td>@(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered)</td>
+        <td>@Math.Round(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered,2)</td>
     </tr>
 }
 
