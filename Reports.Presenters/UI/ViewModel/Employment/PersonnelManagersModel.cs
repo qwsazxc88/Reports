@@ -125,6 +125,16 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int SignerId { get; set; }
         public IEnumerable<SelectListItem> Signers { get; set; }
 
+        [Display(Name = "Вид застрахованного лица")]
+        public int? InsuredPersonTypeId { get; set; } //ok
+        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
+        public string InsuredPersonTypeSelectedName { get; set; }
+
+        [Display(Name = "Статус"),
+            Required(ErrorMessage = "*")]
+        public int StatusId { get; set; }
+        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
+
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }

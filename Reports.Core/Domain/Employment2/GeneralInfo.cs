@@ -20,7 +20,6 @@ namespace Reports.Core.Domain
         public virtual IList<NameChange> NameChanges { get; set; } //ok
         public virtual bool IsMale { get; set; } //ok
         public virtual Country Citizenship { get; set; } //ok
-        public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
         public virtual DateTime? DateOfBirth { get; set; } //ok
         public virtual string RegionOfBirth { get; set; } //ok
         public virtual string DistrictOfBirth { get; set; } //ok
@@ -34,8 +33,9 @@ namespace Reports.Core.Domain
         public virtual DateTime? DisabilityCertificateDateOfIssue { get; set; }
         public virtual DisabilityDegree DisabilityDegree { get; set; }
         public virtual DateTime? DisabilityCertificateExpirationDate { get; set; }
+        public virtual bool IsDisabilityTermLess { get; set; }
+        public virtual Country CountryBirth { get; set; }
 
-        public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }

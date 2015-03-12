@@ -37,11 +37,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int CitizenshipId { get; set; } //ok
         public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
-        
-        [Display(Name = "Вид застрахованного лица")]
-        public int? InsuredPersonTypeId { get; set; } //ok
-        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
-        public string InsuredPersonTypeSelectedName { get; set; }
+
+        [Display(Name = "Страна рождения"),
+            Required(ErrorMessage = "*")]
+        public int CountryBirthId { get; set; } //ok
+        public IEnumerable<SelectListItem> CountryBirthItems { get; set; }
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
@@ -90,12 +90,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DisabilityCertificateExpirationDate { get; set; }
 
+        [Display(Name = "Бессрочная справка")]
+        public bool IsDisabilityTermLess { get; set; } //ok
+
         // ------------
 
-        [Display(Name = "Статус"),
-            Required(ErrorMessage = "*")]
-        public int StatusId { get; set; }
-        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
         [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok

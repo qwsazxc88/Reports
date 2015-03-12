@@ -216,6 +216,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.AgreedToPersonalDataProcessing = entity.AgreedToPersonalDataProcessing;
                 model.CitizenshipId = entity.Citizenship != null ? entity.Citizenship.Id : RUSSIAN_FEDERATION;
+                model.CountryBirthId = entity.CountryBirth != null ? entity.CountryBirth.Id : 0;
                 model.CityOfBirth = entity.CityOfBirth;
                 model.DateOfBirth = entity.DateOfBirth;
 
@@ -227,6 +228,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.DisabilityDegree != null
                     ? (int?)entity.DisabilityDegree.Id
                     : null;
+                model.IsDisabilityTermLess = entity.IsDisabilityTermLess;
 
                 model.DistrictOfBirth = entity.DistrictOfBirth;
                 model.FirstName = entity.FirstName;
@@ -237,11 +239,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 model.INN = entity.INN;
-                model.InsuredPersonTypeId = entity.InsuredPersonType != null ? (int?)entity.InsuredPersonType.Id : null;
-                model.InsuredPersonTypeSelectedName =
-                    model.InsuredPersonTypeId.HasValue
-                    ? model.InsuredPersonTypeItems.Where(x => x.Value == model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text
-                    : string.Empty;
                 model.IsMale = entity.IsMale;
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
@@ -254,7 +251,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Patronymic = entity.Patronymic;
                 model.RegionOfBirth = entity.RegionOfBirth;
                 model.SNILS = entity.SNILS;
-                model.StatusId = entity.Status ?? 0;
                 model.Version = entity.Version;
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
@@ -1215,8 +1211,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentPersonnelManagersDao.Get(id.Value);
             }
 
+            LoadDictionaries(model);
+
             if (entity != null)
             {
+                
                 model.AccessGroupId = entity.AccessGroup != null ? entity.AccessGroup.Id : 0;
                 //model.ApprovedByPersonnelManager = entity.ApprovedByPersonnelManager;
                 model.AreaAddition = entity.AreaAddition;
@@ -1254,9 +1253,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonalAccountContractorId = entity.PersonalAccountContractor != null ? entity.PersonalAccountContractor.Id : 0;
                 model.SignerId = entity.Signer != null ? entity.Signer.Id : 0;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
+                model.InsuredPersonTypeId = entity.InsuredPersonType != null ? (int?)entity.InsuredPersonType.Id : null;
+                model.InsuredPersonTypeSelectedName =
+                    model.InsuredPersonTypeId.HasValue
+                    ? model.InsuredPersonTypeItems.Where(x => x.Value == model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text
+                    : string.Empty;
+                model.StatusId = entity.Status ?? 0;
             }
 
-            LoadDictionaries(model);
+            
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -2013,9 +2018,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(GeneralInfoModel model)
         {
             model.CitizenshipItems = GetCountries();
-            model.InsuredPersonTypeItems = GetInsuredPersonTypes();
+            model.CountryBirthItems = GetCountries();
             model.DisabilityDegrees = GetDisabilityDegrees();
-            model.StatusItems = GetStatuses();
         }
         public void LoadDictionaries(PassportModel model)
         {
@@ -2065,6 +2069,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PersonalAccountContractors = GetPersonalAccountContractors();
             model.AccessGroups = GetAccessGroups();
             model.Signers = GetSigners();
+            model.InsuredPersonTypeItems = GetInsuredPersonTypes();
+            model.StatusItems = GetStatuses();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -2799,6 +2805,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.GeneralInfo = entity;
             entity.Citizenship = CountryDao.Load(viewModel.CitizenshipId);
+            entity.CountryBirth = CountryDao.Load(viewModel.CountryBirthId);
             entity.CityOfBirth = viewModel.CityOfBirth;
             entity.DateOfBirth = viewModel.DateOfBirth;
 
@@ -2807,9 +2814,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DisabilityCertificateNumber = viewModel.DisabilityCertificateNumber;
             entity.DisabilityCertificateSeries = viewModel.DisabilityCertificateSeries;
             entity.DisabilityDegree = viewModel.DisabilityDegreeId.HasValue ? DisabilityDegreeDao.Load(viewModel.DisabilityDegreeId.Value) : null;
-
+            entity.IsDisabilityTermLess = viewModel.IsDisabilityTermLess;
             entity.DistrictOfBirth = viewModel.DistrictOfBirth;
-            entity.FirstName = viewModel.FirstName;
+            
 
             if (entity.ForeignLanguages == null)
             {
@@ -2826,12 +2833,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             entity.INN = viewModel.INN;
-            entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
             entity.IsFinal = !viewModel.IsDraft;
             entity.IsValidate = viewModel.IsValidate;
             entity.IsMale = viewModel.IsMale;
             entity.IsPatronymicAbsent = viewModel.IsPatronymicAbsent;
+            entity.FirstName = viewModel.FirstName;
             entity.LastName = viewModel.LastName;
+            entity.Candidate.User.Name = viewModel.LastName + " " + viewModel.FirstName + " " + viewModel.Patronymic;
 
             if (entity.NameChanges == null)
             {
@@ -2851,7 +2859,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Patronymic = viewModel.IsPatronymicAbsent ? String.Empty : viewModel.Patronymic;
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
-            entity.Status = viewModel.StatusId;
             #endregion
 
             return true;
@@ -3445,6 +3452,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
             entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+            entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
+            entity.Status = viewModel.StatusId;
+
             if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
             {
                 entity.SupplementaryAgreements[0].CreateDate = viewModel.SupplementaryAgreementCreateDate;
@@ -3848,6 +3858,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
                     entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
                     entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+                    entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
+                    entity.Status = viewModel.StatusId;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {

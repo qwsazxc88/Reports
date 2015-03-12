@@ -155,6 +155,15 @@
             @Html.DropDownListFor(m => m.SignerId, Model.Signers, string.Empty)
         </div>
 
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
+            @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems, string.Empty)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
+            @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
+        </div>        
+        
         <div class="formfield clearleft">
             <button type="submit">Сохранить</button>                
         </div>            

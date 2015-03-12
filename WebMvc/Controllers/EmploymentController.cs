@@ -142,7 +142,8 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
-                ViewBag.Error = error;
+                //ViewBag.Error = error;
+                ModelState.AddModelError("AgreedToPersonalDataProcessing", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 model = EmploymentBl.GetGeneralInfoModel(model.UserId);
             }
             else
@@ -179,10 +180,12 @@ namespace WebMvc.Controllers
 
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel(CandidateId);
             model.NameChanges.Add(itemToAdd);
+
             EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
             ViewBag.Error = error;
-
+            
             model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+            
             return Json(model.NameChanges);
         }
 
@@ -274,6 +277,7 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 ViewBag.Error = error;
+                ModelState.AddModelError("AgreedToPersonalDataProcessing", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 model = EmploymentBl.GetPassportModel(model.UserId);
             }
             else
@@ -1280,14 +1284,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("DisabilityCertificateExpirationDate", "Некорректный срок действия справки");
             }
 
-            if (model.InsuredPersonTypeId.HasValue && model.CitizenshipId == RUSSIAN_FEDERATION)
-            {
-                ModelState.AddModelError("InsuredPersonTypeId", "Заполняется только гражданами других государств");
-            }
-            if (!model.InsuredPersonTypeId.HasValue && model.CitizenshipId != RUSSIAN_FEDERATION)
-            {
-                ModelState.AddModelError("InsuredPersonTypeId", "*");
-            }
+            
             ValidateFileLength(model.PhotoFile, "PhotoFile");
             ValidateFileLength(model.INNScanFile, "INNScanFile");
             ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
@@ -1428,6 +1425,8 @@ namespace WebMvc.Controllers
             {
                 ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
             }
+
+            
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
             //    ModelState.AddModelError("Level", "Требуется число от 2 до 7");
