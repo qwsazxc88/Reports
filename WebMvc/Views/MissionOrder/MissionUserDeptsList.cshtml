@@ -97,7 +97,7 @@
                                 {
                                     <input type="button" value="Печать" onclick="return Print();"/>
                                 } 
-                                @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Accountant)
+                                @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Accountant)
                                 {
                                     <span id="LoadingIndicator" style="float:right"></span>
                                     <input type="button" style="float:right;" value="Выгрузить в удержания" onclick="UploadToDeduction();"/>
