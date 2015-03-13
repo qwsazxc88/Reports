@@ -1117,6 +1117,12 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpPost]
+        public ActionResult ExportDocuments(IEnumerable<int> mas)
+        {
+            if (RequestBl.ExportFromMissionReportToDeduction(mas)) return Json(new { Status="Ok"});
+            else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
+        }
+        [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
         {
             bool hasError = !ValidateModel(model);

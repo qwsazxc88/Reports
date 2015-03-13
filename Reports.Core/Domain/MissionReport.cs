@@ -75,6 +75,8 @@ namespace Reports.Core.Domain
         public virtual MissionOrder MissionOrder { get; set; }
         public virtual MissionOrder AdditionalMissionOrder { get; set; }
 
+        public virtual Deduction Deduction { get; set; }
+
         public virtual IList<MissionReportCost> Costs { get; set; }
 
         public virtual IList<MissionReportComment> Comments { get; set; }

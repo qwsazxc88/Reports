@@ -139,8 +139,15 @@
               {
                 <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div> 
                 <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
-              }
-              <div class="menuitem" id="moAnaliticalStatementList">@Html.ActionLink("Аналитическая ведомость", "AnalyticalStatement", "MissionOrder")</div> 
+                 }
+            @if ((dto.UserRole & UserRole.Accountant) > 0
+                  || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                  || (dto.UserRole & UserRole.Employee) > 0
+                  || (dto.UserRole & UserRole.Manager) > 0
+                  || (dto.UserRole & UserRole.Director)>0)
+            { 
+                <div class="menuitem" id="moAnaliticalStatementList">@Html.ActionLink("Аналитическая ведомость", "AnalyticalStatement", "MissionOrder")</div>
+            }   
             <div class="menuitem" id="moGradeList">@Html.ActionLink("Справочник расчета лимитов", "GradeList", "MissionOrder")</div>              
             <div class="menuitem" id="moHotelList">@Html.ActionLink("Контрагенты", "MissionHotels", "MissionOrder")</div>              
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
