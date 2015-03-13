@@ -7701,7 +7701,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return true;
             return false;
         }
-        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds)
+        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds,bool EnableSendEmail)
         {
             List<Deduction> MailList = new List<Deduction>();
             ///В случае ошибки нужно откатить транзакции.
@@ -7742,6 +7742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             DeductionDao.CommitTran();
             MissionReportDao.CommitTran();
+            if(EnableSendEmail)
             foreach(var el in MailList)
                 SendEmailToUser(null, el);
             return true;

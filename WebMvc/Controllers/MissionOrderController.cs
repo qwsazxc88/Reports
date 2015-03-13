@@ -1119,7 +1119,8 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult ExportDocuments(IEnumerable<int> mas)
         {
-            if (RequestBl.ExportFromMissionReportToDeduction(mas)) return Json(new { Status="Ok"});
+            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            if (RequestBl.ExportFromMissionReportToDeduction(mas, EnableSendEmail)) return Json(new { Status = "Ok" });
             else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
         }
         [HttpPost]
