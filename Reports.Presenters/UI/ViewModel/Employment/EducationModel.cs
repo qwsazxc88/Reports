@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
 using System.Web;
+using System.Web.Mvc;
+
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -46,6 +48,55 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public HttpPostedFileBase TrainingScanFile { get; set; }
         public int TrainingScanId { get; set; }
         public string TrainingScanFileName { get; set; }
+
+        //модальная форма
+        [Display(Name = "Наименование образовательного учреждения"),
+            StringLength(100, ErrorMessage = "Не более 100 знаков."),
+            Required(ErrorMessage = "*")]
+        public string IssuedBy { get; set; }
+        public IEnumerable<SelectListItem> NameEducations { get; set; }
+
+        [Display(Name = "Серия"),
+            StringLength(20, ErrorMessage = "Не более 20 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Series { get; set; }
+        
+        [Display(Name = "Номер"),  
+            StringLength(20, ErrorMessage = "Не более 20 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Number { get; set; }
+
+        [Display(Name = "Год поступления"),
+            RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
+            Required(ErrorMessage = "*")]
+        public string AdmissionYear { get; set; }
+
+        [Display(Name = "Год окончания"),
+            RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
+            Required(ErrorMessage = "*")]
+        public string GraduationYear { get; set; }
+
+        [Display(Name = "Квалификация по диплому"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Qualification { get; set; }
+
+        [Display(Name = "Специальность по диплому"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Speciality { get; set; }
+
+        [Display(Name = "Профессия основная"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Profession { get; set; }
+
+        [Display(Name = "Факультет/отделение"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "*")]
+        public string Department { get; set; }
+
+        public bool IsHigherEducationValid { get; set; }
 
         public EducationModel()
         {

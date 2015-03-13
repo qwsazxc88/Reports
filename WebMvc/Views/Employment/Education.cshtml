@@ -20,6 +20,7 @@
     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
+    <input type="hidden" id="IsHigherEducationValid" name="IsHigherEducationValid" value="@Model.IsHigherEducationValid" />
     @Html.HiddenFor(m => m.UserId)
 
     <fieldset class="bordered doc-wrap panel">
@@ -378,6 +379,9 @@
 <div id="add-higher-education-diploma-dialog" title="Добавление сведений о высшем образовании">
     @using (Html.BeginForm("EducationAddHigherEducationDiploma", "Employment", FormMethod.Post))
     {
+        
+        
+        
         <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="IssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -387,6 +391,17 @@
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Profession" style="display:block;">Профессия основная</label><input type="text" name="Profession" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Department" style="display:block;">Факультет/отделение</label><input type="text" name="Department" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        @*
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label>@Html.DropDownListFor(m => m.IssuedBy, Model.NameEducations, string.Empty) @Html.ValidationMessageFor(m => m.IssuedBy)
+        <label for="Series" style="display:block;">Серия</label>@Html.TextBoxFor(m => m.Series)@Html.ValidationMessageFor(m => m.Series)
+        <label for="Number" style="display:block;">Номер</label>@Html.TextBoxFor(m => m.Number)@Html.ValidationMessageFor(m => m.Number)
+        <label for="AdmissionYear" style="display:block;">Год поступления</label>@Html.TextBoxFor(m => m.AdmissionYear)@Html.ValidationMessageFor(m => m.AdmissionYear)
+        <label for="GraduationYear" style="display:block;">Год окончания</label>@Html.TextBoxFor(m => m.GraduationYear)@Html.ValidationMessageFor(m => m.GraduationYear)
+        <label for="Qualification" style="display:block;">Квалификация по диплому</label>@Html.TextBoxFor(m => m.Qualification)@Html.ValidationMessageFor(m => m.Qualification)
+        <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
+        <label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)
+        <label for="Department" style="display:block;">Факультет/отделение</label>@Html.TextBoxFor(m => m.Department)@Html.ValidationMessageFor(m => m.Department)
+        *@
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />

@@ -206,11 +206,28 @@
                     AjaxFormRequest("tabs1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
 
                     $("#tabs1").ajaxStop(function () {
-                        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
-                        UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
-                        UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
-                        $('#gender').buttonset();        
-                        
+                    UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+                    UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
+                    UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+                    $('#gender').buttonset();        
+
+                    //подкрашиваем пол
+                    $("#IsMaleTrue").click(function(){
+                        $("#lblMTrue").css("border-color", "red");
+                        $("#lblMFalse").css("border-color", "white");
+                    });
+                    $("#IsMaleFalse").click(function(){
+                        $("#lblMTrue").css("border-color", "white");
+                        $("#lblMFalse").css("border-color", "red");
+                    });
+                    //обрабатываем клики по птичке
+                    $("#IsDisabilityTermLess").click(function(){
+                        if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+                        else {$("#DisabilityCertificateExpirationDate").show();}
+                    });
+
+                    if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+                        else {$("#DisabilityCertificateExpirationDate").show();}
                         //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
 
 
@@ -335,30 +352,30 @@
                             true
                         );
 
-                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
-                                {
-                                    text: "РОССИЯ",
-                                    actOnSelect: function(){
-                                        $("#InsuredPersonTypeId").val("");
-                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                                    },
-                                    actOnDeselect: function(){
-                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                                    }
-                                },
-                                {
-                                    value: "",
-                                    actOnSelect: function(){
-                                        $("#InsuredPersonTypeId").val("");
-                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                                    },
-                                    actOnDeselect: function(){
-                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                                    }
-                                }
-                            ],        
-                            true
-                        );
+//                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+//                                {
+//                                    text: "РОССИЯ",
+//                                    actOnSelect: function(){
+//                                        $("#InsuredPersonTypeId").val("");
+//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                                    },
+//                                    actOnDeselect: function(){
+//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                                    }
+//                                },
+//                                {
+//                                    value: "",
+//                                    actOnSelect: function(){
+//                                        $("#InsuredPersonTypeId").val("");
+//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                                    },
+//                                    actOnDeselect: function(){
+//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                                    }
+//                                }
+//                            ],        
+//                            true
+//                        );
                     });
                 }
 
