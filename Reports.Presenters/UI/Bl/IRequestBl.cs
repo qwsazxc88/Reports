@@ -190,7 +190,7 @@ namespace Reports.Presenters.UI.Bl
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
         PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId);
 
-        bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds);
+        bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds,bool EnableSendEmail);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
