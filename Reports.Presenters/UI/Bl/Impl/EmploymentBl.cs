@@ -2027,7 +2027,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(EducationModel model)
         {
-
+            model.NameEducations = GetHighEducatonTypes();
         }
         public void LoadDictionaries(FamilyModel model)
         {
@@ -2106,6 +2106,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Участник программы по переселению соотечественников", Value = "3"},
                 new SelectListItem {Text = "Член экипажа судна под флагом РФ", Value = "4"},
                 new SelectListItem {Text = "Беженец", Value = "5"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetHighEducatonTypes()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Дошкольное образование", Value = "01"},
+                new SelectListItem {Text = "Начальное (общее) образование", Value = "02"},
+                new SelectListItem {Text = "Основное общее образование", Value = "03"},
+                new SelectListItem {Text = "Среднее (полное) общее образование", Value = "07"},
+                new SelectListItem {Text = "Начальное профессиональное образование", Value = "10"},
+                new SelectListItem {Text = "Среднее профессиональное образование", Value = "11"},
+                new SelectListItem {Text = "Неполное высшее образование", Value = "15"},
+                new SelectListItem {Text = "Высшее образование", Value = "18"},
+                new SelectListItem {Text = "Послевузовское образование", Value = "19"}
             };
         }
 

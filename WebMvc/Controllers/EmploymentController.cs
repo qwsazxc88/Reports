@@ -374,13 +374,29 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
             model.HigherEducationDiplomas.Add(itemToAdd);
-            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
+            //if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
+            //{
+            //    ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+            //    model.IsHigherEducationValid = false;
+            //}
+            //else
+            //{
+            //    EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
+            //    model.IsHigherEducationValid = true;
+            //}
+            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
             model = EmploymentBl.GetEducationModel(model.UserId);
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return View("Education", model);
+            //{
+            //    if (model.IsHigherEducationValid)
+            //        return View("Education", model);
+            //    else
+            //        return PartialView("Education", model);
+            //}
         }
 
         [HttpPost]
