@@ -7701,7 +7701,51 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return true;
             return false;
         }
+        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds)
+        {
+            List<Deduction> MailList = new List<Deduction>();
+            ///В случае ошибки нужно откатить транзакции.
+            DeductionDao.BeginTran();
+            MissionReportDao.BeginTran();
+            try
+            {
+                foreach (var id in DocIds)
+                {
+                    var report = MissionReportDao.Load(id);
+                    if (report.Deduction != null || !report.SendTo1C.HasValue) continue;
+                    var deduction = new Deduction
+                    {
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),
+                        User = report.User,
+                        Editor = UserDao.Load(CurrentUser.Id),
+                        EditDate = DateTime.Now,
+                        DeductionDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+                        Type = DeductionTypeDao.Load(1),
+                        Kind = DeductionKindDao.Load(3),
+                        Sum =Math.Abs( report.AccountantAllSum - report.PurchaseBookAllSum - report.UserSumReceived ),
+                        DeleteAfterSendTo1C = false,
+                        UploadingDocType=1
+                    };
 
+                    DeductionDao.SaveAndFlush(deduction);
+                    report.Deduction = deduction;
+                    MissionReportDao.SaveAndFlush(report);
+                    MailList.Add(deduction);
+                }
+            }
+            catch (Exception ex)
+            {
+                DeductionDao.RollbackTran();
+                MissionReportDao.RollbackTran();
+                Log.Error("Во время экспорта записей произошла ошибка.", ex);
+                return false;
+            }
+            DeductionDao.CommitTran();
+            MissionReportDao.CommitTran();
+            foreach(var el in MailList)
+                SendEmailToUser(null, el);
+            return true;
+        }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
         {
             error = string.Empty;
@@ -7783,9 +7827,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        
         protected void SendEmailToUser(DeductionEditModel model,Deduction deduction)
         {
-            User user = UserDao.Load(model.UserId);
+            User user= UserDao.Load((model!=null)?model.UserId:deduction.User.Id);
             if(string.IsNullOrEmpty(user.Email))
             {
                 Log.ErrorFormat("E-mail is empty for user {0}",user.Id);

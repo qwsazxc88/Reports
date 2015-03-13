@@ -876,7 +876,9 @@
     <EmbeddedResource Include="Domain\MissionOrderComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionReport.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionReport.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\MissionReportComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>

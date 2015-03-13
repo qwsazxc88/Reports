@@ -74,42 +74,30 @@
        {
            foreach (var el in Model.Documents)
            {
-               i++;
+               if (el.DocType == 1) { i++; }
                <tr>
-                   <td>@i</td>
-                   <td>Приказ на командировку № @el.OrderNumber</td>
-                   <td>@el.OrderDate.ToString("dd.MM.yyyy")</td>
+                   <td>@if (el.DocType == 1)
+                       {@i}</td>
+                   <td>@switch (el.DocType)
+                       {
+                           case 1:<text> Приказ на коммандировку № @el.Number</text>
+                           break;
+                           case 2:<text> Авансовый отчёт № @el.Number</text>;
+                           break;
+                           case 3:
+                            if (el.SaldoStart <= 0){<text> Передано на удержание долга за сотрудником</text>}
+                            else{ <text>Возврат сотруднику долга за организацией</text> }
+                           break;
+                           case 4:<text>Удержано</text>
+                           break;
+                       }
+                   </td>
+                   <td>@el.Date.ToString("dd.MM.yyyy")</td>
                    <td>@el.SaldoStart</td>
                    <td>@el.Ordered</td>
-                   <td></td>
-                   <td>@(el.SaldoStart - el.Ordered)</td>
-               </tr>
-                float saldoend=0;
-               if (el.ReportDate.HasValue)
-               {
-                   saldoend =(float)Math.Round( (double)(el.SaldoStart - el.Ordered + el.ReportedSum.Value),3);
-                <tr>
-                    <td></td>
-                    <td>Авансовый отчёт № @el.ReportNumber</td>
-                    <td>@el.ReportDate.Value.ToString("dd.MM.yyyy")</td>
-                    <td>@(el.SaldoStart - el.Ordered)</td>
-                    <td></td>
-                    <td>@el.ReportedSum</td>
-                    <td>@saldoend</td>
-                </tr>
-               }
-               if (el.SendTo1C.HasValue && saldoend!=0)
-               {
-                <tr>
-                    <td></td>
-                    <td>@(saldoend<0?"Передано на удержание долга за сотрудником":"Возврат сотруднику долга за организацией")</td>
-                    <td>@((el.SendTo1C+TimeSpan.FromDays(1)).Value.ToString("dd.MM.yyyy"))</td>
-                    <td>@saldoend</td>
-                    <td>@saldoend</td>
-                    <td></td>
-                    <td>0</td>
-                </tr>
-               }
+                   <td>@el.Reported</td>
+                   <td>@el.SaldoEnd</td>
+               </tr>               
            }
        }
     </tbody>

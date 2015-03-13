@@ -18,10 +18,10 @@ namespace Reports.Core.Dao
         private string query = @"SELECT 
 	                                U.Id as UserId,
 	                                MAX(U.Name) AS Name,
-	                                (SELECT SUM(AllSum) FROM [dbo].[MissionOrder] WHERE UserId=U.Id AND CreateDate<:DateStart ) AS OrderedBefore,
-	                                (SELECT SUM(AccountantAllSum) FROM [dbo].[MissionReport] WHERE  UserId=U.Id AND CreateDate<:DateStart) As ReportedBefore,
+	                                (SELECT SUM(UserAllSum) FROM [dbo].[MissionOrder] WHERE UserId=U.Id AND CreateDate<:DateStart ) AS OrderedBefore,
+	                                (SELECT SUM(AccountantAllSum-PurchaseBookAllSum) FROM [dbo].[MissionReport] WHERE  UserId=U.Id AND CreateDate<:DateStart) As ReportedBefore,
 	                                SUM(MO.UserAllSum) AS Ordered,
-	                                SUM(MR.AccountantAllSum) AS Reported,
+	                                SUM(MR.AccountantAllSum-PurchaseBookAllSum) AS Reported,
                                     MAX(dep.Name) as Dep7Name,
                                     MAX(dep3.Name) as Dep3Name, 
                                     MAX(up.Name) as Position
@@ -34,7 +34,9 @@ namespace Reports.Core.Dao
         private string whereString = @" WHERE"; 
         private string groupByString=" GROUP BY U.Id";
         private ISessionManager _sessionManager;
-        
+        protected const string sqlCurrentUserJoin = @"
+                                                        inner join dbo.Users currentUser
+                                                        on currentUser.Id = :userId";
         public AnalyticalStatementDao(ISessionManager sessionManager)
         {
             Validate.NotNull(sessionManager, "sessionManager");
@@ -102,6 +104,7 @@ namespace Reports.Core.Dao
                 AddToWhere += " U.Id='" + number + "'";
             }
             IQuery SqlQuery = CreateQuery(query+whereString+AddToWhere+groupByString);
+            if (query.Contains(sqlCurrentUserJoin)) SqlQuery.SetInt32("userId", userId);
             if (beginDate.HasValue) SqlQuery.SetDateTime("DateStart", beginDate.Value);
             if (endDate.HasValue) SqlQuery.SetDateTime("DateEnd", endDate.Value);
             var res= SqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDto)))
@@ -143,6 +146,7 @@ namespace Reports.Core.Dao
                     return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
+                    sqlQuery += sqlCurrentUserJoin;
                     string sqlQueryPart = string.Empty;
                     switch (currentUser.Level)
                     {
@@ -236,23 +240,9 @@ namespace Reports.Core.Dao
                                 )
                                 ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
-                    //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart;
-                //return sqlQueryPart;
-                case UserRole.PersonnelManager://кадровик
-                    if (userId == 10)//расчетчики
-                    {
-                        sqlQuery = string.Format(sqlQuery, string.Empty);
-                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16, 22, 23, 24, 25, 26, 27) ";
-                    }
-                    else
-                    {
-                        sqlQuery = string.Format(sqlQuery, string.Empty);
-                        return string.Empty;
-                    }
-                case UserRole.ConsultantOutsorsingManager://кадровики ОК
-                    sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27) ";
+                case UserRole.PersonnelManager:
+                case UserRole.ConsultantOutsorsingManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
