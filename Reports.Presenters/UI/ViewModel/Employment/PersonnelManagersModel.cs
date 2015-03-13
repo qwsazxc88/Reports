@@ -30,22 +30,22 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsHourlySalaryBasis { get; set; }
 
-        [Display(Name = "Северная надбавка")]
+        [Display(Name = "Северная надбавка (%)")]
         public decimal? NorthernAreaAddition { get; set; }
 
-        [Display(Name = "Районный коэффициент")]
+        [Display(Name = "Районный коэффициент (%)")]
         public decimal? AreaMultiplier { get; set; }
 
-        [Display(Name = "Территориальная надбавка")]
+        [Display(Name = "Территориальная надбавка (руб)")]
         public decimal? AreaAddition { get; set; }
 
-        [Display(Name = "Надбавка за разъездной характер работы")]
+        [Display(Name = "Надбавка за разъездной характер работы (руб)")]
         public decimal? TravelRelatedAddition { get; set; }
 
-        [Display(Name = "Надбавка за квалификацию")]
+        [Display(Name = "Надбавка за квалификацию (руб)")]
         public decimal? CompetenceAddition { get; set; }
 
-        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса")]
+        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб)")]
         public decimal? FrontOfficeExperienceAddition { get; set; }
 
         [Display(Name = "Грейд")]
@@ -124,6 +124,16 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int SignerId { get; set; }
         public IEnumerable<SelectListItem> Signers { get; set; }
+
+        [Display(Name = "Вид застрахованного лица")]
+        public int? InsuredPersonTypeId { get; set; } //ok
+        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
+        public string InsuredPersonTypeSelectedName { get; set; }
+
+        [Display(Name = "Статус"),
+            Required(ErrorMessage = "*")]
+        public int StatusId { get; set; }
+        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
