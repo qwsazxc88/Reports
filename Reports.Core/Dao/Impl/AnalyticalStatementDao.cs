@@ -245,6 +245,7 @@ namespace Reports.Core.Dao
                 case UserRole.ConsultantOutsorsingManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
+                case UserRole.Accountant:
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Empty;
