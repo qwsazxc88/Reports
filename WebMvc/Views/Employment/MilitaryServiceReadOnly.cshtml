@@ -41,8 +41,8 @@
         <span class="fakeFormField">@Html.DisplayFor(m => m.ReserveCategory)&nbsp;</span>
     </div>
     <div class="formfield clear">
-        @Html.LabelFor(m => m.Rank)<br />
-        <span class="fakeFormField">@(Model.Rank != null ? @Model.RankItems.Where(x => x.Value == Model.Rank.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
+        @Html.LabelFor(m => m.RankId)<br />
+        <span class="fakeFormField">@(Model.RankId != null ? @Model.RankItems.Where(x => x.Id == Model.RankId).Single().Name : string.Empty)&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.SpecialityCategoryId)<br />
