@@ -10231,6 +10231,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Manager:
                     bool canEdit = false;
+                    //за уволенного сотрудника
+                    if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee)
+                    {
+                        if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsUserApprovedAvailable = true;
+                        }
+                    }
+
                     bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit)
                         || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
 
@@ -10390,6 +10400,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
             }
+
+            //за уволенного сотрудника
+            if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee && (current.UserRole & UserRole.Manager) == UserRole.Manager
+                && !entity.UserDateAccept.HasValue
+                && model.IsUserApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                entity.AcceptUser = UserDao.Load(current.Id);
+                if (isDirectorManager)
+                {
+                    entity.NeedToAcceptByChiefAsManager = true;
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
+                }
+                else
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager, true);
+            }
+
             bool canEdit = false;
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager &&
                 IsCurrentManagerForUser(user, current, out canEdit)) 
