@@ -1117,6 +1117,13 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpPost]
+        public ActionResult ExportDocuments(IEnumerable<int> mas)
+        {
+            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            if (RequestBl.ExportFromMissionReportToDeduction(mas, EnableSendEmail)) return Json(new { Status = "Ok" });
+            else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
+        }
+        [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
         {
             bool hasError = !ValidateModel(model);
