@@ -7701,7 +7701,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return true;
             return false;
         }
-        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds,bool EnableSendEmail)
+        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId,int kindId, int uploadingType,bool isFastDissmissal, bool EnableSendEmail)
         {
             List<Deduction> MailList = new List<Deduction>();
             ///В случае ошибки нужно откатить транзакции.
@@ -7712,7 +7712,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var id in DocIds)
                 {
                     var report = MissionReportDao.Load(id);
-                    if (report.Deduction != null || !report.SendTo1C.HasValue) continue;
+                    if (report.Deduction != null || ((!report.SendTo1C.HasValue) && uploadingType!=2)) continue;
                     var deduction = new Deduction
                     {
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),
@@ -7720,11 +7720,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Editor = UserDao.Load(CurrentUser.Id),
                         EditDate = DateTime.Now,
                         DeductionDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
-                        Type = DeductionTypeDao.Load(1),
-                        Kind = DeductionKindDao.Load(3),
+                        Type = DeductionTypeDao.Load(typeId),
+                        Kind = DeductionKindDao.Load(kindId),
                         Sum =Math.Abs( report.AccountantAllSum - report.PurchaseBookAllSum - report.UserSumReceived ),
                         DeleteAfterSendTo1C = false,
-                        UploadingDocType=1
+                        UploadingDocType=uploadingType,
+                        IsFastDismissal = isFastDissmissal
+
                     };
 
                     DeductionDao.SaveAndFlush(deduction);
@@ -10691,7 +10693,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.AdditionalOrderDates = entity.AdditionalMissionOrder != null
                 ? FormatDate(entity.AdditionalMissionOrder.BeginDate) + " - " + FormatDate(entity.AdditionalMissionOrder.EndDate)
                 : string.Empty;
+            
             model.DocumentNumber = entity.Number.ToString();
+            if (user.Dismissals != null)
+                model.IsUserDismissal = user.Dismissals.Any(x => x.DeleteDate == null && x.UserDateAccept != null);
+            if (entity.Deduction != null)
+                model.DeductionDocNumber = entity.Deduction.Number;
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
             model.ArchiveDate = FormatDate(entity.ArchiveDate);

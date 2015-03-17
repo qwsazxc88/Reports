@@ -26,6 +26,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 p.Name as Position,
                                 k.Name as Kind,
+                                v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
@@ -110,7 +111,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("DismissalDate", NHibernateUtil.DateTime).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("IsFastDismissal", NHibernateUtil.String);
+                AddScalar("IsFastDismissal", NHibernateUtil.String).
+                AddScalar("UploadingDocType",NHibernateUtil.Int32);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -222,6 +224,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 13:
                     orderBy = @" order by IsFastDismissal";
+                    break;
+                case 14:
+                    orderBy = @" order by UploadingDocType";
                     break;
             }
             if (sortDescending.Value)
