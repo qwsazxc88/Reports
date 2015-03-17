@@ -19,5 +19,6 @@ namespace Reports.Core.Dto
         public string Status { get; set; }
         public string IsFastDismissal { get; set; }
         public int Rn { get; set; }
+        public int UploadingDocType { get; set; }
     }
 }
