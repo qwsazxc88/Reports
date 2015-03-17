@@ -713,7 +713,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager)]
         public ActionResult CreateAdditionalOrder(int id)
         {
             int additionalOrderId = RequestBl.CreateAdditionalOrder(id);
