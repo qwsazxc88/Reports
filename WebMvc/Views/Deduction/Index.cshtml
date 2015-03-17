@@ -180,9 +180,6 @@
                         <div id="sort12" style="min-width:30px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
                     </th>
                     <th>
-                        <div id="sort14"><a href="#" onclick="SortChanged(14);">Авто</a></div>
-                    </th>
-                     <th>
                         <div id="sort13"  style="min-width:30px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
                     </th>
                     @*<th>
@@ -213,14 +210,6 @@
                             }
                             </td>
                             <td>@doc.Status</td>
-                            <td>@switch(doc.UploadingDocType)
-                                { 
-                                    case 1: <text>Выгружено из реестра на удержание</text>
-                                        break;
-                                    case 2: <text>Выгружено из авансового отчёта</text>
-                                        break;
-                                }
-                             </td>
                             <td>@doc.IsFastDismissal</td>
                         </tr>
                     }
