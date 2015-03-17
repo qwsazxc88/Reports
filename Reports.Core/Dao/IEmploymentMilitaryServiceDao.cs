@@ -11,5 +11,6 @@ namespace Reports.Core.Dao
         IList<MilitaryValidityCategoryDto> GetMilitaryValidityCategoryes();
         IList<MilitaryRelationAccountDto> GetMilitaryRelationAccounts();
         IList<IdNameDto> GetMilitarySpecialityCategoryes();
+        IList<MilitaryRanksDto> GetMilitaryRanks();
     }
 }

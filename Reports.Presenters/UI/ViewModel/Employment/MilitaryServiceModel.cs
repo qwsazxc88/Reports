@@ -26,8 +26,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ReserveCategory { get; set; } //ok
 
         [Display(Name = "Воинское звание")]
-        public int? Rank { get; set; } //ok
-        public IEnumerable<SelectListItem> RankItems { get; set; }
+        public int? RankId { get; set; } //ok
+        public IList<MilitaryRanksDto> RankItems { get; set; }
 
         [Display(Name = "Состав (профиль)")]
         public int SpecialityCategoryId { get; set; } //ok

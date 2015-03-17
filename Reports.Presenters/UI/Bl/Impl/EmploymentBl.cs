@@ -686,7 +686,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.MobilizationTicketNumber = entity.MobilizationTicketNumber;
                 model.PersonnelCategory = entity.PersonnelCategory;
                 model.PersonnelType = entity.PersonnelType;
-                model.Rank = entity.Rank;
+                model.RankId = entity.RankId;
                 model.RegistrationExpiration = entity.RegistrationExpiration;
                 model.ReserveCategory = entity.ReserveCategory;
                 model.SpecialityCategoryId = entity.SpecialityCategoryId;
@@ -2066,7 +2066,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(MilitaryServiceModel model)
         {
-            model.RankItems = GetRanks();
+            model.RankItems = EmploymentMilitaryServiceDao.GetMilitaryRanks();
             model.RegistrationExpirationItems = GetRegistrationExpirations();
             model.PersonnelCategoryItems = GetPersonnelCategories();
             model.PersonnelTypeItems = GetPersonnelTypes();
@@ -3225,7 +3225,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.MobilizationTicketNumber = viewModel.MobilizationTicketNumber;
             entity.PersonnelCategory = viewModel.PersonnelCategory;
             entity.PersonnelType = viewModel.PersonnelType;
-            entity.Rank = viewModel.Rank;
+            entity.RankId = viewModel.RankId;
             entity.RegistrationExpiration = viewModel.RegistrationExpiration;
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategoryId = viewModel.SpecialityCategoryId;

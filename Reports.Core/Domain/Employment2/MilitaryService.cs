@@ -17,7 +17,7 @@ namespace Reports.Core.Domain
         public virtual string MilitaryCardNumber { get; set; } //ok
         public virtual DateTime? MilitaryCardDate { get; set; } //ok
         public virtual string ReserveCategory { get; set; } //ok
-        public virtual int? Rank { get; set; } //ok
+        public virtual int? RankId { get; set; } //ok
         public virtual int SpecialityCategoryId { get; set; } //ok - Состав (профиль)
         public virtual string MilitarySpecialityCode { get; set; } //ok
         //public virtual MilitaryValidityCategory MilitaryValidityCategoryes { get; set; } //ok

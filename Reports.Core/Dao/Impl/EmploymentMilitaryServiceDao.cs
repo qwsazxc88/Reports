@@ -61,5 +61,20 @@ namespace Reports.Core.Dao.Impl
             IList<IdNameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
             return documentList;
         }
+
+        /// <summary>
+        /// Справочник воинских званий.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public IList<MilitaryRanksDto> GetMilitaryRanks()
+        {
+            string sqlQuery = @"SELECT null as Id, null as Name
+                                UNION ALL
+                                SELECT Id, Name FROM [dbo].[MilitaryRanks] ORDER BY Id";
+            IQuery query = CreateQuery(sqlQuery);
+            IList<MilitaryRanksDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MilitaryRanksDto))).List<MilitaryRanksDto>();
+            return documentList;
+        }
     }
 }

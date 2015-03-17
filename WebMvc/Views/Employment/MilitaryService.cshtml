@@ -66,8 +66,8 @@
             @Html.EditorFor(m => m.ReserveCategory)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.Rank)&nbsp;@Html.ValidationMessageFor(m => m.Rank)<br />
-            @Html.DropDownListFor(m => m.Rank, Model.RankItems, string.Empty)
+            @Html.LabelFor(m => m.RankId)&nbsp;@Html.ValidationMessageFor(m => m.RankId)<br />
+            @Html.DropDownListFor(m => m.RankId, new SelectList(Model.RankItems, "Id", "Name"))
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.SpecialityCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategoryId)<br />
