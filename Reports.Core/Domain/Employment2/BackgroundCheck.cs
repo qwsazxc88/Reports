@@ -19,10 +19,12 @@ namespace Reports.Core.Domain
         public virtual string PreviousSuperior { get; set; } //ok
         public virtual string PositionSought { get; set; } //ok
         public virtual string MilitaryOperationsExperience { get; set; } //ok
+        public virtual bool HasDriversLicense { get; set; }
         public virtual string DriversLicenseNumber { get; set; } //ok
         public virtual DateTime? DriversLicenseDateOfIssue { get; set; } //ok
         public virtual string DriversLicenseCategories { get; set; } //ok - битовое поле
         public virtual int? DrivingExperience { get; set; } //ok
+        public virtual bool HasAutomobile { get; set; }
         public virtual string AutomobileMake { get; set; } //ok
         public virtual string AutomobileLicensePlateNumber { get; set; } //ok
         public virtual bool IsReadyForBusinessTrips { get; set; } //ok

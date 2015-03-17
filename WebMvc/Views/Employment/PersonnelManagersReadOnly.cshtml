@@ -8,7 +8,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
     
 
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -67,8 +67,10 @@
         }
 
         <div class="formfield clear" id="isHourlySalaryBasisContainer">            
-            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, false, new { @id = "IsHourlySalaryBasisFalse" })<label for="IsHourlySalaryBasisFalse">Оклад по дням</label>
-            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label for="IsHourlySalaryBasisTrue">Оклад по часам</label>
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, false, new { @id = "IsHourlySalaryBasisFalse" })<label id="lblHSBFalse" for="IsHourlySalaryBasisFalse" @if (!Model.IsHourlySalaryBasis)
+                                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по дням</label>
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label id="lblHSBTrue" for="IsHourlySalaryBasisTrue" @if (Model.IsHourlySalaryBasis)
+                                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по часам</label>
         </div>
 
         <div class="formfield clearleft">
@@ -199,5 +201,14 @@
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
         $('#isHourlySalaryBasisContainer').buttonset();
+        //подкрашиваем пол
+        $("#IsHourlySalaryBasisTrue").click(function () {
+            $("#lblHSBTrue").css("border-color", "red");
+            $("#lblHSBFalse").css("border-color", "silver");
+        });
+        $("#IsHourlySalaryBasisFalse").click(function () {
+            $("#lblHSBTrue").css("border-color", "silver");
+            $("#lblHSBFalse").css("border-color", "red");
+        });
     });
 </script>

@@ -14,6 +14,8 @@
 
     <property name="IsFinal" not-null="true"/>
     <property name="IsValidate" not-null="false"/>
+    <property name="FamilyStatusId" not-null="false"/>
+
     
   </class>
 </hibernate-mapping>

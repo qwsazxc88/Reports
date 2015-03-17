@@ -16,10 +16,26 @@
     <table class="clear">
         <tr>
             <td>
+                @Html.LabelFor(m => m.Country)
+            </td>
+            <td>
+                <span class="fakeFormField">@Html.DisplayFor(m => m.Country)&nbsp;</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 @Html.LabelFor(m => m.ZipCode)
             </td>
             <td>
                 <span class="fakeFormField">@Html.DisplayFor(m => m.ZipCode)&nbsp;</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Republic)
+            </td>
+            <td>
+                <span class="fakeFormField">@Html.DisplayFor(m => m.Republic)&nbsp;</span>
             </td>
         </tr>
         <tr>

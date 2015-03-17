@@ -6,6 +6,9 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <!--<property name="EducationTypeId" not-null="true"/>-->
+
+    <many-to-one name="EducationTypes" class="EmploymentEducationType" column="EducationTypeId" foreign-key="FK_HigherEducationDiploma_EmploymentEducationType" index="HigherEducationDiploma_EmploymentEducationType"  not-null="false"/>
     <property name="IssuedBy" length="150" not-null="false"/>
     <property name="Series" length="10" not-null="false"/>
     <property name="Number" length="10" not-null="false"/>
