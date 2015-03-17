@@ -5,6 +5,7 @@ using Reports.Presenters.UI.ViewModel;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Domain;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -36,6 +37,7 @@ namespace Reports.Presenters.UI.Bl
 
         ManagersModel GetManagersModel(int? userId = null);
         ManagersModel GetManagersModel(ManagersModel model);
+        IList<IdNameDto> GetPositionAutocomplete(string Name);
 
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
         PersonnelManagersModel GetPersonnelManagersModel(PersonnelManagersModel model);

@@ -90,6 +90,8 @@
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\IGpdActDao.cs" />
     <Compile Include="Dao\IGpdDetailSetDao.cs" />
     <Compile Include="Dao\IHelpFaqDao.cs" />
@@ -185,6 +187,8 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
@@ -408,6 +412,7 @@
     <Compile Include="Domain\Employment2\Signer.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
+    <Compile Include="Domain\EmploymentEducationType.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\Employment2\FamilyMember.cs" />
@@ -534,6 +539,10 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
+    <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryValidityCategoryDto.cs" />
     <Compile Include="Dto\Employment2\NameChangeDto.cs" />
     <Compile Include="Dto\Employment2\HigherEducationDiplomaDto.cs" />
     <Compile Include="Dto\Employment2\PostGraduateEducationDiplomaDto.cs" />
@@ -1118,6 +1127,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\NoteType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentEducationType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

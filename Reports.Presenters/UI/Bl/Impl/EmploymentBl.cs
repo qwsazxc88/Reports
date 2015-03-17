@@ -197,6 +197,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentSignersDao = value; }
         }
 
+        protected IEmploymentEducationTypeDao employmentEducationTypeDao;
+        public IEmploymentEducationTypeDao EmploymentEducationTypeDao
+        {
+            get { return Validate.Dependency(employmentEducationTypeDao); }
+            set { employmentEducationTypeDao = value; }
+        }
+
+        protected IEmploymentHigherEducationDiplomaDao employmentHigherEducationDiplomaDao;
+        public IEmploymentHigherEducationDiplomaDao EmploymentHigherEducationDiplomaDao
+        {
+            get { return Validate.Dependency(employmentHigherEducationDiplomaDao); }
+            set { employmentHigherEducationDiplomaDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -471,23 +485,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CertificationScan);
                 model.CertificationScanId = attachmentId;
                 model.CertificationScanFileName = attachmentFilename;
-
-                foreach (var item in entity.HigherEducationDiplomas)
-                {
-                    model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
-                    {
-                        Id = item.Id,
-                        AdmissionYear = item.AdmissionYear,
-                        Department = item.Department,
-                        GraduationYear = item.GraduationYear,
-                        IssuedBy = item.IssuedBy,
-                        Number = item.Number,
-                        Profession = item.Profession,
-                        Qualification = item.Qualification,
-                        Series = item.Series,
-                        Speciality = item.Speciality
-                    });
-                }
+                model.HigherEducationDiplomas = EmploymentHigherEducationDiplomaDao.GetHighEducationTypes(entity.Id);
+                //foreach (var item in entity.HigherEducationDiplomas)
+                //{
+                //    model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
+                //    {
+                //        Id = item.Id,
+                //        EducationTypeId = item.EducationTypeId,
+                //        AdmissionYear = item.AdmissionYear,
+                //        Department = item.Department,
+                //        GraduationYear = item.GraduationYear,
+                //        IssuedBy = item.IssuedBy,
+                //        Number = item.Number,
+                //        Profession = item.Profession,
+                //        Qualification = item.Qualification,
+                //        Series = item.Series,
+                //        Speciality = item.Speciality
+                //    });
+                //}
 
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.HigherEducationDiplomaScan);
                 model.HigherEducationDiplomaScanId = attachmentId;
@@ -555,6 +570,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
+                model.FamillyStatuses = EmploymentFamilyDao.GetFamilyStatuses();
+                model.FamilyStatusId = entity.FamilyStatusId;
                 model.Children = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
@@ -655,7 +672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                model.CombatFitness = entity.CombatFitness;
+                model.MilitaryValidityCategoryId = entity.MilitaryValidityCategoryId;
                 model.Commissariat = entity.Commissariat;
                 model.CommonMilitaryServiceRegistrationInfo = entity.CommonMilitaryServiceRegistrationInfo;
                 model.ConscriptionStatus = entity.ConscriptionStatus;
@@ -664,16 +681,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsReserved = entity.IsReserved;
                 model.MilitaryCardDate = entity.MilitaryCardDate;
                 model.MilitaryCardNumber = entity.MilitaryCardNumber;
-                model.MilitaryServiceRegistrationInfo = entity.MilitaryServiceRegistrationInfo;
+                model.MilitaryRelationAccountId = entity.MilitaryRelationAccountId;
                 model.MilitarySpecialityCode = entity.MilitarySpecialityCode;
                 model.MobilizationTicketNumber = entity.MobilizationTicketNumber;
                 model.PersonnelCategory = entity.PersonnelCategory;
                 model.PersonnelType = entity.PersonnelType;
-                model.Rank = entity.Rank;
+                model.RankId = entity.RankId;
                 model.RegistrationExpiration = entity.RegistrationExpiration;
                 model.ReserveCategory = entity.ReserveCategory;
-                model.SpecialityCategory = entity.SpecialityCategory;
+                model.SpecialityCategoryId = entity.SpecialityCategoryId;
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
+
+                //MilitaryRelationAccount
+
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
                 model.IsValidate = entity.IsValidate;
@@ -842,6 +862,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
+                model.Country = entity.Country;
+                model.Republic = entity.Republic;
                 model.Apartment = entity.Apartment;
                 model.Building = entity.Building;
                 model.City = entity.City;
@@ -910,8 +932,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DriversLicenseDateOfIssue = entity.DriversLicenseDateOfIssue;
                 model.DriversLicenseNumber = entity.DriversLicenseNumber;
                 model.DrivingExperience = entity.DrivingExperience;
-                model.HasAutomobile = entity.AutomobileMake != null && entity.AutomobileMake.Length > 0;
-                model.HasDriversLicense = entity.DriversLicenseDateOfIssue.HasValue;
+                model.HasAutomobile = entity.HasAutomobile;//entity.AutomobileMake != null && entity.AutomobileMake.Length > 0;
+                model.HasDriversLicense = entity.HasDriversLicense;//entity.DriversLicenseDateOfIssue.HasValue;
                 model.Hobbies = entity.Hobbies;
                 model.ImportantEvents = entity.ImportantEvents;
                 model.IsReadyForBusinessTrips = entity.IsReadyForBusinessTrips;
@@ -1088,6 +1110,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentManagersDao.Get(id.Value);
             }
 
+            LoadDictionaries(model);
+
             if (entity != null)
             {
                 model.Bonus = entity.Bonus;                
@@ -1107,11 +1131,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.IsSecondaryJob = entity.IsSecondaryJob;
+                model.IsExternalPTWorker = entity.IsExternalPTWorker;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
+                model.PositionName = model.PositionItems != null && model.PositionId != 0 ? model.PositionItems.Where(x => x.Value == model.PositionId.ToString()).Single().Text : "";
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 model.SalaryBasis = entity.SalaryBasis;
@@ -1151,7 +1177,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && (managers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
                     manualRoleManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0);
 
-            LoadDictionaries(model);
+            
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -1198,6 +1224,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
             return model;
+        }
+
+        public IList<IdNameDto> GetPositionAutocomplete(string Name)
+        {
+            return PositionDao.GetPositions(Name);
         }
 
         public PersonnelManagersModel GetPersonnelManagersModel(int? userId = null)
@@ -2027,7 +2058,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(EducationModel model)
         {
-            model.NameEducations = GetHighEducatonTypes();
+            model.EducationTypes = GetHighEducatonTypes();
         }
         public void LoadDictionaries(FamilyModel model)
         {
@@ -2035,11 +2066,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(MilitaryServiceModel model)
         {
-            model.RankItems = GetRanks();
+            model.RankItems = EmploymentMilitaryServiceDao.GetMilitaryRanks();
             model.RegistrationExpirationItems = GetRegistrationExpirations();
             model.PersonnelCategoryItems = GetPersonnelCategories();
             model.PersonnelTypeItems = GetPersonnelTypes();
             model.ConscriptionStatusItems = GetConscriptionStatuses();
+            model.MilitaryValidityCategoryes = EmploymentMilitaryServiceDao.GetMilitaryValidityCategoryes();
+            model.MilitaryRelationAccounts = EmploymentMilitaryServiceDao.GetMilitaryRelationAccounts();
+            model.SpecialityCategoryes = EmploymentMilitaryServiceDao.GetMilitarySpecialityCategoryes();
         }
         public void LoadDictionaries(ExperienceModel model)
         {
@@ -2109,20 +2143,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
         }
 
-        public IEnumerable<SelectListItem> GetHighEducatonTypes()
+        public IList<EmploymentEducationType> GetHighEducatonTypes()
         {
-            return new List<SelectListItem>
-            {
-                new SelectListItem {Text = "Дошкольное образование", Value = "01"},
-                new SelectListItem {Text = "Начальное (общее) образование", Value = "02"},
-                new SelectListItem {Text = "Основное общее образование", Value = "03"},
-                new SelectListItem {Text = "Среднее (полное) общее образование", Value = "07"},
-                new SelectListItem {Text = "Начальное профессиональное образование", Value = "10"},
-                new SelectListItem {Text = "Среднее профессиональное образование", Value = "11"},
-                new SelectListItem {Text = "Неполное высшее образование", Value = "15"},
-                new SelectListItem {Text = "Высшее образование", Value = "18"},
-                new SelectListItem {Text = "Послевузовское образование", Value = "19"}
-            };
+            IList<EmploymentEducationType> EducationTypes = EmploymentEducationTypeDao.LoadAllSorted();
+            return EducationTypes;
+            //return new List<SelectListItem>
+            //{
+            //    new SelectListItem {Text = "Дошкольное образование", Value = "01"},
+            //    new SelectListItem {Text = "Начальное (общее) образование", Value = "02"},
+            //    new SelectListItem {Text = "Основное общее образование", Value = "03"},
+            //    new SelectListItem {Text = "Среднее (полное) общее образование", Value = "07"},
+            //    new SelectListItem {Text = "Начальное профессиональное образование", Value = "10"},
+            //    new SelectListItem {Text = "Среднее профессиональное образование", Value = "11"},
+            //    new SelectListItem {Text = "Неполное высшее образование", Value = "15"},
+            //    new SelectListItem {Text = "Высшее образование", Value = "18"},
+            //    new SelectListItem {Text = "Послевузовское образование", Value = "19"}
+            //};
         }
 
         public IEnumerable<SelectListItem> GetDocumentTypes()
@@ -2134,7 +2170,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new List<SelectListItem>
             {
-                new SelectListItem {Text = "Подлежит призыву", Value = "0"},
+                //new SelectListItem {Text = "Подлежит призыву", Value = "0"},
                 new SelectListItem {Text = "Рядовой", Value = "1"},
                 new SelectListItem {Text = "Матрос", Value = "2"},
                 new SelectListItem {Text = "Ефрейтор", Value = "3"},
@@ -2178,9 +2214,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new List<SelectListItem>
             {
-                new SelectListItem {Text = "-", Value = "0"},
-                new SelectListItem {Text = "Снят с воинского учета по возрасту", Value = "1"},
-                new SelectListItem {Text = "Снят с воинского учета по состоянию здоровья", Value = "2"}
+                //new SelectListItem {Text = "-", Value = "0"},
+                new SelectListItem {Text = "Военнообязанный", Value = "1"},
+                new SelectListItem {Text = "Не воннообязанный", Value = "2"},
+                new SelectListItem {Text = "Призывник", Value = "2"}
             };
         }
 
@@ -2218,7 +2255,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public IEnumerable<SelectListItem> GetPositions()
         {
-            return PositionDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+            return PositionDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Text);
         }
 
         public IEnumerable<SelectListItem> GetSchedules()
@@ -2958,6 +2995,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 int lastIndex = viewModel.HigherEducationDiplomas.Count - 1;
                 entity.HigherEducationDiplomas.Add(new HigherEducationDiploma
                 {
+                    EducationTypes = EmploymentEducationTypeDao.Load(viewModel.HigherEducationDiplomas[lastIndex].EducationTypeId),
                     AdmissionYear = viewModel.HigherEducationDiplomas[lastIndex].AdmissionYear,
                     Department = viewModel.HigherEducationDiplomas[lastIndex].Department,
                     GraduationYear = viewModel.HigherEducationDiplomas[lastIndex].GraduationYear,
@@ -3085,6 +3123,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.Family = entity;
 
             entity.Cohabitants = viewModel.Cohabitants;
+            entity.FamilyStatusId = viewModel.FamilyStatusId;
 
             if (entity.FamilyMembers == null)
             {
@@ -3171,7 +3210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.MilitaryService = entity;
-            entity.CombatFitness = viewModel.CombatFitness;
+            entity.MilitaryValidityCategoryId = viewModel.MilitaryValidityCategoryId;
             entity.Commissariat = viewModel.Commissariat;
             entity.CommonMilitaryServiceRegistrationInfo = viewModel.CommonMilitaryServiceRegistrationInfo;
             entity.ConscriptionStatus = viewModel.ConscriptionStatus;
@@ -3181,15 +3220,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsReserved = viewModel.IsReserved;
             entity.MilitaryCardDate = viewModel.MilitaryCardDate;
             entity.MilitaryCardNumber = viewModel.MilitaryCardNumber;
-            entity.MilitaryServiceRegistrationInfo = viewModel.MilitaryServiceRegistrationInfo;
+            entity.MilitaryRelationAccountId = viewModel.MilitaryRelationAccountId;
             entity.MilitarySpecialityCode = viewModel.MilitarySpecialityCode;
             entity.MobilizationTicketNumber = viewModel.MobilizationTicketNumber;
             entity.PersonnelCategory = viewModel.PersonnelCategory;
             entity.PersonnelType = viewModel.PersonnelType;
-            entity.Rank = viewModel.Rank;
+            entity.RankId = viewModel.RankId;
             entity.RegistrationExpiration = viewModel.RegistrationExpiration;
             entity.ReserveCategory = viewModel.ReserveCategory;
-            entity.SpecialityCategory = viewModel.SpecialityCategory;
+            entity.SpecialityCategoryId = viewModel.SpecialityCategoryId;
             entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
             entity.IsValidate = viewModel.IsValidate;
             #endregion
@@ -3269,6 +3308,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             #region SetEntityProps
+            entity.Country = viewModel.Country;
+            entity.Republic = viewModel.Republic;
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
             entity.Candidate = GetCandidate(viewModel.UserId);
@@ -3301,6 +3342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             #region SetEntityProps
+            entity.HasAutomobile = viewModel.HasAutomobile;
             entity.AutomobileLicensePlateNumber = viewModel.AutomobileLicensePlateNumber;
             entity.AutomobileMake = viewModel.AutomobileMake;
             entity.AverageSalary = viewModel.AverageSalary;
@@ -3308,6 +3350,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.BackgroundCheck = entity;
             entity.ChronicalDiseases = viewModel.ChronicalDiseases;
             entity.Drinking = viewModel.Drinking;
+            entity.HasDriversLicense = viewModel.HasDriversLicense;
             entity.DriversLicenseCategories = viewModel.DriversLicenseCategories;
             entity.DriversLicenseDateOfIssue = viewModel.DriversLicenseDateOfIssue;
             entity.DriversLicenseNumber = viewModel.DriversLicenseNumber;
@@ -3414,6 +3457,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
+            entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
             entity.PersonalAddition = viewModel.PersonalAddition;
             entity.Position = PositionDao.Load(viewModel.PositionId);
             entity.PositionAddition = viewModel.PositionAddition;

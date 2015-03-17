@@ -13,7 +13,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -50,7 +50,13 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasDriversLicense)<br />
-            @Html.EditorFor(m => m.HasDriversLicense)
+            <div class="formfield clear" id="DLContainer">
+                @Html.RadioButtonFor(m => m.HasDriversLicense, true, new { @id = "IsDLTrue" })<label id="lblDTrue" for="IsDLTrue" @if (Model.HasDriversLicense)
+                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                @Html.RadioButtonFor(m => m.HasDriversLicense, false, new { @id = "IsDLFalse" })<label id="lblDFalse" for="IsDLFalse" @if (!Model.HasDriversLicense)
+                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+            </div>
+            @*@Html.EditorFor(m => m.HasDriversLicense)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DriversLicenseNumber)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseNumber)<br />
@@ -70,7 +76,13 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasAutomobile)<br />
-            @Html.EditorFor(m => m.HasAutomobile)
+            <div class="formfield clear" id="HasAuto">
+                @Html.RadioButtonFor(m => m.HasAutomobile, true, new { @id = "IsATrue" })<label id="lblATrue" for="IsATrue" @if (Model.HasAutomobile)
+                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                @Html.RadioButtonFor(m => m.HasAutomobile, false, new { @id = "IsAFalse" })<label id="lblAFalse" for="IsAFalse" @if (!Model.HasAutomobile)
+                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+            </div>
+            @*@Html.EditorFor(m => m.HasAutomobile)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AutomobileMake)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileMake)<br />
@@ -336,6 +348,28 @@
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");
         UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
+        $('#DLContainer').buttonset();        
+        $('#HasAuto').buttonset();        
+        
+        //подкрашиваем наличие прав
+        $("#IsDLTrue").click(function(){
+            $("#lblDTrue").css("border-color", "red");
+            $("#lblDFalse").css("border-color", "silver");
+        });
+        $("#IsDLFalse").click(function(){
+            $("#lblDTrue").css("border-color", "silver");
+            $("#lblDFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем наличие автомобиля
+        $("#IsATrue").click(function(){
+            $("#lblATrue").css("border-color", "red");
+            $("#lblAFalse").css("border-color", "silver");
+        });
+        $("#IsAFalse").click(function(){
+            $("#lblATrue").css("border-color", "silver");
+            $("#lblAFalse").css("border-color", "red");
+        });
 
         var $addReferenceDialog = $('#add-reference-dialog').dialog(
         {

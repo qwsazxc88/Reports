@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Domain;
 using System.Web;
 using System.Web.Mvc;
 
@@ -49,12 +50,21 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int TrainingScanId { get; set; }
         public string TrainingScanFileName { get; set; }
 
-        //модальная форма
+        //для проверок модальных форм 
+        [Display(Name = "Вид образования"),
+            Required(ErrorMessage = "*")]
+        public int EducationTypeId { get; set; }
+        public IList<EmploymentEducationType> EducationTypes { get; set; }
+
+        [Display(Name = "Наименование образовательного учреждения"),
+            StringLength(100, ErrorMessage = "Не более 100 знаков."),
+            Required(ErrorMessage = "*")]
+        public string CertificateIssuedBy { get; set; }
+
         [Display(Name = "Наименование образовательного учреждения"),
             StringLength(100, ErrorMessage = "Не более 100 знаков."),
             Required(ErrorMessage = "*")]
         public string IssuedBy { get; set; }
-        public IEnumerable<SelectListItem> NameEducations { get; set; }
 
         [Display(Name = "Серия"),
             StringLength(20, ErrorMessage = "Не более 20 знаков."),
@@ -96,7 +106,19 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public string Department { get; set; }
 
-        public bool IsHigherEducationValid { get; set; }
+        [Display(Name = " с "),
+            Required(ErrorMessage = "*")]
+        public DateTime? BeginningDate { get; set; }
+
+        [Display(Name = " по "),
+            Required(ErrorMessage = "*")]
+        public DateTime? EndDate { get; set; }
+
+
+
+        public bool IsHigherEducationNotValid { get; set; }//для проверок заполнения сведения об образовании
+        public bool IsPostGraduateEducationNotValid { get; set; }//для проверок заполнения послевузовского образования
+        public bool IsEducationTrainingNotValid { get; set; }//для проверок заполнения повышения квалификации
 
         public EducationModel()
         {
