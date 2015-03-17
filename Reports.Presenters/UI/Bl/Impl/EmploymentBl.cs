@@ -2166,50 +2166,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             return DocumentTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
-        public IEnumerable<SelectListItem> GetRanks()
-        {
-            return new List<SelectListItem>
-            {
-                //new SelectListItem {Text = "Подлежит призыву", Value = "0"},
-                new SelectListItem {Text = "Рядовой", Value = "1"},
-                new SelectListItem {Text = "Матрос", Value = "2"},
-                new SelectListItem {Text = "Ефрейтор", Value = "3"},
-                new SelectListItem {Text = "Ст. матрос", Value = "4"},
-                new SelectListItem {Text = "Мл. сержант", Value = "5"},
-                new SelectListItem {Text = "Старшина 2-й статьи", Value = "6"},
-                new SelectListItem {Text = "Сержант", Value = "7"},
-                new SelectListItem {Text = "Старшина 1-й статьи", Value = "8"},
-                new SelectListItem {Text = "Ст. сержант", Value = "9"},
-                new SelectListItem {Text = "Гл. старшина", Value = "10"},
-                new SelectListItem {Text = "Старшина", Value = "11"},
-                new SelectListItem {Text = "Гл. корабельный старшина", Value = "12"},
-                new SelectListItem {Text = "Прапорщик", Value = "13"},
-                new SelectListItem {Text = "Мичман", Value = "14"},
-                new SelectListItem {Text = "Ст. прапорщик", Value = "15"},
-                new SelectListItem {Text = "Ст. мичман", Value = "16"},
-                new SelectListItem {Text = "Мл. лейтенант", Value = "17"},
-                new SelectListItem {Text = "Лейтенант", Value = "18"},
-                new SelectListItem {Text = "Ст. лейтенант", Value = "19"},
-                new SelectListItem {Text = "Капитан", Value = "20"},
-                new SelectListItem {Text = "Капитан-лейтенант", Value = "21"},
-                new SelectListItem {Text = "Майор", Value = "22"},
-                new SelectListItem {Text = "Капитан 3 ранга", Value = "23"},
-                new SelectListItem {Text = "Подполковник", Value = "24"},
-                new SelectListItem {Text = "Капитан 2 ранга", Value = "25"},
-                new SelectListItem {Text = "Полковник", Value = "26"},
-                new SelectListItem {Text = "Капитан 1 ранга", Value = "27"},
-                new SelectListItem {Text = "Генерал-майор", Value = "28"},
-                new SelectListItem {Text = "Контр-адмирал", Value = "29"},
-                new SelectListItem {Text = "Генерал-лейтенант", Value = "30"},
-                new SelectListItem {Text = "Вице-адмирал", Value = "31"},
-                new SelectListItem {Text = "Генерал-полковник", Value = "32"},
-                new SelectListItem {Text = "Адмирал", Value = "33"},
-                new SelectListItem {Text = "Генерал армии", Value = "34"},
-                new SelectListItem {Text = "Адмирал флота", Value = "35"},
-                new SelectListItem {Text = "Маршал РФ", Value = "36"}
-            };
-        }
-
         public IEnumerable<SelectListItem> GetRegistrationExpirations()
         {
             return new List<SelectListItem>
