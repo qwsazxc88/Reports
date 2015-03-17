@@ -335,8 +335,11 @@ namespace Reports.Core.Dao.Impl
                 case 14:
                     orderBy = "Status";
                     break;
+                case 15:
+                    orderBy = "candidate.Id";
+                    break;
                 default:
-                    orderBy = "Name";
+                    orderBy = "candidate.Id";
                     break;
             }
 

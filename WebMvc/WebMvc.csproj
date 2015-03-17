@@ -178,6 +178,7 @@
     <Content Include="Scripts\jquery.bgiframe.js" />
     <Content Include="Scripts\jquery.bgiframe.min.js" />
     <Content Include="Scripts\jquery.global.js" />
+    <Content Include="Scripts\jquery.maskedinput-1.2.2.js" />
     <Content Include="Scripts\jquery.ui.datepicker-ru.js" />
     <Content Include="Scripts\jquery.upload-1.0.2.min.js" />
     <Content Include="Scripts\json2.js" />

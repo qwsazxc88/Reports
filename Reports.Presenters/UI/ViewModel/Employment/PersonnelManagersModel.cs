@@ -90,7 +90,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
-        [Display(Name = "Уровень"),
+        [Display(Name = "Ранг"),
             Required(ErrorMessage = "*"),
             Range(2, 7, ErrorMessage = "Требуется число от 2 до 7")]
         public int? Level { get; set; }
@@ -138,6 +138,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
+
+        public string MessageStr { get; set; }
 
         public PersonnelManagersModel()
         {

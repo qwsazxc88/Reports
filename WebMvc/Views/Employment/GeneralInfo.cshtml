@@ -435,14 +435,19 @@
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999-99');
+        });     
+
         $('#gender').buttonset();        
         //подкрашиваем пол
         $("#IsMaleTrue").click(function(){
             $("#lblMTrue").css("border-color", "red");
-            $("#lblMFalse").css("border-color", "white");
+            $("#lblMFalse").css("border-color", "silver");
         });
         $("#IsMaleFalse").click(function(){
-            $("#lblMTrue").css("border-color", "white");
+            $("#lblMTrue").css("border-color", "silver");
             $("#lblMFalse").css("border-color", "red");
         });
         //обрабатываем клики по птичке

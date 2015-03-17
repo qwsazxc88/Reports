@@ -11,11 +11,11 @@
     <property name="MilitaryCardDate" not-null="false"/>
     <property name="ReserveCategory" length="20" not-null="false"/>
     <property name="Rank" column="RankId" not-null="false"/>
-    <property name="SpecialityCategory" length="50" not-null="false"/>
+    <property name="SpecialityCategoryId" not-null="false"/>
     <property name="MilitarySpecialityCode" length="7" not-null="false"/>
-    <property name="CombatFitness" length="20" not-null="false"/>
+    <property name="MilitaryValidityCategoryId" not-null="false"/>
     <property name="Commissariat" length="100" not-null="false"/>
-    <property name="MilitaryServiceRegistrationInfo" length="250" not-null="false"/>
+    <property name="MilitaryRelationAccountId" not-null="false"/>
     <property name="CommonMilitaryServiceRegistrationInfo" length="250" not-null="false"/>
     <property name="SpecialMilitaryServiceRegistrationInfo" length="250" not-null="false"/>
     <property name="RegistrationExpiration" column="RegistrationExpirationId" not-null="false"/>

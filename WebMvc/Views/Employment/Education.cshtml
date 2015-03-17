@@ -13,14 +13,17 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
-    <input type="hidden" id="IsHigherEducationValid" name="IsHigherEducationValid" value="@Model.IsHigherEducationValid" />
+    <input type="hidden" id="IsHigherEducationNotValid" name="IsHigherEducationNotValid" value="@Model.IsHigherEducationNotValid" />
+    <input type="hidden" id="IsPostGraduateEducationNotValid" name="IsPostGraduateEducationNotValid" value="@Model.IsPostGraduateEducationNotValid" />
+    <input type="hidden" id="IsEducationTrainingNotValid" name="IsEducationTrainingNotValid" value="@Model.IsEducationTrainingNotValid" />
+    
     @Html.HiddenFor(m => m.UserId)
 
     <fieldset class="bordered doc-wrap panel">
@@ -31,6 +34,9 @@
                 <table class="grid">
                     
                     <tr>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].EducationTypeId)
+                        </th>
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)
                         </th>
@@ -64,6 +70,9 @@
                     @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
                     {
                         <tr>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].EducationTypeName
+                            </td>
                             <td>
                                 @Model.HigherEducationDiplomas[i].IssuedBy
                             </td>
@@ -379,9 +388,7 @@
 <div id="add-higher-education-diploma-dialog" title="Добавление сведений о высшем образовании">
     @using (Html.BeginForm("EducationAddHigherEducationDiploma", "Employment", FormMethod.Post))
     {
-        
-        
-        
+        @*
         <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="IssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -391,8 +398,9 @@
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Profession" style="display:block;">Профессия основная</label><input type="text" name="Profession" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Department" style="display:block;">Факультет/отделение</label><input type="text" name="Department" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        @*
-        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label>@Html.DropDownListFor(m => m.IssuedBy, Model.NameEducations, string.Empty) @Html.ValidationMessageFor(m => m.IssuedBy)
+        *@
+        <label for="IssuedBy" style="display:block;">Вид образования</label>@Html.DropDownListFor(m => m.EducationTypeId, new SelectList(Model.EducationTypes, "Id", "Name")) @Html.ValidationMessageFor(m => m.EducationTypeId)
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label>@Html.TextBoxFor(m => m.IssuedBy) @Html.ValidationMessageFor(m => m.IssuedBy)
         <label for="Series" style="display:block;">Серия</label>@Html.TextBoxFor(m => m.Series)@Html.ValidationMessageFor(m => m.Series)
         <label for="Number" style="display:block;">Номер</label>@Html.TextBoxFor(m => m.Number)@Html.ValidationMessageFor(m => m.Number)
         <label for="AdmissionYear" style="display:block;">Год поступления</label>@Html.TextBoxFor(m => m.AdmissionYear)@Html.ValidationMessageFor(m => m.AdmissionYear)
@@ -401,7 +409,7 @@
         <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
         <label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)
         <label for="Department" style="display:block;">Факультет/отделение</label>@Html.TextBoxFor(m => m.Department)@Html.ValidationMessageFor(m => m.Department)
-        *@
+        
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -411,12 +419,20 @@
 <div id="add-post-graduate-education-diploma-dialog" title="Добавление сведений о послевузовском образовании">
     @using (Html.BeginForm("EducationAddPostGraduateEducationDiploma", "Employment", FormMethod.Post))
     {
+        @*
         <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="IssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="AdmissionYear" style="display:block;">Год поступления</label><input type="text" name="AdmissionYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="GraduationYear" style="display:block;">Год окончания</label><input type="text" name="GraduationYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        *@
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label>@Html.TextBoxFor(m => m.IssuedBy) @Html.ValidationMessageFor(m => m.IssuedBy)
+        <label for="Series" style="display:block;">Серия</label>@Html.TextBoxFor(m => m.Series)@Html.ValidationMessageFor(m => m.Series)
+        <label for="Number" style="display:block;">Номер</label>@Html.TextBoxFor(m => m.Number)@Html.ValidationMessageFor(m => m.Number)
+        <label for="AdmissionYear" style="display:block;">Год поступления</label>@Html.TextBoxFor(m => m.AdmissionYear)@Html.ValidationMessageFor(m => m.AdmissionYear)
+        <label for="GraduationYear" style="display:block;">Год окончания</label>@Html.TextBoxFor(m => m.GraduationYear)@Html.ValidationMessageFor(m => m.GraduationYear)
+        <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -439,6 +455,7 @@
 <div id="add-training-dialog" title="Добавление сведений об повышении квалификации">
     @using (Html.BeginForm("EducationAddTraining", "Employment", FormMethod.Post))
     {
+        @*
         <label for="CertificateIssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="CertificateIssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -446,6 +463,14 @@
         <label for="BeginningDate">с </label><input type="text" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="EndDate">по </label><input type="text" name="EndDate" value="" class="text ui-widget-content ui-corner-all" />
         <label for="Speciality" style="display:block;">Специальность/квалификация</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        *@
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label>@Html.TextBoxFor(m => m.CertificateIssuedBy) @Html.ValidationMessageFor(m => m.CertificateIssuedBy)
+        <label for="Series" style="display:block;">Серия</label>@Html.TextBoxFor(m => m.Series)@Html.ValidationMessageFor(m => m.Series)
+        <label for="Number" style="display:block;">Номер</label>@Html.TextBoxFor(m => m.Number)@Html.ValidationMessageFor(m => m.Number)
+        <span style="display:block;">Период обучения</span>
+        <label for="BeginningDate" style="display:block;">с </label>@Html.EditorFor(m => m.BeginningDate)@Html.ValidationMessageFor(m => m.BeginningDate)
+        <label for="EndDate" style="display:block;"> по </label>@Html.EditorFor(m => m.EndDate)@Html.ValidationMessageFor(m => m.EndDate)
+        <label for="Speciality" style="display:block;">Специальность/квалификация</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -483,7 +508,10 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
-        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue, #BeginningDate, #EndDate'), "-50:+0", true);
+        
+        
+        
 
         var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
         {
@@ -496,9 +524,10 @@
             {
                 "OK": function () {
                     $('#add-higher-education-diploma-dialog form').submit();
-                    $(this).dialog("close");
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
+                    $(":text").val('');
                     $(this).dialog("close");
                 }
             }
@@ -515,9 +544,10 @@
             {
                 "OK": function () {
                     $('#add-post-graduate-education-diploma-dialog form').submit();
-                    $(this).dialog("close");
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
+                    $(":text").val('');
                     $(this).dialog("close");
                 }
             }
@@ -534,9 +564,10 @@
             {
                 "OK": function () {
                     $('#add-certification-dialog form').submit();
-                    $(this).dialog("close");
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
+                    $(":text").val('');
                     $(this).dialog("close");
                 }
             }
@@ -553,9 +584,10 @@
             {
                 "OK": function () {
                     $('#add-training-dialog form').submit();
-                    $(this).dialog("close");
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
+                    $(":text").val('');
                     $(this).dialog("close");
                 }
             }
@@ -580,5 +612,19 @@
             $addTrainingDialog.dialog("open");
             e.preventDefault();
         });
+
+        //есди не прошли проверки открываем формы
+        if ($("#IsHigherEducationNotValid").val() == 'True'){
+            $addHigherEducationDiplomaDialog.dialog("open");
+        }
+
+        if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
+            $addPostGraduateEducationDiplomaDialog.dialog("open");
+        }
+
+        if ($("#IsEducationTrainingNotValid").val() == 'True'){
+            $addTrainingDialog.dialog("open");
+        }
+        
     });
 </script>
