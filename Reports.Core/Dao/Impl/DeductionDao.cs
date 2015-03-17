@@ -31,6 +31,7 @@ namespace Reports.Core.Dao.Impl
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
+                                     when v.UploadingDocType is not null and SendTo1C is null and DeleteDate is null then N'Автовыгрузка'
                                      else N'Записана'
                                 end as Status,
                                 case when IsFastDismissal is null then null  
@@ -147,7 +148,9 @@ namespace Reports.Core.Dao.Impl
                     case 3://3, "Отклонена"
                         statusWhere = @"[DeleteDate] is not null";
                         break;
-                   
+                    case 4: //4, "Автовыгрузка"
+                        statusWhere = @"UploadingDocType is not null and SendTo1C is null and DeleteDate is null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
