@@ -145,10 +145,13 @@
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
                                                                                            {<text>style="display:none"</text>}/>
+                    @*
                    @if (Model.IsAttachmentVisible)
                    {
-                        <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
+                        
                    }
+                   *@
+                   <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
               
                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
                                                                                               {<text>style="display:none"</text>}/>
