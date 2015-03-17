@@ -188,10 +188,10 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError(string.Empty,StrCannotSendRequestWithoutTemplate);
             }*/
 
-            if (model.TypeId == 15)
-            {
-                ModelState.AddModelError("TypeId", "Данный вид услуги не доступен для создания заявки!");
-            }
+            //if (model.TypeId == 15)
+            //{
+            //    ModelState.AddModelError("TypeId", "Данный вид услуги не доступен для создания заявки!");
+            //}
 
             if(model.IsForFiredUser)
             {
