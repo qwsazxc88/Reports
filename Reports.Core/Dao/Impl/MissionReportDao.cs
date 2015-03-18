@@ -234,7 +234,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or 
                         (
-                            (u.RoleId & 2) > 0
+                            ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0)
                             and
                             u.DepartmentId in
                             (
