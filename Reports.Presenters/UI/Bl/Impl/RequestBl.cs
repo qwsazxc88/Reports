@@ -5785,7 +5785,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (managerAccount != null && !managerAccount.IsMainManager)
             {
                 mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
-                    .Where<User>(manager => manager.IsMainManager)
+                    //.Where<User>(manager => manager.IsMainManager) //только руководители
+                    .Where<User>(manager => manager.Email != user.Email) //руководители, заместители, специалисты, кроме самого пользователя, если он есть в числе начальства
                     .ToList<User>();
 
                 foreach(var mainManager in mainManagers)
