@@ -7569,7 +7569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = userDao.Load(userId);
             if(user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя (id {0})", userId));
-            if((user.UserRole & UserRole.Employee) == 0)
+            if ((user.UserRole & UserRole.Employee) == 0 && (user.UserRole & UserRole.DismissedEmployee) == 0)
                 throw new ValidationException(string.Format("Пользователь (id {0}) не является сотрудником", userId));
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Position = user.Position == null ? string.Empty : user.Position.Name;
