@@ -13,7 +13,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -25,10 +25,26 @@
         <table class="clear">
             <tr>
                 <td>
+                    @Html.LabelFor(m => m.Country)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Country)
+                </td>
+            </tr>
+            <tr>
+                <td>
                     @Html.LabelFor(m => m.ZipCode)
                 </td>
                 <td>
                     @Html.EditorFor(m => m.ZipCode)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Republic)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Republic)
                 </td>
             </tr>
             <tr>
@@ -98,7 +114,8 @@
                     @Html.LabelFor(m => m.WorkPhone)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.WorkPhone, new { @type = "tel" })
+                    @Html.TextBoxFor(m => m.WorkPhone, new { @type = "tel" }) 
+                    @Html.ValidationMessageFor(m => m.WorkPhone)
                 </td>
             </tr>
             <tr>
@@ -138,5 +155,11 @@
 <script>
     $(document).ready(function () {
         setActiveMenuItem("empContacts");
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#WorkPhone').mask('+7(999) 999-99-99');
+            $('#HomePhone').mask('+7(999) 999-99-99');
+            $('#Mobile').mask('+7(999) 999-99-99');
+        });
     });
 </script>

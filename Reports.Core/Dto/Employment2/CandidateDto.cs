@@ -111,7 +111,7 @@ namespace Reports.Core.Dto.Employment2
         public bool ExperienceFinal { get; set; }
         public bool ContactFinal { get; set; }
         public bool BackgroundFinal { get; set; }
-        public bool CandidateDocuments { get; set; }
+        public bool CandidateApp { get; set; }
         public bool? BackgroundApproval { get; set; }
         public bool? TrainingApproval { get; set; }
         public bool? ManagerApproval { get; set; }

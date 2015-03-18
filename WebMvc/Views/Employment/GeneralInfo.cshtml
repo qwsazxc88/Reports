@@ -14,7 +14,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)</span>
 
 
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
@@ -33,7 +33,7 @@
                 <div style="width: 80px; height: 100px; background: gray;">
                     @if (@Model.PhotoAttachmentId != 0)
                     {
-                        <input type="image" style="width: 80px; height: 100px" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                        <input type="image" style="width: 80px; height: 100px" id="PhotoFileVeiw" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
                     }
                 </div>
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
@@ -50,7 +50,7 @@
                 {
                     <div class="formfield">
                         @*@Model.PhotoAttachmentFilename*@
-                        <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                        <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId); " @*@if (!Model.IsDeleteScanAvailable)
                                                                                                    {<text>style="display:none"</text>}*@/>
                     </div>
                 }
@@ -127,18 +127,14 @@
         </fieldset>
 
         <div class="formfield clear" id="gender">
-
-            @Html.RadioButtonFor(m => m.IsMale, true, new { @id = "IsMaleTrue" })<label for="IsMaleTrue">М</label>
-            @Html.RadioButtonFor(m => m.IsMale, false, new { @id = "IsMaleFalse" })<label for="IsMaleFalse">Ж</label>
+            @Html.RadioButtonFor(m => m.IsMale, true, new { @id = "IsMaleTrue" })<label id="lblMTrue" for="IsMaleTrue" @if(Model.IsMale){<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>М</label>
+            @Html.RadioButtonFor(m => m.IsMale, false, new { @id = "IsMaleFalse" })<label id="lblMFalse" for="IsMaleFalse" @if(!Model.IsMale){<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Ж</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.CitizenshipId)&nbsp;@Html.ValidationMessageFor(m => m.CitizenshipId)<br />
             @Html.DropDownListFor(m => m.CitizenshipId, Model.CitizenshipItems, string.Empty)
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
-            @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems, string.Empty)
-        </div>
+        
         <div class="formfield clear">
             @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
             @Html.EditorFor(m => m.DateOfBirth)
@@ -146,6 +142,10 @@
         <div class="formfield clear">
             <fieldset class="bordered nomargin">
             <legend class="level2">Место рождения</legend>
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.CountryBirthId)&nbsp;@Html.ValidationMessageFor(m => m.CountryBirthId)<br />
+                    @Html.DropDownListFor(m => m.CountryBirthId, Model.CountryBirthItems, string.Empty)
+                </div>
                 <div class="formfield clear">
                     @Html.LabelFor(m => m.RegionOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.RegionOfBirth)<br />
                     @Html.EditorFor(m => m.RegionOfBirth)
@@ -272,6 +272,10 @@
                 @Html.LabelFor(m => m.DisabilityDegreeId)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityDegreeId)<br />
                 @Html.DropDownListFor(m => m.DisabilityDegreeId, Model.DisabilityDegrees, string.Empty)
             </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsDisabilityTermLess)&nbsp;@Html.ValidationMessageFor(m => m.IsDisabilityTermLess)<br />
+                @Html.CheckBoxFor(m => m.IsDisabilityTermLess)
+            </div>
             <div class="formfield">
                 @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
@@ -301,10 +305,7 @@
 
         </fieldset>
 
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
-            @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
-        </div>        
+        
         
     </fieldset>
     
@@ -312,7 +313,7 @@
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate) <br />
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
-        <button type="submit">Сохранить</button>
+        <button id="btn" type="submit">Сохранить</button>
     </div>
 }
 
@@ -321,7 +322,8 @@
 <div id="add-name-change-dialog" title="Добавление изменения ФИО">
     @using (Html.BeginForm("GeneralInfoAddNameChange", "Employment", FormMethod.Post))
     {
-        <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" id="PreviousName" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        //@Html.ValidationMessageFor(
         <label for="Date" style="display:block;">Дата изменения</label><input type="text" id="DateOfNameChange" name="Date" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Place" style="display:block;">Место</label><input type="text" name="Place" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Reason" style="display:block;">Причина</label><input type="text" name="Reason" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -433,8 +435,30 @@
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999-99');
+        });     
+
         $('#gender').buttonset();        
-        
+        //подкрашиваем пол
+        $("#IsMaleTrue").click(function(){
+            $("#lblMTrue").css("border-color", "red");
+            $("#lblMFalse").css("border-color", "silver");
+        });
+        $("#IsMaleFalse").click(function(){
+            $("#lblMTrue").css("border-color", "silver");
+            $("#lblMFalse").css("border-color", "red");
+        });
+        //обрабатываем клики по птичке
+        $("#IsDisabilityTermLess").click(function(){
+            if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+            else {$("#DisabilityCertificateExpirationDate").show();}
+        });
+
+        if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+            else {$("#DisabilityCertificateExpirationDate").show();}
+
         //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
         
 
@@ -448,6 +472,8 @@
             buttons:
             {
                 "OK": function () {
+                    //if(!Validate1()){return false;}
+                    //$('#add-name-change-dialog form').submit();
                     processAddNameChange();
                     $(this).dialog("close");
                 },
@@ -456,6 +482,16 @@
                 }
             }
         });
+
+        function Validate1(){
+            if($("#PreviousName").val() == ""){
+                var aa = document.getElementsByName("PreviousName");
+                aa.css("backgroundColor", "red");
+                //alert("ssss");
+                return false;
+            }
+            return true;
+        }
 
         var processAddNameChange = function()
         {
@@ -554,30 +590,30 @@
             true
         );
 
-        UIHelpers.handleSelectStates($("#CitizenshipId"), [
-                {
-                    text: "РОССИЯ",
-                    actOnSelect: function(){
-                        $("#InsuredPersonTypeId").val("");
-                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                    },
-                    actOnDeselect: function(){
-                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                    }
-                },
-                {
-                    value: "",
-                    actOnSelect: function(){
-                        $("#InsuredPersonTypeId").val("");
-                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                    },
-                    actOnDeselect: function(){
-                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                    }
-                }
-            ],        
-            true
-        );
+//        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+//                {
+//                    text: "РОССИЯ",
+//                    actOnSelect: function(){
+//                        $("#InsuredPersonTypeId").val("");
+//                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                    },
+//                    actOnDeselect: function(){
+//                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                    }
+//                },
+//                {
+//                    value: "",
+//                    actOnSelect: function(){
+//                        $("#InsuredPersonTypeId").val("");
+//                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                    },
+//                    actOnDeselect: function(){
+//                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                    }
+//                }
+//            ],        
+//            true
+//        );
 
     });
 </script> 

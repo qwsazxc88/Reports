@@ -206,11 +206,32 @@
                     AjaxFormRequest("tabs1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
 
                     $("#tabs1").ajaxStop(function () {
-                        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
-                        UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
-                        UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
-                        $('#gender').buttonset();        
-                        
+                    UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+                    UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
+                    UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+                    $('#gender').buttonset();   
+                    jQuery(function ($) {
+                        $.mask.definitions['~'] = '[+-]';
+                        $('#SNILS').mask('999-999-999-99');
+                    });     
+
+                    //подкрашиваем пол
+                    $("#IsMaleTrue").click(function(){
+                        $("#lblMTrue").css("border-color", "red");
+                        $("#lblMFalse").css("border-color", "white");
+                    });
+                    $("#IsMaleFalse").click(function(){
+                        $("#lblMTrue").css("border-color", "white");
+                        $("#lblMFalse").css("border-color", "red");
+                    });
+                    //обрабатываем клики по птичке
+                    $("#IsDisabilityTermLess").click(function(){
+                        if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+                        else {$("#DisabilityCertificateExpirationDate").show();}
+                    });
+
+                    if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+                        else {$("#DisabilityCertificateExpirationDate").show();}
                         //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
 
 
@@ -335,30 +356,30 @@
                             true
                         );
 
-                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
-                                {
-                                    text: "РОССИЯ",
-                                    actOnSelect: function(){
-                                        $("#InsuredPersonTypeId").val("");
-                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                                    },
-                                    actOnDeselect: function(){
-                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                                    }
-                                },
-                                {
-                                    value: "",
-                                    actOnSelect: function(){
-                                        $("#InsuredPersonTypeId").val("");
-                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                                    },
-                                    actOnDeselect: function(){
-                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                                    }
-                                }
-                            ],        
-                            true
-                        );
+//                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+//                                {
+//                                    text: "РОССИЯ",
+//                                    actOnSelect: function(){
+//                                        $("#InsuredPersonTypeId").val("");
+//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                                    },
+//                                    actOnDeselect: function(){
+//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                                    }
+//                                },
+//                                {
+//                                    value: "",
+//                                    actOnSelect: function(){
+//                                        $("#InsuredPersonTypeId").val("");
+//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                                    },
+//                                    actOnDeselect: function(){
+//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                                    }
+//                                }
+//                            ],        
+//                            true
+//                        );
                     });
                 }
 
@@ -368,6 +389,10 @@
                     AjaxFormRequest("tabs2", "PassportReadOnly", "/Employment/PassportReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs2").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
+                        jQuery(function ($) {
+                        $.mask.definitions['~'] = '[+-]';
+                        $('#InternalPassportSeries').mask('99 99');
+                        });
                     });
                     
                 }
@@ -377,7 +402,7 @@
                     $("#tabs3").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs3").ajaxStop(function(){
-                        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
+                        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue, #BeginningDate, #EndDate'), "-50:+0", true);
 
                         var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
                         {
@@ -390,9 +415,10 @@
                             {
                                 "OK": function () {
                                     $('#add-higher-education-diploma-dialog form').submit();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
+                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -409,9 +435,10 @@
                             {
                                 "OK": function () {
                                     $('#add-post-graduate-education-diploma-dialog form').submit();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
+                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -428,9 +455,10 @@
                             {
                                 "OK": function () {
                                     $('#add-certification-dialog form').submit();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
+                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -447,9 +475,10 @@
                             {
                                 "OK": function () {
                                     $('#add-training-dialog form').submit();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
+                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -474,6 +503,19 @@
                             $addTrainingDialog.dialog("open");
                             e.preventDefault();
                         });
+
+                        //есди не прошли проверки открываем формы
+                        if ($("#IsHigherEducationNotValid").val() == 'True'){
+                            $addHigherEducationDiplomaDialog.dialog("open");
+                        }
+
+                        if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
+                            $addPostGraduateEducationDiplomaDialog.dialog("open");
+                        }
+
+                        if ($("#IsEducationTrainingNotValid").val() == 'True'){
+                            $addTrainingDialog.dialog("open");
+                        }
                     });
                 }
 
@@ -581,9 +623,10 @@
                             buttons:
                             {
                                 "OK": function () {
-                                    processAddExperienceItem();
+                                    $('#add-experience-item-dialog form').submit();
+                                    //processAddExperienceItem();
                                     //$("#btnExperience").click();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
                                     $(this).dialog("close");
@@ -591,34 +634,38 @@
                             }
                         });
 
-                        var processAddExperienceItem = function()
-                        {
-                            var ActionUrl = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
-                            var Id = $("#CandidateID").val();
-                            var url = ActionUrl + "?CandidateId="+Id;
-                            var dataToSend = $("#add-experience-item-dialog form").serialize();
-                            $.post(url, dataToSend, function(dataReceived){
-                                var $tbody = $("#experience-items-container>table>tbody")
-                                $tbody.empty();
-                                for (var i = 0; i < dataReceived.length; i++)
-                                {
-                                    $tbody.append(
-                                        "<tr><td>" +
-                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
-                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
-                                        dataReceived[i].Company + "</td><td>" +
-                                        dataReceived[i].Position + "</td><td>" +
-                                        dataReceived[i].CompanyContacts + "</td><td>" +
-                                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
-                                    );
-                                }
-                            }, "json");
-                        };
+//                        var processAddExperienceItem = function()
+//                        {
+//                            var ActionUrl = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
+//                            var Id = $("#CandidateID").val();
+//                            var url = ActionUrl + "?CandidateId="+Id;
+//                            var dataToSend = $("#add-experience-item-dialog form").serialize();
+//                            $.post(url, dataToSend, function(dataReceived){
+//                                var $tbody = $("#experience-items-container>table>tbody")
+//                                $tbody.empty();
+//                                for (var i = 0; i < dataReceived.length; i++)
+//                                {
+//                                    $tbody.append(
+//                                        "<tr><td>" +
+//                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+//                                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+//                                        dataReceived[i].Company + "</td><td>" +
+//                                        dataReceived[i].Position + "</td><td>" +
+//                                        dataReceived[i].CompanyContacts + "</td><td>" +
+//                                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+//                                    );
+//                                }
+//                            }, "json");
+//                        };
 
                         $("#add-experience-item").click(function (e) {
                             $addExperienceItemDialog.dialog("open");
                             e.preventDefault();
                         });
+
+                        if ($("#IsExperienceItemNotValid").val() == 'True'){
+                            $addExperienceItemDialog.dialog("open");
+                        }
                     });
                 }
 
@@ -626,6 +673,15 @@
                 if (ui.panel.id == "tabs7") {
                     $("#tabs7").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs7", "ContactsReadOnly", "/Employment/ContactsReadOnly?Id=@Model.CandidateID", "GET");
+                    $("#tabs8").ajaxStop(function () {
+                        jQuery(function ($) {
+                            $.mask.definitions['~'] = '[+-]';
+                            $('#WorkPhone').mask('+7(999) 999-99-99');
+                            $('#HomePhone').mask('+7(999) 999-99-99');
+                            $('#Mobile').mask('+7(999) 999-99-99');
+                        });
+                    });
+                    
                 }
 
                 //восьмая
@@ -633,6 +689,29 @@
                     $("#tabs8").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs8", "BackgroundCheckReadOnly", "/Employment/BackgroundCheckReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs8").ajaxStop(function () {
+                        $('#DLContainer').buttonset();        
+                        $('#HasAuto').buttonset();        
+                        //подкрашиваем наличие прав
+                        $("#IsDLTrue").click(function(){
+                            $("#lblDTrue").css("border-color", "red");
+                            $("#lblDFalse").css("border-color", "silver");
+                        });
+                        $("#IsDLFalse").click(function(){
+                            $("#lblDTrue").css("border-color", "silver");
+                            $("#lblDFalse").css("border-color", "red");
+                        });
+
+                        //подкрашиваем наличие автомобиля
+                        $("#IsATrue").click(function(){
+                            $("#lblATrue").css("border-color", "red");
+                            $("#lblAFalse").css("border-color", "silver");
+                        });
+                        $("#IsAFalse").click(function(){
+                            $("#lblATrue").css("border-color", "silver");
+                            $("#lblAFalse").css("border-color", "red");
+                        });
+
+
                         UIHelpers.handleCheckboxState($("#IsApprovalSkipped"),
                         {
                             $target: $("#ApprovalStatus"),
@@ -709,6 +788,15 @@
                     AjaxFormRequest("tabs9", "OnsiteTrainingReadOnly", "/Employment/OnsiteTrainingReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs9").ajaxStop(function () {
                         UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+                        $("#IsComplete").change(function(){
+                            if ($('#IsComplete option:selected').val() == 'false'){
+                                $('#ReasonsForIncompleteTraining').removeAttr('readonly');
+                            ;}
+                            else{
+                                $('#ReasonsForIncompleteTraining').val('');
+                                $('#ReasonsForIncompleteTraining').attr('readonly', true);
+                            ;}
+                        });
                     });
                 }
 
@@ -725,6 +813,64 @@
                     $("#tabs11").ajaxStop(function () {
                         $('#isSecondaryJobContainer').buttonset();
                         $('#isFrontContainer').buttonset();
+                        $('#isExternalWorkContainer').buttonset();
+
+                        //подкрашиваем вид занятости
+                        $("#IsSecondaryJobTrue").click(function(){
+                            $("#lblSJTrue").css("border-color", "red");
+                            $("#lblSJFalse").css("border-color", "silver");
+                            $("#isExternalWorkContainer").show();
+                        });
+                        $("#IsSecondaryJobFalse").click(function(){
+                            $("#lblSJTrue").css("border-color", "silver");
+                            $("#lblSJFalse").css("border-color", "red");
+                            $("#isExternalWorkContainer").hide();
+                        });
+
+                        //подкрашиваем вид совместительства
+                        $("#IsExternalWorkTrue").click(function(){
+                            $("#lblEWTrue").css("border-color", "red");
+                            $("#lblEWFalse").css("border-color", "silver");
+                        });
+                        $("#IsExternalWorkFalse").click(function(){
+                            $("#lblEWTrue").css("border-color", "silver");
+                            $("#lblEWFalse").css("border-color", "red");
+                        });
+
+                        //подкрашиваем вид фронт/бэк
+                        $("#IsFrontTrue").click(function(){
+                            $("#lblFTrue").css("border-color", "red");
+                            $("#lblFFalse").css("border-color", "silver");
+                        });
+                        $("#IsFrontFalse").click(function(){
+                            $("#lblFTrue").css("border-color", "silver");
+                            $("#lblFFalse").css("border-color", "red");
+                        });
+
+                        
+                        //if($('#IsSecondaryJob').val() == 'True'){$('#isExternalWorkContainer').show();}
+                        //else {$('#isExternalWorkContainer').hide();}
+
+                        //автозаполнение должностей
+                        $(function () 
+                        {
+                            $("[data-autocomplete-source]").each(
+                                function () 
+                                {
+                                    var target = $(this);
+                                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                                          select : function(event, ui) 
+                                                                    {
+                                                                        //для физиков
+                                                                        if (ui.item.PositionId != null){
+                                                                            $("#PositionName").val(ui.item.label);
+                                                                            $("#PositionId").val(ui.item.PositionId);
+                                                                        }
+                                                                        return true;
+                                                                    }
+                                                         });
+                                  });
+                        });
                     });
                 }
 
@@ -738,6 +884,15 @@
                                                 UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
                                                 UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
                                                 $('#isHourlySalaryBasisContainer').buttonset();
+                                                //подкрашиваем пол
+                                                $("#IsHourlySalaryBasisTrue").click(function () {
+                                                    $("#lblHSBTrue").css("border-color", "red");
+                                                    $("#lblHSBFalse").css("border-color", "silver");
+                                                });
+                                                $("#IsHourlySalaryBasisFalse").click(function () {
+                                                    $("#lblHSBTrue").css("border-color", "silver");
+                                                    $("#lblHSBFalse").css("border-color", "red");
+                                                });
                                          });
                 }
 

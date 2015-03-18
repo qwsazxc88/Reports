@@ -13,7 +13,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -23,6 +23,10 @@
     <legend>Воинский учет</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsLiableForMilitaryService)&nbsp;@Html.EditorFor(m => m.IsLiableForMilitaryService)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.RegistrationExpiration)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationExpiration)<br />
+            @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.MilitaryCardNumber)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardNumber)<br />
@@ -62,28 +66,28 @@
             @Html.EditorFor(m => m.ReserveCategory)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.Rank)&nbsp;@Html.ValidationMessageFor(m => m.Rank)<br />
-            @Html.DropDownListFor(m => m.Rank, Model.RankItems, string.Empty)
+            @Html.LabelFor(m => m.RankId)&nbsp;@Html.ValidationMessageFor(m => m.RankId)<br />
+            @Html.DropDownListFor(m => m.RankId, new SelectList(Model.RankItems, "Id", "Name"))
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.SpecialityCategory)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategory)<br />
-            @Html.EditorFor(m => m.SpecialityCategory)
+            @Html.LabelFor(m => m.SpecialityCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategoryId)<br />
+            @Html.DropDownListFor(m => m.SpecialityCategoryId, new SelectList(Model.SpecialityCategoryes, "Id", "Name"))
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.MilitarySpecialityCode)&nbsp;@Html.ValidationMessageFor(m => m.MilitarySpecialityCode)<br />
             @Html.EditorFor(m => m.MilitarySpecialityCode)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.CombatFitness)&nbsp;@Html.ValidationMessageFor(m => m.CombatFitness)<br />
-            @Html.EditorFor(m => m.CombatFitness)
+            @Html.LabelFor(m => m.MilitaryValidityCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryValidityCategoryId)<br />
+            @Html.DropDownListFor(m => m.MilitaryValidityCategoryId, new SelectList(Model.MilitaryValidityCategoryes, "Id", "Name"))
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Commissariat)&nbsp;@Html.ValidationMessageFor(m => m.Commissariat)<br />
             @Html.EditorFor(m => m.Commissariat)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryServiceRegistrationInfo)<br />
-            @Html.EditorFor(m => m.MilitaryServiceRegistrationInfo)
+            @Html.LabelFor(m => m.MilitaryRelationAccountId)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryRelationAccountId)<br />
+            @Html.DropDownListFor(m => m.MilitaryRelationAccountId, new SelectList(Model.MilitaryRelationAccounts, "Id", "Name"))
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.CommonMilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.CommonMilitaryServiceRegistrationInfo)<br />
@@ -92,10 +96,6 @@
         <div class="formfield">
             @Html.LabelFor(m => m.SpecialMilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.SpecialMilitaryServiceRegistrationInfo)<br />
             @Html.EditorFor(m => m.SpecialMilitaryServiceRegistrationInfo)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.RegistrationExpiration)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationExpiration)<br />
-            @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
         </div>
         <div class="formfield clear">
             <br />

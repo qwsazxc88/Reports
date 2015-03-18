@@ -13,7 +13,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -21,7 +21,7 @@
     
     
     <fieldset class="bordered doc-wrap panel">
-    <legend>Паспорт РФ</legend>
+    <legend>Паспорт</legend>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
@@ -59,7 +59,7 @@
         *@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
+            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{2}\s\d{2}$", title = "4 цифры (## ##)", })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
@@ -168,5 +168,9 @@
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#InternalPassportSeries').mask('99 99');
+        });
     });
 </script>

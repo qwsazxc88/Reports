@@ -40,7 +40,8 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasDriversLicense)<br />
-            @Html.DisplayFor(m => m.HasDriversLicense)
+            <span class="fakeFormField">@(Model.HasDriversLicense ? "Да" : "Нет")&nbsp;</span>
+            @*@Html.DisplayFor(m => m.HasDriversLicense)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DriversLicenseNumber)<br />
@@ -60,7 +61,8 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasAutomobile)<br />
-            @Html.DisplayFor(m => m.HasAutomobile)
+            <span class="fakeFormField">@(Model.HasAutomobile ? "Да" : "Нет")&nbsp;</span>
+            @*@Html.DisplayFor(m => m.HasAutomobile)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AutomobileMake)<br />

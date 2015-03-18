@@ -110,5 +110,16 @@
     $(document).ready(function () {
         setActiveMenuItem("empOnsiteTraining");
         UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+        $("#IsComplete").change(function () {
+            if ($('#IsComplete option:selected').val() == 'false') {
+                $('#ReasonsForIncompleteTraining').removeAttr('readonly');
+                ;
+            }
+            else {
+                $('#ReasonsForIncompleteTraining').val('');
+                $('#ReasonsForIncompleteTraining').attr('readonly', true);
+                ;
+            }
+        });
     });
 </script>

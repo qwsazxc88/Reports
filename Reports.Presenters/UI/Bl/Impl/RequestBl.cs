@@ -10312,6 +10312,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Manager:
                     bool canEdit = false;
+                    //за уволенного сотрудника
+                    if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee)
+                    {
+                        if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsUserApprovedAvailable = true;
+                        }
+                    }
+
                     bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit)
                         || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
 
@@ -10471,6 +10481,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
             }
+
+            //за уволенного сотрудника
+            if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee && (current.UserRole & UserRole.Manager) == UserRole.Manager
+                && !entity.UserDateAccept.HasValue
+                && model.IsUserApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                entity.AcceptUser = UserDao.Load(current.Id);
+                if (isDirectorManager)
+                {
+                    entity.NeedToAcceptByChiefAsManager = true;
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
+                }
+                else
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager, true);
+            }
+
             bool canEdit = false;
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager &&
                 IsCurrentManagerForUser(user, current, out canEdit)) 
@@ -10885,6 +10912,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsManagerApproveAvailable = true;
                     }
 
+                    //за уволенного сотрудника
+                    if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee)
+                    {
+                        if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            if (entity.AdditionalMissionOrder == null)
+                            {
+                                model.IsCreateAdditionalOrderAvailable = true;
+                                model.IsEditable = true;
+                                model.IsUserApprovedAvailable = true;
+                            }
+                            else if (IsAdditionalMissionOrderConfirmByUserOrExpired(entity.AdditionalMissionOrder))
+                            {
+                                model.IsEditable = true;
+                                model.IsUserApprovedAvailable = true;
+                            }
+                        }
+                        if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            model.IsPrintArchivistAddressAvailable = true;
+                            if (!entity.IsDocumentsSaveToArchive)
+                                model.IsDocumentsSaveToArchiveAvailable = true;
+                        }
+                    }
+
                     //}
                     break;
                 case UserRole.Accountant:
@@ -11120,6 +11172,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SetMissionCostsEditable(model, false);
                 }
             }
+
+            //за уволенных сотруднико можно подтвердить
+            if ((user.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee && (current.UserRole & UserRole.Manager) == UserRole.Manager
+            && !entity.UserDateAccept.HasValue
+            && model.IsUserApproved)
+            {
+                if (model.IsAttachmentsInvalid)
+                    error = string.Format(@"Ордер сохранен успешно, но не может быть согласован - не ко всем статьям расходов прикреплены документы.");
+                else
+                {
+                    entity.UserDateAccept = DateTime.Now;
+                    entity.AcceptUser = UserDao.Load(current.Id);
+                    SetMissionCostsEditable(model, false);
+                }
+            }
+
             bool canEdit;
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit)
                 || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit))

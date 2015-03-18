@@ -13,7 +13,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -25,6 +25,10 @@
     <legend>Состав семьи</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
+        </div>            
+        <div class="formfield">
+            @Html.LabelFor(m => m.FamilyStatusId)
+            @Html.DropDownListFor(m => m.FamilyStatusId, new SelectList(Model.FamillyStatuses, "Id", "Name")) @Html.ValidationMessageFor(m => m.FamilyStatusId)
         </div>            
         <table class="grid centered clear" id="family-members-table">
         <thead>
@@ -251,7 +255,7 @@
     @using (Html.BeginForm("FamilyAddChild", "Employment", FormMethod.Post))
     {
         <label for="Name" style="display:block;">ФИО</label><input type="text" name="Name" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="PassportData" style="display:block;">Паспортные данные</label><textarea rows="2" cols="30" name="PassportData" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
+        <label for="PassportData" style="display:block;">Свидетельство о рождении/Паспортные данные</label><textarea rows="2" cols="30" name="PassportData" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
         <label for="DateOfBirth" style="display:block;">Дата рождения</label><input type="text" id="DateOfBirth" name="DateOfBirth" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="PlaceOfBirth" style="display:block;">Место рождения</label><textarea rows="2" cols="30" name="PlaceOfBirth" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
         <label for="WorksAt" style="display:block;">Место работы, должность,<br />(рабочий, мобильный телефон)</label><textarea rows="2" cols="30" name="WorksAt" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
