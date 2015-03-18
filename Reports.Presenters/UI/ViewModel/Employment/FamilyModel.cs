@@ -33,7 +33,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Семейное положение"),
             Required(ErrorMessage = "*")]
-        public int FamilyStatusId { get; set; }
+        public int? FamilyStatusId { get; set; }
         public IList<FamilyStatusDto> FamillyStatuses { get; set; }
 
         public HttpPostedFileBase MarriageCertificateScanFile { get; set; }

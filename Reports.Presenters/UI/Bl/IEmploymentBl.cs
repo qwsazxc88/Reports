@@ -75,7 +75,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetDisabilityDegrees();
         IEnumerable<SelectListItem> GetStatuses();
         IEnumerable<SelectListItem> GetDocumentTypes();
-        IEnumerable<SelectListItem> GetRanks();
         IEnumerable<SelectListItem> GetRegistrationExpirations();
         IEnumerable<SelectListItem> GetPersonnelCategories();
         IEnumerable<SelectListItem> GetPersonnelTypes();
