@@ -734,7 +734,7 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += string.Format("Number = {0} ", docNumber);
+                whereString += string.Format("v.Number = {0} ", docNumber);
             }
             return whereString;
         }
