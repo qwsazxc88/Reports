@@ -18,12 +18,12 @@ namespace Reports.Core.Domain
         public virtual DateTime? MilitaryCardDate { get; set; } //ok
         public virtual string ReserveCategory { get; set; } //ok
         public virtual int? RankId { get; set; } //ok
-        public virtual int SpecialityCategoryId { get; set; } //ok - Состав (профиль)
+        public virtual int? SpecialityCategoryId { get; set; } //ok - Состав (профиль)
         public virtual string MilitarySpecialityCode { get; set; } //ok
         //public virtual MilitaryValidityCategory MilitaryValidityCategoryes { get; set; } //ok
-        public virtual int MilitaryValidityCategoryId { get; set; } //ok
+        public virtual int? MilitaryValidityCategoryId { get; set; } //ok
         public virtual string Commissariat { get; set; } //ok
-        public virtual int MilitaryRelationAccountId { get; set; } //ok
+        public virtual int? MilitaryRelationAccountId { get; set; } //ok
         public virtual string CommonMilitaryServiceRegistrationInfo { get; set; }
         public virtual string SpecialMilitaryServiceRegistrationInfo { get; set; }
         public virtual int? RegistrationExpiration { get; set; } //ok
