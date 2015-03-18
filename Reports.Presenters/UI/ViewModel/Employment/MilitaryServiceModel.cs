@@ -30,7 +30,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<MilitaryRanksDto> RankItems { get; set; }
 
         [Display(Name = "Состав (профиль)")]
-        public int SpecialityCategoryId { get; set; } //ok
+        public int? SpecialityCategoryId { get; set; } //ok
         public IList<IdNameDto> SpecialityCategoryes { get; set; }
 
         [Display(Name = "Полное кодовое обозначение ВУС"),
@@ -38,7 +38,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string MilitarySpecialityCode { get; set; } //ok
 
         [Display(Name = "Категория годности к военной службе")]
-        public int MilitaryValidityCategoryId { get; set; } //ok
+        public int? MilitaryValidityCategoryId { get; set; } //ok
         public IList<MilitaryValidityCategoryDto> MilitaryValidityCategoryes { get; set; }
 
         [Display(Name = "Наименование ВК по месту жительства"),
@@ -46,7 +46,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Commissariat { get; set; } //ok
 
         [Display(Name = "Отношение к воинскому учету")]
-        public int MilitaryRelationAccountId { get; set; } //ok
+        public int? MilitaryRelationAccountId { get; set; } //ok
         public IList<MilitaryRelationAccountDto> MilitaryRelationAccounts { get; set; }
 
         [Display(Name = "а) общем (номер команды, партии)"),
