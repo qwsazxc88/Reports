@@ -652,10 +652,15 @@ namespace Reports.Core.Dao.Impl
                 {
                     el.SaldoStart = Saldo;
                     if (el.DocType == 4)
-                        if (Saldo >= 0) Saldo += el.Ordered;
-                        else Saldo += -el.Ordered;
+                    {
+                        if (el.Date != DateTime.MinValue)
+                        {
+                            if (Saldo >= 0) Saldo += el.Ordered;
+                            else Saldo += -el.Ordered;
+                        }
+                    }
                     else
-                    if(el.DocType!=3||(el.SaldoStart)>0)Saldo = Saldo-el.Ordered+el.Reported;
+                        if (el.DocType != 3 || (el.SaldoStart) > 0) Saldo = Saldo - el.Ordered + el.Reported;
                     Saldo =(float) Math.Round(Saldo, 2);
                     el.SaldoEnd = Saldo;
                 }

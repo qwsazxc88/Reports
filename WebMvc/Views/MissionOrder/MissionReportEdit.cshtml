@@ -234,7 +234,6 @@
             @if ((dto.UserRole & UserRole.Accountant) > 0 
                 && Model.IsUserDismissal 
                 && Model.DeductionDocNumber==0
-                && (HttpContext.Current.Request.Url.Port==8033 || DateTime.Now>=new DateTime(2015,4,1))
                 )
                     {
                     <input type="button" id="ExportButton" value="Выгрузить в удержания" onclick=" UploadToDeduction(2, 3, 2, 'true');" />
