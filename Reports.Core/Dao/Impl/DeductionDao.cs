@@ -28,10 +28,11 @@ namespace Reports.Core.Dao.Impl
                                 k.Name as Kind,
                                 v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
+                                mr.Number as MissionReportNumber,
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
-                                     when v.UploadingDocType is not null and SendTo1C is null and DeleteDate is null then N'Автовыгрузка'
+                                     when v.UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
                                      else N'Записана'
                                 end as Status,
                                 case when IsFastDismissal is null then null  
@@ -40,6 +41,7 @@ namespace Reports.Core.Dao.Impl
                                 end as IsFastDismissal
                                 from dbo.Deduction v
                                 -- inner join dbo.DeductionType t on v.TypeId = t.Id
+                                left join dbo.MissionReport mr on v.id=mr.DeductionId
                                 inner join dbo.DeductionKind k on v.KindId = k.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 left join dbo.Position p on p.Id = u.PositionId
@@ -113,7 +115,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DismissalDate", NHibernateUtil.DateTime).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("IsFastDismissal", NHibernateUtil.String).
-                AddScalar("UploadingDocType",NHibernateUtil.Int32);
+                AddScalar("UploadingDocType",NHibernateUtil.Int32).
+                AddScalar("MissionReportNumber",NHibernateUtil.Int32);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -229,7 +232,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by IsFastDismissal";
                     break;
                 case 14:
-                    orderBy = @" order by UploadingDocType";
+                    orderBy = @" order by mr.Number";
                     break;
             }
             if (sortDescending.Value)
