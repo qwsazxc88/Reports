@@ -96,7 +96,7 @@ namespace Reports.Core.Dao
             if (!string.IsNullOrWhiteSpace(userName))
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " U.Name='"+userName+"'";
+                AddToWhere += " U.Name like'"+userName+"%'";
             }
             if (!string.IsNullOrWhiteSpace(number))
             {
