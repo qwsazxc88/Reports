@@ -74,6 +74,8 @@
        {
            foreach (var el in Model.Documents)
            {
+               if (el.DocType == 3 && el.SaldoStart <= 0) { continue; }
+                   
                if (el.DocType == 1) { i++; }
                <tr>
                    <td>@if (el.DocType == 1)
@@ -82,17 +84,19 @@
                        {
                            case 1:<text> Приказ на коммандировку № @el.Number</text>
                            break;
-                           case 2:<text> Авансовый отчёт № @el.Number</text>;
+                           case 2:<text> Авансовый отчёт № @el.Number проверен</text>;
                            break;
-                           case 3:
-                            if (el.SaldoStart <= 0){<text> Передано на удержание долга за сотрудником</text>}
-                            else{ <text>Возврат сотруднику долга за организацией</text> }
+                           case 3:<text>Возврат сотруднику долга за организацией</text> 
                            break;
                            case 4:<text>Удержано</text>
                            break;
                        }
                    </td>
-                   <td>@el.Date.ToString("dd.MM.yyyy")</td>
+                   <td>@if(el.Date!=DateTime.MinValue)
+                       {
+                         @el.Date.ToString("dd.MM.yyyy")
+                       }
+                   </td>
                    <td>@el.SaldoStart</td>
                    <td>@el.Ordered</td>
                    <td>@el.Reported</td>
