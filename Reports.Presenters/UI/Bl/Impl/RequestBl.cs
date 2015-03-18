@@ -7521,6 +7521,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.MonthId = deduction.DeductionDate.Year*100 + deduction.DeductionDate.Month;
                 model.DateEdited = deduction.EditDate.ToShortDateString();
                 model.DocumentNumber = deduction.Number.ToString();
+                if (deduction.MissionReport != null && deduction.MissionReport.Any())
+                    model.MissionReportNumber = deduction.MissionReport.First().Number;
                 if(deduction.Type.Id != (int) DeductionTypeEnum.Deduction)
                 {
                     model.DismissalDate = deduction.DismissalDate;
@@ -7545,7 +7547,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Status = deduction.DeleteDate.HasValue
                                    ? "Отклонена"
-                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : "Записана";
+                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : deduction.UploadingDocType.HasValue? "Автовыгрузка" :"Записана";
             }
         }
         protected void SetEditor(DeductionEditModel model, Deduction deduction, IUser current)

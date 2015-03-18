@@ -1109,7 +1109,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Employee | UserRole.Manager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
