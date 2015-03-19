@@ -105,6 +105,7 @@
      </tr>
      <tr>
         <td colspan="2">
+            
             @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "userChange();" } : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
@@ -150,6 +151,17 @@
         </td>
         <td>
             @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "setDismissalDateState();" } : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+        @Html.LabelFor(m => m.MissionReportNumber)
+        </td>
+        <td>
+        @if (Model.MissionReportNumber > 0)
+        {
+        @Html.DisplayFor(m => m.MissionReportNumber)
+        }
         </td>
     </tr>
     <tr>

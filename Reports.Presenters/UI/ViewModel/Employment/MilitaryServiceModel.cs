@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -16,7 +17,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
         public string MilitaryCardNumber { get; set; } //ok
 
-        [Display(Name = "Дата"),
+        [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? MilitaryCardDate { get; set; } //ok
 
@@ -25,27 +26,28 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ReserveCategory { get; set; } //ok
 
         [Display(Name = "Воинское звание")]
-        public int? Rank { get; set; } //ok
-        public IEnumerable<SelectListItem> RankItems { get; set; }
+        public int? RankId { get; set; } //ok
+        public IList<MilitaryRanksDto> RankItems { get; set; }
 
         [Display(Name = "Состав (профиль)")]
-        public string SpecialityCategory { get; set; } //ok
+        public int? SpecialityCategoryId { get; set; } //ok
+        public IList<IdNameDto> SpecialityCategoryes { get; set; }
 
         [Display(Name = "Полное кодовое обозначение ВУС"),
             StringLength(7, ErrorMessage = "Не более 7 знаков.")]
         public string MilitarySpecialityCode { get; set; } //ok
 
-        [Display(Name = "Категория годности к военной службе"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков.")]
-        public string CombatFitness { get; set; } //ok
+        [Display(Name = "Категория годности к военной службе")]
+        public int? MilitaryValidityCategoryId { get; set; } //ok
+        public IList<MilitaryValidityCategoryDto> MilitaryValidityCategoryes { get; set; }
 
         [Display(Name = "Наименование ВК по месту жительства"),
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]
         public string Commissariat { get; set; } //ok
 
-        [Display(Name = "Состоит на воинском учете"),
-            StringLength(250, ErrorMessage = "Не более 250 знаков.")]
-        public string MilitaryServiceRegistrationInfo { get; set; } //ok
+        [Display(Name = "Отношение к воинскому учету")]
+        public int? MilitaryRelationAccountId { get; set; } //ok
+        public IList<MilitaryRelationAccountDto> MilitaryRelationAccounts { get; set; }
 
         [Display(Name = "а) общем (номер команды, партии)"),
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
@@ -55,7 +57,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string SpecialMilitaryServiceRegistrationInfo { get; set; }
 
-        [Display(Name = "Отметка о снятии с ВУ")]
+        [Display(Name = "Отношение к воинской обязанности")]
         public int? RegistrationExpiration { get; set; } //ok
         public IEnumerable<SelectListItem> RegistrationExpirationItems { get; set; }
 

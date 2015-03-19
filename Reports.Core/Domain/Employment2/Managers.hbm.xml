@@ -11,6 +11,7 @@
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Managers_Department" index="Managers_Department"  not-null="false"/>
     <property name="EmploymentConditions" length="250" not-null="false"/>
     <property name="IsSecondaryJob" not-null="true"/>
+    <property name="IsExternalPTWorker" not-null="true"/>
     <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_Managers_Schedule" index="Managers_Schedule"  not-null="false"/>
     <property name="ProbationaryPeriod" length="50" not-null="false"/>
     <property name="SalaryBasis" precision="15" scale="2" not-null="false"/>

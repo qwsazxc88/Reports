@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; } //ok
         public virtual string EmploymentConditions { get; set; } //ok
         public virtual bool IsSecondaryJob { get; set; }
+        public virtual bool IsExternalPTWorker { get; set; }
         public virtual Schedule Schedule { get; set; } // OK?
         public virtual string ProbationaryPeriod { get; set; } //ok
         public virtual decimal? SalaryBasis { get; set; } // базовый должностной оклад
