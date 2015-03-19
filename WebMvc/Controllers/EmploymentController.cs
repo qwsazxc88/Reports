@@ -1493,6 +1493,12 @@ namespace WebMvc.Controllers
             if (model.PersonnelId == 0)
                 ModelState.AddModelError("PersonnelId", "Выберите сотрудника отдела кадров!");
 
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            {
+                if (!model.OnBehalfOfManagerId.HasValue || model.OnBehalfOfManagerId == 0)
+                    ModelState.AddModelError("OnBehalfOfManagerId", "Выберите руководителя!");
+            }
+
             if (numberOfFilledFields < 2)
             {
                 ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных, кроме ФИО.");
