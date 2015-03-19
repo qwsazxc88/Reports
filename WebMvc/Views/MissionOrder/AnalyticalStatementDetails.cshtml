@@ -77,11 +77,10 @@
            foreach (var el in Model.Documents)
            {
                if (el.DocType == 3 && el.SaldoStart <= 0) { continue; }
-                   
-               if (el.DocType == 1) { i++; }
+
+               i++;
                <tr>
-                   <td>@if (el.DocType == 1)
-                       {@i}</td>
+                   <td>@i</td>
                    <td>@switch (el.DocType)
                        {
                            case 1:<text> Приказ на коммандировку № @el.Number</text>
