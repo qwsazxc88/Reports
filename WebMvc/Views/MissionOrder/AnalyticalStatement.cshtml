@@ -90,6 +90,7 @@
             <span id="LoadingIndicator"></span>
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <input type="hidden" id="IsBack" value="false" />
             </div>
         </td>
      </tr>
@@ -123,7 +124,7 @@
         $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
-        
+        if($("#IsBack").val()==='true') GetDocs();
         setSortFields();
         setActiveMenuItem("moAnaliticalStatementList");
     });
@@ -170,7 +171,7 @@
     function GetDocs()
     {
      $("#LoadingIndicator").addClass("loading");
-     
+     $("#IsBack").val('true');
      $.ajax({
         type: 'POST',
         data: $("#RequestData").serialize(),

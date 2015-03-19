@@ -597,8 +597,8 @@ namespace Reports.Core.Dao.Impl
                             v.UserAllSum as UserSum,
                             v.DeductionId as DeductionId,
                             d.DeductionDate as DeductionUploadingDate,
-                            case when v.SendTo1C is null then N'Не выгружено в 1С'
-	                             else N'Выгружено в 1С' end as [Status]
+                            case when v.SendTo1C is null then N'Проводки не сформированы'
+	                             else N'Проводки сформированы' end as [Status]
                             from dbo.MissionReport v
                             left join Deduction d on v.DeductionId=d.id
                             inner join dbo.Users u on v.UserId = u.id and v.[AccountantDateAccept] is not null

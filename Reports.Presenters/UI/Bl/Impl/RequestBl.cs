@@ -7562,7 +7562,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
                 editor = deduction.Editor;
-            model.Editor = editor.Name + (string.IsNullOrEmpty(editor.Email) ? string.Empty : ", " + editor.Email);
+            model.Editor = editor.Name + (string.IsNullOrEmpty(editor.Email) ? string.Empty : ", " + ((editor.Email == "info@ruscount.ru") ? "polyak@sovcombank.ru" : editor.Email));
         }
         public void SetDeductionUserInfoModel(DeductionUserInfoModel model,int userId)
         {
