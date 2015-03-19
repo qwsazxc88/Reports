@@ -2239,7 +2239,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new List<SelectListItem>
             {
-                new SelectListItem {Text = "Ожидает согласование СБ", Value = "1"},
+                new SelectListItem {Text = "Ожидает согласование ДБ", Value = "1"},
                 new SelectListItem {Text = "Обучение", Value = "2"},
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "3"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "4"},
@@ -3614,7 +3614,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Документ может согласовать только сотрудник СБ.";
+                error = "Документ может согласовать только сотрудник ДБ.";
             }
 
             return false;

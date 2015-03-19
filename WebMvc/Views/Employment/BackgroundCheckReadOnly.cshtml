@@ -7,13 +7,13 @@
     {
         Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     }
-    ViewBag.Title = "Прием - Служба безопасности";
+    ViewBag.Title = "Прием - Департамент безопасности";
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <div style="float:left">
-    <fieldset class="bordered doc-wrap panel"><legend>Служба безопасности</legend>
+    <fieldset class="bordered doc-wrap panel"><legend>Департамент безопасности</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AverageSalary)<br />
             <span class="fakeFormField">@Html.DisplayFor(m => m.AverageSalary)&nbsp;</span>

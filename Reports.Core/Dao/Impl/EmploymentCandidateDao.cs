@@ -57,7 +57,7 @@ namespace Reports.Core.Dao.Impl
 					end Disabilities
                 , candidateUser.Grade Grade
 				, case
-					when candidate.Status = 1 then N'Ожидает согласование СБ'
+					when candidate.Status = 1 then N'Ожидает согласование ДБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'
 					when candidate.Status = 4 then N'Ожидает согласование руководителем'
@@ -213,7 +213,7 @@ namespace Reports.Core.Dao.Impl
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager)) > 0)
             {
-                //сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
+                //сотрудников ДБ и тренеров дополнительная фильтрация сейчас не производится
             }
             else
             {
