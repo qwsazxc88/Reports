@@ -30,6 +30,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsHourlySalaryBasis { get; set; }
 
+        [Display(Name = "Базовый оклад по штатному расписанию (руб)")]
+        public decimal? BasicSalary { get; set; }
+
         [Display(Name = "Северная надбавка (%)")]
         public decimal? NorthernAreaAddition { get; set; }
 

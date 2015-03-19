@@ -1266,6 +1266,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
                 model.IsHourlySalaryBasis = entity.IsHourlySalaryBasis;
+                model.BasicSalary = entity.BasicSalary;
                 model.IsContractChangedToIndefinite = entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0;
                 if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                 {
@@ -3460,6 +3461,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
             entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
             entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
+            entity.BasicSalary = viewModel.BasicSalary;
             entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
             entity.OverallExperienceDays = viewModel.OverallExperienceDays;
             entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;

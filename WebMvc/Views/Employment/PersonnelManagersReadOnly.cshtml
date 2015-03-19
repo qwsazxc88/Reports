@@ -73,6 +73,11 @@
                                                                                                                                                                 {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по часам</label>
         </div>
 
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.BasicSalary)&nbsp;@Html.ValidationMessageFor(m => m.BasicSalary)<br />
+            @Html.TextBoxFor(m => m.BasicSalary, new { @class = "calc halfwidth" })
+        </div>
+
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
@@ -85,7 +90,7 @@
             @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
             @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })
         </div>
-        <div class="formfield">
+        <div class="formfield clear">
             @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
             @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })
         </div>
