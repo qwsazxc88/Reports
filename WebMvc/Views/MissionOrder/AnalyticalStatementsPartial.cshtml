@@ -1,0 +1,33 @@
+﻿@using Reports.Presenters.UI.Bl.Impl
+@model IList<Reports.Core.Dto.AnalyticalStatementDto>
+@{
+    var sum1 = Model.Aggregate(0f, (sum, el) => sum + (el.ReportedBefore - el.OrderedBefore));
+    var sum2 = Model.Aggregate(0f, (sum, el) => sum + el.Ordered);
+    var sum3 = Model.Aggregate(0f, (sum, el) => sum + el.Reported);
+    var sum4 = Model.Aggregate(0f, (sum, el) => sum + (el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered));
+    <tr>
+    <td colspan='6'>Итого:</td>
+    <td>@sum1.ToString("0.00")</td>
+    <td>@sum2.ToString("0.00")</td>
+    <td>@sum3.ToString("0.00")</td>
+    <td>@sum4.ToString("0.00")</td>
+    </tr>
+    int i = 0;
+    foreach (var el in Model)
+    {
+        i++;
+    <tr>
+        <td>@i</td>
+        <td>@el.userId</td>
+        <td>@Html.ActionLink(el.Name, "AnalyticalStatementDetails", "MissionOrder", new { userId = el.userId }, null)</td>
+        <td>@el.Position</td>
+        <td>@el.Dep3Name</td>
+        <td>@el.Dep7Name</td>
+        <td>@(el.ReportedBefore - el.OrderedBefore)</td>
+        <td>@el.Ordered</td>
+        <td>@el.Reported</td>
+        <td>@Math.Round(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered, 2)</td>
+    </tr>
+}
+
+}

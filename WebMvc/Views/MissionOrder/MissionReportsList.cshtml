@@ -259,7 +259,7 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr>
+                        <tr @if(doc.IsDismissal && doc.State!="Выгружен в 1с") {<text> class="warning" </text>}>
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>

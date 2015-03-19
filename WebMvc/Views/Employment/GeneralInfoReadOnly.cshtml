@@ -93,10 +93,12 @@
         @Html.LabelFor(m => m.CitizenshipId)<br />
         <span class="fakeFormField">@Model.CitizenshipItems.Where(x => x.Value == Model.CitizenshipId.ToString()).FirstOrDefault().Text&nbsp;</span>
     </div>
+    @*
     <div class="formfield">
         @Html.LabelFor(m => m.InsuredPersonTypeId)<br />
         <span class="fakeFormField">@Model.InsuredPersonTypeSelectedName&nbsp;</span>
     </div>
+    *@
     <div class="formfield clear">
         @Html.LabelFor(m => m.DateOfBirth)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.DateOfBirth)&nbsp;</span>
@@ -206,10 +208,12 @@
         </div>
 
     </fieldset>
+    @*
     <div class="formfield clear">
         @Html.LabelFor(m => m.StatusId)<br />
         <span class="fakeFormField">@Model.StatusItems.Where(x => x.Value == Model.StatusId.ToString()).FirstOrDefault().Text&nbsp;</span>
     </div>
+    *@
     <div class="formfield clear">
         @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)@Html.DisplayFor(m => m.AgreedToPersonalDataProcessing)
     </div>

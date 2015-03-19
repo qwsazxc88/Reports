@@ -5,6 +5,7 @@
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -14,8 +15,15 @@
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
         <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionId):
+            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
+            <input type="hidden" id="PositionId" name="PositionId" value="@Model.PositionId"/>
+            <input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>
+            @Html.ValidationMessageFor(model => model.PositionId)
+            @*
             @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
             @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
+            *@
         </div>
         
         <div class="formfield clear">
@@ -37,8 +45,22 @@
 
         <div class="formfield clear" id="isSecondaryJobContainer">
             @Html.LabelFor(m => m.IsSecondaryJob)
-            @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label for="IsSecondaryJobFalse">Основная</label>
-            @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label for="IsSecondaryJobTrue">По совместительству</label>
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label id="lblSJFalse" for="IsSecondaryJobFalse" @if (!Model.IsSecondaryJob)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Основная</label>
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label id="lblSJTrue" for="IsSecondaryJobTrue" @if (Model.IsSecondaryJob)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>По совместительству</label>
+        </div>
+
+        <div class="formfield clear" id="isExternalWorkContainer" @if(!Model.IsSecondaryJob){<text>style="display:none;"</text>}>
+            @Html.LabelFor(m => m.IsExternalPTWorker)
+            @Html.RadioButtonFor(m => m.IsExternalPTWorker, true, new { @id = "IsExternalWorkTrue" })<label id="lblEWTrue" for="IsExternalWorkTrue" @if (Model.IsExternalPTWorker)
+                                                                                                                                                     {<text>style="border-color:red;"</text>}
+                                                                                                                                                     else
+                                                                                                                                                     {<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
+            @Html.RadioButtonFor(m => m.IsExternalPTWorker, false, new { @id = "IsExternalWorkFalse" })<label id="lblEWFalse" for="IsExternalWorkFalse" @if (!Model.IsExternalPTWorker)
+                                                                                                                                                       {<text>style="border-color:red;"</text>}
+                                                                                                                                                       else
+                                                                                                                                                       {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
         </div>
 
         <div class="formfield clear">
@@ -70,8 +92,14 @@
             @Html.EditorFor(m => m.PositionAddition)
         </div>
         <div class="formfield clear" id="isFrontContainer">
-            @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label for="IsFrontTrue">Фронт</label>
-            @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label for="IsFrontFalse">Бэк</label>
+            @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label id="lblFTrue" for="IsFrontTrue" @if (Model.IsFront)
+                                                                                                                          {<text>style="border-color:red;"</text>}
+                                                                                                                          else
+                                                                                                                          {<text> style="border-color:none;"</text>}>Фронт</label>
+            @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label id="lblFFalse" for="IsFrontFalse" @if (!Model.IsFront)
+                                                                                                                              {<text>style="border-color:red;"</text>}
+                                                                                                                              else
+                                                                                                                              {<text> style="border-color:none;"</text>}>Бэк</label>
         </div>
         @*
         <div class="formfield clear">
@@ -135,5 +163,63 @@
         setActiveMenuItem("empManagers");
         $('#isSecondaryJobContainer').buttonset();
         $('#isFrontContainer').buttonset();
+        $('#isExternalWorkContainer').buttonset();
+
+        if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
+        else {$('#isExternalWorkContainer').hide();}
+
+        //подкрашиваем вид занятости
+        $("#IsSecondaryJobTrue").click(function(){
+            $("#lblSJTrue").css("border-color", "red");
+            $("#lblSJFalse").css("border-color", "silver");
+            $("#isExternalWorkContainer").show();
+        });
+        $("#IsSecondaryJobFalse").click(function(){
+            $("#lblSJTrue").css("border-color", "silver");
+            $("#lblSJFalse").css("border-color", "red");
+            $("#isExternalWorkContainer").hide();
+        });
+
+        //подкрашиваем вид совместительства
+        $("#IsExternalWorkTrue").click(function(){
+            $("#lblEWTrue").css("border-color", "red");
+            $("#lblEWFalse").css("border-color", "silver");
+        });
+        $("#IsExternalWorkFalse").click(function(){
+            $("#lblEWTrue").css("border-color", "silver");
+            $("#lblEWFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем вид фронт/бэк
+        $("#IsFrontTrue").click(function(){
+            $("#lblFTrue").css("border-color", "red");
+            $("#lblFFalse").css("border-color", "silver");
+        });
+        $("#IsFrontFalse").click(function(){
+            $("#lblFTrue").css("border-color", "silver");
+            $("#lblFFalse").css("border-color", "red");
+        });
+        
+
+        //автозаполнение должностей
+        $(function () 
+        {
+            $("[data-autocomplete-source]").each(
+                function () 
+                {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                          select : function(event, ui) 
+                                                    {
+                                                        //для физиков
+                                                        if (ui.item.PositionId != null){
+                                                            $("#PositionName").val(ui.item.label);
+                                                            $("#PositionId").val(ui.item.PositionId);
+                                                        }
+                                                        return true;
+                                                    }
+                                         });
+                  });
+        });
     });
 </script>

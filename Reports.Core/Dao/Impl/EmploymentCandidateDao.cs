@@ -335,8 +335,11 @@ namespace Reports.Core.Dao.Impl
                 case 14:
                     orderBy = "Status";
                     break;
+                case 15:
+                    orderBy = "candidate.Id";
+                    break;
                 default:
-                    orderBy = "Name";
+                    orderBy = "candidate.Id";
                     break;
             }
 
@@ -420,7 +423,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ExperienceFinal", NHibernateUtil.Boolean)
                 .AddScalar("ContactFinal", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundFinal", NHibernateUtil.Boolean)
-                .AddScalar("CandidateDocuments", NHibernateUtil.Boolean)
+                .AddScalar("CandidateApp", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
