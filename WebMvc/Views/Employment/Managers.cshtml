@@ -35,7 +35,7 @@
             @Html.HiddenFor(m => m.DepartmentId)
         </div>
         <div class="formfield clear">
-            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment();"/>
         </div>
 
         <div class="formfield clear">
@@ -71,10 +71,12 @@
             @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
             @Html.EditorFor(m => m.ProbationaryPeriod)
         </div>
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
             @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
         </div>
+        *@
         <div class="formfield">
             @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
             @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
@@ -107,9 +109,23 @@
             @Html.EditorFor(m => m.Bonus)
         </div>
         *@
+        @*
         <div class="formfield clear">
             @Html.EditorFor(m => m.IsLiable)@Html.LabelFor(m => m.IsLiable)
         </div>
+        *@
+        <div class="formfield clear" id="IsLiableContainer">
+            @Html.LabelFor(m => m.IsLiable)
+            @Html.RadioButtonFor(m => m.IsLiable, true, new { @id = "IsLiableTrue" })<label id="lblLTrue" for="IsLiableTrue" @if (Model.IsLiable)
+                                                                                                                          {<text>style="border-color:red;"</text>}
+                                                                                                                          else
+                                                                                                                          {<text> style="border-color:none;"</text>}>Да</label>
+            @Html.RadioButtonFor(m => m.IsLiable, false, new { @id = "IsLiableFalse" })<label id="lblLFalse" for="IsLiableFalse" @if (!Model.IsLiable)
+                                                                                                                              {<text>style="border-color:red;"</text>}
+                                                                                                                              else
+                                                                                                                              {<text> style="border-color:none;"</text>}>Нет</label>
+        </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
@@ -164,6 +180,7 @@
         $('#isSecondaryJobContainer').buttonset();
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();
+        $('#IsLiableContainer').buttonset();
 
         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
         else {$('#isExternalWorkContainer').hide();}
@@ -200,6 +217,15 @@
             $("#lblFFalse").css("border-color", "red");
         });
         
+        //подкрашиваем вид материальную ответственность
+        $("#IsLiableTrue").click(function(){
+            $("#lblLTrue").css("border-color", "red");
+            $("#lblLFalse").css("border-color", "silver");
+        });
+        $("#IsLiableFalse").click(function(){
+            $("#lblLTrue").css("border-color", "silver");
+            $("#lblLFalse").css("border-color", "red");
+        });
 
         //автозаполнение должностей
         $(function () 

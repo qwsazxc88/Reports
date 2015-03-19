@@ -72,7 +72,7 @@
             @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label id="lblHSBTrue" for="IsHourlySalaryBasisTrue" @if (Model.IsHourlySalaryBasis)
                                                                                                                                                                 {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по часам</label>
         </div>
-
+        
         <div class="formfield clear">
             @Html.LabelFor(m => m.BasicSalary)&nbsp;@Html.ValidationMessageFor(m => m.BasicSalary)<br />
             @Html.TextBoxFor(m => m.BasicSalary, new { @class = "calc halfwidth" })
@@ -138,6 +138,9 @@
             </div>
         </fieldset>
 
+        <fieldset class="bordered nomargin clear">
+            <legend class="level2">Пункты трудового договора</legend>
+        </fieldset>
 
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />

@@ -90,10 +90,12 @@
     </div>
 
 
-
 <script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
     //удаляем сканы
     function deleteAttachment(id){
         var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
@@ -814,6 +816,8 @@
                         $('#isSecondaryJobContainer').buttonset();
                         $('#isFrontContainer').buttonset();
                         $('#isExternalWorkContainer').buttonset();
+                        $('#IsLiableContainer').buttonset();
+                        $('#btnChangeDep').click(function(){DepartmentTree.changeDepartment();});
 
                         //подкрашиваем вид занятости
                         $("#IsSecondaryJobTrue").click(function(){
@@ -845,6 +849,16 @@
                         $("#IsFrontFalse").click(function(){
                             $("#lblFTrue").css("border-color", "silver");
                             $("#lblFFalse").css("border-color", "red");
+                        });
+
+                        //подкрашиваем вид материальную ответственность
+                        $("#IsLiableTrue").click(function(){
+                            $("#lblLTrue").css("border-color", "red");
+                            $("#lblLFalse").css("border-color", "silver");
+                        });
+                        $("#IsLiableFalse").click(function(){
+                            $("#lblLTrue").css("border-color", "silver");
+                            $("#lblLFalse").css("border-color", "red");
                         });
 
                         
@@ -884,7 +898,7 @@
                                                 UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
                                                 UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
                                                 $('#isHourlySalaryBasisContainer').buttonset();
-                                                //подкрашиваем пол
+                                                //подкрашиваем оклад
                                                 $("#IsHourlySalaryBasisTrue").click(function () {
                                                     $("#lblHSBTrue").css("border-color", "red");
                                                     $("#lblHSBFalse").css("border-color", "silver");

@@ -138,6 +138,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
+        //пункты трудового договора
+        //для пукта 1.5
+        //для пункта 1.6
+        //для пункта 5.1
+
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
