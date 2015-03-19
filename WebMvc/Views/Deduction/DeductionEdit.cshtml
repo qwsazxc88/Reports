@@ -100,12 +100,23 @@
      <tr>
         <td colspan="2">
             <input type="hidden" id="UserIdHidden" name="UserIdHidden" value="@Model.UserIdHidden" />
-            @Html.LabelFor(m => m.UserId):
+            @Html.LabelFor(m => m.Surname):
         </td>
      </tr>
      <tr>
         <td colspan="2">
-            @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "userChange();" } : (object)new { disabled = "disabled" }) 
+            @*@Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "userChange();" } : (object)new { disabled = "disabled" }) *@
+            @if (Model.IsEditable)
+            {
+                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="userChange();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "Deduction")" />
+                @Html.ValidationMessageFor(m => m.Surname)
+            }
+            else
+            {
+                <label>@Model.Surname</label>
+            }
+            <input type="hidden" id="UserId" name="UserId" value="@Model.UserId"/>
+            <input type="hidden" id="Surname" name="Surname" value="@Model.Surname"/>
         </td>
     </tr>
      <tr>
@@ -247,6 +258,27 @@
             //            $("#Reduction").width("50px");
             //            $("#Reason").width("350px");
             //            setActiveMenuItem("userDismissal");
+            //автозаполнение сотрудников
+            $(function () 
+            {
+                $("[data-autocomplete-source]").each(
+                    function () 
+                    {
+                        var target = $(this);
+                        target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                              select : function(event, ui) 
+                                                        {
+                                                            if (ui.item.UserId != null){
+                                                                $("#Surname").val(ui.item.label);
+                                                                $("#UserId").val(ui.item.UserId);
+                                                                $("#UserIdHidden").val(ui.item.UserId);
+                                                            }
+                                                            return true;
+                                                        }
+                                             });
+                      });
+            });
+
         });
         function ValidateForm() {
             return true;

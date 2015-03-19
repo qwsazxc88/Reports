@@ -7502,7 +7502,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = 0;
                 DateTime today = DateTime.Today;
                 model.DateEdited = today.ToShortDateString();
-                model.UserId = model.Users[0].Id;
+                //model.UserId = model.Users[0].Id;
+                model.UserId = model.UserId;
                 model.MonthId = today.Year * 100 + today.Month;
             }
             else
@@ -7512,10 +7513,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
                 model.Version = deduction.Version;
                 model.UserId = deduction.User.Id;
-                IdNameDto dto = model.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
-                if(dto == null)
-                    throw new ArgumentException(
-               string.Format("Пользователь {0} не является сотрудником или уволен более 3 месяцев назад",deduction.User.Name));
+                model.Surname = userDao.GetUserListForDeduction(null, deduction.User.Id).Single().Name; 
+               // IdNameDto dto = model.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
+               // if(dto == null)
+               //     throw new ArgumentException(
+               //string.Format("Пользователь {0} не является сотрудником или уволен более 3 месяцев назад",deduction.User.Name));
                 model.KindId = deduction.Kind.Id;
                 model.Sum = deduction.Sum.ToString();
                 model.TypeId = deduction.Type.Id;
@@ -7570,26 +7572,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = userDao.Load(userId);
             if(user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя (id {0})", userId));
-            if ((user.UserRole & UserRole.Employee) == 0 && (user.UserRole & UserRole.DismissedEmployee) == 0)
-                throw new ValidationException(string.Format("Пользователь (id {0}) не является сотрудником", userId));
-            model.Department = user.Department == null ? string.Empty : user.Department.Name;
-            model.Position = user.Position == null ? string.Empty : user.Position.Name;
-            model.Cnilc = user.Cnilc;
-            DateTime? dateRelease = null;
-            if(user.DateRelease.HasValue)
-                dateRelease = user.DateRelease.Value;
-            //else
-            //{
-            //    DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
-            //    if(releaseDate.HasValue)
-            //        dateRelease = releaseDate.Value;
-            //}
-            if (dateRelease.HasValue)
+            //if((user.UserRole & UserRole.Employee) == 0)
+            //    throw new ValidationException(string.Format("Пользователь (id {0}) не является сотрудником", userId));
+            if (userId != 0)
             {
-                model.DateRelease = dateRelease.Value.ToShortDateString();
-                if (dateRelease.Value < DateTime.Today.AddMonths(-3))
-                    model.UserInfoError = "Сотрудник уволен более 3 месяцев назад";
+                model.Department = user.Department == null ? string.Empty : user.Department.Name;
+                model.Position = user.Position == null ? string.Empty : user.Position.Name;
+                model.Cnilc = user.Cnilc;
+                DateTime? dateRelease = null;
+                if (user.DateRelease.HasValue)
+                    dateRelease = user.DateRelease.Value;
+                //else
+                //{
+                //    DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
+                //    if(releaseDate.HasValue)
+                //        dateRelease = releaseDate.Value;
+                //}
+                if (dateRelease.HasValue)
+                {
+                    model.DateRelease = dateRelease.Value.ToShortDateString();
+                    if (dateRelease.Value < DateTime.Today.AddMonths(-3))
+                        model.UserInfoError = "Сотрудник уволен более 3 месяцев назад";
+                }
             }
+           
         }
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
@@ -7635,12 +7641,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.MonthIdHidden = model.MonthId;
             model.IsFastDismissalHidden = model.IsFastDismissalHidden;
         }
+        public User GetUser(int Id)
+        {
+            return UserDao.Load(Id);
+        }
+        public IList<IdNameDto> GetUserListForDeduction(string Name, int UserId)
+        {
+            return userDao.GetUserListForDeduction(Name, UserId); 
+        }
         protected void LoadDictionaries(DeductionEditModel model)
         {
             model.Types = GetDeductionTypes(false);
             model.Kindes = GetDeductionKinds();
             model.Monthes = GetDeductionMonthes();
-            model.Users = userDao.GetUserListForDeduction();
+            //model.Users = userDao.GetUserListForDeduction();
         }
         protected List<IdNameDto> GetDeductionKinds()
         {
