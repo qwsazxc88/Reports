@@ -10,6 +10,13 @@ using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using Reports.Core.Dto;
+using Reports.Core.Domain;
+using Reports.Core.Dao;
+using System.Collections.Generic;
+using System.Linq;
+
+
 
 namespace WebMvc.Controllers
 {
@@ -84,6 +91,19 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
+        /// <summary>
+        /// Автозаполнение фио в создании набора реквизитов.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompletePersonSearch(string term)
+        {
+
+            IList<IdNameDto> Persons = RequestBl.GetUserListForDeduction(term, 0);
+            var PersonList = Persons.ToList().Select(a => new { label = a.Name, UserId = a.Id }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
+        }
         protected void CorrectCheckboxes(DeductionEditModel model)
         {
             if (!model.IsEditable && model.IsFastDismissalHidden)
@@ -105,6 +125,21 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateDeductionEditModel(DeductionEditModel model)
         {
+            if (model.Id == 0)
+            {
+                if (model.UserId != 0)
+                {
+                    User DeductionUser = RequestBl.GetUser(model.UserId);
+                    if ((DeductionUser.UserRole & UserRole.DismissedEmployee) > 0 && DeductionUser.DateRelease <= DateTime.Today.AddMonths(-3))
+                    {
+                        ModelState.AddModelError("Surname", "Нельзя создать заявку на удержание, так как выбранный сотрудник уволен более 3 месяцев назад!");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Surname", "Укажите сотрудника!");
+                }
+            }
             if(string.IsNullOrEmpty(model.Sum))
                 ModelState.AddModelError("Sum", "'Сумма' - обязательное поле.");
             else
