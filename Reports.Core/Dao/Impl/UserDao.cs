@@ -859,7 +859,7 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<User>();
         }
-        public IList<IdNameDto> GetUserListForDeduction()
+        public IList<IdNameDto> GetUserListForDeduction(string Name, int UserId)
         {
             string sqlQuery = @"select 
                                 u.id
@@ -867,17 +867,21 @@ namespace Reports.Core.Dao.Impl
                                 from Users u
                                 left join Department d on d.Id = u.DepartmentId
                                 left join Department d2 on d.[Path] like d2.[Path]+N'%' and d2.ItemLevel = 3";
-            string sqlWhere = string.Format(@" ((u.RoleId & {0}) > 0) 
-            and ((u.DateRelease is null) or (u.DateRelease >= :releaseDate))", (int)UserRole.Employee);
+            string sqlWhere = @" ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0) ";
+            if (Name != null)
+                sqlWhere += string.Format(@" and u.Name + N' (' + isnull(d.Name,N'')+ N', ' + isnull(d2.Name,N'')+ N' )' like '{0}%'", Name);
+            if (UserId != 0)
+                sqlWhere += string.Format(@" and u.Id = {0}", UserId); 
+            //string sqlWhere = string.Format(@" ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0) 
+            //and ((u.DateRelease is null) or (u.DateRelease >= :releaseDate))", (int)UserRole.Employee);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by Name";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
-                //AddScalar("DateAccept", NHibernateUtil.DateTime);
-            query.SetDateTime("releaseDate", DateTime.Today.AddMonths(-3));
-            //query.SetDateTime("endDate", endDate);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            //query.SetDateTime("releaseDate", DateTime.Today.AddMonths(-3));
+            IList <IdNameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            return documentList;
         }
         public virtual IList<IdNameDto> GetUsersWithPurchaseBookReportCosts()
         {
