@@ -76,7 +76,7 @@
        {
            foreach (var el in Model.Documents)
            {
-               if (el.DocType == 3 && el.SaldoStart <= 0) { continue; }
+               if (el.DocType == 3 && el.Ordered <= 0) { continue; }
 
                i++;
                <tr>
