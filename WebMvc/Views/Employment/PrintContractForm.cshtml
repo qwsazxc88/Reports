@@ -46,6 +46,7 @@ Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")&nbsp
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
+&nbsp;
 @*1.6. Фактическое место работы РАБОТНИКА: @Model.WorkCity<BR>&nbsp;*@
 1.6. Фактическое место работы РАБОТНИКА: @Model.ContractPointsAddress<BR>&nbsp;
 1.7. РАБОТНИКУ устанавливается испытательный срок продолжительностью @Model.ProbationaryPeriod с момента заключения настоящего Договора.<BR>&nbsp;
@@ -142,30 +143,31 @@ Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")&nbsp
 5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени:<BR>
 - @Model.Schedule<BR>&nbsp;
 *@
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 5)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 5)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.</label><br />
 }
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 6)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 6)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов.</label><br />
 }
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 7)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 7)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: ненормированный рабочий день.</label><br />
 }
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 8)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 8)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год).</label><br />
 }
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 9)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 9)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику).</label><br />
 }
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 10)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 10)
 {
     <label>5.1. РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим).</label><br />
 }
+&nbsp;
 5.2. Время начала и окончания рабочего дня, время обеденного перерыва определяется Правилами внутреннего трудового распорядка и другими внутренними документами РАБОТОДАТЕЛЯ.<BR>&nbsp;
 5.3. В исключительных случаях РАБОТНИК может привлекаться к сверхурочным работам, а также к работе в выходные и нерабочие праздничные дни&nbsp; в порядке, предусмотренном трудовым законодательством.
 <BR>&nbsp;5.4. РАБОТНИКУ предоставляется ежегодный основной оплачиваемый отпуск согласно графику отпусков&nbsp; продолжительностью 28 (двадцать восемь)&nbsp; календарных дней.
@@ -177,7 +179,7 @@ Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")&nbsp
 5.7. По семейным обстоятельствам и другим уважительным причинам РАБОТНИКУ по его письменному заявлению может быть предоставлен отпуск без сохранения заработной платы, продолжительность которого 
 определяется по соглашению между РАБОТНИКОМ и РАБОТОДАТЕЛЕМ.<BR>&nbsp;
 5.8. Оформление отпусков РАБОТНИКУ производится на основании приказов РАБОТОДАТЕЛЯ.<BR><STRONG>&nbsp;
-@if(Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 7)
+@if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 7)
 {
     <label>5.9. РАБОТНИКУ за ненормированный рабочий день предоставляется ежегодный дополнительный оплачиваемый отпуск продолжительностью 3 (три) календарных дня.</label><br />
 }
