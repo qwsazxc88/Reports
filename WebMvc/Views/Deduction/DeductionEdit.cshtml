@@ -314,6 +314,7 @@
             }
         }
         function userChange() {
+           if ($('#Surname').val() == ''){$('#UserId').val('0');}
            clearErrors();
             $.ajax(
              {
