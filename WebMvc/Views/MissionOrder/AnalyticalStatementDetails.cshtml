@@ -76,24 +76,24 @@
        {
            foreach (var el in Model.Documents)
            {
-               if (el.DocType == 3 && el.SaldoStart <= 0) { continue; }
+               if (el.DocType == 3 && el.Ordered <= 0) { continue; }
 
                i++;
                <tr>
                    <td>@i</td>
                    <td>@switch (el.DocType)
                        {
-                           case 1:<text> Приказ на коммандировку № @el.Number</text>
+                           case 1:<a href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = el.DocId })'>Приказ на коммандировку № @el.Number</a>
                            break;
-                           case 2:<text> Авансовый отчёт № @el.Number проверен</text>;
+                           case 2:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Авансовый отчёт № @el.Number проверен</a>
                            break;
-                           case 3:<text>Возврат сотруднику долга за организацией</text> 
+                           case 3:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
                            break;
-                           case 4:<text>Удержано по авансовому отчету № @el.Number</text>
+                           case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано по авансовому отчету № @el.Number</a>
                            break;
                        }
                    </td>
-                   <td>@if(el.Date!=DateTime.MinValue)
+                   <td>@if (el.Date != DateTime.MinValue)
                        {
                          @el.Date.ToString("dd.MM.yyyy")
                        }

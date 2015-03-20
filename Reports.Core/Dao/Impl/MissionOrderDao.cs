@@ -643,7 +643,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Ordered", NHibernateUtil.Single)
                 .AddScalar("Number", NHibernateUtil.Int32)
                 .AddScalar("Reported", NHibernateUtil.Single)
-                .AddScalar("DocType", NHibernateUtil.Int32);
+                .AddScalar("DocType", NHibernateUtil.Int32)
+                .AddScalar("DocId",NHibernateUtil.Int32);
             var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
                 .List<AnalyticalStatementDetailsDto>();
             float Saldo = 0;
@@ -660,7 +661,10 @@ namespace Reports.Core.Dao.Impl
                         }
                     }
                     else
-                        if (el.DocType != 3 || (el.SaldoStart) > 0) Saldo = Saldo - el.Ordered + el.Reported;
+                    {
+                        if (el.DocType != 3) Saldo = Saldo - el.Ordered + el.Reported;
+                        else if (el.Ordered > 0) Saldo = Saldo + el.Ordered;
+                    }
                     Saldo =(float) Math.Round(Saldo, 2);
                     el.SaldoEnd = Saldo;
                 }
