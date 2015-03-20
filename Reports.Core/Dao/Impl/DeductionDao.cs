@@ -143,16 +143,16 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Записана"
-                        statusWhere = @"SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     case 2://2, "Выгружена в 1С"
-                        statusWhere = @"SendTo1C is not null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is not null and v.DeleteDate is null";
                         break;
                     case 3://3, "Отклонена"
-                        statusWhere = @"[DeleteDate] is not null";
+                        statusWhere = @"v.[DeleteDate] is not null";
                         break;
                     case 4: //4, "Автовыгрузка"
-                        statusWhere = @"UploadingDocType is not null and SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
