@@ -193,16 +193,16 @@ namespace Reports.Core.Dao.Impl
                     orderBy = " ORDER BY UserName,EditDate DESC";
                     return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    orderBy = @" order by Number";
+                    orderBy = @" order by v.Number";
                     break;
                 //case 2:
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    orderBy = @" order by EditDate";
+                    orderBy = @" order by v.EditDate";
                     break;
                 case 4:
-                    orderBy = @" order by Dep3Name";
+                    orderBy = @" order by v.Dep3Name";
                     break;
                 case 5:
                     orderBy = @" order by Sum";
