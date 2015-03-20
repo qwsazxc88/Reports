@@ -643,7 +643,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Ordered", NHibernateUtil.Single)
                 .AddScalar("Number", NHibernateUtil.Int32)
                 .AddScalar("Reported", NHibernateUtil.Single)
-                .AddScalar("DocType", NHibernateUtil.Int32);
+                .AddScalar("DocType", NHibernateUtil.Int32)
+                .AddScalar("DocId",NHibernateUtil.Int32);
             var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
                 .List<AnalyticalStatementDetailsDto>();
             float Saldo = 0;
