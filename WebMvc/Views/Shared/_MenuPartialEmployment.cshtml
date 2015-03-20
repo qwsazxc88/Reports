@@ -131,13 +131,13 @@
                 <div class="menuitem" id="empMilitaryService">@Html.ActionLink("Воинский учет", "MilitaryService", "Employment")</div>
                 <div class="menuitem" id="empExperience">@Html.ActionLink("Трудовая деятельность", "Experience", "Employment")</div>
                 <div class="menuitem" id="empContacts">@Html.ActionLink("Контактные данные", "Contacts", "Employment")</div>
-                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
+                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Департамент безопасности", "BackgroundCheck", "Employment")</div>
             }
             
             @*
             @if ((dto.UserRole & UserRole.Security) == UserRole.Security)
             {
-                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
+                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Департамент безопасности", "BackgroundCheck", "Employment")</div>
             }
 
             @if ((dto.UserRole & UserRole.Trainer) == UserRole.Trainer)

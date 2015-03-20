@@ -37,7 +37,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 200 знаков.")]
         public string ProbationaryPeriod { get; set; } //ok
 
-        [Display(Name = "Базовый должностной оклад")]
+        [Display(Name = "Должностной оклад согласно штатному расписанию")]
         public decimal? SalaryBasis { get; set; }
 
         [Display(Name = "Ставка")]
