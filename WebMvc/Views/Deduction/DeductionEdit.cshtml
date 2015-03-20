@@ -158,14 +158,11 @@
         @Html.LabelFor(m => m.MissionReportNumber)
         </td>
         <td>
-        @if (Model.MissionReportNumber > 0 && !Model.IsEditable)
+        @if (Model.MissionReportNumber > 0 )
         {
         @Html.DisplayFor(m => m.MissionReportNumber)
         }
-        @if (Model.IsEditable)
-        {
-            @Html.TextBoxFor(m=>m.MissionReportNumber)
-        }
+       
         </td>
     </tr>
     <tr>
