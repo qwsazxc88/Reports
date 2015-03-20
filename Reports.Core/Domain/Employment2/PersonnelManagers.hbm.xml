@@ -41,5 +41,11 @@
 
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_PersonnelManagers_InsuredPersonType" index="PersonnelManagers_InsuredPersonType"  not-null="false"/>
     <property name="Status" not-null="false"/>
+
+    <property name="ContractPoint_1_Id" not-null="false"/>
+    <property name="ContractPoint_2_Id" not-null="false"/>
+    <property name="ContractPoint_3_Id" not-null="false"/>
+    <property name="ContractPointsFio" length="100" not-null="false"/>
+    <property name="ContractPointsAddress" length="150" not-null="false"/>
   </class>
 </hibernate-mapping>

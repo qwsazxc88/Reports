@@ -1291,6 +1291,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ? model.InsuredPersonTypeItems.Where(x => x.Value == model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text
                     : string.Empty;
                 model.StatusId = entity.Status ?? 0;
+
+                model.ContractPoint_1_Id = entity.ContractPoint_1_Id;
+                model.ContractPoint_2_Id = entity.ContractPoint_2_Id;
+                model.ContractPoint_3_Id = entity.ContractPoint_3_Id;
+                model.ContractPointsFio = entity.ContractPointsFio;
+                model.ContractPointsAddress = entity.ContractPointsAddress;
             }
 
             
@@ -1526,6 +1532,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.Number = candidate.PersonnelManagers.ContractNumber;
+                model.ContractPoint_1_Id = candidate.PersonnelManagers.ContractPoint_1_Id;
+                model.ContractPoint_2_Id = candidate.PersonnelManagers.ContractPoint_2_Id;
+                model.ContractPoint_3_Id = candidate.PersonnelManagers.ContractPoint_3_Id;
+                model.ContractPointsFio = candidate.PersonnelManagers.ContractPointsFio;
+                model.ContractPointsAddress = candidate.PersonnelManagers.ContractPointsAddress;
                 if (candidate.PersonnelManagers.Signer != null)
                 {
                     if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
@@ -2106,6 +2117,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Signers = GetSigners();
             model.InsuredPersonTypeItems = GetInsuredPersonTypes();
             model.StatusItems = GetStatuses();
+            model.ContractPoint1_Items = GetContractPointVariants().Where(x => x.PointTypeId == 1).OrderBy(x => x.PointId).ToList();
+            model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
+            model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -2256,6 +2270,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Согласен на прием", Value = "true"},
                 new SelectListItem {Text = "Отклонить прием", Value = "false"}
             };
+        }
+
+        public IList<ContractPointDto> GetContractPointVariants()
+        {
+            //поля с частями текста договора вбил в html и тут пока не используются, возможно и не будут
+            //общий списк бъется на 3 части для отображения в трех комбобоксах
+            IList<ContractPointDto> cpv = new List<ContractPointDto> { };
+            cpv.Add(new ContractPointDto { PointId = 1, PointTypeId = 1, PointTypeName = "Вариант 1", PointNamePart_1 = "Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами." });
+            cpv.Add(new ContractPointDto { PointId = 2, PointTypeId = 1, PointTypeName = "Вариант 2", PointNamePart_1 = "Настоящий Договор заключается временно, на период отсутствия основного работника ", PointNamePart_2 = ", за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами." });
+            cpv.Add(new ContractPointDto { PointId = 3, PointTypeId = 1, PointTypeName = "Вариант 3", PointNamePart_1 = "Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами." });
+            cpv.Add(new ContractPointDto { PointId = 4, PointTypeId = 2, PointTypeName = "Вариант 1", PointNamePart_1 = "Фактическое место работы Работника:" });
+            cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
+            cpv.Add(new ContractPointDto { PointId = 6, PointTypeId = 3, PointTypeName = "Вариант 2", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов." });
+            cpv.Add(new ContractPointDto { PointId = 7, PointTypeId = 3, PointTypeName = "Вариант 3", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: ненормированный рабочий день." });
+            cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
+            cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
+            cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
+
+            return cpv;
         }
 
         #endregion
@@ -3472,6 +3505,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
             entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
             entity.Status = viewModel.StatusId;
+            entity.ContractPoint_1_Id = viewModel.ContractPoint_1_Id;
+            entity.ContractPoint_2_Id = viewModel.ContractPoint_2_Id;
+            entity.ContractPoint_3_Id = viewModel.ContractPoint_3_Id;
+            entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
+            entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
 
             if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
             {
@@ -3878,6 +3916,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
                     entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
                     entity.Status = viewModel.StatusId;
+                    entity.ContractPoint_1_Id = viewModel.ContractPoint_1_Id;
+                    entity.ContractPoint_2_Id = viewModel.ContractPoint_2_Id;
+                    entity.ContractPoint_3_Id = viewModel.ContractPoint_3_Id;
+                    entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
+                    entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {

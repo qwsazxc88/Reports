@@ -195,6 +195,30 @@
         $("#btnBC").click();
     }
 
+    function changePosition(){
+        if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
+    }
+    //на вкладке кадров переключаем варианты пунктов договора
+    function ContractPointChange(TypeId){
+        if (TypeId == 1){
+            $("#Variant11").hide();
+            $("#Variant12").hide();
+            $("#Variant13").hide();
+            $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
+        }
+        else if (TypeId == 2){
+        }
+        else if (TypeId == 3){
+            $("#Variant35").hide();
+            $("#Variant36").hide();
+            $("#Variant37").hide();
+            $("#Variant38").hide();
+            $("#Variant39").hide();
+            $("#Variant310").hide();
+            $("#Variant3" + $("#ContractPoint_3_Id").val().toString()).show();
+        }
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         //создаем вкладки, с обработчиком переключения вкладок
@@ -898,6 +922,9 @@
                                                 UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
                                                 UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
                                                 $('#isHourlySalaryBasisContainer').buttonset();
+                                                ContractPointChange(1);
+                                                ContractPointChange(2);
+                                                ContractPointChange(3);
                                                 //подкрашиваем оклад
                                                 $("#IsHourlySalaryBasisTrue").click(function () {
                                                     $("#lblHSBTrue").css("border-color", "red");

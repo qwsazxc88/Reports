@@ -47,6 +47,13 @@ namespace Reports.Core.Domain
 
         public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
         public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
+
+        //дополнения для трудового договора
+        public virtual int? ContractPoint_1_Id { get; set; }
+        public virtual int? ContractPoint_2_Id { get; set; }
+        public virtual int? ContractPoint_3_Id { get; set; }
+        public virtual string ContractPointsFio { get; set; }
+        public virtual string ContractPointsAddress { get; set; }
         #endregion
 
         #region Constructors

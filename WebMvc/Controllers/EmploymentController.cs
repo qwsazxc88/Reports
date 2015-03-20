@@ -1182,10 +1182,11 @@ namespace WebMvc.Controllers
                 Session.Add("ManagersMS" + SPPath, mst);
             }
 
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 ViewBag.Error = error;
-                return View(model);
+                //return View(model);
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
             }
             else
             {
@@ -1306,8 +1307,7 @@ namespace WebMvc.Controllers
 
         #region Roster
         [HttpGet]
-        //[ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        [ReportAuthorize(UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Roster()
         {
             var model = EmploymentBl.GetRosterModel(null);
@@ -1656,7 +1656,8 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ManagersModel model)
         {
-
+            if (model.PositionId == 0)
+                ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
             return ModelState.IsValid;
         }
 
@@ -1671,6 +1672,24 @@ namespace WebMvc.Controllers
             if (model.ContractEndDate != null && !isFixedTermContract)
             {
                 ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
+            }
+
+            if (model.ContractPoint_1_Id == 2)
+            {
+                if (model.ContractPointsFio == null || model.ContractPointsFio.Trim().Length == 0)
+                {
+                    ModelState.AddModelError("ContractPointsFio", "Заполните поле!");
+                    ModelState.AddModelError("MessageStr", "Заполните поле!");
+                }
+            }
+
+            if (model.ContractPoint_2_Id == 4)
+            {
+                if (model.ContractPointsAddress == null || model.ContractPointsAddress.Trim().Length == 0)
+                {
+                    ModelState.AddModelError("ContractPointsAddress", "Заполните поле!");
+                    ModelState.AddModelError("MessageStr", "Заполните поле!");
+                }
             }
 
             

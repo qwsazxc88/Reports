@@ -140,8 +140,25 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         //пункты трудового договора
         //для пукта 1.5
+        [Display(Name = "Пункт 1.5 трудового договора")]
+        public int? ContractPoint_1_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint1_Items { get; set; }
+
         //для пункта 1.6
+        [Display(Name = "Пункт 1.6 трудового договора")]
+        public int? ContractPoint_2_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint2_Items { get; set; }
+
         //для пункта 5.1
+        [Display(Name = "Пункт 5.1 трудового договора")]
+        public int? ContractPoint_3_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint3_Items { get; set; }
+
+        //поля вводимые по результатам выбора вариантов пуктов меню
+        [StringLength(20, ErrorMessage = "Не более 100 знаков.")]
+        public string ContractPointsFio { get; set; }
+        [StringLength(20, ErrorMessage = "Не более 150 знаков.")]
+        public string ContractPointsAddress { get; set; }
 
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }

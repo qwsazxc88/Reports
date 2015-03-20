@@ -16,9 +16,9 @@
     <legend>Руководители</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
-            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
+            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
             <input type="hidden" id="PositionId" name="PositionId" value="@Model.PositionId"/>
-            <input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>
+            @*<input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>*@
             @Html.ValidationMessageFor(model => model.PositionId)
             @*
             @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
@@ -248,4 +248,8 @@
                   });
         });
     });
+
+    function changePosition(){
+        if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
+    }
 </script>
