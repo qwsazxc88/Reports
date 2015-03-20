@@ -595,9 +595,12 @@ namespace Reports.Core.Dao.Impl
                             v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived as DiffSum,
                             v.AccountantAllSum as AccountantSum,
                             v.UserAllSum as UserSum,
-                            case when v.SendTo1C is null then N'Не выгружено в 1С'
-	                             else N'Выгружено в 1С' end as [Status]
+                            v.DeductionId as DeductionId,
+                            d.DeductionDate as DeductionUploadingDate,
+                            case when v.SendTo1C is null then N'Проводки не сформированы'
+	                             else N'Проводки сформированы' end as [Status]
                             from dbo.MissionReport v
+                            left join Deduction d on v.DeductionId=d.id
                             inner join dbo.Users u on v.UserId = u.id and v.[AccountantDateAccept] is not null
                             and v.[DeleteDate] is null";
             //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -629,7 +632,39 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DiffSum", NHibernateUtil.Decimal).
                 AddScalar("AccountantSum", NHibernateUtil.Decimal).
                 AddScalar("UserSum", NHibernateUtil.Decimal).
-                AddScalar("Status", NHibernateUtil.String);
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("DeductionId",NHibernateUtil.Int32).
+                AddScalar("DeductionUploadingDate",NHibernateUtil.DateTime);
+        }
+        public IList<AnalyticalStatementDetailsDto> GetAnalyticalStatementDetails(int userId)
+        {
+            IQuery sqlQuery=Session.CreateSQLQuery("exec GetAnalyticalStatementDetails " + userId)
+                .AddScalar("Date", NHibernateUtil.DateTime)
+                .AddScalar("Ordered", NHibernateUtil.Single)
+                .AddScalar("Number", NHibernateUtil.Int32)
+                .AddScalar("Reported", NHibernateUtil.Single)
+                .AddScalar("DocType", NHibernateUtil.Int32);
+            var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
+                .List<AnalyticalStatementDetailsDto>();
+            float Saldo = 0;
+            if (result != null)
+                foreach (var el in result)
+                {
+                    el.SaldoStart = Saldo;
+                    if (el.DocType == 4)
+                    {
+                        if (el.Date != DateTime.MinValue)
+                        {
+                            if (Saldo >= 0) Saldo += el.Ordered;
+                            else Saldo += -el.Ordered;
+                        }
+                    }
+                    else
+                        if (el.DocType != 3 || (el.SaldoStart) > 0) Saldo = Saldo - el.Ordered + el.Reported;
+                    Saldo =(float) Math.Round(Saldo, 2);
+                    el.SaldoEnd = Saldo;
+                }
+            return result;
         }
         public virtual string GetUdStatusWhere(string whereString, int statusId)
         {

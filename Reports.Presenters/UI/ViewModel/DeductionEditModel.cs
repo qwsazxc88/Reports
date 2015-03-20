@@ -21,9 +21,10 @@ namespace Reports.Presenters.UI.ViewModel
 
 
         [Display(Name = "ФИО")]
+        public string Surname { get; set; }
         public int UserId { get; set; }
         public int UserIdHidden { get; set; }
-        public IList<IdNameDto> Users;
+        //public IList<IdNameDto> Users;
 
         public bool IsEditable { get; set; }
 
@@ -58,6 +59,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Состояние")]
         public string Status { get; set; }
+
+        [Display(Name="Номер авансового отчёта:")]
+        public int MissionReportNumber { get; set; }
 
         public string IsUserEmailMessageSend {get; set; }
 

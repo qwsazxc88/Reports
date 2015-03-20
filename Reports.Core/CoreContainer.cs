@@ -559,6 +559,9 @@ namespace Reports.Core
             Register(Component.For(typeof(INoteTypeDao))
                 .ImplementedBy<NoteTypeDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For(typeof(IAnalyticalStatementDao))
+                .ImplementedBy<AnalyticalStatementDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 
