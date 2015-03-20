@@ -26,7 +26,7 @@ namespace Reports.Core.Dao
                                     MAX(dep3.Name) as Dep3Name, 
                                     MAX(up.Name) as Position
                                 FROM [dbo].[MissionOrder] MO
-                                LEFT JOIN [dbo].[MissionReport] MR ON MO.Id= MR.MissionOrderId
+                                INNER JOIN [dbo].[MissionReport] MR ON MO.Id= MR.MissionOrderId
                                 INNER JOIN [dbo].[Users] U ON U.Id = MO.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id                                
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3
@@ -83,6 +83,7 @@ namespace Reports.Core.Dao
             }
 
             AddToWhere = GetWhereForUserRole(role, userId, ref query);
+            
             if (beginDate != null)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
