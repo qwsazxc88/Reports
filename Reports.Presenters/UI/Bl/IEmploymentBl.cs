@@ -85,6 +85,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
         IEnumerable<SelectListItem> GetApprovalStatuses();
+        IList<ContractPointDto> GetContractPointVariants();
 
         int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)

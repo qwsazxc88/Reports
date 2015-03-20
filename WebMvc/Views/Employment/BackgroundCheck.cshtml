@@ -6,7 +6,7 @@
     if ((dto.UserRole & UserRole.Candidate) > 0)
     {
         Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-        ViewBag.Title = "Прием - Служба безопасности";
+        ViewBag.Title = "Прием - Департамент безопасности";
     }
 }
 
@@ -23,7 +23,7 @@
     
     <div style="float:left">
     <fieldset class="bordered doc-wrap panel">
-    <legend>Служба безопасности</legend>
+    <legend>Департамент безопасности</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AverageSalary)&nbsp;@Html.ValidationMessageFor(m => m.AverageSalary)<br />
             @Html.TextBoxFor(m => m.AverageSalary, new { @class = "calc" })

@@ -21,6 +21,7 @@ namespace Reports.Core.Domain
         public virtual IList<SupplementaryAgreement> SupplementaryAgreements { get; set; }
         public virtual string ContractNumber { get; set; } //ok
         public virtual bool IsHourlySalaryBasis { get; set; }
+        public virtual decimal? BasicSalary { get; set; } //ok
         public virtual decimal? NorthernAreaAddition { get; set; } //ok
         public virtual decimal? AreaMultiplier { get; set; } //ok
         public virtual decimal? AreaAddition { get; set; } //ok
@@ -46,6 +47,13 @@ namespace Reports.Core.Domain
 
         public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
         public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
+
+        //дополнения для трудового договора
+        public virtual int? ContractPoint_1_Id { get; set; }
+        public virtual int? ContractPoint_2_Id { get; set; }
+        public virtual int? ContractPoint_3_Id { get; set; }
+        public virtual string ContractPointsFio { get; set; }
+        public virtual string ContractPointsAddress { get; set; }
         #endregion
 
         #region Constructors
