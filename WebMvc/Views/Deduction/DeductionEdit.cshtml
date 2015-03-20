@@ -164,6 +164,17 @@
         </td>
     </tr>
     <tr>
+        <td>
+        @Html.LabelFor(m => m.MissionReportNumber)
+        </td>
+        <td>
+        @if (Model.MissionReportNumber > 0)
+        {
+        @Html.DisplayFor(m => m.MissionReportNumber)
+        }
+        </td>
+    </tr>
+    <tr>
         <td style="width:210px">
             @Html.LabelFor(m => m.DismissalDate):
         </td>

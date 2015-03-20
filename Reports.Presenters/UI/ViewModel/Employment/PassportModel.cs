@@ -15,8 +15,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int DocumentTypeId { get; set;}
         public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
-        [Display(Name = "Серия", Prompt = "4 цифры"),
-            RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
+        [Display(Name = "Серия", Prompt = "## ##"),
+            RegularExpression(@"^\d{2}\s\d{2}$", ErrorMessage = "Требуется 4 цифры в формате ## ##"),
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSeries { get; set; }
 
@@ -58,16 +58,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string District { get; set; }
 
-        [Display(Name = "Населенный пункт"),
+        [Display(Name = "Город/Населенный пункт"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string City { get; set; }
 
         [Display(Name = "Улица"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
         public string Street { get; set; }
         [Display(Name = "Дом"),
-            StringLength(6, ErrorMessage = "Не более 6 знаков.")]
+            StringLength(6, ErrorMessage = "Не более 6 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
         public string StreetNumber { get; set; }
 
         [Display(Name = "Корпус/строение"),
@@ -75,7 +77,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Building { get; set; }
 
         [Display(Name = "Квартира"),
-            StringLength(5, ErrorMessage = "Не более 5 знаков.")]
+            StringLength(5, ErrorMessage = "Не более 5 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
         public string Apartment { get; set; }
 
         // International Passport

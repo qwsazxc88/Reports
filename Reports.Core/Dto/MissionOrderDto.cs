@@ -64,5 +64,6 @@ namespace Reports.Core.Dto
         public string IsDocumentsSaveToArchive { get; set; }
         public DateTime? ArchiveDate { get; set; }
         public string ArchiveNumber { get; set; }
+        public bool IsDismissal { get; set; }
     }
 }

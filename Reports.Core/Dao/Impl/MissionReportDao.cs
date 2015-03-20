@@ -27,6 +27,7 @@ namespace Reports.Core.Dao.Impl
                                 v.EditDate as EditDate,
                                 v.Number as ReportNumber,
                                 o.Number as OrderNumber,
+                                case when dis.UserDateAccept is not null AND dis.DeleteDate is null Then 'True' else 'False' end AS IsDismissal,
                                 -- t.Name as MissionType,  
                                 -- case when v.Kind = 1 then  N' Внутренняя'
                                 --     when v.Kind = 2 then  N' Внешняя'
@@ -76,6 +77,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Users currentUser
                                     on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join Dismissal dis ON dis.UserId=v.UserId
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
@@ -497,7 +499,8 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("BeginDate", NHibernateUtil.DateTime).
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("IsDismissal", NHibernateUtil.Boolean);
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)

@@ -60,6 +60,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Состояние")]
         public string Status { get; set; }
 
+        [Display(Name="Номер авансового отчёта:")]
+        public int MissionReportNumber { get; set; }
+
         public string IsUserEmailMessageSend {get; set; }
 
         public bool IsSaveAvailable { get; set; }

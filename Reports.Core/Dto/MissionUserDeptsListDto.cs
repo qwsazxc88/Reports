@@ -13,5 +13,7 @@ namespace Reports.Core.Dto
         public decimal AccountantSum { get; set; }
         public decimal UserSum { get; set; }
         public string Status { get; set; }
+        public int DeductionId { get; set; }
+        public DateTime DeductionUploadingDate { get; set; }
     }
 }

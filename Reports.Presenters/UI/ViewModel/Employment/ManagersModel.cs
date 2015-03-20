@@ -12,6 +12,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Должность"),
             Required(ErrorMessage = "Обязательное поле")]
         public int PositionId { get; set; }
+        public string PositionName { get; set; }
         public IEnumerable<SelectListItem> PositionItems { get; set; }
 
         [Display(Name = "Структурное подразделение")]
@@ -24,6 +25,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Вид занятости")]
         public bool IsSecondaryJob { get; set; } //ok
+
+        [Display(Name = "Вид совместительства")]
+        public bool IsExternalPTWorker { get; set; } //ok
 
         [Display(Name = "График работы")]
         public int? ScheduleId { get; set; }
@@ -90,6 +94,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
+
+        public string MessageStr { get; set; }
         
         public ManagersModel()
         {

@@ -287,7 +287,10 @@ table.grid td
   padding-left: 5px;
   padding-right: 5px;
 }
-
+table.grid tr.warning
+{
+    background: #FF6666;
+}
 table.grid th
 {
   border: 1px solid Black;
@@ -810,3 +813,21 @@ span.anchorLink
     display: inline-block;
     text-align:justify;
 }
+.loading
+{
+display:inline-block;
+background: url('ajax-loader.gif') no-repeat;
+margin-left:5px;
+margin-right:5px;
+}
+#LoadingIndicator
+{
+    min-width: 43px;
+    min-height: 11px;
+    display:inline-block;
+}
+.hide
+{
+    display:none;
+}
+

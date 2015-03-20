@@ -43,6 +43,9 @@ namespace Reports.Core.Domain
         public virtual AccessGroup AccessGroup { get; set; }
         public virtual Signer Signer { get; set; }
         public virtual User ApprovedByPersonnelManager { get; set; } //ok
+
+        public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
+        public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
         #endregion
 
         #region Constructors

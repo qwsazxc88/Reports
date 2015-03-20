@@ -1152,6 +1152,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SubtypeId = entity.Subtype.Id;
                 model.Question = entity.Question;
                 model.Answer = entity.Answer;
+                
                 SetStaticFields(model, entity);
             }
             if (!CheckUserRights(currUser, current.UserRole, entity))
@@ -1243,32 +1244,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = FormatDate(entity.CreateDate);
             model.Creator = entity.Creator.FullName;
-            if (entity.ConsultantRoleId.HasValue)
-            {
-                switch (entity.ConsultantRoleId)
-                {
-                    case (int)UserRole.ConsultantOutsourcing:
-                        if (entity.ConsultantOutsourcing != null)
-                            model.Worker = entity.ConsultantOutsourcing.FullName;
-                        break;
-                    case (int)UserRole.ConsultantPersonnel:
-                        if (entity.ConsultantPersonnel != null)
-                            model.Worker = entity.ConsultantPersonnel.FullName;
-                        break;
-                    case (int)UserRole.ConsultantAccountant:
-                        if (entity.ConsultantAccountant != null)
-                            model.Worker = entity.ConsultantAccountant.FullName;
-                        break;
-                    //case (int)UserRole.PersonnelManager:
-                    //    if (entity.PersonnelManager != null)
-                    //        model.Worker = entity.PersonnelManager.FullName;
-                    //    break;
-                    case (int)UserRole.ConsultantOutsorsingManager:
-                        if (entity.ConsultantOutsorsingManager != null)
-                            model.Worker = entity.ConsultantOutsorsingManager.FullName;
-                        break;
-                }
-            }
+            
+            if (entity.ConsultantOutsourcing != null)
+                model.Worker = entity.ConsultantOutsourcing.FullName;
+                        
+                    
+            if (entity.ConsultantPersonnel != null)
+                model.Worker = entity.ConsultantPersonnel.FullName;
+                        
+                   
+            if (entity.ConsultantAccountant != null)
+                model.Worker = entity.ConsultantAccountant.FullName;
+                       
+                   
+            if (entity.ConsultantOutsorsingManager != null)
+                model.Worker = entity.ConsultantOutsorsingManager.FullName;
+                        
+                
+            
             if (entity.SendDate.HasValue)
                 model.QuestionSendDate = entity.SendDate.Value.ToShortDateString();
             if (entity.EndWorkDate.HasValue)

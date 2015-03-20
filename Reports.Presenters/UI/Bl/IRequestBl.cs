@@ -52,7 +52,9 @@ namespace Reports.Presenters.UI.Bl
         HolidayWorkEditModel GetHolidayWorkEditModel(int id, int userId);
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
-
+        AnalyticalStatementModel GetAnalyticalStatementModel();
+        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId);
+        IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending);
         MissionListModel GetMissionListModel();
         void SetMissionListModel(MissionListModel model, bool hasError);
         MissionEditModel GetMissionEditModel(int id, int userId);
@@ -189,6 +191,8 @@ namespace Reports.Presenters.UI.Bl
 
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
         PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId);
+
+        bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId, int kindId, int uploadingType, bool isFastDissmissal, bool EnableSendEmail);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
