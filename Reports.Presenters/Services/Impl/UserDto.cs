@@ -58,6 +58,8 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.ConsultantOutsorsingManager;
                 if (IsInRole(ReportRoleConstants.DismissedEmployee))
                     return UserRole.DismissedEmployee;
+                if (IsInRole(ReportRoleConstants.Estimator))
+                    return UserRole.Estimator;
                 return IsInRole(ReportRoleConstants.PersonnelManager) ?
                        UserRole.PersonnelManager :
                        UserRole.NoRole;
