@@ -11,7 +11,7 @@
 <div id="ExportDialog" title="Ручное удержание">
   <p>Укажите номер авансового отчёта.</p>
   <select id="SelectedId">
-  @foreach (var el in Model.Documents.Where(x => x.DocType == 2))
+  @foreach (var el in Model.Documents.Where(x => x.DocType == 2 && x.Date!=DateTime.MinValue && !Model.Documents.Where(d=>d.DocType==4).Any(d=>d.Number==x.Number)))
   {
    <option value="@el.DocId">АО № @el.Number</option>
   }
@@ -70,11 +70,14 @@
             </div>
         </td>
      </tr>
+     @if (Model.Documents.Any(x => x.DocType == 2 && x.Date != DateTime.MinValue && !Model.Documents.Where(d => d.DocType == 4).Any(d => d.Number == x.Number)))
+     {
      <tr>
      <td>
         <input type="button" value="Ручное удержание" onclick="$('#ExportDialog').dialog('open');"/>
      </td>
      </tr>
+     }
  </table> 
  </form>
  <table  class="grid" width="100%">
@@ -177,7 +180,7 @@
             data: { mas: a, typeId: typeId, kindId: kindId, exportType: exportType, isFast: isFast },
             success: function (result) {
                 $(".loading").removeClass("loading");
-                if (result.Status == 'Ok') $("#ExportResult").innerText("Создание удержания выполненно.");
+                if (result.Status == 'Ok') $("#ExportResult").text("Создание удержания выполненно.");
                 else {
                     alert(result.Message);
                 }
