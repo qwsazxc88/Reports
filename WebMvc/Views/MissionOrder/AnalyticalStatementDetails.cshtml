@@ -6,22 +6,7 @@
 @using Reports.Core
 @using Reports.Presenters.Services.Impl
 @using Reports.Presenters.UI.Bl.Impl;
-<div style="visibility:hidden">
 
-<div id="ExportDialog" title="Ручное удержание">
-  <p>Укажите номер авансового отчёта.</p>
-  <select id="SelectedId">
-  @foreach (var el in Model.Documents.Where(x => x.DocType == 2 && x.Date!=DateTime.MinValue && !Model.Documents.Where(d=>d.DocType==4).Any(d=>d.Number==x.Number)))
-  {
-   <option value="@el.DocId">АО № @el.Number</option>
-  }
-  </select>
-  <input type="button" value="Создать"  onclick=" UploadToDeduction(3, 3, 1, 'false');" />
-  <span id="LoadingIndicator"></span>
-  <p id="ExportResult"></p>
-</div>
-    
-</div>
 <form id="RequestData">
 <table style="width:100%">
      <tr>
@@ -70,14 +55,6 @@
             </div>
         </td>
      </tr>
-     @if (Model.Documents.Any(x => x.DocType == 2 && x.Date != DateTime.MinValue && !Model.Documents.Where(d => d.DocType == 4).Any(d => d.Number == x.Number)))
-     {
-     <tr>
-     <td>
-        <input type="button" value="Ручное удержание" onclick="$('#ExportDialog').dialog('open');"/>
-     </td>
-     </tr>
-     }
  </table> 
  </form>
  <table  class="grid" width="100%">
@@ -168,27 +145,5 @@
          GetDocs();
          return false;
     }
-    function UploadToDeduction(typeId, kindId, exportType, isFast) {
-        $("#LoadingIndicator").addClass("loading");
-        var a = [];
-        a.push($("#SelectedId").val());
-
-        jQuery.ajaxSettings.traditional = true;
-        $.ajax({
-            url: '@Url.Action("ExportDocuments")',
-            type: 'POST',
-            data: { mas: a, typeId: typeId, kindId: kindId, exportType: exportType, isFast: isFast },
-            success: function (result) {
-                $(".loading").removeClass("loading");
-                if (result.Status == 'Ok') $("#ExportResult").text("Создание удержания выполненно.");
-                else {
-                    alert(result.Message);
-                }
-            },
-            error: function () {
-                $(".loading").removeClass("loading");
-                alert("При отправке данных произошла ошибка.");
-            }
-        });
-    }
+   
  </script> 
