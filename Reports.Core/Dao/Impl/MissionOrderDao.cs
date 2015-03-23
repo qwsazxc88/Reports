@@ -663,7 +663,7 @@ namespace Reports.Core.Dao.Impl
                     else
                     {
                         if (el.DocType != 3) Saldo = Saldo - el.Ordered + el.Reported;
-                        else if (el.Ordered > 0) Saldo = Saldo + el.Ordered;
+                        else if (el.Ordered > 0) Saldo = Saldo - el.Ordered;
                     }
                     Saldo =(float) Math.Round(Saldo, 2);
                     el.SaldoEnd = Saldo;
