@@ -94,6 +94,11 @@ namespace Reports.Core.Dao
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
                 AddToWhere += " MO.CreateDate<=:DateEnd";
             }
+            if (departmentId > 0)
+            {
+                if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
+                AddToWhere += " U.DepartmentId="+departmentId;
+            }
             if (!string.IsNullOrWhiteSpace(userName))
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
