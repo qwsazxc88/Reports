@@ -21,5 +21,6 @@ namespace Reports.Core.Dto
         public int Rn { get; set; }
         public int UploadingDocType { get; set; }
         public int MissionReportNumber { get; set; }
+        public bool NotUseInAnalyticalStatement { get; set; }
     }
 }

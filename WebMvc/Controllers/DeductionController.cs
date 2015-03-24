@@ -52,7 +52,13 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
-
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
+        {
+            if (RequestBl.ChangeNotUseInAnalyticalStatement(ids, notuse)) return Json(new { Status = "Ok" });
+            else return Json(new { Status = "Error", Message="При обновлении данных произошла ошибка" });
+        }
         [HttpGet]
         public ActionResult DeductionEdit(int id)
         {
