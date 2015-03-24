@@ -7768,6 +7768,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailToUser(null, el);
             return true;
         }
+        public bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
+        {
+            DeductionDao.BeginTran();
+            try
+            {
+                for (int i = 0; i < ids.Length; i++)
+                {
+                    Deduction entity = DeductionDao.Load(ids[i]);
+                    if (entity.NotUseInAnalyticalStatement == notuse[i]) continue;
+                    entity.NotUseInAnalyticalStatement = notuse[i];
+                    DeductionDao.Save(entity);
+                }
+                DeductionDao.Flush();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("При изменении записи произошла ошибка.", ex);
+                DeductionDao.RollbackTran();
+                return false;
+            }
+            DeductionDao.CommitTran();
+            return true;
+        }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
         {
             error = string.Empty;

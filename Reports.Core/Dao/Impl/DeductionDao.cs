@@ -26,6 +26,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 p.Name as Position,
                                 k.Name as Kind,
+                                v.NotUseInAnalyticalStatement as NotUseInAnalyticalStatement,
                                 v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
                                 mr.Number as MissionReportNumber,
@@ -116,7 +117,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("IsFastDismissal", NHibernateUtil.String).
                 AddScalar("UploadingDocType",NHibernateUtil.Int32).
-                AddScalar("MissionReportNumber",NHibernateUtil.Int32);
+                AddScalar("MissionReportNumber",NHibernateUtil.Int32).
+                AddScalar("NotUseInAnalyticalStatement",NHibernateUtil.Boolean);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -234,6 +236,9 @@ namespace Reports.Core.Dao.Impl
                 case 14:
                     orderBy = @" order by mr.Number";
                     break;
+                case 15:
+                    orderBy = @" order by NotUseInAnalyticalStatement";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -254,6 +259,7 @@ namespace Reports.Core.Dao.Impl
                 return new DateTime?();
             return dto.DeductionDate;
         }
+        
     }
     public class DeductionDateTimeDto
     {

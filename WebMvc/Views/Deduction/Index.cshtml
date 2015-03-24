@@ -122,6 +122,8 @@
                                 @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
                                 {
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>   
+                                    <input type="button" value="Сохранить изменения" onclick="SaveChanges();" />
+                                    <span id="LoadingIndicator" style="float:right"></span>
                                 }
                                 @if (Model.Documents != null && Model.Documents.Count > 0)
                                 {
@@ -185,6 +187,12 @@
                     <th>
                         <div id="sort13"  style="min-width:30px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
                     </th>
+                    @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                    {
+                    <th>
+                        <div id="sort15" ><a href="#"  onclick = "SortChanged(15);">Не учитывать<br />в карточке<br />подотчётника</a></div>
+                    </th>
+                    }
                     @*<th>
                         Дата окончания
                     </th>*@
@@ -207,14 +215,18 @@
                             <td>@doc.Kind</td>
                             <td>@doc.Dep7Name</td>
                             <td>
-                            @if(doc.DismissalDate.HasValue)
+                            @if (doc.DismissalDate.HasValue)
                             {
                                 @doc.DismissalDate.Value.ToShortDateString()
                             }
                             </td>
                             <td>@doc.Status</td>
-                            <td>@(doc.MissionReportNumber>0?doc.MissionReportNumber.ToString():"")</td>
+                            <td>@(doc.MissionReportNumber > 0 ? doc.MissionReportNumber.ToString() : "")</td>
                             <td>@doc.IsFastDismissal</td>
+                            @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                            {
+                            <td><input type="checkbox" value="@doc.Id" @(doc.NotUseInAnalyticalStatement ? "checked='checked'" : "") class="AnalyticalStatementCheckBox" /></td>
+                            }
                         </tr>
                     }
                     <tr>
@@ -235,6 +247,7 @@
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
+        
          setSortFields();
          //setActiveMenuItem("userChildVacation");
     });
@@ -270,6 +283,34 @@
         var arraydates = changeformat.split(".");
         var newdate =  arraydates[1]+"."+arraydates[0]+"."+arraydates[2];
         return newdate;
+    }
+    function SaveChanges()
+    {
+        var ids=[];
+        var notuse=[];
+        $(".AnalyticalStatementCheckBox").each(function()
+        {
+            ids.push($(this).val());
+            notuse.push($(this).attr("checked"));
+        });
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("ChangeNotUseInAnalyticalStatement")',
+        type: 'POST',
+        data: {ids:ids, notuse:notuse},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.Status==="Ok") document.forms[0].submit();
+            else
+            { 
+                alert("При отправке данных произошла ошибка.");
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            }
+        });
     }
  </script>   
 }
