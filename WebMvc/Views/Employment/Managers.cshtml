@@ -171,6 +171,38 @@
     </div>
 }
 
+<div id="add-managers-comment-dialog" title="Добавление комментария">
+    @using (Html.BeginForm("ManagersAddComments", "Employment", FormMethod.Post))
+    {
+        <label for="IssuedBy" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+    }
+</div>
+
+<table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td>
+                <input id="add-managers-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
+                                                                  { <text>style = "display:none"</text>; } />
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold">Комментарии</td>
+        </tr>
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@attach.CreatorPosition  @attach.Creator  @attach.CreatedDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@attach.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+
 <script>
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
@@ -247,6 +279,37 @@
                                          });
                   });
         });
+
+
+        var $addManagersCommentDialog = $('#add-managers-comment-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            close: function (event, ui) {
+                                $(this).dialog("destroy").remove();
+                            },
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-managers-comment-dialog form').submit();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $("#Comment").val('');
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+
+        $("#add-managers-comment").click(function (e) {
+            $addManagersCommentDialog.dialog("open");
+            e.preventDefault();
+        });
+
     });
 
     function changePosition(){

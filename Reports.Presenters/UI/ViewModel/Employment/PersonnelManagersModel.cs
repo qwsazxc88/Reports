@@ -155,9 +155,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<ContractPointDto> ContractPoint3_Items { get; set; }
 
         //поля вводимые по результатам выбора вариантов пуктов меню
-        [StringLength(20, ErrorMessage = "Не более 100 знаков.")]
+        [StringLength(100, ErrorMessage = "Не более 100 знаков.")]
         public string ContractPointsFio { get; set; }
-        [StringLength(20, ErrorMessage = "Не более 150 знаков.")]
+        [StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string ContractPointsAddress { get; set; }
 
         //состояние кандидата
@@ -165,6 +165,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public CandidateStateModel CandidateStateModel { get; set; }
 
         public string MessageStr { get; set; }
+
+        [Display(Name = "Текст комментария"),
+            StringLength(256, ErrorMessage = "Не более 256 знаков.")]
+        public string Comment { get; set; } //ok
+        public IList<EmploymentCandidateCommentDto> Comments { get; set; }
+        public bool IsAddCommentAvailable { get; set; }
 
         public PersonnelManagersModel()
         {
