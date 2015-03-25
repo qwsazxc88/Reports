@@ -63,7 +63,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsCreateAdditionalOrderAvailable { get; set; }
 
-
+        public bool IsUserDismissal { get; set; }
+        public int DeductionDocNumber { get; set; }
         [Display(Name = "Дата отправки в архив")]
         public string ArchiveDate { get; set; }
         [Display(Name = "Номер коробки (полки, места) в архиве")]

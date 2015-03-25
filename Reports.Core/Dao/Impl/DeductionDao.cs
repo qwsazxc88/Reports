@@ -26,10 +26,13 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 p.Name as Position,
                                 k.Name as Kind,
+                                v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
+                                mr.Number as MissionReportNumber,
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
+                                     when v.UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
                                      else N'Записана'
                                 end as Status,
                                 case when IsFastDismissal is null then null  
@@ -38,6 +41,7 @@ namespace Reports.Core.Dao.Impl
                                 end as IsFastDismissal
                                 from dbo.Deduction v
                                 -- inner join dbo.DeductionType t on v.TypeId = t.Id
+                                left join dbo.MissionReport mr on v.id=mr.DeductionId
                                 inner join dbo.DeductionKind k on v.KindId = k.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 left join dbo.Position p on p.Id = u.PositionId
@@ -110,7 +114,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("DismissalDate", NHibernateUtil.DateTime).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("IsFastDismissal", NHibernateUtil.String);
+                AddScalar("IsFastDismissal", NHibernateUtil.String).
+                AddScalar("UploadingDocType",NHibernateUtil.Int32).
+                AddScalar("MissionReportNumber",NHibernateUtil.Int32);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -137,15 +143,17 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Записана"
-                        statusWhere = @"SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     case 2://2, "Выгружена в 1С"
-                        statusWhere = @"SendTo1C is not null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is not null and v.DeleteDate is null";
                         break;
                     case 3://3, "Отклонена"
-                        statusWhere = @"[DeleteDate] is not null";
+                        statusWhere = @"v.[DeleteDate] is not null";
                         break;
-                   
+                    case 4: //4, "Автовыгрузка"
+                        statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -185,16 +193,16 @@ namespace Reports.Core.Dao.Impl
                     orderBy = " ORDER BY UserName,EditDate DESC";
                     return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    orderBy = @" order by Number";
+                    orderBy = @" order by v.Number";
                     break;
                 //case 2:
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    orderBy = @" order by EditDate";
+                    orderBy = @" order by v.EditDate";
                     break;
                 case 4:
-                    orderBy = @" order by Dep3Name";
+                    orderBy = @" order by v.Dep3Name";
                     break;
                 case 5:
                     orderBy = @" order by Sum";
@@ -222,6 +230,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 13:
                     orderBy = @" order by IsFastDismissal";
+                    break;
+                case 14:
+                    orderBy = @" order by mr.Number";
                     break;
             }
             if (sortDescending.Value)

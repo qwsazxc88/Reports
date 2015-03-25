@@ -17,6 +17,11 @@
         @Html.LabelFor(m => m.IsLiableForMilitaryService)&nbsp;@Html.DisplayFor(m => m.IsLiableForMilitaryService)
     </div>
     <div class="formfield clear">
+        @Html.LabelFor(m => m.RegistrationExpiration)<br />
+        <span class="fakeFormField">@(Model.RegistrationExpiration != null && Model.RegistrationExpiration != 0 ? 
+            Model.RegistrationExpirationItems.Where(x => x.Value == Model.RegistrationExpiration.Value.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
         @Html.LabelFor(m => m.MilitaryCardNumber)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryCardNumber)&nbsp;</span>
     </div>
@@ -36,28 +41,29 @@
         <span class="fakeFormField">@Html.DisplayFor(m => m.ReserveCategory)&nbsp;</span>
     </div>
     <div class="formfield clear">
-        @Html.LabelFor(m => m.Rank)<br />
-        <span class="fakeFormField">@(Model.Rank != null ? @Model.RankItems.Where(x => x.Value == Model.Rank.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
+        @Html.LabelFor(m => m.RankId)<br />
+        <span class="fakeFormField">@(Model.RankId != null && Model.RankId != 0 ? @Model.RankItems.Where(x => x.Id == Model.RankId).Single().Name : string.Empty)&nbsp;</span>
     </div>
     <div class="formfield clear">
-        @Html.LabelFor(m => m.SpecialityCategory)<br />
-        <span class="fakeFormField">@Html.DisplayFor(m => m.SpecialityCategory)&nbsp;</span>
+        @Html.LabelFor(m => m.SpecialityCategoryId)<br />
+        <span class="fakeFormField">@if (Model.SpecialityCategoryId != null && Model.SpecialityCategoryId != 0)
+                                    {@Html.DisplayFor(m => m.SpecialityCategoryes.Where(x => x.Id == Model.SpecialityCategoryId).Single().Name)}&nbsp;</span>
     </div>
     <div class="formfield">
         @Html.LabelFor(m => m.MilitarySpecialityCode)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.MilitarySpecialityCode)&nbsp;</span>
     </div>
     <div class="formfield clear">
-        @Html.LabelFor(m => m.CombatFitness)<br />
-        <span class="fakeFormField">@Html.DisplayFor(m => m.CombatFitness)&nbsp;</span>
+        @Html.LabelFor(m => m.MilitaryValidityCategoryId)<br />
+        <span class="fakeFormField">@if (Model.MilitaryValidityCategoryId != 0) {@Html.DisplayFor(m => m.MilitaryValidityCategoryes.Where(x => x.Id == m.MilitaryValidityCategoryId).Single().Name)}&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.Commissariat)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.Commissariat)&nbsp;</span>
     </div>
     <div class="formfield clear">
-        @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)<br />
-        <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryServiceRegistrationInfo)&nbsp;</span>
+        @Html.LabelFor(m => m.MilitaryRelationAccountId)<br />
+        <span class="fakeFormField">@if (Model.MilitaryRelationAccountId != 0) {@Html.DisplayFor(m => m.MilitaryRelationAccounts.Where(x => x.Id == m.MilitaryRelationAccountId).Single().Name)}&nbsp;</span>
     </div>
     <div class="formfield">
         @Html.LabelFor(m => m.CommonMilitaryServiceRegistrationInfo)<br />
@@ -66,11 +72,6 @@
     <div class="formfield">
         @Html.LabelFor(m => m.SpecialMilitaryServiceRegistrationInfo)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.SpecialMilitaryServiceRegistrationInfo)&nbsp;</span>
-    </div>
-    <div class="formfield clear">
-        @Html.LabelFor(m => m.RegistrationExpiration)<br />
-        <span class="fakeFormField">@(Model.RegistrationExpiration != null ?
-            Model.RegistrationExpirationItems.Where(x => x.Value == Model.RegistrationExpiration.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
     </div>
     <div class="formfield clear">
         <br />

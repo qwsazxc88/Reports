@@ -283,6 +283,14 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentAdditionDao)).
                      ImplementedBy(typeof(EmploymentAdditionDao)).
                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentEducationTypeDao)).
+                     ImplementedBy(typeof(EmploymentEducationTypeDao)).
+                     LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentHigherEducationDiplomaDao)).
+                     ImplementedBy(typeof(EmploymentHigherEducationDiplomaDao)).
+                     LifeStyle.Is(type));
+            
+
             Register(Component.For(typeof(IRequestPrintFormDao)).
                      ImplementedBy(typeof(RequestPrintFormDao)).
                      LifeStyle.Is(type));
@@ -550,6 +558,9 @@ namespace Reports.Core
 			//Kernel.AddComponentInstance("ISessionFactory", typeof(ISessionFactory), SessionFactory);
             Register(Component.For(typeof(INoteTypeDao))
                 .ImplementedBy<NoteTypeDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For(typeof(IAnalyticalStatementDao))
+                .ImplementedBy<AnalyticalStatementDao>()
                 .LifeStyle.Is(type));
         }
         #endregion

@@ -25,7 +25,8 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div> 
-                @if ((dto.UserRole & UserRole.Employee) > 0
+                @if (dto.Id==10
+                     ||(dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Director) > 0
@@ -33,13 +34,19 @@
                      || (dto.UserRole & UserRole.Secretary) > 0
                      || (dto.UserRole & UserRole.Findep) > 0
                      || (dto.UserRole & UserRole.Archivist) > 0
-                     || (dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id.ToString() == ConfigurationManager.AppSettings["SuperPersonnelId"]
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0
+                     && dto.Id.ToString() == ConfigurationManager.AppSettings["SuperPersonnelId"]
                     )
                 {
                     if ((dto.UserRole & UserRole.Archivist) > 0)
                     {
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
+                    else
+                    if (dto.Id == 10)
+                        { 
+                            <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
+                        }
                     else
                     {
                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>

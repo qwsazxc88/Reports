@@ -29,6 +29,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? SendTo1C { get; set; }
         public virtual DateTime? DeleteDate { get; set; }
         public virtual bool DeleteAfterSendTo1C { get; set; }
+        public virtual int? UploadingDocType { get; set; }
+        public virtual IList<MissionReport> MissionReport { get; set; }
         #endregion
 
         #region Properties

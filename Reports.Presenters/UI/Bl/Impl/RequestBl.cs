@@ -47,7 +47,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IVacationCommentDao vacationCommentDao;
         //protected IRequestNextNumberDao requestNextNumberDao;
         protected IRoleDao roleDao;
-
+        protected IAnalyticalStatementDao analyticalStatementDao;
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
@@ -102,7 +102,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITerraGraphicDao terraGraphicDao;
 
 
-       
+        public IAnalyticalStatementDao AnalyticalStatementDao
+        {
+            get { return Validate.Dependency(analyticalStatementDao); }
+            set { analyticalStatementDao = value; }
+        }
         public IVacationTypeDao VacationTypeDao
         {
             get { return Validate.Dependency(vacationTypeDao); }
@@ -2793,6 +2797,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Mission
+        public AnalyticalStatementModel GetAnalyticalStatementModel()
+        {
+            IdNameReadonlyDto dep = GetDepartmentDto(UserDao.Load(CurrentUser.Id));
+            var result = new AnalyticalStatementModel
+            {
+                UserId = CurrentUser.Id,
+                DepartmentId=dep.Id,
+                DepartmentName=dep.Name,
+                DepartmentReadOnly=dep.IsReadOnly
+            };
+            return result;
+        }
+        public IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending)
+        {
+            return AnalyticalStatementDao.GetDocuments(
+                CurrentUser.Id,
+                CurrentUser.UserRole,
+                departamentId,
+                beginDate,
+                endDate,
+                name,
+                Number,
+                sortBy,
+                SortDescending);
+
+        }
         public MissionListModel GetMissionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -5755,7 +5785,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (managerAccount != null && !managerAccount.IsMainManager)
             {
                 mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
-                    .Where<User>(manager => manager.IsMainManager)
+                    //.Where<User>(manager => manager.IsMainManager) //только руководители
+                    .Where<User>(manager => manager.Email != user.Email) //руководители, заместители, специалисты, кроме самого пользователя, если он есть в числе начальства
                     .ToList<User>();
 
                 foreach(var mainManager in mainManagers)
@@ -7407,6 +7438,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Записана"),
                                                            new IdNameDto(2, "Выгружена в 1С"),
                                                            new IdNameDto(3, "Отклонена"),
+                                                           new IdNameDto(4, "Автовыгрузка")
                                                        }.OrderBy(x => x.Name).ToList();
             if(addAll)
                 deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
@@ -7470,7 +7502,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = 0;
                 DateTime today = DateTime.Today;
                 model.DateEdited = today.ToShortDateString();
-                model.UserId = model.Users[0].Id;
+                //model.UserId = model.Users[0].Id;
+                model.UserId = model.UserId;
                 model.MonthId = today.Year * 100 + today.Month;
             }
             else
@@ -7480,16 +7513,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
                 model.Version = deduction.Version;
                 model.UserId = deduction.User.Id;
-                IdNameDto dto = model.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
-                if(dto == null)
-                    throw new ArgumentException(
-               string.Format("Пользователь {0} не является сотрудником или уволен более 3 месяцев назад",deduction.User.Name));
+                model.Surname = userDao.GetUserListForDeduction(null, deduction.User.Id).Single().Name; 
+               // IdNameDto dto = model.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
+               // if(dto == null)
+               //     throw new ArgumentException(
+               //string.Format("Пользователь {0} не является сотрудником или уволен более 3 месяцев назад",deduction.User.Name));
                 model.KindId = deduction.Kind.Id;
                 model.Sum = deduction.Sum.ToString();
                 model.TypeId = deduction.Type.Id;
                 model.MonthId = deduction.DeductionDate.Year*100 + deduction.DeductionDate.Month;
                 model.DateEdited = deduction.EditDate.ToShortDateString();
                 model.DocumentNumber = deduction.Number.ToString();
+                if (deduction.MissionReport != null && deduction.MissionReport.Any())
+                    model.MissionReportNumber = deduction.MissionReport.First().Number;
                 if(deduction.Type.Id != (int) DeductionTypeEnum.Deduction)
                 {
                     model.DismissalDate = deduction.DismissalDate;
@@ -7514,7 +7550,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Status = deduction.DeleteDate.HasValue
                                    ? "Отклонена"
-                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : "Записана";
+                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : deduction.UploadingDocType.HasValue? "Автовыгрузка" :"Записана";
             }
         }
         protected void SetEditor(DeductionEditModel model, Deduction deduction, IUser current)
@@ -7528,7 +7564,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
                 editor = deduction.Editor;
-            model.Editor = editor.Name + (string.IsNullOrEmpty(editor.Email) ? string.Empty : ", " + editor.Email);
+            model.Editor = editor.Name + (string.IsNullOrEmpty(editor.Email) ? string.Empty : ", " + ((editor.Email == "info@ruscount.ru") ? "polyak@sovcombank.ru" : editor.Email));
         }
         public void SetDeductionUserInfoModel(DeductionUserInfoModel model,int userId)
         {
@@ -7536,26 +7572,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = userDao.Load(userId);
             if(user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя (id {0})", userId));
-            if((user.UserRole & UserRole.Employee) == 0)
-                throw new ValidationException(string.Format("Пользователь (id {0}) не является сотрудником", userId));
-            model.Department = user.Department == null ? string.Empty : user.Department.Name;
-            model.Position = user.Position == null ? string.Empty : user.Position.Name;
-            model.Cnilc = user.Cnilc;
-            DateTime? dateRelease = null;
-            if(user.DateRelease.HasValue)
-                dateRelease = user.DateRelease.Value;
-            //else
-            //{
-            //    DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
-            //    if(releaseDate.HasValue)
-            //        dateRelease = releaseDate.Value;
-            //}
-            if (dateRelease.HasValue)
+            //if((user.UserRole & UserRole.Employee) == 0)
+            //    throw new ValidationException(string.Format("Пользователь (id {0}) не является сотрудником", userId));
+            if (userId != 0)
             {
-                model.DateRelease = dateRelease.Value.ToShortDateString();
-                if (dateRelease.Value < DateTime.Today.AddMonths(-3))
-                    model.UserInfoError = "Сотрудник уволен более 3 месяцев назад";
+                model.Department = user.Department == null ? string.Empty : user.Department.Name;
+                model.Position = user.Position == null ? string.Empty : user.Position.Name;
+                model.Cnilc = user.Cnilc;
+                DateTime? dateRelease = null;
+                if (user.DateRelease.HasValue)
+                    dateRelease = user.DateRelease.Value;
+                //else
+                //{
+                //    DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
+                //    if(releaseDate.HasValue)
+                //        dateRelease = releaseDate.Value;
+                //}
+                if (dateRelease.HasValue)
+                {
+                    model.DateRelease = dateRelease.Value.ToShortDateString();
+                    if (dateRelease.Value < DateTime.Today.AddMonths(-3))
+                        model.UserInfoError = "Сотрудник уволен более 3 месяцев назад";
+                }
             }
+           
         }
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
@@ -7601,12 +7641,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.MonthIdHidden = model.MonthId;
             model.IsFastDismissalHidden = model.IsFastDismissalHidden;
         }
+        public User GetUser(int Id)
+        {
+            return UserDao.Load(Id);
+        }
+        public IList<IdNameDto> GetUserListForDeduction(string Name, int UserId)
+        {
+            return userDao.GetUserListForDeduction(Name, UserId); 
+        }
         protected void LoadDictionaries(DeductionEditModel model)
         {
             model.Types = GetDeductionTypes(false);
             model.Kindes = GetDeductionKinds();
+            if (model.Id == 0 && DateTime.Now>=new DateTime(2015,4,1)) model.Kindes = model.Kindes.Where(x => x.Id != 3).ToList();
             model.Monthes = GetDeductionMonthes();
-            model.Users = userDao.GetUserListForDeduction();
+            //model.Users = userDao.GetUserListForDeduction();
         }
         protected List<IdNameDto> GetDeductionKinds()
         {
@@ -7671,7 +7720,54 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return true;
             return false;
         }
+        public bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId,int kindId, int uploadingType,bool isFastDissmissal, bool EnableSendEmail)
+        {
+            List<Deduction> MailList = new List<Deduction>();
+            ///В случае ошибки нужно откатить транзакции.
+            DeductionDao.BeginTran();
+            MissionReportDao.BeginTran();
+            try
+            {
+                foreach (var id in DocIds)
+                {
+                    var report = MissionReportDao.Load(id);
+                    if (report.Deduction != null || ((!report.SendTo1C.HasValue) && uploadingType!=2)) continue;
+                    var deduction = new Deduction
+                    {
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),
+                        User = report.User,
+                        Editor = UserDao.Load(CurrentUser.Id),
+                        EditDate = DateTime.Now,
+                        DeductionDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+                        Type = DeductionTypeDao.Load(typeId),
+                        Kind = DeductionKindDao.Load(kindId),
+                        Sum =Math.Abs( report.AccountantAllSum - report.PurchaseBookAllSum - report.UserSumReceived ),
+                        DeleteAfterSendTo1C = false,
+                        UploadingDocType=uploadingType,
+                        IsFastDismissal = isFastDissmissal
 
+                    };
+
+                    DeductionDao.SaveAndFlush(deduction);
+                    report.Deduction = deduction;
+                    MissionReportDao.SaveAndFlush(report);
+                    MailList.Add(deduction);
+                }
+            }
+            catch (Exception ex)
+            {
+                DeductionDao.RollbackTran();
+                MissionReportDao.RollbackTran();
+                Log.Error("Во время экспорта записей произошла ошибка.", ex);
+                return false;
+            }
+            DeductionDao.CommitTran();
+            MissionReportDao.CommitTran();
+            if(EnableSendEmail)
+            foreach(var el in MailList)
+                SendEmailToUser(null, el);
+            return true;
+        }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
         {
             error = string.Empty;
@@ -7753,9 +7849,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        
         protected void SendEmailToUser(DeductionEditModel model,Deduction deduction)
         {
-            User user = UserDao.Load(model.UserId);
+            User user= UserDao.Load((model!=null)?model.UserId:deduction.User.Id);
             if(string.IsNullOrEmpty(user.Email))
             {
                 Log.ErrorFormat("E-mail is empty for user {0}",user.Id);
@@ -10642,7 +10739,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.AdditionalOrderDates = entity.AdditionalMissionOrder != null
                 ? FormatDate(entity.AdditionalMissionOrder.BeginDate) + " - " + FormatDate(entity.AdditionalMissionOrder.EndDate)
                 : string.Empty;
+            
             model.DocumentNumber = entity.Number.ToString();
+            if (user.Dismissals != null)
+                model.IsUserDismissal = user.Dismissals.Any(x => x.DeleteDate == null && x.UserDateAccept != null);
+            if (entity.Deduction != null)
+                model.DeductionDocNumber = entity.Deduction.Number;
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
             model.ArchiveDate = FormatDate(entity.ArchiveDate);
@@ -11515,6 +11617,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortBy,
                 model.SortDescending,showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
+        }
+        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
+        {
+            var user=UserDao.Load(userId);
+            
+            AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
+            {                
+                Documents=MissionOrderDao.GetAnalyticalStatementDetails(user.Id)                 
+            };
+            model.DateCreated = DateTime.Now.ToString("dd.MM.yyyy");
+            model.DocumentNumber = userId.ToString();
+            SetUserInfoModel(user, model);
+            return model;
         }
         public PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId, DateTime? beginDate,
             DateTime? endDate, string userName, int sortBy, bool? sortDescending,bool showDepts)

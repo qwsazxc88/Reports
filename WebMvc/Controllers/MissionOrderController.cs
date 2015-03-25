@@ -759,6 +759,30 @@ namespace WebMvc.Controllers
             return RedirectToAction("Index");
 
         }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director )]
+        public ActionResult AnalyticalStatement(AnalyticalStatementModel model)
+        {
+            var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
+            return PartialView("AnalyticalStatementsPartial", Docs);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director)]
+        public ActionResult AnalyticalStatementDetails(int userId)
+        {
+            var model = RequestBl.GetAnalyticalStatementDetails(userId);
+            return View(model);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director)]
+        public ActionResult AnalyticalStatement()
+        {
+            var model = RequestBl.GetAnalyticalStatementModel();
+            return View(model);
+        }
         protected bool ValidateAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model)
         {
             //return false;
@@ -1085,12 +1109,19 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Employee | UserRole.Manager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
             MissionUserDeptsListModelFromSession(model,false);
             return View(model);
+        }
+        [HttpPost]
+        public ActionResult ExportDocuments(IEnumerable<int> mas, int typeId, int kindId, int ExportType, bool isFast)
+        {
+            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            if (RequestBl.ExportFromMissionReportToDeduction(mas, typeId, kindId, ExportType, isFast, EnableSendEmail)) return Json(new { Status = "Ok" });
+            else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
         }
         [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
@@ -1243,8 +1274,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Manager | UserRole.Employee)]
         public ActionResult MissionUserCredsList()
         {
+            var userid = Request.QueryString["UserId"];
+
             var model = RequestBl.GetMissionUserDeptsListModel();
-             MissionUserDeptsListModelFromSession(model,true);
+            if (userid != null)
+            {
+                var user = Ioc.Resolve<IUserDao>().Load(userid);
+                if (user != null)
+                {
+                    model.UserName = user.Name;
+                    model.BeginDate = null;
+                    return MissionUserCredsList(model);
+                }
+            } 
+            MissionUserDeptsListModelFromSession(model, true);
             return View(model);
         }
         [HttpPost]

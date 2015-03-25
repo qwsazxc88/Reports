@@ -13,11 +13,12 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.IsValidate)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
+    <input type="hidden" id="IsExperienceItemNotValid" name="IsExperienceItemNotValid" value="@Model.IsExperienceItemNotValid" />
     @Html.HiddenFor(m => m.UserId)
     
     <fieldset class="bordered doc-wrap panel">
@@ -199,9 +200,8 @@
     </fieldset>
 
     <div class="clear">
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
-        @Html.CheckBoxFor(m => m.IsValidate, !Model.IsValidate ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)
         <button id="btnExperience" type="submit">Сохранить</button>
     </div>
 }
@@ -211,12 +211,19 @@
 <div id="add-experience-item-dialog" title="Добавление сведений о трудовой деятельности">
     @using (Html.BeginForm("ExperienceAddExperienceItem", "Employment", FormMethod.Post))
     {
+        @*
         <label for="BeginningDate" style="display:block;">Начало работы</label><input type="text" id="BeginningDate" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="EndDate" style="display:block;">Окончание работы</label><input type="text" id="EndDate" name="EndDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Company" style="display:block;">Организация</label><input type="text" name="Company" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Position" style="display:block;">Должность</label><input type="text" name="Position" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label><input type="text" name="CompanyContacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        *@
+        <label for="BeginningDate" style="display:block;">с </label>@Html.EditorFor(m => m.BeginningDate)@Html.ValidationMessageFor(m => m.BeginningDate)
+        <label for="EndDate" style="display:block;"> по </label>@Html.EditorFor(m => m.EndDate)@Html.ValidationMessageFor(m => m.EndDate)
+        <label for="Company" style="display:block;">Организация</label>@Html.TextBoxFor(m => m.Company)@Html.ValidationMessageFor(m => m.Company)
+        <label for="Position" style="display:block;">Должность</label>@Html.TextBoxFor(m => m.Position)@Html.ValidationMessageFor(m => m.Position)
+        <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label>@Html.TextBoxFor(m => m.CompanyContacts)@Html.ValidationMessageFor(m => m.CompanyContacts)
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -262,8 +269,9 @@
             buttons:
             {
                 "OK": function () {
-                    processAddExperienceItem();
-                    $(this).dialog("close");
+                    $('#add-experience-item-dialog form').submit();
+                    //processAddExperienceItem();
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
                     $(this).dialog("close");
@@ -271,31 +279,35 @@
             }
         });
 
-        var processAddExperienceItem = function()
-        {
-            var url = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
-            var dataToSend = $("#add-experience-item-dialog form").serialize();
-            $.post(url, dataToSend, function(dataReceived){
-                var $tbody = $("#experience-items-container>table>tbody")
-                $tbody.empty();
-                for (var i = 0; i < dataReceived.length; i++)
-                {
-                    $tbody.append(
-                        "<tr><td>" +
-                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
-                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
-                        dataReceived[i].Company + "</td><td>" +
-                        dataReceived[i].Position + "</td><td>" +
-                        dataReceived[i].CompanyContacts + "</td><td>" +
-                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
-                    );
-                }
-            }, "json");
-        };
+//        var processAddExperienceItem = function()
+//        {
+//            var url = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
+//            var dataToSend = $("#add-experience-item-dialog form").serialize();
+//            $.post(url, dataToSend, function(dataReceived){
+//                var $tbody = $("#experience-items-container>table>tbody")
+//                $tbody.empty();
+//                for (var i = 0; i < dataReceived.length; i++)
+//                {
+//                    $tbody.append(
+//                        "<tr><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+//                        dataReceived[i].Company + "</td><td>" +
+//                        dataReceived[i].Position + "</td><td>" +
+//                        dataReceived[i].CompanyContacts + "</td><td>" +
+//                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+//                    );
+//                }
+//            }, "json");
+//        };
 
         $("#add-experience-item").click(function (e) {
             $addExperienceItemDialog.dialog("open");
             e.preventDefault();
         });
+
+        if ($("#IsExperienceItemNotValid").val() == 'True'){
+            $addExperienceItemDialog.dialog("open");
+        }
     });
 </script>
