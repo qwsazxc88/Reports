@@ -6,6 +6,15 @@
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Редактирование авансового отчета";
 }
+<div style="visibility:hidden">
+<div id="SurchargeDialog" title="Создать доплату" >
+ <p>Введите номер удержания</p>
+ <input type="text" id="deductionNumber" />
+ <p>Введите сумму доплаты</p>
+ <input type="text" id="SurchargeSum" />
+ <input type="button" value="Создать" onclick="AddSurcharge();" />
+</div>
+</div>
 @using (Html.BeginForm("MissionReportEdit", "MissionOrder", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
 {
     <div class="doc-wrap">
@@ -221,6 +230,7 @@
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+            @*<input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> *@
             @if (Model.Id > 0)
             {
                 <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
@@ -349,6 +359,7 @@
         var  actionEditTranDialogUrl = "@Url.Action("EditTranDialog", "MissionOrder")";
         var  actionPrintArchivistAddressDialogUrl = "@Url.Action("PrintArchivistAddressDialog", "MissionOrder")";
         $(document).ready(function () {
+            $("#SurchargeDialog").dialog({ autoOpen: false });
             $("#ArchiveDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             /*$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
@@ -1215,6 +1226,31 @@
         url: '@Url.Action("ExportDocuments")',
         type: 'POST',
         data: {mas:a,typeId:typeId,kindId:kindId,exportType:exportType,isFast:isFast},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.Status=='Ok') $("#ExportButton").hide();
+            else
+            { 
+                alert(result.Message);
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            }
+        });
+    }
+    function AddSurcharge()
+    {
+        $("#LoadingIndicator").addClass("loading");
+        var b= @Model.Id;
+        var a= @Model.UserId;
+        var c=$("#SurchargeSum").val();
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("AddSurcharge","Surcharge")',
+        type: 'POST',
+        data: {userId:a,missionReportId:b,sum:c},
         success: function(result){
             $(".loading").removeClass("loading");
             if(result.Status=='Ok') $("#ExportButton").hide();
