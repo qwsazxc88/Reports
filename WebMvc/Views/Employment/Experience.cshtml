@@ -204,7 +204,7 @@
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
         <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false')">Отправить на согласование</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 

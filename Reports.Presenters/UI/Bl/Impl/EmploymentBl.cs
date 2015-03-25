@@ -2491,6 +2491,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             EmploymentCommonDao.SaveAndFlush(candidate);
 
+            //сообщение тренеру
+            EmploymentSendEmail(candidate.User.Id, 4);
+
             return candidate.User.Id;
         }
                 
@@ -2521,6 +2524,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
                 SaveAttachments<TVM>(model);
+                //сообщение в ДП
+                EmploymentSendEmail(user.Id, 1);
             }
             catch (Exception)
             {
@@ -2542,6 +2547,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
             EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+
+            //сообщение руководителю 
+            EmploymentSendEmail(userId, 3);
 
             error = string.Empty;
             return true;
@@ -3731,6 +3739,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             error = "Ошибка согласования.";
                             return false;
                         }
+                        //сообщение руководителю из ДП
+                        EmploymentSendEmail(entity.Candidate.User.Id, 2);
                         return true;
                     }
                     else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
@@ -3743,6 +3753,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             error = "Ошибка изменения статуса.";
                             return false;
                         }
+                        //сообщение руководителю из ДП
+                        EmploymentSendEmail(entity.Candidate.User.Id, 2);
                         return true;
                     }
                     else
@@ -4212,25 +4224,113 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Get(userId);
             return user != null && user.IsFixedTermContract.HasValue && user.IsFixedTermContract.Value;
         }
-
-        protected void SendEmailToUser(/*DeductionEditModel model, Deduction deduction*/)
+        /// <summary>
+        /// Процедура формирования и отсылки сообщений в процессе приема кандидата на работу.
+        /// </summary>
+        /// <param name="UserId">Id кандидата</param>
+        /// <param name="EmailType">Тип сообщения.</param>
+        protected void EmploymentSendEmail(int UserId, int EmailType)
         {
-            //User user = UserDao.Load((model != null) ? model.UserId : deduction.User.Id);
-            User user = UserDao.Load(18458);
-            if (string.IsNullOrEmpty(user.Email))
-            {
-                Log.ErrorFormat("E-mail is empty for user {0}", user.Id);
-                return;
-            }
-            string defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
-            string to = string.IsNullOrEmpty(defaultEmail) ? user.Email : defaultEmail;
-            string body = @"Привет Жень! Опыты с рассылкой начинаются!";
+            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата
+            EmploymentCandidate entity = GetCandidate(UserId);
 
-            System.DateTime sendDate;
-            EmailDto dto = SendEmail(to, "Тест", body);
+            //User user = UserDao.Load(entity.AppointmentCreator.Id);
+            User user = UserDao.Load(18458);    //для теста учетка Жени
+
+            //проверка на наличие адреса в базе для руководителя
+            if (EmailType == 2 || EmailType == 3)
+            {
+                if (string.IsNullOrEmpty(user.Email))
+                {
+                    Log.ErrorFormat("E-mail is empty for user {0}", user.Id);
+                    return;
+                }
+            }
+
+            string defaultEmail = null;
+            string to = null;
+            string Emailaddress = user.Email;
+            string body = null;
+            string Subject = null;
+
+            switch (EmailType)
+            {
+                case 1: //в ДБ
+                    if (entity.IsCandidateToBackgroundSendEmail && entity.CandidateToBackgroundSendEmailDate.HasValue) return;  //сообщение было послано ранее
+                    //проверка на необходимость отправки сообщения
+                    IList<CandidateStateDto> CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
+                    if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
+
+                    defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    Subject = "Оформлена заявка на прием";
+                    body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо согласование сотрудника Департамента безопасности.";
+                    entity.IsCandidateToBackgroundSendEmail = true;
+                    entity.CandidateToBackgroundSendEmailDate = DateTime.Now;
+                    break;
+                case 2: //из ДБ руководителю
+                    if (entity.IsBackgroundToManagerSendEmail && entity.BackgroundToManagerSendEmailDate.HasValue) return;  //сообщение было послано ранее
+                    defaultEmail = ConfigurationService.EmploymentBackgroundCheckToManagerEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    if (!entity.BackgroundCheck.ApprovalStatus.HasValue) return;    //ошибка, ДБ не проверяли кандидата
+                    if (entity.BackgroundCheck.ApprovalStatus.Value)
+                    {
+                        Subject = "Сотрудником Департамента безопасности согласован прием кандидата";
+                        body = @"Сотрудником Департамента безопасности согласован прием кандидата " + entity.User.Name + ". Ожидается заявление о приеме от кандидата.";
+                    }
+                    else
+                    {
+                        Subject = "Сотрудником Департамента безопасности отклонен прием кандидата";
+                        body = @"Сотрудником Департамента безопасности отклонен прием кандидата " + entity.User.Name + ".";
+                    }
+                    entity.IsBackgroundToManagerSendEmail = true;
+                    entity.BackgroundToManagerSendEmailDate = DateTime.Now;
+                    break;
+                case 3: //руководителю на счет заявления
+                    if (entity.IsCandidateToManagerSendEmail && entity.CandidateToManagerSendEmailDate.HasValue) return;  //сообщение было послано ранее
+                    defaultEmail = ConfigurationService.EmploymentCandidateToManagerEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    Subject = "Кандидатом выложено заявление о приеме";
+                    body = @"Кандидатом " + entity.User.Name + " выложено заявление о приеме. Необходимо согласование руководителя.";
+                    entity.IsCandidateToManagerSendEmail = true;
+                    entity.CandidateToManagerSendEmailDate = DateTime.Now;
+                    break;
+                case 4: //тренеру
+                    if (entity.IsManagerToTrainingSendEmail && entity.ManagerToTrainingSendEmailDate.HasValue) return;  //сообщение было послано ранее
+                    defaultEmail = ConfigurationService.EmploymentManagerToTrainingEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    if (!entity.IsTrainingNeeded) return;   //обучение не требуется
+                    Subject = "Оформлена заявка на прием кандидата. Требуется обучение";
+                    if (entity.IsTrainingNeeded && entity.IsBeforEmployment)
+                    {
+                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Требуется обучение тренера до приема кандидата.";
+                    }
+                    else
+                    {
+                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Требуется обучение тренера после приема кандидата.";
+                    }
+                    entity.IsManagerToTrainingSendEmail = true;
+                    entity.ManagerToTrainingSendEmailDate = DateTime.Now;
+                    break;
+            }
+
+            
+
+
+            EmailDto dto = SendEmail(to, Subject, body);
             if (string.IsNullOrEmpty(dto.Error))
-                sendDate = DateTime.Now;
-                //deduction.EmailSendToUserDate = DateTime.Now;
+            {
+                try
+                {
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                }
+                catch (Exception)
+                {
+                }
+                finally
+                {
+                }
+            }
             else
                 Log.ErrorFormat("Cannot send email to user {0}(email {1}) about deduction {2} : {3}",
                     user.Id, to, 18458, dto.Error);

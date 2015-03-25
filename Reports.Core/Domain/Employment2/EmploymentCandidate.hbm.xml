@@ -25,5 +25,14 @@
     <property name="IsTrainingNeeded" not-null="false"/>
     <property name="IsBeforEmployment" not-null="false"/>
 
+    <property name="IsCandidateToBackgroundSendEmail" not-null="false"/>
+    <property name="CandidateToBackgroundSendEmailDate" not-null="false"/>
+    <property name="IsCandidateToManagerSendEmail" not-null="false"/>
+    <property name="CandidateToManagerSendEmailDate" not-null="false"/>
+    <property name="IsBackgroundToManagerSendEmail" not-null="false"/>
+    <property name="BackgroundToManagerSendEmailDate" not-null="false"/>
+    <property name="IsManagerToTrainingSendEmail" not-null="false"/>
+    <property name="ManagerToTrainingSendEmailDate" not-null="false"/>
+
   </class>
 </hibernate-mapping>
