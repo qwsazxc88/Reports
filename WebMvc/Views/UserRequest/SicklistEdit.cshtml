@@ -392,10 +392,10 @@
     
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
-            $("#PaymentBeginDate").datepicker();
-            $("#PaymentDecreaseDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+            $("#PaymentBeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#PaymentDecreaseDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#ExperienceYears").width("50px");
             $("#ExperienceMonthes").width("50px");

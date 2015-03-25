@@ -97,6 +97,17 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
+        [HttpGet]
+        public ActionResult DeductionImport()
+        {
+            var model=RequestBl.GetDeductionImportModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult DeductionImport(DeductionImportModel model)
+        {
+            return View(model);
+        }
         /// <summary>
         /// Автозаполнение фио в создании набора реквизитов.
         /// </summary>

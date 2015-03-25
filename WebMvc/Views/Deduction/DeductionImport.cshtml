@@ -1,0 +1,81 @@
+﻿@model Reports.Presenters.UI.ViewModel.DeductionImportModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
+    ViewBag.Title = "Импорт заявок из файла";
+}
+
+@using (Html.BeginForm())
+{     
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateEdited):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateEdited)
+            
+        </td>
+    </tr>
+     
+     <tr>
+        <td>
+            <input type="hidden" id="KindIdHidden" name="KindIdHidden" value="@Model.KindIdHidden" />
+            @Html.LabelFor(m => m.KindId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.KindId, new SelectList(Model.Kindes, "ID", "Name")) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="hidden" id="MonthIdHidden" name="MonthIdHidden" value="@Model.MonthIdHidden" />
+            @Html.LabelFor(m => m.MonthId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.Monthes, "ID", "Name")) 
+        </td>
+    </tr>
+     
+    <tr>
+        <td>
+            <input type="hidden" id="DateEdited" name="DateEdited" value="@Model.DateEdited" />
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+        </td>
+    </tr>
+    <tr>
+     <td>
+     Файл:
+     </td>
+     <td>
+     <input type="file" multiple/>
+     </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Editor):
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Editor) 
+         </td>
+    </tr>
+    <tr>
+    <td><button >Создать</button></td>
+    </tr>
+    </table>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+    </script>
+}

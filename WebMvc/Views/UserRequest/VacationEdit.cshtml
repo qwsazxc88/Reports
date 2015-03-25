@@ -422,9 +422,9 @@
         }
 
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
-            $("#AdditionalVacationBeginDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+            $("#AdditionalVacationBeginDate").datepicker({changeMonth: true, changeYear: true});
             restrictDatesInDatepicker($("#AdditionalVacationBeginDate"), $("#BeginDate"), $("#EndDate"));
             $(".hasDatepicker").width("75px");
             setActiveMenuItem("userVacation");
