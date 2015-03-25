@@ -18,15 +18,15 @@ namespace Reports.Core.Dao
         private string query = @"SELECT 
 	                                U.Id as UserId,
 	                                MAX(U.Name) AS Name,
-	                                (SELECT SUM(UserAllSum) FROM [dbo].[MissionOrder] WHERE UserId=U.Id AND CreateDate<:DateStart ) AS OrderedBefore,
-	                                (SELECT SUM(AccountantAllSum-PurchaseBookAllSum) FROM [dbo].[MissionReport] WHERE  UserId=U.Id AND CreateDate<:DateStart) As ReportedBefore,
-	                                SUM(MO.UserAllSum) AS Ordered,
-	                                SUM(MR.AccountantAllSum-PurchaseBookAllSum) AS Reported,
+	                                (SELECT SUM(Ordered) FROM [dbo].[vwAnalyticalStatement] WHERE UserId=U.Id AND [Date]<:DateStart ) AS OrderedBefore,
+	                                (SELECT SUM(Reported-PurchaseBookAllSum) FROM [dbo].[vwAnalyticalStatement] WHERE [Date] is not null AND UserId=U.Id AND [Date]<:DateStart) As ReportedBefore,
+	                                SUM(MO.Ordered) AS Ordered,
+	                                SUM(MO.Reported) AS Reported,
+                                    SUM(MO.PurchaseBookAllSum) as PurchaseBookAllSum,
                                     MAX(dep.Name) as Dep7Name,
                                     MAX(dep3.Name) as Dep3Name, 
                                     MAX(up.Name) as Position
-                                FROM [dbo].[MissionOrder] MO
-                                INNER JOIN [dbo].[MissionReport] MR ON MO.Id= MR.MissionOrderId
+                                FROM [dbo].[vwAnalyticalStatement] MO
                                 INNER JOIN [dbo].[Users] U ON U.Id = MO.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id                                
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3
@@ -54,11 +54,12 @@ namespace Reports.Core.Dao
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("OrderedBefore", NHibernateUtil.Single).
                 AddScalar("ReportedBefore", NHibernateUtil.Single).
-                AddScalar("Ordered",NHibernateUtil.Single).
-                AddScalar("Reported",NHibernateUtil.Single).
-                AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("Dep7Name",NHibernateUtil.String).
-                AddScalar("Position",NHibernateUtil.String)
+                AddScalar("Ordered", NHibernateUtil.Single).
+                AddScalar("Reported", NHibernateUtil.Single).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("Position", NHibernateUtil.String).
+                AddScalar("PurchaseBookAllSum", NHibernateUtil.Single)
                 ;
         }
         public IList<AnalyticalStatementDto> GetDocuments(
@@ -87,12 +88,17 @@ namespace Reports.Core.Dao
             if (beginDate != null)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " MO.CreateDate>= :DateStart";
+                AddToWhere += " MO.Date>= :DateStart";
             }
             if (endDate != null)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " MO.CreateDate<=:DateEnd";
+                AddToWhere += " MO.Date<=:DateEnd";
+            }
+            if (departmentId > 0)
+            {
+                if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
+                AddToWhere += " U.DepartmentId="+departmentId;
             }
             if (!string.IsNullOrWhiteSpace(userName))
             {
@@ -129,6 +135,8 @@ namespace Reports.Core.Dao
                 case 8: res = res.OrderBy(x => (x.ReportedBefore - x.OrderedBefore+x.Reported-x.Ordered)).ToList();
                     break;
                 case 9: res = res.OrderBy(x => x.userId).ToList();
+                    break;
+                case 10: res = res.OrderBy(x => x.PurchaseBookAllSum).ToList();
                     break;
             }
             if(sortDescending.HasValue && sortDescending.Value) res=res.Reverse().ToList();

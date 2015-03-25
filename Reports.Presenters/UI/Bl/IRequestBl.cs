@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.Bl
         SicklistEditModel GetSicklistEditModel(int id, int userId);
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
-
+        bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse);
         bool HaveAbsencesForPeriod(DateTime beginDate, DateTime endDate, int userId,
                                    int currentUserId, UserRole currentUserRole);
         bool ResetSicklistApprovals(int id, out string error);

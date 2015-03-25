@@ -20,6 +20,7 @@
   <property name="DeleteAfterSendTo1C" not-null="true"/>
   <property name="UploadingDocType" not-null="false"/>
   <property name="EmailSendToUserDate" not-null="false"/>
+    <property name="NotUseInAnalyticalStatement" not-null="true"/>
     <bag name="MissionReport" table="MissionReport" lazy="true" >
       <key column="DeductionId" />
       <one-to-many class="MissionReport"/>

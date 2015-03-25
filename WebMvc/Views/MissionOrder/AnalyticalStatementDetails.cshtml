@@ -6,6 +6,7 @@
 @using Reports.Core
 @using Reports.Presenters.Services.Impl
 @using Reports.Presenters.UI.Bl.Impl;
+
 <form id="RequestData">
 <table style="width:100%">
      <tr>
@@ -48,8 +49,6 @@
      <tr>
         <td colspan="2">
             <div class="action-wrap">
-
-            <span id="LoadingIndicator"></span>
             <center><b>Карточка подотчётного лица по командировкам</b></center>
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
@@ -87,7 +86,7 @@
                            break;
                            case 2:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Авансовый отчёт № @el.Number проверен</a>
                            break;
-                           case 3:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
+                           case 3:<a href='@Url.Action("MissionUserCredsList", "MissionOrder", new { userid = Model.DocumentNumber })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
                            break;
                            case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано по авансовому отчету № @el.Number</a>
                            break;
@@ -110,10 +109,11 @@
 
 <script src="@Url.Content("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
 <script type="text/javascript">
-   
+
     $(document).ready(function () {
         setSortFields();
         setActiveMenuItem("moAnaliticalStatementList");
+        $("#ExportDialog").dialog({ autoOpen: false });
     });
     
     function setSortFields(){
@@ -145,5 +145,5 @@
          GetDocs();
          return false;
     }
-    
+   
  </script> 

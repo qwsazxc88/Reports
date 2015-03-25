@@ -54,6 +54,10 @@ namespace Reports.Core.Dto
         /// Остаток конечный
         /// </summary>
         public float SaldoEnd { get; set; }
+        /// <summary>
+        /// Сумма оплаченная организацией
+        /// </summary>
+        public float PurchaseBookAllSum { get; set; }
             
     }
 }

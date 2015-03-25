@@ -7653,6 +7653,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Types = GetDeductionTypes(false);
             model.Kindes = GetDeductionKinds();
+            if (model.Id == 0 && DateTime.Now>=new DateTime(2015,4,1)) model.Kindes = model.Kindes.Where(x => x.Id != 3).ToList();
             model.Monthes = GetDeductionMonthes();
             //model.Users = userDao.GetUserListForDeduction();
         }
@@ -7765,6 +7766,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(EnableSendEmail)
             foreach(var el in MailList)
                 SendEmailToUser(null, el);
+            return true;
+        }
+        public bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
+        {
+            DeductionDao.BeginTran();
+            try
+            {
+                for (int i = 0; i < ids.Length; i++)
+                {
+                    Deduction entity = DeductionDao.Load(ids[i]);
+                    if (entity.NotUseInAnalyticalStatement == notuse[i]) continue;
+                    entity.NotUseInAnalyticalStatement = notuse[i];
+                    DeductionDao.Save(entity);
+                }
+                DeductionDao.Flush();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("При изменении записи произошла ошибка.", ex);
+                DeductionDao.RollbackTran();
+                return false;
+            }
+            DeductionDao.CommitTran();
             return true;
         }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
