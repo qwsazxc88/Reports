@@ -7653,6 +7653,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Types = GetDeductionTypes(false);
             model.Kindes = GetDeductionKinds();
+            if (model.Id == 0 && DateTime.Now>=new DateTime(2015,4,1)) model.Kindes = model.Kindes.Where(x => x.Id != 3).ToList();
             model.Monthes = GetDeductionMonthes();
             //model.Users = userDao.GetUserListForDeduction();
         }
