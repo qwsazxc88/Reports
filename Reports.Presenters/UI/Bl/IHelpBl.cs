@@ -43,5 +43,7 @@ namespace Reports.Presenters.UI.Bl
         HelpTemplateEditModel GetTemplateEditModel(int id);
         bool SaveTemplate(SaveAttacmentModel model);
         bool SaveTemplateName(SaveAttacmentModel model);
+
+        HelpPersonnelBillingListModel GetPersonnelBillingList();
     }
 }

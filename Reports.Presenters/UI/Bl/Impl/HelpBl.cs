@@ -2411,5 +2411,56 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+        #region Service Requests List
+        public HelpPersonnelBillingListModel GetPersonnelBillingList()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            HelpPersonnelBillingListModel model = new HelpPersonnelBillingListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                //DepartmentReadOnly = dep.IsReadOnly,
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            //SetIsOriginalDocsVisible(model);
+            SetIsAvailable(model);
+            return model;
+        }
+        public void SetDictionariesToModel(HelpPersonnelBillingListModel model)
+        {
+            model.Statuses = GetPersonnelBillingStatuses();
+            model.Urgencies = GetPersonnelBillingUrgencies();
+        }
+        protected List<IdNameDto> GetPersonnelBillingStatuses()
+        {
+            List<IdNameDto> statusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(2, "Запрос отправлен"),
+                                                           new IdNameDto(3, "Запрос прочитан"),
+                                                           new IdNameDto(4, "Запрос обработан")
+                                                       }.OrderBy(x => x.Name).ToList();
+            statusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return statusesList;
+        }
+        protected List<IdNameDto> GetPersonnelBillingUrgencies()
+        {
+            List<IdNameDto> list = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Срочно"),
+                                                           new IdNameDto(2, "Очень срочно")
+                                                       }.OrderBy(x => x.Name).ToList();
+            list.Insert(0, new IdNameDto(0, SelectAll));
+            return list;
+        }
+        protected void SetIsAvailable(HelpPersonnelBillingListModel model)
+        {
+            model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0);
+        }
+        #endregion
     }
 }

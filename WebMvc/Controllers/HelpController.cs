@@ -681,6 +681,15 @@ namespace WebMvc.Controllers
         }
 
         #endregion
+        #region Accountant Billing
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult PersonnelBillingList()
+        {
+            var model = HelpBl.GetPersonnelBillingList();
+            return View(model);
+        }
+        #endregion
 
     }
 }

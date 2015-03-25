@@ -148,6 +148,10 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
+        public static bool IsHelpPersonnelBillingAvailable(IUser dto)
+        {
+            return (dto.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager | UserRole.OutsourcingManager)) > 0;
+        }
         public static bool IsHelpTemplateAvailable(IUser dto)
         {
             return (dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0;

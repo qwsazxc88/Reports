@@ -760,6 +760,7 @@
     <Content Include="Views\MissionOrder\AnalyticalStatement.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementsPartial.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementDetails.cshtml" />
+    <Content Include="Views\Help\PersonnelBillingList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
