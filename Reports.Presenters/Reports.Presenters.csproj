@@ -179,6 +179,7 @@
     <Compile Include="UI\ViewModel\Employment\CandidateStateModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ContactsModel.cs" />
     <Compile Include="UI\ViewModel\Employment\CustomReportModel.cs" />
+    <Compile Include="UI\ViewModel\DeductionImportModel.cs" />
     <Compile Include="UI\ViewModel\Employment\EducationModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ExperienceModel.cs" />
     <Compile Include="UI\ViewModel\Employment\FamilyModel.cs" />

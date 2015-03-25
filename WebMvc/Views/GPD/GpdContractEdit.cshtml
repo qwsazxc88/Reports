@@ -480,9 +480,9 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#DateBegin").datepicker();
-        $("#DateEnd").datepicker();
-        $("#DateP").datepicker();
+        $("#DateBegin").datepicker({changeMonth: true, changeYear: true});
+        $("#DateEnd").datepicker({changeMonth: true, changeYear: true});
+        $("#DateP").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setActiveMenuItem("moContract");
 
