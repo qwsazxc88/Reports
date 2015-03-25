@@ -201,7 +201,7 @@ namespace Reports.Core.Dao.Impl
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    orderBy = @" order by v.EditDate";
+                    orderBy = @" order by EditDate";
                     break;
                 case 4:
                     orderBy = @" order by v.Dep3Name";
