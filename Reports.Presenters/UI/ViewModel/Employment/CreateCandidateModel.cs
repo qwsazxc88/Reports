@@ -42,5 +42,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Surname { get; set; }
 
         public bool IsOnBehalfOfManagerAvailable { get; set; }
+
+        [Display(Name = "Обучение требуется")]
+        public bool IsTrainingNeeded { get; set; }
+        [Display(Name = "До приема")]
+        public bool IsBeforEmployment { get; set; }
     }
 }

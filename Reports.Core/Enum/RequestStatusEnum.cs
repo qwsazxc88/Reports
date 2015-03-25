@@ -135,4 +135,10 @@
         DeductionOnDismissal = 2,
         DeductionAfterDismissal = 3,
     }
+    public enum EmploymentCommentTypeEnum
+    {
+        Managers = 1,
+        PersonnelManagers = 2,
+        BackgroundCheck = 3
+    }
 }

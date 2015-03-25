@@ -45,12 +45,31 @@
                 @Html.DropDownListFor(m => m.PersonnelId, new SelectList(Model.Personnels, "Id", "Name"))
             </div>
 
-            <div class="formfield clear">
+            <div id="IsFixedTermContractContainer" class="formfield clear">
                 @Html.LabelFor(m => m.IsFixedTermContract)<br />
-                @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
-                @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse" id="lblFTCFalse" @if (!Model.IsFixedTermContract)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Бессрочный</label>
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue" id="lblFTCTrue" @if (Model.IsFixedTermContract)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Срочный</label>
+
+
             </div>
 
+            <div id="IsTrainingNeededContainer" class="formfield clear">
+                @Html.LabelFor(m => m.IsTrainingNeeded)<br />
+                @Html.RadioButtonFor(m => m.IsTrainingNeeded, false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse" @if (!Model.IsTrainingNeeded)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                @Html.RadioButtonFor(m => m.IsTrainingNeeded, true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" @if (Model.IsTrainingNeeded)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            </div>
+
+            <div id="IsBeforEmploymentContainer" class="formfield clear" @if (!Model.IsTrainingNeeded){<text>style="display:none;"</text>}>
+                @Html.LabelFor(m => m.IsBeforEmployment)<br />
+                @Html.RadioButtonFor(m => m.IsBeforEmployment, false, new { @id = "IsBeforEmploymentFalse" })<label for="IsBeforEmploymentFalse" id="lblBEFalse" @if (!Model.IsBeforEmployment)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                @Html.RadioButtonFor(m => m.IsBeforEmployment, true, new { @id = "IsBeforEmploymentTrue" })<label for="IsBeforEmploymentTrue" id="lblBETrue" @if (Model.IsBeforEmployment)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            </div>
             @if (Model.IsOnBehalfOfManagerAvailable)
             {
                 @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
@@ -69,7 +88,7 @@
         </fieldset>
     </div>
     
-    
+
     <div class="clear">        
         @if (!Model.UserId.HasValue)
         {
@@ -91,6 +110,45 @@
 
     $(document).ready(function () {
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+
+        $('#IsFixedTermContractContainer').buttonset();
+        $('#IsTrainingNeededContainer').buttonset();
+        $('#IsBeforEmploymentContainer').buttonset();
+        //$("#IsTrainingNeeded").select(alert($("#IsTrainingNeeded").val()));
+
+        if($("#IsTrainingNeeded").val() == 'True'){$('#IsBeforEmploymentContainer').show();}
+        else {$('#IsBeforEmploymentContainer').hide();}
+
+        //подкрашиваем переключатели
+        $("#IsFixedTermContractTrue").click(function(){
+            $("#lblFTCTrue").css("border-color", "red");
+            $("#lblFTCFalse").css("border-color", "silver");
+        });
+        $("#IsFixedTermContractFalse").click(function(){
+            $("#lblFTCTrue").css("border-color", "silver");
+            $("#lblFTCFalse").css("border-color", "red");
+        });
+
+
+        $("#IsTrainingNeededTrue").click(function(){
+            $("#lblTNTrue").css("border-color", "red");
+            $("#lblTNFalse").css("border-color", "silver");
+            $("#IsBeforEmploymentContainer").show();
+        });
+        $("#IsTrainingNeededFalse").click(function(){
+            $("#lblTNTrue").css("border-color", "silver");
+            $("#lblTNFalse").css("border-color", "red");
+            $("#IsBeforEmploymentContainer").hide();
+        });
+
+        $("#IsBeforEmploymentTrue").click(function(){
+            $("#lblBETrue").css("border-color", "red");
+            $("#lblBEFalse").css("border-color", "silver");
+        });
+        $("#IsBeforEmploymentFalse").click(function(){
+            $("#lblBETrue").css("border-color", "silver");
+            $("#lblBEFalse").css("border-color", "red");
+        });
     });
 
     function changeManager() {

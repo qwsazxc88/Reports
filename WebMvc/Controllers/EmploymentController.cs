@@ -18,6 +18,7 @@ using System.Text;
 using System.Web.Security;
 using System.Diagnostics;
 using System.Web.Script.Serialization;
+using Reports.Core.Enum;
 
 namespace WebMvc.Controllers
 {
@@ -570,7 +571,29 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult FamilyReadOnly(int? id)
         {
-            var model = EmploymentBl.GetFamilyModel(id);
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            FamilyModel model = null;
+
+            if (Session["FamilyM" + SPPath] != null)
+            {
+                model = (FamilyModel)Session["FamilyM" + SPPath];
+                Session.Remove("FamilyM" + SPPath);
+            }
+            else
+                model = EmploymentBl.GetFamilyModel(id);
+
+
+            if (Session["FamilyMS" + SPPath] != null)
+            {
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["FamilyMS" + SPPath]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["FamilyMS" + SPPath]).ElementAt(i));
+                }
+                Session.Remove("FamilyMS" + SPPath);
+            }
+
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return PartialView("Family", model);
             else
@@ -582,19 +605,40 @@ namespace WebMvc.Controllers
         public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+
             if (model.RowID == 0)
             {
                 if (ValidateModel(model))
                 {
                     EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
+                    ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                    model = EmploymentBl.GetFamilyModel(model.UserId);
                     ViewBag.Error = error;
+                }
+                else
+                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                    model = EmploymentBl.GetFamilyModel(model);
+                    if (Session["FamilyM" + SPPath] != null)
+                        Session.Remove("FamilyM" + SPPath);
+                    if (Session["FamilyM" + SPPath] == null)
+                        Session.Add("FamilyM" + SPPath, model);
+                }
+
+                if (Session["FamilyMS" + SPPath] != null)
+                    Session.Remove("FamilyMS" + SPPath);
+                if (Session["FamilyMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("FamilyMS" + SPPath, mst);
                 }
             }
             else
             {
                 EmploymentBl.DeleteFamilyMember(model);
+                model = EmploymentBl.GetFamilyModel(model.UserId);
             }
-            model = EmploymentBl.GetFamilyModel(model.UserId);
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=3");
             else
@@ -947,7 +991,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager | UserRole.Security)]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -984,8 +1028,8 @@ namespace WebMvc.Controllers
                 EmploymentBl.DeleteBackgroundRow(model);
                 model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
@@ -1025,6 +1069,39 @@ namespace WebMvc.Controllers
                 return PartialView("BackgroundCheckReadOnly", model);
                 //return RedirectToAction("Roster");
             }
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager | UserRole.Security)]
+        public ActionResult BackGroundCheckAddComments(BackgroundCheckModel model)
+        {
+            string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            if (!string.IsNullOrEmpty(model.Comment))
+            {
+                if (!EmploymentBl.SaveComments(model.UserId, (int)EmploymentCommentTypeEnum.BackgroundCheck, model.Comment, out error))
+                {
+                    model = EmploymentBl.GetBackgroundCheckModel(model);
+                    if (Session["BackgroundCheckM" + SPPath] != null)
+                        Session.Remove("BackgroundCheckM" + SPPath);
+                    if (Session["BackgroundCheckM" + SPPath] == null)
+                        Session.Add("BackgroundCheckM" + SPPath, model);
+
+                    ModelState.AddModelError("IsValidate", error);
+
+                    if (Session["BackgroundCheckMS" + SPPath] != null)
+                        Session.Remove("BackgroundCheckMS" + SPPath);
+                    if (Session["BackgroundCheckMS" + SPPath] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("BackgroundCheckMS" + SPPath, mst);
+                    }
+                }
+            }
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0)
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
+            else
+                return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
         #endregion
 
@@ -1215,6 +1292,35 @@ namespace WebMvc.Controllers
                 return RedirectToAction("Roster");
             }
         }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
+        public ActionResult ManagersAddComments(ManagersModel model)
+        {
+            string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            if (!string.IsNullOrEmpty(model.Comment))
+            {
+                if (!EmploymentBl.SaveComments(model.UserId, (int)EmploymentCommentTypeEnum.Managers, model.Comment, out error))
+                {
+                    model = EmploymentBl.GetManagersModel(model);
+                    if (Session["ManagersM" + SPPath] != null)
+                        Session.Remove("ManagersM" + SPPath);
+                    if (Session["ManagersM" + SPPath] == null)
+                        Session.Add("ManagersM" + SPPath, model);
+
+                    ModelState.AddModelError("IsValidate", error);
+
+                    if (Session["ManagersMS" + SPPath] != null)
+                        Session.Remove("ManagersMS" + SPPath);
+                    if (Session["ManagersMS" + SPPath] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("ManagersMS" + SPPath, mst);
+                    }
+                }
+            }
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+        }
 
         #endregion
 
@@ -1233,6 +1339,7 @@ namespace WebMvc.Controllers
         {
             PersonnelManagersModel model = null;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            
 
             if (Session["PersonnelManagersM" + SPPath] != null)
             {
@@ -1250,7 +1357,12 @@ namespace WebMvc.Controllers
                     ModelState.Add(((ModelStateDictionary)Session["PersonnelManagersMS" + SPPath]).ElementAt(i));
                 }
                 Session.Remove("PersonnelManagersMS" + SPPath);
+                //затираются значения, потому что в контроллер приходят пустые поля и присваиваются в коде
+                ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
+                ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
             }
+            
+            //model = EmploymentBl.GetPersonnelManagersModel(id);
 
             return PartialView(model);
             //return View(model);
@@ -1266,8 +1378,9 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
-                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
+                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -1302,6 +1415,36 @@ namespace WebMvc.Controllers
             {
                 return RedirectToAction("Roster");
             }
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult PersonnelManagersAddComments(PersonnelManagersModel model)
+        {
+            string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            if (!string.IsNullOrEmpty(model.Comment))
+            {
+                if (!EmploymentBl.SaveComments(model.UserId, (int)EmploymentCommentTypeEnum.PersonnelManagers, model.Comment, out error))
+                {
+                    model = EmploymentBl.GetPersonnelManagersModel(model);
+                    if (Session["PersonnelManagersM" + SPPath] != null)
+                        Session.Remove("PersonnelManagersM" + SPPath);
+                    if (Session["PersonnelManagersM" + SPPath] == null)
+                        Session.Add("PersonnelManagersM" + SPPath, model);
+
+                    ModelState.AddModelError("IsValidate", error);
+
+                    if (Session["PersonnelManagersMS" + SPPath] != null)
+                        Session.Remove("PersonnelManagersMS" + SPPath);
+                    if (Session["PersonnelManagersMS" + SPPath] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("PersonnelManagersMS" + SPPath, mst);
+                    }
+                }
+            }
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
         }
         #endregion
 
@@ -1562,9 +1705,9 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(EducationModel model)
         {
+            ModelState.Clear();
             if (!model.IsDraft)
             {
-                ModelState.Clear();
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1602,6 +1745,13 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ExperienceModel model)
         {
+            //чистим ошибки для полей из модальной формы
+            ModelState.Remove("BeginningDate");
+            ModelState.Remove("EndDate");
+            ModelState.Remove("Company");
+            ModelState.Remove("Position");
+            ModelState.Remove("CompanyContacts");
+            
             if (!model.IsDraft)
             {
                 ModelState.Clear();
