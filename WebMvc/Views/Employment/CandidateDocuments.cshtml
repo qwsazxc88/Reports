@@ -21,6 +21,7 @@
         <tr>
             <td>
                 <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
+                @*<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>*@
             </td>
             <td>
                 <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />

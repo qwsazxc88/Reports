@@ -378,8 +378,10 @@
 
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit" id="btnEducation">Сохранить</button>
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')">Отправить на согласование</button>
     </div>
 }
 
@@ -615,15 +617,21 @@
 
         //есди не прошли проверки открываем формы
         if ($("#IsHigherEducationNotValid").val() == 'True'){
-            $addHigherEducationDiplomaDialog.dialog("open");
+            $("#add-higher-education-diploma").click();
+            //$addHigherEducationDiplomaDialog.dialog("open");
+            //e.preventDefault();
         }
 
         if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
-            $addPostGraduateEducationDiplomaDialog.dialog("open");
+            $("#add-post-graduate-education-diploma").click();
+            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+            //e.preventDefault();
         }
 
         if ($("#IsEducationTrainingNotValid").val() == 'True'){
-            $addTrainingDialog.dialog("open");
+                $("#add-training").click();
+            //$addTrainingDialog.dialog("open");
+            //e.preventDefault();
         }
         
     });

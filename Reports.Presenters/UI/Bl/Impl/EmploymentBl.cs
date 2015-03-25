@@ -9,12 +9,14 @@ using Reports.Core.Dao;
 using Reports.Core.Dto;
 using Reports.Core.Dto.Employment2;
 using Reports.Core.Domain;
+//using Reports.Core.Domain.Employment2;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.IO;
+
 
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -209,6 +211,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(employmentHigherEducationDiplomaDao); }
             set { employmentHigherEducationDiplomaDao = value; }
+        }
+
+        protected IEmploymentCandidateCommentDao employmentCandidateCommentDao;
+        public IEmploymentCandidateCommentDao EmploymentCandidateCommentDao
+        {
+            get { return Validate.Dependency(employmentCandidateCommentDao); }
+            set { employmentCandidateCommentDao = value; }
         }
 
         #endregion
@@ -657,6 +666,54 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public FamilyModel GetFamilyModel(FamilyModel model)
+        {
+            //userId = userId ?? AuthenticationService.CurrentUser.Id;
+            Family entity = null;
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+
+            int? id = EmploymentCommonDao.GetDocumentId<Family>(model.UserId);
+            if (id.HasValue)
+            {
+                entity = EmploymentFamilyDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.FamillyStatuses = EmploymentFamilyDao.GetFamilyStatuses();
+                model.FamilyStatusId = entity.FamilyStatusId;
+                
+                model.Cohabitants = entity.Cohabitants;
+
+                if (model.Spouse == null)
+                {
+                    model.IsMarried = false;
+                }
+                else
+                {
+                    model.IsMarried = true;
+                }
+
+                //сканы
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MarriageCertificateScan);
+                model.MarriageCertificateScanAttachmentId = attachmentId;
+                model.MarriageCertificateScanAttachmentFilename = attachmentFilename;
+
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ChildBirthCertificateScan);
+                model.ChildBirthCertificateScanAttachmentId = attachmentId;
+                model.ChildBirthCertificateScanAttachmentFilename = attachmentFilename;
+
+                model.IsDraft = !entity.IsFinal;
+                model.IsFinal = entity.IsFinal;
+                model.IsValidate = entity.IsValidate;
+            }
+            LoadDictionaries(model);
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            return model;
+        }
+
         public MilitaryServiceModel GetMilitaryServiceModel(int? userId = null)
         {
             userId = userId ?? AuthenticationService.CurrentUser.Id;
@@ -979,6 +1036,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
+
+                model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.BackgroundCheck);
+                model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0 ||
+                    (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1154,6 +1215,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
+
+                model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
+                model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
+                    (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
             }
 
             EmploymentCandidate candidate = GetCandidate(userId.Value);
@@ -1297,6 +1362,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractPoint_3_Id = entity.ContractPoint_3_Id;
                 model.ContractPointsFio = entity.ContractPointsFio;
                 model.ContractPointsAddress = entity.ContractPointsAddress;
+
+                model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.PersonnelManagers);
+                model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
             }
 
             
@@ -1520,18 +1588,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
-                model.WorkCity = candidate.Managers.WorkCity;
+                //model.WorkCity = candidate.Managers.WorkCity;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
-                model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
+                //model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
                 model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
             if (candidate.PersonnelManagers != null)
             {
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
-                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
-                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
-                model.Number = candidate.PersonnelManagers.ContractNumber;
+                //model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
+                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
+                //model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                //model.Number = candidate.PersonnelManagers.ContractNumber;
+                model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
                 model.ContractPoint_1_Id = candidate.PersonnelManagers.ContractPoint_1_Id;
                 model.ContractPoint_2_Id = candidate.PersonnelManagers.ContractPoint_2_Id;
                 model.ContractPoint_3_Id = candidate.PersonnelManagers.ContractPoint_3_Id;
@@ -1539,6 +1609,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractPointsAddress = candidate.PersonnelManagers.ContractPointsAddress;
                 if (candidate.PersonnelManagers.Signer != null)
                 {
+                    model.EmployerRepresentativeName = candidate.PersonnelManagers.Signer.Name;
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
                     if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
                     {
                         string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
@@ -1552,11 +1624,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
-                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                    //model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
                 }                
             }
 
-            model.IsFixedTermContract = candidate.User.IsFixedTermContract;
+            //model.IsFixedTermContract = candidate.User.IsFixedTermContract;
             
             return model;
         }
@@ -2337,7 +2409,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 User = newUser,
                 AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : currentUser,
                 QuestionnaireDate = DateTime.Now,
-                Personnels = PersonnelUser
+                Personnels = PersonnelUser,
+                IsTrainingNeeded = model.IsTrainingNeeded,
+                IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
@@ -3522,6 +3596,37 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
+        /// <summary>
+        /// Добавляем комментарий
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата</param>
+        /// <param name="CommentTypeId">Вид журнала, к которому относится комментаий</param>
+        /// <param name="Comment">Текст комментария</param>
+        /// <param name="error">сообщение об ошибке</param>
+        /// <returns></returns>
+        public bool SaveComments(int CandidateId, int CommentTypeId, string Comment, out string error)
+        {
+            EmploymentCandidateComment entity = new EmploymentCandidateComment { 
+                UserId = AuthenticationService.CurrentUser.Id,
+                CandidateId = CandidateId,
+                CommentTypeId = CommentTypeId,
+                Comment = Comment,
+                CreatedDate = DateTime.Now
+            };
+            try
+            {
+                EmploymentCandidateCommentDao.SaveAndFlush(entity);
+                //EmploymentCandidateCommentDao.CommitTran();
+                error = "Комментарий добавлен!";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                EmploymentCandidateCommentDao.RollbackTran();
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+        }
 
         #endregion
 
@@ -3886,6 +3991,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
+                    string NewEmploymentContractNumber = null;
+                    if (viewModel.ContractDate.HasValue)
+                        NewEmploymentContractNumber = string.IsNullOrEmpty(viewModel.ContractNumber) ? EmploymentPersonnelManagersDao.GetNewEmploymentContractNumber(viewModel.ContractDate.Value) : viewModel.ContractNumber;
+
                     entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
                     //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
                     entity.AreaAddition = viewModel.AreaAddition;
@@ -3897,10 +4006,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
                     entity.ContractDate = viewModel.ContractDate;
                     entity.ContractEndDate = viewModel.ContractEndDate;
-                    entity.ContractNumber = viewModel.ContractNumber;
+                    entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
                     entity.EmploymentDate = viewModel.EmploymentDate;
                     entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-                    entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+                    entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
                     entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
@@ -3936,6 +4045,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         error = "Ошибка сохранения.";
                         return false;
+                    }
+                    else
+                    {
+                        //SendEmailToUser();
                     }
                     return true;
                 }
@@ -4098,6 +4211,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Get(userId);
             return user != null && user.IsFixedTermContract.HasValue && user.IsFixedTermContract.Value;
+        }
+
+        protected void SendEmailToUser(/*DeductionEditModel model, Deduction deduction*/)
+        {
+            //User user = UserDao.Load((model != null) ? model.UserId : deduction.User.Id);
+            User user = UserDao.Load(18458);
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                Log.ErrorFormat("E-mail is empty for user {0}", user.Id);
+                return;
+            }
+            string defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
+            string to = string.IsNullOrEmpty(defaultEmail) ? user.Email : defaultEmail;
+            string body = @"Привет Жень! Опыты с рассылкой начинаются!";
+
+            System.DateTime sendDate;
+            EmailDto dto = SendEmail(to, "Тест", body);
+            if (string.IsNullOrEmpty(dto.Error))
+                sendDate = DateTime.Now;
+                //deduction.EmailSendToUserDate = DateTime.Now;
+            else
+                Log.ErrorFormat("Cannot send email to user {0}(email {1}) about deduction {2} : {3}",
+                    user.Id, to, 18458, dto.Error);
         }
     }
 }

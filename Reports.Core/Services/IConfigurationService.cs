@@ -13,6 +13,8 @@ namespace Reports.Core.Services
 
         string AppointmentPersonnelManagerEmail { get; }
         string AppointmentStaffManagerEmail { get; }
+
+        string EmploymentCandidateToBackgroundCheckEmail { get; }
 		//string ImageStorageDir { get; }
 		//string MailNotificationSubject { get; }
 		//string MailNoticeSubject { get; }
