@@ -106,17 +106,19 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult DeductionImport(DeductionImportModel model)
         {
-            foreach (string file in Request.Files)
+
+            if (model.File != null && model.File.ContentLength > 0)
             {
-                var upload = Request.Files[file];
-                if (upload != null)
-                {
-                    // получаем имя файла
-                    string fileName = System.IO.Path.GetFileName(upload.FileName);
-                    // сохраняем файл в папку Files в проекте
-                    upload.SaveAs(Server.MapPath("~/Files/" + fileName));
-                }
+                // extract only the fielname
+                var fileName = Path.GetFileName(model.File.FileName);
+                // store the file inside ~/App_Data/uploads folder
+                var path = Path.Combine(Server.MapPath("~/Files"), fileName);
+                model.File.SaveAs(path);
+                FileInfo file = new FileInfo(path);
+                RequestBl.ImportDeductionFromFile(path);
+                file.Delete();
             }
+            model = RequestBl.GetDeductionImportModel();
             return View(model);
         }
         /// <summary>
