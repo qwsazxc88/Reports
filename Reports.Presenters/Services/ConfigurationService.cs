@@ -190,6 +190,9 @@ namespace Reports.Presenters.Services
         public const string keyAppointmentPersonnelManagerEmail = "AppointmentPersonnelManagerEmail";
         public const string keyAppointmentStaffManagerEmail = "AppointmentStaffManagerEmail";
         public const string keyEmploymentCandidateToBackgroundCheckEmail = "EmploymentCandidateToBackgroundCheckEmail";
+        public const string keyEmploymentCandidateToManagerEmail = "EmploymentCandidateToManagerEmail";
+        public const string keyEmploymentBackgroundCheckToManagerEmail = "EmploymentBackgroundCheckToManagerEmail";
+        public const string keyEmploymentManagerToTrainingEmail = "EmploymentManagerToTrainingEmail";
 
         #region IConfigurationService Members
 
@@ -260,6 +263,21 @@ namespace Reports.Presenters.Services
         public string EmploymentCandidateToBackgroundCheckEmail
         {
             get { return ConfigurationManager.AppSettings[keyEmploymentCandidateToBackgroundCheckEmail]; }
+        }
+
+        public string EmploymentCandidateToManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentCandidateToManagerEmail]; }
+        }
+
+        public string EmploymentBackgroundCheckToManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentBackgroundCheckToManagerEmail]; }
+        }
+
+        public string EmploymentManagerToTrainingEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentManagerToTrainingEmail]; }
         }
 
         public int UsersDocumentsDelayInDays
