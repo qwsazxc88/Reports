@@ -343,10 +343,10 @@
     </table>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
-//            $("#PaymentBeginDate").datepicker();
-//            $("#PaymentDecreaseDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+//            $("#PaymentBeginDate").datepicker({changeMonth: true, changeYear: true});
+//            $("#PaymentDecreaseDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#Salary").width("100px");
             $("#RegionFactor").width("100px");

@@ -335,10 +335,10 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
-            $("#PaidToDate1").datepicker();
-            $("#PaidToDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+            $("#PaidToDate1").datepicker({changeMonth: true, changeYear: true});
+            $("#PaidToDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#ChildrenCount").width("75px");
             setActiveMenuItem("userChildVacation");
