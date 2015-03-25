@@ -1274,8 +1274,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Manager | UserRole.Employee)]
         public ActionResult MissionUserCredsList()
         {
+            var userid = Request.QueryString["UserId"];
+
             var model = RequestBl.GetMissionUserDeptsListModel();
-             MissionUserDeptsListModelFromSession(model,true);
+            if (userid != null)
+            {
+                var user = Ioc.Resolve<IUserDao>().Load(userid);
+                if (user != null)
+                {
+                    model.UserName = user.Name;
+                    model.BeginDate = null;
+                    return MissionUserCredsList(model);
+                }
+            } 
+            MissionUserDeptsListModelFromSession(model, true);
             return View(model);
         }
         [HttpPost]
