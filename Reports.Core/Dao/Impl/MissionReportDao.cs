@@ -77,7 +77,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Users currentUser
                                     on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                left join Dismissal dis ON dis.UserId=v.UserId
+                                left join Dismissal dis ON dis.UserId=v.UserId AND dis.SendTo1C is not null
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email

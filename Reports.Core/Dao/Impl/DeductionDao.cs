@@ -143,16 +143,16 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Записана"
-                        statusWhere = @"SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     case 2://2, "Выгружена в 1С"
-                        statusWhere = @"SendTo1C is not null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is not null and v.DeleteDate is null";
                         break;
                     case 3://3, "Отклонена"
-                        statusWhere = @"[DeleteDate] is not null";
+                        statusWhere = @"v.[DeleteDate] is not null";
                         break;
                     case 4: //4, "Автовыгрузка"
-                        statusWhere = @"UploadingDocType is not null and SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
@@ -193,16 +193,16 @@ namespace Reports.Core.Dao.Impl
                     orderBy = " ORDER BY UserName,EditDate DESC";
                     return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    orderBy = @" order by Number";
+                    orderBy = @" order by v.Number";
                     break;
                 //case 2:
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    orderBy = @" order by EditDate";
+                    orderBy = @" order by v.EditDate";
                     break;
                 case 4:
-                    orderBy = @" order by Dep3Name";
+                    orderBy = @" order by v.Dep3Name";
                     break;
                 case 5:
                     orderBy = @" order by Sum";
