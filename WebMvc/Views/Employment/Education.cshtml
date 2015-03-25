@@ -409,7 +409,7 @@
         <label for="GraduationYear" style="display:block;">Год окончания</label>@Html.TextBoxFor(m => m.GraduationYear)@Html.ValidationMessageFor(m => m.GraduationYear)
         <label for="Qualification" style="display:block;">Квалификация по диплому</label>@Html.TextBoxFor(m => m.Qualification)@Html.ValidationMessageFor(m => m.Qualification)
         <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
-        <label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)
+        @*<label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)*@
         <label for="Department" style="display:block;">Факультет/отделение</label>@Html.TextBoxFor(m => m.Department)@Html.ValidationMessageFor(m => m.Department)
         
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />

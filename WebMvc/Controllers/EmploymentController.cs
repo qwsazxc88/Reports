@@ -479,7 +479,7 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
 
-            if (Convert.ToInt32(itemToAdd.GraduationYear) <= Convert.ToInt32(itemToAdd.AdmissionYear))
+            if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
             {
                 ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
                 model.IsPostGraduateEducationNotValid = true;

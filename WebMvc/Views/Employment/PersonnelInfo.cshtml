@@ -270,7 +270,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -444,7 +444,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -453,7 +454,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -467,16 +467,16 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
                                 "OK": function () {
                                     $('#add-post-graduate-education-diploma-dialog form').submit();
-                                    //$(this).dialog("close");
+                                    $(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -490,7 +490,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -499,7 +500,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -513,7 +513,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -522,13 +523,15 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
                         });
 
                         $("#add-higher-education-diploma").click(function (e) {
+                            if ($addHigherEducationDiplomaDialog.dialog("isOpen") == false){
+                            
+                            }
                             $addHigherEducationDiplomaDialog.dialog("open");
                             e.preventDefault();
                         });
@@ -747,6 +750,8 @@
                     $("#tabs8").ajaxStop(function () {
                         $('#DLContainer').buttonset();        
                         $('#HasAuto').buttonset();        
+                        $('#ReadyForBusinessTrips').buttonset();
+        
                         //подкрашиваем наличие прав
                         $("#IsDLTrue").click(function(){
                             $("#lblDTrue").css("border-color", "red");
@@ -765,6 +770,16 @@
                         $("#IsAFalse").click(function(){
                             $("#lblATrue").css("border-color", "silver");
                             $("#lblAFalse").css("border-color", "red");
+                        });
+
+                        //подкрашиваем возможность выезжать за границу
+                        $("#IsRTrue").click(function(){
+                            $("#lblRTrue").css("border-color", "red");
+                            $("#lblRFalse").css("border-color", "silver");
+                        });
+                        $("#IsRFalse").click(function(){
+                            $("#lblRTrue").css("border-color", "silver");
+                            $("#lblRFalse").css("border-color", "red");
                         });
 
 
