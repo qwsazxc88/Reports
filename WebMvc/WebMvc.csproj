@@ -109,7 +109,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
-    <Compile Include="Controllers\SurchargeController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="CustomModelMetadataProvider.cs" />
     <Compile Include="Global.asax.cs">
@@ -233,7 +232,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Files\" />
     <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>

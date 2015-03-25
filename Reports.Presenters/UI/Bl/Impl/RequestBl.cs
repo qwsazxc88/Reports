@@ -7423,19 +7423,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             return model;
         }
-        public void ImportDeductionFromFile(string path)
-        {
-            var result=ExcelHelper.DeductionConverter.ConvertFromFile(path);
-            foreach (var el in result)
-            {
-                el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
-                el.Editor = UserDao.Load(CurrentUser.Id);
-                el.IsFastDismissal = false;
-                el.UploadingDocType = 4;
-                DeductionDao.SaveAndFlush(el);
-            }
-            
-        }
         public DeductionListModel GetDeductionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);

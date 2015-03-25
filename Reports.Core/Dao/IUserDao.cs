@@ -9,7 +9,6 @@ namespace Reports.Core.Dao
     public interface IUserDao : IDao<User>
     {
         User FindByLogin(string login);
-        User FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);
         bool IsLoginWithOtherIdExists(string login, int id);
         IList<User> GetUsersWithRole(UserRole role);

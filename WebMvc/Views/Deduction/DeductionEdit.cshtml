@@ -1,6 +1,4 @@
-﻿@using Reports.Presenters.Services.Impl
-@using Reports.Core
-@model Reports.Presenters.UI.ViewModel.DeductionEditModel
+﻿@model Reports.Presenters.UI.ViewModel.DeductionEditModel
 @{
     Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
     ViewBag.Title = "Редактирование удержания";
@@ -20,11 +18,8 @@
                     </tr>
             </table>  
         </div>  
-      }    
-     if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
-     {   
-    <input type="button" value="Загрузить заявки автоматически из внешнего файла" onclick="@("window.location.href='" + @Url.Action("DeductionImport", "Deduction") + "'");" />                        
-     }
+      }       
+    <input type="button" value="Импорт заявок из файла" onclick="@("window.location.href='" + @Url.Action("DeductionImport", "Deduction") + "'");" />                        
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
