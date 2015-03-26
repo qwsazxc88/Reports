@@ -14,6 +14,8 @@
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)    
+    @Html.HiddenFor(m => m.IsDraft)
+    @Html.HiddenFor(m => m.IsDraftPM)
     
     
     <fieldset class="bordered doc-wrap panel">
@@ -24,7 +26,7 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.EmploymentOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderNumber)<br />
-            @Html.TextBoxFor(m => m.EmploymentOrderNumber, new { @class = "halfwidth", readOnly = "true"})
+            @Html.TextBoxFor(m => m.EmploymentOrderNumber, new { @class = "halfwidth", readOnly = "true" })
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.EmploymentDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentDate)<br />
@@ -68,9 +70,13 @@
 
         <div class="formfield clear" id="isHourlySalaryBasisContainer">            
             @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, false, new { @id = "IsHourlySalaryBasisFalse" })<label id="lblHSBFalse" for="IsHourlySalaryBasisFalse" @if (!Model.IsHourlySalaryBasis)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по дням</label>
+                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                    else
+                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Оклад по дням</label>
             @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label id="lblHSBTrue" for="IsHourlySalaryBasisTrue" @if (Model.IsHourlySalaryBasis)
-                                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по часам</label>
+                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                else
+                                                                                                                                                                {<text> style="border-color:none;"</text>}>Оклад по часам</label>
         </div>
         @*
         <div class="formfield clear">
@@ -106,6 +112,10 @@
         <div class="formfield clear">
             @Html.LabelFor(m => m.Grade)&nbsp;@Html.ValidationMessageFor(m => m.Grade)<br />
             @Html.TextBoxFor(m => m.Grade, new { @class = "halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
+            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
         </div>
         <br />
         <fieldset class="bordered nomargin clear">
@@ -212,7 +222,8 @@
         </div>        
         
         <div class="formfield clearleft">
-            <button type="submit">Сохранить</button>                
+            <button id="btnPMDraft" >Сохранить</button>         
+            <button >Утвердить</button>         
         </div>            
 
     </fieldset>
@@ -248,7 +259,8 @@
         <tr>
             <td>
                 <input type="button" id="add-personnel-managers-comment" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
-                                                                  { <text>style = "display:none"</text>; } />
+                                                                                                      { <text>style = "display:none"</text>;
+                                                                                                      } />
             </td>
         </tr>
         <tr>
@@ -297,6 +309,10 @@
             if ($("#ContractDate").val() != "") {
                 $("#EmploymentOrderDate").val($("#ContractDate").val());
             }
+        });
+
+        $("#btnPMDraft").click(function () {
+            $("#IsDraftPM").val(true);
         });
 
         var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(

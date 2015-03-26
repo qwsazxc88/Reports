@@ -10,7 +10,7 @@
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
-    
+    @Html.HiddenFor(m => m.IsDraft)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
@@ -42,7 +42,10 @@
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
             @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
         </div>
-
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.RegistrationDate)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationDate)<br />
+            @Html.EditorFor(m => m.RegistrationDate)
+        </div>
         <div class="formfield clear" id="isSecondaryJobContainer">
             @Html.LabelFor(m => m.IsSecondaryJob)
             @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label id="lblSJFalse" for="IsSecondaryJobFalse" @if (!Model.IsSecondaryJob)
@@ -63,10 +66,7 @@
                                                                                                                                                        {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
         </div>
 
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
-            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
-        </div>
+        
         <div class="formfield">
             @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
             @Html.EditorFor(m => m.ProbationaryPeriod)
@@ -130,7 +130,16 @@
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
+
+        @if (!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue)
+        {
+            <div class="formfield clear">
+                <button id="btnManagerDraft">Черновик</button>
+            </div>
+        }
     </fieldset>
+    
+    
     
     <div class="clear">
         @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
@@ -203,12 +212,14 @@
         }
 </table>
 
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 <script>
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
 
     $(document).ready(function () {
         setActiveMenuItem("empManagers");
+        UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
         $('#isSecondaryJobContainer').buttonset();
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();

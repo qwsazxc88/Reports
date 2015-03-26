@@ -32,13 +32,14 @@
 	--OnsiteTraining
 		--
 	--Managers
-		--ScheduleId
+		--
 	--PersonnelManagers
 		--AccessGroup
 		--InsuredPersonType
 		--PersonalAccountContractor
 		--Signer
-		--?--SupplementaryAgreement
+		--ScheduleId
+		--SupplementaryAgreement
 
 	
 	

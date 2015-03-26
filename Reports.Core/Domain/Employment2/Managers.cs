@@ -17,7 +17,6 @@ namespace Reports.Core.Domain
         public virtual string EmploymentConditions { get; set; } //ok
         public virtual bool IsSecondaryJob { get; set; }
         public virtual bool IsExternalPTWorker { get; set; }
-        public virtual Schedule Schedule { get; set; } // OK?
         public virtual string ProbationaryPeriod { get; set; } //ok
         public virtual decimal? SalaryBasis { get; set; } // базовый должностной оклад
         public virtual decimal? SalaryMultiplier { get; set; } // ставка        
@@ -28,6 +27,7 @@ namespace Reports.Core.Domain
         public virtual decimal? Bonus { get; set; } //ok
         public virtual bool IsLiable { get; set; } //ok
         public virtual string RequestNumber { get; set; } //ok
+        public virtual DateTime? RegistrationDate { get; set; }
 
         public virtual bool? ManagerApprovalStatus { get; set; }
         public virtual User ApprovingManager { get; set; }

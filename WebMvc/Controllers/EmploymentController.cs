@@ -411,12 +411,37 @@ namespace WebMvc.Controllers
         public ActionResult EducationAddCertification(CertificationDto itemToAdd)
         {
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
-            model.Certifications.Add(itemToAdd);
-            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
-            model = EmploymentBl.GetEducationModel(model.UserId);
+            if (!itemToAdd.CertificateDateOfIssue.HasValue || string.IsNullOrEmpty(itemToAdd.CertificateNumber) || !itemToAdd.CertificationDate.HasValue || string.IsNullOrEmpty(itemToAdd.InitiatingOrder) || string.IsNullOrEmpty(itemToAdd.LocationEI))
+            {
+                model.IsEducationCertificationsNotValid = true;
+                //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                //model = EmploymentBl.GetPassportModel(model);
+                if (Session["EducationM" + SPPath] != null)
+                    Session.Remove("EducationM" + SPPath);
+                if (Session["EducationM" + SPPath] == null)
+                    Session.Add("EducationM" + SPPath, model);
+
+                if (Session["EducationMS" + SPPath] != null)
+                    Session.Remove("EducationMS" + SPPath);
+                if (Session["EducationMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("EducationMS" + SPPath, mst);
+                }
+            }
+            else
+            {
+                model.Certifications.Add(itemToAdd);
+                EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
+                model = EmploymentBl.GetEducationModel(model.UserId);
+                if (!string.IsNullOrEmpty(error))
+                    model.IsEducationCertificationsNotValid = true;
+            }
+            
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
@@ -431,11 +456,14 @@ namespace WebMvc.Controllers
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
-            
 
-            if (Convert.ToInt32(itemToAdd.GraduationYear) <= Convert.ToInt32(itemToAdd.AdmissionYear))
+            if (string.IsNullOrEmpty(itemToAdd.AdmissionYear) || string.IsNullOrEmpty(itemToAdd.Department) || itemToAdd.EducationTypeId == 0 || string.IsNullOrEmpty(itemToAdd.GraduationYear) ||
+                string.IsNullOrEmpty(itemToAdd.IssuedBy) || string.IsNullOrEmpty(itemToAdd.LocationEI) || string.IsNullOrEmpty(itemToAdd.Number) || string.IsNullOrEmpty(itemToAdd.Profession) ||
+                string.IsNullOrEmpty(itemToAdd.Qualification) || string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality))
             {
-                ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                if (Convert.ToInt32(itemToAdd.GraduationYear) <= Convert.ToInt32(itemToAdd.AdmissionYear))
+                    ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+
                 model.IsHigherEducationNotValid = true;
                 //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
                 //model = EmploymentBl.GetPassportModel(model);
@@ -443,6 +471,14 @@ namespace WebMvc.Controllers
                     Session.Remove("EducationM" + SPPath);
                 if (Session["EducationM" + SPPath] == null)
                     Session.Add("EducationM" + SPPath, model);
+
+                if (Session["EducationMS" + SPPath] != null)
+                    Session.Remove("EducationMS" + SPPath);
+                if (Session["EducationMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("EducationMS" + SPPath, mst);
+                }
             }
             else
             {
@@ -453,16 +489,7 @@ namespace WebMvc.Controllers
                     model.IsHigherEducationNotValid = true;
             }
 
-
-            if (Session["EducationMS" + SPPath] != null)
-                Session.Remove("EducationMS" + SPPath);
-            if (Session["EducationMS" + SPPath] == null)
-            {
-                ModelStateDictionary mst = ModelState;
-                Session.Add("EducationMS" + SPPath, mst);
-            }
-
-            
+           
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
@@ -478,18 +505,28 @@ namespace WebMvc.Controllers
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
-
-            if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
+            if (string.IsNullOrEmpty(itemToAdd.GraduationYear) || string.IsNullOrEmpty(itemToAdd.AdmissionYear) || string.IsNullOrEmpty(itemToAdd.IssuedBy) || string.IsNullOrEmpty(itemToAdd.LocationEI) ||
+                string.IsNullOrEmpty(itemToAdd.Number) || string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality) ||
+                itemToAdd.AdmissionYear.Length < 4 || itemToAdd.GraduationYear.Length < 4)
             {
-                ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
+                    ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+
                 model.IsPostGraduateEducationNotValid = true;
 
                 //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-                //model = EmploymentBl.GetPassportModel(model);
                 if (Session["EducationM" + SPPath] != null)
                     Session.Remove("EducationM" + SPPath);
                 if (Session["EducationM" + SPPath] == null)
                     Session.Add("EducationM" + SPPath, model);
+
+                if (Session["EducationMS" + SPPath] != null)
+                    Session.Remove("EducationMS" + SPPath);
+                if (Session["EducationMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("EducationMS" + SPPath, mst);
+                }
             }
             else
             {
@@ -500,13 +537,7 @@ namespace WebMvc.Controllers
                     model.IsPostGraduateEducationNotValid = true;
             }
 
-            if (Session["EducationMS" + SPPath] != null)
-                Session.Remove("EducationMS" + SPPath);
-            if (Session["EducationMS" + SPPath] == null)
-            {
-                ModelStateDictionary mst = ModelState;
-                Session.Add("EducationMS" + SPPath, mst);
-            }
+            
             
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
@@ -522,9 +553,12 @@ namespace WebMvc.Controllers
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
-            if ((!itemToAdd.BeginningDate.HasValue || !itemToAdd.EndDate.HasValue) || (itemToAdd.BeginningDate.Value > itemToAdd.EndDate.Value))
+            if (!itemToAdd.BeginningDate.HasValue || string.IsNullOrEmpty(itemToAdd.CertificateIssuedBy) || !itemToAdd.EndDate.HasValue || string.IsNullOrEmpty(itemToAdd.LocationEI) || string.IsNullOrEmpty(itemToAdd.Number) || 
+                string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality))
             {
-                ModelState.AddModelError("EndDate", "Дата окончания обучения не может быть меньше даты его начала!");
+                if ((!itemToAdd.BeginningDate.HasValue || !itemToAdd.EndDate.HasValue) || (itemToAdd.BeginningDate.Value > itemToAdd.EndDate.Value))
+                    ModelState.AddModelError("EndDate", "Дата окончания обучения не может быть меньше даты его начала!");
+
                 model.IsEducationTrainingNotValid = true;
 
                 //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -533,6 +567,14 @@ namespace WebMvc.Controllers
                     Session.Remove("EducationM" + SPPath);
                 if (Session["EducationM" + SPPath] == null)
                     Session.Add("EducationM" + SPPath, model);
+
+                if (Session["EducationMS" + SPPath] != null)
+                    Session.Remove("EducationMS" + SPPath);
+                if (Session["EducationMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("EducationMS" + SPPath, mst);
+                }
             }
             else
             {
@@ -543,13 +585,6 @@ namespace WebMvc.Controllers
                     model.IsEducationTrainingNotValid = true;
             }
 
-            if (Session["EducationMS" + SPPath] != null)
-                Session.Remove("EducationMS" + SPPath);
-            if (Session["EducationMS" + SPPath] == null)
-            {
-                ModelStateDictionary mst = ModelState;
-                Session.Add("EducationMS" + SPPath, mst);
-            }
             
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
@@ -1237,9 +1272,16 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
-                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                EmploymentBl.ApproveCandidateByManager(model, out error);
+                if (model.IsDraftM)
+                {
+                    EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
+                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                }
+                else
+                {
+                    EmploymentBl.ApproveCandidateByManager(model, out error);
+                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат утвержден!" : error);
+                }
                 model = EmploymentBl.GetManagersModel(model.UserId);
             }
             else
@@ -1289,7 +1331,8 @@ namespace WebMvc.Controllers
             {
                 //return View("ManagersReadOnly", EmploymentBl.GetManagersModel(userId));
                 //return View("Managers", EmploymentBl.GetManagersModel(userId));
-                return RedirectToAction("Roster");
+                //return RedirectToAction("Roster");
+                return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
             }
         }
         [HttpPost]
@@ -1377,9 +1420,17 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SavePersonnelManagersReport(model, out error);
+                if (model.IsDraftPM)
+                {
+                    EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
+                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                }
+                else
+                {
+                    EmploymentBl.SavePersonnelManagersReport(model, out error);
+                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                }
                 model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
-                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 
             }
             else
@@ -1816,13 +1867,19 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(PersonnelManagersModel model)
         {
             bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            bool flgError = false;
+
             if (model.ContractEndDate == null && isFixedTermContract)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
+                ModelState.AddModelError("MessageStr", "*");
+                flgError = true;
             }
             if (model.ContractEndDate != null && !isFixedTermContract)
             {
                 ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
+                ModelState.AddModelError("MessageStr", "Не заполняется при бессрочном ТД");
+                flgError = true;
             }
 
             if (model.ContractPoint_1_Id == 2)
@@ -1831,6 +1888,7 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("ContractPointsFio", "Заполните поле!");
                     ModelState.AddModelError("MessageStr", "Заполните поле!");
+                    flgError = true;
                 }
             }
 
@@ -1840,10 +1898,13 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("ContractPointsAddress", "Заполните поле!");
                     ModelState.AddModelError("MessageStr", "Заполните поле!");
+                    flgError = true;
                 }
             }
 
             
+            if (!ModelState.IsValid && !flgError)
+                ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
             //    ModelState.AddModelError("Level", "Требуется число от 2 до 7");
