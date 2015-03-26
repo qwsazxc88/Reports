@@ -287,10 +287,6 @@
       <Project>{918064DA-FDBE-4DF2-8BA2-73F1C72F4DE5}</Project>
       <Name>Reports.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Reports.ExcelHelper\Reports.ExcelHelper.csproj">
-      <Project>{A001D5A3-886A-47F4-AC43-EAC96C5C6B11}</Project>
-      <Name>Reports.ExcelHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
