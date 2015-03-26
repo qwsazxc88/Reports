@@ -5699,7 +5699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Руководители до 4 уровня по ветке
             IList<User> managers = null;
             //для ветки руководства скб
-            if (user.Department.Path.StartsWith("9900424.9900426.9900427."))
+            if (user.Department!=null && user.Department.Path.StartsWith("9900424.9900426.9900427."))
             {
                 //для приказов на командировки, авансовых отчетов убираем руководителей 4 уровня
                 if (model.GetType().Name == "MissionOrderEditModel" || model.GetType().Name == "MissionReportEditModel" || model.GetType().Name == "SicklistEditModel" ||
@@ -7415,26 +7415,61 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Deduction
-        public DeductionImportModel GetDeductionImportModel()
+        public DeductionImportModel GetDeductionImportModel(DeductionImportModel model=null)
         {
-            var model = new DeductionImportModel();
+            if(model==null) model = new DeductionImportModel();
             model.DateEdited = DateTime.Now.ToShortDateString();
             model.Editor = CurrentUser.Name;
             LoadDictionaries(model);
             return model;
         }
-        public void ImportDeductionFromFile(string path)
+        public IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors)
         {
-            var result=ExcelHelper.DeductionConverter.ConvertFromFile(path);
-            foreach (var el in result)
+            List<Deduction> Deductions = new List<Deduction>();
+            StreamReader reader = new StreamReader(path);
+            var type=DeductionTypeDao.Load(1);
+            var kinds=DeductionKindDao.LoadAll();
+            while (!reader.EndOfStream)
             {
-                el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
-                el.Editor = UserDao.Load(CurrentUser.Id);
-                el.IsFastDismissal = false;
-                el.UploadingDocType = 4;
-                DeductionDao.SaveAndFlush(el);
+                string data = reader.ReadLine();
+                Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
+                if (!m.Success) { Errors.Add("Неправильный формат данных.>"+data); continue; }
+                var el = new Deduction();
+                try
+                { 
+                    el.Sum = decimal.Parse(m.Groups["Sum"].Value,System.Globalization.CultureInfo.InvariantCulture );
+                    el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
+                    el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
+                    el.EditDate = DateTime.Now;
+                    el.PhoneNumber = m.Groups["Phone"].Value.Trim();
+                    if (el.Kind == null) { Errors.Add("Не найден вид удержания.>"+data); continue; }
+                    el.Type = type;
+                    el.User = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim(),m.Groups["Surname"].Value.Trim());
+                    if (el.User == null) { Errors.Add("Пользователь не найден.>"+data); continue; };
+                    el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
+                    el.Editor = UserDao.Load(CurrentUser.Id);
+                    el.IsFastDismissal = false;
+                    el.UploadingDocType = 4;
+                    if (Deductions.Any(x => x.User == el.User && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
+                    DeductionDao.SaveAndFlush(el);
+                    Deductions.Add(el);
+                }
+                catch (Exception ex) { Errors.Add("Ошибка при обработке данных. Не корректные данные.>"+data); continue; }
             }
-            
+            reader.Close();
+            Deductions = Deductions.Distinct().ToList();
+           return Deductions.ConvertAll<DeductionDto>(new Converter<Deduction, DeductionDto>(x => new DeductionDto() 
+                { 
+                    UserId=x.User.Id,
+                    UserName=x.User.Name,
+                    Sum=x.Sum,
+                    Position=x.User.Position.Name,
+                    DeductionDate=x.DeductionDate,
+                    Kind=x.Kind.Name,
+                    Id=x.Id,
+                    Number=x.Number.ToString()
+                }
+                ));
         }
         public DeductionListModel GetDeductionListModel()
         {
@@ -7571,7 +7606,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Status = deduction.DeleteDate.HasValue
                                    ? "Отклонена"
-                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : deduction.UploadingDocType.HasValue? "Автовыгрузка" :"Записана";
+                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : !deduction.UploadingDocType.HasValue? "Записана": deduction.UploadingDocType==4? "Загруженно из файла":"Автовыгрузка";
             }
         }
         protected void SetEditor(DeductionEditModel model, Deduction deduction, IUser current)
@@ -8813,7 +8848,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-
+                var analytical=MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
+                model.UserDept =analytical!=null?analytical.Last().SaldoEnd:0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
                 model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;

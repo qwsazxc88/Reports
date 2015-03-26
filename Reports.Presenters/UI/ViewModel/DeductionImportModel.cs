@@ -29,5 +29,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Editor { get; set; }
 
         public HttpPostedFileBase File { get; set; }
+        public IList<string> Errors { get; set; }
+        public IList<DeductionDto> Imported { get; set; }
     }
 }
