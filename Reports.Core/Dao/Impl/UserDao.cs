@@ -41,6 +41,13 @@ namespace Reports.Core.Dao.Impl
             return (User) Session.CreateCriteria(typeof(User))
                               .Add(Restrictions.Eq("Login", login)).UniqueResult();
         }
+        public virtual User FindByCnilc(string cnilc,string FIO)
+        {
+            return (User)Session.CreateCriteria(typeof(User))
+                              .Add(Restrictions.Eq("Cnilc", cnilc))
+                              .Add(Restrictions.Like("Name",FIO+"%"))
+                              .Add(Restrictions.Eq("RoleId", 2)).UniqueResult();
+        }
         public virtual bool IsLoginWithOtherIdExists(string login,int id)
         {
             return (int)Session.CreateCriteria(typeof(User))
@@ -52,7 +59,7 @@ namespace Reports.Core.Dao.Impl
         public virtual IList<User> FindByEmail(string email)
         {
             var sessionCriteria = Session.CreateCriteria(typeof(User));
-            var queryResult = sessionCriteria.Add(Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String));
+            var queryResult = sessionCriteria.Add(Restrictions.Eq("Email",email)/*Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String)*/);
             var lst = queryResult.List<User>();
             return lst;
             //return Session.CreateCriteria(typeof(User))

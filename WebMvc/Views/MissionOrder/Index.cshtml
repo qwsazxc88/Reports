@@ -315,6 +315,9 @@
                             }
                         </th>
                     }
+                    <th>
+                        <div id="sort26"><a href="#"  onclick = "SortChanged(26);">Долг за<br />сотрудником</a></div>
+                    </th>
                         
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -400,6 +403,9 @@
                                     }
                                 </td>
                             }
+                            <td>
+                                <a href='@Url.Action("AnalyticalStatementDetails", "MissionOrder", new { userid = doc.UserId})'>@doc.UserDebt</a>
+                            </td>
                             @{i++;}
                         </tr>
                        
@@ -415,8 +421,8 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("moAllOrders");

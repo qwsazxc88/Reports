@@ -4,11 +4,14 @@
     var sum1 = Model.Aggregate(0f, (sum, el) => sum + (el.ReportedBefore - el.OrderedBefore));
     var sum2 = Model.Aggregate(0f, (sum, el) => sum + el.Ordered);
     var sum3 = Model.Aggregate(0f, (sum, el) => sum + el.Reported);
-    var sum4 = Model.Aggregate(0f, (sum, el) => sum + (el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered));
+    var sum4 = Model.Aggregate(0f, (sum, el) => sum + (el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered - el.PurchaseBookAllSum));
+    var sum5 = Model.Aggregate(0f, (sum,el) => sum + (el.PurchaseBookAllSum));
+    
     <tr>
     <td colspan='6'>Итого:</td>
     <td>@sum1.ToString("0.00")</td>
     <td>@sum2.ToString("0.00")</td>
+    <td>@sum5.ToString("0.00")</td>
     <td>@sum3.ToString("0.00")</td>
     <td>@sum4.ToString("0.00")</td>
     </tr>
@@ -25,8 +28,9 @@
         <td>@el.Dep7Name</td>
         <td>@(el.ReportedBefore - el.OrderedBefore)</td>
         <td>@el.Ordered</td>
+        <td>@el.PurchaseBookAllSum</td>
         <td>@el.Reported</td>
-        <td>@Math.Round(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered, 2)</td>
+        <td>@Math.Round(el.ReportedBefore - el.OrderedBefore + el.Reported - el.Ordered - el.PurchaseBookAllSum, 2)</td>
     </tr>
 }
 
