@@ -56,7 +56,7 @@
 
         
         <div id="tabs1">
-            @*@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }*@
+            @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }
         </div>
         
         <div id="tabs2">
@@ -169,9 +169,7 @@
     function DeleteEducationRow(Operation, Id) {
         $("#Operation").val(Operation);
         $("#RowID").val(Id);
-        //this.form.submit();
-        $("#btnEducation").click();
-        //return true;
+        $("#EducationForm").submit();
     }
 
     //удаление из таблиц в составе семьи
@@ -270,7 +268,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -321,7 +319,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -435,7 +433,6 @@
                     AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs3").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue, #BeginningDate, #EndDate'), "-50:+0", true);
-
                         var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
                         {
                             autoOpen: false,
@@ -444,7 +441,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -453,7 +451,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -467,7 +464,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -476,7 +474,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -490,7 +487,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -499,7 +497,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -513,7 +510,8 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -522,7 +520,6 @@
                                     //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $(":text").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -557,6 +554,12 @@
 
                         if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
                             $("#add-post-graduate-education-diploma").click();
+                            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+                            //e.preventDefault();
+                        }
+
+                        if ($("#IsEducationCertificationsNotValid").val() == 'True'){
+                            $("#add-certification").click();
                             //$addPostGraduateEducationDiplomaDialog.dialog("open");
                             //e.preventDefault();
                         }
@@ -603,7 +606,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -674,7 +677,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -682,7 +685,7 @@
                                     $('#add-experience-item-dialog form').submit();
                                     //processAddExperienceItem();
                                     //$("#btnExperience").click();
-                                    $(this).dialog("close");
+                                    //$(this).dialog("close");
                                 },
                                 "Отмена": function () {
                                     $(this).dialog("close");
@@ -747,6 +750,8 @@
                     $("#tabs8").ajaxStop(function () {
                         $('#DLContainer').buttonset();        
                         $('#HasAuto').buttonset();        
+                        $('#ReadyForBusinessTrips').buttonset();
+        
                         //подкрашиваем наличие прав
                         $("#IsDLTrue").click(function(){
                             $("#lblDTrue").css("border-color", "red");
@@ -765,6 +770,16 @@
                         $("#IsAFalse").click(function(){
                             $("#lblATrue").css("border-color", "silver");
                             $("#lblAFalse").css("border-color", "red");
+                        });
+
+                        //подкрашиваем возможность выезжать в командировки
+                        $("#IsRTrue").click(function(){
+                            $("#lblRTrue").css("border-color", "red");
+                            $("#lblRFalse").css("border-color", "silver");
+                        });
+                        $("#IsRFalse").click(function(){
+                            $("#lblRTrue").css("border-color", "silver");
+                            $("#lblRFalse").css("border-color", "red");
                         });
 
 
@@ -793,7 +808,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -848,7 +863,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -901,11 +916,16 @@
                     $("#tabs11").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs11").ajaxStop(function () {
+                        UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
                         $('#isSecondaryJobContainer').buttonset();
                         $('#isFrontContainer').buttonset();
                         $('#isExternalWorkContainer').buttonset();
                         $('#IsLiableContainer').buttonset();
                         $('#btnChangeDep').click(function(){DepartmentTree.changeDepartment();});
+
+                        $("#btnManagerDraft").click(function(){
+                            $("#IsDraftM").val(true);
+                        });
 
                         //подкрашиваем вид занятости
                         $("#IsSecondaryJobTrue").click(function(){
@@ -983,7 +1003,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -1019,6 +1039,11 @@
                         ContractPointChange(1);
                         ContractPointChange(2);
                         ContractPointChange(3);
+
+                        $("#btnPMDraft").click(function(){
+                            $("#IsDraftPM").val(true);
+                        });
+
                         //подкрашиваем оклад
                         $("#IsHourlySalaryBasisTrue").click(function () {
                             $("#lblHSBTrue").css("border-color", "red");
@@ -1049,7 +1074,7 @@
                             draggable: false,
                             resizable: false,
                             close: function (event, ui) {
-                                $(this).dialog("destroy").remove();
+                                //$(this).dialog("destroy").remove();
                             },
                             buttons:
                             {
@@ -1139,6 +1164,7 @@
                 }
             }
         });
+
 
         //в зависимости от входного параметра встаем на нужную вкладку
         var ti = $("#TabIndex").val();

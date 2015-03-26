@@ -95,7 +95,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Ранг"),
             Required(ErrorMessage = "*"),
-            Range(2, 7, ErrorMessage = "Требуется число от 2 до 7")]
+            Range(1, 3, ErrorMessage = "Требуется число от 1 до 3")]
         public int? Level { get; set; }
 
         public bool? IsFixedTermContract { get; set; }
@@ -138,6 +138,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
+        [Display(Name = "График работы")]
+        public int? ScheduleId { get; set; }
+        public IEnumerable<SelectListItem> Schedules { get; set; }
+
         //пункты трудового договора
         //для пукта 1.5
         [Display(Name = "Пункт 1.5 трудового договора")]
@@ -165,6 +169,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public CandidateStateModel CandidateStateModel { get; set; }
 
         public string MessageStr { get; set; }
+        public bool IsDraftPM { get; set; } //так как все модели наследуют поле IsDraft, то на вкладках проблематично присвоить значение для параметра необходимой моделипришлось добавить параметр
 
         [Display(Name = "Текст комментария"),
             StringLength(256, ErrorMessage = "Не более 256 знаков.")]
