@@ -92,8 +92,12 @@
             @Html.LabelFor(m => m.AutomobileLicensePlateNumber)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileLicensePlateNumber)<br />
             @Html.TextBoxFor(m => m.AutomobileLicensePlateNumber, new { @class = "halfwidth" })
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.IsReadyForBusinessTrips)&nbsp;@Html.EditorFor(m => m.IsReadyForBusinessTrips)
+        <div class="formfield clear" id="ReadyForBusinessTrips">
+            @Html.LabelFor(m => m.IsReadyForBusinessTrips)
+            @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, true, new { @id = "IsRTrue" })<label id="lblRTrue" for="IsRTrue" @if (Model.IsReadyForBusinessTrips)
+                                                                                                                        {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, false, new { @id = "IsRFalse" })<label id="lblRFalse" for="IsRFalse" @if (!Model.IsReadyForBusinessTrips)
+                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Sports)&nbsp;@Html.ValidationMessageFor(m => m.Sports)<br />
@@ -386,6 +390,7 @@
         UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
         $('#DLContainer').buttonset();        
         $('#HasAuto').buttonset();        
+        $('#ReadyForBusinessTrips').buttonset(0;
         
         //подкрашиваем наличие прав
         $("#IsDLTrue").click(function(){
@@ -405,6 +410,16 @@
         $("#IsAFalse").click(function(){
             $("#lblATrue").css("border-color", "silver");
             $("#lblAFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем возможность выезжать в командировки
+        $("#IsRTrue").click(function(){
+            $("#lblRTrue").css("border-color", "red");
+            $("#lblRFalse").css("border-color", "silver");
+        });
+        $("#IsRFalse").click(function(){
+            $("#lblRTrue").css("border-color", "silver");
+            $("#lblRFalse").css("border-color", "red");
         });
 
         var $addReferenceDialog = $('#add-reference-dialog').dialog(

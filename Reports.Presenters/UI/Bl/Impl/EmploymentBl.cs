@@ -487,7 +487,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         CertificateDateOfIssue = item.CertificateDateOfIssue,
                         CertificateNumber = item.CertificateNumber,
                         CertificationDate = item.CertificationDate,
-                        InitiatingOrder = item.InitiatingOrder
+                        InitiatingOrder = item.InitiatingOrder,
+                        LocationEI = item.LocationEI
                     });
                 }
 
@@ -527,7 +528,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         IssuedBy = item.IssuedBy,
                         Number = item.Number,
                         Series = item.Series,
-                        Speciality = item.Speciality
+                        Speciality = item.Speciality,
+                        LocationEI = item.LocationEI
                     });
                 }
 
@@ -545,7 +547,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EndDate = item.EndDate,
                         Number = item.Number,
                         Series = item.Series,
-                        Speciality = item.Speciality
+                        Speciality = item.Speciality,
+                        LocationEI = item.LocationEI
                     });
                 }
 
@@ -1203,8 +1206,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestNumber = entity.RequestNumber;
                 model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
                 model.WorkCity = entity.WorkCity;
+                model.RegistrationDate = entity.RegistrationDate;
 
                 model.ApprovingManagerName = entity.ApprovingManager != null ? entity.ApprovingManager.Name : string.Empty;
                 model.ApprovingHigherManagerName = entity.ApprovingHigherManager != null ? entity.ApprovingHigherManager.Name : string.Empty;
@@ -1356,6 +1359,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ? model.InsuredPersonTypeItems.Where(x => x.Value == model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text
                     : string.Empty;
                 model.StatusId = entity.Status ?? 0;
+
+                model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
 
                 model.ContractPoint_1_Id = entity.ContractPoint_1_Id;
                 model.ContractPoint_2_Id = entity.ContractPoint_2_Id;
@@ -2178,8 +2183,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(ManagersModel model)
         {
             model.PositionItems = GetPositions();
-            model.Schedules = GetSchedules();
-
             model.ApprovalStatuses = GetApprovalStatuses();
         }
         public void LoadDictionaries(PersonnelManagersModel model)
@@ -2189,6 +2192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Signers = GetSigners();
             model.InsuredPersonTypeItems = GetInsuredPersonTypes();
             model.StatusItems = GetStatuses();
+            model.Schedules = GetSchedules();
             model.ContractPoint1_Items = GetContractPointVariants().Where(x => x.PointTypeId == 1).OrderBy(x => x.PointId).ToList();
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
             model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
@@ -2525,7 +2529,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
                 SaveAttachments<TVM>(model);
                 //сообщение в ДП
-                EmploymentSendEmail(user.Id, 1);
+                //если идет сохранение черновика руководителя или кадров, то не делать рассылку
+                if (model.GetType().Name != "ManagersModel" && model.GetType().Name != "PersonnelManagersModel")
+                    EmploymentSendEmail(user.Id, 1);
+                    
             }
             catch (Exception)
             {
@@ -3054,7 +3061,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     CertificateDateOfIssue = viewModel.Certifications[lastIndex].CertificateDateOfIssue,
                     CertificateNumber = viewModel.Certifications[lastIndex].CertificateNumber,
                     CertificationDate = viewModel.Certifications[lastIndex].CertificationDate,
-                    InitiatingOrder = viewModel.Certifications[lastIndex].InitiatingOrder
+                    InitiatingOrder = viewModel.Certifications[lastIndex].InitiatingOrder,
+                    LocationEI = viewModel.Certifications[lastIndex].LocationEI
                 });
             }
 
@@ -3076,7 +3084,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Profession = viewModel.HigherEducationDiplomas[lastIndex].Profession,
                     Qualification = viewModel.HigherEducationDiplomas[lastIndex].Qualification,
                     Series = viewModel.HigherEducationDiplomas[lastIndex].Series,
-                    Speciality = viewModel.HigherEducationDiplomas[lastIndex].Speciality
+                    Speciality = viewModel.HigherEducationDiplomas[lastIndex].Speciality,
+                    LocationEI = viewModel.HigherEducationDiplomas[lastIndex].LocationEI
                 });
             }
 
@@ -3094,7 +3103,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     IssuedBy = viewModel.PostGraduateEducationDiplomas[lastIndex].IssuedBy,
                     Number = viewModel.PostGraduateEducationDiplomas[lastIndex].Number,
                     Series = viewModel.PostGraduateEducationDiplomas[lastIndex].Series,
-                    Speciality = viewModel.PostGraduateEducationDiplomas[lastIndex].Speciality
+                    Speciality = viewModel.PostGraduateEducationDiplomas[lastIndex].Speciality,
+                    LocationEI = viewModel.PostGraduateEducationDiplomas[lastIndex].LocationEI
                 });
             }
 
@@ -3112,7 +3122,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EndDate = viewModel.Training[lastIndex].EndDate,
                     Number = viewModel.Training[lastIndex].Number,
                     Series = viewModel.Training[lastIndex].Series,
-                    Speciality = viewModel.Training[lastIndex].Speciality
+                    Speciality = viewModel.Training[lastIndex].Speciality,
+                    LocationEI = viewModel.Training[lastIndex].LocationEI
                 });
             }
 
@@ -3537,11 +3548,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
-            if (viewModel.ScheduleId.HasValue)
-            {
-                entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
-            }
             entity.WorkCity = viewModel.WorkCity;
+            entity.RegistrationDate = viewModel.RegistrationDate;
             
             return true;
         }
@@ -3592,6 +3600,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ContractPoint_3_Id = viewModel.ContractPoint_3_Id;
             entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
             entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
+            entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
+            if (viewModel.ScheduleId.HasValue)
+            {
+                entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
+            }
 
             if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
             {
@@ -3871,8 +3884,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
-                        entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
                         entity.WorkCity = viewModel.WorkCity;
+                        entity.RegistrationDate = viewModel.RegistrationDate;
 
                         //entity.Approver = UserDao.Get(current.Id);
                         if (viewModel.ManagerApprovalStatus == true)
@@ -3892,6 +3905,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             error = "Ошибка сохранения.";
                             return false;
                         }
+                        else
+                            EmploymentSendEmail(viewModel.UserId, 5);
                         return true;
                     }
                     else
@@ -4042,6 +4057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.ContractPoint_3_Id = viewModel.ContractPoint_3_Id;
                     entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
                     entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
+                    entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {
@@ -4231,7 +4247,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="EmailType">Тип сообщения.</param>
         protected void EmploymentSendEmail(int UserId, int EmailType)
         {
-            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата
+            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству
             EmploymentCandidate entity = GetCandidate(UserId);
 
             //User user = UserDao.Load(entity.AppointmentCreator.Id);
@@ -4311,6 +4327,59 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     entity.IsManagerToTrainingSendEmail = true;
                     entity.ManagerToTrainingSendEmailDate = DateTime.Now;
+                    break;
+                case 5: //вышестоящему руководству
+                    if (!entity.Managers.ManagerApprovalStatus.HasValue) return;    //непосредственный руководитель еще не согласовал
+                    if (entity.IsManagerToHigherManagerSendEmail && entity.ManagerToHigherManagerSendEmailDate.HasValue) return;    //письмо высшему руководству уже было
+
+                    Emailaddress = null;
+                    IList<User> managers = null;
+
+                    //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье выше уровнем, собираем ихние адреса в строку
+
+                    int CurrentLevel = entity.AppointmentCreator.Level.Value;
+                    //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
+                    while (CurrentLevel > 3)
+                    {
+                        managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
+                        .Where<User>(x => x.Level == CurrentLevel - 1)
+                        .ToList<User>();
+                        foreach (User mu in managers)
+                        {
+                            if (!string.IsNullOrEmpty(mu.Email))
+                            {
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                                //Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                            }
+                        }
+                        if (managers.Count != 0) break;
+                        CurrentLevel -= 1;
+                    }
+
+                    
+
+                    //ручная привязка утверждающего, если нет руководства в автомате и руководитель 3 уровня
+                    if (managers.Count == 0)
+                    {
+                        IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(entity.AppointmentCreator.Id, UserManualRole.ApprovesEmployment)
+                            .Where(x => x.Level == 2)
+                            .ToList<User>();
+                        foreach (User mu in manualRoleManagers)
+                        {
+                            if (!string.IsNullOrEmpty(mu.Email))
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                            //Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(Emailaddress)) return;
+
+                    defaultEmail = ConfigurationService.EmploymentManagerToHighManagerEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    Subject = "Требуется согласование кандидата";
+                    body = @"Кандидат " + entity.User.Name + " согласован непосредственным руководителем. Необходимо согласование кандидата высшим руководством.";
+                    entity.IsManagerToHigherManagerSendEmail = true;
+                    entity.ManagerToHigherManagerSendEmailDate = DateTime.Now;
                     break;
             }
 

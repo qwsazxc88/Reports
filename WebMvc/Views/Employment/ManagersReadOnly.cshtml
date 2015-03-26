@@ -10,6 +10,7 @@
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.IsDraftM)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
@@ -41,7 +42,10 @@
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
             @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
         </div>
-
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.RegistrationDate)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationDate)<br />
+            @Html.EditorFor(m => m.RegistrationDate)
+        </div>
         <div class="formfield clear" id="isSecondaryJobContainer">
             @Html.LabelFor(m => m.IsSecondaryJob)
             @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label id="lblSJFalse" for="IsSecondaryJobFalse" @if (!Model.IsSecondaryJob)
@@ -54,18 +58,19 @@
                                                                                                                                                 {<text> style="border-color:none;"</text>}>По совместительству</label>
         </div>
 
-        <div class="formfield clear" id="isExternalWorkContainer" @if(!Model.IsSecondaryJob){<text>style="display:none;"</text>}>
+        <div class="formfield clear" id="isExternalWorkContainer" @if (!Model.IsSecondaryJob)
+                                                                  {<text>style="display:none;"</text>}>
             @Html.LabelFor(m => m.IsExternalPTWorker)
             @Html.RadioButtonFor(m => m.IsExternalPTWorker, true, new { @id = "IsExternalWorkTrue" })<label id="lblEWTrue" for="IsExternalWorkTrue" @if (Model.IsExternalPTWorker)
-                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
             @Html.RadioButtonFor(m => m.IsExternalPTWorker, false, new { @id = "IsExternalWorkFalse" })<label id="lblEWFalse" for="IsExternalWorkFalse" @if (!Model.IsExternalPTWorker)
-                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
+                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                        else
+                                                                                                                                                        {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
         </div>
 
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
-            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
-        </div>
         <div class="formfield ">
             @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
             @Html.EditorFor(m => m.ProbationaryPeriod)
@@ -116,20 +121,29 @@
         <div class="formfield clear" id="IsLiableContainer">
             @Html.LabelFor(m => m.IsLiable)
             @Html.RadioButtonFor(m => m.IsLiable, true, new { @id = "IsLiableTrue" })<label id="lblLTrue" for="IsLiableTrue" @if (Model.IsLiable)
-                                                                                                                          {<text>style="border-color:red;"</text>}
-                                                                                                                          else
-                                                                                                                          {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                             {<text>style="border-color:red;"</text>}
+                                                                                                                             else
+                                                                                                                             {<text> style="border-color:none;"</text>}>Да</label>
             @Html.RadioButtonFor(m => m.IsLiable, false, new { @id = "IsLiableFalse" })<label id="lblLFalse" for="IsLiableFalse" @if (!Model.IsLiable)
-                                                                                                                              {<text>style="border-color:red;"</text>}
-                                                                                                                              else
-                                                                                                                              {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                 {<text>style="border-color:red;"</text>}
+                                                                                                                                 else
+                                                                                                                                 {<text> style="border-color:none;"</text>}>Нет</label>
         </div>
 
         <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
+
+        @if (!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue)
+        {
+            <div class="formfield clear">
+                <button id="btnManagerDraft">Черновик</button>
+            </div>
+        }
     </fieldset>
+    
+    
     
     <div class="clear">
         @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
@@ -183,7 +197,8 @@
         <tr>
             <td>
                 <input id="add-managers-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
-                                                                  { <text>style = "display:none"</text>; } />
+                                                                                            { <text>style = "display:none"</text>;
+                                                                                            } />
             </td>
         </tr>
         <tr>
@@ -203,12 +218,14 @@
         }
 </table>
 
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 <script>
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
 
     $(document).ready(function () {
         setActiveMenuItem("empManagers");
+        UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
         $('#isSecondaryJobContainer').buttonset();
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();

@@ -15,6 +15,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string PositionName { get; set; }
         public IEnumerable<SelectListItem> PositionItems { get; set; }
 
+        [Display(Name = "Дата оформления"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? RegistrationDate { get; set; }
+
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }        
@@ -28,10 +32,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Вид совместительства")]
         public bool IsExternalPTWorker { get; set; } //ok
-
-        [Display(Name = "График работы")]
-        public int? ScheduleId { get; set; }
-        public IEnumerable<SelectListItem> Schedules { get; set; }
 
         [Display(Name = "Испытательный срок"),
             StringLength(50, ErrorMessage = "Не более 200 знаков.")]
@@ -96,6 +96,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public CandidateStateModel CandidateStateModel { get; set; }
 
         public string MessageStr { get; set; }
+        public bool IsDraftM { get; set; } //так как все модели наследуют поле IsDraft, то на вкладках проблематично присвоить значение для параметра необходимой моделипришлось добавить параметр
 
         [Display(Name = "Текст комментария"),
             StringLength(256, ErrorMessage = "Не более 256 знаков.")]

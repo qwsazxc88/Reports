@@ -18,6 +18,7 @@ namespace Reports.Core.Services
         string EmploymentCandidateToManagerEmail { get; }
         string EmploymentBackgroundCheckToManagerEmail { get; }
         string EmploymentManagerToTrainingEmail { get; }
+        string EmploymentManagerToHighManagerEmail { get; }
 		//string ImageStorageDir { get; }
 		//string MailNotificationSubject { get; }
 		//string MailNoticeSubject { get; }

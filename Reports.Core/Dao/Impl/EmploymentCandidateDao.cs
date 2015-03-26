@@ -110,7 +110,7 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.Department department on managers.DepartmentId = department.Id
                 left join dbo.Department as dep3 ON department.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
                 left join dbo.Position position on managers.PositionId = position.Id
-                left join dbo.Schedule schedule on managers.ScheduleId = schedule.Id
+                left join dbo.Schedule schedule on personnelManagers.ScheduleId = schedule.Id
                 left join dbo.Users candidateUser on candidate.UserId = candidateUser.Id
                 left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
                 inner join dbo.Users currentUser on :currentId = currentUser.Id

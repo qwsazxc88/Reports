@@ -12,5 +12,6 @@
         public virtual string Speciality { get; set; }
         public virtual string Profession { get; set; }
         public virtual string Department { get; set; }
+        public virtual string LocationEI { get; set; }
     }
 }

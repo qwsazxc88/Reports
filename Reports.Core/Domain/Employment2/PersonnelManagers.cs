@@ -48,6 +48,8 @@ namespace Reports.Core.Domain
         public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
         public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
 
+        public virtual Schedule Schedule { get; set; } // OK?
+
         //дополнения для трудового договора
         public virtual int? ContractPoint_1_Id { get; set; }
         public virtual int? ContractPoint_2_Id { get; set; }
