@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
+using System.Web;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class DeductionImportModel
@@ -26,5 +27,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Автор")]
         public string Editor { get; set; }
+
+        public HttpPostedFileBase File { get; set; }
+        public IList<string> Errors { get; set; }
+        public IList<DeductionDto> Imported { get; set; }
     }
 }

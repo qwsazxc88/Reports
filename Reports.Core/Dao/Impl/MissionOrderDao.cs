@@ -46,7 +46,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("AirTicketType", NHibernateUtil.String).
                 AddScalar("TrainTicketType", NHibernateUtil.String).
-                AddScalar("Dep3Name",NHibernateUtil.String);
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("UserDebt",NHibernateUtil.Single);
         }
 
         #region Constants
@@ -63,6 +64,7 @@ namespace Reports.Core.Dao.Impl
                                 dep3.Name as Dep3Name,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
+                                (ans.Reported-ans.Ordered-ans.PurchaseBookAllSum) as UserDebt,
                                 v.EditDate as EditDate,
                                 v.IsRecalculated as IsRecalculated,
                                 ao.Id as AdditionalOrderId,
@@ -160,6 +162,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Users currentUser
                                     on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join (SELECT userid,SUm(Ordered) as Ordered,Sum(Reported) as Reported,Sum(PurchaseBookAllSum) as PurchaseBookAllSum FROM [dbo].[vwAnalyticalStatement] Group by userid) ans ON v.UserId=ans.UserId
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
@@ -306,6 +309,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 25:
                     orderBy = @" order by Dep3Name";
+                    break;
+                case 26:
+                    orderBy = @" order by UserDebt";
                     break;
             }
             if (sortDescending.Value)
