@@ -127,6 +127,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpQuestionRequestDao); }
             set { helpQuestionRequestDao = value; }
         }
+
+        protected IHelpBillingTitleDao helpBillingTitleDao;
+        public IHelpBillingTitleDao HelpBillingTitleDao
+        {
+            get { return Validate.Dependency(helpBillingTitleDao); }
+            set { helpBillingTitleDao = value; }
+        }
+        protected IHelpBillingUrgencyDao helpBillingUrgencyDao;
+        public IHelpBillingUrgencyDao HelpBillingUrgencyDao
+        {
+            get { return Validate.Dependency(helpBillingUrgencyDao); }
+            set { helpBillingUrgencyDao = value; }
+        }
         #endregion
 
         #region Service Requests List
@@ -2434,6 +2447,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetPersonnelBillingStatuses();
             model.Urgencies = GetPersonnelBillingUrgencies();
+            model.Titles = GetPersonnelBillingTitles();
         }
         protected List<IdNameDto> GetPersonnelBillingStatuses()
         {
@@ -2449,11 +2463,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetPersonnelBillingUrgencies()
         {
-            List<IdNameDto> list = new List<IdNameDto>
-                                                       {
-                                                           new IdNameDto(1, "Срочно"),
-                                                           new IdNameDto(2, "Очень срочно")
-                                                       }.OrderBy(x => x.Name).ToList();
+            List<IdNameDto> list = HelpBillingUrgencyDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            list.Insert(0, new IdNameDto(0, SelectAll));
+            return list;
+        }
+        protected List<IdNameDto> GetPersonnelBillingTitles()
+        {
+            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             list.Insert(0, new IdNameDto(0, SelectAll));
             return list;
         }

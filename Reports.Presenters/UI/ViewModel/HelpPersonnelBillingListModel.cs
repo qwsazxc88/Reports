@@ -31,7 +31,9 @@ namespace Reports.Presenters.UI.ViewModel
         public string Number { get; set; }
 
         [Display(Name = "Тема заявки")]
-        public string Title { get; set; }
+        public string TitleId { get; set; }
+        public IList<IdNameDto> Titles;
+        //public string Title { get; set; }
 
         [Display(Name = "Срочность")]
         public string UrgencyId { get; set; }

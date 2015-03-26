@@ -70,20 +70,20 @@
                                 </td>
                          </tr>
                           <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Title):
-                                </td>
-                                <td>
-                                    @Html.TextBoxFor(model => model.Title)
-                                </td>
+                             <td>
+                                @Html.LabelFor(model=>model.TitleId):
+                             </td>
+                             <td>
+                                @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"))
+                            </td>
                          </tr>
                          <tr>
-                         <td>
-                            @Html.LabelFor(model=>model.UrgencyId):
-                         </td>
-                         <td>
-                            @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"))
-                        </td>
+                             <td>
+                                @Html.LabelFor(model=>model.UrgencyId):
+                             </td>
+                             <td>
+                                @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"))
+                            </td>
                          </tr>
                          <tr>
                             <td colspan="2">
@@ -270,7 +270,7 @@
          $("#InitiatorUserName").val('');
          $("#WorkerUserName").val('');
          $("#Number").val('');
-         $("#Title").val('');
+         $("#TitleId").val('0');
          $("#UrgencyId").val('0');
     }
 </script>
