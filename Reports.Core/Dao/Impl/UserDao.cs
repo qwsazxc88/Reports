@@ -67,6 +67,21 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.IsNull("DateRelease"))
                   .List<User>();
         }
+        public virtual IList<IdNameDto> GetUsersWithRole(UserRole role,bool? isActive)
+        {
+            string sqlQuery = string.Format(@" select u.Id,u.[Name] as Name from Users u 
+                    where {0}
+                    (RoleId & :roleId) > 0 
+                    and DateRelease is null 
+                    order by Name",isActive.HasValue? " IsActive = :isActive and ":string.Empty);
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetInt32("roleId", (int)role);
+            if (isActive.HasValue)
+                query = query.SetBoolean("isActive", isActive.Value);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
         public virtual User GetManagerForEmployee(string login)
         {
             return (User)Session.CreateCriteria(typeof(User))

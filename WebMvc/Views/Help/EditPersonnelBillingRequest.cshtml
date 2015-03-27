@@ -7,11 +7,11 @@
 {
     <div class="doc-wrap">
     <table style="width:100%">
-    <tr>
+        @*<tr>
             <td colspan="2" style="font-weight:bold;text-align:center">
                 @Model.DocumentTitle
              </td>
-        </tr>
+        </tr>*@
         <tr>
             <td colspan="2">
                 @Html.ValidationSummary(false)
@@ -29,6 +29,7 @@
                     <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                     <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
@@ -40,11 +41,11 @@
                 @Html.LabelFor(m => m.UserName):
             </td>
              <td>
-               @Html.TextBoxFor(model => model.UserName, Model.IsEditable ? (object)new { maxlength = 256, style = "width:200px" } : (object)new { @readonly = "read-only", maxlength = 256, style = "width:200px" }) 
+               @Html.TextBoxFor(model => model.UserName, Model.IsEditable ? (object)new { maxlength = 256, style = "width:655px" } : (object)new { @readonly = "read-only", maxlength = 256, style = "width:655px" }) 
             </td>
         </tr>
         <tr>
-            <td style="width:220px">
+            <td style="width:230px">
                 @Html.LabelFor(m => m.DepartmentName):
             </td>
             <td>
@@ -57,7 +58,7 @@
             <td colspan="2">
                 @if(Model.IsEditable)
                 {
-                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                    <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                 }
             </td>
         </tr>              
@@ -68,6 +69,15 @@
                 <td>
                     @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
+                </td>
+        </tr>
+         <tr>
+                <td>
+                    @Html.LabelFor(m => m.RecipientId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
                 </td>
         </tr>
         <tr>
@@ -121,7 +131,24 @@
     </div>
     }
     <script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
      $(document).ready(function () {
             setActiveMenuItem("helpPersonnelBilling");
         });
+    function ValidateForm()
+    {
+        var result = true;
+        clearControlErrors($("#SelectDepartmentBtn"));
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            result = false;
+        }        
+        if(!IsFieldNotEmpty($("#UserName")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Question")))
+            result = false;
+        return result;
+    }
     </script> 

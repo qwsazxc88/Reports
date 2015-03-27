@@ -90,6 +90,7 @@
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IHelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
     <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
+    <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />

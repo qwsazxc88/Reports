@@ -31,6 +31,11 @@ namespace Reports.Presenters.UI.ViewModel
         public int UrgencyIdHidden { get; set; }
         public IList<IdNameDto> Urgencies;
 
+        [Display(Name = "Получатель(и)")]
+        public int RecipientId { get; set; }
+        public int RecipientIdHidden { get; set; }
+        public IList<IdNameDto> Recipients;
+
         [Display(Name = "Вопрос")]
         public string Question { get; set; }
         [Display(Name = "Ответ")]
@@ -76,5 +81,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Дата обработки")]
         public string DateEndWork { get; set; }
+    }
+
+    public enum AllPersonnelBillingRecipientEnum
+    {
+        AllEstimators = -1,
+        AllConsultantOutsorsingManager = -2
     }
 }
