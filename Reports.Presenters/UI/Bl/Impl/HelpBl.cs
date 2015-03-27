@@ -35,6 +35,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
         public const string StrInvalidHelpRequestOwner = "Неверная роль владельца заявки (id {0}) {1} в базе даннных.";
         public const string StrInvalidUserDepartment = "Не указано структурное подразделение для пользователя (id {0}) в базе даннных.";
+
+        public const string StrCannotCreatePersonnelBilling = "Вам запрещено сознание запроса";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -2424,7 +2426,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
-        #region Service Requests List
+        #region Personnel Billing List
         public HelpPersonnelBillingListModel GetPersonnelBillingList()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -2476,6 +2478,86 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetIsAvailable(HelpPersonnelBillingListModel model)
         {
             model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0);
+        }
+        #endregion
+        #region Personnel Billing Edit
+        public EditPersonnelBillingRequestViewModel GetPersonnelBillingRequestEditModel(int id)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            int userId;
+            if ((id == 0) && (CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0)
+                userId = current.Id;
+            else
+                throw new ValidationException(StrCannotCreatePersonnelBilling);
+            
+            HelpPersonnelBillingRequest entity = null;
+            if (id != 0)
+                entity = HelpPersonnelBillingRequestDao.Load(id);
+            EditPersonnelBillingRequestViewModel model = new EditPersonnelBillingRequestViewModel
+            {
+                Id = id,
+                UserId = id == 0 ? userId : entity.Creator.Id,
+            };
+            User user = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(current.Id);
+            if (id == 0)
+            {
+                entity = new HelpPersonnelBillingRequest
+                {
+                    Creator = currUser,
+                    CreateDate = DateTime.Now,
+                    EditDate = DateTime.Now
+                };
+            }
+            else
+            {
+                model.Answer = entity.Answer;
+                
+
+                //model.ProductionTimeTypeId = entity.ProductionTime.Id;
+                //model.TransferMethodTypeId = entity.TransferMethod.Id;
+                //model.PeriodId = entity.Period == null ? new int?() : entity.Period.Id;
+                //model.FiredUserName = entity.FiredUserName;
+                //model.FiredUserPatronymic = entity.FiredUserPatronymic;
+                //model.FiredUserSurname = entity.FiredUserSurname;
+                //model.UserBirthDate = entity.UserBirthDate == null ? String.Empty : entity.UserBirthDate.Value.ToString("dd.MM.yyyy");
+                //model.IsForFiredUser = (entity.UserBirthDate != null);//Если дата рождения заполнена - значит форма для уволенного сотрудника
+                //model.Note = entity.Note == null ? 0 : entity.Note.Id;
+                //model.Requirements = entity.Requirements;
+                model.Version = entity.Version;
+                model.DocumentNumber = entity.Number.ToString();
+                model.DateCreated = FormatDate(entity.CreateDate);
+                //model.Creator = entity.Creator.FullName;
+                //model.Address = entity.Address;
+                //RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                //    RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
+                //if (attachment != null)
+                //{
+                //    model.AttachmentId = attachment.Id;
+                //    model.Attachment = attachment.FileName;
+                //}
+                //RequestAttachment serviceAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                //    RequestAttachmentTypeEnum.HelpServiceRequest);
+                //if (serviceAttach != null)
+                //{
+                //    model.ServiceAttachmentId = serviceAttach.Id;
+                //    model.ServiceAttachment = serviceAttach.FileName;
+                //}
+                //if (entity.Consultant != null)
+                //    model.Worker = entity.Consultant.FullName;
+                //if (entity.EndWorkDate.HasValue)
+                //    model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
+                //if (entity.ConfirmWorkDate.HasValue)
+                //    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
+            }
+            //model.NoteList = noteTypeDao.GetAllNoteTypeDto();
+            //SetUserInfoModel(user, model);
+            //LoadDictionaries(model);
+            //SetFlagsState(id, currUser, entity, model);
+            ////SetStaticFields(model, entity);
+
+            //SetHiddenFields(model);
+            return model;
         }
         #endregion
     }

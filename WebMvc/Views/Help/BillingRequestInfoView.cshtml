@@ -1,0 +1,85 @@
+﻿@model Reports.Presenters.UI.ViewModel.BillingRequestInfoViewModel
+<table style="width:100%">
+    <tr>
+        <td colspan="2"  style="font-weight:bold">
+          <input type="hidden" id="Guid" name="Guid" value="@Model.Guid" />
+        </td>
+    </tr>
+   
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.CreatorName)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.CreatorName)
+            <input type="hidden" id="CreatorName" name="CreatorName" value="@Model.CreatorName" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DocumentNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DocumentNumber)
+             <input type="hidden" id="DocumentNumber" name="DocumentNumber" value="@Model.DocumentNumber" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateCreated)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateCreated)
+            <input type="hidden" id="DateCreated" name="DocumentNumber" value="@Model.DateCreated" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Department3Name)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Department3Name)
+            <input type="hidden" id="Department3Name" name="Department3Name" value="@Model.Department3Name" />
+        </td>
+    </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.DateSended)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateSended)
+             <input type="hidden" id="DateSended" name="DateSended" value="@Model.DateSended" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.RecipientName)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.RecipientName)
+            <input type="hidden" id="RecipientName" name="RecipientName" value="@Model.RecipientName" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateBeginWork)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateBeginWork)
+            <input type="hidden" id="DateBeginWork" name="DateBeginWork" value="@Model.DateBeginWork" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateEndWork)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateEndWork)
+            <input type="hidden" id="DateEndWork" name="DateEndWork" value="@Model.DateEndWork" />
+        </td>
+    </tr>
+    <tr>
+       <td colspan="2"/>
+    </tr>
+</table>
+

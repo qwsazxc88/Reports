@@ -761,6 +761,10 @@
     <Content Include="Views\MissionOrder\AnalyticalStatementsPartial.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementDetails.cshtml" />
     <Content Include="Views\Help\PersonnelBillingList.cshtml" />
+    <Content Include="Views\Help\EditPersonnelBillingRequest.cshtml" />
+    <Content Include="Views\Help\BillingRequestInfoView.cshtml" />
+    <Content Include="Views\Help\RequestAttachmentsPartial.cshtml" />
+    <Content Include="Views\Help\AddAttachmentDialog.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

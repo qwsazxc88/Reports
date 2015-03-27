@@ -689,6 +689,14 @@ namespace WebMvc.Controllers
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult EditPersonnelBillingRequest(int id)
+        {
+            EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
+            return View(model);
+        }
         #endregion
 
     }

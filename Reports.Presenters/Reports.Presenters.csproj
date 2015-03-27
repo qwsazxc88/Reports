@@ -164,6 +164,7 @@
     <Compile Include="UI\ViewModel\EditDayModel.cs" />
     <Compile Include="UI\ViewModel\EditInfoModel.cs" />
     <Compile Include="UI\ViewModel\EditMissionPbDocumentModel.cs" />
+    <Compile Include="UI\ViewModel\EditPersonnelBillingRequestViewModel.cs" />
     <Compile Include="UI\ViewModel\EditSubTypeModel.cs" />
     <Compile Include="UI\ViewModel\EditTypeModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeDocumentEditModel.cs" />
