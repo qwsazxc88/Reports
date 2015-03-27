@@ -41,12 +41,10 @@ namespace Reports.Core.Dao.Impl
             return (User) Session.CreateCriteria(typeof(User))
                               .Add(Restrictions.Eq("Login", login)).UniqueResult();
         }
-        public virtual User FindByCnilc(string cnilc,string FIO)
+        public virtual IList<User> FindByCnilc(string cnilc)
         {
-            return (User)Session.CreateCriteria(typeof(User))
-                              .Add(Restrictions.Eq("Cnilc", cnilc))
-                              .Add(Restrictions.Like("Name",FIO+"%"))
-                              .Add(Restrictions.Eq("RoleId", 2)).UniqueResult();
+            return Session.CreateCriteria(typeof(User))
+                              .Add(Restrictions.Eq("Cnilc", cnilc)).List<User>();
         }
         public virtual bool IsLoginWithOtherIdExists(string login,int id)
         {
