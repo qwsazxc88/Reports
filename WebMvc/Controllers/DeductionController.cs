@@ -98,12 +98,14 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant )]
         public ActionResult DeductionImport()
         {
             var model=RequestBl.GetDeductionImportModel();
             return View(model);
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant )]
         public ActionResult DeductionImport(DeductionImportModel model)
         {
             model = RequestBl.GetDeductionImportModel(model);
@@ -114,11 +116,11 @@ namespace WebMvc.Controllers
                 model.File.SaveAs(path);
                 FileInfo file = new FileInfo(path);
                 var Errors = new List<string>();
-                model.Imported= RequestBl.ImportDeductionFromFile(path,ref Errors);
+                model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
                 model.Errors = Errors;
                 file.Delete();
             }
-            else ModelState.AddModelError("File",new Exception("Файл не выбран или пустой."));             
+            else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
             return View(model);
         }
         /// <summary>

@@ -7425,6 +7425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors)
         {
+            //Log.Debug("Файл:" + path);
             List<Deduction> Deductions = new List<Deduction>();
             StreamReader reader = new StreamReader(path);
             var type=DeductionTypeDao.Load(1);
@@ -7432,11 +7433,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             while (!reader.EndOfStream)
             {
                 string data = reader.ReadLine();
+                //Log.Debug("Данные:" + data);
                 Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
                 if (!m.Success) { Errors.Add("Неправильный формат данных.>"+data); continue; }
                 var el = new Deduction();
                 try
-                { 
+                {
                     el.Sum = decimal.Parse(m.Groups["Sum"].Value,System.Globalization.CultureInfo.InvariantCulture );
                     el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
                     el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
@@ -7444,8 +7446,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                     el.PhoneNumber = m.Groups["Phone"].Value.Trim();
                     if (el.Kind == null) { Errors.Add("Не найден вид удержания.>"+data); continue; }
                     el.Type = type;
-                    el.User = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim(),m.Groups["Surname"].Value.Trim());
-                    if (el.User == null) { Errors.Add("Пользователь не найден.>"+data); continue; };
+                    var foundedUsers = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim());
+                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь не найден по СНИЛС.>" + data); continue; };
+                    foundedUsers = foundedUsers.Where(x => x.Name.Contains(m.Groups["Surname"].Value) && x.Name.Contains( m.Groups["Name"].Value) && x.Name.Contains(m.Groups["Patronymic"].Value)).ToList();
+                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь найден по СНИЛС,но не найден по ФИО.>" + data); continue; };
+                    if(!foundedUsers.Any(x=>(x.UserRole & UserRole.Employee) > 0))
+                    {
+                        if(foundedUsers.Any(x=>(x.UserRole & UserRole.DismissedEmployee) > 0))
+                        {
+                            Errors.Add("Пользователь уволен.>" + data); continue;
+                        }
+                        Errors.Add("Пользователь не является сотрудником.>" + data); continue;
+                    }
+                    foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0 ).ToList();
+
+                    el.User = foundedUsers.First(x=>!x.ContractType.HasValue);
+                    if(el.User==null)
+                    {
+                        Errors.Add("Пользователь по совместительству.>" + data); continue;
+                    }
                     el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
                     el.Editor = UserDao.Load(CurrentUser.Id);
                     el.IsFastDismissal = false;

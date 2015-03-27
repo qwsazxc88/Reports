@@ -4,9 +4,8 @@
     Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
     ViewBag.Title = "Импорт заявок из файла";
 }
-
-@using (Html.BeginForm())
-{     
+<form action="/Deduction/DeductionImport" method="post" enctype = "multipart/form-data"> 
+     
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
@@ -59,7 +58,8 @@
      <label>Файл:</label>
      </td>
      <td>
-     <input type="file" multiple/>
+     <input type="file" name="File"/>
+     @Html.ValidationMessageFor(m => m.File)
      </td>
     </tr>
     <tr>
@@ -157,4 +157,4 @@
             $("#Tabs").tabs();
         });
     </script>
-}
+
