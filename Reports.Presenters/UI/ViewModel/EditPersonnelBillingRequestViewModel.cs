@@ -53,6 +53,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSendAvailable { get; set; }
        
         public bool ReloadPage { get; set; }
+        public int Operation { get; set; }
 
         public RequestAttachmentsModel AttachmentsModel { get; set; }
     }

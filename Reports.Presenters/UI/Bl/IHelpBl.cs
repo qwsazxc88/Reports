@@ -46,5 +46,10 @@ namespace Reports.Presenters.UI.Bl
 
         HelpPersonnelBillingListModel GetPersonnelBillingList();
         EditPersonnelBillingRequestViewModel GetPersonnelBillingRequestEditModel(int id);
+        void ReloadDictionariesToModel(EditPersonnelBillingRequestViewModel model);
+        bool SavePersonnelBillingRequestModel(EditPersonnelBillingRequestViewModel model, out string error);
+
+
+        RequestAttachmentsModel GetBillingAttachmentsModel(int id, RequestAttachmentTypeEnum type);
     }
 }

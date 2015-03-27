@@ -30,6 +30,9 @@
                     <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                     <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />
+                    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                     <input type="hidden" id="IsAnswerEditable" name="IsAnswerEditable" value="@Model.IsAnswerEditable" />
+                     <input type="hidden" id="IsEditable"" name="IsEditable"" value="@Model.IsEditable" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
@@ -123,7 +126,7 @@
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
                 <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                 <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
-                <input type="submit" value="Отправить запрос" onclick="return ValidateForm();" @if (!Model.IsSendAvailable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm();" @if (!Model.IsSendAvailable) {<text>style="display:none"</text>}/>
                 <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable) {<text>style="display:none"</text>}/>
             </td>
         </tr>
@@ -150,5 +153,12 @@
         if(!IsFieldNotEmpty($("#Question")))
             result = false;
         return result;
+    }
+    function ValidateAndSendForm()
+    {
+        if(!ValidateForm())
+            return false;
+        $("#Operation").val(1);
+        return true;
     }
     </script> 

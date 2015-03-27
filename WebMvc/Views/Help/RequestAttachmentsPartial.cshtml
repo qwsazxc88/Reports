@@ -140,8 +140,10 @@ function setupUploader()
             $('.qq-upload-list').hide();
             var description = $('#Description').val();
             var id = $('#DocumentId').val();
+            var type = $('#AttachmentRequestTypeId').val();
             uploader.setParams({
                 id: id
+                ,type:type
                 ,Description: description
             });
         },
