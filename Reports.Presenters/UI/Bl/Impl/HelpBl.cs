@@ -2492,6 +2492,36 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0);
         }
+
+        public void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            //User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<HelpPersonnelBillingRequestDto>();
+            else
+                SetDocumentsToModel(model);
+        }
+        public void SetDocumentsToModel(HelpPersonnelBillingListModel model)
+        {
+            //UserRole role = CurrentUser.UserRole;
+            //model.Documents = new List<HelpPersonnelBillingRequestDto>();
+            model.Documents = HelpPersonnelBillingRequestDao.GetDocuments(
+                CurrentUser.Id,
+                CurrentUser.UserRole,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.InitiatorUserName,
+                model.WorkerUserName,
+                model.Number,
+                model.TitleId,
+                model.UrgencyId,
+                model.SortBy,
+                model.SortDescending
+               );
+        }
         #endregion
         #region Personnel Billing Edit
         public EditPersonnelBillingRequestViewModel GetPersonnelBillingRequestEditModel(int id)

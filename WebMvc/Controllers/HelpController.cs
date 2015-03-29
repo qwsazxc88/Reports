@@ -689,6 +689,14 @@ namespace WebMvc.Controllers
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
+        [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            HelpBl.SetPersonnelBillingListModel(model, hasError);
+            return View(model);
+        }
 
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
@@ -697,7 +705,6 @@ namespace WebMvc.Controllers
             EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
             return View(model);
         }
-
         [HttpPost]
         public ActionResult EditPersonnelBillingRequest(EditPersonnelBillingRequestViewModel model)
         {
@@ -731,7 +738,6 @@ namespace WebMvc.Controllers
         {
             return ModelState.IsValid;
         }
-
         protected void CorrectDropdowns(EditPersonnelBillingRequestViewModel model)
         {
             if (!model.IsEditable)
@@ -750,8 +756,8 @@ namespace WebMvc.Controllers
                 model.IsWorkBegin = model.IsWorkBeginHidden;
             }
         }
-
         #endregion
+        #region Attachments
         [HttpGet]
         public FileContentResult ViewAttachment(int id)
         {
@@ -793,7 +799,6 @@ namespace WebMvc.Controllers
                 return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
             }
         }
-
         [HttpPost]
         public ContentResult SaveAttachment(int id,int type, string description, object qqFile)
         {
@@ -871,5 +876,6 @@ namespace WebMvc.Controllers
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
         }
+        #endregion
     }
 }

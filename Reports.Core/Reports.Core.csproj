@@ -568,6 +568,7 @@
     <Compile Include="Dto\GpdContractDto.cs" />
     <Compile Include="Dto\GpdRefDetailDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
+    <Compile Include="Dto\HelpPersonnelBillingRequestDto.cs" />
     <Compile Include="Dto\HelpServiceDictionariesStatesModel.cs" />
     <Compile Include="Dto\HelpServiceQuestionDto.cs" />
     <Compile Include="Dto\HelpServiceRequestDto.cs" />

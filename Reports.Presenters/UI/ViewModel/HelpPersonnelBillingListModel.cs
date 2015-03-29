@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
@@ -17,7 +15,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         //public bool DepartmentReadOnly { get; set; }
 
-        [Display(Name = "Статус заявки")]
+        [Display(Name = "Статус запроса")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
 
@@ -27,16 +25,16 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО получателя")]
         public string WorkerUserName { get; set; }
 
-        [Display(Name = "Номер заявки")]
+        [Display(Name = "Номер запроса")]
         public string Number { get; set; }
 
-        [Display(Name = "Тема заявки")]
-        public string TitleId { get; set; }
+        [Display(Name = "Тема запроса")]
+        public int TitleId { get; set; }
         public IList<IdNameDto> Titles;
         //public string Title { get; set; }
 
         [Display(Name = "Срочность")]
-        public string UrgencyId { get; set; }
+        public int UrgencyId { get; set; }
         public IList<IdNameDto> Urgencies;
 
 
@@ -52,6 +50,8 @@ namespace Reports.Presenters.UI.ViewModel
         
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
+
+        public IList<HelpPersonnelBillingRequestDto> Documents { get; set; }
 
         public bool HasErrors { get; set; }
     }

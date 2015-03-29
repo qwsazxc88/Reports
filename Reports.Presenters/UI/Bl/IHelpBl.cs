@@ -45,6 +45,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveTemplateName(SaveAttacmentModel model);
 
         HelpPersonnelBillingListModel GetPersonnelBillingList();
+        void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError);
         EditPersonnelBillingRequestViewModel GetPersonnelBillingRequestEditModel(int id);
         void ReloadDictionariesToModel(EditPersonnelBillingRequestViewModel model);
         bool SavePersonnelBillingRequestModel(EditPersonnelBillingRequestViewModel model, out string error);
