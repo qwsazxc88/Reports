@@ -4453,7 +4453,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!string.IsNullOrEmpty(mu.Email))
                             {
                                 //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
-                                Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
                             }
                         }
                         if (managers.Count != 0) break;
@@ -4472,7 +4472,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (!string.IsNullOrEmpty(mu.Email))
                                 //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
-                                Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
                         }
                     }
 
