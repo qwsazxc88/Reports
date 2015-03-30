@@ -461,8 +461,12 @@ namespace WebMvc.Controllers
                 string.IsNullOrEmpty(itemToAdd.IssuedBy) || string.IsNullOrEmpty(itemToAdd.LocationEI) || string.IsNullOrEmpty(itemToAdd.Number) || string.IsNullOrEmpty(itemToAdd.Profession) ||
                 string.IsNullOrEmpty(itemToAdd.Qualification) || string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality))
             {
-                if (Convert.ToInt32(itemToAdd.GraduationYear) <= Convert.ToInt32(itemToAdd.AdmissionYear))
-                    ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                try
+                {
+                    if (Convert.ToInt32(itemToAdd.GraduationYear) <= Convert.ToInt32(itemToAdd.AdmissionYear))
+                        ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                }
+                catch { }
 
                 model.IsHigherEducationNotValid = true;
                 //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -509,8 +513,12 @@ namespace WebMvc.Controllers
                 string.IsNullOrEmpty(itemToAdd.Number) || string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality) ||
                 itemToAdd.AdmissionYear.Length < 4 || itemToAdd.GraduationYear.Length < 4)
             {
-                if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
-                    ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                try
+                {
+                    if (Convert.ToInt32(itemToAdd.GraduationYear) < Convert.ToInt32(itemToAdd.AdmissionYear))
+                        ModelState.AddModelError("GraduationYear", "Год окончания не может быть меньше года поступления!");
+                }
+                catch { }
 
                 model.IsPostGraduateEducationNotValid = true;
 
