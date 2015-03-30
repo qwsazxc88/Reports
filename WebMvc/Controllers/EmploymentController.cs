@@ -1306,8 +1306,8 @@ namespace WebMvc.Controllers
 
         #region Roster
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        //[ReportAuthorize(UserRole.OutsourcingManager)]
+        //[ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager)]
         public ActionResult Roster()
         {
             var model = EmploymentBl.GetRosterModel(null);

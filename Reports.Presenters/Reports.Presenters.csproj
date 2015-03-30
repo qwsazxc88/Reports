@@ -259,6 +259,7 @@
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
+    <Compile Include="UI\ViewModel\SurchargeViewModel.cs" />
     <Compile Include="UI\ViewModel\TemplatesListModel.cs" />
     <Compile Include="UI\ViewModel\TerraGraphicsSetShortNameModel.cs" />
     <Compile Include="UI\ViewModel\TerraPointSetDefaultTerraPointModel.cs" />
