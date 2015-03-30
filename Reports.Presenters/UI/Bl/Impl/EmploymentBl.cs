@@ -2482,7 +2482,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             // временная проверка на создание кандидата для дальневосточной и московской дирекции
-            if (!department.Path.StartsWith("9900424.9900920.9904119.") || !department.Path.StartsWith("9900424.9901038.9901164."))
+            if (!department.Path.StartsWith("9900424.9900920.9904119.") && !department.Path.StartsWith("9900424.9901038.9901164."))
             {
                 error = "Раздел 'Прием' пока работает в тестовом режиме для Московской и Дальневосточной дирекций!.";
                 return null;
