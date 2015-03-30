@@ -1616,6 +1616,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.EmployerRepresentativeName = candidate.PersonnelManagers.Signer.Name;
                     model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+                    model.EmployerRepresentativePreamblePartyTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
                     if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
                     {
                         string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');

@@ -11,6 +11,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string EmployerRepresentativeNameShortened { get; set; }
         public string EmployerRepresentativeName { get; set; }
         public string EmployerRepresentativePosition { get; set; }
+        public string EmployerRepresentativePreamblePartyTemplate { get; set; }
         //public string Number { get; set; }
         // public string City { get; set; }
         public DateTime? ContractDate { get; set; }
