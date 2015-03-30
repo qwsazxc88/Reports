@@ -32,6 +32,7 @@ namespace Reports.Core.Domain
         public virtual int? UploadingDocType { get; set; }
         public virtual IList<MissionReport> MissionReport { get; set; }
         public virtual bool NotUseInAnalyticalStatement { get; set; }
+        public virtual string PhoneNumber { get; set; }
         #endregion
 
         #region Properties

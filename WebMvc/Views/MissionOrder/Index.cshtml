@@ -220,13 +220,13 @@
                         <div id="sort22" style="min-width:30px"><a href="#" onclick = "SortChanged(22);">Должность</a></div>
                     </th>
                     <th>
-                        <div id="sort25" style="min-width:30px"><a href="#"  onclick = "SortChanged(25);">Подразделение <br/>уровня 3</a></div>
+                        <div id="sort25" style="min-width:30px"><a href="#"  onclick = "SortChanged(25);">Подр. <br/>уровня 3</a></div>
                     </th>
                      <th>
-                        <div id="sort2" style="min-width:30px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
+                        <div id="sort2" style="min-width:30px"><a href="#"  onclick = "SortChanged(2);">Подр. <br/>уровня 7</a></div>
                     </th>
                     <th>
-                        <div id="sort3"  style="min-width:30px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>приказа</a></div>
+                        <div id="sort3"  style="min-width:30px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>пр.</a></div>
                     </th>
                     @if (!Model.IsCorrectionsOnlyModeOn)
                     {
@@ -235,7 +235,7 @@
                         </th>
                     }
                     <th>
-                        <div id="sort18"  style="min-width:30px"><a href="#"  onclick = "SortChanged(18);">Номер<br/> изм.<br/> приказа</a></div>
+                        <div id="sort18"  style="min-width:30px"><a href="#"  onclick = "SortChanged(18);">Номер<br/> изм.<br/> пр.</a></div>
                     </th>
                     @if (!Model.IsCorrectionsOnlyModeOn)
                     {
@@ -243,13 +243,13 @@
                             <div id="sort19" style="min-width:30px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
                         </th>                    
                         <th>
-                            <div id="sort23" style="min-width:30px"><a href="#" onclick = "SortChanged(23);">Цель <br/>командировки</a></div>
+                            <div id="sort23" style="min-width:30px"><a href="#" onclick = "SortChanged(23);">Цель <br/>ком.</a></div>
                         </th>                    
                         <th>
-                            <div id="sort5" style="min-width:30px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                            <div id="sort5" style="min-width:30px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>ком.</a></div>
                         </th>
                          <th>
-                            <div id="sort15" style="min-width:30px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                            <div id="sort15" style="min-width:30px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>ком.</a></div>
                         </th>
                         <th>
                             <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
@@ -261,26 +261,29 @@
                             <div id="sort8" style="min-width:30px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G<br />грейду</a></div>
                         </th>
                         <th>
-                            <div id="sort9" style="min-width:30px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                            <div id="sort9" style="min-width:30px"><a href="#"  onclick = "SortChanged(9);">Прев.  <br/>по G</a></div>
                         </th>
                          <th>
                             <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                        </th>
+                         <th>
+                            <div id="sort26"><a href="#"  onclick = "SortChanged(26);">Долг за<br />сотруд.</a></div>
                         </th>
                         <th>
                             <div id="sort11" style="min-width:30px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
                         </th>
                          <th>
-                            <div id="sort14"  style="min-width:30px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                            <div id="sort14"  style="min-width:30px"><a href="#"  onclick = "SortChanged(14);">Секр.</a></div>
                         </th>
                     }
                     <th>
-                        <div id="sort12"  style="min-width:30px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                        <div id="sort12"  style="min-width:30px"><a href="#"  onclick = "SortChanged(12);">Сост.</a></div>
                     </th>                    
                     <th>
                         <div id="sort13"  style="min-width:30px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
                     </th>
                         <th>
-                        <div id="sort20"  style="min-width:30px"><a href="#"  onclick = "SortChanged(20);">Состояние<br/>изм.</a></div>
+                        <div id="sort20"  style="min-width:30px"><a href="#"  onclick = "SortChanged(20);">Сост.<br/>изм.</a></div>
                     </th>
                         <th>
                         <div id="sort21"  style="min-width:30px"><a href="#"  onclick = "SortChanged(21);">Период</a></div>
@@ -315,6 +318,7 @@
                             }
                         </th>
                     }
+                   
                         
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -353,6 +357,9 @@
                                 <td>@RequestBl.FormatSum(doc.GradeSum)</td>
                                 <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
                                 <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                                <td>
+                                    <a href='@Url.Action("AnalyticalStatementDetails", "MissionOrder", new { userid = doc.UserId })'>@doc.UserDebt</a>
+                                </td>
                                 <td>@doc.HasMission</td>
                                 <td>@doc.NeedSecretary</td>
                             }
@@ -392,7 +399,7 @@
                                 <td style="text-align: center">
                                     @if (Model.IsRecalculationAvailable)
                                     {
-                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @class = "selcheckisrecalculated"});
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @class = "selcheckisrecalculated" });
                                     }
                                     else
                                     {
@@ -400,6 +407,7 @@
                                     }
                                 </td>
                             }
+                            
                             @{i++;}
                         </tr>
                        

@@ -33,7 +33,8 @@ namespace Reports.Core.Dao.Impl
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
-                                     when v.UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
+                                     when v.UploadingDocType is not null and v.UploadingDocType!=4 and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
+                                     when v.UploadingDocType = 4 and v.SendTo1C is null and v.DeleteDate is null then N'Загруженно из файла'
                                      else N'Записана'
                                 end as Status,
                                 case when IsFastDismissal is null then null  
@@ -195,16 +196,16 @@ namespace Reports.Core.Dao.Impl
                     orderBy = " ORDER BY UserName,EditDate DESC";
                     return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    orderBy = @" order by v.Number";
+                    orderBy = @" order by Number";
                     break;
                 //case 2:
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    orderBy = @" order by v.EditDate";
+                    orderBy = @" order by EditDate";
                     break;
                 case 4:
-                    orderBy = @" order by v.Dep3Name";
+                    orderBy = @" order by Dep3Name";
                     break;
                 case 5:
                     orderBy = @" order by Sum";

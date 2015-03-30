@@ -39,7 +39,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string ResidenceGrades { get; set; }
         public string AirTicketTypeGrades { get; set; }
         public string TrainTicketTypeGrades { get; set; }
-      
+        public float UserDept { get; set; }
 
         public string Targets { get; set; }
 

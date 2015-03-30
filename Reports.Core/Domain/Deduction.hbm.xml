@@ -17,6 +17,7 @@
   <many-to-one name="Editor" class="User" column="CreatorId" foreign-key="FK_Deduction_EditorUser" index="IX_Deduction_EditorUser_Id"  not-null="true"/>
   <property name="SendTo1C" not-null="false"/>
   <property name="DeleteDate" not-null="false"/>
+  <property name="PhoneNumber" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
   <property name="UploadingDocType" not-null="false"/>
   <property name="EmailSendToUserDate" not-null="false"/>

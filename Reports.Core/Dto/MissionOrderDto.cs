@@ -36,8 +36,8 @@ namespace Reports.Core.Dto
         public string AirTicketType { get; set; }
         public string TrainTicketType { get; set; }
         public bool Flag { get; set; }
-        public bool IsChecked { get; set; }        
-        
+        public bool IsChecked { get; set; }
+        public float UserDebt { get; set; }
         //public bool IsApproveFlagAvailable { get; set; }
     }
     public class MissionReportDto

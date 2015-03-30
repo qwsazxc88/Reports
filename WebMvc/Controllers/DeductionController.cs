@@ -98,14 +98,29 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant )]
         public ActionResult DeductionImport()
         {
             var model=RequestBl.GetDeductionImportModel();
             return View(model);
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant )]
         public ActionResult DeductionImport(DeductionImportModel model)
         {
+            model = RequestBl.GetDeductionImportModel(model);
+            if (model.File != null && model.File.ContentLength > 0)
+            {
+                var fileName = Path.GetFileName(model.File.FileName);
+                var path = Path.Combine(Server.MapPath("~/Files"), fileName);
+                model.File.SaveAs(path);
+                FileInfo file = new FileInfo(path);
+                var Errors = new List<string>();
+                model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
+                model.Errors = Errors;
+                file.Delete();
+            }
+            else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
             return View(model);
         }
         /// <summary>
