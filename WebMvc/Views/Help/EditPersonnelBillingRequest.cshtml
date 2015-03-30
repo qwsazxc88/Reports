@@ -161,4 +161,11 @@
         $("#Operation").val(1);
         return true;
     }
+    function ValidateAnswer()
+    {
+      if(!IsFieldNotEmpty($("#Answer")))
+            return false;
+       $("#Operation").val(2);
+       return true;
+    }
     </script> 

@@ -245,7 +245,11 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += "LOWER(uRep.[Name]) like :recName";
+                whereString += @"LOWER(
+                                case when RecipientId = -1 then N'Все расчетчики'
+	                                      when RecipientId = -2 then N'Все консультанты ОК'
+	                                      else uRep.Name end 
+                                ) like :recName";
             }
             return whereString;
         }

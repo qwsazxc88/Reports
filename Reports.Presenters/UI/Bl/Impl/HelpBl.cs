@@ -35,13 +35,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
         public const string StrInvalidHelpRequestOwner = "Неверная роль владельца заявки (id {0}) {1} в базе даннных.";
         public const string StrInvalidUserDepartment = "Не указано структурное подразделение для пользователя (id {0}) в базе даннных.";
+
         public const string StrAllEstimators = "Все расчетчики";
         public const string StrAllConsultantOutsorsingManagers = "Все консультанты ОК";
-        
-
-       
         public const string StrCannotCreatePersonnelBilling = "Вам запрещено сознание запроса";
         public const string StrInvalidAttachmentType = "Неизвестный тип прикрепленных файлов {0}";
+        public const string StrCannotLoadRecipientForId = "Ошибка при загрузке получателя запроса (Id = {0}) из базы данных.";
+        public const string StrPersonnalBillingRequestNotFound = "Не найден запрос (внутренний биллинг,id {0}) в базе данных";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -2567,6 +2567,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserId = entity.Creator.Id;
                 model.Version = entity.Version;
+                model.RecipientId = entity.RecipientId;
+                model.IsWorkBegin = entity.BeginWorkDate.HasValue;
                 //model.DocumentNumber = entity.Number.ToString();
                 //model.DateCreated = FormatDate(entity.CreateDate);
                 //model.Creator = entity.Creator.FullName;
@@ -2605,6 +2607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TitleIdHidden = model.TitleId;
             model.UrgencyIdHidden = model.UrgencyId;
             model.RecipientIdHidden = model.RecipientId;
+            model.IsWorkBeginHidden = model.IsWorkBegin;
         }
         protected void LoadDictionaries(EditPersonnelBillingRequestViewModel model)
         {
@@ -2686,6 +2689,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsSendAvailable = true;
                         }
                     }
+                    if((int)currentRole == entity.RecipientRoleId)
+                    {
+                        if(!entity.BeginWorkDate.HasValue &&
+                           (entity.RecipientId == AuthenticationService.CurrentUser.Id || 
+                            entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
+                        {
+                            model.IsWorkBeginAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if(!entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        {
+                            model.IsAnswerEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                    }
                     break;
                 case UserRole.Estimator:
                     if (entity.Creator.Id == current.Id)
@@ -2695,6 +2713,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsEditable = true;
                             model.IsSaveAvailable = true;
                             model.IsSendAvailable = true;
+                        }
+                    }
+                    if ((int)currentRole == entity.RecipientRoleId)
+                    {
+                        if (!entity.BeginWorkDate.HasValue &&
+                           (entity.RecipientId == AuthenticationService.CurrentUser.Id ||
+                            entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            model.IsWorkBeginAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (!entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        {
+                            model.IsAnswerEditable = true;
+                            model.IsSaveAvailable = true;
                         }
                     }
                     break;
@@ -2761,15 +2794,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IdNameDto dto = new IdNameDto();
                 if (model.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager)
                     dto = new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager, Name = StrAllConsultantOutsorsingManagers };
-                if (model.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators)
+                else if (model.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators)
                     dto = new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllEstimators, Name = StrAllEstimators };
                 else
                 {
-                    User user = UserDao.Load(model.RecipientId);
+                    User user = UserDao.Get(model.RecipientId);
                     if (user != null)
                         dto = new IdNameDto { Id = user.Id, Name = user.FullName };
+                    else
+                        throw new ValidationException(string.Format(StrCannotLoadRecipientForId,model.RecipientId));
                 }
                 model.Recipients = new List<IdNameDto> { dto };
+                model.RecipientId = dto.Id;
             }
         }
 
@@ -2796,12 +2832,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     };
                     ChangeEntityProperties(entity, model, currUser, out error);
                     HelpPersonnelBillingRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
                 }
                 else
                 {
                     entity = HelpPersonnelBillingRequestDao.Get(model.Id);
                     if (entity == null)
-                        throw new ValidationException(string.Format(StrServiceRequestNotFound, model.Id));
+                        throw new ValidationException(string.Format(StrPersonnalBillingRequestNotFound, model.Id));
                     if (entity.Version != model.Version)
                     {
                         error = StrServiceRequestWasChanged;
@@ -2862,6 +2899,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.SendDate = DateTime.Now;
                         }
                     }
+                    else if((int)currRole == entity.RecipientRoleId)
+                    {
+                        if (!entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                            (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.RecipientId = currUser.Id;
+                            model.RecipientId = entity.RecipientId;
+                        }
+                        if (!entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                        }
+                    }
                     break;
                 case UserRole.Estimator:
                     if (entity.Creator.Id == currUser.Id)
@@ -2869,6 +2920,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!entity.SendDate.HasValue && model.Operation == 1) // send
                         {
                             entity.SendDate = DateTime.Now;
+                        }
+                    }
+                    else if ((int)currRole == entity.RecipientRoleId)
+                    {
+                        if (!entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                            (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.RecipientId = currUser.Id;
+                            model.RecipientId = entity.RecipientId;
+                        }
+                        if (!entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
                         }
                     }
                     break;
