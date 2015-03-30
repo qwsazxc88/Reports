@@ -229,7 +229,7 @@
         
         <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
+            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^\d{3}-\d{3}-\d{3}\s\d{2}$", title = "###-###-### ##" })
         </div>
         @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename) && !Model.IsValidate)
         {
@@ -439,7 +439,7 @@
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
-            $('#SNILS').mask('999-999-999-99');
+            $('#SNILS').mask('999-999-999 99');
         });     
 
         $('#gender').buttonset();        

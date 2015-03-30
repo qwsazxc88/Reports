@@ -3628,10 +3628,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department department = DepartmentDao.Get(viewModel.DepartmentId);            
 
             // Проверка прав руководителя на подразделение
-            if (!IsUserManagerForDepartment(department, currentUser))
+            if (currentUser.UserRole == UserRole.Manager)
             {
-                error = "Отсутствуют права на выбранное подразделение.";
-                return false;
+                if (!IsUserManagerForDepartment(department, currentUser))
+                {
+                    error = "Отсутствуют права на выбранное подразделение.";
+                    return false;
+                }
             }
 
             entity.Bonus = viewModel.Bonus;
