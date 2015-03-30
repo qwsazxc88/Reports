@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ManagersModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core           
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Руководители";
 }
@@ -135,7 +138,7 @@
             @Html.EditorFor(m => m.RequestNumber)
         </div>
 
-        @if (!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue)
+        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
                 <button id="btnManagerDraft">Черновик</button>

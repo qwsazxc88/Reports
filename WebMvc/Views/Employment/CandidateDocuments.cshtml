@@ -71,9 +71,11 @@
                 }
             </td>
         </tr>
+        @*
         <tr>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
+                <!--<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>-->
+                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
             </td>
             <td>
                 <input type="hidden" id="T2FileId" name="T2FileId" value="@Model.T2FileId" />
@@ -97,6 +99,7 @@
                 }
             </td>
         </tr>
+    *@
         <tr>
             <td>
                 <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>

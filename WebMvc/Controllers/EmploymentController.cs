@@ -685,7 +685,6 @@ namespace WebMvc.Controllers
         public ActionResult FamilyAddChild(FamilyMemberDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
-
             FamilyModel model = EmploymentBl.GetFamilyModel(CandidateId);
             model.Children.Add(itemToAdd);
             EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
@@ -1264,7 +1263,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
         public ActionResult Managers(ManagersModel model)
         {
             string error = String.Empty;
@@ -1985,6 +1984,12 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintT2(int userId)
+        {
+            return GetPrintForm("PrintT2", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintLiabilityContract(int userId)
         {
             return GetPrintForm("PrintLiabilityContract", userId);
@@ -2029,6 +2034,13 @@ namespace WebMvc.Controllers
         public ActionResult PrintEmploymentOrder(int userId)
         {
             PrintEmploymentOrderModel model = EmploymentBl.GetPrintEmploymentOrderModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintT2(int userId)
+        {
+            PrintT2Model model = EmploymentBl.GetPrintT2Model(userId);
             return View(model);
         }
 

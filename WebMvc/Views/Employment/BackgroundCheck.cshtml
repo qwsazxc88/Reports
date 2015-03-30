@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
@@ -365,7 +365,7 @@
 <script type="text/javascript">
     function DeleteBackgroundRow(Id) {
         $("#RowID").val(Id);
-        $("#btnBC").click();
+        $("#BackgroundCheckForm").submit();
     }
 
     function deleteAttachment(id){

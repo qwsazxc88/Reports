@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.PersonnelManagersModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Кадры";
 }
@@ -217,10 +220,13 @@
             @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
         </div>        
 
-        <div class="formfield clearleft">
-            <button id="btnPMDraft" >Сохранить</button>         
-            <button >Утвердить</button>         
-        </div>            
+        @if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+        {
+            <div class="formfield clearleft">
+                <button id="btnPMDraft" >Сохранить</button>         
+                <button >Утвердить</button>         
+            </div>            
+        }
     </fieldset>
     @*
     <div class="buttonpanel">

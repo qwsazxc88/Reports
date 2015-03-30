@@ -1699,6 +1699,100 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PrintT2Model GetPrintT2Model(int userId)
+        {
+            //временно не работает, по причине нехватки первичных данных анкеты для заполнения справки
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintT2Model model = new PrintT2Model();
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.Code = candidate.User.Code;
+                model.SNILS = candidate.User.Cnilc;
+                model.Inn = candidate.GeneralInfo.INN;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
+                model.IsMale = candidate.GeneralInfo.IsMale;
+                model.LastName = candidate.GeneralInfo.LastName;
+                model.FirstName = candidate.GeneralInfo.FirstName;
+                model.Patronymic = candidate.GeneralInfo.Patronymic;
+                model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
+                model.DateOfBirth = candidate.GeneralInfo.DateOfBirth;
+                model.RegionOfBirth = candidate.GeneralInfo.RegionOfBirth;
+                model.CityOfBirth = candidate.GeneralInfo.CityOfBirth;
+                model.CitizenshipName = candidate.GeneralInfo.Citizenship.Name;
+                model.ForeignLanguages = candidate.GeneralInfo.ForeignLanguages;
+                model.HigherEducations = EmploymentHigherEducationDiplomaDao.GetHighEducationTypes(candidate.Education.Id);
+                model.PostGraduateEducations = candidate.Education.PostGraduateEducationDiplomas;
+                model.OverallExperienceYears = candidate.PersonnelManagers.OverallExperienceYears;
+                model.OverallExperienceMonths = candidate.PersonnelManagers.OverallExperienceMonths;
+                model.OverallExperienceDays = candidate.PersonnelManagers.OverallExperienceDays;
+                model.InsurableExperienceYears = candidate.PersonnelManagers.InsurableExperienceYears;
+                model.InsurableExperienceMonths = candidate.PersonnelManagers.InsurableExperienceMonths;
+                model.InsurableExperienceDays = candidate.PersonnelManagers.InsurableExperienceDays;
+                if (candidate.Family.FamilyStatusId.HasValue && candidate.Family.FamilyStatusId.Value != 0)
+                    model.FamilyStatusName = EmploymentFamilyDao.GetFamilyStatuses().Where(x => x.Id == candidate.Family.FamilyStatusId.Value).ToList()[0].Name;
+                model.FamilyMembers = candidate.Family.FamilyMembers;
+            }
+
+            //if (candidate.Passport != null)
+            //{
+            //    model.EmployeeAddress = candidate.Passport.ZipCode
+            //        + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+            //        + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+            //    model.PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+            //    model.PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+            //    model.PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+            //}
+
+            //if (candidate.Managers != null)
+            //{
+            //    model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+            //    model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+            //    model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+            //    model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
+            //    model.SalaryBasis = candidate.Managers.SalaryBasis;
+            //}
+
+            //if (candidate.PersonnelManagers != null)
+            //{
+            //    model.ContractDate = candidate.PersonnelManagers.ContractDate;
+            //    model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
+            //    model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
+            //    model.ContractPoint_1_Id = candidate.PersonnelManagers.ContractPoint_1_Id;
+            //    model.ContractPoint_2_Id = candidate.PersonnelManagers.ContractPoint_2_Id;
+            //    model.ContractPoint_3_Id = candidate.PersonnelManagers.ContractPoint_3_Id;
+            //    model.ContractPointsFio = candidate.PersonnelManagers.ContractPointsFio;
+            //    model.ContractPointsAddress = candidate.PersonnelManagers.ContractPointsAddress;
+            //    if (candidate.PersonnelManagers.Signer != null)
+            //    {
+            //        model.EmployerRepresentativeName = candidate.PersonnelManagers.Signer.Name;
+            //        model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+            //        if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+            //        {
+            //            string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+            //            if (employerRepresentativeNameParts.Length >= 2)
+            //            {
+            //                model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+            //                for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+            //                {
+            //                    model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
+            //                }
+            //            }
+            //        }
+
+            //    }
+            //}
+
+
+            return model;
+        }
+
         public PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);
