@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "FamilyForm" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     <input type="hidden" id="cmd" name="cmd" />
@@ -244,8 +244,10 @@
     
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button id="btnFamily" type="submit">Сохранить</button>
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 
     </fieldset>
@@ -273,7 +275,7 @@
         if (IsSpouse){
             $("#IsMarried").val('false');
         }
-        $("#btnFamily").click();
+        $("#FamilyForm").submit();
     }
 
     function deleteAttachment(id){

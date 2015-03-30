@@ -334,10 +334,10 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
                                 currentUser.Level));
                     }
-                    sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
+                    sqlQueryPart = string.Format(@"u.Id=currentUser.Id or  u.Id in ( {0} )", sqlQueryPart);
 
                     // Автороль должна действовать только для уровней ниже третьего
-                    sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    sqlQueryPart = string.Format(" (u.Level>3 or u.Level IS NULL) and ( {0} ) ", sqlQueryPart);
                     // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                     sqlQueryPart += string.Format(@"
                                 or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);

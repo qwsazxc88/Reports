@@ -8,5 +8,6 @@
         public virtual string AdmissionYear { get; set; }
         public virtual string GraduationYear { get; set; }
         public virtual string Speciality { get; set; }
+        public virtual string LocationEI { get; set; }
     }
 }
