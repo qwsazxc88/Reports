@@ -292,9 +292,9 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
+                model = EmploymentBl.GetPassportModel(model.UserId);
                 ViewBag.Error = error;
                 ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                model = EmploymentBl.GetPassportModel(model.UserId);
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
