@@ -14,7 +14,17 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<Dto.SurchargeDto> GetDocuments(int userId, UserRole role, int departmentId, int statusId, DateTime? beginDate, DateTime? endDate, string userName, int sortedBy, bool? sortDescending, string Number)
         {
-            throw new NotImplementedException();
+            var res=LoadAll().Where(x => x.EditDate < endDate && x.EditDate > beginDate);
+            if(!String.IsNullOrWhiteSpace(Number))
+            res = res.Where(x => x.Number.ToString() == Number);
+            return res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
+                    {
+                        UserId= x.User.Id,
+                        UserName=x.User.Name,
+                        Number=x.Number.ToString(),
+                        SurchargeDate=x.SurchargeDate
+                    
+                    });
         }
         public void AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
         {

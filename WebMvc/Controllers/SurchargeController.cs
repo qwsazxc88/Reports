@@ -8,6 +8,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Core.Dto;
 using Reports.Core.Services;
 using Reports.Presenters.Services;
+using Reports.Presenters.UI.ViewModel;
 namespace WebMvc.Controllers
 {
     public class SurchargeController : Controller
@@ -34,10 +35,16 @@ namespace WebMvc.Controllers
         }
         #endregion
 
-
+        [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            var model = new SurchargeViewModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult Index(SurchargeViewModel model)
+        {
+            return View(model);
         }
         public ActionResult AddSurcharge(int userId, int missionReportId, float sum)
         {

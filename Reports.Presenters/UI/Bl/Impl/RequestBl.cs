@@ -8868,7 +8868,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
                 var analytical=MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
-                model.UserDept =analytical!=null?analytical.Last().SaldoEnd:0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
+                model.UserDept =(analytical!=null && analytical.Any())?analytical.Last().SaldoEnd:0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
                 model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;
