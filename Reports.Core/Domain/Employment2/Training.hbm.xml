@@ -12,6 +12,6 @@
     <property name="BeginningDate" not-null="false"/>
     <property name="EndDate" not-null="false"/>
     <property name="Speciality" length="50" not-null="false"/>
-    <property name="LocationEI" length="150" not-null="false"/>
+
   </class>
 </hibernate-mapping>
