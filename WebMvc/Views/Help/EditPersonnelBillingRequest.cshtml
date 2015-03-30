@@ -152,6 +152,8 @@
             result = false;
         if(!IsFieldNotEmpty($("#Question")))
             result = false;
+        else if(!validateMaxLength($("#Question"),8192))
+            result = false;
         return result;
     }
     function ValidateAndSendForm()
@@ -163,9 +165,12 @@
     }
     function ValidateAnswer()
     {
+      var result = true;
       if(!IsFieldNotEmpty($("#Answer")))
-            return false;
+            result = false;
+       else if(!validateMaxLength($("#Answer"),8192))
+            result = false;
        $("#Operation").val(2);
-       return true;
+       return result;
     }
     </script> 
