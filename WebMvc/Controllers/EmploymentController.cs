@@ -152,8 +152,8 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 //ViewBag.Error = error;
-                ModelState.AddModelError("AgreedToPersonalDataProcessing", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 model = EmploymentBl.GetGeneralInfoModel(model.UserId);
+                ModelState.AddModelError("AgreedToPersonalDataProcessing", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -292,9 +292,9 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
+                model = EmploymentBl.GetPassportModel(model.UserId);
                 ViewBag.Error = error;
                 ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                model = EmploymentBl.GetPassportModel(model.UserId);
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -373,9 +373,9 @@ namespace WebMvc.Controllers
                 if (ValidateModel(model))
                 {
                     EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
+                    model = EmploymentBl.GetEducationModel(model.UserId);
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                     ViewBag.Error = error;
-                    model = EmploymentBl.GetEducationModel(model.UserId);
                 }
                 else
                 {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -647,8 +647,8 @@ namespace WebMvc.Controllers
                 if (ValidateModel(model))
                 {
                     EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
-                    ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                     model = EmploymentBl.GetFamilyModel(model.UserId);
+                    ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                     ViewBag.Error = error;
                 }
                 else
@@ -742,9 +742,9 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<MilitaryServiceModel, MilitaryService>(model, out error);
+                model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
                 ViewBag.Error = error;
                 ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -822,9 +822,9 @@ namespace WebMvc.Controllers
                 if (ValidateModel(model))
                 {
                     EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
+                    model = EmploymentBl.GetExperienceModel(model.UserId);
                     ViewBag.Error = error;
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                    model = EmploymentBl.GetExperienceModel(model.UserId);
                 }
                 else
                 {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -955,9 +955,9 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.ProcessSaving<ContactsModel, Contacts>(model, out error);
+                model = EmploymentBl.GetContactsModel(model.UserId);
                 ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 ViewBag.Error = error;
-                model = EmploymentBl.GetContactsModel(model.UserId);
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
@@ -1036,9 +1036,9 @@ namespace WebMvc.Controllers
                 if (ValidateModel(model))
                 {
                     EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                     ViewBag.Error = error;
-                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
                 }
                 else
                 {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
