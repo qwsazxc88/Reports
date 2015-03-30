@@ -82,7 +82,11 @@
              @*   <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div> *@
                     
-                @*<div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>*@
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                {
+                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                }
 
                  @if (UserDto.IsHelpServiceAvailable(dto))
                  {
@@ -119,7 +123,7 @@
             {
                 <div class="menuitem" id="moInstructions">@Html.ActionLink("Памятка отбывающего в командировку", "Instructions", "MissionOrder")</div>
             }
-                @if ((dto.UserRole & UserRole.Archivist) == 0 && dto.Id!=10)
+                @if ((dto.UserRole & UserRole.Archivist) == 0 && dto.Id != 10)
                 {
                     <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
                 }

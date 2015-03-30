@@ -2481,6 +2481,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
 
+            // временная проверка на создание кандидата для дальневосточной и московской дирекции
+            if (!department.Path.StartsWith("9900424.9900920.9904119.") || !department.Path.StartsWith("9900424.9901038.9901164."))
+            {
+                error = "Раздел 'Прием' пока работает в тестовом режиме для Московской и Дальневосточной дирекций!.";
+                return null;
+            }
+
             // Проверка прав руководителя на подразделение
             if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
             {
@@ -4345,8 +4352,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству
             EmploymentCandidate entity = GetCandidate(UserId);
 
-            //User user = UserDao.Load(entity.AppointmentCreator.Id);
-            User user = UserDao.Load(18458);    //для теста учетка Жени
+            User user = UserDao.Load(entity.AppointmentCreator.Id);
+            //User user = UserDao.Load(18458);    //для теста учетка Жени
 
             //проверка на наличие адреса в базе для руководителя
             if (EmailType == 2 || EmailType == 3)
@@ -4373,6 +4380,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
 
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
+                    Emailaddress = "list-priem-bezopas@sovcombank.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
                     Subject = "Оформлена заявка на прием";
                     body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо согласование сотрудника Департамента безопасности.";
@@ -4409,6 +4417,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 4: //тренеру
                     if (entity.IsManagerToTrainingSendEmail && entity.ManagerToTrainingSendEmailDate.HasValue) return;  //сообщение было послано ранее
                     defaultEmail = ConfigurationService.EmploymentManagerToTrainingEmail;
+                    Emailaddress = "list-priem-obuch@sovcombank.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
                     if (!entity.IsTrainingNeeded) return;   //обучение не требуется
                     Subject = "Оформлена заявка на прием кандидата. Требуется обучение";
@@ -4443,8 +4452,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (!string.IsNullOrEmpty(mu.Email))
                             {
-                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
-                                //Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                                //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                                Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
                             }
                         }
                         if (managers.Count != 0) break;
@@ -4462,8 +4471,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         foreach (User mu in manualRoleManagers)
                         {
                             if (!string.IsNullOrEmpty(mu.Email))
-                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
-                            //Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
+                                //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                                Emailaddress += string.IsNullOrEmpty(Emailaddress) ? "" : ", " + mu.Email;//рабочая строка
                         }
                     }
 
