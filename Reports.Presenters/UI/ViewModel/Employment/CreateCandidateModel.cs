@@ -14,7 +14,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string PassportData { get; set; }
 
         [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
-            RegularExpression(@"^(\d{3}-){3}\s\d{2}$", ErrorMessage = "Требуется формат ###-###-### ##")]
+            RegularExpression(@"^\d{3}-\d{3}-\d{3}\s\d{2}$", ErrorMessage = "Требуется формат ###-###-### ##")]
         public string SNILS { get; set; }
 
         [Display(Name = "Дата рождения"),
