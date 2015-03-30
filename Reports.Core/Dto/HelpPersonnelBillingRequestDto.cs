@@ -17,5 +17,6 @@ namespace Reports.Core.Dto
         public string RepicientName { get; set; }
         public int StatusNumber { get; set; }
         public string Status { get; set; }
+        public int Number { get; set; }
     }
 }

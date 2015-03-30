@@ -77,7 +77,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Получатель")]
         public string RecipientName { get; set; }
 
-        [Display(Name = "Дата пррочтения")]
+        [Display(Name = "Дата прочтения")]
         public string DateBeginWork { get; set; }
 
         [Display(Name = "Дата обработки")]
