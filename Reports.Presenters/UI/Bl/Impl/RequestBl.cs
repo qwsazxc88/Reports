@@ -7851,6 +7851,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailToUser(null, el);
             return true;
         }
+        public void SetDeductionDoc(int deductionNumber, int MissionReportid)
+        {
+            var d=DeductionDao.LoadAll().First(x => x.Number == deductionNumber);
+            var m = MissionReportDao.Load(MissionReportid);
+            m.Deduction = d;
+            MissionReportDao.SaveAndFlush(m);
+        }
         public bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
         {
             DeductionDao.BeginTran();

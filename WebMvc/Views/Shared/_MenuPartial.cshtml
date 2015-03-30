@@ -23,10 +23,18 @@
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     @Html.ActionLink("Удержания", "Index", "Deduction")
+                   
                 }
                 </div> 
-                @if (dto.Id==10
-                     ||(dto.UserRole & UserRole.Employee) > 0
+                 <div id="liSurcharge" class="mainMenuItem"> 
+                 @if ((dto.UserRole & UserRole.Accountant) > 0
+                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                               @Html.ActionLink("Доплата", "Index", "Surcharge")
+                    }
+                </div>
+                @if (dto.Id == 10
+                     || (dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Director) > 0
@@ -43,14 +51,14 @@
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                     else
-                    if (dto.Id == 10)
+                        if (dto.Id == 10)
                         { 
                             <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
                         }
-                    else
-                    {
+                        else
+                        {
                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
-                    }
+                        }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
