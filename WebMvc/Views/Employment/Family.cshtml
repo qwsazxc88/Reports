@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "FamilyForm" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     <input type="hidden" id="cmd" name="cmd" />
@@ -275,7 +275,7 @@
         if (IsSpouse){
             $("#IsMarried").val('false');
         }
-        $("#btnFamily").click();
+        $("#FamilyForm").submit();
     }
 
     function deleteAttachment(id){

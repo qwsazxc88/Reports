@@ -178,19 +178,19 @@
         if (IsSpouse){
             $("#IsMarried").val('false');
         }
-        $("#btnFamily").click();
+        $("#FamilyForm").submit();
     }
 
     //удаление из таблиц в воинском учете
     function DeleteExperienceRow(Id) {
         $("#RowID").val(Id);
-        $("#btnExperience").click();
+        $("#ExperienceForm").submit();
     }
 
     //удаление из таблиц в службе безопасности
     function DeleteBackgroundRow(Id) {
         $("#RowID").val(Id);
-        $("#btnBC").click();
+        $("#BackgroundCheckForm").submit();
     }
 
     function changePosition(){

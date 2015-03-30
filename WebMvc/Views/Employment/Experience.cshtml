@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ExperienceForm" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     <input type="hidden" id="IsExperienceItemNotValid" name="IsExperienceItemNotValid" value="@Model.IsExperienceItemNotValid" />
@@ -238,7 +238,7 @@
 <script type="text/javascript">
     function DeleteExperienceRow(Id) {
         $("#RowID").val(Id);
-        $("#btnExperience").click();
+        $("#ExperienceForm").submit();
     }
 
     function deleteAttachment(id){

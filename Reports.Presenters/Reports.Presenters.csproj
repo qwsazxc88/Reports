@@ -189,6 +189,7 @@
     <Compile Include="UI\ViewModel\Employment\PersonnelInfoModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PersonnelManagersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintPersonalDataObligationModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintT2Model.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\OnsiteTrainingModel.cs" />

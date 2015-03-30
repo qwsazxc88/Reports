@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ManagersModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core           
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Руководители";
 }
@@ -49,21 +52,26 @@
         <div class="formfield clear" id="isSecondaryJobContainer">
             @Html.LabelFor(m => m.IsSecondaryJob)
             @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label id="lblSJFalse" for="IsSecondaryJobFalse" @if (!Model.IsSecondaryJob)
-                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Основная</label>
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Основная</label>
             @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label id="lblSJTrue" for="IsSecondaryJobTrue" @if (Model.IsSecondaryJob)
-                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>По совместительству</label>
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>По совместительству</label>
         </div>
 
-        <div class="formfield clear" id="isExternalWorkContainer" @if(!Model.IsSecondaryJob){<text>style="display:none;"</text>}>
+        <div class="formfield clear" id="isExternalWorkContainer" @if (!Model.IsSecondaryJob)
+                                                                  {<text>style="display:none;"</text>}>
             @Html.LabelFor(m => m.IsExternalPTWorker)
             @Html.RadioButtonFor(m => m.IsExternalPTWorker, true, new { @id = "IsExternalWorkTrue" })<label id="lblEWTrue" for="IsExternalWorkTrue" @if (Model.IsExternalPTWorker)
-                                                                                                                                                     {<text>style="border-color:red;"</text>}
-                                                                                                                                                     else
-                                                                                                                                                     {<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
             @Html.RadioButtonFor(m => m.IsExternalPTWorker, false, new { @id = "IsExternalWorkFalse" })<label id="lblEWFalse" for="IsExternalWorkFalse" @if (!Model.IsExternalPTWorker)
-                                                                                                                                                       {<text>style="border-color:red;"</text>}
-                                                                                                                                                       else
-                                                                                                                                                       {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
+                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                        else
+                                                                                                                                                        {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
         </div>
 
         
@@ -117,13 +125,13 @@
         <div class="formfield clear" id="IsLiableContainer">
             @Html.LabelFor(m => m.IsLiable)
             @Html.RadioButtonFor(m => m.IsLiable, true, new { @id = "IsLiableTrue" })<label id="lblLTrue" for="IsLiableTrue" @if (Model.IsLiable)
-                                                                                                                          {<text>style="border-color:red;"</text>}
-                                                                                                                          else
-                                                                                                                          {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                             {<text>style="border-color:red;"</text>}
+                                                                                                                             else
+                                                                                                                             {<text> style="border-color:none;"</text>}>Да</label>
             @Html.RadioButtonFor(m => m.IsLiable, false, new { @id = "IsLiableFalse" })<label id="lblLFalse" for="IsLiableFalse" @if (!Model.IsLiable)
-                                                                                                                              {<text>style="border-color:red;"</text>}
-                                                                                                                              else
-                                                                                                                              {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                 {<text>style="border-color:red;"</text>}
+                                                                                                                                 else
+                                                                                                                                 {<text> style="border-color:none;"</text>}>Нет</label>
         </div>
 
         <div class="formfield clear">
@@ -131,7 +139,7 @@
             @Html.EditorFor(m => m.RequestNumber)
         </div>
 
-        @if (!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue)
+        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
                 <button id="btnManagerDraft">Черновик</button>
@@ -192,7 +200,8 @@
         <tr>
             <td>
                 <input id="add-managers-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
-                                                                  { <text>style = "display:none"</text>; } />
+                                                                                            { <text>style = "display:none"</text>;
+                                                                                            } />
             </td>
         </tr>
         <tr>

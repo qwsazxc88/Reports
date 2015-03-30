@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.Bl
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        PrintT2Model GetPrintT2Model(int userId);
         PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId);
         PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
         PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
