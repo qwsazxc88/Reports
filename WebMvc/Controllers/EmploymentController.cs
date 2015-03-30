@@ -458,7 +458,7 @@ namespace WebMvc.Controllers
             EducationModel model = EmploymentBl.GetEducationModel(itemToAdd.UserId);
 
             if (string.IsNullOrEmpty(itemToAdd.AdmissionYear) || string.IsNullOrEmpty(itemToAdd.Department) || itemToAdd.EducationTypeId == 0 || string.IsNullOrEmpty(itemToAdd.GraduationYear) ||
-                string.IsNullOrEmpty(itemToAdd.IssuedBy) || string.IsNullOrEmpty(itemToAdd.LocationEI) || string.IsNullOrEmpty(itemToAdd.Number) || string.IsNullOrEmpty(itemToAdd.Profession) ||
+                string.IsNullOrEmpty(itemToAdd.IssuedBy) || string.IsNullOrEmpty(itemToAdd.LocationEI) || string.IsNullOrEmpty(itemToAdd.Number) || //string.IsNullOrEmpty(itemToAdd.Profession) ||
                 string.IsNullOrEmpty(itemToAdd.Qualification) || string.IsNullOrEmpty(itemToAdd.Series) || string.IsNullOrEmpty(itemToAdd.Speciality))
             {
                 try
