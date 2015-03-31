@@ -1,7 +1,7 @@
-﻿@model Reports.Presenters.UI.ViewModel.AnalyticalStatementModel
+﻿@model Reports.Presenters.UI.ViewModel.SurchargeViewModel
 @{
-    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
-    ViewBag.Title = "Аналитическая ведомость";
+    Layout = "~/Views/Shared/_LayoutSurcharge.cshtml";
+    ViewBag.Title = "Ручная доплата";
 }
 @using Reports.Core
 @using Reports.Presenters.Services.Impl
@@ -100,16 +100,13 @@
     <thead>
         <tr>
         <th>№<br />П/П</th>
-        <th><a href="#" id="sort9" onclick = "SortChanged(9);">Номер<br />отчёта</a></th>
+        <th><a href="#" id="sort9" onclick = "SortChanged(9);">Номер<br />заявки</a></th>
         <th><a href="#" id="sort1" onclick = "SortChanged(1);">ФИО<br/>сотрудника</a></th>
         <th><a href="#" id="sort2" onclick = "SortChanged(2);">Должность</a></th>
         <th><a href="#" id="sort3" onclick = "SortChanged(3);">Подразделение<br />3 уровня</a></th>
         <th><a href="#" id="sort4" onclick = "SortChanged(4);">Подразделение<br />7 уровня</a></th>
-        <th><a href="#" id="sort5" onclick = "SortChanged(5);">Остаток<br />начальный</a></th>
-        <th><a href="#" id="sort6" onclick = "SortChanged(6);">Сумма,<br />выданная<br />под отчёт</a></th>
-        <th><a href="#" id="sort10" onclick = "SortChanged(10);">Сумма,<br />оплаченная<br />за сотрудника</a></th>
-        <th><a href="#" id="sort7" onclick = "SortChanged(7);">Сумма,<br />принятая<br />бухгалтерией</a></th>
-        <th><a href="#" id="sort8" onclick = "SortChanged(8);">Остаток<br />конечный</a></th>
+        <th><a href="#" id="sort5" onclick = "SortChanged(5);">Дата</a></th>
+        <th><a href="#" id="sort6" onclick = "SortChanged(6);">Сумма</a></th>
        </tr>               
     </thead>
     <tbody id="tableBody">
@@ -127,7 +124,7 @@
         $(".hasDatepicker").width("75px");
         if($("#IsBack").val()==='true') GetDocs();
         setSortFields();
-        setActiveMenuItem("moAnaliticalStatementList");
+        setActiveMenuItem("liSurcharge");
     });
     function resetFilter() {
         $("#BeginDate").val('');
@@ -188,3 +185,4 @@
         });
     }
  </script> 
+

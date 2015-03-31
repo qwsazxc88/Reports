@@ -267,6 +267,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
@@ -322,6 +323,7 @@
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ISurchargeDao.cs" />
     <Compile Include="Dao\ITerraGraphicDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITerraPointToUserDao.cs" />
@@ -497,6 +499,7 @@
     </Compile>
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
     <Compile Include="Domain\TerraPoint.cs" />
     <Compile Include="Domain\TerraPointToUser.cs" />
@@ -583,6 +586,7 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
