@@ -31,11 +31,6 @@ namespace Reports.Core.Dto.Employment2
             Required(ErrorMessage = "Обязательное поле")]
         public string InitiatingOrder { get; set; }
 
-        [Display(Name = "Место нахождения учебного заведения"),
-            StringLength(150, ErrorMessage = "Не более 150 знаков."),
-            Required(ErrorMessage = "*")]
-        public string LocationEI { get; set; }
-
         public CertificationDto()
         {
             this.CertificationDate = new DateTime();
