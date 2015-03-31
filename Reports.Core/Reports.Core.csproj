@@ -267,6 +267,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
@@ -511,7 +512,6 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
-    <Compile Include="Domain\UserToDepartment.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationType.cs" />
@@ -1147,7 +1147,6 @@
   <ItemGroup>
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <Content Include="Domain\Surcharge.hbm.xml" />
-    <Content Include="Domain\UserToDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
