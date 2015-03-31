@@ -120,7 +120,12 @@
   //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
   //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
   //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
-
+    public enum EmploymentCommentTypeEnum
+    {
+        Managers = 1,
+        PersonnelManagers = 2,
+        BackgroundCheck = 3
+    }
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,
