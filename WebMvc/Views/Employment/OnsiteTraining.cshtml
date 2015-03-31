@@ -97,10 +97,12 @@
 
                 if (Model.IsApproveByTrainerAvailable)
                 {
-        <div class="clear">
-            @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-            <button type="submit">Сохранить</button>
-        </div>
+                    <div class="clear">
+                    @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+                    <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+                    <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+                    <button type="submit" onclick="$('#IsDraft').val('false')">Сохранить</button>
+                    </div>
                 }
 }
 

@@ -274,8 +274,8 @@
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
-    $("#DateAccept").datepicker();
-    $("#ColloquyDate").datepicker();
+    $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
+    $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");
      onTypeChange();
    });

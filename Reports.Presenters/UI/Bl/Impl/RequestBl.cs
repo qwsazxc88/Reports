@@ -5699,7 +5699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Руководители до 4 уровня по ветке
             IList<User> managers = null;
             //для ветки руководства скб
-            if (user.Department.Path.StartsWith("9900424.9900426.9900427."))
+            if (user.Department!=null && user.Department.Path.StartsWith("9900424.9900426.9900427."))
             {
                 //для приказов на командировки, авансовых отчетов убираем руководителей 4 уровня
                 if (model.GetType().Name == "MissionOrderEditModel" || model.GetType().Name == "MissionReportEditModel" || model.GetType().Name == "SicklistEditModel" ||
@@ -7415,6 +7415,81 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Deduction
+        public DeductionImportModel GetDeductionImportModel(DeductionImportModel model=null)
+        {
+            if(model==null) model = new DeductionImportModel();
+            model.DateEdited = DateTime.Now.ToShortDateString();
+            model.Editor = CurrentUser.Name;
+            LoadDictionaries(model);
+            return model;
+        }
+        public IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors)
+        {
+            //Log.Debug("Файл:" + path);
+            List<Deduction> Deductions = new List<Deduction>();
+            StreamReader reader = new StreamReader(path);
+            var type=DeductionTypeDao.Load(1);
+            var kinds=DeductionKindDao.LoadAll();
+            while (!reader.EndOfStream)
+            {
+                string data = reader.ReadLine();
+                //Log.Debug("Данные:" + data);
+                Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
+                if (!m.Success) { Errors.Add("Неправильный формат данных.>"+data); continue; }
+                var el = new Deduction();
+                try
+                {
+                    el.Sum = decimal.Parse(m.Groups["Sum"].Value,System.Globalization.CultureInfo.InvariantCulture );
+                    el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
+                    el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
+                    el.EditDate = DateTime.Now;
+                    el.PhoneNumber = m.Groups["Phone"].Value.Trim();
+                    if (el.Kind == null) { Errors.Add("Не найден вид удержания.>"+data); continue; }
+                    el.Type = type;
+                    var foundedUsers = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim());
+                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь не найден по СНИЛС.>" + data); continue; };
+                    foundedUsers = foundedUsers.Where(x => x.Name.Contains(m.Groups["Surname"].Value) && x.Name.Contains( m.Groups["Name"].Value) && x.Name.Contains(m.Groups["Patronymic"].Value)).ToList();
+                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь найден по СНИЛС,но не найден по ФИО.>" + data); continue; };
+                    if(!foundedUsers.Any(x=>(x.UserRole & UserRole.Employee) > 0))
+                    {
+                        if(foundedUsers.Any(x=>(x.UserRole & UserRole.DismissedEmployee) > 0))
+                        {
+                            Errors.Add("Пользователь уволен.>" + data); continue;
+                        }
+                        Errors.Add("Пользователь не является сотрудником.>" + data); continue;
+                    }
+                    foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0 ).ToList();
+
+                    el.User = foundedUsers.First(x=>!x.ContractType.HasValue);
+                    if(el.User==null)
+                    {
+                        Errors.Add("Пользователь по совместительству.>" + data); continue;
+                    }
+                    el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
+                    el.Editor = UserDao.Load(CurrentUser.Id);
+                    el.IsFastDismissal = false;
+                    el.UploadingDocType = 4;
+                    if (Deductions.Any(x => x.User == el.User && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
+                    DeductionDao.SaveAndFlush(el);
+                    Deductions.Add(el);
+                }
+                catch (Exception ex) { Errors.Add("Ошибка при обработке данных. Не корректные данные.>"+data); continue; }
+            }
+            reader.Close();
+            Deductions = Deductions.Distinct().ToList();
+           return Deductions.ConvertAll<DeductionDto>(new Converter<Deduction, DeductionDto>(x => new DeductionDto() 
+                { 
+                    UserId=x.User.Id,
+                    UserName=x.User.Name,
+                    Sum=x.Sum,
+                    Position=x.User.Position.Name,
+                    DeductionDate=x.DeductionDate,
+                    Kind=x.Kind.Name,
+                    Id=x.Id,
+                    Number=x.Number.ToString()
+                }
+                ));
+        }
         public DeductionListModel GetDeductionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -7550,7 +7625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Status = deduction.DeleteDate.HasValue
                                    ? "Отклонена"
-                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : deduction.UploadingDocType.HasValue? "Автовыгрузка" :"Записана";
+                                   : deduction.SendTo1C.HasValue ? "Выгружена в 1С" : !deduction.UploadingDocType.HasValue? "Записана": deduction.UploadingDocType==4? "Загруженно из файла":"Автовыгрузка";
             }
         }
         protected void SetEditor(DeductionEditModel model, Deduction deduction, IUser current)
@@ -7654,6 +7729,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Types = GetDeductionTypes(false);
             model.Kindes = GetDeductionKinds();
             if (model.Id == 0 && DateTime.Now>=new DateTime(2015,4,1)) model.Kindes = model.Kindes.Where(x => x.Id != 3).ToList();
+            model.Monthes = GetDeductionMonthes();
+            //model.Users = userDao.GetUserListForDeduction();
+        }
+        protected void LoadDictionaries(DeductionImportModel model)
+        {
+            model.Types = GetDeductionTypes(false);
+            model.Kindes = GetDeductionKinds();
+            if (DateTime.Now >= new DateTime(2015, 4, 1)) model.Kindes = model.Kindes.Where(x => x.Id != 3).ToList();
             model.Monthes = GetDeductionMonthes();
             //model.Users = userDao.GetUserListForDeduction();
         }
@@ -7766,6 +7849,36 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(EnableSendEmail)
             foreach(var el in MailList)
                 SendEmailToUser(null, el);
+            return true;
+        }
+        public void SetDeductionDoc(int deductionNumber, int MissionReportid)
+        {
+            var d=DeductionDao.LoadAll().First(x => x.Number == deductionNumber);
+            var m = MissionReportDao.Load(MissionReportid);
+            m.Deduction = d;
+            MissionReportDao.SaveAndFlush(m);
+        }
+        public bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
+        {
+            DeductionDao.BeginTran();
+            try
+            {
+                for (int i = 0; i < ids.Length; i++)
+                {
+                    Deduction entity = DeductionDao.Load(ids[i]);
+                    if (entity.NotUseInAnalyticalStatement == notuse[i]) continue;
+                    entity.NotUseInAnalyticalStatement = notuse[i];
+                    DeductionDao.Save(entity);
+                }
+                DeductionDao.Flush();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("При изменении записи произошла ошибка.", ex);
+                DeductionDao.RollbackTran();
+                return false;
+            }
+            DeductionDao.CommitTran();
             return true;
         }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
@@ -8761,7 +8874,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-
+                var analytical=MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
+                model.UserDept =(analytical!=null && analytical.Any())?analytical.Last().SaldoEnd:0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
                 model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;

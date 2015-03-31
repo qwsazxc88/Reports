@@ -109,8 +109,8 @@
        var  actionGetReportsUrl = "@Url.Action("GetReports", "MissionOrder")";
         $(document).ready(function () {
             setActiveMenuItem("moAllPurchaseBookDoc");
-            $("#DocumentDate").datepicker();
-            $("#CfDate").datepicker();
+            $("#DocumentDate").datepicker({changeMonth: true, changeYear: true});
+            $("#CfDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
         });
         function RenderRecords() {

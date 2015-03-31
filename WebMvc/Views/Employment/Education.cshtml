@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "EducationForm" }))
 {
     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
@@ -64,6 +64,9 @@
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
                         </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].LocationEI)
+                        </th>
                         <th></th>
                     </tr>
                     
@@ -99,6 +102,9 @@
                             </td>
                             <td>
                                 @Model.HigherEducationDiplomas[i].Department
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].LocationEI
                             </td>
 
                             <td id="delete-foreign-language">
@@ -160,6 +166,9 @@
                         <th>
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
                         </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].LocationEI)
+                        </th>
                         <th></th>
                     </tr>
                     
@@ -183,6 +192,9 @@
                             </td>
                             <td>
                                 @Model.PostGraduateEducationDiplomas[i].Speciality
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].LocationEI
                             </td>
                             <td id="delete-foreign-language">
                                 <a href="#" onclick="DeleteEducationRow(2, @Model.PostGraduateEducationDiplomas[i].Id)">Удалить строку</a>
@@ -240,6 +252,9 @@
                             <th>
                                 @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
                             </th>
+                            <th>
+                                @Html.LabelFor(m => m.Certifications[0].LocationEI)
+                            </th>
                             <th></th>
                         </tr>
                     
@@ -263,6 +278,9 @@
                                 </td>
                                 <td>
                                     @Model.Certifications[i].InitiatingOrder
+                                </td>
+                                <td>
+                                    @Model.Certifications[i].LocationEI
                                 </td>
                                 <td id="delete-foreign-language">
                                     <a href="#" onclick="DeleteEducationRow(3, @Model.Certifications[i].Id)">Удалить строку</a>
@@ -320,6 +338,9 @@
                             <th>
                                 @Html.LabelFor(m => m.Training[0].Speciality)
                             </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].LocationEI)
+                            </th>
                             <th></th>
                         </tr>
                     
@@ -343,6 +364,9 @@
                                 </td>
                                 <td>
                                     @Model.Training[i].Speciality
+                                </td>
+                                <td>
+                                    @Model.Training[i].LocationEI
                                 </td>
                                 <td id="delete-foreign-language">
                                     <a href="#" onclick="DeleteEducationRow(4, @Model.Training[i].Id)">Удалить строку</a>
@@ -378,8 +402,10 @@
 
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit" id="btnEducation">Сохранить</button>
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -407,8 +433,9 @@
         <label for="GraduationYear" style="display:block;">Год окончания</label>@Html.TextBoxFor(m => m.GraduationYear)@Html.ValidationMessageFor(m => m.GraduationYear)
         <label for="Qualification" style="display:block;">Квалификация по диплому</label>@Html.TextBoxFor(m => m.Qualification)@Html.ValidationMessageFor(m => m.Qualification)
         <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
-        <label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)
+        @*<label for="Profession" style="display:block;">Профессия основная</label>@Html.TextBoxFor(m => m.Profession)@Html.ValidationMessageFor(m => m.Profession)*@
         <label for="Department" style="display:block;">Факультет/отделение</label>@Html.TextBoxFor(m => m.Department)@Html.ValidationMessageFor(m => m.Department)
+        <label for="LocationEI" style="display:block;">Место нахождения учебного заведения</label>@Html.TextBoxFor(m => m.LocationEI) @Html.ValidationMessageFor(m => m.LocationEI)
         
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -433,6 +460,7 @@
         <label for="AdmissionYear" style="display:block;">Год поступления</label>@Html.TextBoxFor(m => m.AdmissionYear)@Html.ValidationMessageFor(m => m.AdmissionYear)
         <label for="GraduationYear" style="display:block;">Год окончания</label>@Html.TextBoxFor(m => m.GraduationYear)@Html.ValidationMessageFor(m => m.GraduationYear)
         <label for="Speciality" style="display:block;">Специальность по диплому</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
+        <label for="LocationEI" style="display:block;">Место нахождения учебного заведения</label>@Html.TextBoxFor(m => m.LocationEI) @Html.ValidationMessageFor(m => m.LocationEI)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -446,6 +474,7 @@
         <label for="CertificateNumber" style="display:block;">Номер документа</label><input type="text" name="CertificateNumber" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" id="CertificateDateOfIssue" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="InitiatingOrder" style="display:block;">Основание</label><input type="text" name="InitiatingOrder" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="LocationEI" style="display:block;">Место нахождения учебного заведения</label>@Html.TextBoxFor(m => m.LocationEI) @Html.ValidationMessageFor(m => m.LocationEI)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -471,6 +500,7 @@
         <label for="BeginningDate" style="display:block;">с </label>@Html.EditorFor(m => m.BeginningDate)@Html.ValidationMessageFor(m => m.BeginningDate)
         <label for="EndDate" style="display:block;"> по </label>@Html.EditorFor(m => m.EndDate)@Html.ValidationMessageFor(m => m.EndDate)
         <label for="Speciality" style="display:block;">Специальность/квалификация</label>@Html.TextBoxFor(m => m.Speciality)@Html.ValidationMessageFor(m => m.Speciality)
+        <label for="LocationEI" style="display:block;">Место нахождения учебного заведения</label>@Html.TextBoxFor(m => m.LocationEI) @Html.ValidationMessageFor(m => m.LocationEI)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -485,9 +515,7 @@
     function DeleteEducationRow(Operation, Id) {
         $("#Operation").val(Operation);
         $("#RowID").val(Id);
-        //this.form.submit();
-        $("#btnEducation").click();
-        //return true;
+        $("#EducationForm").submit();
     }
 
     function deleteAttachment(id){
@@ -615,15 +643,21 @@
 
         //есди не прошли проверки открываем формы
         if ($("#IsHigherEducationNotValid").val() == 'True'){
-            $addHigherEducationDiplomaDialog.dialog("open");
+            $("#add-higher-education-diploma").click();
+            //$addHigherEducationDiplomaDialog.dialog("open");
+            //e.preventDefault();
         }
 
         if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
-            $addPostGraduateEducationDiplomaDialog.dialog("open");
+            $("#add-post-graduate-education-diploma").click();
+            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+            //e.preventDefault();
         }
 
         if ($("#IsEducationTrainingNotValid").val() == 'True'){
-            $addTrainingDialog.dialog("open");
+                $("#add-training").click();
+            //$addTrainingDialog.dialog("open");
+            //e.preventDefault();
         }
         
     });

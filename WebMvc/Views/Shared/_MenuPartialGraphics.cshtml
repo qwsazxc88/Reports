@@ -40,11 +40,18 @@
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
-                <div id="liDeduction" class="mainOn">
+                <div id="liDeduction" class="mainMenuItem">
                     @if ((dto.UserRole & UserRole.Accountant) > 0 || 
                          (dto.UserRole & UserRole.OutsourcingManager) > 0)
                     {
                         @Html.ActionLink("Удержания", "Index", "Deduction")
+                    }
+                </div>
+                <div id="liSurcharge" class="mainMenuItem"> 
+                 @if ((dto.UserRole & UserRole.Accountant) > 0
+                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                               @Html.ActionLink("Доплата", "Index", "Surcharge")
                     }
                 </div>
                 @if ((dto.UserRole & UserRole.Employee) > 0
@@ -76,16 +83,20 @@
               @*  <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>  *@
                     
-                @*iv id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>*@
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                {
+                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                }
 
                  @if (UserDto.IsHelpServiceAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
                  }
                  else if (UserDto.IsHelpQuestionAvailable(dto))
-                {
+                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
-                }
+                 }
                  else if (UserDto.IsHelpTemplateAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 

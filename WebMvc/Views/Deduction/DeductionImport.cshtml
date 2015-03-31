@@ -1,0 +1,160 @@
+﻿@model Reports.Presenters.UI.ViewModel.DeductionImportModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
+    ViewBag.Title = "Импорт заявок из файла";
+}
+<form action="/Deduction/DeductionImport" method="post" enctype = "multipart/form-data"> 
+     
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateEdited):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateEdited)
+            
+        </td>
+    </tr>
+    @* 
+     <tr>
+        <td>
+            <input type="hidden" id="KindIdHidden" name="KindIdHidden" value="@Model.KindIdHidden" />
+            @Html.LabelFor(m => m.KindId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.KindId, new SelectList(Model.Kindes, "ID", "Name")) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="hidden" id="MonthIdHidden" name="MonthIdHidden" value="@Model.MonthIdHidden" />
+            @Html.LabelFor(m => m.MonthId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.Monthes, "ID", "Name")) 
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <input type="hidden" id="DateEdited" name="DateEdited" value="@Model.DateEdited" />
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+        </td>
+    </tr>
+     *@
+    <tr>
+     <td>
+     <label>Файл:</label>
+     </td>
+     <td>
+     <input type="file" name="File"/>
+     @Html.ValidationMessageFor(m => m.File)
+     </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Editor):
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Editor) 
+         </td>
+    </tr>
+    <tr>
+    <td><button >Создать</button></td>
+    </tr>
+    </table>
+    </div>
+    <div id="Tabs">
+    <ul>
+    @if (Model.Imported != null)
+    {<li><a href="#tabs-1">Загруженные заявки (@Model.Imported.Count)</a></li>}
+    @if (Model.Errors != null)
+    {<li><a href="#tabs-2">Ошибки (@Model.Errors.Count)</a></li>}
+    </ul>
+    @if (Model.Errors!=null )
+    {
+        <div id="tabs-2">
+        <ul class="list-group">
+        @foreach (var err in Model.Errors)
+        { <li class="list-group-item"><b>@err.Substring(0,err.IndexOf('>'))</b><br />@err.Substring(err.IndexOf('>'))</li>}
+       </ul>
+        </div>
+    }
+     @if (Model.Imported != null)
+     {
+         
+        <div id="tabs-1">
+        <table class="grid" width='100%'>
+        <thead>
+        <tr>
+            <th>
+                № П/П
+            </th>
+            <th>
+                Имя пользователя
+            </th>
+            <th>
+                Дата удержания
+            </th>
+            <th>
+                Вид удержания
+            </th>
+            <th>
+                Сумма удержания
+            </th>
+            <th>
+                Номер документа
+            </th>
+        </tr>
+    </thead>
+         <tbody>
+     @{
+         int i = 1;
+     }
+     @foreach (var doc in Model.Imported)
+     {         
+         <tr>
+            <td>
+                @i
+            </td>
+            <td>
+                @doc.UserName
+            </td>
+            <td>
+                @doc.DeductionDate.ToShortDateString()
+            </td>
+            <td>
+                @doc.Kind
+            </td>
+            <td>
+                @doc.Sum
+            </td>
+            <td>
+                <a href='@Url.Action("DeductionEdit", "Deduction", new { id = doc.Id })'>@doc.Number</a>
+            </td>
+         </tr>
+         i++;
+     }
+    </tbody>
+        </table>
+        </div>
+        
+    }
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Tabs").tabs();
+        });
+    </script>
+
