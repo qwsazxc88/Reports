@@ -189,6 +189,11 @@ namespace Reports.Presenters.Services
         public const string keyDefaultDeductionEmail = "DefaultDeductionEmail";
         public const string keyAppointmentPersonnelManagerEmail = "AppointmentPersonnelManagerEmail";
         public const string keyAppointmentStaffManagerEmail = "AppointmentStaffManagerEmail";
+        public const string keyEmploymentCandidateToBackgroundCheckEmail = "EmploymentCandidateToBackgroundCheckEmail";
+        public const string keyEmploymentCandidateToManagerEmail = "EmploymentCandidateToManagerEmail";
+        public const string keyEmploymentBackgroundCheckToManagerEmail = "EmploymentBackgroundCheckToManagerEmail";
+        public const string keyEmploymentManagerToTrainingEmail = "EmploymentManagerToTrainingEmail";
+        public const string keyEmploymentManagerToHighManagerEmail = "EmploymentManagerToHighManagerEmail";
 
         #region IConfigurationService Members
 
@@ -254,6 +259,31 @@ namespace Reports.Presenters.Services
         public string AppointmentStaffManagerEmail
         {
             get { return ConfigurationManager.AppSettings[keyAppointmentStaffManagerEmail]; }
+        }
+
+        public string EmploymentCandidateToBackgroundCheckEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentCandidateToBackgroundCheckEmail]; }
+        }
+
+        public string EmploymentCandidateToManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentCandidateToManagerEmail]; }
+        }
+
+        public string EmploymentBackgroundCheckToManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentBackgroundCheckToManagerEmail]; }
+        }
+
+        public string EmploymentManagerToTrainingEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentManagerToTrainingEmail]; }
+        }
+
+        public string EmploymentManagerToHighManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentManagerToHighManagerEmail]; }
         }
 
         public int UsersDocumentsDelayInDays
