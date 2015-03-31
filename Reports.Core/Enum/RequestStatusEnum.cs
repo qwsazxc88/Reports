@@ -27,7 +27,8 @@
         AppointmentReport = 14,
         ClearanceChecklist = 15,
         HelpServiceRequest = 16,
-        HelpQuestionRequest = 17
+        HelpQuestionRequest = 17,
+        Surcharge = 18
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -119,7 +120,12 @@
   //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
   //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
   //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
-
+    public enum EmploymentCommentTypeEnum
+    {
+        Managers = 1,
+        PersonnelManagers = 2,
+        BackgroundCheck = 3
+    }
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,
@@ -134,11 +140,5 @@
         Deduction = 1,
         DeductionOnDismissal = 2,
         DeductionAfterDismissal = 3,
-    }
-    public enum EmploymentCommentTypeEnum
-    {
-        Managers = 1,
-        PersonnelManagers = 2,
-        BackgroundCheck = 3
     }
 }

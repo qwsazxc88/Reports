@@ -289,9 +289,6 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentHigherEducationDiplomaDao)).
                      ImplementedBy(typeof(EmploymentHigherEducationDiplomaDao)).
                      LifeStyle.Is(type));
-            Register(Component.For(typeof(IEmploymentCandidateCommentDao)).
-                     ImplementedBy(typeof(EmploymentCandidateCommentDao)).
-                     LifeStyle.Is(type));
             
 
             Register(Component.For(typeof(IRequestPrintFormDao)).
