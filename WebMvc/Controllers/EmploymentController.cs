@@ -1327,6 +1327,7 @@ namespace WebMvc.Controllers
         public ActionResult ManagersApproveByHigherManager(int userId, bool? higherManagerApprovalStatus)
         {
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
             EmploymentBl.ApproveCandidateByHigherManager(userId, higherManagerApprovalStatus, out error);
             if (!string.IsNullOrEmpty(error))
@@ -1336,11 +1337,19 @@ namespace WebMvc.Controllers
             }
             else
             {
-                //return View("ManagersReadOnly", EmploymentBl.GetManagersModel(userId));
-                //return View("Managers", EmploymentBl.GetManagersModel(userId));
-                //return RedirectToAction("Roster");
-                return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат утвержден!" : error);
             }
+
+            
+            if (Session["ManagersMS" + SPPath] != null)
+                Session.Remove("ManagersMS" + SPPath);
+            if (Session["ManagersMS" + SPPath] == null)
+            {
+                ModelStateDictionary mst = ModelState;
+                Session.Add("ManagersMS" + SPPath, mst);
+            }
+
+            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
