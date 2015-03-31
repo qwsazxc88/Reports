@@ -18,6 +18,7 @@
 		  <one-to-many class="SupplementaryAgreement"/>
 	  </bag>
     <property name="IsHourlySalaryBasis" not-null="true" />
+    <property name="BasicSalary" precision="15" scale="2" not-null="false"/>
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
@@ -37,8 +38,14 @@
     <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>
     <many-to-one name="Signer" class="Signer" column="SignerId" foreign-key="FK_PersonnelManagers_Signer" index="PersonnelManagers_Signer"  not-null="false"/>
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
-
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_PersonnelManagers_InsuredPersonType" index="PersonnelManagers_InsuredPersonType"  not-null="false"/>
+    <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_PersonnelManagers_Schedule" index="PersonnelManagers_Schedule"  not-null="false"/>
     <property name="Status" not-null="false"/>
+
+    <property name="ContractPoint_1_Id" not-null="false"/>
+    <property name="ContractPoint_2_Id" not-null="false"/>
+    <property name="ContractPoint_3_Id" not-null="false"/>
+    <property name="ContractPointsFio" length="100" not-null="false"/>
+    <property name="ContractPointsAddress" length="150" not-null="false"/>
   </class>
 </hibernate-mapping>

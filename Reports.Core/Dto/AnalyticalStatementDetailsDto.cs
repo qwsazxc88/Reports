@@ -20,5 +20,8 @@ namespace Reports.Core.Dto
         public float SaldoEnd { get; set; }
         public int DocType { get; set; }
         public int DocId { get; set; }
+         [DisplayFormat(DataFormatString = "{0.00}")]
+        public float PurchaseBookAllSum { get; set; }
+
     }
 }

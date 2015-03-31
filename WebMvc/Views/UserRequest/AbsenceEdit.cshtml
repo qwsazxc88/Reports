@@ -196,8 +196,8 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#DaysCount").width("50px");
             setActiveMenuItem("userAbsence");

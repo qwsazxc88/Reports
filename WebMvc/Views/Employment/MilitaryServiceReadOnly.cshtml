@@ -55,7 +55,8 @@
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.MilitaryValidityCategoryId)<br />
-        <span class="fakeFormField">@if (Model.MilitaryValidityCategoryId != 0) {@Html.DisplayFor(m => m.MilitaryValidityCategoryes.Where(x => x.Id == m.MilitaryValidityCategoryId).Single().Name)}&nbsp;</span>
+        <span class="fakeFormField">@if (Model.MilitaryValidityCategoryId != null && Model.MilitaryValidityCategoryId != 0)
+                                    {@Html.DisplayFor(m => m.MilitaryValidityCategoryes.Where(x => x.Id == m.MilitaryValidityCategoryId).Single().Name)}&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.Commissariat)<br />
@@ -63,7 +64,8 @@
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.MilitaryRelationAccountId)<br />
-        <span class="fakeFormField">@if (Model.MilitaryRelationAccountId != 0) {@Html.DisplayFor(m => m.MilitaryRelationAccounts.Where(x => x.Id == m.MilitaryRelationAccountId).Single().Name)}&nbsp;</span>
+        <span class="fakeFormField">@if (Model.MilitaryRelationAccountId != null && Model.MilitaryRelationAccountId != 0)
+                                    {@Html.DisplayFor(m => m.MilitaryRelationAccounts.Where(x => x.Id == m.MilitaryRelationAccountId).Single().Name)}&nbsp;</span>
     </div>
     <div class="formfield">
         @Html.LabelFor(m => m.CommonMilitaryServiceRegistrationInfo)<br />

@@ -111,6 +111,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
 
+        [Display(Name = "Текст комментария"),
+            StringLength(256, ErrorMessage = "Не более 256 знаков.")]
+        public string Comment { get; set; } //ok
+        public IList<EmploymentCandidateCommentDto> Comments { get; set; }
+        public bool IsAddCommentAvailable { get; set; }
+
         public BackgroundCheckModel()
         {
             this.Version = 0;

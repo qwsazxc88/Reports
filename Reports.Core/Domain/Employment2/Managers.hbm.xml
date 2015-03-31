@@ -12,7 +12,6 @@
     <property name="EmploymentConditions" length="250" not-null="false"/>
     <property name="IsSecondaryJob" not-null="true"/>
     <property name="IsExternalPTWorker" not-null="true"/>
-    <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_Managers_Schedule" index="Managers_Schedule"  not-null="false"/>
     <property name="ProbationaryPeriod" length="50" not-null="false"/>
     <property name="SalaryBasis" precision="15" scale="2" not-null="false"/>
     <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
@@ -23,6 +22,7 @@
     <property name="Bonus" precision="19" scale="2" not-null="false"/>
     <property name="IsLiable" not-null="true"/>
     <property name="RequestNumber" length="50" not-null="false"/>
+    <property name="RegistrationDate" not-null="false" />
 
     <property name="ManagerApprovalStatus" not-null="false"/>
     <many-to-one name="ApprovingManager" class="User" column="ApprovingManagerId" foreign-key="FK_Managers_ApprovingManager" index="Managers_ApprovingManager" not-null="false"/>

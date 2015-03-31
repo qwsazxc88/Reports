@@ -1,4 +1,6 @@
-﻿@model Reports.Presenters.UI.ViewModel.DeductionEditModel
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@model Reports.Presenters.UI.ViewModel.DeductionEditModel
 @{
     Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
     ViewBag.Title = "Редактирование удержания";
@@ -6,18 +8,26 @@
 
 @using (Html.BeginForm())
 {
-      if (Model.IsCreateButtonVisible)
-      { 
+       
         <div class="action-wrap">
             <table style="width:100%">
                 <tr>
                         <td colspan="2">
-                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>   
+                            @if (Model.IsCreateButtonVisible)
+                            { 
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>
+                            }
+                          
+                           @* @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                            {
+                                <input type="button" value="Загрузить заявки автоматически из внешнего файла" onclick="@("window.location.href='" + @Url.Action("DeductionImport", "Deduction") + "'");" />                        
+                            } *@
                         </td>
                     </tr>
             </table>  
         </div>  
-      }       
+         
+    
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
@@ -168,7 +178,7 @@
         @Html.LabelFor(m => m.MissionReportNumber)
         </td>
         <td>
-        @if (Model.MissionReportNumber > 0 )
+        @if (Model.MissionReportNumber > 0)
         {
         @Html.DisplayFor(m => m.MissionReportNumber)
         }
@@ -251,8 +261,8 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
-            //$("#BeginDate").datepicker();
-            $("#DismissalDate").datepicker();
+            //$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#DismissalDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#Sum").width("75px");
             setDismissalDateState();
