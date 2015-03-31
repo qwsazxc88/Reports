@@ -40,7 +40,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Должностной оклад согласно штатному расписанию")]
         public decimal? SalaryBasis { get; set; }
 
-        [Display(Name = "Ставка")]
+        [Display(Name = "Ставка"),
+            Required(ErrorMessage = "Обязательное для заполнения поле!")]
         public decimal? SalaryMultiplier { get; set; }
 
         [Display(Name = "Место работы по ТД (нас. пункт)"),
