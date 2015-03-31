@@ -62,9 +62,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string CertificateIssuedBy { get; set; }
 
         [Display(Name = "Наименование образовательного учреждения"),
-            StringLength(100, ErrorMessage = "Не более 100 знаков."),
+            StringLength(150, ErrorMessage = "Не более 150 знаков."),
             Required(ErrorMessage = "*")]
         public string IssuedBy { get; set; }
+
+        [Display(Name = "Место нахождения учебного заведения"),
+            StringLength(150, ErrorMessage = "Не более 150 знаков."),
+            Required(ErrorMessage = "*")]
+        public string LocationEI { get; set; }
 
         [Display(Name = "Серия"),
             StringLength(20, ErrorMessage = "Не более 20 знаков."),
@@ -119,6 +124,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsHigherEducationNotValid { get; set; }//для проверок заполнения сведения об образовании
         public bool IsPostGraduateEducationNotValid { get; set; }//для проверок заполнения послевузовского образования
         public bool IsEducationTrainingNotValid { get; set; }//для проверок заполнения повышения квалификации
+        public bool IsEducationCertificationsNotValid { get; set; }//для проверок заполнения аттестации
 
         public EducationModel()
         {

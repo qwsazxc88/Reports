@@ -229,7 +229,7 @@
         
         <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
+            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^\d{3}-\d{3}-\d{3}\s\d{2}$", title = "###-###-### ##" })
         </div>
         @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename) && !Model.IsValidate)
         {
@@ -311,9 +311,11 @@
     
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate) <br />
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
-        <button id="btn" type="submit">Сохранить</button>
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -437,7 +439,7 @@
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
-            $('#SNILS').mask('999-999-999-99');
+            $('#SNILS').mask('999-999-999 99');
         });     
 
         $('#gender').buttonset();        
@@ -459,8 +461,6 @@
         if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
             else {$("#DisabilityCertificateExpirationDate").show();}
 
-        //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
-        
 
         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
         {

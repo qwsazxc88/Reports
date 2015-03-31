@@ -18,7 +18,9 @@ namespace Reports.Presenters.UI.Bl
         PassportModel GetPassportModel(PassportModel model);
 
         EducationModel GetEducationModel(int? userId = null);
+
         FamilyModel GetFamilyModel(int? userId = null);
+        FamilyModel GetFamilyModel(FamilyModel model);
 
         MilitaryServiceModel GetMilitaryServiceModel(int? userId = null);
         MilitaryServiceModel GetMilitaryServiceModel(MilitaryServiceModel model);
@@ -50,6 +52,7 @@ namespace Reports.Presenters.UI.Bl
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        PrintT2Model GetPrintT2Model(int userId);
         PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId);
         PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
         PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
@@ -85,6 +88,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
         IEnumerable<SelectListItem> GetApprovalStatuses();
+        IList<ContractPointDto> GetContractPointVariants();
 
         int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
@@ -102,6 +106,15 @@ namespace Reports.Presenters.UI.Bl
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
+        /// <summary>
+        /// Добавляем комментарий
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата</param>
+        /// <param name="CommentTypeId">Вид журнала, к которому относится комментаий</param>
+        /// <param name="Comment">Текст комментария</param>
+        /// <param name="error">сообщение об ошибке</param>
+        /// <returns></returns>
+        bool SaveComments(int CandidateId, int CommentTypeId, string Comment, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
         bool IsUnlimitedEditAvailable();
