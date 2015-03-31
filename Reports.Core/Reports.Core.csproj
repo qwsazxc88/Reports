@@ -1147,7 +1147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
-    <Content Include="Domain\Surcharge.hbm.xml" />
+    <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
     <Content Include="Domain\UserToDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
