@@ -13,8 +13,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool AddSurcharge(int userId, float sum, int creatorId, DateTime editDate,  int missionReportId)
         {
-            var SurchargeDao = Ioc.Resolve<ISurchargeDao>();
-            SurchargeDao.AddDocument(userId, (decimal)sum, creatorId, editDate,missionReportId);
+            //var SurchargeDao = Ioc.Resolve<ISurchargeDao>();
+            //SurchargeDao.AddDocument(userId, (decimal)sum, creatorId, editDate,missionReportId);
             return true;
         }
     }
