@@ -523,7 +523,6 @@ namespace WebMvc.Controllers
                 model.IsPostGraduateEducationNotValid = true;
 
                 //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-                //model = EmploymentBl.GetPassportModel(model);
                 if (Session["EducationM" + SPPath] != null)
                     Session.Remove("EducationM" + SPPath);
                 if (Session["EducationM" + SPPath] == null)
@@ -694,7 +693,6 @@ namespace WebMvc.Controllers
         public ActionResult FamilyAddChild(FamilyMemberDto itemToAdd, int? CandidateId)
         {
             string error = String.Empty;
-
             FamilyModel model = EmploymentBl.GetFamilyModel(CandidateId);
             model.Children.Add(itemToAdd);
             EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
@@ -1035,7 +1033,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager | UserRole.Security)]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -1400,6 +1398,7 @@ namespace WebMvc.Controllers
         {
             PersonnelManagersModel model = null;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            
 
             if (Session["PersonnelManagersM" + SPPath] != null)
             {
@@ -1421,6 +1420,8 @@ namespace WebMvc.Controllers
                 ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
                 ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
             }
+            
+            //model = EmploymentBl.GetPersonnelManagersModel(id);
 
             return PartialView(model);
             //return View(model);
@@ -1770,9 +1771,9 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(EducationModel model)
         {
+            ModelState.Clear();
             if (!model.IsDraft)
             {
-                ModelState.Clear();
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1810,6 +1811,13 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ExperienceModel model)
         {
+            //чистим ошибки для полей из модальной формы
+            ModelState.Remove("BeginningDate");
+            ModelState.Remove("EndDate");
+            ModelState.Remove("Company");
+            ModelState.Remove("Position");
+            ModelState.Remove("CompanyContacts");
+            
             if (!model.IsDraft)
             {
                 ModelState.Clear();

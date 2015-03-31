@@ -65,8 +65,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр")]
         public string INN { get; set; } //ok
-        [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
-            RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
+        [Display(Name = "СНИЛС №", Prompt = "###-###-### ##"),
+            RegularExpression(@"^\d{3}-\d{3}-\d{3}\s\d{2}$", ErrorMessage = "Требуется формат ###-###-### ##"),
             Required(ErrorMessage = "*")]
         public string SNILS { get; set; } //ok
 
