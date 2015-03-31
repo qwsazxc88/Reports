@@ -80,10 +80,13 @@
                 }
                 @*
                 <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
-                </div> 
+                </div> *@
 
-                <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
-                </div>*@
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                {
+                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                }
 
                 @if (UserDto.IsHelpServiceAvailable(dto))
                  {
@@ -109,7 +112,7 @@
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
-                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
+                    <div id="liGPD" class="mainOn">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
         </div>  
         <div class="podmenu">
