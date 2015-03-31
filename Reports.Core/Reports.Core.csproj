@@ -497,6 +497,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
+    <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
@@ -510,6 +511,7 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\UserToDepartment.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationType.cs" />
@@ -1143,7 +1145,9 @@
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <Content Include="Domain\Surcharge.hbm.xml" />
+    <Content Include="Domain\UserToDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
