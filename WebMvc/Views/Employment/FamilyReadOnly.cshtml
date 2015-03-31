@@ -1,8 +1,16 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.FamilyModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Состав семьи";
 }
+
+@Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <fieldset class="bordered doc-wrap panel"><legend>Состав семьи</legend>
     <div class="formfield clear">
@@ -139,9 +147,16 @@
 
     @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
     {
-        <br />
+        <br /><label>Скан свидетельства о браке:</label>
         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
             @Model.MarriageCertificateScanAttachmentFilename
+        </a>
+    }
+    @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+    {
+        <br /><label>Скан свидетельства о рождении ребенка:</label>
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ChildBirthCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.ChildBirthCertificateScanAttachmentFilename
         </a>
     }
     

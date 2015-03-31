@@ -17,6 +17,8 @@ namespace Reports.Core.Domain
         // Скан свидетельства о браке
 
         public virtual bool IsFinal { get; set; }
+        public virtual bool IsValidate { get; set; }
+        public virtual int? FamilyStatusId { get; set; }
         #endregion
 
         #region Constructors

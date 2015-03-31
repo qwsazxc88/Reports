@@ -1,11 +1,21 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Общая информация";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Общая информация";
+    }
+    
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
-@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)</span>
+
 
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {    
@@ -20,23 +30,36 @@
         </div>
         <div class="formfield clearleft" style="float:right">
             <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
-                <div style="width: 96px; height: 96px; background: gray;"></div>
-                <input type="file" name="PhotoFile" />
+                <div style="width: 80px; height: 100px; background: gray;">
+                    @if (@Model.PhotoAttachmentId != 0)
+                    {
+                        <input type="image" style="width: 80px; height: 100px" id="PhotoFileVeiw" name="PhotoFileVeiw" src='@Url.Action("ViewAttachment", new { Id = Model.PhotoAttachmentId })' />
+                    }
+                </div>
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
 
-                @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename))
+                
+                    @if (@Model.PhotoAttachmentId == 0 && !Model.IsValidate)
+                    {
+                        <input type="file" id="PhotoFile" name="PhotoFile" />
+                        @Model.PhotoAttachmentFilename
+                    }
+                
+
+                @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename) && !Model.IsValidate)
                 {
                     <div class="formfield">
-                        <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                        @*@Model.PhotoAttachmentFilename*@
+                        <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId); " @*@if (!Model.IsDeleteScanAvailable)
                                                                                                    {<text>style="display:none"</text>}*@/>
                     </div>
                 }
-                
             </fieldset>            
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
             @Html.TextBoxFor(m => m.LastName)
+            <input type="hidden" id="LastName" name="LastName" value="@Model.LastName" />
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.FirstName)&nbsp;@Html.ValidationMessageFor(m => m.FirstName)<br />
@@ -65,9 +88,15 @@
                                 <th>
                                     @Html.LabelFor(m => m.NameChanges[0].Reason)
                                 </th>
+                                @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                {
+                                    <th>
+                                        @*@Html.LabelFor(m => m.NameChanges[0].Id)*@
+                                    </th>
+                                }
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="name-changes">
                             @for (var i = 0; i < Model.NameChanges.Count; i++)
                             {
                                 <tr class="name-change-row">
@@ -83,9 +112,12 @@
                                     <td>
                                         @Model.NameChanges[i].Reason
                                     </td>
-                                    @*<td id="delete-name-change">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                    {
+                                        <td>
+                                            <a onclick="DeleteNameChange(@Model.NameChanges[i].Id);" href="#" >Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -95,18 +127,14 @@
         </fieldset>
 
         <div class="formfield clear" id="gender">
-
-            @Html.RadioButtonFor(m => m.IsMale, true, new { @id = "IsMaleTrue" })<label for="IsMaleTrue">М</label>
-            @Html.RadioButtonFor(m => m.IsMale, false, new { @id = "IsMaleFalse" })<label for="IsMaleFalse">Ж</label>
+            @Html.RadioButtonFor(m => m.IsMale, true, new { @id = "IsMaleTrue" })<label id="lblMTrue" for="IsMaleTrue" @if(Model.IsMale){<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>М</label>
+            @Html.RadioButtonFor(m => m.IsMale, false, new { @id = "IsMaleFalse" })<label id="lblMFalse" for="IsMaleFalse" @if(!Model.IsMale){<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Ж</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.CitizenshipId)&nbsp;@Html.ValidationMessageFor(m => m.CitizenshipId)<br />
             @Html.DropDownListFor(m => m.CitizenshipId, Model.CitizenshipItems, string.Empty)
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
-            @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems, string.Empty)
-        </div>
+        
         <div class="formfield clear">
             @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
             @Html.EditorFor(m => m.DateOfBirth)
@@ -114,6 +142,10 @@
         <div class="formfield clear">
             <fieldset class="bordered nomargin">
             <legend class="level2">Место рождения</legend>
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.CountryBirthId)&nbsp;@Html.ValidationMessageFor(m => m.CountryBirthId)<br />
+                    @Html.DropDownListFor(m => m.CountryBirthId, Model.CountryBirthItems, string.Empty)
+                </div>
                 <div class="formfield clear">
                     @Html.LabelFor(m => m.RegionOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.RegionOfBirth)<br />
                     @Html.EditorFor(m => m.RegionOfBirth)
@@ -137,6 +169,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.ForeignLanguages[0].Level)
                                 </th>
+                                @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -149,9 +185,12 @@
                                     <td>
                                         @Model.ForeignLanguages[i].Level
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a onclick="DeleteForeignLanguages(@Model.ForeignLanguages[i].Id);" href="#" data-index=@Model.ForeignLanguages[i].Id>Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -165,11 +204,12 @@
             @Html.LabelFor(m => m.INN)&nbsp;@Html.ValidationMessageFor(m => m.INN)<br />
             @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
-        </div>
-
+        @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
+            </div>
+        }
         @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
         {
             <div class="formfield">
@@ -178,21 +218,25 @@
                     @Model.INNScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
         
         <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
+            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^\d{3}-\d{3}-\d{3}\s\d{2}$", title = "###-###-### ##" })
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
-        </div>
-
+        @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
+            </div>
+        }
         @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
         {
             <div class="formfield">
@@ -201,10 +245,13 @@
                     @Model.SNILSScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId); " @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
 
         <fieldset class="bordered nomargin clear">
@@ -225,14 +272,20 @@
                 @Html.LabelFor(m => m.DisabilityDegreeId)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityDegreeId)<br />
                 @Html.DropDownListFor(m => m.DisabilityDegreeId, Model.DisabilityDegrees, string.Empty)
             </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsDisabilityTermLess)&nbsp;@Html.ValidationMessageFor(m => m.IsDisabilityTermLess)<br />
+                @Html.CheckBoxFor(m => m.IsDisabilityTermLess)
+            </div>
             <div class="formfield">
                 @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
             </div>
-            <div class="formfield clear">
-                Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
-            </div>
-            
+            @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield clear">
+                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
+                </div>
+            }
             @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
             {
                 <div class="formfield">
@@ -241,24 +294,28 @@
                         @Model.DisabilityCertificateScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
 
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
-            @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
-        </div>        
+        
         
     </fieldset>
     
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate) <br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        @*@Html.CheckBoxFor(m => m.IsValidate)@Html.LabelFor(m => m.IsValidate)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -267,7 +324,8 @@
 <div id="add-name-change-dialog" title="Добавление изменения ФИО">
     @using (Html.BeginForm("GeneralInfoAddNameChange", "Employment", FormMethod.Post))
     {
-        <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" id="PreviousName" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        //@Html.ValidationMessageFor(
         <label for="Date" style="display:block;">Дата изменения</label><input type="text" id="DateOfNameChange" name="Date" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Place" style="display:block;">Место</label><input type="text" name="Place" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Reason" style="display:block;">Причина</label><input type="text" name="Reason" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -309,14 +367,100 @@
         return false;
     }
 
+
+    function AjaxFormRequest(result_id,form_id,url,TypePost) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+                document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
+    }
+
+
+    function DeleteNameChange(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
+        var url = actionUrl + "?NameID=" + Id;
+
+        var dataToSend = $("#add-name-change-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#name-changes-container>table");
+                var $rows = $("#name-changes-container>table .name-change-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"name-change-row\"><td>" +
+                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    function DeleteForeignLanguages(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteForeignLanguage", "Employment")";
+        var url = actionUrl + "?LanguageID=" + Id;
+
+        var dataToSend = $("#add-foreign-language-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#foreign-languages-container>table");
+                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"foreign-language-row\"><td>" +
+                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") +  "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    
     // BEGIN Add Name Change
 
     $(document).ready(function () {
+
         setActiveMenuItem("empGeneralInfo");
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
         UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999 99');
+        });     
+
         $('#gender').buttonset();        
+        //подкрашиваем пол
+        $("#IsMaleTrue").click(function(){
+            $("#lblMTrue").css("border-color", "red");
+            $("#lblMFalse").css("border-color", "silver");
+        });
+        $("#IsMaleFalse").click(function(){
+            $("#lblMTrue").css("border-color", "silver");
+            $("#lblMFalse").css("border-color", "red");
+        });
+        //обрабатываем клики по птичке
+        $("#IsDisabilityTermLess").click(function(){
+            if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+            else {$("#DisabilityCertificateExpirationDate").show();}
+        });
+
+        if($("#IsDisabilityTermLess").is(":checked")){$("#DisabilityCertificateExpirationDate").hide();}
+            else {$("#DisabilityCertificateExpirationDate").show();}
+
 
         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
         {
@@ -328,6 +472,8 @@
             buttons:
             {
                 "OK": function () {
+                    //if(!Validate1()){return false;}
+                    //$('#add-name-change-dialog form').submit();
                     processAddNameChange();
                     $(this).dialog("close");
                 },
@@ -336,6 +482,16 @@
                 }
             }
         });
+
+        function Validate1(){
+            if($("#PreviousName").val() == ""){
+                var aa = document.getElementsByName("PreviousName");
+                aa.css("backgroundColor", "red");
+                //alert("ssss");
+                return false;
+            }
+            return true;
+        }
 
         var processAddNameChange = function()
         {
@@ -352,14 +508,15 @@
                         (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
                         UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
                         (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
-                        (dataReceived[i].Reason ? dataReceived[i].Place : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
         };
 
         // END Add Name Change
+
 
         // BEGIN Add Foreign Language
 
@@ -395,8 +552,8 @@
                     $table.append(
                         "<tr class=\"foreign-language-row\"><td>" +
                         (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
-                        (dataReceived[i].Level ? dataReceived[i].Level : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") + "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
@@ -413,6 +570,8 @@
             $addForeignLanguageDialog.dialog("open");
             e.preventDefault();
         });
+
+
 
         UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
             {
@@ -431,30 +590,30 @@
             true
         );
 
-        UIHelpers.handleSelectStates($("#CitizenshipId"), [
-                {
-                    text: "РОССИЯ",
-                    actOnSelect: function(){
-                        $("#InsuredPersonTypeId").val("");
-                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                    },
-                    actOnDeselect: function(){
-                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                    }
-                },
-                {
-                    value: "",
-                    actOnSelect: function(){
-                        $("#InsuredPersonTypeId").val("");
-                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-                    },
-                    actOnDeselect: function(){
-                        $("#InsuredPersonTypeId").removeAttr("disabled");
-                    }
-                }
-            ],        
-            true
-        );
+//        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+//                {
+//                    text: "РОССИЯ",
+//                    actOnSelect: function(){
+//                        $("#InsuredPersonTypeId").val("");
+//                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                    },
+//                    actOnDeselect: function(){
+//                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                    }
+//                },
+//                {
+//                    value: "",
+//                    actOnSelect: function(){
+//                        $("#InsuredPersonTypeId").val("");
+//                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+//                    },
+//                    actOnDeselect: function(){
+//                        $("#InsuredPersonTypeId").removeAttr("disabled");
+//                    }
+//                }
+//            ],        
+//            true
+//        );
 
     });
 </script> 

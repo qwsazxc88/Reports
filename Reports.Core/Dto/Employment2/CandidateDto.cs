@@ -18,6 +18,8 @@ namespace Reports.Core.Dto.Employment2
 
         public string Department { get; set; }
 
+        public string Department3 { get; set; }
+
         public string Position { get; set; }
 
         public DateTime? EmploymentDate { get; set; }
@@ -32,6 +34,8 @@ namespace Reports.Core.Dto.Employment2
 
         public DateTime? ContractEndDate { get; set; }
 
+        public DateTime? QuestionnaireDate { get; set; }
+
 
         public DateTime? SupplementaryAgreementCreateDate { get; set; }
 
@@ -41,8 +45,13 @@ namespace Reports.Core.Dto.Employment2
 
         public int? IndefiniteContractOrderNumber { get; set; }
 
+        public string AppointmentManager { get; set; }
+        public string PersonnelName { get; set; }
+        public string Training { get; set; }
 
         public bool? IsFixedTermContract { get; set; }
+
+        public bool IsSecondaryJob { get; set; }
 
         //public bool IsFulltime { get; set; }
 
@@ -72,6 +81,8 @@ namespace Reports.Core.Dto.Employment2
 
         public bool IsContractChangedToIndefinite { get; set; }
 
+        
+
         /*
         [Display(Name = "Паспортные данные"),
             StringLength(500, ErrorMessage = "Не более 500 знаков."),
@@ -96,5 +107,34 @@ namespace Reports.Core.Dto.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string WorksAt { get; set; }
         */
+    }
+    /// <summary>
+    /// Состояние кандидата
+    /// </summary>
+    public class CandidateStateDto
+    {
+        public int Id { get; set; }
+        public bool GeneralFinal { get; set; }
+        public bool PassportFinal { get; set; }
+        public bool EducationFinal { get; set; }
+        public bool FamilyFinal { get; set; }
+        public bool MilitaryFinal { get; set; }
+        public bool ExperienceFinal { get; set; }
+        public bool ContactFinal { get; set; }
+        public bool BackgroundFinal { get; set; }
+        public bool CandidateApp { get; set; }
+        public bool CandidateReady { get; set; }
+        public bool? BackgroundApproval { get; set; }
+        public bool? TrainingApproval { get; set; }
+        public bool? ManagerApproval { get; set; }
+        public bool? PersonnelManagerApproval { get; set; }
+    }
+    /// <summary>
+    /// Список кадровиков
+    /// </summary>
+    public class CandidatePersonnelDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

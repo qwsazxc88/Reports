@@ -10,7 +10,9 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual EmploymentCandidate Candidate { get; set; }
+        public virtual string Country { get; set; } //ok
         public virtual string ZipCode { get; set; } //ok
+        public virtual string Republic { get; set; } //ok
         public virtual string Region { get; set; } //ok
         public virtual string District { get; set; } //ok
         public virtual string City { get; set; } //ok
@@ -24,6 +26,7 @@ namespace Reports.Core.Domain
         public virtual string Email { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }
+        public virtual bool IsValidate { get; set; }
         #endregion
 
         #region Constructors

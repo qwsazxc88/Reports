@@ -9,6 +9,7 @@ namespace Reports.Core.Dto
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
+        public string Dep3Name { get; set; }
         public string Dep7Name { get; set; }
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
@@ -35,8 +36,8 @@ namespace Reports.Core.Dto
         public string AirTicketType { get; set; }
         public string TrainTicketType { get; set; }
         public bool Flag { get; set; }
-        public bool IsChecked { get; set; }        
-        
+        public bool IsChecked { get; set; }
+        public float UserDebt { get; set; }
         //public bool IsApproveFlagAvailable { get; set; }
     }
     public class MissionReportDto
@@ -46,6 +47,7 @@ namespace Reports.Core.Dto
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
+        public string Dep3Name { get; set; }
         public string Dep7Name { get; set; }
         public DateTime EditDate { get; set; }
         public int ReportNumber { get; set; }
@@ -62,5 +64,6 @@ namespace Reports.Core.Dto
         public string IsDocumentsSaveToArchive { get; set; }
         public DateTime? ArchiveDate { get; set; }
         public string ArchiveNumber { get; set; }
+        public bool IsDismissal { get; set; }
     }
 }

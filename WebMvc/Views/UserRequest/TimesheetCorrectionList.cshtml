@@ -74,7 +74,7 @@
                                 @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
                             </td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -179,8 +179,8 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
         $(document).ready(function () {
-            $("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
+            $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             setSortFields();
             setActiveMenuItem("userTimesheetCorrection");

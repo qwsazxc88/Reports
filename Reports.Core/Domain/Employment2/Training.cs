@@ -10,5 +10,6 @@ namespace Reports.Core.Domain
         public virtual DateTime? BeginningDate { get; set; }
         public virtual DateTime? EndDate { get; set; }
         public virtual string Speciality { get; set; }
+        public virtual string LocationEI { get; set; }
     }
 }

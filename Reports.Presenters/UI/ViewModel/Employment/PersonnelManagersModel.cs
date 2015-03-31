@@ -30,22 +30,25 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsHourlySalaryBasis { get; set; }
 
-        [Display(Name = "Северная надбавка")]
+        [Display(Name = "Базовый оклад по штатному расписанию (руб)")]
+        public decimal? BasicSalary { get; set; }
+
+        [Display(Name = "Северная надбавка (%)")]
         public decimal? NorthernAreaAddition { get; set; }
 
-        [Display(Name = "Районный коэффициент")]
+        [Display(Name = "Районный коэффициент (%)")]
         public decimal? AreaMultiplier { get; set; }
 
-        [Display(Name = "Территориальная надбавка")]
+        [Display(Name = "Территориальная надбавка (руб)")]
         public decimal? AreaAddition { get; set; }
 
-        [Display(Name = "Надбавка за разъездной характер работы")]
+        [Display(Name = "Надбавка за разъездной характер работы (руб)")]
         public decimal? TravelRelatedAddition { get; set; }
 
-        [Display(Name = "Надбавка за квалификацию")]
+        [Display(Name = "Надбавка за квалификацию (руб)")]
         public decimal? CompetenceAddition { get; set; }
 
-        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса")]
+        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб)")]
         public decimal? FrontOfficeExperienceAddition { get; set; }
 
         [Display(Name = "Грейд")]
@@ -90,9 +93,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
-        [Display(Name = "Уровень"),
+        [Display(Name = "Ранг"),
             Required(ErrorMessage = "*"),
-            Range(2, 7, ErrorMessage = "Требуется число от 2 до 7")]
+            Range(1, 3, ErrorMessage = "Требуется число от 1 до 3")]
         public int? Level { get; set; }
 
         public bool? IsFixedTermContract { get; set; }
@@ -124,6 +127,55 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int SignerId { get; set; }
         public IEnumerable<SelectListItem> Signers { get; set; }
+
+        [Display(Name = "Вид застрахованного лица")]
+        public int? InsuredPersonTypeId { get; set; } //ok
+        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
+        public string InsuredPersonTypeSelectedName { get; set; }
+
+        [Display(Name = "Статус"),
+            Required(ErrorMessage = "*")]
+        public int StatusId { get; set; }
+        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
+
+        [Display(Name = "График работы")]
+        public int? ScheduleId { get; set; }
+        public IEnumerable<SelectListItem> Schedules { get; set; }
+
+        //пункты трудового договора
+        //для пукта 1.5
+        [Display(Name = "Пункт 1.5 трудового договора")]
+        public int? ContractPoint_1_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint1_Items { get; set; }
+
+        //для пункта 1.6
+        [Display(Name = "Пункт 1.6 трудового договора")]
+        public int? ContractPoint_2_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint2_Items { get; set; }
+
+        //для пункта 5.1
+        [Display(Name = "Пункт 5.1 трудового договора")]
+        public int? ContractPoint_3_Id { get; set; } //ok
+        public IList<ContractPointDto> ContractPoint3_Items { get; set; }
+
+        //поля вводимые по результатам выбора вариантов пуктов меню
+        [StringLength(100, ErrorMessage = "Не более 100 знаков.")]
+        public string ContractPointsFio { get; set; }
+        [StringLength(150, ErrorMessage = "Не более 150 знаков.")]
+        public string ContractPointsAddress { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
+
+        public string MessageStr { get; set; }
+        public bool IsDraftPM { get; set; } //так как все модели наследуют поле IsDraft, то на вкладках проблематично присвоить значение для параметра необходимой моделипришлось добавить параметр
+
+        [Display(Name = "Текст комментария"),
+            StringLength(256, ErrorMessage = "Не более 256 знаков.")]
+        public string Comment { get; set; } //ok
+        public IList<EmploymentCandidateCommentDto> Comments { get; set; }
+        public bool IsAddCommentAvailable { get; set; }
 
         public PersonnelManagersModel()
         {

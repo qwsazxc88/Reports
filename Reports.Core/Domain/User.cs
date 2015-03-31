@@ -101,7 +101,7 @@ namespace Reports.Core.Domain
         //}
 
         public virtual string Code { get; set; }
-
+        public virtual int? ContractType { get; set; }
 
         public virtual string Password
         {
@@ -166,7 +166,7 @@ namespace Reports.Core.Domain
 
         public virtual string Cnilc { get; set; }
         public virtual string Address { get; set; }
-
+        public virtual IList<Dismissal> Dismissals { get; set; }
         public virtual string LoginAd { get; set; }
         public virtual decimal? Rate { get; set; }
         public virtual bool GivesCredit { get; set; }

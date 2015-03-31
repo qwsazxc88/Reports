@@ -9,6 +9,7 @@ namespace Reports.Core.Dao
     public interface IUserDao : IDao<User>
     {
         User FindByLogin(string login);
+        IList<User> FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);
         bool IsLoginWithOtherIdExists(string login, int id);
         IList<User> GetUsersWithRole(UserRole role);
@@ -48,7 +49,7 @@ namespace Reports.Core.Dao
                                                              DateTime beginDate, DateTime endDate);
 
         int DeleteEmployees(DateTime date);
-        IList<IdNameDto> GetUserListForDeduction();
+        IList<IdNameDto> GetUserListForDeduction(string Name, int UserId);
 
         IList<IdNameDtoWithDates> GetUsersForManagerWithDatePagedForGraphics(int managerId, UserRole managerRole,
                                                                              DateTime beginDate, DateTime endDate,

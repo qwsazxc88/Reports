@@ -71,15 +71,25 @@ namespace WebMvc.Controllers
         }
         [HttpPost]
         public ActionResult Index(HelpServiceRequestsListModel model)
-        {
+        { 
             //ModelState.Clear();
             bool hasError = !ValidateModel(model);
             //if (!hasError)
             //    SetMissionOrderFilterToSession(model);
+            if (model.IsOriginalsReceivedChanged)
+            {
+                HelpBl.SaveDocumentsToModel(model);
+                model.IsOriginalsReceivedChanged = false;
+            }
             HelpBl.SetServiceRequestsListModel(model, hasError);
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
+        }
+        [HttpPost]
+        public string SaveServiceDocuments()
+        {
+            return("test");
         }
         protected bool ValidateModel(BeginEndCreateDate model)
         {
@@ -107,7 +117,12 @@ namespace WebMvc.Controllers
                                             {"userId", model.UserId}
                                           });
         }
-
+        public ActionResult CreateServiceRequestForFired()
+        {
+            HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(0, AuthenticationService.CurrentUser.Id);
+            model.IsForFiredUser = true;
+            return View("ServiceRequestEdit", model);
+        }
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
          | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
@@ -172,6 +187,19 @@ namespace WebMvc.Controllers
                 if (model.Operation == 1)
                     ModelState.AddModelError(string.Empty,StrCannotSendRequestWithoutTemplate);
             }*/
+
+            //if (model.TypeId == 15)
+            //{
+            //    ModelState.AddModelError("TypeId", "Данный вид услуги не доступен для создания заявки!");
+            //}
+
+            if(model.IsForFiredUser)
+            {
+                if (String.IsNullOrWhiteSpace(model.UserBirthDate)) ModelState.AddModelError("UserBirthDate", "Не заполнена дата рождения");
+                if (String.IsNullOrWhiteSpace(model.FiredUserName)) ModelState.AddModelError("FiredUserName", "Не заполнено имя");
+                if (String.IsNullOrWhiteSpace(model.FiredUserSurname)) ModelState.AddModelError("FiredUserSurname", "Не заполнено фамилия");
+                if (String.IsNullOrWhiteSpace(model.FiredUserPatronymic)) ModelState.AddModelError("FiredUserPatronymic", "Не заполнено отчество");
+            }
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(HelpServiceRequestEditModel model)
@@ -183,6 +211,7 @@ namespace WebMvc.Controllers
                 model.PeriodId = model.PeriodIdHidden;
                 model.TransferMethodTypeId = model.TransferMethodTypeIdHidden;
             }
+            model.NoteList = HelpBl.GetAllNodeTypesDto();
         }
         #endregion
         #region Service Questions

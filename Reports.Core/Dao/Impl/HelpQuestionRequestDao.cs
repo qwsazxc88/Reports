@@ -68,6 +68,7 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as RequestNumber,
                                 v.CreateDate as CreateDate,
                                 v.EndWorkDate as EndWorkDate,
+                                v.Base as Base,
                                 t.Name as QuestionType,
                                 s.Name as QuestionSubtype,
                                 hesc.SendCount as QuestionsCount,
@@ -125,7 +126,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("Dep3Name", NHibernateUtil.String);
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Base", NHibernateUtil.Boolean);
+                
         }
         public List<HelpServiceQuestionDto> GetDocuments(int userId,
                 UserRole role,
@@ -223,6 +226,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     orderBy = @" order by Dep3Name";
+                    break;
+                case 15:
+                    orderBy = @" order by Base";
                     break;
             }
             if (sortDescending.Value)
@@ -328,10 +334,10 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
                                 currentUser.Level));
                     }
-                    sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
+                    sqlQueryPart = string.Format(@"u.Id=currentUser.Id or  u.Id in ( {0} )", sqlQueryPart);
 
                     // Автороль должна действовать только для уровней ниже третьего
-                    sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    sqlQueryPart = string.Format(" (u.Level>3 or u.Level IS NULL) and ( {0} ) ", sqlQueryPart);
                     // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                     sqlQueryPart += string.Format(@"
                                 or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);

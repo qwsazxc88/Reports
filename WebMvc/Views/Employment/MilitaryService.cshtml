@@ -1,10 +1,19 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.MilitaryServiceModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Воинский учет";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Воинский учет";
+    }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -16,6 +25,10 @@
             @Html.LabelFor(m => m.IsLiableForMilitaryService)&nbsp;@Html.EditorFor(m => m.IsLiableForMilitaryService)
         </div>
         <div class="formfield clear">
+            @Html.LabelFor(m => m.RegistrationExpiration)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationExpiration)<br />
+            @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
+        </div>
+        <div class="formfield clear">
             @Html.LabelFor(m => m.MilitaryCardNumber)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardNumber)<br />
             @Html.EditorFor(m => m.MilitaryCardNumber)
         </div>
@@ -24,22 +37,28 @@
             @Html.EditorFor(m => m.MilitaryCardDate)
         </div>
         
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
-        </div>
+        @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
         {
             <div class="formfield">
-                <br />Скан:
+                <br />Скан военного билета:
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MilitaryCardScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
 
         <div class="formfield clear">
@@ -47,28 +66,28 @@
             @Html.EditorFor(m => m.ReserveCategory)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.Rank)&nbsp;@Html.ValidationMessageFor(m => m.Rank)<br />
-            @Html.DropDownListFor(m => m.Rank, Model.RankItems, string.Empty)
+            @Html.LabelFor(m => m.RankId)&nbsp;@Html.ValidationMessageFor(m => m.RankId)<br />
+            @Html.DropDownListFor(m => m.RankId, new SelectList(Model.RankItems, "Id", "Name"))
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.SpecialityCategory)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategory)<br />
-            @Html.EditorFor(m => m.SpecialityCategory)
+            @Html.LabelFor(m => m.SpecialityCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategoryId)<br />
+            @Html.DropDownListFor(m => m.SpecialityCategoryId, new SelectList(Model.SpecialityCategoryes, "Id", "Name"))
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.MilitarySpecialityCode)&nbsp;@Html.ValidationMessageFor(m => m.MilitarySpecialityCode)<br />
             @Html.EditorFor(m => m.MilitarySpecialityCode)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.CombatFitness)&nbsp;@Html.ValidationMessageFor(m => m.CombatFitness)<br />
-            @Html.EditorFor(m => m.CombatFitness)
+            @Html.LabelFor(m => m.MilitaryValidityCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryValidityCategoryId)<br />
+            @Html.DropDownListFor(m => m.MilitaryValidityCategoryId, new SelectList(Model.MilitaryValidityCategoryes, "Id", "Name"))
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Commissariat)&nbsp;@Html.ValidationMessageFor(m => m.Commissariat)<br />
             @Html.EditorFor(m => m.Commissariat)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryServiceRegistrationInfo)<br />
-            @Html.EditorFor(m => m.MilitaryServiceRegistrationInfo)
+            @Html.LabelFor(m => m.MilitaryRelationAccountId)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryRelationAccountId)<br />
+            @Html.DropDownListFor(m => m.MilitaryRelationAccountId, new SelectList(Model.MilitaryRelationAccounts, "Id", "Name"))
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.CommonMilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.CommonMilitaryServiceRegistrationInfo)<br />
@@ -79,10 +98,6 @@
             @Html.EditorFor(m => m.SpecialMilitaryServiceRegistrationInfo)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.RegistrationExpiration)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationExpiration)<br />
-            @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
-        </div>
-        <div class="formfield clear">
             <br />
             @Html.LabelFor(m => m.IsReserved)&nbsp;@Html.EditorFor(m => m.IsReserved)
         </div>
@@ -91,22 +106,28 @@
             @Html.EditorFor(m => m.MobilizationTicketNumber)
         </div>
         
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
-        </div>
+        @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename) && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
         {
             <div class="formfield">
-                <br />Скан:
+                <br />Скан мобилизационного талона:
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MobilizationTicketScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
 
         <div class="formfield clear">
@@ -131,14 +152,33 @@
     </fieldset>
 
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empMilitaryService");
         UIHelpers.attachDatepickerToInputs($('#MilitaryCardDate'), "-60:+0", true);

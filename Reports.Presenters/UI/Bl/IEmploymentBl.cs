@@ -5,29 +5,54 @@ using Reports.Presenters.UI.ViewModel;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Domain;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.Bl
 {
     public interface IEmploymentBl : IBaseBl
     {
         GeneralInfoModel GetGeneralInfoModel(int? userId = null);
+        GeneralInfoModel GetGeneralInfoModel(GeneralInfoModel model);
+
         PassportModel GetPassportModel(int? userId = null);
+        PassportModel GetPassportModel(PassportModel model);
+
         EducationModel GetEducationModel(int? userId = null);
+
         FamilyModel GetFamilyModel(int? userId = null);
+        FamilyModel GetFamilyModel(FamilyModel model);
+
         MilitaryServiceModel GetMilitaryServiceModel(int? userId = null);
+        MilitaryServiceModel GetMilitaryServiceModel(MilitaryServiceModel model);
+
         ExperienceModel GetExperienceModel(int? userId = null);
+        ExperienceModel GetExperienceModel(ExperienceModel model);
+
         ContactsModel GetContactsModel(int? userId = null);
+        ContactsModel GetContactsModel(ContactsModel model);
+
         BackgroundCheckModel GetBackgroundCheckModel(int? userId = null);
+        BackgroundCheckModel GetBackgroundCheckModel(BackgroundCheckModel model);
+
         OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null);
         ApplicationLetterModel GetApplicationLetterModel(int? userId = null);
+
         ManagersModel GetManagersModel(int? userId = null);
+        ManagersModel GetManagersModel(ManagersModel model);
+        IList<IdNameDto> GetPositionAutocomplete(string Name);
+
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
+        PersonnelManagersModel GetPersonnelManagersModel(PersonnelManagersModel model);
+
+        CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
+        CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);
         PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error);
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        PrintT2Model GetPrintT2Model(int userId);
         PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId);
         PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
         PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
@@ -53,7 +78,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetDisabilityDegrees();
         IEnumerable<SelectListItem> GetStatuses();
         IEnumerable<SelectListItem> GetDocumentTypes();
-        IEnumerable<SelectListItem> GetRanks();
         IEnumerable<SelectListItem> GetRegistrationExpirations();
         IEnumerable<SelectListItem> GetPersonnelCategories();
         IEnumerable<SelectListItem> GetPersonnelTypes();
@@ -64,6 +88,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
         IEnumerable<SelectListItem> GetApprovalStatuses();
+        IList<ContractPointDto> GetContractPointVariants();
 
         int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
@@ -81,6 +106,15 @@ namespace Reports.Presenters.UI.Bl
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
+        /// <summary>
+        /// Добавляем комментарий
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата</param>
+        /// <param name="CommentTypeId">Вид журнала, к которому относится комментаий</param>
+        /// <param name="Comment">Текст комментария</param>
+        /// <param name="error">сообщение об ошибке</param>
+        /// <returns></returns>
+        bool SaveComments(int CandidateId, int CommentTypeId, string Comment, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
         bool IsUnlimitedEditAvailable();
@@ -90,5 +124,12 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteAttachment(DeleteAttacmentModel model);
 
         bool IsFixedTermContract(int userId);
+        void DeleteNameChange(GeneralInfoModel model, int NameID);
+        void DeleteLanguage(GeneralInfoModel model, int LanguageID);
+        void DeleteEducationRow(EducationModel model);
+        void DeleteExperiensRow(ExperienceModel model);
+        void DeleteBackgroundRow(BackgroundCheckModel model);
+        void DeleteFamilyMember(FamilyModel model);
+        void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model);
     }
 }

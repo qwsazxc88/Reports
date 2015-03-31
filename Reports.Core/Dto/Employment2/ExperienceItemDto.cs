@@ -8,6 +8,9 @@ namespace Reports.Core.Dto.Employment2
 {
     public class ExperienceItemDto
     {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Начало работы"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]

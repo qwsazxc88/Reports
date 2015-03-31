@@ -83,7 +83,8 @@
                         </tr>
                         <tr>
                           <td colspan="2">
-                            <input type="submit" value="Выбрать"/>
+                            @*<input type="submit" value="Выбрать"/>*@
+                            <input type="button" value="Выбрать" onclick="$('#grid').remove(); this.form.submit();"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
                           </td>
                         </tr>
@@ -119,55 +120,61 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table id="grid" class="grid" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                        <div id="sort1" style="min-width:100px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                     <th>
-                        <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
+                        <div id="sort2" style="min-width:100px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
                     </th>
                     <th>
-                        <div id="sort14" style="min-width:130px"><a href="#" onclick = "SortChanged(14);">Подразделение<br /> 3 уровня</a></div>
+                        <div id="sort14" style="min-width:100px"><a href="#" onclick = "SortChanged(14);">Подразделение<br /> 3 уровня</a></div>
                     </th>
                     @* <th>
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>*@
                     <th>
-                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
+                        <div id="sort4"  style="min-width:180px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
+                        <div id="sort5"  style="min-width:40px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> вопроса</a></div>
+                        <div id="sort6"  style="min-width:40px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> вопроса</a></div>
                     </th>                    
                     <th>
-                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> ответа</a></div>
+                        <div id="sort7"  style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> ответа</a></div>
                     </th>
                         <th>
-                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид вопроса</a></div>
+                        <div id="sort8"  style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Вид вопроса</a></div>
                     </th>
                     <th>
-                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Тип вопроса</a></div>
+                        <div id="sort9"  style="min-width:100px"><a href="#"  onclick = "SortChanged(9);">Тип вопроса</a></div>
                     </th>
                     <th>
-                        <div id="sort10"  style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Кол-во<br/> вопросов</a></div>
+                        <div id="sort10"  style="min-width:40px"><a href="#"  onclick = "SortChanged(10);">Кол-во<br/> вопросов</a></div>
                     </th>
                     @if (Model.IsManagerColumnVisible)
                     {
                      <th>
-                        <div id="sort11"  style="min-width:70px"><a href="#"  onclick = "SortChanged(11);">Консультация<br/> для руководителя</a></div>
+                        <div id="sort11"  style="min-width:40px"><a href="#"  onclick = "SortChanged(11);">Консультация<br/> для руководителя</a></div>
                     </th>
                     }
                     <th>
-                        <div id="sort12"  style="min-width:140px"><a href="#"  onclick = "SortChanged(12);">Перенаправлено<br/> роли</a></div>
+                        <div id="sort12"  style="min-width:110px"><a href="#"  onclick = "SortChanged(12);">Перенаправлено<br/> роли</a></div>
                     </th>
+                    @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                    {
                     <th>
-                        <div id="sort13"  style="min-width:100px"><a href="#"  onclick = "SortChanged(13);">Состояние</a></div>
+                        <div id="sort15" ><a href="#" onclick="SortChanged(15);">База</a></div>
+                    </th>
+                    }
+                    <th>
+                        <div id="sort13"  style="min-width:70px"><a href="#"  onclick = "SortChanged(13);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -222,6 +229,12 @@
                                 <td>@if(doc.IsManagerQuestion){<text>Да</text>}</td>
                             }
                             <td>@doc.RedirectRole</td>
+                            @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                            {
+                            <td>
+                                @Html.CheckBox("Base", doc.Base, new { disabled = "disabled" })
+                            </td>
+                            }
                             <td style="background-color:@color">
                                 @doc.Status
                             </td>
@@ -238,8 +251,8 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("helpQuestionsRequests");

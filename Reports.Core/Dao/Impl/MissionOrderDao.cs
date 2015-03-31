@@ -45,7 +45,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("AirTicketType", NHibernateUtil.String).
-                AddScalar("TrainTicketType", NHibernateUtil.String);
+                AddScalar("TrainTicketType", NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
+                AddScalar("UserDebt",NHibernateUtil.Single);
         }
 
         #region Constants
@@ -59,8 +61,10 @@ namespace Reports.Core.Dao.Impl
                                 u.Id as UserId,
                                 u.Name as UserName,
                                 up.Name as Position,
+                                dep3.Name as Dep3Name,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
+                                (ans.Reported-ans.Ordered-ans.PurchaseBookAllSum) as UserDebt,
                                 v.EditDate as EditDate,
                                 v.IsRecalculated as IsRecalculated,
                                 ao.Id as AdditionalOrderId,
@@ -158,14 +162,16 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Users currentUser
                                     on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join (SELECT userid,SUm(Ordered) as Ordered,Sum(Reported) as Reported,Sum(PurchaseBookAllSum) as PurchaseBookAllSum FROM [dbo].[vwAnalyticalStatement] Group by userid) ans ON v.UserId=ans.UserId
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
                                         and uManagerAccount.Login like u.Login+N'R'
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
-                                left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
+                                left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId 
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3
                                 {1}";
         #endregion
 
@@ -301,6 +307,12 @@ namespace Reports.Core.Dao.Impl
                 case 24:
                     orderBy = @" order by IsRecalculated";
                     break;
+                case 25:
+                    orderBy = @" order by Dep3Name";
+                    break;
+                case 26:
+                    orderBy = @" order by UserDebt";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -410,7 +422,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or 
                         (
-                            (u.RoleId & 2) > 0
+                            ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0)
                             and
                             u.DepartmentId in
                             (
@@ -589,9 +601,12 @@ namespace Reports.Core.Dao.Impl
                             v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived as DiffSum,
                             v.AccountantAllSum as AccountantSum,
                             v.UserAllSum as UserSum,
-                            case when v.SendTo1C is null then N'Не выгружено в 1С'
-	                             else N'Выгружено в 1С' end as [Status]
+                            v.DeductionId as DeductionId,
+                            d.DeductionDate as DeductionUploadingDate,
+                            case when v.SendTo1C is null then N'Проводки не сформированы'
+	                             else N'Проводки сформированы' end as [Status]
                             from dbo.MissionReport v
+                            left join Deduction d on v.DeductionId=d.id
                             inner join dbo.Users u on v.UserId = u.id and v.[AccountantDateAccept] is not null
                             and v.[DeleteDate] is null";
             //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -603,6 +618,8 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            if (role==UserRole.Employee)
+                whereString = GetWhereForOnlyUser(whereString, userId);
             sqlQuery = GetUdSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateUdQuery(sqlQuery);
@@ -621,7 +638,44 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DiffSum", NHibernateUtil.Decimal).
                 AddScalar("AccountantSum", NHibernateUtil.Decimal).
                 AddScalar("UserSum", NHibernateUtil.Decimal).
-                AddScalar("Status", NHibernateUtil.String);
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("DeductionId",NHibernateUtil.Int32).
+                AddScalar("DeductionUploadingDate",NHibernateUtil.DateTime);
+        }
+        public IList<AnalyticalStatementDetailsDto> GetAnalyticalStatementDetails(int userId)
+        {
+            IQuery sqlQuery=Session.CreateSQLQuery("exec GetAnalyticalStatementDetails " + userId)
+                .AddScalar("Date", NHibernateUtil.DateTime)
+                .AddScalar("Ordered", NHibernateUtil.Single)
+                .AddScalar("Number", NHibernateUtil.Int32)
+                .AddScalar("Reported", NHibernateUtil.Single)
+                .AddScalar("DocType", NHibernateUtil.Int32)
+                .AddScalar("DocId",NHibernateUtil.Int32)
+                .AddScalar("PurchaseBookAllSum",NHibernateUtil.Single);
+            var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
+                .List<AnalyticalStatementDetailsDto>();
+            float Saldo = 0;
+            if (result != null)
+                foreach (var el in result)
+                {
+                    el.SaldoStart = Saldo;
+                    if (el.DocType == 4)
+                    {
+                        if (el.Date != DateTime.MinValue)
+                        {
+                            if (Saldo >= 0) Saldo += el.Ordered;
+                            else Saldo += -el.Ordered;
+                        }
+                    }
+                    else
+                    {
+                        if (el.DocType != 3 &&  el.Date!= null && el.Date!=DateTime.MinValue) Saldo = Saldo - el.Ordered + el.Reported;
+                        else if (el.Ordered > 0) Saldo = Saldo - el.Ordered;
+                    }
+                    Saldo =(float) Math.Round(Saldo, 2);
+                    el.SaldoEnd = Saldo;
+                }
+            return result;
         }
         public virtual string GetUdStatusWhere(string whereString, int statusId)
         {

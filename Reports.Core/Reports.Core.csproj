@@ -88,6 +88,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IAnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\IGpdActDao.cs" />
     <Compile Include="Dao\IGpdDetailSetDao.cs" />
     <Compile Include="Dao\IHelpFaqDao.cs" />
@@ -183,6 +188,9 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
@@ -245,6 +253,7 @@
     <Compile Include="Dao\Impl\MissionTargetDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
+    <Compile Include="Dao\Impl\NoteTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
@@ -258,6 +267,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
@@ -295,6 +305,7 @@
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
     <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
+    <Compile Include="Dao\INoteTypeDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
@@ -312,6 +323,7 @@
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ISurchargeDao.cs" />
     <Compile Include="Dao\ITerraGraphicDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITerraPointToUserDao.cs" />
@@ -386,6 +398,7 @@
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
+    <Compile Include="Domain\Employment2\EmploymentCandidateComment.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
@@ -404,6 +417,7 @@
     <Compile Include="Domain\Employment2\Signer.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
+    <Compile Include="Domain\EmploymentEducationType.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\Employment2\FamilyMember.cs" />
@@ -468,6 +482,7 @@
     <Compile Include="Domain\MissionTrainTicketType.cs" />
     <Compile Include="Domain\MissionTrainTicketTypeGradeValue.cs" />
     <Compile Include="Domain\MissionType.cs" />
+    <Compile Include="Domain\NoteType.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
     <Compile Include="Domain\RequestAttachment.cs" />
@@ -483,7 +498,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
+    <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
     <Compile Include="Domain\TerraPoint.cs" />
     <Compile Include="Domain\TerraPointToUser.cs" />
@@ -515,6 +532,8 @@
     <Compile Include="Domain\Employment2\DisabilityDegree.cs" />
     <Compile Include="Domain\Schedule.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
+    <Compile Include="Dto\AnalyticalStatementDetailsDto.cs" />
+    <Compile Include="Dto\AnalyticalStatementDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
@@ -527,6 +546,12 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
+    <Compile Include="Dto\Employment2\ContractPointDto.cs" />
+    <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
+    <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryValidityCategoryDto.cs" />
     <Compile Include="Dto\Employment2\NameChangeDto.cs" />
     <Compile Include="Dto\Employment2\HigherEducationDiplomaDto.cs" />
     <Compile Include="Dto\Employment2\PostGraduateEducationDiplomaDto.cs" />
@@ -559,8 +584,10 @@
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
     <Compile Include="Dto\MissionUserDeptsListDto.cs" />
     <Compile Include="Dto\NameDto.cs" />
+    <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
@@ -868,7 +895,9 @@
     <EmbeddedResource Include="Domain\MissionOrderComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionReport.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionReport.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\MissionReportComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -1069,7 +1098,9 @@
     <EmbeddedResource Include="Domain\HelpServicePeriod.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\HelpServiceRequestComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -1103,6 +1134,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdDetailSet.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\NoteType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentEducationType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\SicklistPaymentType.hbm.xml" />
+    <Content Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

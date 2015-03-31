@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.Bl
         SicklistEditModel GetSicklistEditModel(int id, int userId);
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
-
+        bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse);
         bool HaveAbsencesForPeriod(DateTime beginDate, DateTime endDate, int userId,
                                    int currentUserId, UserRole currentUserRole);
         bool ResetSicklistApprovals(int id, out string error);
@@ -52,7 +52,9 @@ namespace Reports.Presenters.UI.Bl
         HolidayWorkEditModel GetHolidayWorkEditModel(int id, int userId);
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
-
+        AnalyticalStatementModel GetAnalyticalStatementModel();
+        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId);
+        IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending);
         MissionListModel GetMissionListModel();
         void SetMissionListModel(MissionListModel model, bool hasError);
         MissionEditModel GetMissionEditModel(int id, int userId);
@@ -85,7 +87,8 @@ namespace Reports.Presenters.UI.Bl
         EmploymentEditModel GetEmploymentEditModel(int id, int userId);
         void ReloadDictionariesToModel(EmploymentEditModel model);
         bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);
-
+        DeductionImportModel GetDeductionImportModel(DeductionImportModel model = null);
+        IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors);
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
@@ -119,7 +122,9 @@ namespace Reports.Presenters.UI.Bl
         DeductionEditModel GetDeductionEditModel(int id);
         void SetDeductionUserInfoModel(DeductionUserInfoModel model, int userId);
         void ReloadDictionariesToModel(DeductionEditModel model);
-        bool SaveDeductionEditModel(DeductionEditModel model, out string error);
+        bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error);
+        IList<IdNameDto> GetUserListForDeduction(string Name, int UserId);
+        User GetUser(int Id);
 
         TerraGraphicsSetShortNameModel SetShortNameModel();
         TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);
@@ -179,7 +184,7 @@ namespace Reports.Presenters.UI.Bl
 
         MissionUserDeptsListModel GetMissionUserDeptsListModel();
         void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError,bool showDepts);
-
+        void SetDeductionDoc(int deductionNumber, int MissionReportid);
         PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId,
                                                                       DateTime? beginDate,
                                                                       DateTime? endDate, string userName, int sortBy,
@@ -187,6 +192,8 @@ namespace Reports.Presenters.UI.Bl
 
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
         PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId);
+
+        bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId, int kindId, int uploadingType, bool isFastDissmissal, bool EnableSendEmail);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);

@@ -1,13 +1,24 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Трудовая деятельность";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Трудовая деятельность";
+    }
 }
 
-<span style="color:red;">@ViewBag.Error</span>
+@Html.Partial("CandidateState", Model.CandidateStateModel)
 
-@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
+
+@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ExperienceForm" }))
 {
+    <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
+    <input type="hidden" id="IsExperienceItemNotValid" name="IsExperienceItemNotValid" value="@Model.IsExperienceItemNotValid" />
     @Html.HiddenFor(m => m.UserId)
     
     <fieldset class="bordered doc-wrap panel">
@@ -34,6 +45,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
                                 </th> 
+                                @if (Model.ExperienceItems != null && Model.ExperienceItems.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -55,9 +70,12 @@
                                     <td>
                                         @Model.ExperienceItems[i].CompanyContacts
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.ExperienceItems != null && Model.ExperienceItems.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a href="#" onclick="DeleteExperienceRow(@Model.ExperienceItems[i].Id)">Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -97,10 +115,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
+                </div>
+            }
             
             @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
             {
@@ -110,10 +130,13 @@
                         @Model.WorkBookScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
@@ -148,10 +171,12 @@
                     </td>
                 </tr>
             </table>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
             {
@@ -161,10 +186,13 @@
                         @Model.WorkBookSupplementScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
         </fieldset>
@@ -172,8 +200,11 @@
     </fieldset>
 
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -182,12 +213,19 @@
 <div id="add-experience-item-dialog" title="Добавление сведений о трудовой деятельности">
     @using (Html.BeginForm("ExperienceAddExperienceItem", "Employment", FormMethod.Post))
     {
+        @*
         <label for="BeginningDate" style="display:block;">Начало работы</label><input type="text" id="BeginningDate" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="EndDate" style="display:block;">Окончание работы</label><input type="text" id="EndDate" name="EndDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Company" style="display:block;">Организация</label><input type="text" name="Company" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Position" style="display:block;">Должность</label><input type="text" name="Position" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label><input type="text" name="CompanyContacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        
+        *@
+        <label for="BeginningDate" style="display:block;">с </label>@Html.EditorFor(m => m.BeginningDate)@Html.ValidationMessageFor(m => m.BeginningDate)
+        <label for="EndDate" style="display:block;"> по </label>@Html.EditorFor(m => m.EndDate)@Html.ValidationMessageFor(m => m.EndDate)
+        <label for="Company" style="display:block;">Организация</label>@Html.TextBoxFor(m => m.Company)@Html.ValidationMessageFor(m => m.Company)
+        <label for="Position" style="display:block;">Должность</label>@Html.TextBoxFor(m => m.Position)@Html.ValidationMessageFor(m => m.Position)
+        <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label>@Html.TextBoxFor(m => m.CompanyContacts)@Html.ValidationMessageFor(m => m.CompanyContacts)
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
     }
@@ -198,6 +236,27 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function DeleteExperienceRow(Id) {
+        $("#RowID").val(Id);
+        $("#ExperienceForm").submit();
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
         UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
@@ -212,8 +271,9 @@
             buttons:
             {
                 "OK": function () {
-                    processAddExperienceItem();
-                    $(this).dialog("close");
+                    $('#add-experience-item-dialog form').submit();
+                    //processAddExperienceItem();
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
                     $(this).dialog("close");
@@ -221,31 +281,35 @@
             }
         });
 
-        var processAddExperienceItem = function()
-        {
-            var url = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
-            var dataToSend = $("#add-experience-item-dialog form").serialize();
-            $.post(url, dataToSend, function(dataReceived){
-                var $tbody = $("#experience-items-container>table>tbody")
-                $tbody.empty();
-                for (var i = 0; i < dataReceived.length; i++)
-                {
-                    $tbody.append(
-                        "<tr><td>" +
-                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
-                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
-                        dataReceived[i].Company + "</td><td>" +
-                        dataReceived[i].Position + "</td><td>" +
-                        dataReceived[i].CompanyContacts + 
-                        "</td></tr>"
-                    );
-                }
-            }, "json");
-        };
+//        var processAddExperienceItem = function()
+//        {
+//            var url = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
+//            var dataToSend = $("#add-experience-item-dialog form").serialize();
+//            $.post(url, dataToSend, function(dataReceived){
+//                var $tbody = $("#experience-items-container>table>tbody")
+//                $tbody.empty();
+//                for (var i = 0; i < dataReceived.length; i++)
+//                {
+//                    $tbody.append(
+//                        "<tr><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+//                        dataReceived[i].Company + "</td><td>" +
+//                        dataReceived[i].Position + "</td><td>" +
+//                        dataReceived[i].CompanyContacts + "</td><td>" +
+//                        "<a onclick='DeleteExperienceRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+//                    );
+//                }
+//            }, "json");
+//        };
 
         $("#add-experience-item").click(function (e) {
             $addExperienceItemDialog.dialog("open");
             e.preventDefault();
         });
+
+        if ($("#IsExperienceItemNotValid").val() == 'True'){
+            $addExperienceItemDialog.dialog("open");
+        }
     });
 </script>

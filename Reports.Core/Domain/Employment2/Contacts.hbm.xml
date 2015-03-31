@@ -6,7 +6,9 @@
     <version name="Version" column= "Version"/>
 
     <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Contacts_Candidate" index="Contacts_Candidate" not-null="true"/>
+    <property name="Country" length="50" not-null="false"/>
     <property name="ZipCode" length="6" not-null="false"/>
+    <property name="Republic" length="50" not-null="false"/>
     <property name="Region" length="50" not-null="false"/>
     <property name="District" length="50" not-null="false"/>
     <property name="City" length="50" not-null="false"/>
@@ -14,12 +16,13 @@
     <property name="StreetNumber" length="10" not-null="false"/>
     <property name="Building" length="10" not-null="false"/>
     <property name="Apartment" length="10" not-null="false"/>
-    <property name="WorkPhone" length="10" not-null="false"/>
-    <property name="HomePhone" length="10" not-null="false"/>
-    <property name="Mobile" length="10" not-null="false"/>
+    <property name="WorkPhone" length="20" not-null="false"/>
+    <property name="HomePhone" length="20" not-null="false"/>
+    <property name="Mobile" length="20" not-null="false"/>
     <property name="Email" length="50" not-null="false"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
     
   </class>
 </hibernate-mapping>

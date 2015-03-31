@@ -17,10 +17,15 @@
   <many-to-one name="Editor" class="User" column="CreatorId" foreign-key="FK_Deduction_EditorUser" index="IX_Deduction_EditorUser_Id"  not-null="true"/>
   <property name="SendTo1C" not-null="false"/>
   <property name="DeleteDate" not-null="false"/>
+  <property name="PhoneNumber" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
-
+  <property name="UploadingDocType" not-null="false"/>
   <property name="EmailSendToUserDate" not-null="false"/>
-
+    <property name="NotUseInAnalyticalStatement" not-null="true"/>
+    <bag name="MissionReport" table="MissionReport" lazy="true" >
+      <key column="DeductionId" />
+      <one-to-many class="MissionReport"/>
+    </bag>
   <!--<many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>-->
 
   <!--<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">

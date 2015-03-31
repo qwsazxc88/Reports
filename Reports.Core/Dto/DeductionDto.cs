@@ -6,7 +6,7 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int Number { get; set; }
+        public string Number { get; set; }
         public DateTime EditDate { get; set; }
         public string Dep3Name { get; set; }
         public decimal Sum { get; set; }
@@ -19,5 +19,8 @@ namespace Reports.Core.Dto
         public string Status { get; set; }
         public string IsFastDismissal { get; set; }
         public int Rn { get; set; }
+        public int UploadingDocType { get; set; }
+        public int MissionReportNumber { get; set; }
+        public bool NotUseInAnalyticalStatement { get; set; }
     }
 }

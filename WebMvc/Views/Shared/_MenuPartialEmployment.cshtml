@@ -50,6 +50,13 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div> 
+                <div id="liSurcharge" class="mainMenuItem"> 
+                 @if ((dto.UserRole & UserRole.Accountant) > 0
+                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                               @Html.ActionLink("Доплата", "Index", "Surcharge")
+                    }
+                </div>
                   @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
@@ -82,7 +89,11 @@
                     </div> 
                 }*@
                     
-                @*<div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")</div>*@
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                {
+                    <div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                }
                 
                  @if (UserDto.IsHelpServiceAvailable(dto))
                  {
@@ -145,6 +156,7 @@
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {
                 <div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>
+                <div class="menuitem" id="empCandidateDocuments">@Html.ActionLink("Документы", "CandidateDocuments", "Employment")</div>
             }
             
             @*

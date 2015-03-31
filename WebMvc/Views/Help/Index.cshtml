@@ -74,6 +74,15 @@
                                 </td>
                          </tr>
                          <tr>
+                         <td>
+                            @Html.LabelFor(model=>model.TypeId):
+                         </td>
+                         <td>
+                            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+                            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                        </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -83,7 +92,8 @@
                         </tr>
                         <tr>
                           <td colspan="2">
-                            <input type="submit" value="Выбрать"/>
+                            @*<input type="submit" value="Выбрать"/>*@
+                            <input type="button" value="Выбрать" onclick="$('#grid').remove(); this.form.submit();"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
                           </td>
                         </tr>
@@ -105,7 +115,13 @@
                                 @if (Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
-                                }                                                                                     
+                                    <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
+                                } 
+                                @if (Model.IsOriginalDocsEditable)
+                                {
+                                    <input type="submit" value="Сохранить изменения" style="float:right" onclick="OriginalsChanged()" />
+                                    @Html.HiddenFor(m=>m.IsOriginalsReceivedChanged)
+                                }                                                                                    
                             </td>
                             @*<td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
@@ -123,50 +139,63 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table id="grid" class="grid" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                        <div id="sort1" style="min-width:100px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                     <th>
-                        <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
+                        <div id="sort2" style="min-width:100px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
                     </th>
                      <th>
-                        <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
+                        <div id="sort3" style="min-width:100px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>
                     <th>
-                        <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
+                        <div id="sort13" style="min-width:100px"><a href="#"  onclick = "SortChanged(13);">ФИО<br/>уволенного</a></div>
                     </th>
                     <th>
-                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
+                        <div id="sort14" style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">Примечание</a></div>
                     </th>
                     <th>
-                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
+                        <div id="sort11" style="min-width:100px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
                     </th>
                     <th>
-                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> запроса</a></div>
+                        <div id="sort4"  style="min-width:180px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br /> 7 уровня</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"  style="min-width:40px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6"  style="min-width:40px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> запроса</a></div>
                     </th>                    
                     <th>
-                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
+                        <div id="sort7"  style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
                     </th>
                     <th>
-                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
+                        <div id="sort8"  style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
                     </th>
                     <th>
-                        <div id="sort12"  style="min-width:130px"><a href="#"  onclick = "SortChanged(12);">Срок<br /> изготовления</a></div>
+                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Срок<br /> изготовления</a></div>
                     </th>
                     <th>
-                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
+                        <div id="sort9"  style="min-width:100px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
                     </th>
+                    @if (Model.IsOriginalDocsVisible)
+                            {
+                                <th>
+                                   <div id="sort15" ><a href="#"  onclick = "SortChanged(15);">Оригинал док-в <br />от сотр. получен</a></div> 
+                                </th>
+                            }
                     <th>
-                        <div id="sort10"  style="min-width:130px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
+                        <div id="sort10"  style="min-width:100px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
+                    int i=0;
                     foreach (var doc in Model.Documents)
                     {
                         string color = "white";
@@ -193,6 +222,14 @@
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
                             <td>@doc.ManagerName</td>
+                            <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
+                            <td>@if (doc.Note == null)
+                                {
+                                       <p /> 
+                                }
+                                else
+                                { <p>@doc.NoteName</p> }
+                                 </td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
@@ -202,22 +239,30 @@
                             <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
                             <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
                             *@
-                            <td>@doc.CreateDate.ToShortDateString() @doc.CreateDate.ToShortTimeString()</td>                            
-                            @if (@doc.ConfirmWorkDate == null)
+                            <td>@doc.EditDate.ToShortDateString() @doc.EditDate.ToShortTimeString()</td>                            
+                            @if (@doc.EndWorkDate == null)
                             {
                                 <td></td>
                             }
                             else
                             {
-                                <td>@doc.ConfirmWorkDate.Value.ToShortDateString() @doc.ConfirmWorkDate.Value.ToShortTimeString()</td>
+                                <td>@doc.EndWorkDate.Value.ToShortDateString() @doc.EndWorkDate.Value.ToShortTimeString()</td>
                             }
                             <td>@doc.RequestType</td>
                             <td>@doc.ProdTimeName</td>
                             <td>@doc.RequestTransferType</td>
+                            @if (Model.IsOriginalDocsVisible)
+                            {
+                                <td style="text-align:center; vertical-align:middle;">
+                                    @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived, Model.IsOriginalDocsEditable ? null : (object)new { disabled = "disabled" })
+                                    @Html.HiddenFor(m => m.Documents[i].Id)
+                                </td>
+                            }
                             <td style="background-color:@color">
                                 @doc.Status
                             </td>
                         </tr>
+                        i++;
                     }
                 }
             </table>
@@ -230,12 +275,17 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("helpAllRequests");
+        $("#IsOriginalsReceivedChanged").val(false);
     });
+    function OriginalsChanged()
+    {
+        $("#IsOriginalsReceivedChanged").val(true);
+    }
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
@@ -248,6 +298,7 @@
          $("#StatusId").val('0');
          $("#UserName").val('');
          $("#Number").val('');
+         $("#TypeId").val('0');
     }
 </script>
 

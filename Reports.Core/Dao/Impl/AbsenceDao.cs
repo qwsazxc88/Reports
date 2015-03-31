@@ -25,7 +25,9 @@ namespace Reports.Core.Dao.Impl
                DateTime? endDate,
                string userName, 
                int sortedBy,
-               bool? sortDescending)
+               bool? sortDescending,
+               string Number
+            )
         {
             string sqlQuery = string.Format(sqlSelectForList,
                                 DeleteRequestText,
@@ -40,7 +42,7 @@ namespace Reports.Core.Dao.Impl
             return GetDefaultDocuments(userId, role, departmentId, 
                 positionId, absenceTypeId,
                 requestStatusId, beginDate, endDate,userName,
-                sqlQuery,sortedBy,sortDescending);
+                sqlQuery,sortedBy,sortDescending,Number);
         }
         public IList<BeginEndDateDto> LoadForUserAndPeriod(DateTime beginDate, DateTime endDate, int userId)
         {

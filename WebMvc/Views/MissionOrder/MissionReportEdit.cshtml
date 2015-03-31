@@ -1,8 +1,27 @@
 ﻿@model Reports.Presenters.UI.ViewModel.MissionReportEditModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Редактирование авансового отчета";
 }
+<div style="visibility:hidden">
+<div id="SurchargeDialog" title="Создать доплату" >
+ @if (Model.DeductionDocNumber == 0)
+ {
+ <p>Введите номер удержания</p>
+ <input type="text" id="deductionNumber" />
+ }
+ else
+ {
+  <input type="hidden" id="deductionNumber" value='@Model.DeductionDocNumber' />   
+ }
+ <p>Введите сумму доплаты</p>
+ <input type="text" id="SurchargeSum" />
+ <input type="button" value="Создать" onclick="AddSurcharge();" />
+</div>
+</div>
 @using (Html.BeginForm("MissionReportEdit", "MissionOrder", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
 {
     <div class="doc-wrap">
@@ -172,7 +191,13 @@
                     <input type="hidden" id="IsAccountantReject" name="IsAccountantReject" value="@Model.IsAccountantReject" />
                     <input type="hidden" id="IsAccountantRejectAvailable" name="IsAccountantRejectAvailable" value="@Model.IsAccountantRejectAvailable" />
                 </div>
-                
+                @if (!Model.IsAccountantRejectAvailable && !Model.IsSend1C && (dto.UserRole & UserRole.Accountant) > 0)
+                {
+                <input style="float:right;" type="submit" value="Отменить согласование бухгалтера" onclick="return AccountantApproveCancel();" @*@if (!Model.IsAccountantApprovedHidden)
+                                                                                                                                               {<text>style="display:none"</text>}*@/>
+                }
+                <input type="hidden" id="IsAccountantApprovedCancel" name="IsAccountantApprovedCancel" value="@Model.IsAccountantApprovedCancel" />
+                <input type="hidden" id="IsSend1C" name="IsSend1C" value="@Model.IsSend1C" />
             </td>
         </tr>
         <tr>
@@ -212,6 +237,11 @@
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+            @if (Model.IsAccountantApproved && (dto.UserRole & UserRole.Accountant) > 0)
+            {
+                @*<input type="button" value="Создать удержание" onclick="" />*@
+                @*<input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> *@
+            }
             @if (Model.Id > 0)
             {
                 <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
@@ -222,6 +252,15 @@
             <input type="hidden" id="IsPrintArchivistAddressAvailable" name="IsPrintArchivistAddressAvailable" value="@Model.IsPrintArchivistAddressAvailable" />
             <input type="button" value="Документы для архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
+            @if ((dto.UserRole & UserRole.Accountant) > 0 
+                && Model.IsUserDismissal 
+                && Model.DeductionDocNumber==0
+                && DateTime.Now>=new DateTime(2015,4,1)
+                )
+                    {
+                    <input type="button" id="ExportButton" value="Выгрузить в удержания" onclick=" UploadToDeduction(2, 3, 2, 'true');" />
+                    }
+            <span id="LoadingIndicator" ></span>
             </td>
         </tr>
     </table>
@@ -331,10 +370,11 @@
         var  actionEditTranDialogUrl = "@Url.Action("EditTranDialog", "MissionOrder")";
         var  actionPrintArchivistAddressDialogUrl = "@Url.Action("PrintArchivistAddressDialog", "MissionOrder")";
         $(document).ready(function () {
-            $("#ArchiveDate").datepicker();
+            $("#SurchargeDialog").dialog({ autoOpen: false });
+            $("#ArchiveDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
-            /*$("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
+            /*$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#DaysCount").width("50px");*/
             setActiveMenuItem("moAllReports");
@@ -388,6 +428,13 @@
             if(!ValidateForm())
                 return false;
             $("#IsAccountantReject").val('True');
+            return true;
+        }
+        function AccountantApproveCancel()
+        {
+            if(!ValidateForm())
+                return false;
+            $("#IsAccountantApprovedCancel").val('True');
             return true;
         }
         function renderCostsTable(costs) {
@@ -448,8 +495,8 @@
                          disableSaveButton();
                      else
                      {
-//                        $("#BeginDate").datepicker();
-//                        $("#EndDate").datepicker();
+//                        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+//                        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
 //                        $(".hasDatepicker").width("85px"); 
 //                        $("#RealDays").width("85px"); 
 //                        $("#AllDays").width("85px"); 
@@ -470,8 +517,8 @@
                 // fix IE6  
                 bgiframe: true,
                 /*open: function (event, ui) {
-                    $("#BeginDate").datepicker();
-                    $("#EndDate").datepicker();
+                    $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+                    $("#EndDate").datepicker({changeMonth: true, changeYear: true});
                     $(".hasDatepicker").width("75px"); 
                 },*/
                 close: function (event, ui) {
@@ -732,7 +779,7 @@
             var obj = findByCostId(targets.List,costId);
             if(obj == undefined)
             {
-                addError("Не найден расход при редактировании проодки");
+                addError("Не найден расход при редактировании проводки");
                 return;
             }
             var trans = obj.Trans;
@@ -1179,6 +1226,63 @@
             );
             return false;
         }
+        function UploadToDeduction(typeId, kindId, exportType, isFast)
+    {
+        $("#LoadingIndicator").addClass("loading");
+        var a=[];
+        a.push($("#Id").val());
+        
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("ExportDocuments")',
+        type: 'POST',
+        data: {mas:a,typeId:typeId,kindId:kindId,exportType:exportType,isFast:isFast},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.Status=='Ok') $("#ExportButton").hide();
+            else
+            { 
+                alert(result.Message);
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            }
+        });
+    }
+    function AddSurcharge()
+    {
+        $("#LoadingIndicator").addClass("loading");
+        var b= @Model.Id;
+        var a= @Model.UserId;
+        var c=$("#SurchargeSum").val();
+        var d=$("#deductionNumber").val();
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("AddSurcharge","Surcharge")',
+        type: 'POST',
+        data: {userId:a,missionReportId:b,sum:c,deductionNumber:d},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.status=='Ok') 
+            {
+                $("#ExportButton").hide();
+                $("#SurchargeDialog").dialog( "close" );
+            }
+            else
+            { 
+                alert(result.Message);
+                $("#SurchargeDialog").dialog( "close" );
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            $("#SurchargeDialog").dialog( "close" );
+            }
+        });
+    }
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>
 }

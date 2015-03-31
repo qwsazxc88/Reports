@@ -12,7 +12,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Должность"),
             Required(ErrorMessage = "Обязательное поле")]
         public int PositionId { get; set; }
+        public string PositionName { get; set; }
         public IEnumerable<SelectListItem> PositionItems { get; set; }
+
+        [Display(Name = "Дата оформления"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? RegistrationDate { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
@@ -25,15 +30,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Вид занятости")]
         public bool IsSecondaryJob { get; set; } //ok
 
-        [Display(Name = "График работы")]
-        public int? ScheduleId { get; set; }
-        public IEnumerable<SelectListItem> Schedules { get; set; }
+        [Display(Name = "Вид совместительства")]
+        public bool IsExternalPTWorker { get; set; } //ok
 
         [Display(Name = "Испытательный срок"),
             StringLength(50, ErrorMessage = "Не более 200 знаков.")]
         public string ProbationaryPeriod { get; set; } //ok
 
-        [Display(Name = "Базовый должностной оклад")]
+        [Display(Name = "Должностной оклад согласно штатному расписанию")]
         public decimal? SalaryBasis { get; set; }
 
         [Display(Name = "Ставка")]
@@ -86,6 +90,20 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsApproveByManagerAvailable { get; set; }
         public bool IsApproveByHigherManagerAvailable { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
+
+        public string MessageStr { get; set; }
+        public bool IsDraftM { get; set; } //так как все модели наследуют поле IsDraft, то на вкладках проблематично присвоить значение для параметра необходимой моделипришлось добавить параметр
+
+        [Display(Name = "Текст комментария"),
+            StringLength(256, ErrorMessage = "Не более 256 знаков.")]
+        public string Comment { get; set; } //ok
+        public IList<EmploymentCandidateCommentDto> Comments { get; set; }
+        public bool IsAddCommentAvailable { get; set; }
+        //public CommentsModel CommentsModel { get; set; }//комментарии
         
         public ManagersModel()
         {

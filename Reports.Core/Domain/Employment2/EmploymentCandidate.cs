@@ -24,5 +24,19 @@ namespace Reports.Core.Domain
         public virtual EmploymentStatus Status { get; set; }
         public virtual DateTime? QuestionnaireDate { get; set; }
         public virtual User AppointmentCreator { get; set; }
+        public virtual User Personnels { get; set; }
+        public virtual bool IsTrainingNeeded { get; set; }
+        public virtual bool IsBeforEmployment { get; set; }
+        //для фиксирования рассылки
+        public virtual bool IsCandidateToBackgroundSendEmail { get; set; }
+        public virtual DateTime? CandidateToBackgroundSendEmailDate { get; set; }
+        public virtual bool IsCandidateToManagerSendEmail { get; set; }
+        public virtual DateTime? CandidateToManagerSendEmailDate { get; set; }
+        public virtual bool IsBackgroundToManagerSendEmail { get; set; }
+        public virtual DateTime? BackgroundToManagerSendEmailDate { get; set; }
+        public virtual bool IsManagerToTrainingSendEmail { get; set; }
+        public virtual DateTime? ManagerToTrainingSendEmailDate { get; set; }
+        public virtual bool IsManagerToHigherManagerSendEmail { get; set; }
+        public virtual DateTime? ManagerToHigherManagerSendEmailDate { get; set; }
     }
 }

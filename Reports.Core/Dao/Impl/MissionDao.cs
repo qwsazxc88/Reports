@@ -20,6 +20,8 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType," +
+                                sqlPositionStandartSelector +
+                                sqlDepartamentStandartSelector +
                                 RequestStatusStandardSelector +
                                 @",
                                 case when v.IsAdditionalOrderExists = 1 then N'Да' else N'Нет' end as IsAdditionalOrderExists,
@@ -29,7 +31,10 @@ namespace Reports.Core.Dao.Impl
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " + sqlUManagerAccountJoin + @"
+                                " 
+                                +sqlDepartamentJoin
+                                +sqlPositionJoin
+                                + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin;
         public MissionDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -46,7 +51,9 @@ namespace Reports.Core.Dao.Impl
                DateTime? endDate,
                string userName, 
                int sortedBy,
-               bool? sortDescending)
+               bool? sortDescending,
+               string docNumber
+            )
         {
             string sqlQuery = string.Format(sqlMissionSelectForList,
                                             DeleteRequestText,
@@ -60,7 +67,7 @@ namespace Reports.Core.Dao.Impl
             return GetMissionDocuments(userId, role, departmentId,
                 positionId, typeId,
                 requestStatusId, beginDate, endDate, userName,
-                sqlQuery, sortedBy, sortDescending);
+                sqlQuery, sortedBy, sortDescending, docNumber);
 
         }
         public virtual IList<MissionDto> GetMissionDocuments(
@@ -75,7 +82,8 @@ namespace Reports.Core.Dao.Impl
                                string userName,
                                string sqlQuery,
                                int sortedBy,
-                               bool? sortDescending
+                               bool? sortDescending,
+                               string docNumber
            )
         {
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -85,6 +93,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetDocumentNumberWhere(whereString, docNumber);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -106,7 +115,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("IsAdditionalOrderExists", NHibernateUtil.String).
-                AddScalar("Flag", NHibernateUtil.Boolean);
+                AddScalar("Flag", NHibernateUtil.Boolean).
+                AddScalar("Position",NHibernateUtil.String).
+                AddScalar("Dep7Name",NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String);
         }
 
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
@@ -147,6 +159,15 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 9:
                     sqlQuery += @" order by Flag";
+                    break;
+                case 10:
+                    sqlQuery += @" order by Position";
+                    break;
+                case 11:
+                    sqlQuery += @" order by Dep3Name";
+                    break;
+                case 12:
+                    sqlQuery += @" order by Dep7Name";
                     break;
                 /*case 8:
                     sqlQuery += @" order by EndDate";

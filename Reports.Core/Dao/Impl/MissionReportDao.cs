@@ -22,10 +22,12 @@ namespace Reports.Core.Dao.Impl
                                 u.Id as UserId,
                                 u.Name as UserName,
                                 up.Name as Position,
+                                dep3.Name as Dep3Name,
                                 dep.Name as Dep7Name,
                                 v.EditDate as EditDate,
                                 v.Number as ReportNumber,
                                 o.Number as OrderNumber,
+                                case when dis.UserDateAccept is not null AND dis.DeleteDate is null Then 'True' else 'False' end AS IsDismissal,
                                 -- t.Name as MissionType,  
                                 -- case when v.Kind = 1 then  N' Внутренняя'
                                 --     when v.Kind = 2 then  N' Внешняя'
@@ -75,6 +77,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Users currentUser
                                     on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join Dismissal dis ON dis.UserId=v.UserId AND dis.SendTo1C is not null
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
@@ -82,7 +85,8 @@ namespace Reports.Core.Dao.Impl
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[Users] uBuh on uBuh.Id = v.AcceptAccountant
-                                inner join dbo.Department dep on u.DepartmentId = dep.Id";
+                                inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3";
                                 //{0}";
 
         public MissionReportDao(ISessionManager sessionManager)
@@ -232,7 +236,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or 
                         (
-                            (u.RoleId & 2) > 0
+                            ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0)
                             and
                             u.DepartmentId in
                             (
@@ -428,6 +432,9 @@ namespace Reports.Core.Dao.Impl
                 case 18:
                     orderBy = @" order by UserSumReceived";
                     break;
+                case 19:
+                    orderBy = @" order by Dep3Name";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -466,6 +473,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("Position", NHibernateUtil.String).
+                AddScalar("Dep3Name",NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("ReportNumber", NHibernateUtil.Int32).
@@ -491,7 +499,8 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("BeginDate", NHibernateUtil.DateTime).
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("IsDismissal", NHibernateUtil.Boolean);
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)

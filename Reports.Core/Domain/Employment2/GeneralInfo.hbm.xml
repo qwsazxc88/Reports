@@ -17,7 +17,8 @@
     </bag>
     <property name="IsMale" not-null="false"/>
     <many-to-one name="Citizenship" class="Country" column="CitizenshipId" foreign-key="FK_GeneralInfo_Citizenship" index="GeneralInfo_Citizenship"  not-null="false"/>
-    <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_GeneralInfo_InsuredPersonType" index="GeneralInfo_InsuredPersonType"  not-null="false"/>
+    <many-to-one name="CountryBirth" class="Country" column="CountryBirthId" foreign-key="FK_GeneralInfo_Country" index="GeneralInfo_Country"  not-null="false"/>
+    
     <property name="DateOfBirth" not-null="false"/>
     <property name="RegionOfBirth" length="50" not-null="false"/>
     <property name="DistrictOfBirth" length="50" not-null="false"/>
@@ -34,11 +35,13 @@
     <property name="DisabilityCertificateDateOfIssue" not-null="false"/>
     <many-to-one name="DisabilityDegree" class="DisabilityDegree" column="DisabilityDegreeId" foreign-key="FK_GeneralInfo_DisabilityDegree" index="GeneralInfo_DisabilityDegree"  not-null="false"/>
     <property name="DisabilityCertificateExpirationDate" not-null="false"/>
+    <property name="IsDisabilityTermLess" not-null="false"/>
     
-    <property name="Status" not-null="false"/>
+ 
     <property name="AgreedToPersonalDataProcessing" not-null="true"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
     
   </class>
 </hibernate-mapping>

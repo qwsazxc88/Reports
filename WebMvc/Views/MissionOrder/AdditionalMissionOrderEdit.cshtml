@@ -269,8 +269,8 @@
     <script type="text/javascript">
         var  actionEditTargetDialogUrl = "@Url.Action("EditTargetDialog", "MissionOrder")";
         $(document).ready(function () {
-            /*$("#BeginDate").datepicker();
-            $("#EndDate").datepicker();
+            /*$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#EndDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#DaysCount").width("50px");*/
             //setActiveMenuItem("moAllOrders");
@@ -396,8 +396,8 @@
                          disableSaveButton();
                      else
                      {
-                        $("#BeginDate").datepicker();
-                        $("#EndDate").datepicker();
+                        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+                        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
                         $(".hasDatepicker").width("85px"); 
                         $("#RealDays").width("85px"); 
                         $("#AllDays").width("85px"); 
@@ -418,8 +418,8 @@
                 // fix IE6  
                 bgiframe: true,
                 /*open: function (event, ui) {
-                    $("#BeginDate").datepicker();
-                    $("#EndDate").datepicker();
+                    $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+                    $("#EndDate").datepicker({changeMonth: true, changeYear: true});
                     $(".hasDatepicker").width("75px"); 
                 },*/
                 close: function (event, ui) {

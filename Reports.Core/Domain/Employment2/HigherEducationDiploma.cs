@@ -2,6 +2,7 @@
 {
     public class HigherEducationDiploma : AbstractEntityWithVersion
     {
+        public virtual EmploymentEducationType EducationTypes { get; set; }
         public virtual string IssuedBy { get; set; }
         public virtual string Series { get; set; }
         public virtual string Number { get; set; }
@@ -11,5 +12,6 @@
         public virtual string Speciality { get; set; }
         public virtual string Profession { get; set; }
         public virtual string Department { get; set; }
+        public virtual string LocationEI { get; set; }
     }
 }

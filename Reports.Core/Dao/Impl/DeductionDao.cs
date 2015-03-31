@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
                                @"select 
                                 v.Id as Id,
                                 u.Id as UserId,
-                                v.Number,
+                                v.Number as Number,
                                 v.EditDate,
                                 dep3.Name as Dep3Name,
                                 v.Sum,
@@ -26,10 +26,15 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 p.Name as Position,
                                 k.Name as Kind,
+                                v.NotUseInAnalyticalStatement as NotUseInAnalyticalStatement,
+                                v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
+                                mr.Number as MissionReportNumber,
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
+                                     when v.UploadingDocType is not null and v.UploadingDocType!=4 and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
+                                     when v.UploadingDocType = 4 and v.SendTo1C is null and v.DeleteDate is null then N'Загруженно из файла'
                                      else N'Записана'
                                 end as Status,
                                 case when IsFastDismissal is null then null  
@@ -38,6 +43,7 @@ namespace Reports.Core.Dao.Impl
                                 end as IsFastDismissal
                                 from dbo.Deduction v
                                 -- inner join dbo.DeductionType t on v.TypeId = t.Id
+                                left join dbo.MissionReport mr on v.id=mr.DeductionId
                                 inner join dbo.DeductionKind k on v.KindId = k.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 left join dbo.Position p on p.Id = u.PositionId
@@ -60,7 +66,8 @@ namespace Reports.Core.Dao.Impl
                                 string userName,
                                 //string sqlQuery,
                                 int sortedBy,
-                                bool? sortDescending
+                                bool? sortDescending,
+                                string Number
             )
         {
             string whereString = GetWhereForUserRole(role, userId);
@@ -70,6 +77,7 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetDocumentNumberWhere(whereString, Number);
             string sqlQuery = GetSqlQueryOrdered(sqlSelectForDeduction, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -96,7 +104,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Rn", NHibernateUtil.Int32).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
-                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Number", NHibernateUtil.String).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Sum", NHibernateUtil.Decimal).
@@ -108,7 +116,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("DismissalDate", NHibernateUtil.DateTime).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("IsFastDismissal", NHibernateUtil.String);
+                AddScalar("IsFastDismissal", NHibernateUtil.String).
+                AddScalar("UploadingDocType",NHibernateUtil.Int32).
+                AddScalar("MissionReportNumber",NHibernateUtil.Int32).
+                AddScalar("NotUseInAnalyticalStatement",NHibernateUtil.Boolean);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -135,15 +146,17 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Записана"
-                        statusWhere = @"SendTo1C is null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is null and v.DeleteDate is null";
                         break;
                     case 2://2, "Выгружена в 1С"
-                        statusWhere = @"SendTo1C is not null and DeleteDate is null";
+                        statusWhere = @"v.SendTo1C is not null and v.DeleteDate is null";
                         break;
                     case 3://3, "Отклонена"
-                        statusWhere = @"[DeleteDate] is not null";
+                        statusWhere = @"v.[DeleteDate] is not null";
                         break;
-                   
+                    case 4: //4, "Автовыгрузка"
+                        statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -221,6 +234,12 @@ namespace Reports.Core.Dao.Impl
                 case 13:
                     orderBy = @" order by IsFastDismissal";
                     break;
+                case 14:
+                    orderBy = @" order by mr.Number";
+                    break;
+                case 15:
+                    orderBy = @" order by NotUseInAnalyticalStatement";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -241,6 +260,7 @@ namespace Reports.Core.Dao.Impl
                 return new DateTime?();
             return dto.DeductionDate;
         }
+        
     }
     public class DeductionDateTimeDto
     {

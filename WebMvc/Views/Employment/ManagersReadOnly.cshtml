@@ -1,0 +1,336 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ManagersModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core           
+@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Руководители";
+}
+
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
+
+@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.IsDraftM)
+    
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Руководители</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionId):
+            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
+            <input type="hidden" id="PositionId" name="PositionId" value="@Model.PositionId"/>
+            @*<input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>*@
+            @Html.ValidationMessageFor(model => model.PositionId)
+            @*
+            @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
+            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
+            *@
+        </div>
+        
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DepartmentName):
+        </div>
+        <div class="formfield">
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            @Html.HiddenFor(m => m.DepartmentName)
+            @Html.HiddenFor(m => m.DepartmentId)
+        </div>
+        <div class="formfield clear">
+            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment();"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
+            @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.RegistrationDate)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationDate)<br />
+            @Html.EditorFor(m => m.RegistrationDate)
+        </div>
+        <div class="formfield clear" id="isSecondaryJobContainer">
+            @Html.LabelFor(m => m.IsSecondaryJob)
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label id="lblSJFalse" for="IsSecondaryJobFalse" @if (!Model.IsSecondaryJob)
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Основная</label>
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label id="lblSJTrue" for="IsSecondaryJobTrue" @if (Model.IsSecondaryJob)
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>По совместительству</label>
+        </div>
+
+        <div class="formfield clear" id="isExternalWorkContainer" @if (!Model.IsSecondaryJob)
+                                                                  {<text>style="display:none;"</text>}>
+            @Html.LabelFor(m => m.IsExternalPTWorker)
+            @Html.RadioButtonFor(m => m.IsExternalPTWorker, true, new { @id = "IsExternalWorkTrue" })<label id="lblEWTrue" for="IsExternalWorkTrue" @if (Model.IsExternalPTWorker)
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:silver;"</text>}>Внешний совместитель</label>
+            @Html.RadioButtonFor(m => m.IsExternalPTWorker, false, new { @id = "IsExternalWorkFalse" })<label id="lblEWFalse" for="IsExternalWorkFalse" @if (!Model.IsExternalPTWorker)
+                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                        else
+                                                                                                                                                        {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
+        </div>
+
+        <div class="formfield ">
+            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
+            @Html.EditorFor(m => m.ProbationaryPeriod)
+        </div>
+        
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
+            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
+        </div>
+        
+        <div class="formfield">
+            @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
+            @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
+            @Html.EditorFor(m => m.WorkCity)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+            @Html.EditorFor(m => m.PersonalAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.EditorFor(m => m.PositionAddition)
+        </div>
+        <div class="formfield clear" id="isFrontContainer">
+            @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label id="lblFTrue" for="IsFrontTrue" @if (Model.IsFront)
+                                                                                                                          {<text>style="border-color:red;"</text>}
+                                                                                                                          else
+                                                                                                                          {<text> style="border-color:none;"</text>}>Фронт</label>
+            @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label id="lblFFalse" for="IsFrontFalse" @if (!Model.IsFront)
+                                                                                                                              {<text>style="border-color:red;"</text>}
+                                                                                                                              else
+                                                                                                                              {<text> style="border-color:none;"</text>}>Бэк</label>
+        </div>
+        @*
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Bonus)&nbsp;@Html.ValidationMessageFor(m => m.Bonus)<br />
+            @Html.EditorFor(m => m.Bonus)
+        </div>
+        *@
+        @*
+        <div class="formfield clear">
+            @Html.EditorFor(m => m.IsLiable)@Html.LabelFor(m => m.IsLiable)
+        </div>
+        *@
+        <div class="formfield clear" id="IsLiableContainer">
+            @Html.LabelFor(m => m.IsLiable)
+            @Html.RadioButtonFor(m => m.IsLiable, true, new { @id = "IsLiableTrue" })<label id="lblLTrue" for="IsLiableTrue" @if (Model.IsLiable)
+                                                                                                                             {<text>style="border-color:red;"</text>}
+                                                                                                                             else
+                                                                                                                             {<text> style="border-color:none;"</text>}>Да</label>
+            @Html.RadioButtonFor(m => m.IsLiable, false, new { @id = "IsLiableFalse" })<label id="lblLFalse" for="IsLiableFalse" @if (!Model.IsLiable)
+                                                                                                                                 {<text>style="border-color:red;"</text>}
+                                                                                                                                 else
+                                                                                                                                 {<text> style="border-color:none;"</text>}>Нет</label>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
+            @Html.EditorFor(m => m.RequestNumber)
+        </div>
+
+        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue) || (dto.UserRole & UserRole.PersonnelManager) > 0)
+        {
+            <div class="formfield clear">
+                <button id="btnManagerDraft">Черновик</button>
+            </div>
+        }
+    </fieldset>
+    
+    
+    
+    <div class="clear">
+        @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.ManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingManagerName
+                @(Model.ManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.ManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
+        }
+        @if (Model.IsApproveByManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+@using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <div class="clear">
+        @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.HigherManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByHigherManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.HigherManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingHigherManagerName
+                @(Model.HigherManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.HigherManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
+        }
+        @if (Model.IsApproveByHigherManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+<div id="add-managers-comment-dialog" title="Добавление комментария">
+    @using (Html.BeginForm("ManagersAddComments", "Employment", FormMethod.Post))
+    {
+        <label for="IssuedBy" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+        
+    }
+</div>
+
+<table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td>
+                <input id="add-managers-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
+                                                                                            { <text>style = "display:none"</text>;
+                                                                                            } />
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold">Комментарии</td>
+        </tr>
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@attach.CreatorPosition  @attach.Creator  @attach.CreatedDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@attach.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
+<script>
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
+    $(document).ready(function () {
+        setActiveMenuItem("empManagers");
+        UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
+        $('#isSecondaryJobContainer').buttonset();
+        $('#isFrontContainer').buttonset();
+        $('#isExternalWorkContainer').buttonset();
+        $('#IsLiableContainer').buttonset();
+
+        if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
+        else {$('#isExternalWorkContainer').hide();}
+        
+        //подкрашиваем вид занятости
+        $("#IsSecondaryJobTrue").click(function(){
+            $("#lblSJTrue").css("border-color", "red");
+            $("#lblSJFalse").css("border-color", "silver");
+            $("#isExternalWorkContainer").show();
+        });
+        $("#IsSecondaryJobFalse").click(function(){
+            $("#lblSJTrue").css("border-color", "silver");
+            $("#lblSJFalse").css("border-color", "red");
+            $("#isExternalWorkContainer").hide();
+        });
+
+        //подкрашиваем вид совместительства
+        $("#IsExternalWorkTrue").click(function(){
+            $("#lblEWTrue").css("border-color", "red");
+            $("#lblEWFalse").css("border-color", "silver");
+        });
+        $("#IsExternalWorkFalse").click(function(){
+            $("#lblEWTrue").css("border-color", "silver");
+            $("#lblEWFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем вид фронт/бэк
+        $("#IsFrontTrue").click(function(){
+            $("#lblFTrue").css("border-color", "red");
+            $("#lblFFalse").css("border-color", "silver");
+        });
+        $("#IsFrontFalse").click(function(){
+            $("#lblFTrue").css("border-color", "silver");
+            $("#lblFFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем вид материальную ответственность
+        $("#IsLiableTrue").click(function(){
+            $("#lblLTrue").css("border-color", "red");
+            $("#lblLFalse").css("border-color", "silver");
+        });
+        $("#IsLiableFalse").click(function(){
+            $("#lblLTrue").css("border-color", "silver");
+            $("#lblLFalse").css("border-color", "red");
+        });
+
+        //автозаполнение должностей
+        $(function () 
+        {
+            $("[data-autocomplete-source]").each(
+                function () 
+                {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                          select : function(event, ui) 
+                                                    {
+                                                        //для физиков
+                                                        if (ui.item.PositionId != null){
+                                                            $("#PositionName").val(ui.item.label);
+                                                            $("#PositionId").val(ui.item.PositionId);
+                                                        }
+                                                        return true;
+                                                    }
+                                         });
+                  });
+        });
+
+        var $addManagersCommentDialog = $('#add-managers-comment-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            close: function (event, ui) {
+                                $(this).dialog("destroy").remove();
+                            },
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-managers-comment-dialog form').submit();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $("#Comment").val('');
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+
+        $("#add-managers-comment").click(function (e) {
+            $addManagersCommentDialog.dialog("open");
+            e.preventDefault();
+        });
+    });
+
+    function changePosition(){
+        if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
+    }
+</script>

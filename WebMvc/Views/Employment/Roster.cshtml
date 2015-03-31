@@ -1,5 +1,8 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.RosterModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Реестр по приему";
 }
@@ -55,6 +58,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CandidateId):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.CandidateId)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -64,7 +75,8 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                            <button>Выбрать</button>
+                            @*<button type="submit">Выбрать</button>*@
+                            <button id="btnSubmit" type="button">Выбрать</button>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
                             </td>
                         </tr>                        
@@ -76,7 +88,10 @@
 
     @* END Выбор параметров *@
     
-    <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
+    {
+        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    }
     
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
@@ -107,43 +122,42 @@
         <th>
             №<br />п/п
         </th>
-        
         <th>
-            <div id="sort1"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+            <div id="sort1"><a href="#" onclick = "SortColumnChanged(1);">№ <br />заявки</a></div>
         </th>
-
         <th>
-            Анкета
+            <div id="sort2"><a href="#" onclick = "SortColumnChanged(2);">Дата <br />заявки</a></div>
         </th>
-
         <th>
-            <div id="sort2"><a href="#" onclick = "SortChanged(2);">Город<br />места<br />работы</a></div>
+            <div id="sort3"><a href="#" onclick = "SortColumnChanged(3);">ФИО</a></div>
         </th>
-
         <th>
-            <div id="sort3"><a href="#" onclick = "SortChanged(3);">Структурное<br />подразделение</a></div>
-        </th>
-
-        <th>
-            <div id="sort4"><a href="#" onclick = "SortChanged(4);">Должность</a></div>
+            <div id="sort4"><a href="#" onclick = "SortColumnChanged(4);">Должность</a></div>
         </th>        
-        
         <th>
-            <div id="sort5"><a href="#" onclick = "SortChanged(5);">Дата<br />приема</a></div>
+            <div id="sort5"><a href="#" onclick = "SortColumnChanged(5);">Структурное<br />подразделение<br />3 ур.</a></div>
         </th>
-        
         <th>
-            <div id="sort6"><a href="#" onclick = "SortChanged(6);">Номер<br />приказа</a></div>
+            <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Структурное<br />подразделение<br />7 ур.</a></div>
         </th>
-        
         <th>
-            <div id="sort7"><a href="#" onclick = "SortChanged(7);">Дата<br />приказа</a></div>
+            <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Город<br />места<br />работы</a></div>
         </th>
-
         <th>
-            <div id="sort8"><a href="#" onclick = "SortChanged(8);">Номер<br />трудового<br />договора</a></div>
+            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">Основная\<br />По<br />совместительству</a></div>
         </th>
-
+        <th>
+            <div id="sort9"><a href="#" onclick = "SortColumnChanged(9);">Исп.<br />срок</a></div>
+        </th>
+        <th>
+            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">Инвалидность</a></div>
+        </th>
+        <th>
+            <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Обучение</a></div>
+        </th>
+        <th>
+            <div id="sort12"><a href="#" onclick = "SortColumnChanged(12);">Дата<br />приема</a></div>
+        </th>
         <th>
             Дата<br />окончания<br />СТД
         </th>
@@ -154,33 +168,48 @@
                 <input type="checkbox" id="setAllToChangeContractToIndefinite" />
             }
         </th>
-
-        @* Вид работы (осн./совм.) *@
-        @* Характер работы (пост./врем.) *@
-
         <th>
-            <div id="sort9"><a href="#" onclick = "SortChanged(9);">Исп.<br />срок</a></div>
+            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Руководитель</a></div>
+        </th>
+        <th>
+            <div id="sort14"><a href="#" onclick = "SortColumnChanged(14);">Кадровик</a></div>
+        </th>
+        <th>
+            <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
+        </th>
+        @*
+        <th>
+            Анкета
+        </th>
+        *@
+        
+@*        
+        <th>
+            <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Номер<br />приказа</a></div>
+        </th>
+        
+        <th>
+            <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Дата<br />приказа</a></div>
         </th>
 
         <th>
-            <div id="sort10"><a href="#" onclick = "SortChanged(10);">График<br />работы</a></div>
+            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">Номер<br />трудового<br />договора</a></div>
+        </th>
+        <th>
+            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">График<br />работы</a></div>
         </th>
 
         <th>
-            <div id="sort11"><a href="#" onclick = "SortChanged(11);">Дата<br />рождения</a></div>
+            <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Дата<br />рождения</a></div>
         </th>
 
-        <th>
-            <div id="sort12"><a href="#" onclick = "SortChanged(12);">Инвалидность</a></div>
-        </th>
+        
 
         <th>
-            <div id="sort13"><a href="#" onclick = "SortChanged(13);">Грейд</a></div>
+            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Грейд</a></div>
         </th>
 
-        <th>
-            <div id="sort14"><a href="#" onclick = "SortChanged(14);">Текущее<br />состояние</a></div>
-        </th>
+  *@      
 
         @if (Model.IsBulkApproveByManagerAvailable)
         {
@@ -199,159 +228,137 @@
         }
     
     </tr>
+    <tbody id="tblBody">
+        @{ int i = 1; }
 
-    @{ int i = 1; }
-
-    @foreach (var candidate in Model.Roster)
-    {
+        @foreach (var candidate in Model.Roster)
+        {
   
-        <tr>
+            <tr>
         
-            <td rowspan="2">
-                @i
-                @Html.HiddenFor(m => m.Roster[i - 1].Id)
-            </td>
-        
-            <td rowspan="2">
-                @candidate.Name
-            </td>
-
-            <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
-                <span class="buttonLink">Разделы</span>
-            </td>
-
-            <td>
-                &nbsp;@candidate.WorkCity
-            </td>
-
-            <td>
-                &nbsp;@candidate.Department
-            </td>
-
-            <td>
-                &nbsp;@candidate.Position
-            </td>        
-        
-            <td>
-                &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
-            </td>
-        
-            <td>
-                &nbsp;@candidate.EmploymentOrderNumber
-            </td>
-        
-            <td>
-                &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
-            </td>
-
-            <td>
-                &nbsp;@candidate.ContractNumber
-            </td>
-
-            <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
-                {<text>style="background-color:yellow"</text>}>
-                &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
-            </td>
-
-            <td class="centered">
-                @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
-                {
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
-                }
-                else
-                {
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { disabled = "disabled" })
-                }
-            </td>
-
-            @* Вид работы (осн./совм.) *@
-            @* Характер работы (пост./врем.) *@
-
-            <td>
-                &nbsp;@candidate.ProbationaryPeriod
-            </td>
-
-            <td>
-                &nbsp;@candidate.Schedule
-            </td>
-
-            <td>
-                &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
-            </td>
-
-            <td>
-                &nbsp;@candidate.Disabilities
-            </td>
-
-            <td>
-                &nbsp;@candidate.Grade
-            </td>
-
-            <td>
-                &nbsp;@candidate.Status
-            </td>
-        
-            @if (Model.IsBulkApproveByManagerAvailable)
-            {
-                <td rowspan="2" class="centered">
-                    @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
-                    {
-                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager, new { @class = "selcheckByManager", dataId = Model.Roster[i - 1].Id })
-                    }&nbsp;
+                <td >
+                    @i
+                    @Html.HiddenFor(m => m.Roster[i - 1].Id)
                 </td>
-            }
-        
-            @if (Model.IsBulkApproveByHigherManagerAvailable)
-            {
-                <td rowspan="2" class="centered">
-                    @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
-                    {
-                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager, new { @class = "selcheckByHigherManager", dataId = Model.Roster[i - 1].Id })
-                    }&nbsp;
+                <td>
+                    @candidate.Id.ToString()
                 </td>
-            }        
+                <td>
+                    &nbsp;@(candidate.QuestionnaireDate.HasValue ? candidate.QuestionnaireDate.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td>
+                    <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+                </td>
+                <td>
+                    &nbsp;@candidate.Position
+                </td>        
+                <td>
+                    &nbsp;@candidate.Department3
+                </td>
 
-            @{i++;}
-        </tr>
-        <tr>
-            <td colspan="15" style="padding: 0;">
-                <div style="display:none;">
-                    @if (Model.IsCandidateInfoAvailable)
+                <td>
+                    &nbsp;@candidate.Department
+                </td>
+                <td>
+                    &nbsp;@candidate.WorkCity
+                </td>
+                <td class="centered">
+                     &nbsp;@Html.CheckBoxFor(m => m.Roster[i - 1].IsSecondaryJob, new { disabled = "disabled" })
+                </td>
+                <td>
+                    &nbsp;@candidate.ProbationaryPeriod
+                </td>
+                <td>
+                    &nbsp;@candidate.Disabilities
+                </td>
+                <td>
+                    &nbsp;@candidate.Training
+                </td>
+                <td>
+                    &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
+                    {<text>style="background-color:yellow"</text>}>
+                    &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td class="centered">
+                    @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
                     {
-                        <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
-                        <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
                     }
+                    else
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { disabled = "disabled" })
+                    }
+                </td>
+                <td>
+                    &nbsp;@candidate.AppointmentManager
+                </td>
+                <td>
+                    &nbsp;@candidate.PersonnelName
+                </td>
+                <td>
+                    &nbsp;@candidate.Status
+                </td>
+                @*
+                <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
+                    <span class="buttonLink">Разделы</span>
+                </td>
+                *@
+                
 
-                    @if (Model.IsBackgroundCheckAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
-                    }
-                    
-                    <span class="buttonLink">@Html.ActionLink("Обучение", "OnsiteTraining", new { id = candidate.UserId })</span>
 
-                    @if (Model.IsCandidateInfoAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
-                    }
+        
+                
+@*        
+                <td>
+                    &nbsp;@candidate.EmploymentOrderNumber
+                </td>
+        
+                <td>
+                    &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
+                </td>
 
-                    @if (Model.IsManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
-                    }
-                    @if (Model.IsPersonalManagersAvailable)
-                    {
-                        <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
-                    }
-                </div>
-            </td>
-        </tr>
-    }
+                <td>
+                    &nbsp;@candidate.ContractNumber
+                </td>
+                <td>
+                    &nbsp;@candidate.Schedule
+                </td>
 
+                <td>
+                    &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td>
+                    &nbsp;@candidate.Grade
+                </td>
+*@              
+        
+                @if (Model.IsBulkApproveByManagerAvailable)
+                {
+                    <td rowspan="2" class="centered">
+                        @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager, new { @class = "selcheckByManager", dataId = Model.Roster[i - 1].Id })
+                        }&nbsp;
+                    </td>
+                }
+        
+                @if (Model.IsBulkApproveByHigherManagerAvailable)
+                {
+                    <td rowspan="2" class="centered">
+                        @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager, new { @class = "selcheckByHigherManager", dataId = Model.Roster[i - 1].Id })
+                        }&nbsp;
+                    </td>
+                }        
+
+                @{i++;}
+            </tr>
+        
+        }
+    </tbody>
     </table>
 
     </fieldset>
@@ -372,61 +379,61 @@
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+        $(".hasDatepicker").width("75px");
 
-        $(".selcheckByManager, #setAllByManager").click(function(){
-	        isApproveByManagerChanged = true;
+        $(".selcheckByManager, #setAllByManager").click(function () {
+            isApproveByManagerChanged = true;
         });
-        $(".selcheckByHigherManager, #setAllByHigherManager").click(function(){
-	        isApproveByHigherManagerChanged = true;
+        $(".selcheckByHigherManager, #setAllByHigherManager").click(function () {
+            isApproveByHigherManagerChanged = true;
         });
-        $(".selcheckContractToIndefinite, #setAllToChangeContractToIndefinite").click(function(){
-	        isChangeContractToIndefiniteChanged = true;
+        $(".selcheckContractToIndefinite, #setAllToChangeContractToIndefinite").click(function () {
+            isChangeContractToIndefiniteChanged = true;
         });
 
-        $("#setAllToChangeContractToIndefinite").click(function(){
-            if ($(this).is(':checked'))
-            {
-                $(".selcheckContractToIndefinite").attr('checked','checked');
+        setSortFields();
+
+        $("#btnSubmit").click(function () {
+            $("tblBody").remove();
+            this.form.submit();
+        });
+
+        $("#setAllToChangeContractToIndefinite").click(function () {
+            if ($(this).is(':checked')) {
+                $(".selcheckContractToIndefinite").attr('checked', 'checked');
             }
-            else
-            {
+            else {
                 $(".selcheckContractToIndefinite").removeAttr('checked');
             }
         });
-        
-        $("#setAllByManager").click(function(){
-            if ($(this).is(':checked'))
-            {
-                $(".selcheckByManager").attr('checked','checked');
+
+        $("#setAllByManager").click(function () {
+            if ($(this).is(':checked')) {
+                $(".selcheckByManager").attr('checked', 'checked');
             }
-            else
-            {
+            else {
                 $(".selcheckByManager").removeAttr('checked');
             }
         });
 
-        $("#setAllByHigherManager").click(function(){
-        if ($(this).is(':checked'))
-        {
-            $(".selcheckByHigherManager").attr('checked','checked');
-        }
-        else
-        {
-            $(".selcheckByHigherManager").removeAttr('checked');
-        }
+        $("#setAllByHigherManager").click(function () {
+            if ($(this).is(':checked')) {
+                $(".selcheckByHigherManager").attr('checked', 'checked');
+            }
+            else {
+                $(".selcheckByHigherManager").removeAttr('checked');
+            }
         });
 
-        $("#SaveRosterButton").click(function(e){
+        $("#SaveRosterButton").click(function (e) {
             $("#IsApproveModified").val("true");
             var url = "";
 
-            if (isApproveByManagerChanged || isApproveByHigherManagerChanged)
-            {
+            if (isApproveByManagerChanged || isApproveByHigherManagerChanged) {
                 url = "/Employment/RosterBulkApprove";
             }
 
-            if (isChangeContractToIndefiniteChanged)
-            {
+            if (isChangeContractToIndefiniteChanged) {
                 url = "/Employment/RosterBulkChangeContractToIndefinite";
             }
 
@@ -441,13 +448,10 @@
                     }
                 }
             );
-            
+
             e.preventDefault();
         });
 
-        $("td.displayLinks > span").click(function () {
-            $(this).parent().parent().next().children().children().toggle();
-        });
     });
 
     function resetFilter() {
@@ -457,6 +461,8 @@
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');
         $("#DepartmentName").val('');
+        $("#CandidateId").val('');
+        $("#StatusId").val('');
 
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
@@ -481,6 +487,11 @@
         var arraydates = changeformat.split(".");
         var newdate = arraydates[1] + "." + arraydates[0] + "." + arraydates[2];
         return newdate;
+    }
+
+    function SortColumnChanged(OrderId) {
+        $("tblBody").remove();
+        SortChanged(OrderId);
     }
 
 </script>

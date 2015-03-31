@@ -1,0 +1,188 @@
+﻿@model Reports.Presenters.UI.ViewModel.SurchargeViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutSurcharge.cshtml";
+    ViewBag.Title = "Ручная доплата";
+}
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+<form id="RequestData">
+<table style="width:100%">
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName, new { placeholder="Фамилия Имя Отчество"})
+                                    </td>
+                             </tr>
+                          }
+                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number, new { placeholder = "Номер" })
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.TextBoxFor(model => model.BeginDate, new { placeholder = "Дата" }) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.TextBoxFor(model => model.EndDate, new { placeholder = "Дата" }) 
+                             </td>
+                        </tr>
+                     
+                        <tr>
+                          <td colspan="2">
+                            <input type="button" value="Выбрать" onclick="GetDocs();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     
+     <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+            <span id="LoadingIndicator"></span>
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <input type="hidden" id="IsBack" value="false" />
+            </div>
+        </td>
+     </tr>
+ </table> 
+ </form>
+ <table  class="grid" width="100%">
+    <thead>
+        <tr>
+        <th>№<br />П/П</th>
+        <th><a href="#" id="sort9" onclick = "SortChanged(9);">Номер<br />заявки</a></th>
+        <th><a href="#" id="sort1" onclick = "SortChanged(1);">ФИО<br/>сотрудника</a></th>
+        <th><a href="#" id="sort2" onclick = "SortChanged(2);">Должность</a></th>
+        <th><a href="#" id="sort3" onclick = "SortChanged(3);">Подразделение<br />3 уровня</a></th>
+        <th><a href="#" id="sort4" onclick = "SortChanged(4);">Подразделение<br />7 уровня</a></th>
+        <th><a href="#" id="sort5" onclick = "SortChanged(5);">Дата</a></th>
+        <th><a href="#" id="sort6" onclick = "SortChanged(6);">Сумма</a></th>
+       </tr>               
+    </thead>
+    <tbody id="tableBody">
+       
+    </tbody>
+</table>
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+        $(".hasDatepicker").width("75px");
+        if($("#IsBack").val()==='true') GetDocs();
+        setSortFields();
+        setActiveMenuItem("liSurcharge");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        $("#UserName").val('');
+        $("#Number").val('');
+    }
+    function setSortFields(){
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+    }
+    function SortChanged(sortedBy)
+    {
+        
+        if($("#SortBy").val() != sortedBy)
+           {
+           $("#sort"+$("#SortBy").val()).removeClass("sort-desc");
+           $("#sort"+$("#SortBy").val()).removeClass("sort-asc");
+            $("#SortDescending").val(''); 
+            }
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+         setSortFields()
+         GetDocs();
+         return false;
+    }
+    function GetDocs()
+    {
+     $("#LoadingIndicator").addClass("loading");
+     $("#IsBack").val('true');
+     $.ajax({
+        type: 'POST',
+        data: $("#RequestData").serialize(),
+        success: function(result){
+            $("#tableBody tr").remove();
+            $("#tableBody").append(result);
+            $(".loading").removeClass("loading");
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При загрузке данных произошла ошибка.");
+            }
+        });
+    }
+ </script> 
+

@@ -176,10 +176,10 @@
     </table>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#Date").datepicker();
-            //$("#EndDate").datepicker();
-            //$("#PaymentBeginDate").datepicker();
-            //$("#PaymentDecreaseDate").datepicker();
+            $("#Date").datepicker({changeMonth: true, changeYear: true});
+            //$("#EndDate").datepicker({changeMonth: true, changeYear: true});
+            //$("#PaymentBeginDate").datepicker({changeMonth: true, changeYear: true});
+            //$("#PaymentDecreaseDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             $("#Rate").width("50px");
             $("#Hours").width("50px");

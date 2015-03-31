@@ -10,6 +10,13 @@ using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using Reports.Core.Dto;
+using Reports.Core.Domain;
+using Reports.Core.Dao;
+using System.Collections.Generic;
+using System.Linq;
+
+
 
 namespace WebMvc.Controllers
 {
@@ -45,7 +52,13 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
-
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
+        {
+            if (RequestBl.ChangeNotUseInAnalyticalStatement(ids, notuse)) return Json(new { Status = "Ok" });
+            else return Json(new { Status = "Error", Message="При обновлении данных произошла ошибка" });
+        }
         [HttpGet]
         public ActionResult DeductionEdit(int id)
         {
@@ -67,7 +80,9 @@ namespace WebMvc.Controllers
             }
 
             string error;
-            if (!RequestBl.SaveDeductionEditModel(model,out error))
+            //чтобы письма рассылались только когда идет работа с рабочей базой
+            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            if (!RequestBl.SaveDeductionEditModel(model, EnableSendEmail, out error))
             {
 
                 if (model.ReloadPage)
@@ -81,6 +96,45 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("", error);
             }
             return View(model);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant )]
+        public ActionResult DeductionImport()
+        {
+            var model=RequestBl.GetDeductionImportModel();
+            return View(model);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant )]
+        public ActionResult DeductionImport(DeductionImportModel model)
+        {
+            model = RequestBl.GetDeductionImportModel(model);
+            if (model.File != null && model.File.ContentLength > 0)
+            {
+                var fileName = Path.GetFileName(model.File.FileName);
+                var path = Path.Combine(Server.MapPath("~/Files"), fileName);
+                model.File.SaveAs(path);
+                FileInfo file = new FileInfo(path);
+                var Errors = new List<string>();
+                model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
+                model.Errors = Errors;
+                file.Delete();
+            }
+            else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
+            return View(model);
+        }
+        /// <summary>
+        /// Автозаполнение фио в создании набора реквизитов.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompletePersonSearch(string term)
+        {
+
+            IList<IdNameDto> Persons = RequestBl.GetUserListForDeduction(term, 0);
+            var PersonList = Persons.ToList().Select(a => new { label = a.Name, UserId = a.Id }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
         }
         protected void CorrectCheckboxes(DeductionEditModel model)
         {
@@ -103,6 +157,21 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateDeductionEditModel(DeductionEditModel model)
         {
+            if (model.Id == 0)
+            {
+                if (model.UserId != 0)
+                {
+                    User DeductionUser = RequestBl.GetUser(model.UserId);
+                    if ((DeductionUser.UserRole & UserRole.DismissedEmployee) > 0 && DeductionUser.DateRelease <= DateTime.Today.AddMonths(-3))
+                    {
+                        ModelState.AddModelError("Surname", "Нельзя создать заявку на удержание, так как выбранный сотрудник уволен более 3 месяцев назад!");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Surname", "Укажите сотрудника!");
+                }
+            }
             if(string.IsNullOrEmpty(model.Sum))
                 ModelState.AddModelError("Sum", "'Сумма' - обязательное поле.");
             else

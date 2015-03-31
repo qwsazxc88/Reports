@@ -86,6 +86,14 @@
                                 </td>
                             </tr>
                        @* }*@
+                       <tr>
+                        <td>
+                            @Html.LabelFor(m=>m.Number)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m=>m.Number)
+                        </td>
+                       </tr>
                          <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
@@ -114,6 +122,8 @@
                                 @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
                                 {
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>   
+                                    <input type="button" value="Сохранить изменения" onclick="SaveChanges();" />
+                                    <span id="LoadingIndicator" style="float:right"></span>
                                 }
                                 @if (Model.Documents != null && Model.Documents.Count > 0)
                                 {
@@ -135,45 +145,54 @@
                     <th>Дата</th>*@
                      <th>
                         @*<div id="sort1"><a href="#" onclick = "SortChanged(1);">*@
-                        № п/п
+                        №<br />п/п
                         @*</a></div>*@
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
+                        <div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br />заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort3" style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                        <div id="sort3" style="min-width:30px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
                      <th>
-                        <div id="sort4" style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение уровня 3</a></div>
+                        <div id="sort4" style="min-width:30px"><a href="#"  onclick = "SortChanged(4);">Подразделение<br />уровня 3</a></div>
                     </th>
                     <th>
-                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Сумма</a></div>
+                        <div id="sort5"  style="min-width:30px"><a href="#"  onclick = "SortChanged(5);">Сумма</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:86px"><a href="#"  onclick = "SortChanged(6);">Период</a></div>
+                        <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Период</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:90px"><a href="#"  onclick = "SortChanged(7);">Ф.И.О.</a></div>
+                        <div id="sort7" style="min-width:30px"><a href="#"  onclick = "SortChanged(7);">Ф.И.О.</a></div>
                     </th>
                     <th>
-                        <div id="sort8" style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Должность</a></div>
+                        <div id="sort8" style="min-width:30px"><a href="#"  onclick = "SortChanged(8);">Должность</a></div>
                     </th>
                     <th>
-                        <div id="sort9" style="min-width:132px"><a href="#"  onclick = "SortChanged(9);">Вид удержания</a></div>
+                        <div id="sort9" style="min-width:30px"><a href="#"  onclick = "SortChanged(9);">Вид<br />удержания</a></div>
                     </th>
                     <th>
-                        <div id="sort10" style="min-width:222px"><a href="#"  onclick = "SortChanged(10);">Подразделение ККО/Отдел</a></div>
+                        <div id="sort10" style="min-width:30px"><a href="#"  onclick = "SortChanged(10);">Подразделение<br />ККО/Отдел</a></div>
                     </th>
                      <th>
-                        <div id="sort11" style="min-width:148px"><a href="#"  onclick = "SortChanged(11);">Дата увольнения</a></div>
+                        <div id="sort11" style="min-width:30px"><a href="#"  onclick = "SortChanged(11);">Дата<br />увольнения</a></div>
                     </th>
                     <th>
-                        <div id="sort12" style="min-width:96px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                        <div id="sort12" style="min-width:30px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
                     </th>
-                     <th>
-                        <div id="sort13"  style="min-width:74px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
+                    <th>
+                        <div id="sort14" ><a href="#"  onclick = "SortChanged(14);">Номер<br />авансового<br />отчёта</a></div>
                     </th>
+                    <th>
+                        <div id="sort13"  style="min-width:30px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
+                    </th>
+                    @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                    {
+                    <th>
+                        <div id="sort15" ><a href="#"  onclick = "SortChanged(15);">Не учитывать<br />в карточке<br />подотчётника</a></div>
+                    </th>
+                    }
                     @*<th>
                         Дата окончания
                     </th>*@
@@ -196,13 +215,18 @@
                             <td>@doc.Kind</td>
                             <td>@doc.Dep7Name</td>
                             <td>
-                            @if(doc.DismissalDate.HasValue)
+                            @if (doc.DismissalDate.HasValue)
                             {
                                 @doc.DismissalDate.Value.ToShortDateString()
                             }
                             </td>
                             <td>@doc.Status</td>
+                            <td>@(doc.MissionReportNumber > 0 ? doc.MissionReportNumber.ToString() : "")</td>
                             <td>@doc.IsFastDismissal</td>
+                            @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                            {
+                            <td><input type="checkbox" value="@doc.Id" @(doc.NotUseInAnalyticalStatement ? "checked='checked'" : "") class="AnalyticalStatementCheckBox" /></td>
+                            }
                         </tr>
                     }
                     <tr>
@@ -220,9 +244,10 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
+        
          setSortFields();
          //setActiveMenuItem("userChildVacation");
     });
@@ -241,6 +266,7 @@
         //$("#VacationTypeId").val('0');
         $("#RequestStatusId").val('0');
          $("#UserName").val('');
+         $("#Number").val('');
     }
      function onPrintClick() {
 
@@ -257,6 +283,34 @@
         var arraydates = changeformat.split(".");
         var newdate =  arraydates[1]+"."+arraydates[0]+"."+arraydates[2];
         return newdate;
+    }
+    function SaveChanges()
+    {
+        var ids=[];
+        var notuse=[];
+        $(".AnalyticalStatementCheckBox").each(function()
+        {
+            ids.push($(this).val());
+            notuse.push($(this).attr("checked"));
+        });
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("ChangeNotUseInAnalyticalStatement")',
+        type: 'POST',
+        data: {ids:ids, notuse:notuse},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.Status==="Ok") document.forms[0].submit();
+            else
+            { 
+                alert("При отправке данных произошла ошибка.");
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            }
+        });
     }
  </script>   
 }

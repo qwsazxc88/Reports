@@ -1,18 +1,29 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.BackgroundCheckModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Служба безопасности";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Департамент безопасности";
+    }
 }
 
-<span style="color:red;">@ViewBag.Error</span>
+@Html.Partial("CandidateState", Model.CandidateStateModel)
 
-@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
+
+@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm" }))
 {
+    <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
+    
     
     <div style="float:left">
     <fieldset class="bordered doc-wrap panel">
-    <legend>Служба безопасности</legend>
+    <legend>Департамент безопасности</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AverageSalary)&nbsp;@Html.ValidationMessageFor(m => m.AverageSalary)<br />
             @Html.TextBoxFor(m => m.AverageSalary, new { @class = "calc" })
@@ -39,7 +50,13 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasDriversLicense)<br />
-            @Html.EditorFor(m => m.HasDriversLicense)
+            <div class="formfield clear" id="DLContainer">
+                @Html.RadioButtonFor(m => m.HasDriversLicense, true, new { @id = "IsDLTrue" })<label id="lblDTrue" for="IsDLTrue" @if (Model.HasDriversLicense)
+                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                @Html.RadioButtonFor(m => m.HasDriversLicense, false, new { @id = "IsDLFalse" })<label id="lblDFalse" for="IsDLFalse" @if (!Model.HasDriversLicense)
+                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+            </div>
+            @*@Html.EditorFor(m => m.HasDriversLicense)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DriversLicenseNumber)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseNumber)<br />
@@ -59,7 +76,13 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.HasAutomobile)<br />
-            @Html.EditorFor(m => m.HasAutomobile)
+            <div class="formfield clear" id="HasAuto">
+                @Html.RadioButtonFor(m => m.HasAutomobile, true, new { @id = "IsATrue" })<label id="lblATrue" for="IsATrue" @if (Model.HasAutomobile)
+                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                @Html.RadioButtonFor(m => m.HasAutomobile, false, new { @id = "IsAFalse" })<label id="lblAFalse" for="IsAFalse" @if (!Model.HasAutomobile)
+                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+            </div>
+            @*@Html.EditorFor(m => m.HasAutomobile)*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AutomobileMake)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileMake)<br />
@@ -69,8 +92,12 @@
             @Html.LabelFor(m => m.AutomobileLicensePlateNumber)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileLicensePlateNumber)<br />
             @Html.TextBoxFor(m => m.AutomobileLicensePlateNumber, new { @class = "halfwidth" })
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.IsReadyForBusinessTrips)&nbsp;@Html.EditorFor(m => m.IsReadyForBusinessTrips)
+        <div class="formfield clear" id="ReadyForBusinessTrips">
+            @Html.LabelFor(m => m.IsReadyForBusinessTrips)
+            @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, true, new { @id = "IsRTrue" })<label id="lblRTrue" for="IsRTrue" @if (Model.IsReadyForBusinessTrips)
+                                                                                                                        {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, false, new { @id = "IsRFalse" })<label id="lblRFalse" for="IsRFalse" @if (!Model.IsReadyForBusinessTrips)
+                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Sports)&nbsp;@Html.ValidationMessageFor(m => m.Sports)<br />
@@ -112,6 +139,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.References[0].Relation)
                                 </th>
+                                @if (@Model.References != null && @Model.References.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>  
                         <tbody>                 
@@ -139,9 +170,12 @@
                                     <td>
                                         @Model.References[i].Relation
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (@Model.References != null && @Model.References.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a href="#" onclick="DeleteBackgroundRow(@Model.References[i].Id)">Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             } 
                         </tbody>                    
@@ -175,10 +209,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
             {
@@ -188,10 +224,13 @@
                         @Model.PersonalDataProcessingScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
             <div class="letter clear">
@@ -219,10 +258,12 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст о достоверности сведений</legend>
-            
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
-            </div>
+            @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
             {
@@ -232,10 +273,13 @@
                         @Model.InfoValidityScanAttachmentFilename
                     </a>
                 </div>
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
-                </div>
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
             }
 
             <div class="letter clear">                
@@ -256,8 +300,11 @@
     </div>
     
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -279,12 +326,101 @@
     }
 </div>
 
+<div id="add-backgroundcheck-comment-dialog" title="Добавление комментария">
+    @using (Html.BeginForm("BackGroundCheckAddComments", "Employment", FormMethod.Post))
+    {
+        <label for="Comment" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)
+        <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+    }
+</div>
+
+
+<table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td>
+                <input id="add-backgroundcheck-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
+                                                                  { <text>style = "display:none"</text>; } />
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold">Комментарии</td>
+        </tr>
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@attach.CreatorPosition  @attach.Creator  @attach.CreatedDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@attach.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+
+
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function DeleteBackgroundRow(Id) {
+        $("#RowID").val(Id);
+        $("#BackgroundCheckForm").submit();
+    }
+
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
+
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");
         UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
+        $('#DLContainer').buttonset();        
+        $('#HasAuto').buttonset();        
+        $('#ReadyForBusinessTrips').buttonset(0;
+        
+        //подкрашиваем наличие прав
+        $("#IsDLTrue").click(function(){
+            $("#lblDTrue").css("border-color", "red");
+            $("#lblDFalse").css("border-color", "silver");
+        });
+        $("#IsDLFalse").click(function(){
+            $("#lblDTrue").css("border-color", "silver");
+            $("#lblDFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем наличие автомобиля
+        $("#IsATrue").click(function(){
+            $("#lblATrue").css("border-color", "red");
+            $("#lblAFalse").css("border-color", "silver");
+        });
+        $("#IsAFalse").click(function(){
+            $("#lblATrue").css("border-color", "silver");
+            $("#lblAFalse").css("border-color", "red");
+        });
+
+        //подкрашиваем возможность выезжать в командировки
+        $("#IsRTrue").click(function(){
+            $("#lblRTrue").css("border-color", "red");
+            $("#lblRFalse").css("border-color", "silver");
+        });
+        $("#IsRFalse").click(function(){
+            $("#lblRTrue").css("border-color", "silver");
+            $("#lblRFalse").css("border-color", "red");
+        });
 
         var $addReferenceDialog = $('#add-reference-dialog').dialog(
         {
@@ -293,10 +429,13 @@
             width: "auto",
             draggable: false,
             resizable: false,
+            close: function (event, ui) {
+                                $(this).dialog("destroy").remove();
+                            },
             buttons:
             {
                 "OK": function () {
-                    processAddNameChange();
+                    processBCAddNameChange();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -305,7 +444,7 @@
             }
         });
 
-        var processAddNameChange = function()
+        var processBCAddNameChange = function()
         {
             var url = "@Url.Action("BackgroundCheckAddReference", "Employment")";
             var dataToSend = $("#add-reference-dialog form").serialize();
@@ -323,8 +462,8 @@
                         (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
                         (dataReceived[i].Position ? dataReceived[i].Position : "") + "</td><td>" +
                         (dataReceived[i].Phone ? dataReceived[i].Phone : "") + "</td><td>" +
-                        (dataReceived[i].Relation ? dataReceived[i].Relation : "") +
-                        "</td></tr>"
+                        (dataReceived[i].Relation ? dataReceived[i].Relation : "") + "</td><td>" +
+                        "<a onclick='DeleteBackgroundRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
                     );
                 }
             }, "json");
@@ -332,6 +471,35 @@
 
         $("#add-reference").click(function (e) {
             $addReferenceDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        var $addBackGroundCheckCommentDialog = $('#add-backgroundcheck-comment-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            close: function (event, ui) {
+                                $(this).dialog("destroy").remove();
+                            },
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-backgroundcheck-comment-dialog form').submit();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $("#Comment").val('');
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+
+        $("#add-backgroundcheck-comment").click(function (e) {
+            $addBackGroundCheckCommentDialog.dialog("open");
             e.preventDefault();
         });
     });

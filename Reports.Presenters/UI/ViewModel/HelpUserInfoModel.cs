@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace Reports.Presenters.UI.ViewModel
 {
     public class HelpUserInfoModel : PreventDCModel
@@ -44,6 +43,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string Email { get; set; }
 
         public bool IsForQuestion { get; set; }
-
+        
     }
 }

@@ -5,7 +5,12 @@
 @{
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Реестр на удержание";
+    var userdto=UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
+
+<div id="ErrorDialog" title="Ошибка" style="display:none;">
+  <p>Произошла ошибка.</p>
+</div>
 @using (Html.BeginForm())
 {
      <table style="width:100%">
@@ -92,7 +97,12 @@
                                 @if (Model.IsPrintAvailable)
                                 {
                                     <input type="button" value="Печать" onclick="return Print();"/>
-                                }                                                                                     
+                                } 
+                                @if (Model.UserId==10)
+                                {
+                                    <span id="LoadingIndicator" style="float:right"></span>
+                                    <input type="button" style="float:right;" value="Выгрузить в удержания" onclick="UploadToDeduction(1,3,1,'false');"/>
+                                }                                                                                 
                             </td>
                    </tr>
               </table>  
@@ -104,49 +114,79 @@
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <thead>
                 <tr>
                    
                      <th>
                         № п/п
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:210px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                        <div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                      <th>
-                        <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер <br/>авансового отчета</a></div>
+                        <div id="sort2" style="min-width:30px"><a href="#"  onclick = "SortChanged(2);">Номер <br/>авансового отчета</a></div>
                     </th>
                     <th>
-                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата <br/>авансового отчета</a></div>
+                        <div id="sort3"  style="min-width:30px"><a href="#"  onclick = "SortChanged(3);">Дата <br/>авансового отчета</a></div>
                     </th>
                     <th>
-                        <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Сумма удержания по <br/>авансовому отчету</a></div>
+                        <div id="sort4" style="min-width:30px"><a href="#"  onclick = "SortChanged(4);">Сумма удержания по <br/>авансовому отчету</a></div>
                     </th>
                     <th>
-                        <div id="sort5" style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Сумма принятая к <br/>учету бухгалтерией</a></div>
+                        <div id="sort5" style="min-width:30px"><a href="#"  onclick = "SortChanged(5);">Сумма принятая к <br/>учету бухгалтерией</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Сумма - расходы <br/>фактические</a></div>
+                        <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Сумма - расходы <br/>фактические</a></div>
+                    </th>
+                    @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                    {
+                    <th>
+                        <div id="sort7" style="min-width:30px"><a href="#"  onclick = "SortChanged(7);">Состояние<br />выгрузки<br />авансового<br />отчета</a></div>
+                    </th>
+                    }
+                    <th>
+                        <div id="sort8" style="min-width:30px"><a href="#"  onclick = "SortChanged(8);">Состояние<br />выгрузки в<br />удержание</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Состояние</a></div>
+                        <div id="sort9" style="min-width:30px"><a href="#"  onclick = "SortChanged(9);">Дата<br />выгрузки в<br />удержание</a></div>
                     </th>
                 </tr>
+                </thead>
+                <tbody>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
-                            <td>@doc.Number</td>
+                            <td>@doc.Number
+                            <input type="hidden" name="DocId" value="@doc.Id" />
+                            </td>
                             <td>@doc.UserName</td>
                             <td>@doc.ReportNumber</td>
                             <td>@doc.ReportDate.ToShortDateString()</td>
                             <td>@RequestBl.FormatSum(doc.DiffSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                            {
                             <td>@doc.Status</td>
+                            }
+                            <td>@if (doc.DeductionId != null && @doc.DeductionId > 0)
+                                {
+                                   <a href='@Url.Action("DeductionEdit", "Deduction", new { id = doc.DeductionId })'>Выгружено</a>
+                                }
+                             </td>
+                                
+                            <td>@if (doc.DeductionId != null && @doc.DeductionId > 0)
+                                {
+                                     @doc.DeductionUploadingDate.ToShortDateString()
+                                }
+                            </td>
                         </tr>
                     }
+
                 }
+                </tbody>
             </table>  
             </td>
         </tr>     
@@ -157,11 +197,16 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("moUserDepts");
+        $( "#ErrorDialog" ).dialog({
+            autoOpen: false,
+            close: function( event, ui ) {document.forms[0].submit();}
+        });
+        $("#InfoDialog").dialog({autoOpen: false});
     });
     function resetFilter() {
         $("#BeginDate").val('');
@@ -181,6 +226,32 @@
       '&userName='+escapeJson($("#UserName").val())+'&sortBy='+$("#SortBy").val()+'&sortDescending='+$("#SortDescending").val();
       window.location.href=printUrl;
       return false;
+    }
+    function UploadToDeduction(typeId, kindId, exportType, isFast)
+    {
+        $("#LoadingIndicator").addClass("loading");
+        var a=[];
+        $("input[name*='DocId']").each(function(){a.push(this.value);});
+        
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("ExportDocuments")',
+        type: 'POST',
+        data: {mas:a,typeId:typeId,kindId:kindId,exportType:exportType,isFast:isFast},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.Status=='Ok') document.forms[0].submit();
+            else
+            { 
+                $("#ErrorDialog").text(result.Message);
+                $("#ErrorDialog").dialog("open");
+            }
+            },
+        error: function(){
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            }
+        });
     }
 //    function setSelection()
 //    {

@@ -1,13 +1,21 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto.Employment2;
+using System.Collections.Generic;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ContactsModel : AbstractEmploymentModel
     {
+        [Display(Name = "Страна"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+        public string Country { get; set; } //ok
         [Display(Name = "Почтовый индекс"),
             StringLength(6, ErrorMessage = "Требуется 6 знаков.")]
         public string ZipCode { get; set; } //ok
+        [Display(Name = "Республика/Край"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+        public string Republic { get; set; } //ok
         [Display(Name = "Область"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Region { get; set; } //ok
@@ -29,20 +37,30 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Квартира"),
             StringLength(10, ErrorMessage = "Не более 10 знаков.")]
         public string Apartment { get; set; } //ok
-        [Display(Name = "Телефон рабочий"),
-            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+        [Display(Name = "Телефон рабочий", Prompt = "+#(###) ###-##-##"),
+            StringLength(20, ErrorMessage = "Должно быть не более 20 знаков."),
+            RegularExpression(@"^\S\d{1}\S\d{3}\S\s\d{3}\S\d{2}\S\d{2}$", ErrorMessage = "Требуется ввести номер телефона в формате +#(###) ###-##-##")]
         public string WorkPhone { get; set; } //ok
         [Display(Name = "Телефон домашний"),
-            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+            StringLength(20, ErrorMessage = "Должно быть не более 20 знаков."),
+            RegularExpression(@"^\S\d{1}\S\d{3}\S\s\d{3}\S\d{2}\S\d{2}$", ErrorMessage = "Требуется ввести номер телефона в формате +#(###) ###-##-##")]
         public string HomePhone { get; set; } //ok
         [Display(Name = "Телефон мобильный"),
             DataType(DataType.PhoneNumber),
-            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+            StringLength(20, ErrorMessage = "Должно быть не более 20 знаков."),
+            RegularExpression(@"^\S\d{1}\S\d{3}\S\s\d{3}\S\d{2}\S\d{2}$", ErrorMessage = "Требуется ввести номер телефона в формате +#(###) ###-##-##")]
         public string Mobile { get; set; } //ok
         [Display(Name = "E-mail"),
             DataType(DataType.EmailAddress),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Email { get; set; } //ok
+
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public ContactsModel()
         {

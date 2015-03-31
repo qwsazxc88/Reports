@@ -37,11 +37,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int CitizenshipId { get; set; } //ok
         public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
-        
-        [Display(Name = "Вид застрахованного лица")]
-        public int? InsuredPersonTypeId { get; set; } //ok
-        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
-        public string InsuredPersonTypeSelectedName { get; set; }
+
+        [Display(Name = "Страна рождения"),
+            Required(ErrorMessage = "*")]
+        public int CountryBirthId { get; set; } //ok
+        public IEnumerable<SelectListItem> CountryBirthItems { get; set; }
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
@@ -65,8 +65,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр")]
         public string INN { get; set; } //ok
-        [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
-            RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
+        [Display(Name = "СНИЛС №", Prompt = "###-###-### ##"),
+            RegularExpression(@"^\d{3}-\d{3}-\d{3}\s\d{2}$", ErrorMessage = "Требуется формат ###-###-### ##"),
             Required(ErrorMessage = "*")]
         public string SNILS { get; set; } //ok
 
@@ -90,15 +90,17 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DisabilityCertificateExpirationDate { get; set; }
 
+        [Display(Name = "Бессрочная справка")]
+        public bool IsDisabilityTermLess { get; set; } //ok
+
         // ------------
 
-        [Display(Name = "Статус"),
-            Required(ErrorMessage = "*")]
-        public int StatusId { get; set; }
-        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
         [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
+
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
 
         public HttpPostedFileBase PhotoFile { get; set; }
         public HttpPostedFileBase INNScanFile { get; set; }
@@ -113,7 +115,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int SNILSScanAttachmentId { get; set; }
         public string DisabilityCertificateScanAttachmentFilename { get; set; }
         public int DisabilityCertificateScanAttachmentId { get; set; }
-                
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
+
         public GeneralInfoModel()
         {
             this.Version = 0;

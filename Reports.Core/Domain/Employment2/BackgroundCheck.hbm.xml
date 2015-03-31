@@ -13,10 +13,12 @@
     <property name="PreviousSuperior" length="250" not-null="false"/>
     <property name="PositionSought" length="50" not-null="false"/>
     <property name="MilitaryOperationsExperience" length="50" not-null="false"/>
+    <property name="HasDriversLicense" not-null="false"/>
     <property name="DriversLicenseNumber" length="12" not-null="false"/>
     <property name="DriversLicenseDateOfIssue" not-null="false"/>
     <property name="DriversLicenseCategories" not-null="false"/>
     <property name="DrivingExperience" not-null="false"/>
+    <property name="HasAutomobile" not-null="false"/>
     <property name="AutomobileMake" length="50" not-null="false"/>
     <property name="AutomobileLicensePlateNumber" length="15" not-null="false"/>
     <property name="IsReadyForBusinessTrips" not-null="true"/>
@@ -38,6 +40,7 @@
     <many-to-one name="Approver" class="User" column="ApproverId" foreign-key="FK_BackgroundCheck_Approver" index="BackgroundCheck_Approver" not-null="false"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
 
   </class>
 </hibernate-mapping>

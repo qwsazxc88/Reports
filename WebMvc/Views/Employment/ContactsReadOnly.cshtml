@@ -1,17 +1,41 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ContactsModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Контактные данные";
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <fieldset class="bordered doc-wrap panel"><legend>Фактическое место жительства</legend>
     <table class="clear">
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Country)
+            </td>
+            <td>
+                <span class="fakeFormField">@Html.DisplayFor(m => m.Country)&nbsp;</span>
+            </td>
+        </tr>
         <tr>
             <td>
                 @Html.LabelFor(m => m.ZipCode)
             </td>
             <td>
                 <span class="fakeFormField">@Html.DisplayFor(m => m.ZipCode)&nbsp;</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Republic)
+            </td>
+            <td>
+                <span class="fakeFormField">@Html.DisplayFor(m => m.Republic)&nbsp;</span>
             </td>
         </tr>
         <tr>

@@ -1,25 +1,37 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.PassportModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Паспортные данные";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Паспортные данные";
+    }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
     
+    
     <fieldset class="bordered doc-wrap panel">
-    <legend>Паспорт РФ</legend>
+    <legend>Паспорт</legend>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
-
-        <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
-        </div>
+        @if (Model.InternalPassportScanAttachmentId == 0 && !Model.IsValidate)
+        {
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
+            </div>
+        }
 
         @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
         {
@@ -29,21 +41,25 @@
                     @Model.InternalPassportScanAttachmentFilename
                 </a>
             </div>
-            <div class="formfield">
-                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InternalPassportScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}*@/>
-            </div>
+            if (!Model.IsValidate)
+            {
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InternalPassportScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
         }
-
+        @*
         <div class="formfield">
             <br /><a href="">Открыть</a>
         </div>
         <div class="formfield">
             <br /><a href="">Удалить</a>
         </div>
+        *@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
+            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{2}\s\d{2}$", title = "4 цифры (## ##)", })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
@@ -123,8 +139,11 @@
     </fieldset>
 
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate) <br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 
 }
@@ -132,8 +151,28 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#InternalPassportSeries').mask('99 99');
+        });
     });
 </script>

@@ -26,7 +26,7 @@
 	  <!--<property name="CanAnswer" not-null="true"/>
 	  <property name="Birthday" not-null="false"/>-->
 	  <property name="RoleId" not-null="true"/>
-    
+    <property name="ContractType" not-null="false"/>
     <bag name="ClearanceChecklistRoleRecords" table="UserClearanceChecklistRoleRecord" lazy="true" cascade="save-update">
       <key column="UserId" foreign-key="FK_ClearanceChecklistRoleRecord_User"/>
       <one-to-many class="ClearanceChecklistRoleRecord" />
@@ -65,6 +65,10 @@
 	<bag name="AcceptRequests" lazy="true" inverse="true" cascade="all-delete-orphan">
 		<key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>
 		<one-to-many class="AcceptRequestDate"/>
-	</bag>  
+	</bag>
+    <bag name="Dismissals" table="Dismissal" lazy="true" >
+      <key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>
+      <one-to-many class="Dismissal"/>
+    </bag>  
   </class>
 </hibernate-mapping>

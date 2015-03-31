@@ -9,56 +9,86 @@
 
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
-    <fieldset class="bordered doc-wrap panel">
-    <legend>Добавление кандидата</legend>
-        <div class="formfield">
-            @Html.LabelFor(m => m.PassportData)&nbsp;@Html.ValidationMessageFor(m => m.PassportData)<br />
-            @Html.TextBoxFor(m => m.PassportData)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.TextBoxFor(m => m.SNILS)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
-            @Html.TextBoxFor(m => m.DateOfBirth)
-        </div>
-
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.DepartmentName):
-        </div>
-        <div class="formfield">
-            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-            @Html.HiddenFor(m => m.DepartmentName)
-            @Html.HiddenFor(m => m.DepartmentId)
-        </div>
-        <div class="formfield clear">
-            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
-        </div>
-
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.IsFixedTermContract)<br />
-            @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
-            @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
-        </div>
-
-        @if (Model.IsOnBehalfOfManagerAvailable)
-        {
-            @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
+    <div class="doc-wrap">
+            <fieldset class="bordered doc-wrap panel">
+            <legend>Добавление кандидата</legend>
+            <div class="formfield">
+                @Html.LabelFor(m => m.Surname)&nbsp;@Html.ValidationMessageFor(m => m.Surname)<br />
+                @Html.TextBoxFor(m => m.Surname)
+            </div>
             <div class="formfield clear">
-                @Html.LabelFor(m => m.OnBehalfOfManagerName):
+                @Html.LabelFor(m => m.PassportData)&nbsp;@Html.ValidationMessageFor(m => m.PassportData)<br />
+                @Html.TextBoxFor(m => m.PassportData)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
+                @Html.TextBoxFor(m => m.SNILS)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
+                @Html.TextBoxFor(m => m.DateOfBirth)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DepartmentName):
             </div>
             <div class="formfield">
-                <label id="OnBehalfOfManagerNameLabel">@Model.OnBehalfOfManagerName</label>
-                @Html.HiddenFor(m => m.OnBehalfOfManagerId)
-                @Html.HiddenFor(m => m.OnBehalfOfManagerName)
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                @Html.HiddenFor(m => m.DepartmentName)
+                @Html.HiddenFor(m => m.DepartmentId)
             </div>
             <div class="formfield clear">
-                <input type="button" value="Выбрать" onclick="changeManager();"/>
+                <input type="button" value="Выбрать" onclick="changeDepartment();"/>
             </div>
-        }
-    </fieldset>
+
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.PersonnelId)<br />
+                @Html.DropDownListFor(m => m.PersonnelId, new SelectList(Model.Personnels, "Id", "Name"))
+            </div>
+
+            <div id="IsFixedTermContractContainer" class="formfield clear">
+                @Html.LabelFor(m => m.IsFixedTermContract)<br />
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse" id="lblFTCFalse" @if (!Model.IsFixedTermContract)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Бессрочный</label>
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue" id="lblFTCTrue" @if (Model.IsFixedTermContract)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Срочный</label>
+
+
+            </div>
+
+            <div id="IsTrainingNeededContainer" class="formfield clear">
+                @Html.LabelFor(m => m.IsTrainingNeeded)<br />
+                @Html.RadioButtonFor(m => m.IsTrainingNeeded, false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse" @if (!Model.IsTrainingNeeded)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                @Html.RadioButtonFor(m => m.IsTrainingNeeded, true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" @if (Model.IsTrainingNeeded)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            </div>
+
+            <div id="IsBeforEmploymentContainer" class="formfield clear" @if (!Model.IsTrainingNeeded){<text>style="display:none;"</text>}>
+                @Html.LabelFor(m => m.IsBeforEmployment)<br />
+                @Html.RadioButtonFor(m => m.IsBeforEmployment, false, new { @id = "IsBeforEmploymentFalse" })<label for="IsBeforEmploymentFalse" id="lblBEFalse" @if (!Model.IsBeforEmployment)
+                                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                @Html.RadioButtonFor(m => m.IsBeforEmployment, true, new { @id = "IsBeforEmploymentTrue" })<label for="IsBeforEmploymentTrue" id="lblBETrue" @if (Model.IsBeforEmployment)
+                                                                                                                                                {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+            </div>
+            @if (Model.IsOnBehalfOfManagerAvailable)
+            {
+                @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.OnBehalfOfManagerName):
+                </div>
+                <div class="formfield">
+                    <label id="OnBehalfOfManagerNameLabel">@Model.OnBehalfOfManagerName</label>
+                    @Html.HiddenFor(m => m.OnBehalfOfManagerId)
+                    @Html.HiddenFor(m => m.OnBehalfOfManagerName)
+                </div>
+                <div class="formfield clear">
+                    <input type="button" value="Выбрать" onclick="changeManager();"/>
+                </div>
+            }
+        </fieldset>
+    </div>
     
+
     <div class="clear">        
         @if (!Model.UserId.HasValue)
         {
@@ -80,6 +110,49 @@
 
     $(document).ready(function () {
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999 99');
+        });  
+
+        $('#IsFixedTermContractContainer').buttonset();
+        $('#IsTrainingNeededContainer').buttonset();
+        $('#IsBeforEmploymentContainer').buttonset();
+        //$("#IsTrainingNeeded").select(alert($("#IsTrainingNeeded").val()));
+
+        if($("#IsTrainingNeeded").val() == 'True'){$('#IsBeforEmploymentContainer').show();}
+        else {$('#IsBeforEmploymentContainer').hide();}
+
+        //подкрашиваем переключатели
+        $("#IsFixedTermContractTrue").click(function(){
+            $("#lblFTCTrue").css("border-color", "red");
+            $("#lblFTCFalse").css("border-color", "silver");
+        });
+        $("#IsFixedTermContractFalse").click(function(){
+            $("#lblFTCTrue").css("border-color", "silver");
+            $("#lblFTCFalse").css("border-color", "red");
+        });
+
+
+        $("#IsTrainingNeededTrue").click(function(){
+            $("#lblTNTrue").css("border-color", "red");
+            $("#lblTNFalse").css("border-color", "silver");
+            $("#IsBeforEmploymentContainer").show();
+        });
+        $("#IsTrainingNeededFalse").click(function(){
+            $("#lblTNTrue").css("border-color", "silver");
+            $("#lblTNFalse").css("border-color", "red");
+            $("#IsBeforEmploymentContainer").hide();
+        });
+
+        $("#IsBeforEmploymentTrue").click(function(){
+            $("#lblBETrue").css("border-color", "red");
+            $("#lblBEFalse").css("border-color", "silver");
+        });
+        $("#IsBeforEmploymentFalse").click(function(){
+            $("#lblBETrue").css("border-color", "silver");
+            $("#lblBEFalse").css("border-color", "red");
+        });
     });
 
     function changeManager() {

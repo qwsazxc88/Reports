@@ -18,6 +18,7 @@
     <property name="WorkBookSupplementDateOfIssue" not-null="false"/>
 
     <property name="IsFinal" not-null="true"/>
+    <property name="IsValidate" not-null="false"/>
     
   </class>
 </hibernate-mapping>

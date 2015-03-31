@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
@@ -27,10 +28,28 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string Cohabitants { get; set; } //ok
 
-        public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
+        [Display(Name = "Правильность предоставленных данных подтверждаю")]
+        public bool IsValidate { get; set; } //ok
 
+        [Display(Name = "Семейное положение"),
+            Required(ErrorMessage = "*")]
+        public int? FamilyStatusId { get; set; }
+        public IList<FamilyStatusDto> FamillyStatuses { get; set; }
+
+        public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
         public string MarriageCertificateScanAttachmentFilename { get; set; }
         public int MarriageCertificateScanAttachmentId { get; set; }
+
+        public HttpPostedFileBase ChildBirthCertificateScanFile { get; set; }
+        public string ChildBirthCertificateScanAttachmentFilename { get; set; }
+        public int ChildBirthCertificateScanAttachmentId { get; set; }
+        
+
+        public int RowID { get; set; }
+
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
 
         public FamilyModel()
         {

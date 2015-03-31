@@ -27,7 +27,8 @@
         AppointmentReport = 14,
         ClearanceChecklist = 15,
         HelpServiceRequest = 16,
-        HelpQuestionRequest = 17
+        HelpQuestionRequest = 17,
+        Surcharge = 18
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -90,8 +91,15 @@
 
         ApplicationLetterScan = 271,
 
-        // ? = 281,
-        // ? = 282,
+        //документы распечатанные и отсканированные кандидатом в приеме
+        EmploymentContractScan = 272,
+        OrderOnReceptionScan = 273,
+        CandidateT2Scan = 274,
+        ContractMatResponsibleScan = 275,
+        PersonalDataScan = 276,
+        DataObligationScan = 277,
+        EmploymentFileScan = 278,
+        RegisterPersonalRecordScan = 279,
 
         // Dismissal Additional Documents Scans
 
@@ -100,6 +108,7 @@
         F182NScan = 203,
         F2NDFLScan = 204,
         WorkbookRequestScan = 205,
+        
 
         UnsignedT2Scan = 251,        
         UnsignedDismissalAgreementScan = 252
@@ -111,7 +120,12 @@
   //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
   //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
   //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
-
+    public enum EmploymentCommentTypeEnum
+    {
+        Managers = 1,
+        PersonnelManagers = 2,
+        BackgroundCheck = 3
+    }
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,

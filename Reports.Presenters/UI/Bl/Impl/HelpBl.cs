@@ -115,6 +115,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpQuestionSubtypeDao); }
             set { helpQuestionSubtypeDao = value; }
         }
+        protected INoteTypeDao noteTypeDao;
+        public INoteTypeDao NoteTypeDao
+        {
+            get { return Validate.Dependency(noteTypeDao); }
+            set { noteTypeDao = value; }
+        }
         protected IHelpQuestionRequestDao helpQuestionRequestDao;
         public IHelpQuestionRequestDao HelpQuestionRequestDao
         {
@@ -138,8 +144,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             SetDictionariesToModel(model);
             //SetInitialStatus(model);
+            SetIsOriginalDocsVisible(model);
             SetIsAvailable(model);
             return model;
+        }
+        protected void SetIsOriginalDocsVisible(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> RolesToShow=new List<UserRole>();
+            RolesToShow.AddRange(new List<UserRole>{
+                UserRole.OutsourcingManager,
+                UserRole.PersonnelManager,
+                UserRole.ConsultantOutsourcing,
+                UserRole.ConsultantPersonnel,
+                UserRole.ConsultantOutsorsingManager
+               
+            });
+            model.IsOriginalDocsVisible = RolesToShow.Contains(CurrentUser.UserRole);
+        }
+        protected void SetIsOriginalDocsEditable(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> RolesToEdit = new List<UserRole>{
+                
+                UserRole.PersonnelManager,
+                 UserRole.ConsultantOutsorsingManager
+            };
+            model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole) || CurrentUser.Id==10;
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
@@ -148,6 +177,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
             model.Statuses = GetServiceRequestsStatuses();
+            List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            //types=FilteServiceRequestTypes(types);
+            types.Insert(0,new HelpServiceType() { Id = 0, Name = "Все" });
+            model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         public List<IdNameDto> GetServiceRequestsStatuses()
         {
@@ -156,7 +189,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Черновик сотрудника"),
                                                            new IdNameDto(2, "Услуга запрошена"),
                                                            new IdNameDto(3, "Услуга формируется"),
-                                                           new IdNameDto(4, "Услуга сформирована"),
+                                                           //new IdNameDto(4, "Услуга сформирована"),
                                                            new IdNameDto(5, "Услуга оказана")
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(5, "Одобрен членом правления"),
@@ -173,6 +206,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetDictionariesToModel(model);
             User user = UserDao.Load(model.UserId);
+
             if (hasError)
                 model.Documents = new List<HelpServiceRequestDto>();
             else
@@ -193,7 +227,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Number,
                 model.SortBy,
                 model.SortDescending,
-                model.Address);
+                model.Address,
+                model.TypeId);
+            SetIsOriginalDocsVisible(model);
+            SetIsOriginalDocsEditable(model);
+        }
+        public void SaveDocumentsToModel(HelpServiceRequestsListModel model)
+        {
+            List<UserRole> ApprovedUsers = new List<UserRole>
+            {
+                UserRole.ConsultantPersonnel,
+                UserRole.PersonnelManager
+            };
+            if (!ApprovedUsers.Contains(CurrentUser.UserRole) || model.Documents==null) return;
+            foreach (var doc in model.Documents)
+            {
+                HelpServiceRequest entity = helpServiceRequestDao.FindById(doc.Id);
+                if (entity == null) continue;
+                entity.IsOriginalReceived = doc.IsOriginalReceived;
+                helpServiceRequestDao.SaveAndFlush(entity);
+            }
         }
         #endregion
         #region Service Requests Edit
@@ -243,7 +296,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpServiceRequestEditModel model = new HelpServiceRequestEditModel
             {
                 Id = id,
-                UserId = id == 0 ? userId.Value : entity.User.Id
+                UserId = id == 0 ? userId.Value : entity.User.Id,
+                IsUserEmployee=CurrentUser.UserRole==UserRole.Employee
             };
             User user = UserDao.Load(model.UserId);
             User currUser = UserDao.Load(current.Id);
@@ -255,6 +309,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                  Creator = currUser,
                                  CreateDate = DateTime.Now,
                                  EditDate = DateTime.Now,
+                                 UserBirthDate= DateTime.Now
                              };
             }
             else
@@ -263,6 +318,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ProductionTimeTypeId = entity.ProductionTime.Id;
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
                 model.PeriodId = entity.Period == null? new int?() : entity.Period.Id;
+                model.FiredUserName = entity.FiredUserName;
+                model.FiredUserPatronymic = entity.FiredUserPatronymic;
+                model.FiredUserSurname = entity.FiredUserSurname;
+                model.UserBirthDate = entity.UserBirthDate==null?String.Empty : entity.UserBirthDate.Value.ToString("dd.MM.yyyy");
+                model.IsForFiredUser = (entity.UserBirthDate != null);//Если дата рождения заполнена - значит форма для уволенного сотрудника
+                model.Note = entity.Note==null?0 : entity.Note.Id;
                 model.Requirements = entity.Requirements;
                 model.Version = entity.Version;
                 model.DocumentNumber = entity.Number.ToString();
@@ -290,7 +351,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.ConfirmWorkDate.HasValue)
                     model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
             }
-           
+            model.NoteList = noteTypeDao.GetAllNoteTypeDto();
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, entity, model);
@@ -370,6 +431,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
+                            model.IsNotEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
                         }
@@ -386,6 +448,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
+                            if (current.Id == 10)
+                            {
+                                model.IsNotEndWorkAvailable = true;
+                            }
                             model.IsEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
@@ -417,7 +483,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
         }
-
+        protected List<HelpServiceType> FilteServiceRequestTypes(List<HelpServiceType> types)
+        {
+            List<int> hiddenIds=new List<int>{15};
+            //Фильтрация доступных услуг
+            types=types.Where(x=>!hiddenIds.Contains(x.Id)).ToList();
+            
+            return types;
+        }
         protected void SetFlagsState(HelpServiceRequestEditModel model, bool state)
         {
             model.IsBeginWorkAvailable = state;
@@ -434,6 +507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            //types = FilteServiceRequestTypes(types);
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
@@ -481,6 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
+            
             model.Email = user.Email;
             if(user.Department != null)
             {
@@ -591,7 +666,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpServiceRequest),
                         EditDate = DateTime.Now,
                         User = user,
+                        FiredUserName=model.FiredUserName,
+                        FiredUserSurname=model.FiredUserSurname,
+                        FiredUserPatronymic=model.FiredUserPatronymic,
+                        Note=noteTypeDao.Load(model.Note)
                     };
+                    if (model.UserBirthDate != null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
+                    
                     ChangeEntityProperties(entity, model,fileDto,currUser,out error);
                     HelpServiceRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
@@ -661,6 +742,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
                 }
                 entity.Type = type;
+                entity.Note = noteTypeDao.Load(model.Note);
+                entity.FiredUserName = model.FiredUserName;
+                entity.FiredUserSurname = model.FiredUserSurname;
+                entity.FiredUserPatronymic = model.FiredUserPatronymic;
+                if(model.UserBirthDate!=null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
                 entity.Requirements = type.IsRequirementsAvailable ? model.Requirements : null;
@@ -772,9 +858,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate = DateTime.Now;
                             entity.Consultant = currUser;
                         }
-                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id 
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -793,7 +888,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 6 && entity.BeginWorkDate.HasValue)
                         {
@@ -818,7 +916,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            entity.ConfirmWorkDate = DateTime.Now;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue && currUser.Id == 10)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (model.Operation == 2 && entity.SendDate.HasValue && !entity.NotEndWorkDate.HasValue)
@@ -833,6 +940,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             HelpServiceType type = HelpServiceTypeDao.Load(typeId);
             SetDistionariesFlag(model, type);
+        }
+        public IList<NoteTypeDto> GetAllNodeTypesDto()
+        {
+            return noteTypeDao.GetAllNoteTypeDto();
         }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
@@ -1041,6 +1152,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SubtypeId = entity.Subtype.Id;
                 model.Question = entity.Question;
                 model.Answer = entity.Answer;
+                
                 SetStaticFields(model, entity);
             }
             if (!CheckUserRights(currUser, current.UserRole, entity))
@@ -1132,32 +1244,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = FormatDate(entity.CreateDate);
             model.Creator = entity.Creator.FullName;
-            if (entity.ConsultantRoleId.HasValue)
-            {
-                switch (entity.ConsultantRoleId)
-                {
-                    case (int)UserRole.ConsultantOutsourcing:
-                        if (entity.ConsultantOutsourcing != null)
-                            model.Worker = entity.ConsultantOutsourcing.FullName;
-                        break;
-                    case (int)UserRole.ConsultantPersonnel:
-                        if (entity.ConsultantPersonnel != null)
-                            model.Worker = entity.ConsultantPersonnel.FullName;
-                        break;
-                    case (int)UserRole.ConsultantAccountant:
-                        if (entity.ConsultantAccountant != null)
-                            model.Worker = entity.ConsultantAccountant.FullName;
-                        break;
-                    //case (int)UserRole.PersonnelManager:
-                    //    if (entity.PersonnelManager != null)
-                    //        model.Worker = entity.PersonnelManager.FullName;
-                    //    break;
-                    case (int)UserRole.ConsultantOutsorsingManager:
-                        if (entity.ConsultantOutsorsingManager != null)
-                            model.Worker = entity.ConsultantOutsorsingManager.FullName;
-                        break;
-                }
-            }
+            
+            if (entity.ConsultantOutsourcing != null)
+                model.Worker = entity.ConsultantOutsourcing.FullName;
+                        
+                    
+            if (entity.ConsultantPersonnel != null)
+                model.Worker = entity.ConsultantPersonnel.FullName;
+                        
+                   
+            if (entity.ConsultantAccountant != null)
+                model.Worker = entity.ConsultantAccountant.FullName;
+                       
+                   
+            if (entity.ConsultantOutsorsingManager != null)
+                model.Worker = entity.ConsultantOutsorsingManager.FullName;
+                        
+                
+            
             if (entity.SendDate.HasValue)
                 model.QuestionSendDate = entity.SendDate.Value.ToShortDateString();
             if (entity.EndWorkDate.HasValue)
@@ -1300,7 +1404,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsBeginWorkAvailable = true;
                         }
                         if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
-                                model.IsEndAvailable = true;//могут закрывать тему 
+                                model.IsEndAvailable = true;//могут закрывать тему
+                        if (!entity.EndWorkDate.HasValue) model.IsBaseAvailable = true;
+                        else  model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
@@ -1782,6 +1888,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.HistoryEntities.Add(redirect);
                             entity.Answer = null;
                             model.Answer = null;
+                        }
+                        if (model.Operation == 7)
+                        {
+                            entity.Base = true;
                         }
                     }
                     break;

@@ -1,24 +1,50 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ContactsModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
-    ViewBag.Title = "Прием - Контактные данные";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        ViewBag.Title = "Прием - Контактные данные";
+    }
 }
 
+@Html.Partial("CandidateState", Model.CandidateStateModel)
+
 <span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
 @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
+    
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Фактическое место жительства</legend>
         <table class="clear">
             <tr>
                 <td>
+                    @Html.LabelFor(m => m.Country)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Country)
+                </td>
+            </tr>
+            <tr>
+                <td>
                     @Html.LabelFor(m => m.ZipCode)
                 </td>
                 <td>
                     @Html.EditorFor(m => m.ZipCode)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Republic)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Republic)
                 </td>
             </tr>
             <tr>
@@ -88,7 +114,8 @@
                     @Html.LabelFor(m => m.WorkPhone)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.WorkPhone, new { @type = "tel" })
+                    @Html.TextBoxFor(m => m.WorkPhone, new { @type = "tel" }) 
+                    @Html.ValidationMessageFor(m => m.WorkPhone)
                 </td>
             </tr>
             <tr>
@@ -119,13 +146,22 @@
     </fieldset>
 
     <div class="clear">
-        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
-        <button type="submit">Сохранить</button>
+        @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
+        @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
+        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
+        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
+        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
 <script>
     $(document).ready(function () {
         setActiveMenuItem("empContacts");
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#WorkPhone').mask('+7(999) 999-99-99');
+            $('#HomePhone').mask('+7(999) 999-99-99');
+            $('#Mobile').mask('+7(999) 999-99-99');
+        });
     });
 </script>

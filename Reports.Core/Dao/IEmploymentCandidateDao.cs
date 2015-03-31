@@ -14,9 +14,12 @@ namespace Reports.Core.Dao
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                int CandidateId,
                 int sortBy,
                 bool? sortDescending);
 
         IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
+        IList<CandidateStateDto> GetCandidateState(int CandidateID);
+        IList<CandidatePersonnelDto> GetPersonnels();
     }
 }
