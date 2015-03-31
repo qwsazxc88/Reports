@@ -10,6 +10,6 @@
     <property name="CertificateNumber" length="20" not-null="false"/>
     <property name="CertificateDateOfIssue" not-null="false"/>
     <property name="InitiatingOrder" length="20" not-null="false"/>
-    <property name="LocationEI" length="150" not-null="false"/>
+    
   </class>
 </hibernate-mapping>

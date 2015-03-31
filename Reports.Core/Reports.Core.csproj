@@ -89,7 +89,6 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
-    <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -188,7 +187,6 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
-    <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
@@ -267,6 +265,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
@@ -322,6 +321,7 @@
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ISurchargeDao.cs" />
     <Compile Include="Dao\ITerraGraphicDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITerraPointToUserDao.cs" />
@@ -396,7 +396,6 @@
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
-    <Compile Include="Domain\Employment2\EmploymentCandidateComment.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
@@ -497,6 +496,7 @@
     </Compile>
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
     <Compile Include="Domain\TerraPoint.cs" />
     <Compile Include="Domain\TerraPointToUser.cs" />
@@ -542,8 +542,6 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
-    <Compile Include="Dto\Employment2\ContractPointDto.cs" />
-    <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
     <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
@@ -583,6 +581,7 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
@@ -1137,7 +1136,7 @@
     <EmbeddedResource Include="Domain\EmploymentEducationType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateComment.hbm.xml" />
+    <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

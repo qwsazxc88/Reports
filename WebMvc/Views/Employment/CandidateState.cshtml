@@ -3,12 +3,12 @@
     ViewBag.Title = "CandidateState";
 }
 
-<b>Индикатор состояния заполнения и согласования анкеты</b>
+<b>Состояние приема кандидата</b>
     <table class="state">
         <tr>
             <td colspan="9" style="background-color:Silver">Состояние заполнения анкетных данных</td>
             <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
-                {<text>style="background-color:Lime"</text>}>Департамент безопасности</td>
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
             <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
                 {<text>style="background-color:Lime"</text>}>Обучение</td>
             <td @if (Model.CandidateState[0].ManagerApproval.HasValue && Model.CandidateState[0].ManagerApproval.Value)
@@ -32,7 +32,7 @@
             <td @if (Model.CandidateState[0].ContactFinal)
                 {<text>style="background-color:Lime"</text>}>Контактные данные</td>
             <td @if (Model.CandidateState[0].BackgroundFinal)
-                {<text>style="background-color:Lime"</text>}>Департамент безопасности</td>
+                {<text>style="background-color:Lime"</text>}>Служба безопасности</td>
             <td @if (Model.CandidateState[0].CandidateApp)
                 {<text>style="background-color:Lime"</text>}>Заявление</td>
             <td colspan="4" style="background-color:Silver">Согласование</td>

@@ -50,6 +50,13 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div> 
+                <div id="liSurcharge" class="mainMenuItem"> 
+                 @if ((dto.UserRole & UserRole.Accountant) > 0
+                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                               @Html.ActionLink("Доплата", "Index", "Surcharge")
+                    }
+                </div>
                   @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
@@ -131,13 +138,13 @@
                 <div class="menuitem" id="empMilitaryService">@Html.ActionLink("Воинский учет", "MilitaryService", "Employment")</div>
                 <div class="menuitem" id="empExperience">@Html.ActionLink("Трудовая деятельность", "Experience", "Employment")</div>
                 <div class="menuitem" id="empContacts">@Html.ActionLink("Контактные данные", "Contacts", "Employment")</div>
-                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Департамент безопасности", "BackgroundCheck", "Employment")</div>
+                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
             }
             
             @*
             @if ((dto.UserRole & UserRole.Security) == UserRole.Security)
             {
-                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Департамент безопасности", "BackgroundCheck", "Employment")</div>
+                <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
             }
 
             @if ((dto.UserRole & UserRole.Trainer) == UserRole.Trainer)

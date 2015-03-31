@@ -32,13 +32,10 @@ namespace Reports.Core.Dao.Impl
 
         protected const string sqlSelectForCandidateList =
             @"select candidate.Id Id
-                , candidate.QuestionnaireDate
                 , candidate.UserId UserId
                 , isnull(generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic, candidateUser.Name) as Name
                 , managers.WorkCity WorkCity
-                , managers.IsSecondaryJob IsSecondaryJob
                 , department.Name Department
-                , dep3.Name Department3
                 , position.Name Position
                 , personnelManagers.EmploymentDate EmploymentDate
                 , personnelManagers.EmploymentOrderNumber EmploymentOrderNumber
@@ -60,7 +57,7 @@ namespace Reports.Core.Dao.Impl
 					end Disabilities
                 , candidateUser.Grade Grade
 				, case
-					when candidate.Status = 1 then N'Ожидает согласование ДБ'
+					when candidate.Status = 1 then N'Ожидает согласование СБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'
 					when candidate.Status = 4 then N'Ожидает согласование руководителем'
@@ -96,29 +93,20 @@ namespace Reports.Core.Dao.Impl
 					when candidate.Status = 4 and appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' then 1
 					else 0
 					end IsApproveByHigherManagerAvailable
-                , appointmentCreator.Name as AppointmentManager
-                , Personnel.Name as PersonnelName
-                , case when candidate.IsTrainingNeeded = 0 then 'Не требуется'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 1 and isnull(J.IsFinal, 0) = 1 then 'Пройдено'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Непройдено'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
                 left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
                 left join dbo.Department department on managers.DepartmentId = department.Id
-                left join dbo.Department as dep3 ON department.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
                 left join dbo.Position position on managers.PositionId = position.Id
-                left join dbo.Schedule schedule on personnelManagers.ScheduleId = schedule.Id
+                left join dbo.Schedule schedule on managers.ScheduleId = schedule.Id
                 left join dbo.Users candidateUser on candidate.UserId = candidateUser.Id
                 left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
                 inner join dbo.Users currentUser on :currentId = currentUser.Id
                 left join dbo.Department currentDepartment on currentUser.DepartmentId = currentDepartment.Id
                 left join dbo.Users appointmentCreator on candidate.AppointmentCreatorId = appointmentCreator.Id
                 inner join dbo.Department appointmentCreatorDepartment on appointmentCreator.DepartmentId = appointmentCreatorDepartment.Id
-                left join dbo.Users as Personnel ON Personnel.id = candidate.PersonnelId
-                inner join OnsiteTraining as J ON J.Id = candidate.OnsiteTrainingId
             ";
 
         #endregion
@@ -225,7 +213,7 @@ namespace Reports.Core.Dao.Impl
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager)) > 0)
             {
-                //сотрудников ДБ и тренеров дополнительная фильтрация сейчас не производится
+                //сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
             }
             else
             {
@@ -306,49 +294,49 @@ namespace Reports.Core.Dao.Impl
             switch (sortedBy)
             {
                 case 1:
-                    orderBy = "candidate.Id";
+                    orderBy = "Name";
                     break;
                 case 2:
-                    orderBy = "QuestionnaireDate";
+                    orderBy = "WorkCity";
                     break;
                 case 3:
-                    orderBy = "Name";
+                    orderBy = "Department";
                     break;
                 case 4:
                     orderBy = "Position";
                     break;
                 case 5:
-                    orderBy = "Department3";
+                    orderBy = "EmploymentDate";
                     break;
                 case 6:
-                    orderBy = "Department";
+                    orderBy = "EmploymentOrderNumber";
                     break;
                 case 7:
-                    orderBy = "WorkCity";
+                    orderBy = "EmploymentOrderDate";
                     break;
                 case 8:
-                    orderBy = "IsSecondaryJob";
+                    orderBy = "ContractNumber";
                     break;
                 case 9:
                     orderBy = "ProbationaryPeriod";
                     break;
                 case 10:
-                    orderBy = "Disabilities";
+                    orderBy = "Schedule";
                     break;
                 case 11:
-                    orderBy = "Training";
+                    orderBy = "DateOfBirth";
                     break;
                 case 12:
-                    orderBy = "EmploymentDate";
+                    orderBy = "Disabilities";
                     break;
                 case 13:
-                    orderBy = "AppointmentManager";
+                    orderBy = "Grade";
                     break;
                 case 14:
-                    orderBy = "PersonnelName";
+                    orderBy = "Status";
                     break;
                 case 15:
-                    orderBy = "Status";
+                    orderBy = "candidate.Id";
                     break;
                 default:
                     orderBy = "candidate.Id";
@@ -366,12 +354,10 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
-                .AddScalar("QuestionnaireDate", NHibernateUtil.DateTime)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
                 .AddScalar("WorkCity", NHibernateUtil.String)
                 .AddScalar("Department", NHibernateUtil.String)
-                .AddScalar("Department3", NHibernateUtil.String)
                 .AddScalar("Position", NHibernateUtil.String)
                 .AddScalar("EmploymentDate", NHibernateUtil.DateTime)
                 .AddScalar("EmploymentOrderNumber", NHibernateUtil.String)
@@ -391,15 +377,12 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsApprovedByHigherManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByManagerAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByHigherManagerAvailable", NHibernateUtil.Boolean)
-                .AddScalar("IsSecondaryJob", NHibernateUtil.Boolean)
+
                 .AddScalar("IsContractChangedToIndefinite", NHibernateUtil.Boolean)
                 .AddScalar("SupplementaryAgreementCreateDate", NHibernateUtil.DateTime)
                 .AddScalar("SupplementaryAgreementNumber", NHibernateUtil.Int32)
                 .AddScalar("IndefiniteContractOrderCreateDate", NHibernateUtil.DateTime)
                 .AddScalar("IndefiniteContractOrderNumber", NHibernateUtil.Int32)
-                .AddScalar("AppointmentManager", NHibernateUtil.String)
-                .AddScalar("PersonnelName", NHibernateUtil.String)
-                .AddScalar("Training", NHibernateUtil.String)
                 ;
 
             return query;
@@ -441,7 +424,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ContactFinal", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundFinal", NHibernateUtil.Boolean)
                 .AddScalar("CandidateApp", NHibernateUtil.Boolean)
-                .AddScalar("CandidateReady", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
