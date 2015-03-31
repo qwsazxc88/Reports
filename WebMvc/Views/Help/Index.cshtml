@@ -139,7 +139,7 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table id="grid" class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
@@ -193,78 +193,80 @@
                         <div id="sort10"  style="min-width:100px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
                 </tr>
-                @if (Model.Documents != null && Model.Documents.Count > 0)
-                {
-                    int i=0;
-                    foreach (var doc in Model.Documents)
+                <tbody id="grid">
+                    @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
-                        string color = "white";
-                        switch (doc.StatusNumber)
+                        int i=0;
+                        foreach (var doc in Model.Documents)
                         {
-                            case 2:
-                                color = "orange";
-                                break;
-                            case 3:
-                                color = "yellow";
-                                break;
-                            case 4:
-                                color = "LightGreen";
-                                break;
-                            case 5:
-                                color = "green";
-                                break;
-                            case 6:
-                                color = "red";
-                                break;
-                        }
-                        <tr>
-                            <td>@doc.Number</td>
-                            <td>@doc.UserName</td>
-                            <td>@doc.Position</td>
-                            <td>@doc.ManagerName</td>
-                            <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
-                            <td>@if (doc.Note == null)
+                            string color = "white";
+                            switch (doc.StatusNumber)
+                            {
+                                case 2:
+                                    color = "orange";
+                                    break;
+                                case 3:
+                                    color = "yellow";
+                                    break;
+                                case 4:
+                                    color = "LightGreen";
+                                    break;
+                                case 5:
+                                    color = "green";
+                                    break;
+                                case 6:
+                                    color = "red";
+                                    break;
+                            }
+                            <tr>
+                                <td>@doc.Number</td>
+                                <td>@doc.UserName</td>
+                                <td>@doc.Position</td>
+                                <td>@doc.ManagerName</td>
+                                <td>@doc.FiredUserSurname @doc.FiredUserName @doc.FiredUserPatronymic</td>
+                                <td>@if (doc.Note == null)
+                                    {
+                                           <p /> 
+                                    }
+                                    else
+                                    { <p>@doc.NoteName</p> }
+                                     </td>
+                                <td>@doc.Dep3Name</td>
+                                <td>@doc.Dep7Name</td>
+                                <td style="text-align:left">
+                                    <a class="ui-notify-close" href='@Url.Action("ServiceRequestEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
+                                </td>
+                                @*
+                                <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
+                                <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
+                                *@
+                                <td>@doc.EditDate.ToShortDateString() @doc.EditDate.ToShortTimeString()</td>                            
+                                @if (@doc.EndWorkDate == null)
                                 {
-                                       <p /> 
+                                    <td></td>
                                 }
                                 else
-                                { <p>@doc.NoteName</p> }
-                                 </td>
-                            <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
-                            <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("ServiceRequestEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
-                            </td>
-                            @*
-                            <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
-                            <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
-                            *@
-                            <td>@doc.EditDate.ToShortDateString() @doc.EditDate.ToShortTimeString()</td>                            
-                            @if (@doc.EndWorkDate == null)
-                            {
-                                <td></td>
-                            }
-                            else
-                            {
-                                <td>@doc.EndWorkDate.Value.ToShortDateString() @doc.EndWorkDate.Value.ToShortTimeString()</td>
-                            }
-                            <td>@doc.RequestType</td>
-                            <td>@doc.ProdTimeName</td>
-                            <td>@doc.RequestTransferType</td>
-                            @if (Model.IsOriginalDocsVisible)
-                            {
-                                <td style="text-align:center; vertical-align:middle;">
-                                    @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived, Model.IsOriginalDocsEditable ? null : (object)new { disabled = "disabled" })
-                                    @Html.HiddenFor(m => m.Documents[i].Id)
+                                {
+                                    <td>@doc.EndWorkDate.Value.ToShortDateString() @doc.EndWorkDate.Value.ToShortTimeString()</td>
+                                }
+                                <td>@doc.RequestType</td>
+                                <td>@doc.ProdTimeName</td>
+                                <td>@doc.RequestTransferType</td>
+                                @if (Model.IsOriginalDocsVisible)
+                                {
+                                    <td style="text-align:center; vertical-align:middle;">
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsOriginalReceived, Model.IsOriginalDocsEditable ? null : (object)new { disabled = "disabled" })
+                                        @Html.HiddenFor(m => m.Documents[i].Id)
+                                    </td>
+                                }
+                                <td style="background-color:@color">
+                                    @doc.Status
                                 </td>
-                            }
-                            <td style="background-color:@color">
-                                @doc.Status
-                            </td>
-                        </tr>
-                        i++;
+                            </tr>
+                            i++;
+                        }
                     }
-                }
+                </tbody>
             </table>
         </td>
      </tr>
