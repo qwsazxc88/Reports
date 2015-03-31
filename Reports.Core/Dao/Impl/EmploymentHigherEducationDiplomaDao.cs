@@ -40,8 +40,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Qualification", NHibernateUtil.String).
                 AddScalar("Speciality", NHibernateUtil.String).
                 AddScalar("Profession", NHibernateUtil.String).
-                AddScalar("Department", NHibernateUtil.String).
-                AddScalar("LocationEI", NHibernateUtil.String);
+                AddScalar("Department", NHibernateUtil.String);
         }
     }
 }
