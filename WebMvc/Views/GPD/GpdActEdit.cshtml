@@ -449,9 +449,9 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
 
     $(document).ready(function () {
-        $("#ActDate").datepicker();
-        $("#DateBegin").datepicker();
-        $("#DateEnd").datepicker();
+        $("#ActDate").datepicker({changeMonth: true, changeYear: true});
+        $("#DateBegin").datepicker({changeMonth: true, changeYear: true});
+        $("#DateEnd").datepicker({changeMonth: true, changeYear: true});
         $("#ChargingDate").datepicker({dateFormat: "mm.yy"});      
         $(".hasDatepicker").width("75px");
         

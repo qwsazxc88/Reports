@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.Bl
         SicklistEditModel GetSicklistEditModel(int id, int userId);
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
-
+        bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse);
         bool HaveAbsencesForPeriod(DateTime beginDate, DateTime endDate, int userId,
                                    int currentUserId, UserRole currentUserRole);
         bool ResetSicklistApprovals(int id, out string error);
@@ -87,7 +87,8 @@ namespace Reports.Presenters.UI.Bl
         EmploymentEditModel GetEmploymentEditModel(int id, int userId);
         void ReloadDictionariesToModel(EmploymentEditModel model);
         bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);
-
+        DeductionImportModel GetDeductionImportModel(DeductionImportModel model = null);
+        IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors);
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
