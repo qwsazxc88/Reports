@@ -8,8 +8,15 @@
 }
 <div style="visibility:hidden">
 <div id="SurchargeDialog" title="Создать доплату" >
+ @if (Model.DeductionDocNumber == 0)
+ {
  <p>Введите номер удержания</p>
  <input type="text" id="deductionNumber" />
+ }
+ else
+ {
+  <input type="hidden" id="deductionNumber" value='@Model.DeductionDocNumber' />   
+ }
  <p>Введите сумму доплаты</p>
  <input type="text" id="SurchargeSum" />
  <input type="button" value="Создать" onclick="AddSurcharge();" />
@@ -230,7 +237,11 @@
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-            @*<input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> *@
+            @if (Model.IsAccountantApproved && (dto.UserRole & UserRole.Accountant) > 0)
+            {
+                @*<input type="button" value="Создать удержание" onclick="" />*@
+                @*<input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> *@
+            }
             @if (Model.Id > 0)
             {
                 <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
@@ -1246,22 +1257,29 @@
         var b= @Model.Id;
         var a= @Model.UserId;
         var c=$("#SurchargeSum").val();
+        var d=$("#deductionNumber").val();
         jQuery.ajaxSettings.traditional = true;
         $.ajax({
         url: '@Url.Action("AddSurcharge","Surcharge")',
         type: 'POST',
-        data: {userId:a,missionReportId:b,sum:c},
+        data: {userId:a,missionReportId:b,sum:c,deductionNumber:d},
         success: function(result){
             $(".loading").removeClass("loading");
-            if(result.Status=='Ok') $("#ExportButton").hide();
+            if(result.status=='Ok') 
+            {
+                $("#ExportButton").hide();
+                $("#SurchargeDialog").dialog( "close" );
+            }
             else
             { 
                 alert(result.Message);
+                $("#SurchargeDialog").dialog( "close" );
             }
             },
         error: function(){
             $(".loading").removeClass("loading");
             alert("При отправке данных произошла ошибка.");
+            $("#SurchargeDialog").dialog( "close" );
             }
         });
     }
