@@ -2691,14 +2691,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if((int)currentRole == entity.RecipientRoleId)
                     {
-                        if(!entity.BeginWorkDate.HasValue &&
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
                            (entity.RecipientId == AuthenticationService.CurrentUser.Id || 
                             entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
                         {
                             model.IsWorkBeginAvailable = true;
                             model.IsSaveAvailable = true;
                         }
-                        if(!entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
                         {
                             model.IsAnswerEditable = true;
                             model.IsSaveAvailable = true;
@@ -2717,14 +2717,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if ((int)currentRole == entity.RecipientRoleId)
                     {
-                        if (!entity.BeginWorkDate.HasValue &&
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
                            (entity.RecipientId == AuthenticationService.CurrentUser.Id ||
                             entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
                         {
                             model.IsWorkBeginAvailable = true;
                             model.IsSaveAvailable = true;
                         }
-                        if (!entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
                         {
                             model.IsAnswerEditable = true;
                             model.IsSaveAvailable = true;
@@ -2901,14 +2901,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if((int)currRole == entity.RecipientRoleId)
                     {
-                        if (!entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
                             (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.RecipientId = currUser.Id;
                             model.RecipientId = entity.RecipientId;
                         }
-                        if (!entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
                         {
                             entity.EndWorkDate = DateTime.Now;
                         }
@@ -2924,14 +2924,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if ((int)currRole == entity.RecipientRoleId)
                     {
-                        if (!entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
                             (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.RecipientId = currUser.Id;
                             model.RecipientId = entity.RecipientId;
                         }
-                        if (!entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
                         {
                             entity.EndWorkDate = DateTime.Now;
                         }
