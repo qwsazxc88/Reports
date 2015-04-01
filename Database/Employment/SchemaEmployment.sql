@@ -107,6 +107,7 @@ GO
 			[ContractPointsFio] [nvarchar](100) NULL,
 			[ContractPointsAddress] [nvarchar](150) NULL,
 			[ScheduleId] [int] NULL,
+			[CompleteDate] [datetime] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1011,6 +1012,7 @@ GO
 			[PersonnelManagersId] [int] NULL,
 			[Status] [int] NULL,
 			[ContractNumber1C] [nvarchar](20) NULL,
+			[SendTo1C] [datetime] NULL,
 			[QuestionnaireDate] [datetime] NULL,
 			[AppointmentCreatorId] [int] NULL,
 			[PersonnelId] [int] NULL,
@@ -1480,6 +1482,12 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата готовности кандидата к выгрузке в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'CompleteDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата выгрузки в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'SendTo1C'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер документа приема на работу из 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'ContractNumber1C'
 	GO
 

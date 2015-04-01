@@ -1507,6 +1507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
+                    filters != null ? filters.CompleteDate : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -2219,6 +2220,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
+                    filters != null ? filters.CompleteDate : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -3041,8 +3043,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.GeneralInfo = entity;
-            entity.Citizenship = CountryDao.Load(viewModel.CitizenshipId);
-            entity.CountryBirth = CountryDao.Load(viewModel.CountryBirthId);
+
+            entity.Citizenship = viewModel.CitizenshipId != 0 ? CountryDao.Load(viewModel.CitizenshipId) : null;
+            entity.CountryBirth = viewModel.CountryBirthId != 0 ? CountryDao.Load(viewModel.CountryBirthId) : null;
+
             entity.CityOfBirth = viewModel.CityOfBirth;
             entity.DateOfBirth = viewModel.DateOfBirth;
 
@@ -4176,6 +4180,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     //entity.Approver = UserDao.Get(current.Id);
+                    entity.CompleteDate = DateTime.Now;
                     entity.Candidate.Status = EmploymentStatus.COMPLETE;
                     if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
                     {
