@@ -9,6 +9,12 @@ namespace Reports.Core.Dao.Impl
     public class SurchargeDao:DefaultDao<Surcharge>, ISurchargeDao
     {
         private IRequestNextNumberDao NextNumberDao = Ioc.Resolve<IRequestNextNumberDao>();
+        private IDepartmentDao DepartmentDao = Ioc.Resolve<IDepartmentDao>();
+        private string GetDep3Name(Department Dep)
+        {
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(Dep, 3);
+            return dep3 == null ? "" : dep3.Name;
+        }
         public SurchargeDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -34,8 +40,8 @@ namespace Reports.Core.Dao.Impl
                         SurchargeDate=x.SurchargeDate,
                         Sum=x.Sum,
                         Position = x.User.Position!=null?x.User.Position.Name:"",
-                        Dep3Name = x.User.Department!=null? x.User.Department.Name:""
-                    
+                        Dep7Name = x.User.Department!=null? x.User.Department.Name:"",
+                        Dep3Name = GetDep3Name(x.User.Department)
                     });
         }
         public void AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)

@@ -7827,8 +7827,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Sum =Math.Abs( report.AccountantAllSum - report.PurchaseBookAllSum - report.UserSumReceived ),
                         DeleteAfterSendTo1C = false,
                         UploadingDocType=uploadingType,
-                        IsFastDismissal = isFastDissmissal
-
+                        IsFastDismissal = isFastDissmissal,
+                        DismissalDate= report.User.DateRelease
                     };
 
                     DeductionDao.SaveAndFlush(deduction);
