@@ -14,6 +14,7 @@ namespace Reports.Core.Dao
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                string ContractNumber1C,
                 int CandidateId,
                 int sortBy,
                 bool? sortDescending);
