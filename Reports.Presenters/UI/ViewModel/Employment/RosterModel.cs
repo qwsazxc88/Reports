@@ -39,6 +39,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Идентификатор личного дела")]
         public int? CandidateId { get; set; }
 
+        [Display(Name = "Номер документа из 1С")]
+        public string ContractNumber1C { get; set; }
+
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
 

@@ -32,7 +32,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
-        public int RUSSIAN_FEDERATION = 643;
+        //public int RUSSIAN_FEDERATION = 643;
+        public int RUSSIAN_FEDERATION = 3;
 
         #endregion
 
@@ -1507,6 +1508,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
@@ -2218,6 +2220,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
