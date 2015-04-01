@@ -138,7 +138,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
 
-        [Display(Name = "График работы")]
+        [Display(Name = "График работы"),
+            Required(ErrorMessage = "Обязательное для заполнения поле!")]
         public int? ScheduleId { get; set; }
         public IEnumerable<SelectListItem> Schedules { get; set; }
 
