@@ -41,6 +41,7 @@
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_PersonnelManagers_InsuredPersonType" index="PersonnelManagers_InsuredPersonType"  not-null="false"/>
     <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_PersonnelManagers_Schedule" index="PersonnelManagers_Schedule"  not-null="false"/>
     <property name="Status" not-null="false"/>
+    <property name="CompleteDate" not-null="false"/>
 
     <property name="ContractPoint_1_Id" not-null="false"/>
     <property name="ContractPoint_2_Id" not-null="false"/>

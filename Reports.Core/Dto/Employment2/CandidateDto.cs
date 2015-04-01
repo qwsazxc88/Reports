@@ -38,6 +38,7 @@ namespace Reports.Core.Dto.Employment2
 
         public DateTime? QuestionnaireDate { get; set; }
 
+        public DateTime? CompleteDate { get; set; }
 
         public DateTime? SupplementaryAgreementCreateDate { get; set; }
 

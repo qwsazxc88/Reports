@@ -832,6 +832,20 @@ margin-right:5px;
     min-height: 11px;
     display:inline-block;
 }
+
+.loading2
+{
+display:inline-block;
+background: url('floating_beams.gif') no-repeat;
+margin-left:5px;
+margin-right:5px;
+}
+#LoadingIndicator2
+{
+    min-width: 30px;
+    min-height: 30px;
+    display:inline-block;
+}
 .hide
 {
     display:none;
