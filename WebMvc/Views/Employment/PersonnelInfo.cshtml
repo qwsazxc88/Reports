@@ -21,7 +21,7 @@
         <ul>
             @if (Model.IsCandidateInfoAvailable)
             {
-                <li><a href="#tabs1">Общая информация</a></li>
+                <li><a href="#tabs1"><!--<span id="LoadingIndicator2" style="display:none;"></span>-->Общая информация</a></li>
                 <li><a href="#tabs2">Паспортные данные</a></li>
                 <li><a href="#tabs3">Образование</a></li>
                 <li><a href="#tabs4">Состав семьи</a></li>
@@ -56,29 +56,29 @@
 
         
         <div id="tabs1">
-            @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" })) { }
+            
         </div>
         
         <div id="tabs2">
-            @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs3">
-            @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs4">
-            @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs5">
-            @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs6">
-            @using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs7">
-            @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs8">
-            @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" })) { }
+            
         </div>
         <div id="tabs9"></div>
         <div id="tabs10"></div>
@@ -222,14 +222,19 @@
         //создаем вкладки, с обработчиком переключения вкладок
         $('#tabs').tabs({ selected: -1,
             spinner: "Загрузка...",
-            ajaxOption: {cache: true},
+            ajaxOption: {cache: false},
             select: function (e, ui) {
                 //первая вкладка
                 if (ui.panel.id == "tabs1") {
+                    //$("#LoadingIndicator2").addClass("loading2");
+                    //$("#LoadingIndicator2").show();
                     $("#tabs1").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
 
                     $("#tabs1").ajaxStop(function () {
+                    //$(".loading2").removeClass("loading2");
+                    //$("#LoadingIndicator2").hide();
+
                     UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
                     UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
                     UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
@@ -260,7 +265,8 @@
 
 
 
-                        var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
+                        //var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
+                        $('#add-name-change-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -269,6 +275,7 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -311,7 +318,8 @@
 
                         // BEGIN Add Foreign Language
 
-                        var $addForeignLanguageDialog = $('#add-foreign-language-dialog').dialog(
+                        //var $addForeignLanguageDialog = $('#add-foreign-language-dialog').dialog(
+                        $('#add-foreign-language-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -320,6 +328,7 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -358,12 +367,14 @@
                         // END Add Foreign Language
 
                         $("#add-name-change").click(function (e) {
-                            $addNameChangeDialog.dialog("open");
+                            //$addNameChangeDialog.dialog("open");
+                            $('#add-name-change-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         $("#add-foreign-language").click(function (e) {
-                            $addForeignLanguageDialog.dialog("open");
+                            //$addForeignLanguageDialog.dialog("open");
+                            $('#add-foreign-language-dialog').dialog("open");
                             e.preventDefault();
                         });
 
@@ -433,7 +444,8 @@
                     AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs3").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue, #BeginningDate, #EndDate'), "-50:+0", true);
-                        var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
+                        //var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
+                        $('#add-higher-education-diploma-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -456,7 +468,8 @@
                             }
                         });
 
-                        var $addPostGraduateEducationDiplomaDialog = $('#add-post-graduate-education-diploma-dialog').dialog(
+                        //var $addPostGraduateEducationDiplomaDialog = $('#add-post-graduate-education-diploma-dialog').dialog(
+                        $('#add-post-graduate-education-diploma-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -479,7 +492,8 @@
                             }
                         });
 
-                        var $addCertificationDialog = $('#add-certification-dialog').dialog(
+                        //var $addCertificationDialog = $('#add-certification-dialog').dialog(
+                        $('#add-certification-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -502,7 +516,8 @@
                             }
                         });
 
-                        var $addTrainingDialog = $('#add-training-dialog').dialog(
+                        //var $addTrainingDialog = $('#add-training-dialog').dialog(
+                        $('#add-training-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -526,47 +541,51 @@
                         });
 
                         $("#add-higher-education-diploma").click(function (e) {
-                            $addHigherEducationDiplomaDialog.dialog("open");
+                            //$addHigherEducationDiplomaDialog.dialog("open");
+                            $('#add-higher-education-diploma-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         $("#add-post-graduate-education-diploma").click(function (e) {
-                            $addPostGraduateEducationDiplomaDialog.dialog("open");
+                            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+                            $('#add-post-graduate-education-diploma-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         $("#add-certification").click(function (e) {
-                            $addCertificationDialog.dialog("open");
+                            //$addCertificationDialog.dialog("open");
+                            $('#add-certification-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         $("#add-training").click(function (e) {
-                            $addTrainingDialog.dialog("open");
+                            //$addTrainingDialog.dialog("open");
+                            $('#add-training-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         //есди не прошли проверки открываем формы
                         if ($("#IsHigherEducationNotValid").val() == 'True'){
                             $("#add-higher-education-diploma").click();
-                            //$addHigherEducationDiplomaDialog.dialog("open");
+                            $("#IsHigherEducationNotValid").val(false);
                             //e.preventDefault();
                         }
 
                         if ($("#IsPostGraduateEducationNotValid").val() == 'True'){
                             $("#add-post-graduate-education-diploma").click();
-                            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+                            $("#IsPostGraduateEducationNotValid").val(false);
                             //e.preventDefault();
                         }
 
                         if ($("#IsEducationCertificationsNotValid").val() == 'True'){
                             $("#add-certification").click();
-                            //$addPostGraduateEducationDiplomaDialog.dialog("open");
+                            $("#IsEducationCertificationsNotValid").val(false);
                             //e.preventDefault();
                         }
 
                         if ($("#IsEducationTrainingNotValid").val() == 'True'){
                              $("#add-training").click();
-                            //$addTrainingDialog.dialog("open");
+                             $("#IsEducationTrainingNotValid").val(false);
                             //e.preventDefault();
                         }
                     });
@@ -598,7 +617,8 @@
                             true
                         );
 
-                        var $addChildDialog = $('#add-child-dialog').dialog(
+                        //var $addChildDialog = $('#add-child-dialog').dialog(
+                        $('#add-child-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -607,6 +627,7 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -647,7 +668,8 @@
                         };
 
                         $("#add-child").click(function (e) {
-                            $addChildDialog.dialog("open");
+                            //$addChildDialog.dialog("open");
+                            $('#add-child-dialog').dialog("open");
                             e.preventDefault();
                         });
                     });
@@ -669,7 +691,8 @@
                     $("#tabs6").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
 
-                        var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
+                        //var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
+                        $('#add-experience-item-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -678,6 +701,7 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -718,12 +742,15 @@
 //                        };
 
                         $("#add-experience-item").click(function (e) {
-                            $addExperienceItemDialog.dialog("open");
+                            //$addExperienceItemDialog.dialog("open");
+                            $('#add-experience-item-dialog').dialog("open");
                             e.preventDefault();
                         });
 
                         if ($("#IsExperienceItemNotValid").val() == 'True'){
-                            $addExperienceItemDialog.dialog("open");
+                            //$addExperienceItemDialog.dialog("open");
+                            $('#add-experience-item-dialog').dialog("open");
+                            $("#IsExperienceItemNotValid").val(false);
                         }
                     });
                 }
@@ -748,6 +775,7 @@
                     $("#tabs8").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs8", "BackgroundCheckReadOnly", "/Employment/BackgroundCheckReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs8").ajaxStop(function () {
+                        UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
                         $('#DLContainer').buttonset();        
                         $('#HasAuto').buttonset();        
                         $('#ReadyForBusinessTrips').buttonset();
@@ -800,7 +828,8 @@
 
                         UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
 
-                        var $addReferenceDialog = $('#add-reference-dialog').dialog(
+                        //var $addReferenceDialog = $('#add-reference-dialog').dialog(
+                        $('#add-reference-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -809,6 +838,7 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $(":text").val('');
                             },
                             buttons:
                             {
@@ -850,12 +880,14 @@
                         };
 
                         $("#add-reference").click(function (e) {
-                            $addReferenceDialog.dialog("open");
+                            //$addReferenceDialog.dialog("open");
+                            $('#add-reference-dialog').dialog("open");
                             e.preventDefault();
                         });
 
 
-                        var $addBackGroundCheckCommentDialog = $('#add-backgroundcheck-comment-dialog').dialog(
+                        //var $addBackGroundCheckCommentDialog = $('#add-backgroundcheck-comment-dialog').dialog(
+                        $('#add-backgroundcheck-comment-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -864,6 +896,9 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                //$(":text").val('');
+                                //$(":textarea").val('');
+                                $("#Comment").val('');
                             },
                             buttons:
                             {
@@ -872,7 +907,6 @@
                                     $(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $("#Comment").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -880,7 +914,8 @@
 
 
                         $("#add-backgroundcheck-comment").click(function (e) {
-                            $addBackGroundCheckCommentDialog.dialog("open");
+                            //$addBackGroundCheckCommentDialog.dialog("open");
+                            $('#add-backgroundcheck-comment-dialog').dialog("open");
                             e.preventDefault();
                         });
 
@@ -995,7 +1030,8 @@
                         });
 
 
-                        var $addManagersCommentDialog = $('#add-managers-comment-dialog').dialog(
+                        //var $addManagersCommentDialog = $('#add-managers-comment-dialog').dialog(
+                        $('#add-managers-comment-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -1004,6 +1040,8 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                //$(":text").val('');
+                                $("#Comment").val('');
                             },
                             buttons:
                             {
@@ -1012,7 +1050,6 @@
                                     $(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $("#Comment").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -1020,7 +1057,8 @@
 
 
                         $("#add-managers-comment").click(function (e) {
-                            $addManagersCommentDialog.dialog("open");
+                            //$addManagersCommentDialog.dialog("open");
+                            $('#add-managers-comment-dialog').dialog("open");
                             e.preventDefault();
                         });
                     });
@@ -1066,7 +1104,8 @@
                             }
                         });
 
-                        var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
+                        //var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
+                        $('#add-personnel-managers-comment-dialog').dialog(
                         {
                             autoOpen: false,
                             modal: true,
@@ -1075,6 +1114,8 @@
                             resizable: false,
                             close: function (event, ui) {
                                 //$(this).dialog("destroy").remove();
+                                $("#Comment").val('');
+                                //$(":textarea").val('');
                             },
                             buttons:
                             {
@@ -1083,7 +1124,6 @@
                                     $(this).dialog("close");
                                 },
                                 "Отмена": function () {
-                                    $("#Comment").val('');
                                     $(this).dialog("close");
                                 }
                             }
@@ -1091,8 +1131,9 @@
 
                         //$("#add-personnel-managers-comment").die("click");
                         $("#add-personnel-managers-comment").click(function (e) {
-                            $addPersonnelManagersCommentDialog.dialog("open");
-                            //alert("dd");
+                            //$addPersonnelManagersCommentDialog.dialog("open");
+                            $('#add-personnel-managers-comment-dialog').dialog("open");
+                            //$("#Comment").val('');
                             e.preventDefault();
                         });
                     });
