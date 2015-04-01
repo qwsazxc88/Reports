@@ -54,7 +54,7 @@
                                 @Html.LabelFor(m => m.UserName):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.UserName)
+                                @Html.TextBoxFor(model => model.UserName, new { placeholder = "ФИО" })
                             </td>
                         </tr>
                         <tr>
@@ -71,6 +71,14 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.ContractNumber1C)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CompleteDate):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.CompleteDate)
                             </td>
                         </tr>
                         <tr>
@@ -171,6 +179,9 @@
         </th>
         <th>
             Дата<br />окончания<br />СТД
+        </th>
+        <th>
+            <div id="sort17"><a href="#" onclick = "SortColumnChanged(17);">Дата<br />создания<br />кандидата</a></div>
         </th>
         <th>
             Сотрудник<br />переведен на<br />бессрочный ТД<br />
@@ -295,6 +306,9 @@
                     {<text>style="background-color:yellow"</text>}>
                     &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
                 </td>
+                <td>
+                    &nbsp;@(candidate.CompleteDate.HasValue ? candidate.CompleteDate.Value.ToShortDateString() : String.Empty)
+                </td>
                 <td class="centered">
                     @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
                     {
@@ -392,7 +406,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
-        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate, #CompleteDate'), "-1:+0", true);
         $(".hasDatepicker").width("75px");
 
         $(".selcheckByManager, #setAllByManager").click(function () {
@@ -471,6 +485,7 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
+        $("#CompleteDate").val('');
 
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');

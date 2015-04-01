@@ -50,6 +50,8 @@ namespace Reports.Core.Domain
 
         public virtual Schedule Schedule { get; set; } // OK?
 
+        public virtual DateTime? CompleteDate { get; set; } //ok
+
         //дополнения для трудового договора
         public virtual int? ContractPoint_1_Id { get; set; }
         public virtual int? ContractPoint_2_Id { get; set; }
