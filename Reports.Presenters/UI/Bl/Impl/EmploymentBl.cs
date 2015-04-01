@@ -32,7 +32,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
-        public int RUSSIAN_FEDERATION = 643;
+        //public int RUSSIAN_FEDERATION = 643;
+        public int RUSSIAN_FEDERATION = 3;
 
         #endregion
 
