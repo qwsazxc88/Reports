@@ -16,5 +16,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? EndDate { get; set; }
         public int? CandidateId { get; set; }
         public string ContractNumber1C { get; set; }
+        public DateTime? CompleteDate { get; set; }
     }
 }
