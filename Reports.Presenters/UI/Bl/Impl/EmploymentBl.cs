@@ -1507,6 +1507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
@@ -2218,6 +2219,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
+                    filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);

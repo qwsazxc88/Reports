@@ -66,6 +66,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ContractNumber1C):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.ContractNumber1C)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -127,6 +135,9 @@
         </th>
         <th>
             <div id="sort2"><a href="#" onclick = "SortColumnChanged(2);">Дата <br />заявки</a></div>
+        </th>
+        <th>
+            <div id="sort16"><a href="#" onclick = "SortColumnChanged(16);">Номер <br />документа<br />из 1С</a></div>
         </th>
         <th>
             <div id="sort3"><a href="#" onclick = "SortColumnChanged(3);">ФИО</a></div>
@@ -245,6 +256,9 @@
                 </td>
                 <td>
                     &nbsp;@(candidate.QuestionnaireDate.HasValue ? candidate.QuestionnaireDate.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td>
+                    @candidate.ContractNumber1C
                 </td>
                 <td>
                     <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
