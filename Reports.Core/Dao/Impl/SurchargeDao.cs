@@ -30,6 +30,22 @@ namespace Reports.Core.Dao.Impl
             {
                 res = res.Where(x => x.EditDate < endDate);
             }
+            if (departmentId > 0)
+            {
+                res = res.Where(x => x.User.Department.Id == departmentId);
+            }
+            if (statusId > 0)
+            {
+                switch (statusId)
+                {
+                        //Выгружен в 1с
+                    case 1: res = res.Where(x => x.SendTo1C != null);
+                        break;
+                        //Не выгружен в 1с
+                    case 2: res = res.Where(x => x.SendTo1C == null);
+                        break;
+                }
+            }
             if(!String.IsNullOrWhiteSpace(Number))
                 res = res.Where(x => x.Number.ToString() == Number);
             return res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
@@ -41,10 +57,11 @@ namespace Reports.Core.Dao.Impl
                         Sum=x.Sum,
                         Position = x.User.Position!=null?x.User.Position.Name:"",
                         Dep7Name = x.User.Department!=null? x.User.Department.Name:"",
-                        Dep3Name = GetDep3Name(x.User.Department)
+                        Dep3Name = GetDep3Name(x.User.Department),
+                        Status = x.SendTo1C == null ? "Проводки не сформированы" : "Проводки сформированы"
                     });
         }
-        public void AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
+        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
         {
             var User = UserDao.Load(userId);
             var Editor = UserDao.Load(creatorId);
@@ -61,6 +78,7 @@ namespace Reports.Core.Dao.Impl
             };
             
             SaveAndFlush(document);
+            return document.Number;
         }
     }
 }

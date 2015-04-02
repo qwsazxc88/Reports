@@ -41,6 +41,11 @@
                     <td>@Html.LabelFor(m => m.Position)</td>
                     <td>@Html.DisplayFor(m => m.Position)</td>
                 </tr>
+                <tr>
+                    <td>
+                       <input type="button" value="Печать аналитической ведомости" onclick="window.location.href='@Url.Action("GetAnalyticalStatementPrintForm", "MissionOrder", new { id = Model.DocumentNumber })';"/>   
+                    </td>
+                </tr>
             </table>
         </div>
     </td>

@@ -100,7 +100,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITerraPointDao terraPointDao;
         protected ITerraPointToUserDao terraPointToUserDao;
         protected ITerraGraphicDao terraGraphicDao;
-
+        protected IDeductionImportDao deductionImportDao;
 
         public IAnalyticalStatementDao AnalyticalStatementDao
         {
@@ -508,7 +508,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { configurationService = value; }
             get { return Validate.Dependency(configurationService); }
         }
-
+        public IDeductionImportDao DeductionImport_Dao
+        {
+            set { deductionImportDao = value; }
+            get { return Validate.Dependency(deductionImportDao); }
+        }
         #endregion
 
         #region Create Request
@@ -7426,6 +7430,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors)
         {
             //Log.Debug("Файл:" + path);
+            DeductionImport import = new DeductionImport();
+            import.Creator = UserDao.Load(CurrentUser.Id);
+            import.ImportDate = DateTime.Now;
+            import.InputFile = path.Substring(path.LastIndexOf('\\')+1);
+            DeductionImport_Dao.SaveAndFlush(import);
             List<Deduction> Deductions = new List<Deduction>();
             StreamReader reader = new StreamReader(path);
             var type=DeductionTypeDao.Load(1);
@@ -7469,7 +7478,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     el.Editor = UserDao.Load(CurrentUser.Id);
                     el.IsFastDismissal = false;
                     el.UploadingDocType = 4;
-                    if (Deductions.Any(x => x.User == el.User && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
+                    if (Deductions.Any(x => x.User == el.User && x.DeductionDate == el.DeductionDate && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
+                    el.DeductionImport = import;
                     DeductionDao.SaveAndFlush(el);
                     Deductions.Add(el);
                 }
@@ -7477,6 +7487,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             reader.Close();
             Deductions = Deductions.Distinct().ToList();
+            var report = path.Replace(".input.csv", ".report.txt");
+            StreamWriter writer = new StreamWriter(report);
+            foreach (var err in Errors)
+                writer.WriteLine(err);
+            writer.Flush();
+            writer.Close();
+            report = import.InputFile.Replace(".input.csv", ".report.txt");
+            import.ReportFile = report;
+            DeductionImport_Dao.SaveAndFlush(import);
            return Deductions.ConvertAll<DeductionDto>(new Converter<Deduction, DeductionDto>(x => new DeductionDto() 
                 { 
                     UserId=x.User.Id,
@@ -7486,7 +7505,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DeductionDate=x.DeductionDate,
                     Kind=x.Kind.Name,
                     Id=x.Id,
-                    Number=x.Number.ToString()
+                    Number=x.Number.ToString(),
+                    
                 }
                 ));
         }
@@ -7851,12 +7871,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailToUser(null, el);
             return true;
         }
-        public void SetDeductionDoc(int deductionNumber, int MissionReportid)
+        public string SetDeductionDoc(int deductionNumber, int MissionReportid)
         {
-            var d=DeductionDao.LoadAll().First(x => x.Number == deductionNumber);
+            var list=DeductionDao.LoadAll().Where(x => x.Number == deductionNumber);
+            Deduction d;
+            if (list!=null && list.Any())
+                d=list.First();
+            else return "Не найдено удержание. ";
             var m = MissionReportDao.Load(MissionReportid);
+            if (m.User.Id != d.User.Id) return "Удержание указано не верно. ";
+            if (m.Deduction != null && m.Deduction.Id != d.Id) return "Удержание указано не верно. ";
             m.Deduction = d;
             MissionReportDao.SaveAndFlush(m);
+            return "";
         }
         public bool ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
         {
@@ -10780,6 +10807,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(8, "Требует одобрения бухгалтером"),
                                                            new IdNameDto(10, "Отклонен"),
                                                            new IdNameDto(9, "Выгружен в 1С"),
+                                                           new IdNameDto(11, "Выгружен в удержания")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
