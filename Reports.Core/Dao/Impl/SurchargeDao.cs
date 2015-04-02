@@ -34,6 +34,14 @@ namespace Reports.Core.Dao.Impl
             {
                 res = res.Where(x => x.User.Department.Id == departmentId);
             }
+            if (!String.IsNullOrWhiteSpace(Number))
+            {
+                res = res.Where(x => x.Number.ToString() == Number);
+            }
+            if (!String.IsNullOrWhiteSpace(userName))
+            {
+                res= res.Where(x=>x.User.Name.ToLower().Contains(userName.ToLower()));
+            }
             if (statusId > 0)
             {
                 switch (statusId)
@@ -48,7 +56,8 @@ namespace Reports.Core.Dao.Impl
             }
             if(!String.IsNullOrWhiteSpace(Number))
                 res = res.Where(x => x.Number.ToString() == Number);
-            return res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
+            
+            var dto= res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
                     {
                         UserId= x.User.Id,
                         UserName=x.User.Name,
@@ -60,6 +69,27 @@ namespace Reports.Core.Dao.Impl
                         Dep3Name = GetDep3Name(x.User.Department),
                         Status = x.SendTo1C == null ? "Проводки не сформированы" : "Проводки сформированы"
                     });
+            switch (sortedBy)
+            {
+                case 1: dto=dto.OrderBy(x => x.UserName).ToList();
+                    break;
+                case 2: dto = dto.OrderBy(x => x.Position).ToList();
+                    break;
+                case 3: dto = dto.OrderBy(x => x.Dep3Name).ToList();
+                    break;
+                case 4: dto = dto.OrderBy(x => x.Dep7Name).ToList();
+                    break;
+                case 5: dto = dto.OrderBy(x => x.EditDate).ToList();
+                    break;
+                case 6: dto = dto.OrderBy(x => x.Sum).ToList();
+                    break;
+                case 7: dto = dto.OrderBy(x => x.Number).ToList();
+                    break;
+                case 8: dto = dto.OrderBy(x => x.Status).ToList();
+                    break;
+            }
+            if (sortDescending.HasValue && sortDescending.Value) dto.Reverse();
+            return dto;
         }
         public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
         {
