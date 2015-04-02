@@ -87,7 +87,14 @@
             @Html.TextBoxFor(m => m.BasicSalary, new { @class = "calc halfwidth" })
         </div>
         *@
-
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+            @Html.EditorFor(m => m.PersonalAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.EditorFor(m => m.PositionAddition)
+        </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })

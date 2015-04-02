@@ -93,14 +93,6 @@
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
             @Html.EditorFor(m => m.WorkCity)
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
-            @Html.EditorFor(m => m.PersonalAddition)
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
-            @Html.EditorFor(m => m.PositionAddition)
-        </div>
         <div class="formfield clear" id="isFrontContainer">
             @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label id="lblFTrue" for="IsFrontTrue" @if (Model.IsFront)
                                                                                                                           {<text>style="border-color:red;"</text>}

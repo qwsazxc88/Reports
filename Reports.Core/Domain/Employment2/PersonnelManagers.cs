@@ -34,6 +34,8 @@ namespace Reports.Core.Domain
         public virtual int InsurableExperienceYears { get; set; } //ok
         public virtual int InsurableExperienceMonths { get; set; } //ok
         public virtual int InsurableExperienceDays { get; set; } //ok
+        public virtual decimal? PersonalAddition { get; set; } //ok
+        public virtual decimal? PositionAddition { get; set; } //ok
         // TODO: EMPL ќзнакомлен с регламентными документами
         public virtual string PersonalAccount { get; set; } //ok
         public virtual PersonalAccountContractor PersonalAccountContractor { get; set; } //ok

@@ -16,8 +16,6 @@
     <property name="SalaryBasis" precision="15" scale="2" not-null="false"/>
     <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
     <property name="WorkCity" length="100" not-null="false"/>
-    <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
-    <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
     <property name="IsFront" not-null="true"/>
     <property name="Bonus" precision="19" scale="2" not-null="false"/>
     <property name="IsLiable" not-null="true"/>
