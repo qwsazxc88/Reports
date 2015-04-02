@@ -111,14 +111,14 @@ namespace WebMvc.Controllers
             model = RequestBl.GetDeductionImportModel(model);
             if (model.File != null && model.File.ContentLength > 0)
             {
-                var fileName = Path.GetFileName(model.File.FileName);
+                var fileName = Guid.NewGuid()+".input.csv";
                 var path = Path.Combine(Server.MapPath("~/Files"), fileName);
                 model.File.SaveAs(path);
-                FileInfo file = new FileInfo(path);
                 var Errors = new List<string>();
                 model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
                 model.Errors = Errors;
-                file.Delete();
+                ViewBag.ReportFile = "/Files/" + fileName.Replace(".input.csv", ".report.txt");
+                //file.Delete();
             }
             else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
             return View(model);

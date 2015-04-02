@@ -567,6 +567,9 @@ namespace Reports.Core
             Register(Component.For(typeof(ISurchargeDao))
                 .ImplementedBy<SurchargeDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For(typeof(IDeductionImportDao))
+                .ImplementedBy<DeductionImportDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

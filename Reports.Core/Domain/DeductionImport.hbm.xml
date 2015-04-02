@@ -1,0 +1,11 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="DeductionImport">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="ImportDate" not-null="true"/>
+    <property name="InputFile" not-null="true"/>
+    <property name="ReportFile" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_DeductionImport_User" not-null="true"/>
+  </class>
+</hibernate-mapping>
