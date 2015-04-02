@@ -240,7 +240,7 @@
             @if (Model.IsAccountantApproved && (dto.UserRole & UserRole.Accountant) > 0)
             {
                 @*<input type="button" value="Создать удержание" onclick="" />*@
-                @*<input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> *@
+                <input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> 
             }
             @if (Model.Id > 0)
             {
@@ -1272,7 +1272,8 @@
             }
             else
             { 
-                alert(result.Message);
+                console.log(result);
+                alert(result.message);
                 $("#SurchargeDialog").dialog( "close" );
             }
             },

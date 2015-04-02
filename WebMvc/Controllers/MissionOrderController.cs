@@ -770,9 +770,9 @@ namespace WebMvc.Controllers
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
         UserRole.Director)]
-        public ActionResult AnalyticalStatementDetails(int userId)
+        public ActionResult AnalyticalStatementDetails(int id)
         {
-            var model = RequestBl.GetAnalyticalStatementDetails(userId);
+            var model = RequestBl.GetAnalyticalStatementDetails(id);
             return View(model);
         }
         [HttpGet]
@@ -854,6 +854,10 @@ namespace WebMvc.Controllers
         public ActionResult GetReportPrintForm(int id)
         {
             return GetPrintForm(id, "PrintReport");
+        }
+        public ActionResult GetAnalyticalStatementPrintForm(int id)
+        {
+            return GetPrintForm(id, "AnalyticalStatementDetails");
         }
         [HttpGet]
         public ActionResult GetReportListPrintForm(int id, int reportId)

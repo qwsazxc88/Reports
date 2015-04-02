@@ -184,7 +184,7 @@ namespace Reports.Presenters.UI.Bl
 
         MissionUserDeptsListModel GetMissionUserDeptsListModel();
         void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError,bool showDepts);
-        void SetDeductionDoc(int deductionNumber, int MissionReportid);
+        string SetDeductionDoc(int deductionNumber, int MissionReportid);
         PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId,
                                                                       DateTime? beginDate,
                                                                       DateTime? endDate, string userName, int sortBy,

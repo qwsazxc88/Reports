@@ -358,7 +358,7 @@
                                 <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
                                 <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                                 <td>
-                                    <a href='@Url.Action("AnalyticalStatementDetails", "MissionOrder", new { userid = doc.UserId })'>@doc.UserDebt</a>
+                                    <a href='@Url.Action("AnalyticalStatementDetails", "MissionOrder", new { id = doc.UserId })'>@doc.UserDebt</a>
                                 </td>
                                 <td>@doc.HasMission</td>
                                 <td>@doc.NeedSecretary</td>

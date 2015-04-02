@@ -41,6 +41,11 @@
                     <td>@Html.LabelFor(m => m.Position)</td>
                     <td>@Html.DisplayFor(m => m.Position)</td>
                 </tr>
+                <tr>
+                    <td>
+                       <input type="button" value="Печать аналитической ведомости" onclick="window.location.href='@Url.Action("GetAnalyticalStatementPrintForm", "MissionOrder", new { id = Model.DocumentNumber })';"/>   
+                    </td>
+                </tr>
             </table>
         </div>
     </td>
@@ -90,6 +95,8 @@
                            case 3:<a href='@Url.Action("MissionUserCredsList", "MissionOrder", new { userid = Model.DocumentNumber })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
                            break;
                            case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано @(el.Number>0? " по авансовому отчету №"+ el.Number :"")</a>
+                           break;
+                           case 5:<a>Ручная доплата по АО №@el.Number</a>
                            break;
                        }
                    </td>
