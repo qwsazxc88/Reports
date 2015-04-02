@@ -108,6 +108,8 @@ GO
 			[ContractPointsAddress] [nvarchar](150) NULL,
 			[ScheduleId] [int] NULL,
 			[CompleteDate] [datetime] NULL,
+			[PersonalAddition] [decimal](19, 2) NULL,
+			[PositionAddition] [decimal](19, 2) NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -232,8 +234,6 @@ GO
 			[EmploymentConditions] [nvarchar](250) NULL,
 			[ProbationaryPeriod] [nvarchar](50) NULL,
 			[WorkCity] [nvarchar](100) NULL,
-			[PersonalAddition] [decimal](19, 2) NULL,
-			[PositionAddition] [decimal](19, 2) NULL,
 			[IsFront] [bit] NOT NULL,
 			[Bonus] [decimal](19, 2) NULL,
 			[IsLiable] [bit] NOT NULL,
@@ -1802,6 +1802,27 @@ LEFT JOIN (SELECT RequestId, count(RequestId) as cnt
 					 GROUP BY RequestId) as L ON L.RequestId = A.Id
 
 GO
+
+
+IF OBJECT_ID ('vwEmploymentPositions', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwEmploymentPositions]
+GO
+
+
+
+--достаем комментарии к разделам приема
+CREATE VIEW [dbo].[vwEmploymentPositions]
+AS
+SELECT Id, Name + case when IsMarkedToRemoval = 1 then ' (не использовать)' else '' end as Name
+FROM dbo.Position
+
+
+
+GO
+
+
+
+
 --ПРЕДСТАВЛЕНИЯ КОНЕЦ
 
 --ПЕРВИЧНЫЕ ДАННЫЕ ДЛЯ СПРАВОЧНИКОВ - НАЧАЛО

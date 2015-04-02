@@ -48,12 +48,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string WorkCity { get; set; } //ok
 
-        [Display(Name = "Персональная надбавка")]
-        public decimal? PersonalAddition { get; set; } //ok
-
-        [Display(Name = "Должностная надбавка")]
-        public decimal? PositionAddition { get; set; } //ok
-
         [Display(Name = "Фронт/Бэк")]
         public bool IsFront { get; set; } //ok
 

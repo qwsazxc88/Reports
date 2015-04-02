@@ -25,7 +25,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<IdNameDto> GetPositions(string Term)
         {
-            string sqlQuery = @"SELECT * FROM [dbo].[Position] WHERE Name like '" + (Term == null ? "" : Term) + "%' ORDER BY Name";
+            string sqlQuery = @"SELECT * FROM [dbo].[vwEmploymentPositions] WHERE Name like '" + (Term == null ? "" : Term) + "%' ORDER BY Name";
             IQuery query = CreateQuery(sqlQuery);
             IList<IdNameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
             return documentList;
