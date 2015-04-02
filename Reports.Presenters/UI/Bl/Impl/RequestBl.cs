@@ -7828,7 +7828,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         DeleteAfterSendTo1C = false,
                         UploadingDocType=uploadingType,
                         IsFastDismissal = isFastDissmissal,
-                        DismissalDate = report.User.DateRelease
+                        DismissalDate = DismissalDao.GetDismissalDateForUser(report.User.Id)
 
                     };
 
