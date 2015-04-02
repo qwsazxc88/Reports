@@ -51,6 +51,7 @@
             $inputs.datepicker({
                 dateFormat: "dd.mm.yy",
                 changeYear: true,
+                changeMonth: true,
                 yearRange: rangeArray[0] !== undefined ? rangeArray[0] : null,
                 minDate: rangeArray[1] !== undefined ? rangeArray[1] : null,
                 maxDate: rangeArray[2] !== undefined ? rangeArray[2] : null

@@ -54,7 +54,7 @@
                                 @Html.LabelFor(m => m.UserName):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.UserName)
+                                @Html.TextBoxFor(model => model.UserName, new { placeholder = "ФИО" })
                             </td>
                         </tr>
                         <tr>
@@ -63,6 +63,22 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.CandidateId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ContractNumber1C):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.ContractNumber1C)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CompleteDate):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.CompleteDate)
                             </td>
                         </tr>
                         <tr>
@@ -129,6 +145,9 @@
             <div id="sort2"><a href="#" onclick = "SortColumnChanged(2);">Дата <br />заявки</a></div>
         </th>
         <th>
+            <div id="sort16"><a href="#" onclick = "SortColumnChanged(16);">Номер <br />документа<br />из 1С</a></div>
+        </th>
+        <th>
             <div id="sort3"><a href="#" onclick = "SortColumnChanged(3);">ФИО</a></div>
         </th>
         <th>
@@ -160,6 +179,9 @@
         </th>
         <th>
             Дата<br />окончания<br />СТД
+        </th>
+        <th>
+            <div id="sort17"><a href="#" onclick = "SortColumnChanged(17);">Дата<br />создания<br />кандидата</a></div>
         </th>
         <th>
             Сотрудник<br />переведен на<br />бессрочный ТД<br />
@@ -247,6 +269,9 @@
                     &nbsp;@(candidate.QuestionnaireDate.HasValue ? candidate.QuestionnaireDate.Value.ToShortDateString() : String.Empty)
                 </td>
                 <td>
+                    @candidate.ContractNumber1C
+                </td>
+                <td>
                     <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
                 </td>
                 <td>
@@ -280,6 +305,9 @@
                 <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
                     {<text>style="background-color:yellow"</text>}>
                     &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
+                </td>
+                <td>
+                    &nbsp;@(candidate.CompleteDate.HasValue ? candidate.CompleteDate.Value.ToShortDateString() : String.Empty)
                 </td>
                 <td class="centered">
                     @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
@@ -378,7 +406,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
-        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate, #CompleteDate'), "-1:+0", true);
         $(".hasDatepicker").width("75px");
 
         $(".selcheckByManager, #setAllByManager").click(function () {
@@ -457,6 +485,7 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
+        $("#CompleteDate").val('');
 
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');

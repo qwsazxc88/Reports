@@ -107,6 +107,7 @@ GO
 			[ContractPointsFio] [nvarchar](100) NULL,
 			[ContractPointsAddress] [nvarchar](150) NULL,
 			[ScheduleId] [int] NULL,
+			[CompleteDate] [datetime] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1010,6 +1011,8 @@ GO
 			[ManagersId] [int] NULL,
 			[PersonnelManagersId] [int] NULL,
 			[Status] [int] NULL,
+			[ContractNumber1C] [nvarchar](20) NULL,
+			[SendTo1C] [datetime] NULL,
 			[QuestionnaireDate] [datetime] NULL,
 			[AppointmentCreatorId] [int] NULL,
 			[PersonnelId] [int] NULL,
@@ -1479,6 +1482,15 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата готовности кандидата к выгрузке в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'CompleteDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата выгрузки в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'SendTo1C'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер документа приема на работу из 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'ContractNumber1C'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateComments', @level2type=N'COLUMN',@level2name=N'Id'
 	GO
 
@@ -1751,45 +1763,45 @@ GO
 
 
 	IF OBJECT_ID ('vwEmploymentFillState', 'V') IS NOT NULL
-		DROP VIEW [dbo].[vwEmploymentFillState]
-	GO
+	DROP VIEW [dbo].[vwEmploymentFillState]
+GO
 
-	--состояние заполнения анкет
-	CREATE VIEW [dbo].[vwEmploymentFillState]
-	AS
-	SELECT -1 as Id, cast(0 as bit) as GeneralFinal, cast(0 as bit) as PassportFinal, cast(0 as bit) as EducationFinal, cast(0 as bit) as FamilyFinal, cast(0 as bit) as MilitaryFinal, cast(0 as bit) as ExperienceFinal,
-				 cast(0 as bit) as ContactFinal, cast(0 as bit) as BackgroundFinal, cast(0 as bit) as CandidateApp,
-				 --кандидат полностью заполнил анкету
-				 cast(0 as bit) as CandidateReady,
-				 --согласование
-				 cast(0 as bit) as BackgroundApproval, cast(0 as bit) as TrainingApproval, cast(0 as bit) as ManagerApproval, cast(0 as bit) as PersonnelManagerApproval
-	UNION ALL
-	SELECT A.Id, B.IsFinal as GeneralFinal, C.IsFinal as PassportFinal, D.IsFinal as EducationFinal, E.IsFinal as FamilyFinal, F.IsFinal as MilitaryFinal, G.IsFinal as ExperienceFinal,
-				 H.IsFinal as ContactFinal, I.IsFinal as BackgroundFinal, 
-				 --cast(case when L.cnt = 8 then 1 else 0 end as bit) as CandidateApp,
-				 cast(case when L.cnt >= 1 then 1 else 0 end as bit) as CandidateApp,
-				 --кандидат полностью заполнил анкету
-				 cast(case when B.IsFinal = 1 and C.IsFinal = 1 and D.IsFinal = 1 and E.IsFinal = 1 and F.IsFinal = 1 and G.IsFinal = 1 and H.IsFinal = 1 and I.IsFinal = 1 then 1 else 0 end as bit) as CandidateReady,
-				 --согласование
-				 I.ApprovalStatus as BackgroundApproval, J.IsComplete as TrainingApproval, K.HigherManagerApprovalStatus as ManagerApproval, 
-				 cast(case when A.Status = 7 then 1 else 0 end as bit) as PersonnelManagerApproval
-	FROM EmploymentCandidate as A
-	INNER JOIN GeneralInfo as B ON B.Id = A.GeneralInfoId
-	INNER JOIN Passport as C ON C.Id = A.PassportId
-	INNER JOIN Education as D ON D.Id = A.EducationId
-	INNER JOIN Family as E ON E.Id = A.FamilyId
-	INNER JOIN MilitaryService as F ON F.Id = A.MilitaryServiceId
-	INNER JOIN Experience as G ON G.Id = A.ExperienceId
-	INNER JOIN Contacts as H ON H.Id = A.ContactsId
-	INNER JOIN BackgroundCheck as I ON I.Id = A.BackgroundCheckId
-	INNER JOIN OnsiteTraining as J ON J.Id = A.OnsiteTrainingId
-	INNER JOIN Managers as K ON K.Id = A.ManagersId
-	LEFT JOIN (SELECT RequestId, count(RequestId) as cnt 
-						 FROM RequestAttachment 
-						 WHERE RequestType = 271--in (272, 273, 274, 275, 276, 277, 278, 279) 
-						 GROUP BY RequestId) as L ON L.RequestId = A.Id
+--состояние заполнения анкет
+CREATE VIEW [dbo].[vwEmploymentFillState]
+AS
+SELECT -1 as Id, cast(0 as bit) as GeneralFinal, cast(0 as bit) as PassportFinal, cast(0 as bit) as EducationFinal, cast(0 as bit) as FamilyFinal, cast(0 as bit) as MilitaryFinal, cast(0 as bit) as ExperienceFinal,
+			 cast(0 as bit) as ContactFinal, cast(0 as bit) as BackgroundFinal, cast(0 as bit) as CandidateApp,
+			 --кандидат полностью заполнил анкету
+			 cast(0 as bit) as CandidateReady,
+			 --согласование
+			 cast(0 as bit) as BackgroundApproval, cast(0 as bit) as TrainingApproval, cast(0 as bit) as ManagerApproval, cast(0 as bit) as PersonnelManagerApproval
+UNION ALL
+SELECT A.Id, B.IsFinal as GeneralFinal, C.IsFinal as PassportFinal, D.IsFinal as EducationFinal, E.IsFinal as FamilyFinal, F.IsFinal as MilitaryFinal, G.IsFinal as ExperienceFinal,
+			 H.IsFinal as ContactFinal, I.IsFinal as BackgroundFinal, 
+			 --cast(case when L.cnt = 8 then 1 else 0 end as bit) as CandidateApp,
+			 cast(case when L.cnt >= 1 then 1 else 0 end as bit) as CandidateApp,
+			 --кандидат полностью заполнил анкету
+			 cast(case when B.IsFinal = 1 and C.IsFinal = 1 and D.IsFinal = 1 and E.IsFinal = 1 and F.IsFinal = 1 and G.IsFinal = 1 and H.IsFinal = 1 and I.IsFinal = 1 then 1 else 0 end as bit) as CandidateReady,
+			 --согласование
+			 I.ApprovalStatus as BackgroundApproval, J.IsComplete as TrainingApproval, K.HigherManagerApprovalStatus as ManagerApproval, 
+			 cast(case when A.Status = 7 or A.Status = 8 then 1 else 0 end as bit) as PersonnelManagerApproval
+FROM EmploymentCandidate as A
+INNER JOIN GeneralInfo as B ON B.Id = A.GeneralInfoId
+INNER JOIN Passport as C ON C.Id = A.PassportId
+INNER JOIN Education as D ON D.Id = A.EducationId
+INNER JOIN Family as E ON E.Id = A.FamilyId
+INNER JOIN MilitaryService as F ON F.Id = A.MilitaryServiceId
+INNER JOIN Experience as G ON G.Id = A.ExperienceId
+INNER JOIN Contacts as H ON H.Id = A.ContactsId
+INNER JOIN BackgroundCheck as I ON I.Id = A.BackgroundCheckId
+INNER JOIN OnsiteTraining as J ON J.Id = A.OnsiteTrainingId
+INNER JOIN Managers as K ON K.Id = A.ManagersId
+LEFT JOIN (SELECT RequestId, count(RequestId) as cnt 
+					 FROM RequestAttachment 
+					 WHERE RequestType = 271--in (272, 273, 274, 275, 276, 277, 278, 279) 
+					 GROUP BY RequestId) as L ON L.RequestId = A.Id
 
-	GO
+GO
 --ПРЕДСТАВЛЕНИЯ КОНЕЦ
 
 --ПЕРВИЧНЫЕ ДАННЫЕ ДЛЯ СПРАВОЧНИКОВ - НАЧАЛО

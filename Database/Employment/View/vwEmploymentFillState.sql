@@ -20,7 +20,7 @@ SELECT A.Id, B.IsFinal as GeneralFinal, C.IsFinal as PassportFinal, D.IsFinal as
 			 cast(case when B.IsFinal = 1 and C.IsFinal = 1 and D.IsFinal = 1 and E.IsFinal = 1 and F.IsFinal = 1 and G.IsFinal = 1 and H.IsFinal = 1 and I.IsFinal = 1 then 1 else 0 end as bit) as CandidateReady,
 			 --согласование
 			 I.ApprovalStatus as BackgroundApproval, J.IsComplete as TrainingApproval, K.HigherManagerApprovalStatus as ManagerApproval, 
-			 cast(case when A.Status = 7 then 1 else 0 end as bit) as PersonnelManagerApproval
+			 cast(case when A.Status = 7 or A.Status = 8 then 1 else 0 end as bit) as PersonnelManagerApproval
 FROM EmploymentCandidate as A
 INNER JOIN GeneralInfo as B ON B.Id = A.GeneralInfoId
 INNER JOIN Passport as C ON C.Id = A.PassportId

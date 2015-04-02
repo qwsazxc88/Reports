@@ -48,6 +48,7 @@
         <tr>
             <td>
                 <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
+                @*<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>*@
             </td>
             <td>
                 <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />

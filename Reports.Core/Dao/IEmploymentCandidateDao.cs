@@ -13,7 +13,9 @@ namespace Reports.Core.Dao
                 int statusId,
                 DateTime? beginDate,
                 DateTime? endDate,
+                DateTime? CompleteDate,
                 string userName,
+                string ContractNumber1C,
                 int CandidateId,
                 int sortBy,
                 bool? sortDescending);
