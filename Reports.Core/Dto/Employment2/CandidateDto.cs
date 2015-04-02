@@ -12,6 +12,8 @@ namespace Reports.Core.Dto.Employment2
 
         public int UserId { get; set; }
 
+        public string ContractNumber1C { get; set; }
+
         public string Name { get; set; }
 
         public string WorkCity { get; set; }
@@ -36,6 +38,7 @@ namespace Reports.Core.Dto.Employment2
 
         public DateTime? QuestionnaireDate { get; set; }
 
+        public DateTime? CompleteDate { get; set; }
 
         public DateTime? SupplementaryAgreementCreateDate { get; set; }
 
@@ -68,6 +71,7 @@ namespace Reports.Core.Dto.Employment2
         public Int32 Grade { get; set; }
 
         public string Status { get; set; }
+
 
         public bool IsChangeContractToIndefiniteAvailable { get; set; }
 

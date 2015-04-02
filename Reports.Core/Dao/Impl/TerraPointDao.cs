@@ -66,12 +66,12 @@ namespace Reports.Core.Dao.Impl
         {
             const string sqlQuery = @"select id as Id,parentId as Name from [dbo].[TerraPoint]
                                     where Code1c = :code1c
-                                    and :path like [Path]+N'%'";
+                                    /*and :path like [Path]+N'%'*/";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                                AddScalar("Id", NHibernateUtil.Int32).
                                AddScalar("Name", NHibernateUtil.String).
-                               SetString("code1c", code1C).
-                               SetString("path", path);
+                               SetString("code1c", code1C);
+                               //SetString("path", path);   //убрал из запроса условия для пути
             //query.SetDateTime("endDate", endDate);
             return (IdNameDto)query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult(); ;
             //return (TerraPoint)Session.CreateCriteria(typeof(TerraPoint))

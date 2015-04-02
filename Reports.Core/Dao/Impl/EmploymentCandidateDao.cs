@@ -34,6 +34,7 @@ namespace Reports.Core.Dao.Impl
             @"select candidate.Id Id
                 , candidate.QuestionnaireDate
                 , candidate.UserId UserId
+                , candidate.ContractNumber1C as ContractNumber1C
                 , isnull(generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic, candidateUser.Name) as Name
                 , managers.WorkCity WorkCity
                 , managers.IsSecondaryJob IsSecondaryJob
@@ -102,6 +103,7 @@ namespace Reports.Core.Dao.Impl
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 1 and isnull(J.IsFinal, 0) = 1 then 'Пройдено'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Непройдено'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
+                ,personnelManagers.CompleteDate as CompleteDate
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
@@ -129,7 +131,9 @@ namespace Reports.Core.Dao.Impl
                 int statusId,
                 DateTime? beginDate,
                 DateTime? endDate,
+                DateTime? CompleteDate,
                 string userName,
+                string ContractNumber1C,
                 int CandidateId,
                 int sortBy,
                 bool? sortDescending)
@@ -138,14 +142,15 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, currentId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetCandidateIdWhere(whereString, CandidateId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetDatesWhere(whereString, beginDate, endDate, CompleteDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
 
-            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName);
+            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate);
 
             //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
@@ -255,7 +260,7 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        public override string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate)
+        public string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate, DateTime? CompleteDate)
         {
             if (beginDate.HasValue)
             {
@@ -265,6 +270,12 @@ namespace Reports.Core.Dao.Impl
             whereString = string.Format(@"{0} candidate.QuestionnaireDate <= :endDate",
                 (whereString.Length > 0 ? whereString + @" and" : string.Empty));
 
+
+            if (CompleteDate.HasValue)
+            {
+                whereString = string.Format(@"{0} personnelManagers.CompleteDate = :CompleteDate",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
             return whereString;
         }
 
@@ -287,6 +298,17 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(userName))
             {
                 whereString = string.Format(@"{0} (generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic) like N'%' + :userName + N'%'",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            return whereString;
+        }
+
+        public string GetContractNumber1CWhere(string whereString, string ContractNumber1C)
+        {
+            if (!string.IsNullOrEmpty(ContractNumber1C))
+            {
+                whereString = string.Format(@"{0} candidate.ContractNumber1C like N'%' + :ContractNumber1C + N'%'",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 
@@ -350,6 +372,12 @@ namespace Reports.Core.Dao.Impl
                 case 15:
                     orderBy = "Status";
                     break;
+                case 16:
+                    orderBy = "ContractNumber1C";
+                    break;
+                case 17:
+                    orderBy = "CompleteDate";
+                    break;
                 default:
                     orderBy = "candidate.Id";
                     break;
@@ -368,6 +396,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("QuestionnaireDate", NHibernateUtil.DateTime)
                 .AddScalar("UserId", NHibernateUtil.Int32)
+                .AddScalar("ContractNumber1C", NHibernateUtil.String)
                 .AddScalar("Name", NHibernateUtil.String)
                 .AddScalar("WorkCity", NHibernateUtil.String)
                 .AddScalar("Department", NHibernateUtil.String)
@@ -400,12 +429,13 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AppointmentManager", NHibernateUtil.String)
                 .AddScalar("PersonnelName", NHibernateUtil.String)
                 .AddScalar("Training", NHibernateUtil.String)
+                .AddScalar("CompleteDate", NHibernateUtil.DateTime)
                 ;
 
             return query;
         }
 
-        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName)
+        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate)
         {
             query.SetInt32("currentId", currentId);
             if (beginDate.HasValue)
@@ -413,9 +443,18 @@ namespace Reports.Core.Dao.Impl
                 query.SetDateTime("beginDate", beginDate.Value);
             }
             query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+
+            if (CompleteDate.HasValue)
+                query.SetDateTime("CompleteDate", CompleteDate.Value);
+
             if (!string.IsNullOrEmpty(userName))
             {
                 query.SetString("userName", userName);
+            }
+
+            if (!string.IsNullOrEmpty(ContractNumber1C))
+            {
+                query.SetString("ContractNumber1C", ContractNumber1C);
             }
         }
         /// <summary>
