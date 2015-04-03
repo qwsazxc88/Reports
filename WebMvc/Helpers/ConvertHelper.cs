@@ -115,6 +115,9 @@ namespace WebMvc.Helpers
                 }
             }
 
+            if (rubles == 0)
+                resultBuilder.AppendFormat(" {0}", "0");
+
             switch (partDigits[2])
             {
                 case 1:

@@ -1199,8 +1199,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsExternalPTWorker = entity.IsExternalPTWorker;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
-                model.PersonalAddition = entity.PersonalAddition;
-                model.PositionAddition = entity.PositionAddition;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = model.PositionItems != null && model.PositionId != 0 ? model.PositionItems.Where(x => x.Value == model.PositionId.ToString()).Single().Text : "";
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
@@ -1368,6 +1366,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractPoint_3_Id = entity.ContractPoint_3_Id;
                 model.ContractPointsFio = entity.ContractPointsFio;
                 model.ContractPointsAddress = entity.ContractPointsAddress;
+
+                model.PersonalAddition = entity.PersonalAddition;
+                model.PositionAddition = entity.PositionAddition;
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.PersonnelManagers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
@@ -1600,6 +1601,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 //model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
                 model.SalaryBasis = candidate.Managers.SalaryBasis;
+                model.SalaryMultiplier = candidate.Managers.SalaryMultiplier;   
             }
 
             if (candidate.PersonnelManagers != null)
@@ -1608,8 +1610,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
                 //model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
-                //model.Number = candidate.PersonnelManagers.ContractNumber;
+                model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
+                model.PositionAddition = candidate.PersonnelManagers.PositionAddition;
                 model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
+                model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
+                model.CompetenceAddition = candidate.PersonnelManagers.CompetenceAddition;
+                model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
+                model.NorthernAreaAddition = candidate.PersonnelManagers.NorthernAreaAddition;
+                model.AreaMultiplier = candidate.PersonnelManagers.AreaMultiplier;
+
                 model.ContractPoint_1_Id = candidate.PersonnelManagers.ContractPoint_1_Id;
                 model.ContractPoint_2_Id = candidate.PersonnelManagers.ContractPoint_2_Id;
                 model.ContractPoint_3_Id = candidate.PersonnelManagers.ContractPoint_3_Id;
@@ -1655,8 +1664,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Managers != null)
             {
-                model.PersonalAddition = candidate.Managers.PersonalAddition;
-                model.PositionAddition = candidate.Managers.PositionAddition;
+                model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
+                model.PositionAddition = candidate.PersonnelManagers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
@@ -3653,9 +3662,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsLiable = viewModel.IsLiable;
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
-            entity.PersonalAddition = viewModel.PersonalAddition;
             entity.Position = PositionDao.Load(viewModel.PositionId);
-            entity.PositionAddition = viewModel.PositionAddition;
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
@@ -3707,6 +3714,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
             entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
             entity.Status = viewModel.StatusId;
+            entity.PositionAddition = viewModel.PositionAddition;
+            entity.PersonalAddition = viewModel.PersonalAddition;
             entity.ContractPoint_1_Id = viewModel.ContractPoint_1_Id;
             entity.ContractPoint_2_Id = viewModel.ContractPoint_2_Id;
             entity.ContractPoint_3_Id = viewModel.ContractPoint_3_Id;
@@ -3989,9 +3998,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
-                        entity.PersonalAddition = viewModel.PersonalAddition;
                         entity.Position = PositionDao.Load(viewModel.PositionId);
-                        entity.PositionAddition = viewModel.PositionAddition;
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;
@@ -4170,6 +4177,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
                     entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
                     entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
+                    entity.PositionAddition = viewModel.PositionAddition;
+                    entity.PersonalAddition = viewModel.PersonalAddition;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {
