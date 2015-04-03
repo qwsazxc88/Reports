@@ -57,6 +57,10 @@ namespace Reports.Presenters.UI.Bl
         PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
         PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
         PrintEmploymentFileModel GetPrintEmploymentFileModel(int userId);
+        PrintInstructionOfSecretModel GetPrintInstructionOfSecretModel(int userId);
+        PrintInstructionEnsuringSafetyModel GetPrintInstructionEnsuringSafetyModel(int userId);
+        PrintAgreePersonForCheckingModel GetPrintAgreePersonForCheckingModel(int userId);
+        PrintCashWorkAddition1Model GetPrintCashWorkAddition1Model(int userId);
         IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending);
         
         void LoadDictionaries(GeneralInfoModel model);

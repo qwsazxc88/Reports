@@ -1217,6 +1217,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
+                model.SendTo1C = entity.Candidate.SendTo1C;
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
@@ -1372,6 +1373,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.PersonnelManagers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
+                model.SendTo1C = entity.Candidate.SendTo1C;
             }
 
             
@@ -2210,6 +2212,58 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             } 
             #endregion
+
+            return model;
+        }
+
+        public PrintInstructionOfSecretModel GetPrintInstructionOfSecretModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintInstructionOfSecretModel model = new PrintInstructionOfSecretModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            model.PositionName = candidate.Managers.Position.Name;
+            model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintInstructionEnsuringSafetyModel GetPrintInstructionEnsuringSafetyModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintInstructionEnsuringSafetyModel model = new PrintInstructionEnsuringSafetyModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintAgreePersonForCheckingModel GetPrintAgreePersonForCheckingModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintAgreePersonForCheckingModel model = new PrintAgreePersonForCheckingModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintCashWorkAddition1Model GetPrintCashWorkAddition1Model(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintCashWorkAddition1Model model = new PrintCashWorkAddition1Model();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
 
             return model;
         }
@@ -3670,7 +3724,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             entity.WorkCity = viewModel.WorkCity;
-            entity.RegistrationDate = viewModel.RegistrationDate;
+            if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+            {
+                entity.RegistrationDate = viewModel.RegistrationDate;
+                entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
+            }
             
             return true;
         }
@@ -3695,11 +3753,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.User.Grade = viewModel.Grade;
             entity.Candidate.User.Level = viewModel.Level;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
-            entity.ContractDate = viewModel.ContractDate;
-            entity.ContractNumber = viewModel.ContractNumber;
-            entity.EmploymentDate = viewModel.EmploymentDate;
-            entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-            entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+            if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+            {
+                entity.ContractDate = viewModel.ContractDate;
+                entity.ContractNumber = viewModel.ContractNumber;
+                entity.EmploymentDate = viewModel.EmploymentDate;
+                entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
+                entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+            }
             entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
             entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
@@ -4006,7 +4068,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.WorkCity = viewModel.WorkCity;
-                        entity.RegistrationDate = viewModel.RegistrationDate;
+                        if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+                        {
+                            entity.RegistrationDate = viewModel.RegistrationDate;
+                            entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
+                        }
 
                         //entity.Approver = UserDao.Get(current.Id);
                         if (viewModel.ManagerApprovalStatus == true)
@@ -4152,12 +4218,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate.User.Grade = viewModel.Grade;
                     entity.Candidate.User.Level = viewModel.Level;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
-                    entity.ContractDate = viewModel.ContractDate;
-                    entity.ContractEndDate = viewModel.ContractEndDate;
-                    entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
-                    entity.EmploymentDate = viewModel.EmploymentDate;
-                    entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-                    entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
+                    if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+                    {
+                        entity.ContractDate = viewModel.ContractDate;
+                        entity.ContractEndDate = viewModel.ContractEndDate;
+                        entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
+                        entity.EmploymentDate = viewModel.EmploymentDate;
+                        entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
+                        entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                        entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
+                    }
                     entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;

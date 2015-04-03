@@ -1,0 +1,408 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintCashWorkAddition1Model
+@{
+    Layout = null;
+    ViewBag.Title = "Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)";
+}
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<style xmlns="http://www.w3.org/1999/xhtml" type="text/css">
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:10pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	<!-- "li span.odfLiEnd" - IE 7 issue-->
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.ta1 { writing-mode:lr-tb; }
+	.ta2 { writing-mode:lr-tb; }
+	.ta3 { writing-mode:lr-tb; }
+	.Default { font-family:Calibri; vertical-align:bottom; color:#000000; font-size:11pt; }
+	.ce1 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce10 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce11 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce12 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce13 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce14 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce15 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce16 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce17 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce18 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce19 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce2 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-left-style:solid; border-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce20 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce21 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce22 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce23 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce24 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; text-align:center ! important; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce25 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; text-align:center ! important; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce26 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce27 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce28 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce29 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce3 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce30 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce31 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce32 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce33 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce34 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; background-color:transparent; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce35 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce36 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce37 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce38 { color:#000000; font-size:11pt; font-family:Times New Roman; vertical-align:bottom; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce39 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:solid; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce4 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce40 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce41 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce42 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce43 { color:#000000; font-size:10pt; font-family:Calibri; vertical-align:top; text-align:left ! important; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce44 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce45 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; background-color:transparent; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce46 { color:#000000; font-size:11pt; font-family:Times New Roman; vertical-align:bottom; text-align:right ! important; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce47 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce48 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce5 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce6 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce7 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce8 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce9 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.co1 { width:3.724cm; }
+	.co2 { width:0.559cm; }
+	.co3 { width:8.652cm; }
+	.co4 { width:6.888cm; }
+	.co5 { width:6.999cm; }
+	.co6 { width:1.711cm; }
+	.ro1 { height:0.529cm; }
+	.ro10 { height:0.556cm; }
+	.ro11 { height:0.487cm; }
+	.ro2 { height:0.9cm; }
+	.ro3 { height:0.979cm; }
+	.ro4 { height:1.296cm; }
+	.ro5 { height:0.873cm; }
+	.ro6 { height:1.376cm; }
+	.ro7 { height:1.349cm; }
+	.ro8 { height:2.143cm; }
+	.ro9 { height:1.455cm; }
+	.T1 { color:#000000; font-family:Times New Roman; font-size:9pt; font-weight:normal; text-decoration:none ! important; font-style:italic; text-shadow:none; }
+	<!-- ODF styles with no properties representable as CSS -->
+	 { }
+	</style>
+
+<table cellspacing="0" cellpadding="0" border="0" class="ta1">
+    <colgroup>
+        <col width="163" />
+        <col width="24" /><col width="378" /><col width="301" /><col width="306" /><col width="75" />
+    </colgroup>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="Default"> </td>
+        <td style="text-align:left;width:0.559cm; " class="Default"> </td>
+        <td style="text-align:left;width:8.652cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.888cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.999cm; " class="Default"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.724cm; " class="Default"> </td>
+        <td style="text-align:left;width:0.559cm; " class="Default"> </td>
+        <td style="text-align:left;width:8.652cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.888cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.999cm; " class="ce43"><p>Приложение 1 к Распоряжению №167/ОД от 19.11.2013</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:0.559cm; " class="ce18"><p>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce44"> </td><td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce2"><p>этапы</p></td>
+        <td colspan="2" style="text-align:left;width:0.559cm; " class="ce19"><p>последовательность действий</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce2"><p>исполнители</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce45"><p>нормативный документ</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce3"> </td>
+        <td colspan="3" style="text-align:left;width:0.559cm; " class="ce20"><p>Соблюдать последовательность действий!</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce45"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro3">
+        <td rowspan="4" style="text-align:left;width:3.724cm; " class="ce4"><p>Открытие Офиса</p></td>
+        <td style="text-align:left;width:0.559cm; " class="ce15"><p>1.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce32"><p>Снять с охраны помещения кассы</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce32"><p>Сотрудник, назначенный распорядительным документом</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>Договор с охранной компанией</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>2.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Открыть помещения кассы</p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Два сотрудника, назначенные распорядительными документами ответственными за сохранность ценностей</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>"Порядок начала операционного дня кассира" Приложение 22  к Положению об организации кассовой работы в ООО ИКБ "Совкомбанк"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro5">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>3.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Проверить оттиски печатей на сейфе с ценностями,                           Заполнить журнал ф. 162</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>4.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce32"><p>Хранить личные вещи в специальном помещении СП/ в удалении и изолировано от рабочего стола кассира, сейфа и мест хранения денежных средств и ценностей Банка </p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro5">
+        <td rowspan="11" style="text-align:left;width:3.724cm; " class="ce7"><p>Подготовка к началу работы</p></td>
+        <td style="text-align:left;width:0.559cm; " class="ce15"><p>5.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce32"><p>Для исполнения обязанностей кассир должен иметь на рабочем месте:</p></td>
+        <td rowspan="5" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td rowspan="5" style="text-align:left;width:6.999cm; " class="ce10"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:0.559cm; " class="ce22"><p>а.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce33"><p>приказ о приеме на работу;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:0.559cm; " class="ce22"><p>б.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce33"><p>должностную инструкцию;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce22"><p>в.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce33"><p>свидетельство о прохождении обучения по определению подлинности денежных средств - рубли РФ, доллары и евро</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:0.559cm; " class="ce22"><p>г.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce11"><p>паспорт</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro6">
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce21"><p>6.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce11"><p>Подготовить денежную наличность и ценности (карты, ключи, дубликаты ключей) </p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, исполняющий функции кассового работника, в присутствии сотрудника ответственного за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>"Порядок начала операционного дня кассира" Приложение 22  к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:6.999cm; " class="ce33"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce21"><p>7.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>При передаче смены между кассирами - полный пересчет денежных средств и ценностей. При выявлении расхождений- устранить проблемы</p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, исполняющий функции кассового работника, в присутствии сотрудника ответственного за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>"Порядок начала операционного дня кассира" Приложение 22  к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro7">
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок работы с излишками/недостачами Приложение 29 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce21"><p>8.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>Подготовка кассира к началу работы с клиентами</p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, назначенный распорядительным документом/ Сотрудник, исполняющий функции кассового работника</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>"Порядок начала операционного дня кассира" Приложение 22  к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro8">
+        <td rowspan="2" style="text-align:left;width:3.724cm; " class="ce10"><p>Приходные и расходные операции без присутствия клиентов</p></td>
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce24"><p>9.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>Приходные и расходные кассовые операции ( операции без клиентов - инкассация, загрузкы/выгрузка кассет УС и т.д.)</p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce32"><p>"Порядок взаимодействия подразделений Банка при проведении инкассации устройств самообслуживания, отражении сумм по незавершенным и сбойным транзакциям ООО ИКБ «Совкомбанка» "</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td rowspan="8" style="text-align:left;width:3.724cm; " class="ce4"><p>Подготовка к завершению работы</p></td>
+        <td style="text-align:left;width:0.559cm; " class="ce26"><p>10.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce32"><p>Проверить полноту отражения в бухгалтерском учете кассовых операций, совершенных в течение дня</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce32"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce15"><p>11.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>Сверить наличие денежных средств и ценностей с данными бухучета. При выявлении расхождений- устранить проблемы</p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, исполняющий функции кассового работника, в присутствии сотрудника ответственного за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок работы с излишками/недостачами Приложение 29 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro6">
+        <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce21"><p>12.</p></td>
+        <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>Упаковать денежные средства и ценности </p></td>
+        <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Положение об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>13.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Сверить учетные формы</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce32"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы в ООО ИКБ "Совкомбанк"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>14.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Сформировать сшив документов</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы в ООО ИКБ "Совкомбанк"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro9">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>15.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Поместить в сейф денежные средства, ценности, Акт приема-передачи (при наличии), маркировочные средства</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce11"><p>Сотрудник, исполняющий функции кассового работника, в присутствии сотрудника ответственного за сохранность ценностей.</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td rowspan="3" style="text-align:left;width:3.724cm; " class="ce15"><p>Закрытие Офиса</p></td>
+        <td style="text-align:left;width:0.559cm; " class="ce15"><p>16.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce32"><p>Опечатать сейф с ценностями,   Заполнить книгу ф. 0409162                        </p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce32"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.559cm; " class="ce21"><p>17.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p> </p><p>Закрыть кассовое помещение </p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудники, назначеные распорядительным документом</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce11"><p>Порядок завершения рабочего дня кассира Приложение 23 к Положению об организации кассовой работы </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro5">
+        <td style="text-align:left;width:0.559cm; " class="ce28"><p>18.</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce10"><p>Поставить на охрану помещение кассы</p></td>
+        <td style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудник, назначенный распорядительным документом</p></td>
+        <td style="text-align:left;width:6.999cm; " class="ce10"><p>Договор с охранной компанией</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td style="text-align:left;width:8.652cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.888cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.999cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro10">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce34"><p>Со всеми нормативными документами, указанными в данном порядке ознакомлен                  <span class="T1">подпись</span></p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce38"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td style="text-align:left;width:8.652cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.888cm; " class="ce38"> </td>
+        <td style="text-align:left;width:6.999cm; " class="ce46"><p>дата</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro11">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce28"><p>Типовые вопросы размещены на корпоративном портале, закладка "ФронтИнфо" / "типовые вопросы менеджеров"/"Касса"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td style="text-align:left;width:8.652cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.888cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.999cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce35"><p>задать вопрос можно:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce36"><p>на корпоративном портале, закладка "Вопросы-ответы"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce17"><p>через систему Папирус/Формы/общие закрытие проекты/вопросы Фронта</p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td style="text-align:left;width:8.652cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.888cm; " class="ce1"> </td>
+        <td style="text-align:left;width:6.999cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce37"><p>* - данный порядок оформляется в двух экземплярах, по одному для каждой из сторон </p></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="Default"> </td>
+        <td style="text-align:left;width:0.559cm; " class="Default"> </td>
+        <td style="text-align:left;width:8.652cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.888cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.999cm; " class="Default"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="Default"> </td>
+        <td style="text-align:left;width:0.559cm; " class="Default"> </td>
+        <td style="text-align:left;width:8.652cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.888cm; " class="Default"> </td>
+        <td style="text-align:left;width:6.999cm; " class="Default"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+</table>
+<table cellspacing="0" cellpadding="0" border="0" class="ta2">
+    <colgroup><col width="75" /></colgroup>
+    <tr class="ro1">
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+</table>
+<table  cellspacing="0" cellpadding="0" border="0" class="ta3">
+    <colgroup><col width="75" /></colgroup>
+    <tr class="ro1">
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+</table>
+
