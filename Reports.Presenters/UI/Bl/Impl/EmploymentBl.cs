@@ -1573,7 +1573,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (candidate.GeneralInfo != null)
             {
                 model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
-                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                
+                model.EmployeeNameShortened = (!string.IsNullOrEmpty(candidate.GeneralInfo.LastName) ? candidate.GeneralInfo.LastName : string.Empty) + " " + 
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0].ToString() : string.Empty) + ". "
                     + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + ".");
             }
 
