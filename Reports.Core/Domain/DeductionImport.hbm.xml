@@ -6,6 +6,7 @@
     <property name="ImportDate" not-null="true"/>
     <property name="InputFile" not-null="true"/>
     <property name="ReportFile" not-null="false"/>
+    <property name="InputFileHash" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_DeductionImport_User" not-null="true"/>
   </class>
 </hibernate-mapping>

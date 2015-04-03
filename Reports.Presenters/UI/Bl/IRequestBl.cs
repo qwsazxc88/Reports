@@ -88,7 +88,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(EmploymentEditModel model);
         bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);
         DeductionImportModel GetDeductionImportModel(DeductionImportModel model = null);
-        IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors);
+        IList<DeductionDto> ImportDeductionFromFile(ref string path, ref List<string> Errors, ref bool isFileExist);
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);

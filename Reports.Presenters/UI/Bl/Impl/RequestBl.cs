@@ -7427,75 +7427,94 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             return model;
         }
-        public IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors)
+        public IList<DeductionDto> ImportDeductionFromFile(ref string path, ref List<string> Errors,ref bool isFileExist)
         {
-            //Log.Debug("Файл:" + path);
-            DeductionImport import = new DeductionImport();
-            import.Creator = UserDao.Load(CurrentUser.Id);
-            import.ImportDate = DateTime.Now;
-            import.InputFile = path.Substring(path.LastIndexOf('\\')+1);
-            DeductionImport_Dao.SaveAndFlush(import);
-            List<Deduction> Deductions = new List<Deduction>();
-            StreamReader reader = new StreamReader(path);
-            var type=DeductionTypeDao.Load(1);
-            var kinds=DeductionKindDao.LoadAll();
-            while (!reader.EndOfStream)
+            var inp = new StreamReader(path);
+            var hash = Reports.Presenters.Utils.WebUtils.GetMd5Hash(inp.ReadToEnd());
+            inp.Close();
+            DeductionImport import = DeductionImport_Dao.LoadByHash(hash);
+            List<Deduction> Deductions;
+            if (import != null)
             {
-                string data = reader.ReadLine();
-                //Log.Debug("Данные:" + data);
-                Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
-                if (!m.Success) { Errors.Add("Неправильный формат данных.>"+data); continue; }
-                var el = new Deduction();
-                try
+                isFileExist = true;
+                Deductions = DeductionDao.GetDeductionsByImportId(import.Id).ToList();
+                StreamReader reader = new StreamReader(Path.Combine(Path.GetDirectoryName(path),import.ReportFile));
+                path = Path.Combine(Path.GetDirectoryName(path), import.InputFile);
+                while (!reader.EndOfStream)
                 {
-                    el.Sum = decimal.Parse(m.Groups["Sum"].Value,System.Globalization.CultureInfo.InvariantCulture );
-                    el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
-                    el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
-                    el.EditDate = DateTime.Now;
-                    el.PhoneNumber = m.Groups["Phone"].Value.Trim();
-                    if (el.Kind == null) { Errors.Add("Не найден вид удержания.>"+data); continue; }
-                    el.Type = type;
-                    var foundedUsers = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim());
-                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь не найден по СНИЛС.>" + data); continue; };
-                    foundedUsers = foundedUsers.Where(x => x.Name.Contains(m.Groups["Surname"].Value) && x.Name.Contains( m.Groups["Name"].Value) && x.Name.Contains(m.Groups["Patronymic"].Value)).ToList();
-                    if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь найден по СНИЛС,но не найден по ФИО.>" + data); continue; };
-                    if(!foundedUsers.Any(x=>(x.UserRole & UserRole.Employee) > 0))
-                    {
-                        if(foundedUsers.Any(x=>(x.UserRole & UserRole.DismissedEmployee) > 0))
-                        {
-                            Errors.Add("Пользователь уволен.>" + data); continue;
-                        }
-                        Errors.Add("Пользователь не является сотрудником.>" + data); continue;
-                    }
-                    foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0 ).ToList();
-
-                    el.User = foundedUsers.First(x=>!x.ContractType.HasValue);
-                    if(el.User==null)
-                    {
-                        Errors.Add("Пользователь по совместительству.>" + data); continue;
-                    }
-                    el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
-                    el.Editor = UserDao.Load(CurrentUser.Id);
-                    el.IsFastDismissal = false;
-                    el.UploadingDocType = 4;
-                    if (Deductions.Any(x => x.User == el.User && x.DeductionDate == el.DeductionDate && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
-                    el.DeductionImport = import;
-                    DeductionDao.SaveAndFlush(el);
-                    Deductions.Add(el);
+                    Errors.Add(reader.ReadLine());
                 }
-                catch (Exception ex) { Errors.Add("Ошибка при обработке данных. Не корректные данные.>"+data); continue; }
+                reader.Close();
             }
-            reader.Close();
-            Deductions = Deductions.Distinct().ToList();
-            var report = path.Replace(".input.csv", ".report.txt");
-            StreamWriter writer = new StreamWriter(report);
-            foreach (var err in Errors)
-                writer.WriteLine(err);
-            writer.Flush();
-            writer.Close();
-            report = import.InputFile.Replace(".input.csv", ".report.txt");
-            import.ReportFile = report;
-            DeductionImport_Dao.SaveAndFlush(import);
+            else
+            {
+                import = new DeductionImport();
+                import.Creator = UserDao.Load(CurrentUser.Id);
+                import.InputFileHash = hash;
+                import.ImportDate = DateTime.Now;
+                import.InputFile = path.Substring(path.LastIndexOf('\\')+1);
+                DeductionImport_Dao.SaveAndFlush(import);
+                Deductions = new List<Deduction>();
+                StreamReader reader = new StreamReader(path);
+                var type=DeductionTypeDao.Load(1);
+                var kinds=DeductionKindDao.LoadAll();
+                while (!reader.EndOfStream)
+                {
+                    string data = reader.ReadLine();
+                    Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
+                    if (!m.Success) { Errors.Add("Неправильный формат данных.>"+data); continue; }
+                    var el = new Deduction();
+                    try
+                    {
+                        el.Sum = decimal.Parse(m.Groups["Sum"].Value,System.Globalization.CultureInfo.InvariantCulture );
+                        el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
+                        el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
+                        el.EditDate = DateTime.Now;
+                        el.PhoneNumber = m.Groups["Phone"].Value.Trim();
+                        if (el.Kind == null) { Errors.Add("Не найден вид удержания.>"+data); continue; }
+                        el.Type = type;
+                        var foundedUsers = userDao.FindByCnilc(m.Groups["Cnilc"].Value.Trim());
+                        if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь не найден по СНИЛС.>" + data); continue; };
+                        foundedUsers = foundedUsers.Where(x => x.Name.Contains(m.Groups["Surname"].Value) && x.Name.Contains( m.Groups["Name"].Value) && x.Name.Contains(m.Groups["Patronymic"].Value)).ToList();
+                        if (foundedUsers == null || !foundedUsers.Any()) { Errors.Add("Пользователь найден по СНИЛС,но не найден по ФИО.>" + data); continue; };
+                        if(!foundedUsers.Any(x=>(x.UserRole & UserRole.Employee) > 0))
+                        {
+                            if(foundedUsers.Any(x=>(x.UserRole & UserRole.DismissedEmployee) > 0))
+                            {
+                                Errors.Add("Пользователь уволен.>" + data); continue;
+                            }
+                            Errors.Add("Пользователь не является сотрудником.>" + data); continue;
+                        }
+                        foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0 ).ToList();
+
+                        el.User = foundedUsers.First(x=>!x.ContractType.HasValue);
+                        if(el.User==null)
+                        {
+                            Errors.Add("Пользователь по совместительству.>" + data); continue;
+                        }
+                        el.Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction);
+                        el.Editor = UserDao.Load(CurrentUser.Id);
+                        el.IsFastDismissal = false;
+                        el.UploadingDocType = 4;
+                        if (Deductions.Any(x => x.User == el.User && x.DeductionDate == el.DeductionDate && x.Sum == el.Sum && x.Kind==el.Kind && x.PhoneNumber==el.PhoneNumber)) { Errors.Add("Дубликат!>"+data); continue; }
+                        el.DeductionImport = import;
+                        DeductionDao.SaveAndFlush(el);
+                        Deductions.Add(el);
+                    }
+                    catch (Exception ex) { Errors.Add("Ошибка при обработке данных. Не корректные данные.>"+data); continue; }
+                }
+                reader.Close();
+                Deductions = Deductions.Distinct().ToList();
+                var report = path.Replace(".input.csv", ".report.txt");
+                StreamWriter writer = new StreamWriter(report);
+                foreach (var err in Errors)
+                    writer.WriteLine(err);
+                writer.Flush();
+                writer.Close();
+                report = import.InputFile.Replace(".input.csv", ".report.txt");
+                import.ReportFile = report;
+                DeductionImport_Dao.SaveAndFlush(import);
+            }
            return Deductions.ConvertAll<DeductionDto>(new Converter<Deduction, DeductionDto>(x => new DeductionDto() 
                 { 
                     UserId=x.User.Id,
