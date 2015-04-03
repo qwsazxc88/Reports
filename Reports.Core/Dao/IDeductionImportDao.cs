@@ -7,5 +7,7 @@ namespace Reports.Core.Dao
 {
     public interface IDeductionImportDao:IDao<DeductionImport>
     {
+        bool IsFileExist(string hash);
+        DeductionImport LoadByHash(string hash);
     }
 }

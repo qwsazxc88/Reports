@@ -672,6 +672,7 @@ namespace Reports.Core.Dao.Impl
                         if (el.DocType != 3 &&  el.Date!= null && el.Date!=DateTime.MinValue) Saldo = Saldo - el.Ordered + el.Reported;
                         else if (el.Ordered > 0 && el.Date!=null && el.Date!=DateTime.MinValue) Saldo = Saldo - el.Ordered;
                     }
+                    Saldo = Saldo - el.PurchaseBookAllSum;
                     Saldo =(float) Math.Round(Saldo, 2);
                     el.SaldoEnd = Saldo;
                 }
