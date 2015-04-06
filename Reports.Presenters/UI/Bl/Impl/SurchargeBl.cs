@@ -12,10 +12,10 @@ namespace Reports.Presenters.UI.Bl.Impl
     public class SurchargeBl: ISurchargeBL
     {
         private ISurchargeDao SurchargeDao = Ioc.Resolve<ISurchargeDao>();
-        public bool AddSurcharge(int userId, float sum, int creatorId, DateTime editDate,  int missionReportId)
+        public int AddSurcharge(int userId, float sum, int creatorId, DateTime editDate,  int missionReportId)
         {
-            SurchargeDao.AddDocument(userId, (decimal)sum, creatorId, editDate,missionReportId);
-            return true;
+
+            return SurchargeDao.AddDocument(userId, (decimal)sum, creatorId, editDate, missionReportId);
         }
         public IList<SurchargeDto> GetDocuments(int userId, UserRole role, int departmentId, int statusId, DateTime? beginDate, DateTime? endDate, string userName, int sortedBy, bool? sortDescending, string Number)
         {

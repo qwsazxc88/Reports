@@ -18,10 +18,10 @@
                                 <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>
                             }
                           
-                           @* @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                            @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0 && false)
                             {
                                 <input type="button" value="Загрузить заявки автоматически из внешнего файла" onclick="@("window.location.href='" + @Url.Action("DeductionImport", "Deduction") + "'");" />                        
-                            } *@
+                            } 
                         </td>
                     </tr>
             </table>  
