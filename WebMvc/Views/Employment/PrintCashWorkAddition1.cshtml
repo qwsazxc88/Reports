@@ -116,7 +116,7 @@
         <td style="text-align:left;width:6.999cm; " class="ce44"> </td><td style="text-align:left;width:1.711cm; " class="Default"> </td>
     </tr>
     <tr class="ro1">
-        <td style="text-align:left;width:3.724cm; " class="ce2"><p>этапы</p></td>
+        <td style="text-align:left;width:3.724cm; " class="ce3"><p>этапы</p></td>
         <td colspan="2" style="text-align:left;width:0.559cm; " class="ce19"><p>последовательность действий</p></td>
         <td style="text-align:left;width:6.888cm; " class="ce2"><p>исполнители</p></td>
         <td style="text-align:left;width:6.999cm; " class="ce45"><p>нормативный документ</p></td>
@@ -218,7 +218,7 @@
         <td style="text-align:left;width:1.711cm; " class="Default"> </td>
     </tr>
     <tr class="ro8">
-        <td rowspan="2" style="text-align:left;width:3.724cm; " class="ce10"><p>Приходные и расходные операции без присутствия клиентов</p></td>
+        <td rowspan="2" style="text-align:left;width:3.724cm; " class="ce4"><p>Приходные и расходные операции без присутствия клиентов</p></td>
         <td rowspan="2" style="text-align:left;width:0.559cm; " class="ce24"><p>9.</p></td>
         <td rowspan="2" style="text-align:left;width:8.652cm; " class="ce10"><p>Приходные и расходные кассовые операции ( операции без клиентов - инкассация, загрузкы/выгрузка кассет УС и т.д.)</p></td>
         <td rowspan="2" style="text-align:left;width:6.888cm; " class="ce10"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
@@ -281,7 +281,7 @@
         <td style="text-align:left;width:1.711cm; " class="Default"> </td>
     </tr>
     <tr class="ro4">
-        <td rowspan="3" style="text-align:left;width:3.724cm; " class="ce15"><p>Закрытие Офиса</p></td>
+        <td rowspan="3" style="text-align:left;width:3.724cm; " class="ce4"><p>Закрытие Офиса</p></td>
         <td style="text-align:left;width:0.559cm; " class="ce15"><p>16.</p></td>
         <td style="text-align:left;width:8.652cm; " class="ce32"><p>Опечатать сейф с ценностями,   Заполнить книгу ф. 0409162                        </p></td>
         <td style="text-align:left;width:6.888cm; " class="ce32"><p>Сотрудники, назначенные распорядительным документом ответственными за сохранность ценностей. </p></td>
@@ -313,16 +313,19 @@
     <tr class="ro10">
         <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
         <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
-        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce34"><p>Со всеми нормативными документами, указанными в данном порядке ознакомлен                  <span class="T1">подпись</span></p></td>
+        <td colspan="3" style="text-align:left;width:8.652cm; " class="ce34"><p>Со всеми нормативными документами, указанными в данном порядке ознакомлен:</span></p><br /></td>
         <td style="text-align:left;width:1.711cm; " class="ce38"> </td>
     </tr>
     <tr class="ro1">
-        <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.724cm; " class="ce1"></td>
         <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
-        <td style="text-align:left;width:8.652cm; " class="ce1"> </td>
-        <td style="text-align:left;width:6.888cm; " class="ce38"> </td>
-        <td style="text-align:left;width:6.999cm; " class="ce46"><p>дата</p></td>
+        <td style="text-align:left;width:8.652cm; " class="ce1">@Model.EmployeeName <span class="T1">  ____________________________/подпись/ </td>
+        <td style="text-align:left;width:6.888cm; " class="ce38"></td>
+        <td style="text-align:left;width:6.999cm; " class="ce46"><p>@(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToShortDateString() : "__________________/дата/")</p></td>
         <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr>
+        <td colspan="5"><br /><br /></td>
     </tr>
     <tr class="ro11">
         <td style="text-align:left;width:3.724cm; " class="ce1"> </td>
@@ -387,22 +390,5 @@
         <td style="text-align:left;width:1.711cm; " class="Default"> </td>
     </tr>
 </table>
-<table cellspacing="0" cellpadding="0" border="0" class="ta2">
-    <colgroup><col width="75" /></colgroup>
-    <tr class="ro1">
-        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
-    </tr>
-    <tr class="ro1">
-        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
-    </tr>
-</table>
-<table  cellspacing="0" cellpadding="0" border="0" class="ta3">
-    <colgroup><col width="75" /></colgroup>
-    <tr class="ro1">
-        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
-    </tr>
-    <tr class="ro1">
-        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
-    </tr>
-</table>
+
 

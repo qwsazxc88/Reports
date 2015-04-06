@@ -45,6 +45,15 @@ namespace WebMvc.Controllers
 
         #region Main Actions
 
+        #region Instruction
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult Instruction()
+        {
+            return View(new InstructionModel());
+        } 
+        #endregion
+
         #region Index
         [HttpGet]
         [ActionName("Index")]
@@ -2087,6 +2096,12 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintRegisterPersonalRecord(int userId)
+        {
+            return GetPrintForm("PrintRegisterPersonalRecord", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintInstructionOfSecret(int userId)
         {
             return GetPrintForm("PrintInstructionOfSecret", userId);
@@ -2102,6 +2117,24 @@ namespace WebMvc.Controllers
         public ActionResult GetPrintAgreePersonForChecking(int userId)
         {
             return GetPrintForm("PrintAgreePersonForChecking", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition1(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition1", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition2(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition2", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintObligationTradeSecret(int userId)
+        {
+            return GetPrintForm("PrintObligationTradeSecret", userId);
         }
 
         [HttpGet]
@@ -2164,6 +2197,13 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult PrintRegisterPersonalRecord(int userId)
+        {
+            PrintRegisterPersonalRecordModel model = EmploymentBl.GetPrintRegisterPersonalRecordModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
         public ActionResult PrintInstructionOfSecret(int userId)
         {
             PrintInstructionOfSecretModel model = EmploymentBl.GetPrintInstructionOfSecretModel(userId);
@@ -2188,6 +2228,20 @@ namespace WebMvc.Controllers
         public ActionResult PrintCashWorkAddition1(int userId)
         {
             PrintCashWorkAddition1Model model = EmploymentBl.GetPrintCashWorkAddition1Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition2(int userId)
+        {
+            PrintCashWorkAddition2Model model = EmploymentBl.GetPrintCashWorkAddition2Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintObligationTradeSecret(int userId)
+        {
+            PrintObligationTradeSecretModel model = EmploymentBl.GetPrintObligationTradeSecretModel(userId);
             return View(model);
         }
 
