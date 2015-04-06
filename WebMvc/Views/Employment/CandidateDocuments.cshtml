@@ -19,9 +19,10 @@
     <fieldset class="bordered doc-wrap panel">
     <table class="buttonTable">
         <tr>
-            <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
-                @*<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>*@
+        <td>Печать трудового договора</td>
+            <td style="width:5%">
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />
@@ -46,9 +47,10 @@
             </td>
         </tr>
         <tr>
+            <td>Печать приказа о приеме</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
-                @*<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>*@
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />
@@ -75,8 +77,8 @@
         @*
         <tr>
             <td>
-                <!--<button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>-->
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("PrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
+                <!--<button  type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>-->
+                <button  type="button" onclick="window.location.href='@Url.Action("PrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
             </td>
             <td>
                 <input type="hidden" id="T2FileId" name="T2FileId" value="@Model.T2FileId" />
@@ -102,8 +104,10 @@
         </tr>
     *@
         <tr>
+            <td>Печать договора Мат. ответственность</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="ContractMatResponsibleFileId" name="ContractMatResponsibleFileId" value="@Model.ContractMatResponsibleFileId" />
@@ -128,8 +132,10 @@
             </td>
         </tr>
         <tr>
+            <td>Печать ДС Персональные данные</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать<br />ДС Персональные данные</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="PersonalDataFileId" name="PersonalDataFileId" value="@Model.PersonalDataFileId" />
@@ -154,8 +160,10 @@
             </td>
         </tr>
         <tr>
+            <td>Печать Обязательство конфиденциальность</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать<br />Обязательство конфиденциальность</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="DataObligationFileId" name="DataObligationFileId" value="@Model.DataObligationFileId" />
@@ -180,8 +188,10 @@
             </td>
         </tr>
         <tr>
+            <td>Печать личного листка по учету кадров</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать<br />личного листка<br />по учету кадров</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
@@ -206,8 +216,10 @@
             </td>
         </tr>
         <tr>
+            <td>Печать реестра личного дела</td>
             <td>
-                <button class="PrintButton" type="button" onclick="window.location.href='@Url.Action("GetPrintAttachments", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                <button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>
             </td>
             <td>
                 <input type="hidden" id="RegisterPersonalRecordFileId" name="RegisterPersonalRecordFileId" value="@Model.RegisterPersonalRecordFileId" />
@@ -231,6 +243,174 @@
                 }
             </td>
         </tr>
+        <tr>
+            <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="InstructionOfSecretFileId" name="InstructionOfSecretFileId" value="@Model.InstructionOfSecretFileId" />
+                @if (string.IsNullOrEmpty(Model.InstructionOfSecretFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="InstructionOfSecretFile" id="InstructionOfSecretFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.InstructionOfSecretFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InstructionOfSecretFileId })' style="cursor:hand" target="_blank">
+                            @Model.InstructionOfSecretFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete9" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="InstructionEnsuringSafetyFileId" name="InstructionEnsuringSafetyFileId" value="@Model.InstructionEnsuringSafetyFileId" />
+                @if (string.IsNullOrEmpty(Model.InstructionEnsuringSafetyFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="InstructionEnsuringSafetyFile" id="InstructionEnsuringSafetyFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.InstructionEnsuringSafetyFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InstructionEnsuringSafetyFileId })' style="cursor:hand" target="_blank">
+                            @Model.InstructionEnsuringSafetyFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete10" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="AgreePersonForCheckingFileId" name="AgreePersonForCheckingFileId" value="@Model.AgreePersonForCheckingFileId" />
+                @if (string.IsNullOrEmpty(Model.AgreePersonForCheckingFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="AgreePersonForCheckingFile" id="AgreePersonForCheckingFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.AgreePersonForCheckingFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreePersonForCheckingFileId })' style="cursor:hand" target="_blank">
+                            @Model.AgreePersonForCheckingFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete11" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="CashWorkAddition1FileId" name="CashWorkAddition1FileId" value="@Model.CashWorkAddition1FileId" />
+                @if (string.IsNullOrEmpty(Model.CashWorkAddition1FileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="CashWorkAddition1File" id="CashWorkAddition1File"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.CashWorkAddition1FileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CashWorkAddition1FileId })' style="cursor:hand" target="_blank">
+                            @Model.CashWorkAddition1FileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete12" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="CashWorkAddition2FileId" name="CashWorkAddition2FileId" value="@Model.CashWorkAddition2FileId" />
+                @if (string.IsNullOrEmpty(Model.CashWorkAddition2FileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="CashWorkAddition2File" id="CashWorkAddition2File"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.CashWorkAddition2FileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CashWorkAddition2FileId })' style="cursor:hand" target="_blank">
+                            @Model.CashWorkAddition2FileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete13" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </td>
+            <td>
+                <input type="hidden" id="ObligationTradeSecretFileId" name="ObligationTradeSecretFileId" value="@Model.ObligationTradeSecretFileId" />
+                @if (string.IsNullOrEmpty(Model.ObligationTradeSecretFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="ObligationTradeSecretFile" id="ObligationTradeSecretFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.ObligationTradeSecretFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ObligationTradeSecretFileId })' style="cursor:hand" target="_blank">
+                            @Model.ObligationTradeSecretFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete14" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+        </tr>
     </table>
     </fieldset>
 }
@@ -246,6 +426,12 @@
         $("#DataObligationFile").change(function () { this.form.submit(); });
         $("#EmploymentFile").change(function () { this.form.submit(); });
         $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
+        $("#InstructionOfSecretFile").change(function () { this.form.submit(); });
+        $("#InstructionEnsuringSafetyFile").change(function () { this.form.submit(); });
+        $("#AgreePersonForCheckingFile").change(function () { this.form.submit(); });
+        $("#CashWorkAddition1File").change(function () { this.form.submit(); });
+        $("#CashWorkAddition2File").change(function () { this.form.submit(); });
+        $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
 
         $("#btnDelete1").click(function () {
             var Id = $("#EmploymentContractFileId").val();
@@ -291,6 +477,42 @@
 
         $("#btnDelete8").click(function () {
             var Id = $("#RegisterPersonalRecordFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete9").click(function () {
+            var Id = $("#InstructionOfSecretFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete10").click(function () {
+            var Id = $("#InstructionEnsuringSafetyFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete11").click(function () {
+            var Id = $("#AgreePersonForCheckingFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete12").click(function () {
+            var Id = $("#CashWorkAddition1FileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete13").click(function () {
+            var Id = $("#CashWorkAddition2FileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete14").click(function () {
+            var Id = $("#ObligationTradeSecretFileId").val();
             $("#DeleteAttachmentId").val(Id);
             this.form.submit();
         });

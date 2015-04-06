@@ -146,7 +146,7 @@ else
     Базовый должностной оклад в составляет
     @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.SalaryBasis.Value.ToString(), Html.ConvertNumberSumToText(Model.SalaryBasis.Value)) :
     "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
-    РАБОТНИКУ устанавливается - @Model.SalaryMultiplier.Value ставки от базового должностного оклада, что составляет 
+    РАБОТНИКУ устанавливается - @(Model.SalaryMultiplier.HasValue ? Model.SalaryMultiplier.Value : 0) ставки от базового должностного оклада, что составляет 
     @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.SalaryBasis.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.SalaryBasis.Value * Model.SalaryMultiplier.Value)) :
     "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
     </text>    
@@ -426,7 +426,7 @@ else
 <TD><b>@Model.PassportSeriesNumber</b></TD></TR>
 <TR>
 <TD>Выдан:</TD>
-<TD><b>@Model.PassportDateOfIssue.Value.ToShortDateString(), @Model.PassportIssuedBy</b></TD></TR>
+<TD><b>@(Model.PassportDateOfIssue.HasValue ? Model.PassportDateOfIssue.Value.ToShortDateString() : string.Empty), @Model.PassportIssuedBy</b></TD></TR>
 <TR>
 <TD>Адрес регистрации:</TD>
 <TD><b>@Model.EmployeeAddress</b></TD></TR></TBODY></TABLE><BR><br />

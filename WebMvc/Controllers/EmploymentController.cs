@@ -45,6 +45,15 @@ namespace WebMvc.Controllers
 
         #region Main Actions
 
+        #region Instruction
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult Instruction()
+        {
+            return View(new InstructionModel());
+        } 
+        #endregion
+
         #region Index
         [HttpGet]
         [ActionName("Index")]
@@ -1878,10 +1887,22 @@ namespace WebMvc.Controllers
 
             if (!model.SalaryMultiplier.HasValue)
                 ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
-            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value == 0)
-                ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
-            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value > 1)
-                ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
+            if (!model.SalaryMultiplier.HasValue)
+                ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");
+            else
+            {
+                if (model.SalaryMultiplier.Value == 0)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
+                if (model.SalaryMultiplier.Value > 1)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
+            }
+
+            
+            if (!model.SendTo1C.HasValue)
+            {
+                if (!model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                    ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+            }
             return ModelState.IsValid;
         }
 
@@ -1937,6 +1958,30 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("ScheduleId", "Для оклада по часам основной график работы не доступен!");
                 ModelState.AddModelError("MessageStr", "Для оклада по часам основной график работы не доступен!");
                 flgError = true;
+            }
+
+            if (!model.SendTo1C.HasValue)
+            {
+                if (!model.EmploymentDate.HasValue && model.EmploymentDate.Value < DateTime.Today)
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
+                }
+
+                if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                }
+
+                if (model.ContractDate.HasValue && model.EmploymentDate.HasValue)
+                {
+                    if (model.ContractDate.Value > model.EmploymentDate.Value)
+                    {
+                        ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                    }
+                }
             }
 
             if (!ModelState.IsValid && !flgError)
@@ -2051,6 +2096,48 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintRegisterPersonalRecord(int userId)
+        {
+            return GetPrintForm("PrintRegisterPersonalRecord", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionOfSecret(int userId)
+        {
+            return GetPrintForm("PrintInstructionOfSecret", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionEnsuringSafety(int userId)
+        {
+            return GetPrintForm("PrintInstructionEnsuringSafety", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintAgreePersonForChecking(int userId)
+        {
+            return GetPrintForm("PrintAgreePersonForChecking", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition1(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition1", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition2(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition2", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintObligationTradeSecret(int userId)
+        {
+            return GetPrintForm("PrintObligationTradeSecret", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
@@ -2106,6 +2193,55 @@ namespace WebMvc.Controllers
         public ActionResult PrintEmploymentFile(int userId)
         {
             PrintEmploymentFileModel model = EmploymentBl.GetPrintEmploymentFileModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintRegisterPersonalRecord(int userId)
+        {
+            PrintRegisterPersonalRecordModel model = EmploymentBl.GetPrintRegisterPersonalRecordModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionOfSecret(int userId)
+        {
+            PrintInstructionOfSecretModel model = EmploymentBl.GetPrintInstructionOfSecretModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionEnsuringSafety(int userId)
+        {
+            PrintInstructionEnsuringSafetyModel model = EmploymentBl.GetPrintInstructionEnsuringSafetyModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintAgreePersonForChecking(int userId)
+        {
+            PrintAgreePersonForCheckingModel model = EmploymentBl.GetPrintAgreePersonForCheckingModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition1(int userId)
+        {
+            PrintCashWorkAddition1Model model = EmploymentBl.GetPrintCashWorkAddition1Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition2(int userId)
+        {
+            PrintCashWorkAddition2Model model = EmploymentBl.GetPrintCashWorkAddition2Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintObligationTradeSecret(int userId)
+        {
+            PrintObligationTradeSecretModel model = EmploymentBl.GetPrintObligationTradeSecretModel(userId);
             return View(model);
         }
 

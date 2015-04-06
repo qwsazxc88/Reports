@@ -351,8 +351,9 @@ table.buttonTable td
   border: 1px solid Silver;
   padding-left: 5px;
   padding-right: 5px;
+  /*
   height:100%;
-  width:12%;
+  width:12%;*/
 }
 
 button.PrintButton

@@ -183,6 +183,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Comment { get; set; } //ok
         public IList<EmploymentCandidateCommentDto> Comments { get; set; }
         public bool IsAddCommentAvailable { get; set; }
+        public DateTime? SendTo1C { get; set; }
 
         public PersonnelManagersModel()
         {

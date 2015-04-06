@@ -1217,6 +1217,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
+                model.SendTo1C = entity.Candidate.SendTo1C;
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
@@ -1372,6 +1373,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.PersonnelManagers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
+                model.SendTo1C = entity.Candidate.SendTo1C;
             }
 
             
@@ -1459,6 +1461,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.RegisterPersonalRecordScan);
                 model.RegisterPersonalRecordFileId = attachmentId;
                 model.RegisterPersonalRecordFileName = attachmentFilename;
+
+                //памятка сотруднику о сохранении коммерческой, банковской и служебной тайны
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InstructionOfSecretScan);
+                model.InstructionOfSecretFileId = attachmentId;
+                model.InstructionOfSecretFileName = attachmentFilename;
+
+                //Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan);
+                model.InstructionEnsuringSafetyFileId = attachmentId;
+                model.InstructionEnsuringSafetyFileName = attachmentFilename;
+
+                //Согласие физического лица на проверку персональных данных (Приложение №3)
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.AgreePersonForCheckingScan);
+                model.AgreePersonForCheckingFileId = attachmentId;
+                model.AgreePersonForCheckingFileName = attachmentFilename;
+
+                //Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CashWorkAddition1Scan);
+                model.CashWorkAddition1FileId = attachmentId;
+                model.CashWorkAddition1FileName = attachmentFilename;
+
+                //Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CashWorkAddition2Scan);
+                model.CashWorkAddition2FileId = attachmentId;
+                model.CashWorkAddition2FileName = attachmentFilename;
+
+                //Обязательство о неразглашении коммерческой и служебной тайны
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ObligationTradeSecretScan);
+                model.ObligationTradeSecretFileId = attachmentId;
+                model.ObligationTradeSecretFileName = attachmentFilename;
             }
 
             
@@ -1573,7 +1605,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (candidate.GeneralInfo != null)
             {
                 model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
-                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                
+                model.EmployeeNameShortened = (!string.IsNullOrEmpty(candidate.GeneralInfo.LastName) ? candidate.GeneralInfo.LastName : string.Empty) + " " + 
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0].ToString() : string.Empty) + ". "
                     + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + ".");
             }
 
@@ -2212,6 +2246,100 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PrintRegisterPersonalRecordModel GetPrintRegisterPersonalRecordModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintRegisterPersonalRecordModel model = new PrintRegisterPersonalRecordModel();
+
+            //model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            model.Attachments = EmploymentCandidateDao.GetCandidateAttachmentList(candidate.Id);
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintInstructionOfSecretModel GetPrintInstructionOfSecretModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintInstructionOfSecretModel model = new PrintInstructionOfSecretModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            model.PositionName = candidate.Managers.Position.Name;
+            model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintInstructionEnsuringSafetyModel GetPrintInstructionEnsuringSafetyModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintInstructionEnsuringSafetyModel model = new PrintInstructionEnsuringSafetyModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintAgreePersonForCheckingModel GetPrintAgreePersonForCheckingModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintAgreePersonForCheckingModel model = new PrintAgreePersonForCheckingModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintCashWorkAddition1Model GetPrintCashWorkAddition1Model(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintCashWorkAddition1Model model = new PrintCashWorkAddition1Model();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintCashWorkAddition2Model GetPrintCashWorkAddition2Model(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintCashWorkAddition2Model model = new PrintCashWorkAddition2Model();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            //model.PositionName = candidate.Managers.Position.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
+
+        public PrintObligationTradeSecretModel GetPrintObligationTradeSecretModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintObligationTradeSecretModel model = new PrintObligationTradeSecretModel();
+
+            model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+            model.EmployeeName = candidate.User.Name;
+            model.PositionName = candidate.Managers.Position == null ? string.Empty : candidate.Managers.Position.Name;
+            model.EmployeeNameShortened = (!string.IsNullOrEmpty(candidate.GeneralInfo.LastName) ? candidate.GeneralInfo.LastName : string.Empty) + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0].ToString() : string.Empty) + ". "
+                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + ".");
+            //model.DepartmentName = candidate.Managers.Department.Name;
+
+            return model;
+        }
         public IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -2931,6 +3059,48 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UploadFileDto fileDto = GetFileContext(model.RegisterPersonalRecordFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.RegisterPersonalRecordFileId, fileDto, RequestAttachmentTypeEnum.RegisterPersonalRecordScan, out fileName);
+            }
+
+            if (model.InstructionOfSecretFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InstructionOfSecretFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InstructionOfSecretFileId, fileDto, RequestAttachmentTypeEnum.InstructionOfSecretScan, out fileName);
+            }
+
+            if (model.InstructionEnsuringSafetyFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InstructionEnsuringSafetyFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InstructionEnsuringSafetyFileId, fileDto, RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan, out fileName);
+            }
+
+            if (model.AgreePersonForCheckingFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.AgreePersonForCheckingFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.AgreePersonForCheckingFileId, fileDto, RequestAttachmentTypeEnum.AgreePersonForCheckingScan, out fileName);
+            }
+
+            if (model.CashWorkAddition1File != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.CashWorkAddition1File);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.CashWorkAddition1FileId, fileDto, RequestAttachmentTypeEnum.CashWorkAddition1Scan, out fileName);
+            }
+
+            if (model.CashWorkAddition2File != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.CashWorkAddition2File);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.CashWorkAddition2FileId, fileDto, RequestAttachmentTypeEnum.CashWorkAddition2Scan, out fileName);
+            }
+
+            if (model.ObligationTradeSecretFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ObligationTradeSecretFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ObligationTradeSecretFileId, fileDto, RequestAttachmentTypeEnum.ObligationTradeSecretScan, out fileName);
             }
         } 
         #endregion
@@ -3668,7 +3838,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             entity.WorkCity = viewModel.WorkCity;
-            entity.RegistrationDate = viewModel.RegistrationDate;
+            if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+            {
+                entity.RegistrationDate = viewModel.RegistrationDate;
+                entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
+            }
             
             return true;
         }
@@ -3693,11 +3867,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.User.Grade = viewModel.Grade;
             entity.Candidate.User.Level = viewModel.Level;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
-            entity.ContractDate = viewModel.ContractDate;
-            entity.ContractNumber = viewModel.ContractNumber;
-            entity.EmploymentDate = viewModel.EmploymentDate;
-            entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-            entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+            if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+            {
+                entity.ContractDate = viewModel.ContractDate;
+                entity.ContractNumber = viewModel.ContractNumber;
+                entity.EmploymentDate = viewModel.EmploymentDate;
+                entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
+                entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+            }
             entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
             entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
@@ -4004,7 +4182,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.WorkCity = viewModel.WorkCity;
-                        entity.RegistrationDate = viewModel.RegistrationDate;
+                        if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+                        {
+                            entity.RegistrationDate = viewModel.RegistrationDate;
+                            entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
+                        }
 
                         //entity.Approver = UserDao.Get(current.Id);
                         if (viewModel.ManagerApprovalStatus == true)
@@ -4150,12 +4332,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate.User.Grade = viewModel.Grade;
                     entity.Candidate.User.Level = viewModel.Level;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
-                    entity.ContractDate = viewModel.ContractDate;
-                    entity.ContractEndDate = viewModel.ContractEndDate;
-                    entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
-                    entity.EmploymentDate = viewModel.EmploymentDate;
-                    entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-                    entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
+                    if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
+                    {
+                        entity.ContractDate = viewModel.ContractDate;
+                        entity.ContractEndDate = viewModel.ContractEndDate;
+                        entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
+                        entity.EmploymentDate = viewModel.EmploymentDate;
+                        entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
+                        entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                        entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
+                    }
                     entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;

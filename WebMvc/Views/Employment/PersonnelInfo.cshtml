@@ -1153,6 +1153,12 @@
                                                 $("#DataObligationFile").change(function () { this.form.submit(); });
                                                 $("#EmploymentFile").change(function () { this.form.submit(); });
                                                 $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
+                                                $("#InstructionOfSecretFile").change(function () { this.form.submit(); });
+                                                $("#InstructionEnsuringSafetyFile").change(function () { this.form.submit(); });
+                                                $("#AgreePersonForCheckingFile").change(function () { this.form.submit(); });
+                                                $("#CashWorkAddition1File").change(function () { this.form.submit(); });
+                                                $("#CashWorkAddition2File").change(function () { this.form.submit(); });
+                                                $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
 
                                                 $("#btnDelete1").click(function () {
                                                     var Id = $("#EmploymentContractFileId").val();
@@ -1198,6 +1204,42 @@
 
                                                 $("#btnDelete8").click(function () {
                                                     var Id = $("#RegisterPersonalRecordFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete9").click(function () {
+                                                    var Id = $("#InstructionOfSecretFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete10").click(function () {
+                                                    var Id = $("#InstructionEnsuringSafetyFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete11").click(function () {
+                                                    var Id = $("#AgreePersonForCheckingFileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete12").click(function () {
+                                                    var Id = $("#CashWorkAddition1FileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete13").click(function () {
+                                                    var Id = $("#CashWorkAddition2FileId").val();
+                                                    $("#DeleteAttachmentId").val(Id);
+                                                    this.form.submit();
+                                                });
+
+                                                $("#btnDelete14").click(function () {
+                                                    var Id = $("#ObligationTradeSecretFileId").val();
                                                     $("#DeleteAttachmentId").val(Id);
                                                     this.form.submit();
                                                 });
