@@ -8036,6 +8036,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                         user.Id,to,deduction.Id,dto.Error);
             }
         }
+        public bool SendNotifyEmailToUser(int MissionReportId)
+        {
+            var mr=MissionReportDao.Load(MissionReportId);
+            if (String.IsNullOrWhiteSpace(mr.User.Email)) return false;
+            var creator=UserDao.Load(CurrentUser.Id);
+            String body = String.Format("По авансовому отчёту №{0} с Вас будет удержанно {1:0.00} рублей. \r\n Автор: {2}, e-mail: {3}."
+                ,mr.Number
+                ,mr.AccountantAllSum-mr.PurchaseBookAllSum-mr.UserAllSum
+                ,creator.Name
+                ,creator.Email);
+            EmailDto dto = SendEmail(mr.User.Email, "Удержание", body);
+            if (string.IsNullOrEmpty(dto.Error))
+                return true;
+            else
+                return false;
+        }
         protected void ChangeEntityProperties(Deduction entity, DeductionEditModel model)
         {
             if(model.IsEditable)
