@@ -150,7 +150,7 @@
 
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {
-                <div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>
+                @*<div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>*@
                 <div class="menuitem" id="empCandidateDocuments">@Html.ActionLink("Документы", "CandidateDocuments", "Employment")</div>
             }
             
