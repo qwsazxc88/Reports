@@ -260,6 +260,10 @@
                     {
                     <input type="button" id="ExportButton" value="Выгрузить в удержания" onclick=" UploadToDeduction(2, 3, 2, 'true');" />
                     }
+            @if ((dto.UserRole & UserRole.Accountant) > 0)
+            {
+                <input type="button" id="SendNotifyButton" value="Отправить сотруднику уведомление об удержании" onclick="SendNotify();"/>
+            }
             <span id="LoadingIndicator" ></span>
             </td>
         </tr>
@@ -1260,7 +1264,7 @@
         var d=$("#deductionNumber").val();
         jQuery.ajaxSettings.traditional = true;
         $.ajax({
-        url: '@Url.Action("AddSurcharge","Surcharge")',
+        url: '@Url.Action("AddSurcharge", "Surcharge")',
         type: 'POST',
         data: {userId:a,missionReportId:b,sum:c,deductionNumber:d},
         success: function(result){
@@ -1281,6 +1285,32 @@
             $(".loading").removeClass("loading");
             alert("При отправке данных произошла ошибка.");
             $("#SurchargeDialog").dialog( "close" );
+            }
+        });
+    }
+    function SendNotify()
+    {
+        $("#SendNotifyButton").attr('disabled','disabled');
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("SendNotifyEmailToUser", "MissionOrder")',
+        type: 'POST',
+        data: {id:@Model.Id},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.status=='Ok') 
+            {
+                $("#SendNotifyButton").removeAttr('disabled');
+            }
+            else
+            {
+                alert('При отправке сообщения произошла ошибка.');
+                $("#SendNotifyButton").removeAttr('disabled');
+            }
+            },
+        error: function(){
+            $("#SendNotifyButton").removeAttr('disabled');
+            alert("При отправке сообщения произошла ошибка!");
             }
         });
     }

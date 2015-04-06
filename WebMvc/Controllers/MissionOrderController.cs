@@ -1123,9 +1123,16 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult ExportDocuments(IEnumerable<int> mas, int typeId, int kindId, int ExportType, bool isFast)
         {
-            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            bool EnableSendEmail = false; //Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;// Отключена отправка писем т.к. сделали ручную кнопку.
             if (RequestBl.ExportFromMissionReportToDeduction(mas, typeId, kindId, ExportType, isFast, EnableSendEmail)) return Json(new { Status = "Ok" });
             else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant)]
+        public JsonResult SendNotifyEmailToUser(int id)
+        {
+            bool result=RequestBl.SendNotifyEmailToUser(id);
+            return Json(new { status=result?"Ok":"Error" });
         }
         [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)

@@ -47,13 +47,7 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div>
-                <div id="liSurcharge" class="mainMenuItem"> 
-                 @if ((dto.UserRole & UserRole.Accountant) > 0
-                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                    {
-                               @Html.ActionLink("Доплата", "Index", "Surcharge")
-                    }
-                </div> 
+                
                   @if (dto.Id == 10                      
                      ||(dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -160,6 +154,11 @@
                 <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div>
                 <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
               }
+            @if ((dto.UserRole & UserRole.Accountant) > 0)
+            {
+              <div class="menuitem" id="moSurcharge"> @Html.ActionLink("Ручная доплата", "Index", "Surcharge")</div>
+      
+            }
             @if ((dto.UserRole & UserRole.Accountant) > 0
                   || (dto.UserRole & UserRole.OutsourcingManager) > 0
                   || (dto.UserRole & UserRole.Employee) > 0
