@@ -1875,6 +1875,13 @@ namespace WebMvc.Controllers
         {
             if (model.PositionId == 0)
                 ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
+
+            if (!model.SalaryMultiplier.HasValue)
+                ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
+            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value == 0)
+                ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
+            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value > 1)
+                ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
             return ModelState.IsValid;
         }
 
@@ -1917,7 +1924,21 @@ namespace WebMvc.Controllers
                 }
             }
 
-            
+
+            if (!model.IsHourlySalaryBasis && model.ScheduleId != 48)
+            {
+                ModelState.AddModelError("ScheduleId", "Для оклада по дням доступен только основной график работы!");
+                ModelState.AddModelError("MessageStr", "Для оклада по дням доступен только основной график работы!");
+                flgError = true;
+            }
+
+            if (model.IsHourlySalaryBasis && model.ScheduleId == 48)
+            {
+                ModelState.AddModelError("ScheduleId", "Для оклада по часам основной график работы не доступен!");
+                ModelState.AddModelError("MessageStr", "Для оклада по часам основной график работы не доступен!");
+                flgError = true;
+            }
+
             if (!ModelState.IsValid && !flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)

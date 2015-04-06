@@ -70,7 +70,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int InsurableExperienceMonths { get; set; }
 
         [Display(Name = "дней")]
-        public int InsurableExperienceDays { get; set; }        
+        public int InsurableExperienceDays { get; set; }
+
+        [Display(Name = "Персональная надбавка")]
+        public decimal? PersonalAddition { get; set; } //ok
+
+        [Display(Name = "Должностная надбавка")]
+        public decimal? PositionAddition { get; set; } //ok
 
         // Ознакомлен с регламентными документами
 
