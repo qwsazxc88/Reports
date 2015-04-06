@@ -154,7 +154,7 @@
                 <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div>
                 <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
               }
-            @if ((dto.UserRole & UserRole.Accountant) > 0)
+            @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager)>0)
             {
               <div class="menuitem" id="moSurcharge"> @Html.ActionLink("Ручная доплата", "Index", "Surcharge")</div>
       
