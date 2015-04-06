@@ -218,8 +218,8 @@
         <tr>
             <td>Печать реестра личного дела</td>
             <td>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
-                <button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="RegisterPersonalRecordFileId" name="RegisterPersonalRecordFileId" value="@Model.RegisterPersonalRecordFileId" />
