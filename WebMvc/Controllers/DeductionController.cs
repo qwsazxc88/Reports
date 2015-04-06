@@ -115,10 +115,15 @@ namespace WebMvc.Controllers
                 var path = Path.Combine(Server.MapPath("~/Files"), fileName);
                 model.File.SaveAs(path);
                 var Errors = new List<string>();
-                model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
+                bool isFileExist=false;
+                model.Imported = RequestBl.ImportDeductionFromFile(ref path, ref Errors,ref isFileExist);
+                if (isFileExist)
+                {
+                    ModelState.AddModelError("File", "Файл уже был загружен. Отображены результаты предидущей загрузки.");
+                    new FileInfo(Path.Combine(Server.MapPath("~/Files"), fileName)).Delete();
+                }
                 model.Errors = Errors;
-                ViewBag.ReportFile = "/Files/" + fileName.Replace(".input.csv", ".report.txt");
-                //file.Delete();
+                ViewBag.ReportFile = "/Files/" + Path.GetFileName(path).Replace(".input.csv", ".report.txt");
             }
             else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
             return View(model);

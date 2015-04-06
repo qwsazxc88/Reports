@@ -11,5 +11,6 @@ namespace Reports.Core.Domain
         public virtual string ReportFile { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime ImportDate { get; set; }
+        public virtual string InputFileHash { get; set; }
     }
 }

@@ -43,7 +43,7 @@
                 </tr>
                 <tr>
                     <td>
-                       <input type="button" value="Печать аналитической ведомости" onclick="window.location.href='@Url.Action("GetAnalyticalStatementPrintForm", "MissionOrder", new { id = Model.DocumentNumber })';"/>   
+                       <input type="button" value="Печать карточки" onclick="window.location.href='@Url.Action("GetAnalyticalStatementPrintForm", "MissionOrder", new { id = Model.DocumentNumber })';"/>   
                     </td>
                 </tr>
             </table>
@@ -115,8 +115,6 @@
        }
     </tbody>
 </table>
-
-<script src="@Url.Content("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
 <script type="text/javascript">
 
     $(document).ready(function () {
