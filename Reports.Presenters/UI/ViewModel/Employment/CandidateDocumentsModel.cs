@@ -13,6 +13,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
 
+        //заявление о приеме
+        public HttpPostedFileBase ApplicationLetterScanFile { get; set; }
+        public string ApplicationLetterScanAttachmentFilename { get; set; }
+        public int ApplicationLetterScanAttachmentId { get; set; }
+
         //трудовой договор
         public HttpPostedFileBase EmploymentContractFile { get; set; }
         public string EmploymentContractFileName { get; set; }

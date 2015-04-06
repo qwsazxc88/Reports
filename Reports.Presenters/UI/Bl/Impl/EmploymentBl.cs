@@ -1154,12 +1154,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId.Value);
             ApplicationLetterModel model = new ApplicationLetterModel { UserId = userId.Value };
 
-            int attachmentId = 0;
-            string attachmentFilename = string.Empty;
-            GetAttachmentData(ref attachmentId, ref attachmentFilename, candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
-            model.ApplicationLetterScanAttachmentId = attachmentId;
-            model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
-            model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
+            //int attachmentId = 0;
+            //string attachmentFilename = string.Empty;
+            //GetAttachmentData(ref attachmentId, ref attachmentFilename, candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
+            //model.ApplicationLetterScanAttachmentId = attachmentId;
+            //model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
+            //model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
 
             return model;
         }
@@ -1422,6 +1422,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
+                //заявление о приеме
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
+                model.ApplicationLetterScanAttachmentId = attachmentId;
+                model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
+                //model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
+
                 //трудовой договор
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentContractScan);
                 model.EmploymentContractFileId = attachmentId;
@@ -1904,6 +1910,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
                 }
             }
+
+            model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
 
             return model;
         }
