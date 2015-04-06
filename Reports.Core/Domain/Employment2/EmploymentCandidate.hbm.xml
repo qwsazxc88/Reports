@@ -24,6 +24,7 @@
     <many-to-one name="Personnels" class="User" column="PersonnelId" foreign-key="FK_EmploymentCandidate_Users" index="EmploymentCandidate_Users"  not-null="false"/>
     <property name="IsTrainingNeeded" not-null="false"/>
     <property name="IsBeforEmployment" not-null="false"/>
+    <property name="SendTo1C" not-null="false"/>
 
     <property name="IsCandidateToBackgroundSendEmail" not-null="false"/>
     <property name="CandidateToBackgroundSendEmailDate" not-null="false"/>

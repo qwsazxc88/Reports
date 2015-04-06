@@ -99,6 +99,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<EmploymentCandidateCommentDto> Comments { get; set; }
         public bool IsAddCommentAvailable { get; set; }
         //public CommentsModel CommentsModel { get; set; }//комментарии
+        public DateTime? SendTo1C { get; set; }
         
         public ManagersModel()
         {
