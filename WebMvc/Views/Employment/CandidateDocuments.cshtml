@@ -22,13 +22,12 @@
             <th>Название документа</th>
             <th></th>
             <th></th>
-            @*<th>Для<br />приема</th>*@
+            <th>Для<br />приема</th>
         </tr>
         <tr>
         <td>Заявление о приеме</td>
             <td style="width:5%">
                 <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="ApplicationLetterScanAttachmentId" name="ApplicationLetterScanAttachmentId" value="@Model.ApplicationLetterScanAttachmentId" />
@@ -51,7 +50,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
         <td>Печать трудового договора</td>
@@ -80,7 +79,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать приказа о приеме</td>
@@ -109,7 +108,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         @*
         <tr>
@@ -167,7 +166,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать ДС Персональные данные</td>
@@ -196,7 +195,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать Обязательство конфиденциальность</td>
@@ -225,7 +224,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать личного листка по учету кадров</td>
@@ -254,7 +253,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать реестра личного дела</td>
@@ -283,7 +282,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
@@ -312,7 +311,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
@@ -341,7 +340,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
@@ -370,7 +369,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
@@ -399,7 +398,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
@@ -428,12 +427,12 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
         <tr>
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -457,7 +456,7 @@
                     </div>
                 }
             </td>
-            @*<td></td>*@
+            <td></td>
         </tr>
     </table>
     </fieldset>
