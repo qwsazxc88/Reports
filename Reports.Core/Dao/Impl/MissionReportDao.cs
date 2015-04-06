@@ -45,6 +45,8 @@ namespace Reports.Core.Dao.Impl
                                     - isnull([UserSumReceived],0)
                                      else null end as Saldo,
                                 case when v.DeleteDate is not null then N'Отклонен'
+                                     when v.DeductionId is not null AND v.SendTo1C is not null then N'Выгружен в удержания. Выгружен в 1с'
+                                     when v.DeductionId is not null AND v.SendTo1C is null then N'Выгружен в удержания.'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
                                      when v.[AccountantDateAccept] is not null 
                                           -- and v.ManagerDateAccept is not null 
@@ -321,6 +323,9 @@ namespace Reports.Core.Dao.Impl
                     //    break;
                     case 10:
                         statusWhere = @"v.[DeleteDate] is not null";
+                        break;
+                    case 11:
+                        statusWhere = @"v.DeductionId is not null";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");

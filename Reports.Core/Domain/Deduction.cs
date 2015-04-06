@@ -33,6 +33,7 @@ namespace Reports.Core.Domain
         public virtual IList<MissionReport> MissionReport { get; set; }
         public virtual bool NotUseInAnalyticalStatement { get; set; }
         public virtual string PhoneNumber { get; set; }
+        public virtual DeductionImport DeductionImport { get; set; }
         #endregion
 
         #region Properties

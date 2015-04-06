@@ -6,7 +6,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Criterion;
 namespace Reports.Core.Dao.Impl
 {
     public class DeductionDao : DefaultDao<Deduction>, IDeductionDao
@@ -260,7 +260,12 @@ namespace Reports.Core.Dao.Impl
                 return new DateTime?();
             return dto.DeductionDate;
         }
-        
+        public IList<Deduction> GetDeductionsByImportId(int id)
+        {
+            var crit=Session.CreateCriteria(typeof(Deduction));
+            crit.Add(Restrictions.Eq("DeductionImport.id", id));
+            return crit.List<Deduction>();
+        }
     }
     public class DeductionDateTimeDto
     {
