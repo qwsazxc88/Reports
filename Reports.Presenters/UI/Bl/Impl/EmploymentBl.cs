@@ -3120,6 +3120,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ObligationTradeSecretFileId, fileDto, RequestAttachmentTypeEnum.ObligationTradeSecretScan, out fileName);
             }
+
+            if (model.ApplicationLetterScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+            }
         } 
         #endregion
 
