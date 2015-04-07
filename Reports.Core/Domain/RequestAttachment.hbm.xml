@@ -11,6 +11,7 @@
     <property name="RequestId" not-null="true"/>
     <property name="RequestType" not-null="true"/>
     <property name="DateCreated" not-null="true"/>
+    <property name="DocumentsCount" not-null="true"/>
     <property name="Description" length="256" not-null="false"/>
 	<many-to-one name="CreatorRole" class="Role" column="CreatorRoleId" foreign-key="FK_ATTACHMENT_USER_ROLE" index="IX_ATTACHMENT_USER_ROLE_ID"  not-null="true"/>
 	  <property name="FilePath" length="1024" not-null="false"/>

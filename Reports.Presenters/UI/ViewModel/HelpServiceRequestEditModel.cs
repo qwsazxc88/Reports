@@ -46,6 +46,10 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан")]
         public string ServiceAttachment { get; set; }
         public int ServiceAttachmentId { get; set; }
+        [Display(Name="Количество документов")]
+        public int DocumentsCount { get; set; }
+        [Display(Name="GE Money")]
+        public bool IsForGEMoney { get; set; }
         //public bool IsServiceAttachmentVisible { get; set; }
 
         public CommentsModel CommentsModel { get; set; }

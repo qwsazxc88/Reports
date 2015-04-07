@@ -42,6 +42,8 @@ namespace Reports.Core.Dao.Impl
                                 v.FiredUserPatronymic as FiredUserPatronymic,
                                 v.UserBirthDate as UserBirthDate,
                                 v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsForGEMoney as IsForGEMoney,
+                                att.DocumentsCount as DocumentsCount,
                                 NT.Name as NoteName,
                                 v.CreateDate as CreateDate,
                                 v.EditDate as EditDate,
@@ -69,6 +71,7 @@ namespace Reports.Core.Dao.Impl
                                 dep3.Name as Dep3Name,
                                 L.Name as ProdTimeName
                                 from dbo.HelpServiceRequest v
+                                left join [dbo].[RequestAttachment] att on v.Id=att.RequestId and att.RequestType=11
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpServiceTransferMethod] m on v.[TransferMethodId] = m.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
@@ -108,7 +111,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("FiredUserPatronymic",NHibernateUtil.String).
                 AddScalar("NoteName",NHibernateUtil.String).
                 AddScalar("UserBirthDate",NHibernateUtil.Date).
-                AddScalar("IsOriginalReceived",NHibernateUtil.Boolean)
+                AddScalar("IsOriginalReceived",NHibernateUtil.Boolean).
+                AddScalar("IsForGEMoney",NHibernateUtil.Boolean).
+                AddScalar("DocumentsCount",NHibernateUtil.Int32)
                 ;  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,
