@@ -1555,9 +1555,19 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.SortBy = filters.SortBy;
                 model.SortDescending = filters.SortDescending;
+                model.DepartmentId = filters.DepartmentId;
+                model.DepartmentName = filters.DepartmentId != 0 ? DepartmentDao.Load(filters.DepartmentId).Name : string.Empty;
+                model.BeginDate = filters.BeginDate;
+                model.EndDate = filters.EndDate;
+                model.CompleteDate = filters.CompleteDate;
+                model.UserName = filters.UserName;
+                model.ContractNumber1C = filters.ContractNumber1C;
+                model.CandidateId = filters.CandidateId;
             }
 
             LoadDictionaries(model);
+
+            
 
             model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
