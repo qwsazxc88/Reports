@@ -792,7 +792,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         FileName = fileDto.FileName,
                         RequestId = entity.Id,
                         RequestType = (int)RequestAttachmentTypeEnum.HelpServiceRequest,
-                        DocumentsCount = model.DocumentsCount
+                        DocumentsCount =  model.DocumentsCount>0?model.DocumentsCount:1
                     };
                     RequestAttachmentDao.SaveAndFlush(attachment);
                     model.ServiceAttachmentId = attachment.Id;
