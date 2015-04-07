@@ -1321,7 +1321,7 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;
                 //return View(model);
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
             }
             else
             {
@@ -1358,7 +1358,7 @@ namespace WebMvc.Controllers
                 Session.Add("ManagersMS" + SPPath, mst);
             }
 
-            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
@@ -1387,7 +1387,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
 
         #endregion
@@ -1480,7 +1480,7 @@ namespace WebMvc.Controllers
             if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
                 else
                 {
                     ViewBag.Error = error;
@@ -1520,7 +1520,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
         }
         #endregion
 
@@ -1625,7 +1625,7 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
 
             if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
             else
                 return View(model);
         }

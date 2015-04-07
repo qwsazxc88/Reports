@@ -19,6 +19,40 @@
     <fieldset class="bordered doc-wrap panel">
     <table class="buttonTable">
         <tr>
+            <th>Название документа</th>
+            <th>Образец</th>
+            <th>Скан</th>
+            @*<th>Для<br />приема</th>*@
+        </tr>
+        <tr>
+        <td>Заявление о приеме</td>
+            <td style="width:5%">
+                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';">Печать</button>
+            </td>
+            <td>
+                <input type="hidden" id="ApplicationLetterScanAttachmentId" name="ApplicationLetterScanAttachmentId" value="@Model.ApplicationLetterScanAttachmentId" />
+                @if (string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан трудового договора<br /><input type="file" name="ApplicationLetterScanFile" id="ApplicationLetterScanFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ApplicationLetterScanAttachmentId })' style="cursor:hand" target="_blank">
+                            @Model.ApplicationLetterScanAttachmentFilename
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete15" value="Удалить скан" />
+                    </div>
+                }
+            </td>
+            @*<td></td>*@
+        </tr>
+        <tr>
         <td>Печать трудового договора</td>
             <td style="width:5%">
                 <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
@@ -45,6 +79,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать приказа о приеме</td>
@@ -73,6 +108,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         @*
         <tr>
@@ -130,6 +166,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать ДС Персональные данные</td>
@@ -158,6 +195,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать Обязательство конфиденциальность</td>
@@ -186,6 +224,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать личного листка по учету кадров</td>
@@ -214,6 +253,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать реестра личного дела</td>
@@ -242,6 +282,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
@@ -270,6 +311,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
@@ -298,6 +340,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
@@ -326,6 +369,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
@@ -354,6 +398,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
@@ -382,11 +427,12 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
         <tr>
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -410,6 +456,7 @@
                     </div>
                 }
             </td>
+            @*<td></td>*@
         </tr>
     </table>
     </fieldset>
@@ -418,6 +465,7 @@
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empCandidateDocuments");
+        $("#ApplicationLetterScanFile").change(function () { this.form.submit(); });
         $("#EmploymentContractFile").change(function () { this.form.submit(); });
         $("#OrderOnReceptionFile").change(function () { this.form.submit(); });
         $("#T2File").change(function () { this.form.submit(); });
@@ -513,6 +561,12 @@
 
         $("#btnDelete14").click(function () {
             var Id = $("#ObligationTradeSecretFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete15").click(function () {
+            var Id = $("#ApplicationLetterScanAttachmentId").val();
             $("#DeleteAttachmentId").val(Id);
             this.form.submit();
         });
