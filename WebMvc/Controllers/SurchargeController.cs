@@ -62,9 +62,11 @@ namespace WebMvc.Controllers
         public ActionResult AddSurcharge(int userId, int missionReportId, float sum, int deductionNumber)
         {
             if (deductionNumber <= 0) return Json(new { status = "Error", message = "Не указан номер удержания." });
-            RequestBl.SetDeductionDoc(deductionNumber, missionReportId);
-            SurchargeBl.AddSurcharge(userId, sum, CurrentUser.Id, DateTime.Now, missionReportId);
-            return Json(new { status = "Ok" });
+            string error=RequestBl.SetDeductionDoc(deductionNumber, missionReportId);
+            if (error != "") return Json(new { status = "Error", message = error });
+            int doc = SurchargeBl.AddSurcharge(userId, sum, CurrentUser.Id, DateTime.Now, missionReportId);
+            if (doc < 1) return Json(new { status = "Error", message = "Ошибка добавления документа." });
+            return Json(new { status = "Ok", message = String.Format("Добавлен документ №{0}.",doc) });
         }
 
     }

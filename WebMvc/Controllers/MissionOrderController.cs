@@ -770,9 +770,9 @@ namespace WebMvc.Controllers
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
         UserRole.Director)]
-        public ActionResult AnalyticalStatementDetails(int userId)
+        public ActionResult AnalyticalStatementDetails(int id)
         {
-            var model = RequestBl.GetAnalyticalStatementDetails(userId);
+            var model = RequestBl.GetAnalyticalStatementDetails(id);
             return View(model);
         }
         [HttpGet]
@@ -854,6 +854,10 @@ namespace WebMvc.Controllers
         public ActionResult GetReportPrintForm(int id)
         {
             return GetPrintForm(id, "PrintReport");
+        }
+        public ActionResult GetAnalyticalStatementPrintForm(int id)
+        {
+            return GetPrintForm(id, "AnalyticalStatementDetails");
         }
         [HttpGet]
         public ActionResult GetReportListPrintForm(int id, int reportId)
@@ -1119,9 +1123,16 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult ExportDocuments(IEnumerable<int> mas, int typeId, int kindId, int ExportType, bool isFast)
         {
-            bool EnableSendEmail = Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;
+            bool EnableSendEmail = false; //Request.Url.Port == 8002 || Request.Url.Port == 500 ? true : false;// Отключена отправка писем т.к. сделали ручную кнопку.
             if (RequestBl.ExportFromMissionReportToDeduction(mas, typeId, kindId, ExportType, isFast, EnableSendEmail)) return Json(new { Status = "Ok" });
             else return Json(new { Status = "Error", Message="При экспорте данных произошла ошибка" });
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant)]
+        public JsonResult SendNotifyEmailToUser(int id)
+        {
+            bool result=RequestBl.SendNotifyEmailToUser(id);
+            return Json(new { status=result?"Ok":"Error" });
         }
         [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)

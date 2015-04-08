@@ -9,6 +9,12 @@ namespace Reports.Core.Dao.Impl
     public class SurchargeDao:DefaultDao<Surcharge>, ISurchargeDao
     {
         private IRequestNextNumberDao NextNumberDao = Ioc.Resolve<IRequestNextNumberDao>();
+        private IDepartmentDao DepartmentDao = Ioc.Resolve<IDepartmentDao>();
+        private string GetDep3Name(Department Dep)
+        {
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(Dep, 3);
+            return dep3 == null ? "" : dep3.Name;
+        }
         public SurchargeDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -24,9 +30,34 @@ namespace Reports.Core.Dao.Impl
             {
                 res = res.Where(x => x.EditDate < endDate);
             }
+            if (departmentId > 0)
+            {
+                res = res.Where(x => x.User.Department.Id == departmentId);
+            }
+            if (!String.IsNullOrWhiteSpace(Number))
+            {
+                res = res.Where(x => x.Number.ToString() == Number);
+            }
+            if (!String.IsNullOrWhiteSpace(userName))
+            {
+                res= res.Where(x=>x.User.Name.ToLower().Contains(userName.ToLower()));
+            }
+            if (statusId > 0)
+            {
+                switch (statusId)
+                {
+                        //Выгружен в 1с
+                    case 1: res = res.Where(x => x.SendTo1C != null);
+                        break;
+                        //Не выгружен в 1с
+                    case 2: res = res.Where(x => x.SendTo1C == null);
+                        break;
+                }
+            }
             if(!String.IsNullOrWhiteSpace(Number))
                 res = res.Where(x => x.Number.ToString() == Number);
-            return res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
+            
+            var dto= res.ToList().ConvertAll<Dto.SurchargeDto>(x => new Dto.SurchargeDto 
                     {
                         UserId= x.User.Id,
                         UserName=x.User.Name,
@@ -34,11 +65,33 @@ namespace Reports.Core.Dao.Impl
                         SurchargeDate=x.SurchargeDate,
                         Sum=x.Sum,
                         Position = x.User.Position!=null?x.User.Position.Name:"",
-                        Dep3Name = x.User.Department!=null? x.User.Department.Name:""
-                    
+                        Dep7Name = x.User.Department!=null? x.User.Department.Name:"",
+                        Dep3Name = GetDep3Name(x.User.Department),
+                        Status = x.SendTo1C == null ? "Проводки не сформированы" : "Проводки сформированы"
                     });
+            switch (sortedBy)
+            {
+                case 1: dto=dto.OrderBy(x => x.UserName).ToList();
+                    break;
+                case 2: dto = dto.OrderBy(x => x.Position).ToList();
+                    break;
+                case 3: dto = dto.OrderBy(x => x.Dep3Name).ToList();
+                    break;
+                case 4: dto = dto.OrderBy(x => x.Dep7Name).ToList();
+                    break;
+                case 5: dto = dto.OrderBy(x => x.EditDate).ToList();
+                    break;
+                case 6: dto = dto.OrderBy(x => x.Sum).ToList();
+                    break;
+                case 7: dto = dto.OrderBy(x => x.Number).ToList();
+                    break;
+                case 8: dto = dto.OrderBy(x => x.Status).ToList();
+                    break;
+            }
+            if (sortDescending.HasValue && sortDescending.Value) dto.Reverse();
+            return dto;
         }
-        public void AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
+        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
         {
             var User = UserDao.Load(userId);
             var Editor = UserDao.Load(creatorId);
@@ -55,6 +108,7 @@ namespace Reports.Core.Dao.Impl
             };
             
             SaveAndFlush(document);
+            return document.Number;
         }
     }
 }

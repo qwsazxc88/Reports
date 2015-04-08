@@ -71,7 +71,7 @@
                         <input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>
                     </td>
                 </tr>
-            }
+             }
             <tr id="RequirementsTrId">
                 <td>
                     @Html.LabelFor(m => m.Requirements):
@@ -112,6 +112,11 @@
                     <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
                 </td>
             </tr>
+            
+            <tr>
+                <td>@Html.LabelFor(m => m.IsForGEMoney)</td>
+                <td>@Html.CheckBoxFor(m => m.IsForGEMoney, Model.IsConsultantOutsourcingEditable ? null : (object)new { disabled = "disabled" })</td>
+            </tr>
             <tr id="ViewServiceAttachmentTrId">
                 <td>@Html.LabelFor(model => model.ServiceAttachment):</td>
                 <td>
@@ -125,11 +130,25 @@
                     }
                 </td>
             </tr>
+            <tr>
+            <td></td>
+            <td>
+             @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
+             { 
+                 <p>Количество документов: @Model.DocumentsCount</p>
+             }
+            </td>
+            </tr>
+           
             @if (Model.IsConsultantOutsourcingEditable)
             {
             <tr>    
                 <td>Прикрепить скан</td>
                 <td><input id="ServiceFileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            </tr>
+                 <tr>
+                <td>@Html.LabelFor(m => m.DocumentsCount)</td>
+                <td>@Html.EditorFor(m => m.DocumentsCount)</td>
             </tr>
             }
              <tr>
@@ -139,22 +158,23 @@
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
-                                                                                              {<text>style="display:none"</text>}/>
+                                                                                                       {<text>style="display:none"</text>}/>
                  
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
-                                                                                           {<text>style="display:none"</text>}/>
+                                                                                                {<text>style="display:none"</text>}/>
                     @*
                    @if (Model.IsAttachmentVisible)
                    {
                         
                    }
                    *@
-                   <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
+                   <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
               
                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
-                                                                                              {<text>style="display:none"</text>}/>
+                                                                                                                                                                 {<text>style="display:none"</text>}/>
 
                 </td>
             </tr>

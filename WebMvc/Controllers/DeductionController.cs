@@ -111,14 +111,19 @@ namespace WebMvc.Controllers
             model = RequestBl.GetDeductionImportModel(model);
             if (model.File != null && model.File.ContentLength > 0)
             {
-                var fileName = Path.GetFileName(model.File.FileName);
+                var fileName = Guid.NewGuid()+".input.csv";
                 var path = Path.Combine(Server.MapPath("~/Files"), fileName);
                 model.File.SaveAs(path);
-                FileInfo file = new FileInfo(path);
                 var Errors = new List<string>();
-                model.Imported = RequestBl.ImportDeductionFromFile(path, ref Errors);
+                bool isFileExist=false;
+                model.Imported = RequestBl.ImportDeductionFromFile(ref path, ref Errors,ref isFileExist);
+                if (isFileExist)
+                {
+                    ModelState.AddModelError("File", "Файл уже был загружен. Отображены результаты предидущей загрузки.");
+                    new FileInfo(Path.Combine(Server.MapPath("~/Files"), fileName)).Delete();
+                }
                 model.Errors = Errors;
-                file.Delete();
+                ViewBag.ReportFile = "/Files/" + Path.GetFileName(path).Replace(".input.csv", ".report.txt");
             }
             else { ModelState.AddModelError("File", new Exception("Файл не выбран или пустой."));  }
             return View(model);

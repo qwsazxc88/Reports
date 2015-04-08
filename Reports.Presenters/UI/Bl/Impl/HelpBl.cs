@@ -315,6 +315,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 model.TypeId = entity.Type.Id;
+                model.IsForGEMoney = entity.IsForGEMoney;
                 model.ProductionTimeTypeId = entity.ProductionTime.Id;
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
                 model.PeriodId = entity.Period == null? new int?() : entity.Period.Id;
@@ -343,6 +344,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ServiceAttachmentId = serviceAttach.Id;
                     model.ServiceAttachment = serviceAttach.FileName;
+                    model.DocumentsCount = serviceAttach.DocumentsCount;
                 }
                 if (entity.Consultant != null)
                     model.Worker = entity.Consultant.FullName;
@@ -669,7 +671,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         FiredUserName=model.FiredUserName,
                         FiredUserSurname=model.FiredUserSurname,
                         FiredUserPatronymic=model.FiredUserPatronymic,
-                        Note=noteTypeDao.Load(model.Note)
+                        Note=noteTypeDao.Load(model.Note),
+                        IsForGEMoney=model.IsForGEMoney
                     };
                     if (model.UserBirthDate != null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                     
@@ -742,6 +745,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
                 }
                 entity.Type = type;
+                entity.IsForGEMoney = model.IsForGEMoney;
                 entity.Note = noteTypeDao.Load(model.Note);
                 entity.FiredUserName = model.FiredUserName;
                 entity.FiredUserSurname = model.FiredUserSurname;
@@ -788,6 +792,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         FileName = fileDto.FileName,
                         RequestId = entity.Id,
                         RequestType = (int)RequestAttachmentTypeEnum.HelpServiceRequest,
+                        DocumentsCount =  model.DocumentsCount>0?model.DocumentsCount:1
                     };
                     RequestAttachmentDao.SaveAndFlush(attachment);
                     model.ServiceAttachmentId = attachment.Id;
