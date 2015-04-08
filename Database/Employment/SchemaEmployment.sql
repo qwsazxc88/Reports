@@ -3,6 +3,7 @@ USE WebAppSKB
 GO
 --структура базы данных раздела "ПРИЕМ"
 --EmploymentCandidate
+	--EmploymentCandidateDocNeeded
 	--GeneralInfo
 		--NameChange
 		--Country	 (есть данные) (убрать Франция, Израиль, Туркменистан, Узбекистан)
@@ -989,7 +990,28 @@ GO
 
 		GO
 	--ОСНОВНАЯ ИНФОРМАЦИЯ - КОНЕЦ
+	--ДОКУМЕНТ ДЛЯ ПРИЕМА - НАЧАЛО
+		IF OBJECT_ID ('EmploymentCandidateDocNeeded', 'U') IS NOT NULL
+		DROP TABLE [dbo].[EmploymentCandidateDocNeeded]
+		GO
+	--ДОКУМЕНТ ДЛЯ ПРИЕМА - КОНЕЦ
+		CREATE TABLE [dbo].[EmploymentCandidateDocNeeded](
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[Version] [int] NOT NULL CONSTRAINT [DF_EmploymentCandidateDocNeeded_Version]  DEFAULT ((1)),
+		[CandidateId] [int] NULL,
+		[DocTypeId] [int] NULL,
+		[IsNeeded] [bit] NULL CONSTRAINT [DF_EmploymentCandidateDocNeeded_IsNeeded]  DEFAULT ((0)),
+		[DateCreate] [datetime] NULL,
+		[CreatorId] [int] NULL,
+		[DateEdit] [datetime] NULL,
+		[EditorId] [int] NULL,
+	 CONSTRAINT [PK_EmploymentCandidateDocNeeded] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
 
+	GO
 	--КАНДИДАТ
 		IF OBJECT_ID ('EmploymentCandidate', 'U') IS NOT NULL
 		DROP TABLE [dbo].[EmploymentCandidate]
@@ -1028,6 +1050,8 @@ GO
 			[ManagerToTrainingSendEmailDate] [datetime] NULL,
 			[IsManagerToHigherManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsManagerToHigherManagerSendEmail]  DEFAULT ((0)),
 			[ManagerToHigherManagerSendEmailDate] [datetime] NULL,
+			[IsPersonnelManagerToManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsPersonnelManagerToManagerSendEmail]  DEFAULT ((0)),
+			[PersonnelManagerToManagerSendEmailDate] [datetime] NULL,
 		 CONSTRAINT [PK_EmploymentCandidate] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1060,6 +1084,27 @@ GO
 
 	
 --ССЫЛКИ НАЧАЛО
+		ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate] FOREIGN KEY([CandidateId])
+	REFERENCES [dbo].[EmploymentCandidate] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users] FOREIGN KEY([CreatorId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users1] FOREIGN KEY([EditorId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users1]
+	GO
+
 	ALTER TABLE [dbo].[EmploymentCandidateComments]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateComments_Users] FOREIGN KEY([UserId])
 	REFERENCES [dbo].[Users] ([Id])
 	GO
@@ -1482,6 +1527,42 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сообщение руководству от кадровика послано' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsPersonnelManagerToManagerSendEmail'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата сообщения руководству от кадровика' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'PersonnelManagerToManagerSendEmailDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'Id'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'Version'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id кандидата' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'CandidateId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DocTypeId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Документ нужен для подписи кандидатом' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'IsNeeded'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DateCreate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'CreatorId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DateEdit'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'EditorId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Список необходимых документов для подписи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата готовности кандидата к выгрузке в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'CompleteDate'
 	GO
 
