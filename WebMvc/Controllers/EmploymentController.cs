@@ -1616,7 +1616,15 @@ namespace WebMvc.Controllers
             //, IEnumerable<HttpPostedFileBase> files
             string error = String.Empty;
             if (model.DeleteAttachmentId == 0)
-                EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            {
+                //кадровик не может менять список документов после выгрузки кандидата в 1С
+                if (model.IsSave && model.SendTo1C.HasValue)
+                {
+                    ModelState.AddModelError("SendTo1C", "Кандидат выгружен в 1С! Изменение перечня документов для подписи не возможно!");
+                }
+                else
+                    EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            }
             else
             {
                 DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
