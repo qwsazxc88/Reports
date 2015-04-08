@@ -26,7 +26,9 @@
       <key column="DeductionId" />
       <one-to-many class="MissionReport"/>
     </bag>
-  <!--<many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>-->
+    <many-to-one name="DeductionImport" class="DeductionImport" column="DeductionImportId" foreign-key="FK_Deduction_DeductionImport"  not-null="false"/>
+
+    <!--<many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>-->
 
   <!--<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
     <key column="DismissalId" foreign-key="FK_DismissalComment_Dismissal"/>

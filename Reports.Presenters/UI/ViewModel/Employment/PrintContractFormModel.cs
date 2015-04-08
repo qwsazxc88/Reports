@@ -26,13 +26,26 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //public string WorkCity { get; set; }
         public string ProbationaryPeriod { get; set; }
         public decimal? SalaryBasis { get; set; }
-        public decimal? AreaAddition { get; set; }
+
+        public decimal? PersonalAddition { get; set; }  //персональная надбавка
+        public decimal? PositionAddition { get; set; }  //должностная 
+        public decimal? AreaAddition { get; set; }  //территориальная
+        public decimal? TravelRelatedAddition { get; set; } //за разъезды
+        public decimal? CompetenceAddition { get; set; }    //за квалификацию
+        public decimal? FrontOfficeExperienceAddition { get; set; } //за фрон-офис
+
+        [Display(Name = "Северная надбавка (%)")]
+        public decimal? NorthernAreaAddition { get; set; }
+        [Display(Name = "Районный коэффициент (%)")]
+        public decimal? AreaMultiplier { get; set; }
+        
         //public string Schedule { get; set; }
         // Реквизиты подразделения
         public string PassportSeriesNumber { get; set; }
         public string PassportIssuedBy { get; set; }
         public DateTime? PassportDateOfIssue { get; set; }
         public string EmployeeAddress { get; set; }
+        public decimal? SalaryMultiplier { get; set; }
         //public bool? IsFixedTermContract { get; set; }
 
 

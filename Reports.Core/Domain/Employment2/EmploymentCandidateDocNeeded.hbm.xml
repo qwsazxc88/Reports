@@ -1,0 +1,18 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="EmploymentCandidateDocNeeded" dynamic-update="true" table="EmploymentCandidateDocNeeded">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_EmploymentCandidateDocNeeded_EmploymentCandidate" index="EmploymentCandidateDocNeeded_EmploymentCandidate" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_EmploymentCandidateDocNeeded_Users" index="EmploymentCandidateDocNeeded_Users" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorId" foreign-key="FK_EmploymentCandidateDocNeeded_Users1" index="EmploymentCandidateDocNeeded_Users1" not-null="false"/>
+
+    <property name="DocTypeId" not-null="false"/>
+    <property name="IsNeeded" not-null="false"/>
+    <property name="DateCreate" not-null="false"/>
+    <property name="DateEdit" not-null="false"/>
+
+  </class>
+</hibernate-mapping>

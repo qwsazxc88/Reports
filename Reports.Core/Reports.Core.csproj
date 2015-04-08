@@ -89,7 +89,9 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IDeductionImportDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -188,7 +190,9 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\DeductionImportDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
@@ -387,6 +391,7 @@
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Deduction.cs" />
+    <Compile Include="Domain\DeductionImport.cs" />
     <Compile Include="Domain\DeductionKind.cs" />
     <Compile Include="Domain\DeductionType.cs" />
     <Compile Include="Domain\Department.cs" />
@@ -399,6 +404,7 @@
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidateComment.cs" />
+    <Compile Include="Domain\Employment2\EmploymentCandidateDocNeeded.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
@@ -546,8 +552,10 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
+    <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
     <Compile Include="Dto\Employment2\ContractPointDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
+    <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />
     <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
@@ -1145,8 +1153,10 @@
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
-    <Content Include="Domain\Surcharge.hbm.xml" />
+    <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

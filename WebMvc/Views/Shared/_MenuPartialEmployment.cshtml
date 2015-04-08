@@ -50,13 +50,7 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div> 
-                <div id="liSurcharge" class="mainMenuItem"> 
-                 @if ((dto.UserRole & UserRole.Accountant) > 0
-                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                    {
-                               @Html.ActionLink("Доплата", "Index", "Surcharge")
-                    }
-                </div>
+                
                   @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
@@ -129,6 +123,7 @@
                  }
         </div>  
         <div class="podmenu">
+            <div class="menuitem" id="empInstruction">@Html.ActionLink("Инструкция", "Instruction", "Employment")</div>
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {                
                 <div class="menuitem" id="empGeneralInfo">@Html.ActionLink("Общая информация", "GeneralInfo", "Employment")</div>
@@ -155,7 +150,7 @@
 
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {
-                <div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>
+                @*<div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>*@
                 <div class="menuitem" id="empCandidateDocuments">@Html.ActionLink("Документы", "CandidateDocuments", "Employment")</div>
             }
             

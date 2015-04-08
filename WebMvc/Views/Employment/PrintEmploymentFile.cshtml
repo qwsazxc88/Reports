@@ -227,7 +227,7 @@
     <TR>
         <TD>&nbsp;Мать</TD>
         <TD>@Model.Mother.Name</TD>
-        <TD>@(Model.Mother.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Mother.PlaceOfBirth</TD>
+        <TD>@(Model.Mother.DateOfBirth.HasValue ? Model.Mother.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Mother.PlaceOfBirth</TD>
         <TD>@Model.Mother.WorksAt</TD>
         <TD>@Model.Mother.Contacts</TD>
     </TR>

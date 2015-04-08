@@ -1,0 +1,151 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintInstructionEnsuringSafetyModel
+@{
+    Layout = null;
+    ViewBag.Title = "Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну";
+}
+
+
+<head xmlns="http://www.w3.org/1999/xhtml" profile="http://dublincore.org/documents/dcmi-terms/">
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+<title xml:lang="en-US">     Приложение №1</title>
+
+<style type="text/css">
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	<!-- "li span.odfLiEnd" - IE 7 issue-->
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:14pt; text-align:left ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.P10 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:-0.751cm; margin-right:0cm; text-indent:0cm; }
+	.P11 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:-0.751cm; margin-right:0cm; text-indent:0cm; font-weight:bold; }
+	.P12 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:1.501cm; margin-right:0cm; text-indent:-0.866cm; }
+	.P13 { font-size:12pt; text-align:left ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; font-weight:bold; }
+	.P14 { font-size:12pt; text-align:center ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; font-weight:bold; }
+	.P15 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; font-weight:bold; }
+	.P16 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; }
+	.P17 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; }
+	.P18 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; }
+	.P19 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; }
+	.P2 { font-size:14pt; text-align:center ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.P20 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0.249cm; text-indent:0cm; }
+	.P21 { font-size:12pt; text-align:left ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0.635cm; margin-right:0.249cm; text-indent:0cm; font-weight:bold; }
+	.P22 { font-size:12pt; text-align:center ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0.635cm; margin-right:0.249cm; text-indent:0cm; font-weight:bold; }
+	.P23 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:1.501cm; margin-right:0.249cm; text-indent:-0.866cm; font-weight:bold; }
+	.P24 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:2.54cm; margin-right:0.249cm; text-indent:0cm; }
+	.P25 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; margin-left:0cm; margin-right:0cm; text-indent:1.249cm; }
+	.P26 { font-size:12pt; text-align:right ! important; font-family:Times New Roman; writing-mode:lr-tb; }
+	.P3 { font-size:12pt; text-align:left ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.P4 { font-size:12pt; text-align:center ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.P5 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; }
+	.P6 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; }
+	.P7 { font-size:12pt; text-align:justify ! important; font-family:Times New Roman; writing-mode:lr-tb; }
+	.P8 { font-size:12pt; text-align:right ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.P9 { font-size:14pt; text-align:center ! important; font-family:Times New Roman; writing-mode:lr-tb; font-weight:bold; }
+	.Standard { font-size:12pt; font-family:Times New Roman; writing-mode:lr-tb; text-align:left ! important; }
+	.T1 { font-weight:bold; }
+	.T2 { font-weight:bold; }
+	.T3 { font-size:10pt; }
+	.WW8Num1z0 { font-family:OpenSymbol, Arial Unicode MS; }
+	
+	</style></head>
+    <body xmlns="http://www.w3.org/1999/xhtml" dir="ltr" style="max-width:21.001cm;margin-top:1.7cm; margin-bottom:1.6cm; margin-left:3cm; margin-right:1.501cm; writing-mode:lr-tb; "><p class="P26">
+<span class="T1">Приложение №1</span></p>
+<p class="P8">к Приказу №80/ОД   от 12.05.2009</p>
+<p class="P8"> </p><p class="P8"> </p><p class="P9">Инструкция</p>
+<p class="P2">по обеспечению сохранности сведений, составляющих коммерческую,   и служебную тайну в  ПАО «Совкомбанк»</p>
+<p class="P1"> </p><ol><li><p class="P4" style="margin-left:0cm;">1. Общие положения.<span class="odfLiEnd"></span> </p></li></ol>
+<p class="P3"> </p>
+<p class="P10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цель данной Инструкции – защита интересов ПАО «Совкомбанк» от разглашения и утечки информации. Утечка сведений, составляющих коммерческую и служебную тайну Банка, может стать причиной финансовых потерь, 
+негативно отразиться на экономической безопасности и деловой репутации Банка, а также к угрозе жизни и здоровья сотрудников.</p>
+<p class="P10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="T1">Коммерческая тайна </span>– научно - техническая, технологическая, коммерческая, финансово-экономическая или иная  информация, в том числе и ноу-хау, 
+которая имеет действительную или потенциальную коммерческую ценность в силу ее неизвестности третьим лицам, к которой нет свободного доступа на законном основании, и в отношении  которой обладателем  
+такой информации введен режим коммерческой тайны (Федеральный Закон РФ «О коммерческой тайне»  № 98-Ф3 от 29 июля 2004 года).</p>
+<p class="P10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="T1">Обладатель коммерческой тайны</span> – физическое или юридическое лицо, владеющее информацией, составляющей коммерческую тайну,  на законном основании, ограничило доступ 
+к этой информации и установило в ее отношении режим коммерческой тайны.</p>
+<p class="P10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="T1">Режим коммерческой тайны </span>–  правовые, организационные, технические и иные меры, принимаемые обладателем коммерческой тайны по охране ее конфиденциальности.</p>
+<p class="P10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="T1">Разглашение коммерческой тайны </span>– действие или бездействие, в результате которого  коммерческая тайна  в любой форме (устной, письменной или иной форме, в том числе с
+использованием технических средств) стала известна третьим лицам без согласия ее обладателя либо вопреки трудовому договору.</p>
+<p class="P11">           </p><ol><li><ol><li><p class="P6" style="margin-left:0cm;">
+<span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.1</span>Данная Инструкция распространяется на лиц, выполняющих работу по заданию Банка, занимающих в банке определенные должности,  а также поступающих на работу в банк.
+<span class="odfLiEnd"></span> </p></li><li><p class="P6" style="margin-left:0cm;"><span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.2</span>Для целей настоящей Инструкции в понятие « коммерческой тайны»  
+включаются любые сведения о лицах, событиях, предметах, фактах, явлениях и процессах, перечисленные в «Перечне сведений, составляющих коммерческую и служебную тайну».<span class="odfLiEnd"></span> 
+</p></li><li><p class="P6" style="margin-left:0cm;"><span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.3</span>Сотрудник обязан  хранить в тайне сведения, ставшие ему известными в ходе работы в Банке. 
+Разглашение информации, утрата ее носителей, передача третьим лицам, публикация без согласия Руководства Банка, а также использование для занятия любой деятельностью, которая в качестве конкурентного действия может нанести ущерб 
+банку – влечет уголовную, административную, гражданско-правовую или иную ответственность в соответствии с действующим Законодательством.<span class="odfLiEnd"></span> 
+</p></li><li><p class="P6" style="margin-left:0cm;"><span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.4</span>Под разглашением информации, составляющей коммерческую тайну, понимается умышленное или неосторожное действие,
+направленное на её передачу  любым лицам, за исключением случаев, предусмотренных законом, с целью извлечения выгоды или без таковой.<span class="odfLiEnd"></span> 
+</p></li><li><p class="P6" style="margin-left:0cm;"><span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.5</span>Под «созданием условий утечки» Информации понимается действие, облегчающее доступ к ней каким-либо
+лицам, а также умышленное или неумышленное неприятие мер для  её защиты, предписанных настоящей Инструкцией, или мер, продиктованных соображениями осмотрительности.<span class="odfLiEnd"></span> 
+</p></li><li><p class="P6" style="margin-left:0cm;"><span class="WW8Num2z0" style="display:block;float:left;min-width:0.794cm;">1.6</span>Основанием для принятия настоящей Инструкции является ст.139 
+«Гражданского Кодекса Российской Федерации», а также действующее законодательство Российской Федерации.<span class="odfLiEnd"></span> 
+</p></li></ol></li></ol><p class="P5"> </p><p class="P5"> </p><ol><li><p class="P4" style="margin-left:0cm;">2. Порядок защиты коммерческой и служебной тайны.
+<span class="odfLiEnd"></span> </p></li></ol><p class="P3"> </p><p class="P12"> 2.1. Сотрудник обязан работать только с теми сведениями и документами,   содержащими коммерческую и служебную тайну, к которым он 
+получил доступ в силу служебных обязанностей. Сотрудник также обязан знать, какие конкретные сведения подлежат защите и строго соблюдать правила пользования ими.</p>
+<p class="P12"> 2.2. Сотрудник должен знать, кому из персонала разрешено работать со сведениями, содержащими коммерческую и служебную тайну, доступ к которым он имеет, и в каком объеме эти сведения могут быть доведены до этих сотрудников.</p>
+<p class="P12">2.3. При участии в работах сторонних организаций сотрудник может знакомить их представителей со сведениями, содержащими коммерческую и служебную тайну, только с разрешения руководителя структурного подразделения.
+При этом руководитель должен определить конкретные вопросы, подлежащие рассмотрению, и указать, кому и в каком объеме может быть доведена информация, подлежащая защите.</p>
+<p class="P12">2.4. Об утрате документов, изделий, содержащих коммерческую и служебную тайну, удостоверений, пропусков, ключей от помещений, хранилищ, сейфов, металлических шкафов, личных печатей, а также о причинах и условиях возможной 
+утечки таких сведений сотрудник обязан немедленно сообщить руководителю структурного подразделения и заместителю Председателя Правления Банка по безопасности, либо лицу его замещающему.</p>
+<p class="P12">2.5. При увольнении, перед уходом в отпуск, отъездом в длительную командировку (более 1 месяца) необходимо сдать лицу, указанному руководителем структурного подразделения, все носители коммерческой и служебной тайны, 
+которые находились в распоряжении сотрудника в связи с выполнением им служебных обязанностей.</p>
+<p class="P12">2.6. При прекращении пользования компьютером (при увольнении, передаче другому сотруднику и т.д.) сдать информацию, содержащуюся на магнитных носителях, системному администратору.</p>
+<p class="P12">2.7. Сотрудник обязан при первом требовании лица, назначенного Руководством Банка, предъявить для проверки все числящиеся за ним материалы, содержащие коммерческую и служебную тайну, предъявить устные и письменные 
+объяснения по фактам выявленных нарушений, установленных правил  учета и хранения документов и изделий, содержащих коммерческую и служебную тайну, а также о фактах ее разглашения, утраты документов и изделий.</p>
+<p class="P12">2.8. В случае попытки посторонних лиц или организаций получить информацию, содержащую коммерческую и служебную тайну, сотрудник обязан немедленно сообщить об этом своему непосредственному руководителю, а также в службу безопасности.</p>
+<p class="P12">2.9. В целях защиты коммерческой и служебной тайны сотрудникам Банка запрещается выполнять следующие действия, способные привести к утечке информации:</p>
+<ul><li>
+<p class="P7" style="margin-left:0cm;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- сообщать Информацию любым посторонним лицам, включая родственников;<span class="odfLiEnd"></span></p></li><li>
+<p class="P7" style="margin-left:0cm;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- использовать эту информацию вне Банка;<span class="odfLiEnd"></span> </p></li><li>
+<p class="P7" style="margin-left:0cm;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- обращаться (без ведома Руководства Банка) от своего имени или от имени третьих лиц к тем лицам и организациям,
+с которыми контактирует банк.<span class="odfLiEnd"></span> </p></li></ul><p class="P5"> </p><p class="P5"></p><p class="P5"> </p><ol><li>
+<p class="P14" style="margin-left:0cm;">3. Ответственность за разглашение, передачу и утечку коммерческой<span class="odfLiEnd"></span> </p></li></ol>
+<p class="P22">и служебной тайны.</p><p class="P21"> </p><p class="P23">3.1. Дисциплинарная ответственность:</p><ul><li>
+<p class="P17" style="margin-left:0cm;"><span class="WW8Num1z0" style="display:block;float:left;min-width:0.635cm;">- </span>разглашение информации является грубым нарушением трудовой дисциплины и влечет применение к сотруднику 
+мер дисциплинарной ответственности.<span class="odfLiEnd"></span> </p></li></ul><p class="P24"> </p>
+<p class="P16">       <span class="T2">3.2. Гражданско-правовая ответственность:</span></p><p class="P16"> </p><ul><li><p class="P17" style="margin-left:0cm;"><span class="WW8Num1z0" style="display:block;float:left;min-width:0.635cm;">-</span>
+ответственность за вред (ущерб), причиненный разглашением Информации, заключается в обязанности виновного лица возместить причиненный вред (ущерб) в полном объеме на основании ст. 152, ст. 139 п.2 ГК РФ.
+<span class="odfLiEnd"></span> </p></li></ul><p class="P24"> </p><p class="P16">        <span class="T1">Статья 152. Защита чести, достоинства и деловой репутации.</span></p><p class="P15"> </p><ol><li>
+<p class="P20" style="margin-left:0cm;"><span class="WW8Num3z0" style="display:block;float:left;min-width:0.635cm;">1.</span>Гражданин вправе требовать по суду опровержения порочащих его честь, достоинство или деловую репутацию сведений,
+если распространивший такие сведения не докажет, что они соответствуют действительности.<span class="odfLiEnd"></span> </p></li><li>
+<p class="P20" style="margin-left:0cm;"><span class="WW8Num3z0" style="display:block;float:left;min-width:0.635cm;">2.</span>Если сведения, порочащие честь, достоинство и деловую репутацию гражданина, распространены в 
+средствах массовой информации, они должны быть опровергнуты в тех же средствах массовой информации.<span class="odfLiEnd"></span> </p></li><li>
+<p class="P20" style="margin-left:0cm;"><span class="WW8Num3z0" style="display:block;float:left;min-width:0.635cm;">3.</span>Гражданин, в отношении которого распространены сведения, порочащие его честь, достоинство или деловую репутацию, 
+вправе наряду с опровержением таких сведений требовать возмещения убытков и морального вреда, причиненных их распространением.<span class="odfLiEnd"></span> </p></li><li>
+<p class="P20" style="margin-left:0cm;"><span class="WW8Num3z0" style="display:block;float:left;min-width:0.635cm;">4.</span>Правила настоящей статьи о защите деловой репутации гражданина соответственно применяются к 
+защите деловой репутации юридического лица.<span class="odfLiEnd"></span> </p></li></ol><p class="P24"> </p>
+<p class="P16">            <span class="T1">Статья 139. Служебная и коммерческая тайна.</span></p><p class="P15"> </p><ol><li><p class="P18" style="margin-left:0cm;">
+<span class="WW8Num4z0" style="display:block;float:left;min-width:0.635cm;">1.</span>Информация составляет  служебную или коммерческую тайну в случае, когда информация имеет действительную или потенциальную коммерческую ценность в силу
+неизвестности ее третьим лицам, к ней нет свободного доступа на законном основании, и обладатель информации принимает меры к охране ее конфиденциальности. Сведения, которые не могут составлять служебную или коммерческую тайну, 
+определяются законом или иными правовыми актами.<span class="odfLiEnd"></span> </p></li><li><p class="P18" style="margin-left:0cm;"><span class="WW8Num4z0" style="display:block;float:left;min-width:0.635cm;">2.</span>Информация, составляющая
+служебную или коммерческую тайну, защищается способами, предусмотренными настоящим Кодексом и другими законами. Лица незаконными методами получившие информацию, которая составляет служебную или коммерческую тайну,
+обязаны возместить убытки. Такая же обязанность возлагается на работников, разгласивших служебную или коммерческую тайну вопреки трудовому договору, в том числе контракту, и на контрагентов, сделавших это 
+вопреки гражданско-правовому договору.<span class="odfLiEnd"></span> </p></li></ol><p class="P24"> </p><p class="P16"><span class="T2">             3.3. Уголовная ответственность:</span></p><ul><li>
+<p class="P17" style="margin-left:0cm;"><span class="WW8Num1z0" style="display:block;float:left;min-width:0.635cm;">-</span>ответственность за незаконное  разглашение или использование сведений,
+составляющих коммерческую тайну, совершенное из корыстной или иной личной заинтересованности, предусмотрена ст. 183 УК РФ.<span class="odfLiEnd"></span> </p></li></ul><p class="P24"> </p><p class="P13">Статья 183.    Незаконное получение 
+и разглашение сведений, составляющих    коммерческую, налоговую или банковскую тайну.</p><p class="P13"> </p><ol><li><p class="P19" style="margin-left:0cm;"><span class="WW8Num5z0" style="display:block;float:left;min-width:0.635cm;">1.</span>
+Собирание сведений, составляющих коммерческую, налоговую или банковскую тайну, путем похищения документов, подкупа или угроз, а равно иным незаконным способом – наказывается штрафом в размере от ста до двухсот минимальных 
+размеров оплаты труда или в размере заработной платы, или иного дохода осужденного за период от одного до двух месяцев, либо лишением свободы на срок до двух лет.<span class="odfLiEnd"></span> </p></li><li>
+<p class="P19" style="margin-left:0cm;"><span class="WW8Num5z0" style="display:block;float:left;min-width:0.635cm;">2.</span>Незаконные разглашение или использование сведений составляющих коммерческую, налоговую или
+банковскую тайну, без согласия их владельца лицом, которому она была доверена или стала известна по службе или работе, - наказывается штрафом в размере от ста до двухсот размеров оплаты труда с лишением права занимать 
+определенные должности или заниматься определенной деятельностью на срок до трех лет либо лишение свободы на срок до трех лет.<span class="odfLiEnd"></span> </p></li><li><p class="P19" style="margin-left:0cm;">
+<span class="WW8Num5z0" style="display:block;float:left;min-width:0.635cm;">3.</span>Те же деяния,  причинившие крупный ущерб или совершенные из корыстной заинтересованности, - наказываются штрафом в размере от двухсот до пятисот 
+минимальных размеров оплаты труда с лишением права занимать определенные должности или заниматься определенной деятельностью на срок до пяти лет либо лишением свободы на срок до пяти лет.<span class="odfLiEnd"></span> </p></li>
+<li><p class="P19" style="margin-left:0cm;"><span class="WW8Num5z0" style="display:block;float:left;min-width:0.635cm;">4.</span>Деяния, предусмотренные частями второй или третьей настоящей статьи, повлекшие тяжкие последствия, - 
+наказываются лишением свободы на срок до десяти лет.<span class="odfLiEnd"></span> </p></li></ol><p class="Standard"> </p><p class="P25"><a name="sub_171"></a>Нарушение требований настоящей Инструкции влечет за собой дисциплинарную,
+гражданско-правовую, административную или уголовную ответственность в соответствии с законодательством Российской Федерации.</p><p class="P25"><a name="sub_172"></a>Лица, права и законные интересы которых были нарушены в связи с 
+разглашением информации ограниченного доступа или иным неправомерным использованием такой информации, вправе обратиться в установленном порядке за судебной защитой своих прав, в том числе с исками о возмещении убытков, компенсации
+морального вреда, защите чести, достоинства и деловой репутации. </p><p class="P25">Требование о возмещении убытков не может быть удовлетворено в случае предъявления его лицом, не принимавшим мер по соблюдению конфиденциальности 
+информации или нарушившим установленные законодательством Российской Федерации требования о защите информации, если принятие этих мер и соблюдение таких требований являлись обязанностями данного лица.</p><p class="P25"> </p>
+<p>@Model.EmployeeName _______________________________                                     @(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToLongDateString() : "___________________/дата/")</p>
+<p><span class="T3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                       подпись </span></p></body>
+

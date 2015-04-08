@@ -1,0 +1,516 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintCashWorkAddition2Model
+@{
+    Layout = null;
+    ViewBag.Title = "Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)";
+}
+
+
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+<style type="text/css">
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:10pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	<!-- "li span.odfLiEnd" - IE 7 issue-->
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.ta1 { writing-mode:lr-tb; }
+	.ta2 { writing-mode:lr-tb; }
+	.ta3 { writing-mode:lr-tb; }
+	.Default { font-family:Calibri; vertical-align:bottom; color:#000000; font-size:11pt; }
+	.ce1 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce10 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce11 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce12 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce13 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce14 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce15 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce16 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce17 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce18 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce19 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce2 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce20 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce21 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce22 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce23 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce24 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce25 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; background-color:transparent; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce26 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce27 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; background-color:transparent; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce28 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce29 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce3 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce30 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce31 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce32 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce33 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; background-color:transparent; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce34 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; background-color:transparent; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce35 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; background-color:transparent; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce36 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce37 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce38 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce39 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce4 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:solid; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce40 { color:#000000; font-size:10pt; font-family:Calibri; vertical-align:top; text-align:left ! important; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce41 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce42 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce43 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce44 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce45 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce46 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce47 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce48 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:none; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce49 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce5 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce50 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-style:none; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce51 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-style:none; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce52 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; background-color:transparent; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:bold; }
+	.ce53 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; text-align:right ! important; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce54 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce55 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-style:none; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce56 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce57 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-width:0.0261cm; border-top-style:solid; border-top-color:#000000; margin-left:0cm; writing-mode:page; font-style:italic; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce58 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:bottom; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce59 { color:#000000; font-size:11pt; font-family:Calibri; vertical-align:bottom; margin-left:0cm; writing-mode:page; }
+	.ce6 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-width:0.0261cm; border-bottom-style:solid; border-bottom-color:#000000; border-left-style:none; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce60 { color:#000000; font-size:11pt; font-family:Calibri; vertical-align:bottom; border-style:none; }
+	.ce61 { color:#000000; font-size:10pt; font-family:Times New Roman; vertical-align:bottom; border-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce7 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-width:0.0261cm; border-style:solid; border-color:#000000; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce8 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.ce9 { color:#000000; font-size:9pt; font-family:Times New Roman; vertical-align:middle; border-bottom-style:none; border-left-width:0.0261cm; border-left-style:solid; border-left-color:#000000; border-right-width:0.0261cm; border-right-style:solid; border-right-color:#000000; border-top-style:none; margin-left:0cm; writing-mode:page; font-style:normal; text-shadow:none; text-decoration:none ! important; font-weight:normal; }
+	.co1 { width:3.304cm; }
+	.co2 { width:0.587cm; }
+	.co3 { width:11.508cm; }
+	.co4 { width:3.219cm; }
+	.co5 { width:3.36cm; }
+	.co6 { width:1.711cm; }
+	.ro1 { height:0.582cm; }
+	.ro2 { height:0.529cm; }
+	.ro3 { height:0.873cm; }
+	.ro4 { height:0.529cm; }
+	.ro5 { height:0.556cm; }
+	.ro6 { height:1.085cm; }
+	.T1 { color:#000000; font-family:Times New Roman; font-size:9pt; font-weight:normal; text-decoration:none ! important; font-style:italic; text-shadow:none; }
+
+	</style>
+<table cellspacing="0" cellpadding="0" border="0" class="ta1">
+    <colgroup><col width="144" /><col width="26" /><col width="503" /><col width="141" /><col width="147" /><col width="75" /></colgroup>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.304cm; " class="Default"> </td>
+        <td style="text-align:left;width:0.587cm; " class="Default"> </td>
+        <td style="text-align:left;width:11.508cm; " class="Default"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce40"><p>Приложение 2 к Распоряжению №167/ОД от 19.11.2013</p></td>
+        <td style="text-align:left;width:3.36cm; " class="ce40"> </td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="4" style="text-align:left;width:11.508cm; " class="ce18"><p>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП</p></td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"><p>                                             </p></td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:3.304cm; " class="ce2"><p>этапы</p></td>
+        <td style="text-align:left;width:0.587cm; " class="ce42"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce42"><p>последовательность действий</p></td>
+        <td style="text-align:left;width:3.219cm; " class="ce42"><p>исполнители</p></td>
+        <td style="text-align:left;width:3.36cm; " class="ce52"><p>нормативный документ</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce58"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce2"> </td>
+        <td colspan="2" style="text-align:left;width:0.587cm; " class="ce13"><p>Соблюдать последовательность действий!</p></td>
+        <td rowspan="20" style="text-align:left;width:3.219cm; " class="ce43"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td rowspan="59" style="text-align:left;width:3.36cm; " class="ce7"><p>Положение по огранизации кассовой работы в ООО ИКБ "Совкомбанк"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td rowspan="19" style="text-align:left;width:3.304cm; " class="ce4"><p>Приходные операции</p></td>
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>1.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce20"><p>запросить паспорт у клиента:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce21"><p>сверить фотографию в паспорте с личностью физического лица</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro4">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>2.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce22"><p>проверить в кассовом документе:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce21"><p>дату;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce23"><p>сверить с паспортом ФИО клиента;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>3.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce24"><p>для подтверждения операции найти в ПО РБС/Инверсия документ по номеру</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce25"><p>сверить в печатном кассовом документе и ПО:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce26"><p>дату;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce14"><p>в.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce27"><p>ФИО клиента</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>4.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>уточнить сумму операции у клиента</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>5.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>сверить сумму с данными печатного документа и ПО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>6.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>принять денежные средства от клиента  </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>7.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>пересчитать</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>8.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>проверить подлинность купюр</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>9.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>передать на подпись клиенту  2 экземпляра ПКО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>10.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подтвердить в РБС операцию клиента </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>11.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подписать ПКО и отдать клиенту его экземпляр документа</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>12.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>убрать денежные средства со стола в средство индивидуального хранения</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>13.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>убрать подписанный клиентом документ с рабочего стола в место хранения кассовых документов в течение рабочего времени</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td rowspan="19" style="text-align:left;width:3.304cm; " class="ce4"><p>Расходные операции</p></td>
+        <td colspan="2" style="text-align:left;width:0.587cm; " class="ce15"><p>Соблюдать последовательность действий!</p></td>
+        <td rowspan="19" style="text-align:left;width:3.219cm; " class="ce43"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>1.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce30"><p>принять от клиента талон, сверить номер талона и и номер РКО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>2.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce20"><p>запросить паспорт у клиента:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce21"><p>сверить фотографию в паспорте с личностью физического лица</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>3.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce22"><p>проверить в кассовом документе:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce21"><p>дату;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce23"><p>сверить с паспортом ФИО клиента;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>4.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce24"><p>для подтверждения операции найти в ПО РБС/Инверсия документ по номеру</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>5.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce25"><p>сверить в печатном кассовом документе и ПО:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce26"><p>дату;</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce27"><p>ФИО клиента</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>6.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>уточнить сумму операции у клиента</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>7.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>сверить сумму с данными печатного документа и ПО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>8.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>пересчитать денежные средства в присутствии и при визуальном контроле со стороны клиента с проверкой на подлинность </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>9.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>передать на подпись клиенту  2 экземпляра РКО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>10.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подписать РКО </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>11.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>выдать клиенту денежные средства и его экземпляр РКО,  визуально контролировать пересчет клиентом купюр</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>12.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подтвердить в бухучете операцию клиента </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>13.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>прикрепить талон к РКО и убрать печатный документ с рабочего стола в место хранения кассовых документов в течение рабочего времени</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro5">
+        <td rowspan="20" style="text-align:left;width:3.304cm; " class="ce4"><p>Выплата перевода ДС ( WU, Контакт, ЗК)</p></td>
+        <td colspan="2" style="text-align:left;width:0.587cm; " class="ce13"><p>Соблюдать последовательность действий!</p></td>
+        <td rowspan="20" style="text-align:left;width:3.219cm; " class="ce43"><p>Сотрудник, исполняющий функции кассового работника</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>1.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce20"><p>запросить паспорт у клиента:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce21"><p>сверить фотографию в паспорте с личностью физического лица</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>2.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce20"><p>выяснить:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce31"><p>номер перевода</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce31"><p>сумму перевода</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce7"><p>3.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce20"><p>проверить в ПО: </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce31"><p>статус перевода для возможной выдачи</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>б.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce31"><p>ФИО клиента в ПО на соотвествие данным паспорта</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce16"><p>в.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce32"><p>сумму перевода</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce8"><p>4.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce31"><p>сделать запрос в ПО на выдачу перевода</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce17"><p>а.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce33"><p>после получения подтверждения  оформить документы для выдачи денежных средств</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>5.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>пересчитать денежные средства в присутствии и при визуальном контроле со стороны клиента с проверкой на подлинность </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>6.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>передать на подпись клиенту  2 экземпляра РКО</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce11"><p>7.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подписать РКО </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce12"><p>8.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>выдать клиенту денежные средства и его экземпляр РКО,  визуально контролировать пересчет клиентом купюр</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce12"><p>9.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подтвердить в бухучете операцию клиента </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce12"><p>10.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>направить уведомление о выдаче перевода в систему, по которой осуществлялась выдача перевода </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:0.587cm; " class="ce12"><p>11.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>подтвердить в бухучете операцию клиента </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro3">
+        <td style="text-align:left;width:0.587cm; " class="ce12"><p>12.</p></td>
+        <td style="text-align:left;width:11.508cm; " class="ce28"><p>прикрепить талон к РКО и убрать печатный документ с рабочего стола в место хранения кассовых документов в течение рабочего времени</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce34"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce35"><p>Со всеми нормативными документами, указанными в данном порядке ознакомлен</p><br /></td>
+        <td style="text-align:left;width:1.711cm; " class="Default"> </td>
+    </tr>
+    <tr class="ro1">
+        <td style="text-align:left;width:3.724cm; " class="ce1"></td>
+        <td style="text-align:left;width:0.559cm; " class="ce1"> </td>
+        <td style="text-align:left;width:8.652cm; " class="ce1">@Model.EmployeeName <span class="T1">  ____________________________/подпись/ </td>
+        <td colspan="2" style="text-align:left;width:6.999cm; " class="ce1"><p align="right">@(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToShortDateString() : "__________________/дата/")</p></td>
+
+    </tr>
+    <tr>
+        <td colspan="5"><br /><br /></td>
+    </tr>
+    <tr class="ro6">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce28"><p>Типовые вопросы размещены на корпоративном портале, закладка "ФронтИнфо" / "типовые вопросы менеджеров"/"Касса</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td></tr><tr class="ro2"><td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce36"><p>задать вопрос можно:</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce37"><p>на корпоративном портале, закладка "Вопросы-ответы"</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce38"><p>через систему Папирус/Формы/общие закрытие проекты/вопросы Фронта</p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td colspan="3" style="text-align:left;width:11.508cm; " class="ce39"><p>* - данный порядок оформляется в двух экземплярах, по одному для каждой из сторон </p></td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    <tr class="ro2">
+        <td style="text-align:left;width:3.304cm; " class="ce1"> </td>
+        <td style="text-align:left;width:0.587cm; " class="ce1"> </td>
+        <td style="text-align:left;width:11.508cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.219cm; " class="ce1"> </td>
+        <td style="text-align:left;width:3.36cm; " class="ce1"> </td>
+        <td style="text-align:left;width:1.711cm; " class="ce1"> </td>
+    </tr>
+    
+</table>
+
