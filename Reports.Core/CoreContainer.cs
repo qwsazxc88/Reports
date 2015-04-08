@@ -479,6 +479,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentPersonnelManagersDao)).
                 ImplementedBy(typeof(EmploymentPersonnelManagersDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentCandidateDocNeededDao)).
+                ImplementedBy(typeof(EmploymentCandidateDocNeededDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(ICountryDao)).
                 ImplementedBy(typeof(CountryDao)).
                 LifeStyle.Is(type));
@@ -566,6 +569,9 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For(typeof(ISurchargeDao))
                 .ImplementedBy<SurchargeDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For(typeof(IDeductionImportDao))
+                .ImplementedBy<DeductionImportDao>()
                 .LifeStyle.Is(type));
         }
         #endregion

@@ -70,7 +70,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int InsurableExperienceMonths { get; set; }
 
         [Display(Name = "дней")]
-        public int InsurableExperienceDays { get; set; }        
+        public int InsurableExperienceDays { get; set; }
+
+        [Display(Name = "Персональная надбавка")]
+        public decimal? PersonalAddition { get; set; } //ok
+
+        [Display(Name = "Должностная надбавка")]
+        public decimal? PositionAddition { get; set; } //ok
 
         // Ознакомлен с регламентными документами
 
@@ -177,6 +183,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Comment { get; set; } //ok
         public IList<EmploymentCandidateCommentDto> Comments { get; set; }
         public bool IsAddCommentAvailable { get; set; }
+        public DateTime? SendTo1C { get; set; }
 
         public PersonnelManagersModel()
         {

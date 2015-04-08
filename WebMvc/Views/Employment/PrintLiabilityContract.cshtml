@@ -8,7 +8,7 @@
 <META content="text/html; charset=utf-8" http-equiv=Content-Type>
 <META name=GENERATOR content="MSHTML 11.00.9600.16521"></HEAD>
 <BODY>
-<P align=center>ДОГОВОР №<BR>о&nbsp;полной индивидуальной материальной ответственности</P>
+<P align=center>ДОГОВОР №@(!string.IsNullOrEmpty(@Model.ContractNumber) ? "ДМО " + @Model.ContractNumber : "______________________")<BR>о&nbsp;полной индивидуальной материальной ответственности</P>
 
 <table style="width: 90%; margin: 0 auto;">
 <tr>
@@ -163,7 +163,7 @@
 
 <TR style="HEIGHT: 22.35pt; height=29">
 <TD style="BORDER-TOP: #d4d0c8; HEIGHT: 22.35pt; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 210pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid;" height=29 width=277 colSpan=5>
-<FONT size=2 face=Arial>Заместитель Председателя Правления ООО ИКБ «Совкомбанк»</FONT></TD>
+<FONT size=2 face=Arial>@Model.EmployerRepresentativePosition</FONT></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8;"></TD></TR>
 
 <TR style="HEIGHT: 11.25pt" height=15">

@@ -76,6 +76,7 @@
     </table>
     </div>
     <div id="Tabs">
+   
     <ul>
     @if (Model.Imported != null)
     {<li><a href="#tabs-1">Загруженные заявки (@Model.Imported.Count)</a></li>}
@@ -85,6 +86,10 @@
     @if (Model.Errors!=null )
     {
         <div id="tabs-2">
+         @if (ViewBag.ReportFile != null)
+        {
+            <a href="@ViewBag.ReportFile" download="report.txt">Загрузить отчёт</a>
+        }
         <ul class="list-group">
         @foreach (var err in Model.Errors)
         { <li class="list-group-item"><b>@err.Substring(0,err.IndexOf('>'))</b><br />@err.Substring(err.IndexOf('>'))</li>}

@@ -41,6 +41,11 @@
                     <td>@Html.LabelFor(m => m.Position)</td>
                     <td>@Html.DisplayFor(m => m.Position)</td>
                 </tr>
+                <tr>
+                    <td>
+                       <input type="button" value="Печать карточки" onclick="window.location.href='@Url.Action("GetAnalyticalStatementPrintForm", "MissionOrder", new { id = Model.DocumentNumber })';"/>   
+                    </td>
+                </tr>
             </table>
         </div>
     </td>
@@ -91,6 +96,8 @@
                            break;
                            case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано @(el.Number>0? " по авансовому отчету №"+ el.Number :"")</a>
                            break;
+                           case 5:<a>Ручная доплата по АО №@el.Number</a>
+                           break;
                        }
                    </td>
                    <td>@if (el.Date != DateTime.MinValue)
@@ -108,8 +115,6 @@
        }
     </tbody>
 </table>
-
-<script src="@Url.Content("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
 <script type="text/javascript">
 
     $(document).ready(function () {
