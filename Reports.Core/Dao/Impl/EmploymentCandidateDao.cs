@@ -528,5 +528,7 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
+        
+
     }
 }

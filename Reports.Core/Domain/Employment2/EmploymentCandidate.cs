@@ -39,5 +39,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? ManagerToTrainingSendEmailDate { get; set; }
         public virtual bool IsManagerToHigherManagerSendEmail { get; set; }
         public virtual DateTime? ManagerToHigherManagerSendEmailDate { get; set; }
+        public virtual bool IsPersonnelManagerToManagerSendEmail { get; set; }
+        public virtual DateTime? PersonnelManagerToManagerSendEmailDate { get; set; }
     }
 }
