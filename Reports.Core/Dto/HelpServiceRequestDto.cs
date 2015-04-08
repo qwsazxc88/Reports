@@ -30,6 +30,8 @@ namespace Reports.Core.Dto
         public int Note { get; set; }
         public string NoteName { get; set; }
         public bool IsOriginalReceived { get; set; }
+        public bool IsForGEMoney { get; set; }
+        public int DocumentsCount { get; set; }
     }
       //AddScalar("Id", NHibernateUtil.Int32).
       //          AddScalar("UserId", NHibernateUtil.Int32).
