@@ -1429,6 +1429,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
+
+                model.SendTo1C = entity.Candidate.SendTo1C;
+
                 //заявление о приеме
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
                 model.ApplicationLetterScanAttachmentId = attachmentId;
