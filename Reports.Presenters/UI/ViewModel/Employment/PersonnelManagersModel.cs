@@ -99,10 +99,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
-        [Display(Name = "Ранг"),
-            Required(ErrorMessage = "*"),
-            Range(1, 3, ErrorMessage = "Требуется число от 1 до 3")]
-        public int? Level { get; set; }
+        //[Display(Name = "Ранг"),
+        //    Required(ErrorMessage = "*"),
+        //    Range(1, 3, ErrorMessage = "Требуется число от 1 до 3")]
+        //public int? Level { get; set; }
 
         public bool? IsFixedTermContract { get; set; }
         public bool IsContractChangedToIndefinite { get; set; }
