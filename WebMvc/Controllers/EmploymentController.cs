@@ -1962,13 +1962,16 @@ namespace WebMvc.Controllers
 
             if (!model.SendTo1C.HasValue)
             {
-                if (!model.EmploymentDate.HasValue && model.EmploymentDate.Value < DateTime.Today)
+                //на время теста разрешили не раньше 1 апреля
+                //if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < DateTime.Today)
+                if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < Convert.ToDateTime("01/04/2015"))
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
                 }
 
-                if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
+                //if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
+                if (model.ContractDate.HasValue && model.ContractDate.Value < Convert.ToDateTime("01/04/2015"))//на время теста
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
