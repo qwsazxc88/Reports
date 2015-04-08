@@ -36,6 +36,8 @@
     <property name="ManagerToTrainingSendEmailDate" not-null="false"/>
     <property name="IsManagerToHigherManagerSendEmail" not-null="false"/>
     <property name="ManagerToHigherManagerSendEmailDate" not-null="false"/>
+    <property name="IsPersonnelManagerToManagerSendEmail" not-null="false"/>
+    <property name="PersonnelManagerToManagerSendEmailDate" not-null="false"/>
 
   </class>
 </hibernate-mapping>

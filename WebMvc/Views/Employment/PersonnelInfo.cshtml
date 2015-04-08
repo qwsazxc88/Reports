@@ -1161,6 +1161,11 @@
                         $("#CashWorkAddition2File").change(function () { this.form.submit(); });
                         $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
 
+                        $("#btnSaveDocNeeded").click(function () {
+                            $("#IsSave").val(true);
+                            this.form.submit();
+                        });
+
                         $("#btnDelete1").click(function () {
                             var Id = $("#EmploymentContractFileId").val();
                             $("#DeleteAttachmentId").val(Id);

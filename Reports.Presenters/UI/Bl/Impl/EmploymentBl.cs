@@ -221,6 +221,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentCandidateCommentDao = value; }
         }
 
+        protected IEmploymentCandidateDocNeededDao employmentCandidateDocNeededDao;
+        public IEmploymentCandidateDocNeededDao EmploymentCandidateDocNeededDao
+        {
+            get { return Validate.Dependency(employmentCandidateDocNeededDao); }
+            set { employmentCandidateDocNeededDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -1497,7 +1504,35 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ObligationTradeSecretScan);
                 model.ObligationTradeSecretFileId = attachmentId;
                 model.ObligationTradeSecretFileName = attachmentFilename;
+
+                //достаем метки для документов
+                IList<AttachmentNeedListDto> adl = EmploymentCandidateDocNeededDao.GetCandidateDocListNeeded(entity.Candidate.Id);
+                if (adl != null && adl.Count != 0)
+                {
+                    model.ApplicationLetterScanFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ApplicationLetterScan).Single().IsNeeded;
+                    model.EmploymentContractFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentContractScan).Single().IsNeeded;
+                    model.OrderOnReceptionFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.OrderOnReceptionScan).Single().IsNeeded;
+                    model.T2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CandidateT2Scan).Single().IsNeeded;
+                    model.ContractMatResponsibleFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ContractMatResponsibleScan).Single().IsNeeded;
+                    model.PersonalDataFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.PersonalDataScan).Single().IsNeeded;
+                    model.DataObligationFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.DataObligationScan).Single().IsNeeded;
+                    model.EmploymentFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentFileScan).Single().IsNeeded;
+                    model.RegisterPersonalRecordFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.RegisterPersonalRecordScan).Single().IsNeeded;
+                    model.InstructionOfSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.InstructionOfSecretScan).Single().IsNeeded;
+                    model.InstructionEnsuringSafetyFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan).Single().IsNeeded;
+                    model.AgreePersonForCheckingFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.AgreePersonForCheckingScan).Single().IsNeeded;
+                    model.CashWorkAddition1FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition1Scan).Single().IsNeeded;
+                    model.CashWorkAddition2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition2Scan).Single().IsNeeded;
+                    model.ObligationTradeSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan).Single().IsNeeded;
+                }
+                else
+                {
+                    model.ApplicationLetterScanFileNeeded = true;
+                    model.EmploymentContractFileNeeded = true;
+                    model.OrderOnReceptionFileNeeded = true;
+                }
             }
+
 
             
             return model;
@@ -2758,7 +2793,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             //сообщение тренеру
-            EmploymentSendEmail(candidate.User.Id, 4);
+            EmploymentSendEmail(candidate.User.Id, 4, false);
 
             return candidate.User.Id;
         }
@@ -2793,7 +2828,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //сообщение в ДП
                 //если идет сохранение черновика руководителя или кадров, то не делать рассылку
                 if (model.GetType().Name != "ManagersModel" && model.GetType().Name != "PersonnelManagersModel")
-                    EmploymentSendEmail(user.Id, 1);
+                    EmploymentSendEmail(user.Id, 1, false);
                     
             }
             catch (Exception)
@@ -2818,7 +2853,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
 
             //сообщение руководителю 
-            EmploymentSendEmail(userId, 3);
+            EmploymentSendEmail(userId, 3, false);
 
             error = string.Empty;
             return true;
@@ -3023,12 +3058,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
+            //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
+            IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
+            
+
+            //сохраняем сканы
+            if (model.ApplicationLetterScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+            }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ApplicationLetterScan, IsNeeded = model.ApplicationLetterScanFileNeeded });
+
+
             if (model.EmploymentContractFile != null)
             {
                 UploadFileDto fileDto = GetFileContext(model.EmploymentContractFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.EmploymentContractFileId, fileDto, RequestAttachmentTypeEnum.EmploymentContractScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.EmploymentContractScan, IsNeeded = model.EmploymentContractFileNeeded });
 
             if (model.OrderOnReceptionFile != null)
             {
@@ -3036,6 +3086,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.OrderOnReceptionFileId, fileDto, RequestAttachmentTypeEnum.OrderOnReceptionScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.OrderOnReceptionScan, IsNeeded = model.OrderOnReceptionFileNeeded });
 
             if (model.T2File != null)
             {
@@ -3043,6 +3094,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.T2FileId, fileDto, RequestAttachmentTypeEnum.CandidateT2Scan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.CandidateT2Scan, IsNeeded = model.T2FileNeeded });
 
             if (model.ContractMatResponsibleFile != null)
             {
@@ -3050,6 +3102,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ContractMatResponsibleFileId, fileDto, RequestAttachmentTypeEnum.ContractMatResponsibleScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ContractMatResponsibleScan, IsNeeded = model.ContractMatResponsibleFileNeeded });
 
             if (model.PersonalDataFile != null)
             {
@@ -3057,6 +3110,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.PersonalDataFileId, fileDto, RequestAttachmentTypeEnum.PersonalDataScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.PersonalDataScan, IsNeeded = model.PersonalDataFileNeeded });
 
             if (model.DataObligationFile != null)
             {
@@ -3064,6 +3118,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.DataObligationFileId, fileDto, RequestAttachmentTypeEnum.DataObligationScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.DataObligationScan, IsNeeded = model.DataObligationFileNeeded });
 
             if (model.EmploymentFile != null)
             {
@@ -3071,6 +3126,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.EmploymentFileId, fileDto, RequestAttachmentTypeEnum.EmploymentFileScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.EmploymentFileScan, IsNeeded = model.EmploymentFileNeeded });
 
             if (model.RegisterPersonalRecordFile != null)
             {
@@ -3078,6 +3134,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.RegisterPersonalRecordFileId, fileDto, RequestAttachmentTypeEnum.RegisterPersonalRecordScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.RegisterPersonalRecordScan, IsNeeded = model.RegisterPersonalRecordFileNeeded });
 
             if (model.InstructionOfSecretFile != null)
             {
@@ -3085,6 +3142,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.InstructionOfSecretFileId, fileDto, RequestAttachmentTypeEnum.InstructionOfSecretScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.InstructionOfSecretScan, IsNeeded = model.InstructionOfSecretFileNeeded });
 
             if (model.InstructionEnsuringSafetyFile != null)
             {
@@ -3092,6 +3150,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.InstructionEnsuringSafetyFileId, fileDto, RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan, IsNeeded = model.InstructionEnsuringSafetyFileNeeded });
 
             if (model.AgreePersonForCheckingFile != null)
             {
@@ -3099,6 +3158,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.AgreePersonForCheckingFileId, fileDto, RequestAttachmentTypeEnum.AgreePersonForCheckingScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.AgreePersonForCheckingScan, IsNeeded = model.AgreePersonForCheckingFileNeeded });
 
             if (model.CashWorkAddition1File != null)
             {
@@ -3106,6 +3166,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.CashWorkAddition1FileId, fileDto, RequestAttachmentTypeEnum.CashWorkAddition1Scan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.CashWorkAddition1Scan, IsNeeded = model.CashWorkAddition1FileNeeded });
 
             if (model.CashWorkAddition2File != null)
             {
@@ -3113,6 +3174,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.CashWorkAddition2FileId, fileDto, RequestAttachmentTypeEnum.CashWorkAddition2Scan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.CashWorkAddition2Scan, IsNeeded = model.CashWorkAddition2FileNeeded });
 
             if (model.ObligationTradeSecretFile != null)
             {
@@ -3120,14 +3182,83 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ObligationTradeSecretFileId, fileDto, RequestAttachmentTypeEnum.ObligationTradeSecretScan, out fileName);
             }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan, IsNeeded = model.ObligationTradeSecretFileNeeded });
 
-            if (model.ApplicationLetterScanFile != null)
+            if (model.IsSave)
             {
-                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
-                string fileName = string.Empty;
-                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+                User CreatorEditor = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                try
+                {
+                    IList<EmploymentCandidateDocNeededDto> dnList = EmploymentCandidateDocNeededDao.GetCandidateDocNeeded(candidate.Id);
+                    EmploymentCandidateDocNeeded dn = null;
+
+                    foreach (var item in DocNeeded)
+                    {
+                        if (dnList != null && dnList.Where(x => x.DocTypeId == item.DocTypeId).ToList<EmploymentCandidateDocNeededDto>().Count != 0)
+                        {
+                            dn = EmploymentCandidateDocNeededDao.Load(dnList.Where(x => x.DocTypeId == item.DocTypeId).Single().Id);
+                        }
+                        
+                        if (dn == null)
+                        {
+                            dn = new EmploymentCandidateDocNeeded
+                            {
+                                Candidate = candidate,
+                                Creator = CreatorEditor,
+                                DateCreate = DateTime.Now,
+                                DocTypeId = item.DocTypeId,
+                                IsNeeded = (item.DocTypeId == (int)RequestAttachmentTypeEnum.ApplicationLetterScan || item.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentContractScan
+                                || item.DocTypeId == (int)RequestAttachmentTypeEnum.OrderOnReceptionScan ? true : item.IsNeeded)//первые три документа обязательны для всех
+                            };
+                        }
+                        else
+                        {
+                            dn.Candidate = candidate;
+                            dn.Editor = CreatorEditor;
+                            dn.DateEdit = DateTime.Now;
+                            dn.DocTypeId = item.DocTypeId;
+                            dn.IsNeeded = (item.DocTypeId == (int)RequestAttachmentTypeEnum.ApplicationLetterScan || item.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentContractScan
+                                || item.DocTypeId == (int)RequestAttachmentTypeEnum.OrderOnReceptionScan ? true : item.IsNeeded);//первые три документа обязательны для всех
+                        }
+
+                        EmploymentCandidateDocNeededDao.SaveAndFlush(dn);
+                        dn = null;
+                    }
+
+                    EmploymentCandidateDocNeededDao.CommitTran();
+
+                    EmploymentSendEmail(candidate.User.Id, 6, CheckChangesInDocList(dnList, DocNeeded));//сообщение 
+                }
+                catch (Exception ex)
+                {
+                    EmploymentCandidateDocNeededDao.RollbackTran();
+                    return;
+                }
             }
-        } 
+
+        }
+        /// <summary>
+        /// Проверяем наличие изменений в списке документов для подписи кандидатом
+        /// </summary>
+        /// <param name="DocList">Состояние документов из базы данных</param>
+        /// <param name="CurrentDocState">Состояние с клиента</param>
+        /// <returns></returns>
+        protected bool CheckChangesInDocList(IList<EmploymentCandidateDocNeededDto> DocList, IList<AttachmentNeedListDto> CurrentDocState)
+        {
+            if (DocList.Count == 0) return true;//списка в базе нет, то есть пакет документов формировался впервые
+            if (DocList.Count != CurrentDocState.Count) return false;//списки  не соотвествуют друг другу (ошибка)
+
+            foreach (var item in DocList)
+            {
+                if (item.DocTypeId != (int)RequestAttachmentTypeEnum.ApplicationLetterScan &&
+                    item.DocTypeId != (int)RequestAttachmentTypeEnum.EmploymentContractScan &&
+                    item.DocTypeId != (int)RequestAttachmentTypeEnum.OrderOnReceptionScan)
+                {
+                    if (item.IsNeeded != CurrentDocState.Where(x => x.DocTypeId == item.DocTypeId).Single().IsNeeded) return true;
+                }
+            }
+            return false;
+        }
         #endregion
 
         #endregion        
@@ -4077,7 +4208,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             return false;
                         }
                         //сообщение руководителю из ДП
-                        EmploymentSendEmail(entity.Candidate.User.Id, 2);
+                        EmploymentSendEmail(entity.Candidate.User.Id, 2, false);
                         return true;
                     }
                     else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
@@ -4091,7 +4222,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             return false;
                         }
                         //сообщение руководителю из ДП
-                        EmploymentSendEmail(entity.Candidate.User.Id, 2);
+                        EmploymentSendEmail(entity.Candidate.User.Id, 2, false);
                         return true;
                     }
                     else
@@ -4232,7 +4363,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             return false;
                         }
                         else
-                            EmploymentSendEmail(viewModel.UserId, 5);
+                            EmploymentSendEmail(viewModel.UserId, 5, false);
                         return true;
                     }
                     else
@@ -4578,13 +4709,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="UserId">Id кандидата</param>
         /// <param name="EmailType">Тип сообщения.</param>
-        protected void EmploymentSendEmail(int UserId, int EmailType)
+        /// <param name="IsChangeDocList">Наличие изменений в списке кадровых документов на подпись кандидату.</param>
+        protected void EmploymentSendEmail(int UserId, int EmailType, bool IsChangeDocList)
         {
-            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству
+            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству, 6 - руководителю и замам о готовности документов на прием
             EmploymentCandidate entity = GetCandidate(UserId);
 
             User user = UserDao.Load(entity.AppointmentCreator.Id);
             //User user = UserDao.Load(18458);    //для теста учетка Жени
+            IList<User> managers = null;
+            int CurrentLevel = 0;
 
             //проверка на наличие адреса в базе для руководителя
             if (EmailType == 2 || EmailType == 3)
@@ -4668,11 +4802,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.IsManagerToHigherManagerSendEmail && entity.ManagerToHigherManagerSendEmailDate.HasValue) return;    //письмо высшему руководству уже было
 
                     Emailaddress = null;
-                    IList<User> managers = null;
+                    //IList<User> managers = null;
 
                     //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье выше уровнем, собираем ихние адреса в строку
 
-                    int CurrentLevel = entity.AppointmentCreator.Level.Value;
+                    CurrentLevel = entity.AppointmentCreator.Level.Value;
                     //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
                     while (CurrentLevel > 3)
                     {
@@ -4715,6 +4849,67 @@ namespace Reports.Presenters.UI.Bl.Impl
                     body = @"Кандидат " + entity.User.Name + " согласован непосредственным руководителем. Необходимо согласование кандидата высшим руководством.";
                     entity.IsManagerToHigherManagerSendEmail = true;
                     entity.ManagerToHigherManagerSendEmailDate = DateTime.Now;
+                    break;
+                case 6: //руководству и замам от кадровика
+                    if (!entity.Managers.HigherManagerApprovalStatus.HasValue) return;    //Вышестоящий руководитель еще не согласовал
+
+                    Emailaddress = null;//рабочая строка
+                    //Emailaddress = "zagryazkin@ruscount.ru";//для теста
+                    //IList<User> managers = null;
+
+                    //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье текущего уровня, собираем их адреса в строку
+                    CurrentLevel = entity.AppointmentCreator.Level.Value;
+                    managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, false)
+                        .Where<User>(x => x.Level == CurrentLevel && x.RoleId == (int)UserRole.Manager)
+                        .ToList<User>();
+                        foreach (User mu in managers)
+                        {
+                            if (!string.IsNullOrEmpty(mu.Email))
+                            {
+                                //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + "zagryazkin@ruscount.ru";//для теста
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                            }
+                        }
+
+
+
+                    //ручная привязка утверждающего, если нет руководства в автомате и руководитель 3 уровня
+                    if (managers.Count == 0)
+                    {
+                        IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(entity.AppointmentCreator.Id, UserManualRole.ApprovesEmployment)
+                            .Where(x => x.Level == 2)
+                            .ToList<User>();
+                        foreach (User mu in manualRoleManagers)
+                        {
+                            if (!string.IsNullOrEmpty(mu.Email))
+                                //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + Emailaddress;//для теста
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                        }
+                    }
+                    
+                    if (string.IsNullOrEmpty(Emailaddress)) return;
+
+
+                    defaultEmail = ConfigurationService.EmploymentPersonnelManagerToManagerEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+
+                    if (!entity.IsPersonnelManagerToManagerSendEmail && !entity.PersonnelManagerToManagerSendEmailDate.HasValue)
+                    {    //письмо руководству уже было
+                        Subject = "Сформирован пакет кадровых документов для подписи кандидатом";
+                        body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                    }
+                    else
+                    {
+                        if (IsChangeDocList)//если не ошибочное нажатие без изменений
+                        {
+                            Subject = "Пакет кадровых документов для подписи кандидатом изменен";
+                            body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                        }
+                        else
+                            return;
+                    }
+                    entity.IsPersonnelManagerToManagerSendEmail = true;
+                    entity.PersonnelManagerToManagerSendEmailDate = DateTime.Now;
                     break;
             }
 
