@@ -35,6 +35,7 @@ namespace Reports.Core.Dto
         public string StatusName { get; set; }
         public int GCID { get; set; }
         public string CTName { get; set; }
+        public int CTType { get; set; }
         //public int DSID { get; set; }
         public string DetailName { get; set; }
         public DateTime? DateP { get; set; }
@@ -82,4 +83,30 @@ namespace Reports.Core.Dto
         public DateTime CreateDate { get; set; }
         public string Creator { get; set; }
     }
+
+    public class GpdActEqualityComparerByPayeeId : IEqualityComparer<GpdActDto>
+    {
+        public bool Equals(GpdActDto x, GpdActDto y)
+        {
+            return (x.PayeeID == y.PayeeID);
+        }
+
+        public int GetHashCode(GpdActDto obj)
+        {
+            return (obj.PayeeID+obj.PayeeName).GetHashCode();
+        }
+    }
+    public class GpdActEqualityComparerByPayeeIdandCTName : IEqualityComparer<GpdActDto>
+    {
+        public bool Equals(GpdActDto x, GpdActDto y)
+        {
+            return (x.PayeeID == y.PayeeID && x.CTName==y.CTName);
+        }
+
+        public int GetHashCode(GpdActDto obj)
+        {
+            return (obj.PayeeID + obj.PayeeName+obj.CTName).GetHashCode();
+        }
+    }
+
 }

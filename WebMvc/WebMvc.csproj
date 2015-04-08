@@ -769,6 +769,8 @@
     <Content Include="Views\Surcharge\Index.cshtml" />
     <Content Include="Views\Surcharge\IndexPartial.cshtml" />
     <Content Include="Views\Shared\_LayoutSurcharge.cshtml" />
+    <Content Include="Views\GPD\GPDAnalyticalStatement.cshtml" />
+    <Content Include="Views\GPD\GPDAnalyticalStatementDetails.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
