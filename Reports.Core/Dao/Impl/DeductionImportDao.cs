@@ -5,7 +5,6 @@ using System.Text;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-using Reports.Core.Domain;
 using NHibernate.Criterion;
 namespace Reports.Core.Dao.Impl
 {

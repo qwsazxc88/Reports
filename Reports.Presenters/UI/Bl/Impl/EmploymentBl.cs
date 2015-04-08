@@ -2553,8 +2553,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 //new SelectListItem {Text = "-", Value = "0"},
                 new SelectListItem {Text = "Военнообязанный", Value = "1"},
-                new SelectListItem {Text = "Не воннообязанный", Value = "2"},
-                new SelectListItem {Text = "Призывник", Value = "2"}
+                new SelectListItem {Text = "Не военнообязанный", Value = "2"},
+                new SelectListItem {Text = "Призывник", Value = "3"}
             };
         }
 
@@ -3229,7 +3229,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     EmploymentSendEmail(candidate.User.Id, 6, CheckChangesInDocList(dnList, DocNeeded));//сообщение 
                 }
-                catch (Exception ex)
+                catch 
                 {
                     EmploymentCandidateDocNeededDao.RollbackTran();
                     return;
