@@ -197,6 +197,9 @@
             <div id="sort14"><a href="#" onclick = "SortColumnChanged(14);">Кадровик</a></div>
         </th>
         <th>
+            <div id="sort18"><a href="#" onclick = "SortColumnChanged(18);">Состояние<br />документов<br />приема</a></div>
+        </th>
+        <th>
             <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
         </th>
         @*
@@ -324,6 +327,9 @@
                 </td>
                 <td>
                     &nbsp;@candidate.PersonnelName
+                </td>
+                <td>
+                    &nbsp;@candidate.DocStatus
                 </td>
                 <td>
                     &nbsp;@candidate.Status
