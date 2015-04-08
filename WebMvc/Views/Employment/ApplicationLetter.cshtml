@@ -12,6 +12,7 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>
+    @*
         @if (Model.IsApplicationLetterUploadAvailable)
         {
             <div class="formfield clear">
@@ -29,7 +30,7 @@
                 </a>
             </div>
         }
-
+        *@
         <div class="letter clear" style="text-align: center">
             <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
             <img src="@Url.Content("~/Content/files/Образец заявления о приеме.png")" alt="Образец заявления о приеме" />

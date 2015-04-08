@@ -41,6 +41,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? UserBirthDate { get; set; }
         public virtual NoteType Note { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
+        public virtual bool IsForGEMoney { get; set; }
         #endregion
 
         #region Properties

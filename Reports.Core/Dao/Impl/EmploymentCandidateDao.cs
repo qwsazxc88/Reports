@@ -506,5 +506,29 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
+        /// <summary>
+        /// Список сканов.
+        /// </summary>
+        /// <param name="CandidateID">Id кандидата</param>
+        /// <returns></returns>
+        public IList<AttachmentListDto> GetCandidateAttachmentList(int CandidateID)
+        {
+            IQuery query = CreateAttachmentListQuery("SELECT  ROW_NUMBER() OVER(ORDER BY AttachmentTypeName) as RowNumber, * FROM dbo.fnGetEmploymentAttachmentList(" + CandidateID.ToString() + ")");
+            return query.SetResultTransformer(Transformers.AliasToBean<AttachmentListDto>()).List<AttachmentListDto>();
+        }
+        public virtual IQuery CreateAttachmentListQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                //.AddScalar("Id", NHibernateUtil.Int32)
+                //.AddScalar("AttachmentType", NHibernateUtil.Int32)
+                .AddScalar("RowNumber", NHibernateUtil.Int32)
+                .AddScalar("AttachmentTypeName", NHibernateUtil.String)
+                .AddScalar("AtachmentAvalable", NHibernateUtil.String)
+                ;
+
+            return query;
+        }
+        
+
     }
 }

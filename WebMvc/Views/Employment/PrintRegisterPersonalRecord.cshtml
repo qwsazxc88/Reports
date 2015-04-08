@@ -1,0 +1,24 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintRegisterPersonalRecordModel
+@{
+    Layout = null;
+    ViewBag.Title = "Печать реестра личного дела";
+}
+
+<strong> Реестр личного дела</strong><br />
+<strong>Кандидат: @Model.EmployeeName</strong><br /><br />
+<table cellpadding="0" cellspacing="0" border="1">
+    <tr style="border-style:solid;">
+        <th>№ п/п</th>
+        <th>Скан документа</th>
+        <th>Наличие</th>
+    </tr>
+    @foreach (var item in Model.Attachments)
+    {
+        <tr style="border-style:solid; border-color:Black;">
+            <td align=center>@item.RowNumber</td>
+            <td>@item.AttachmentTypeName</td>
+            <td align=center>@item.AtachmentAvalable</td>
+        </tr>
+    }
+</table>
+

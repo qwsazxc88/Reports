@@ -194,6 +194,7 @@ namespace Reports.Presenters.Services
         public const string keyEmploymentBackgroundCheckToManagerEmail = "EmploymentBackgroundCheckToManagerEmail";
         public const string keyEmploymentManagerToTrainingEmail = "EmploymentManagerToTrainingEmail";
         public const string keyEmploymentManagerToHighManagerEmail = "EmploymentManagerToHighManagerEmail";
+        public const string keyEmploymentPersonnelManagerToManagerEmail = "EmploymentPersonnelManagerToManagerEmail";
 
         #region IConfigurationService Members
 
@@ -286,6 +287,10 @@ namespace Reports.Presenters.Services
             get { return ConfigurationManager.AppSettings[keyEmploymentManagerToHighManagerEmail]; }
         }
 
+        public string EmploymentPersonnelManagerToManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyEmploymentPersonnelManagerToManagerEmail]; }
+        }
         public int UsersDocumentsDelayInDays
         {
             get

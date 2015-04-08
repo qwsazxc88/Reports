@@ -192,6 +192,12 @@
                     <th>
                         <div id="sort10"  style="min-width:100px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
+                    <th>
+                        <div id="sort16" ><a href="#"  onclick = "SortChanged(16);">GE<br /> Money</a></div>
+                    </th>
+                    <th>
+                        <div id="sort17" ><a href="#"  onclick = "SortChanged(17);">Кол-во<br />документов</a></div>
+                    </th>
                 </tr>
                 <tbody id="grid">
                     @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -261,6 +267,13 @@
                                 }
                                 <td style="background-color:@color">
                                     @doc.Status
+                                </td>
+                                
+                                <td style="text-align:center; vertical-align:middle;">
+                                @Html.CheckBoxFor(m => m.Documents[i].IsForGEMoney, (object)new { disabled = "disabled" })
+                                </td>
+                                <td>
+                                @doc.DocumentsCount
                                 </td>
                             </tr>
                             i++;
