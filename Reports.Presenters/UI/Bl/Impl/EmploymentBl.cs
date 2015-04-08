@@ -1351,7 +1351,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ChangeContractToIndefiniteOrderNumber = entity.SupplementaryAgreements[0].OrderNumber;
                 }
 
-                model.Level = entity.Candidate.User.Level;
+                //model.Level = entity.Candidate.User.Level;
                 model.NorthernAreaAddition = entity.NorthernAreaAddition;
                 model.OverallExperienceDays = entity.OverallExperienceDays;
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
@@ -1429,6 +1429,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 int attachmentId = 0;
                 string attachmentFilename = string.Empty;
+
+                model.SendTo1C = entity.Candidate.SendTo1C;
+
                 //заявление о приеме
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
                 model.ApplicationLetterScanAttachmentId = attachmentId;
@@ -4021,7 +4024,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.PersonnelManagers = entity;
             entity.Candidate.User.Grade = viewModel.Grade;
-            entity.Candidate.User.Level = viewModel.Level;
+            //entity.Candidate.User.Level = viewModel.Level;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
@@ -4486,7 +4489,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate = GetCandidate(viewModel.UserId);
                     entity.Candidate.PersonnelManagers = entity;
                     entity.Candidate.User.Grade = viewModel.Grade;
-                    entity.Candidate.User.Level = viewModel.Level;
+                    //entity.Candidate.User.Level = viewModel.Level;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
                     if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                     {
