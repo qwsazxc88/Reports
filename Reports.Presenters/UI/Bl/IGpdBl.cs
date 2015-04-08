@@ -49,6 +49,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveGpdAct(GpdActEditModel model, out string error);
         void SetGpdActFind(GpdActListModel model, bool hasError);
         void SetGpdActView(GpdActListModel model, bool hasError);
+        void SetGpdAnalyticalStatementView(GpdActListModel model, bool hasError);
         void GetPermission(GpdActListModel model);
         void GetPermission(GpdActEditModel model);
         #endregion

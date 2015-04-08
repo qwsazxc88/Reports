@@ -35,7 +35,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string ActNumber { get; set; }
 
         public IList<GpdActDto> Documents { get; set; }
-
+        [Display(Name="По всем видам выплат")]
+        public bool GroupAll { get; set; }
+        public int CTtype { get; set; }
+        [Display(Name="Вид начисления")]
+        public IList<IdNameDto> CTTypes { get; set; }
+        [Display(Name="Номер карточки")]
+        public string CardNumber { get; set; }
         public string errorMessage { get; set; }
         public bool hasErrors { get; set; }
         public bool IsFind { get; set; }
