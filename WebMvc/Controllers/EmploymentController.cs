@@ -1923,7 +1923,7 @@ namespace WebMvc.Controllers
             if (model.ContractEndDate == null && isFixedTermContract)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
-                ModelState.AddModelError("MessageStr", "*");
+                ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
                 flgError = true;
             }
             if (model.ContractEndDate != null && !isFixedTermContract)
@@ -1976,6 +1976,7 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    flgError = true;
                 }
 
                 //if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
@@ -1983,6 +1984,7 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    flgError = true;
                 }
 
                 if (model.ContractDate.HasValue && model.EmploymentDate.HasValue)
@@ -1991,11 +1993,12 @@ namespace WebMvc.Controllers
                     {
                         ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        flgError = true;
                     }
                 }
             }
 
-            if (!ModelState.IsValid && !flgError)
+            if (!ModelState.IsValid && flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
