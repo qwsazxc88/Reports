@@ -3189,6 +3189,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.IsSave)
             {
+                try
+                {
+                    string NewEmploymentContractNumber = null;
+                    if (candidate.PersonnelManagers.ContractDate.HasValue)
+                        NewEmploymentContractNumber = string.IsNullOrEmpty(candidate.PersonnelManagers.ContractNumber) ? EmploymentPersonnelManagersDao.GetNewEmploymentContractNumber(candidate.PersonnelManagers.ContractDate.Value) : candidate.PersonnelManagers.ContractNumber;
+                    if (string.IsNullOrEmpty(candidate.PersonnelManagers.ContractNumber))
+                    {
+                        candidate.PersonnelManagers.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
+                        candidate.PersonnelManagers.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
+                        EmploymentCandidateDao.SaveAndFlush(candidate);
+                    }
+                }
+                catch
+                {
+                }
+
                 User CreatorEditor = UserDao.Load(AuthenticationService.CurrentUser.Id);
                 try
                 {
@@ -4478,9 +4494,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
-                    string NewEmploymentContractNumber = null;
-                    if (viewModel.ContractDate.HasValue)
-                        NewEmploymentContractNumber = string.IsNullOrEmpty(viewModel.ContractNumber) ? EmploymentPersonnelManagersDao.GetNewEmploymentContractNumber(viewModel.ContractDate.Value) : viewModel.ContractNumber;
+                    //формирование номера ТД  и приказа о приеме перенес в сохранение кадровиком списка документов для подписи кандидатом
+                    //string NewEmploymentContractNumber = null;
+                    //if (viewModel.ContractDate.HasValue)
+                    //    NewEmploymentContractNumber = string.IsNullOrEmpty(viewModel.ContractNumber) ? EmploymentPersonnelManagersDao.GetNewEmploymentContractNumber(viewModel.ContractDate.Value) : viewModel.ContractNumber;
+                    //entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
 
                     entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
                     //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
@@ -4495,11 +4513,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.ContractDate = viewModel.ContractDate;
                         entity.ContractEndDate = viewModel.ContractEndDate;
-                        entity.ContractNumber = NewEmploymentContractNumber;// viewModel.ContractNumber;
                         entity.EmploymentDate = viewModel.EmploymentDate;
                         entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
                         entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-                        entity.EmploymentOrderNumber = NewEmploymentContractNumber;//viewModel.EmploymentOrderNumber;
                     }
                     entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
