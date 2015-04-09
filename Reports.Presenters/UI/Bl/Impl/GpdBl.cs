@@ -1462,6 +1462,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.SortDescending) ordered.Reverse();
                 docs = ordered.ToList();
             }
+            if (model.SortBy == 23)
+            {
+                var ordered = docs.OrderBy(x => x.Ndfl);
+                if (model.SortDescending) ordered.Reverse();
+                docs = ordered.ToList();
+            }
             model.Documents=docs;
 
         }

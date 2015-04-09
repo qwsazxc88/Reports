@@ -260,7 +260,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         private string ActListSqlOrderBy(int SortBy, bool? SortDescending)
         {
-            if (SortBy == 0 || SortBy == 21) return "";
+            if (SortBy == 0 || SortBy == 21|| SortBy==23) return "";
 
             string SqlOrderBy = " ORDER BY ";
             switch (SortBy)
@@ -329,7 +329,7 @@ namespace Reports.Core.Dao.Impl
                     //SqlOrderBy += "(Amount-AmountPayment-(Amount/100*13))"; Сортировка выполняется в GpdBL
                     break;
                 case 22:
-                    SqlOrderBy += "PayeeId";
+                    SqlOrderBy += "PersonId";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
