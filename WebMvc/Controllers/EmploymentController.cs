@@ -1426,8 +1426,8 @@ namespace WebMvc.Controllers
                 }
                 Session.Remove("PersonnelManagersMS" + SPPath);
                 //затираются значения, потому что в контроллер приходят пустые поля и присваиваются в коде
-                ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
-                ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
             }
             
             //model = EmploymentBl.GetPersonnelManagersModel(id);
