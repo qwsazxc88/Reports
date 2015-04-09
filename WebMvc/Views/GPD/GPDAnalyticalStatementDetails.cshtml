@@ -1,6 +1,7 @@
 ﻿@using Reports.Core
 @using Reports.Presenters.Services.Impl
 @using Reports.Presenters.UI.Bl.Impl;
+@using Reports.Presenters.UI.Bl;
 @model Reports.Presenters.UI.ViewModel.GpdActListModel
 @{
     Layout = "~/Views/Shared/_LayoutGPD.cshtml";
@@ -23,6 +24,22 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                ФИО:
+                            </td>
+                            <td>
+                                @Model.Documents[0].Surname
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CardNumber)
+                            </td>
+                            <td>
+                                @Model.CardNumber
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="width:220px">
                                 Подразделение 3 уровня
                             </td>
@@ -38,23 +55,6 @@
                                 <label id="DepartmentNameLabel">@Model.Documents[0].DepLevel7Name</label>                                
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                ФИО:
-                            </td>
-                            <td>
-                                @Model.Documents[0].PayeeName 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.CardNumber)
-                            </td>
-                            <td>
-                                @Model.CardNumber
-                            </td>
-                        </tr>
-                        
                         <tr>
                             <td colspan="2">
                                 <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
@@ -86,7 +86,7 @@
                                             НДФЛ<br /> удержанный
                                         </th>
                                         <th>
-                                            Сумма к <br />выплаченная
+                                            Сумма<br />выплаченная
                                         </th>
                                         <th>
                                             Остаток
@@ -103,41 +103,45 @@
                                             saldo += doc.Amount;
                                             <tr>
                                                 <td>@i.ToString()</td>
-                                                <td>@doc.ActDate</td>
+                                                <td>@(doc.ActDate.HasValue?doc.ActDate.Value.ToShortDateString():null)</td>
                                                 <td>Начисленно по акту @doc.ActNumber</td>
                                                 <td>@doc.CTName</td>
-                                                <td>@doc.ChargingDate</td>
+                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
                                                 <td>@doc.Amount</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>@saldo</td>
                                             </tr>
-                                            i += 1;
-                                            saldo -= Math.Round(doc.Amount / 100 * 13);
+                                            if (doc.SendTo1C.HasValue)
+                                            {
+                                                i += 1;
+                                                saldo -= Math.Round(doc.Amount / 100 * 13);
                                             <tr>
                                                 <td>@i.ToString()</td>
-                                                <td>@doc.ActDate</td>
+                                                <td>@doc.SendTo1C.Value.ToShortDateString()</td>
                                                 <td>Удержан НДФЛ по акту @doc.ActNumber</td>
                                                 <td>@doc.CTName</td>
-                                                <td>@doc.ChargingDate</td>
+                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
                                                 <td></td>
                                                 <td>@Math.Round(doc.Amount / 100 * 13)</td>
                                                 <td></td>
                                                 <td>@saldo</td>
                                             </tr>
-                                            i += 1;
-                                            saldo -= doc.AmountPayment;
+                                                i += 1;
+                                                saldo -= doc.AmountPayment;
                                             <tr>
                                                 <td>@i.ToString()</td>
-                                                <td>@doc.ActDate</td>
+                                                <td>@doc.SendTo1C.Value.ToShortDateString()</td>
                                                 <td>Выплачено по акту @doc.ActNumber</td>
                                                 <td>@doc.CTName</td>
-                                                <td>@doc.ChargingDate</td>
+                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>@doc.AmountPayment</td>
                                                 <td>@saldo</td>
                                             </tr>
+                                            }
+                                            i++;
                                         }
                                     }
                                     

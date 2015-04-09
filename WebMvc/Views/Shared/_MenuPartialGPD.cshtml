@@ -108,8 +108,15 @@
                  {
                     <div id="liGPD" class="mainOn">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
+                  @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 {
+                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
+                 }
         </div>  
         <div class="podmenu">
+
+         @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+         {
             <div class="menuitem" id="moContract">@Html.ActionLink("Договор", "Index", "GPD")</div>
             <div class="menuitem" id="moAct">@Html.ActionLink("Акт", "GpdActList", "GPD")</div>
             <!--
@@ -118,6 +125,12 @@
             <div class="menuitem" id="moGpdRefDetail">@Html.ActionLink("Справочник реквизитов", "GpdRefDetail", "GPD")</div>
             <div class="menuitem" id="moAnalyticalStatement">@Html.ActionLink("Аналитическая ведомость", "GpdAnalyticalStatement", "GPD")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+         }
+          @if ((dto.UserRole & UserRole.Manager) > 0)
+          {
+             <div class="menuitem" id="moAnalyticalStatement">@Html.ActionLink("Аналитическая ведомость", "GpdAnalyticalStatement", "GPD")</div>
+             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+          }
         </div>
     </div>   
 }

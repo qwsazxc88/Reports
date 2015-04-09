@@ -1443,21 +1443,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             GetPermission(model);
             var docs = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype,model.Surname, model.StatusID, model.ActNumber, model.CardNumber, model.SortBy, model.SortDescending);
-            docs = docs.Distinct(model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPayeeId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPayeeIdandCTName())
+            docs = docs.Distinct(model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonIdandCTName())
                 .GroupJoin(docs, o => o, i => i, (p, op) => new GpdActDto{ 
-                    PayeeID=p.PayeeID,
-                    PayeeName=p.PayeeName,
+                    PersonId=p.PersonId,
+                    Surname=p.Surname,
                     DepLevel3Name = p.DepLevel3Name,
                     DepLevel7Name = p.DepLevel7Name,
                     CTName =model.GroupAll && model.CTtype==0 ?"Все виды": p.CTName,
                     Amount=op.Sum(s=>s.Amount),
-                    AmountPayment=op.Sum(s=>s.AmountPayment)
+                    Ndfl=op.Sum(s=>s.SendTo1C.HasValue?Math.Round(s.Amount/100*13):0),
+                    AmountPayment=op.Sum(s=>s.SendTo1C.HasValue?s.AmountPayment:0)
             },
-            model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPayeeId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPayeeIdandCTName()
+            model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonIdandCTName()
             ).ToList();
             if (model.SortBy == 21)
             {
-                var ordered = docs.OrderBy(x => (x.Amount - x.AmountPayment - Math.Round(x.Amount / 100 * 13)));
+                var ordered = docs.OrderBy(x => (x.Amount - x.AmountPayment - x.Ndfl));
                 if (model.SortDescending) ordered.Reverse();
                 docs = ordered.ToList();
             }
