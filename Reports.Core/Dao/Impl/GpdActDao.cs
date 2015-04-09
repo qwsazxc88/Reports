@@ -98,7 +98,7 @@ namespace Reports.Core.Dao.Impl
             }
             if (!String.IsNullOrWhiteSpace(CardNumber))
             {
-                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE PayeeId= " + CardNumber+" "; else sqlWhere += " AND PayeeId=" + CardNumber+" ";
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE PersonId= " + CardNumber+" "; else sqlWhere += " AND PersonId=" + CardNumber+" ";
             }
             if(CTType>0)
             {
@@ -139,6 +139,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ActDate", NHibernateUtil.DateTime).
                 AddScalar("ActNumber", NHibernateUtil.String).
                 AddScalar("GCCount", NHibernateUtil.Int32).
+                AddScalar("PersonId",NHibernateUtil.Int32).
                 AddScalar("Surname", NHibernateUtil.String).
                 AddScalar("NameContract", NHibernateUtil.String).
                 AddScalar("NumContract", NHibernateUtil.String).
@@ -157,6 +158,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ESSSNum", NHibernateUtil.String).
                 AddScalar("StatusID", NHibernateUtil.Int32).
                 AddScalar("StatusName", NHibernateUtil.String).
+                AddScalar("SendTo1C",NHibernateUtil.DateTime).
                 AddScalar("GCID", NHibernateUtil.Int32).
                 AddScalar("CTName", NHibernateUtil.String).
                 AddScalar("DateP", NHibernateUtil.DateTime).
