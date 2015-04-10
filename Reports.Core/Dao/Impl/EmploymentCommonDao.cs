@@ -31,7 +31,7 @@ namespace Reports.Core.Dao.Impl
 
         public EmploymentCandidate GetCandidateByUserId(int userId)
         {
-            string sqlQuery = string.Format(@"select ec.id from EmploymentCandidate ec where ec.User = :userId)");
+            string sqlQuery = string.Format(@"select ec.id from EmploymentCandidate ec where ec.User = :userId");
             IQuery query = Session.CreateQuery(sqlQuery);
             query.SetInt32("userId", userId);
             int? id = query.UniqueResult<int>();

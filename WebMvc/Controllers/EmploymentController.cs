@@ -45,6 +45,15 @@ namespace WebMvc.Controllers
 
         #region Main Actions
 
+        #region Instruction
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult Instruction()
+        {
+            return View(new InstructionModel());
+        } 
+        #endregion
+
         #region Index
         [HttpGet]
         [ActionName("Index")]
@@ -1312,7 +1321,7 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;
                 //return View(model);
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
             }
             else
             {
@@ -1349,7 +1358,7 @@ namespace WebMvc.Controllers
                 Session.Add("ManagersMS" + SPPath, mst);
             }
 
-            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
@@ -1378,7 +1387,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
 
         #endregion
@@ -1417,8 +1426,8 @@ namespace WebMvc.Controllers
                 }
                 Session.Remove("PersonnelManagersMS" + SPPath);
                 //затираются значения, потому что в контроллер приходят пустые поля и присваиваются в коде
-                ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
-                ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
             }
             
             //model = EmploymentBl.GetPersonnelManagersModel(id);
@@ -1471,7 +1480,7 @@ namespace WebMvc.Controllers
             if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
                 else
                 {
                     ViewBag.Error = error;
@@ -1511,7 +1520,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
         }
         #endregion
 
@@ -1607,7 +1616,15 @@ namespace WebMvc.Controllers
             //, IEnumerable<HttpPostedFileBase> files
             string error = String.Empty;
             if (model.DeleteAttachmentId == 0)
-                EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            {
+                //кадровик не может менять список документов после выгрузки кандидата в 1С
+                if (model.IsSave && model.SendTo1C.HasValue)
+                {
+                    ModelState.AddModelError("SendTo1C", "Кандидат выгружен в 1С! Изменение перечня документов для подписи не возможно!");
+                }
+                else
+                    EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            }
             else
             {
                 DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
@@ -1616,7 +1633,7 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
 
             if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
             else
                 return View(model);
         }
@@ -1878,10 +1895,22 @@ namespace WebMvc.Controllers
 
             if (!model.SalaryMultiplier.HasValue)
                 ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
-            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value == 0)
-                ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
-            if (!model.SalaryMultiplier.HasValue && model.SalaryMultiplier.Value > 1)
-                ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
+            if (!model.SalaryMultiplier.HasValue)
+                ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");
+            else
+            {
+                if (model.SalaryMultiplier.Value == 0)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
+                if (model.SalaryMultiplier.Value > 1)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
+            }
+
+            
+            if (!model.SendTo1C.HasValue)
+            {
+                if (!model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                    ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+            }
             return ModelState.IsValid;
         }
 
@@ -1894,7 +1923,7 @@ namespace WebMvc.Controllers
             if (model.ContractEndDate == null && isFixedTermContract)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
-                ModelState.AddModelError("MessageStr", "*");
+                ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
                 flgError = true;
             }
             if (model.ContractEndDate != null && !isFixedTermContract)
@@ -1939,7 +1968,37 @@ namespace WebMvc.Controllers
                 flgError = true;
             }
 
-            if (!ModelState.IsValid && !flgError)
+            if (!model.SendTo1C.HasValue)
+            {
+                //на время теста разрешили не раньше 1 апреля
+                //if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < DateTime.Today)
+                if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < Convert.ToDateTime("01/04/2015"))
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    flgError = true;
+                }
+
+                //if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
+                if (model.ContractDate.HasValue && model.ContractDate.Value < Convert.ToDateTime("01/04/2015"))//на время теста
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    flgError = true;
+                }
+
+                if (model.ContractDate.HasValue && model.EmploymentDate.HasValue)
+                {
+                    if (model.ContractDate.Value > model.EmploymentDate.Value)
+                    {
+                        ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        flgError = true;
+                    }
+                }
+            }
+
+            if (!ModelState.IsValid && flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
@@ -2051,6 +2110,48 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintRegisterPersonalRecord(int userId)
+        {
+            return GetPrintForm("PrintRegisterPersonalRecord", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionOfSecret(int userId)
+        {
+            return GetPrintForm("PrintInstructionOfSecret", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionEnsuringSafety(int userId)
+        {
+            return GetPrintForm("PrintInstructionEnsuringSafety", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintAgreePersonForChecking(int userId)
+        {
+            return GetPrintForm("PrintAgreePersonForChecking", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition1(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition1", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition2(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition2", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintObligationTradeSecret(int userId)
+        {
+            return GetPrintForm("PrintObligationTradeSecret", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
@@ -2106,6 +2207,55 @@ namespace WebMvc.Controllers
         public ActionResult PrintEmploymentFile(int userId)
         {
             PrintEmploymentFileModel model = EmploymentBl.GetPrintEmploymentFileModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintRegisterPersonalRecord(int userId)
+        {
+            PrintRegisterPersonalRecordModel model = EmploymentBl.GetPrintRegisterPersonalRecordModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionOfSecret(int userId)
+        {
+            PrintInstructionOfSecretModel model = EmploymentBl.GetPrintInstructionOfSecretModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionEnsuringSafety(int userId)
+        {
+            PrintInstructionEnsuringSafetyModel model = EmploymentBl.GetPrintInstructionEnsuringSafetyModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintAgreePersonForChecking(int userId)
+        {
+            PrintAgreePersonForCheckingModel model = EmploymentBl.GetPrintAgreePersonForCheckingModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition1(int userId)
+        {
+            PrintCashWorkAddition1Model model = EmploymentBl.GetPrintCashWorkAddition1Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition2(int userId)
+        {
+            PrintCashWorkAddition2Model model = EmploymentBl.GetPrintCashWorkAddition2Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintObligationTradeSecret(int userId)
+        {
+            PrintObligationTradeSecretModel model = EmploymentBl.GetPrintObligationTradeSecretModel(userId);
             return View(model);
         }
 

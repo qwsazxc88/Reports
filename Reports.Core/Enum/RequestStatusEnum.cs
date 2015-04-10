@@ -100,6 +100,12 @@
         DataObligationScan = 277,
         EmploymentFileScan = 278,
         RegisterPersonalRecordScan = 279,
+        InstructionOfSecretScan = 280,
+        InstructionEnsuringSafetyScan = 281,
+        AgreePersonForCheckingScan = 282,
+        CashWorkAddition1Scan = 283,
+        CashWorkAddition2Scan = 284,
+        ObligationTradeSecretScan = 285,
 
         // Dismissal Additional Documents Scans
 

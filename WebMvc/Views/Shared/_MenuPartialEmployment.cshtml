@@ -127,6 +127,7 @@
                  }
         </div>  
         <div class="podmenu">
+            <div class="menuitem" id="empInstruction">@Html.ActionLink("Инструкция", "Instruction", "Employment")</div>
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {                
                 <div class="menuitem" id="empGeneralInfo">@Html.ActionLink("Общая информация", "GeneralInfo", "Employment")</div>
@@ -153,7 +154,7 @@
 
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {
-                <div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>
+                @*<div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>*@
                 <div class="menuitem" id="empCandidateDocuments">@Html.ActionLink("Документы", "CandidateDocuments", "Employment")</div>
             }
             
