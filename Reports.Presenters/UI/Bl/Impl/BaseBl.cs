@@ -604,7 +604,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 list.Add(new IdNameDto(i,GetMonthName(i)));
             return list;
         }
-        protected static string GetMonthName(int month)
+        public static string GetMonthName(int month)
         {
             switch (month)
             {
