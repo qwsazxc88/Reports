@@ -280,7 +280,7 @@ namespace WebMvc.Controllers
         /// <param name="GCID">ID договора.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager| UserRole.Manager)]
         public ActionResult GpdActEdit(int Id, int GCID, string Msg)
         {
             bool hasError = false;

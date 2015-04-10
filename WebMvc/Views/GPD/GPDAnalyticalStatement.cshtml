@@ -107,7 +107,7 @@
                                             <div id="sort19" ><a href="#" onclick = "SortChanged(19);">Сумма <br />начисленная</a></div>
                                         </th>
                                         <th>
-                                            НДФЛ
+                                            <div id="sort23" ><a href="#" onclick = "SortChanged(23);">НДФЛ</a></div>
                                         </th>
                                         <th>
                                             <div id="sort15"><a href="#" onclick = "SortChanged(15);">Сумма к <br />выплате</a></div>
@@ -125,16 +125,16 @@
                                         {
                                             <tr>
                                                 <td>@i.ToString()</td>
-                                                <td>@Html.ActionLink(doc.PayeeID.ToString(), "GPDAnalyticalStatementDetails", "GPD", new { id = (doc.PayeeID) }, null)</td>
-                                                <td>@doc.PayeeName</td>
+                                                <td>@Html.ActionLink(doc.PersonId.ToString(), "GPDAnalyticalStatementDetails", "GPD", new { id = (doc.PersonId) }, null)</td>
+                                                <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@RequestBl.FormatSum(@doc.Amount)</td>
-                                                <td>@RequestBl.FormatSum(Math.Round(@doc.Amount/100*13))</td>
+                                                <td>@RequestBl.FormatSum(@doc.Ndfl)</td>
                                                 <td>@RequestBl.FormatSum(@doc.AmountPayment)</td>
-                                                <td>@RequestBl.FormatSum(doc.Amount - doc.AmountPayment - Math.Round(doc.Amount / 100 * 13))</td>
+                                                <td>@RequestBl.FormatSum(doc.Amount - doc.AmountPayment - doc.Ndfl)</td>
                                             </tr>
                                             i += 1;
                                         }
