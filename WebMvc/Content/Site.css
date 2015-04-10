@@ -279,6 +279,7 @@ table.grid
   border: 1px solid Black;
   border-collapse: collapse;
   color:Black;
+  width:100%;
 }
 
 table.grid > tbody > tr:nth-of-type(odd) {

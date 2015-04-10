@@ -573,6 +573,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IDeductionImportDao))
                 .ImplementedBy<DeductionImportDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdChargingTypeDao))
+                .ImplementedBy<GpdChargingTypeDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

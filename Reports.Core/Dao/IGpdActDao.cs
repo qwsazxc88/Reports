@@ -31,14 +31,17 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         IList<GpdActDto> GetAct(UserRole role,
+                                        int userId,
                                         int? ID,
                                         bool IsFind,
                                         DateTime? DateBegin,
                                         DateTime? DateEnd,
                                         int DepartmentId,
+                                        int CTType,
                                         string Surname,
                                         int StatusID,
                                         string ActNumber,
+                                        string CardNumber,
                                         int SortBy,
                                         bool? SortDescending);
         /// <summary>
