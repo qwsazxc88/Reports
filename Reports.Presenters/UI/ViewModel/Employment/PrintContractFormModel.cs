@@ -15,6 +15,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //public string Number { get; set; }
         // public string City { get; set; }
         public DateTime? ContractDate { get; set; }
+        public DateTime? EmploymentDate { get; set; }
         //public DateTime? ContractEndDate { get; set; }
         public string ContractNumber { get; set; }
         public string EmployeeName { get; set; }

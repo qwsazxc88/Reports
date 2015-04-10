@@ -268,7 +268,19 @@
             @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
             {
                 @Html.LabelFor(m => m.ApprovalStatus)<br />
-                @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />            
+                @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />
+                if (Model.IsApproveBySecurityAvailable)
+                {
+                    @Html.LabelFor(m => m.PyrusRef) <text> &nbsp;</text>
+                    @Html.TextBoxFor(m => m.PyrusRef)
+                    <br />
+                }
+                else
+                {
+                    <a href="@Model.PyrusRef">@Html.LabelFor(m => m.PyrusRef)</a><br />
+                }
+                
+                <br />            
                 @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, string.Empty, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
             }
             @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
@@ -296,7 +308,8 @@
         <tr>
             <td>
                 <input id="add-backgroundcheck-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
-                                                                  { <text>style = "display:none"</text>; } />
+                                                                                                   { <text>style = "display:none"</text>;
+                                                                                                   } />
             </td>
         </tr>
         <tr>

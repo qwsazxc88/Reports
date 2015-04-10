@@ -363,6 +363,7 @@ GO
 			[IsFinal] [bit] NOT NULL CONSTRAINT [DF__Backgroun__IsFin__39794BAC]  DEFAULT ((0)),
 			[IsApprovalSkipped] [bit] NOT NULL CONSTRAINT [DF_BackgroundCheck_IsApprovalSkipped]  DEFAULT ((0)),
 			[IsValidate] [bit] NULL CONSTRAINT [DF_BackgroundCheck_IsValidate]  DEFAULT ((0)),
+			[PyrusRef] [nvarchar](150) NULL,
 		 CONSTRAINT [PK_BackgroundCheck] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1527,6 +1528,9 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ссылка на задачу в системе Pyrus' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'BackgroundCheck', @level2type=N'COLUMN',@level2name=N'PyrusRef'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сообщение руководству от кадровика послано' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsPersonnelManagerToManagerSendEmail'
 	GO
 
