@@ -104,9 +104,9 @@
                                             <tr>
                                                 <td>@i.ToString()</td>
                                                 <td>@(doc.ActDate.HasValue?doc.ActDate.Value.ToShortDateString():null)</td>
-                                                <td>Начисленно по акту @doc.ActNumber</td>
+                                                <td>@Html.ActionLink("Начисленно по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)</td>
                                                 <td>@doc.CTName</td>
-                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
                                                 <td>@doc.Amount</td>
                                                 <td></td>
                                                 <td></td>
@@ -119,9 +119,10 @@
                                             <tr>
                                                 <td>@i.ToString()</td>
                                                 <td>@doc.SendTo1C.Value.ToShortDateString()</td>
-                                                <td>Удержан НДФЛ по акту @doc.ActNumber</td>
+                                                <td>@Html.ActionLink("Удержан НДФЛ по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)
+                                                </td>
                                                 <td>@doc.CTName</td>
-                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
                                                 <td></td>
                                                 <td>@Math.Round(doc.Amount / 100 * 13)</td>
                                                 <td></td>
@@ -132,9 +133,9 @@
                                             <tr>
                                                 <td>@i.ToString()</td>
                                                 <td>@doc.SendTo1C.Value.ToShortDateString()</td>
-                                                <td>Выплачено по акту @doc.ActNumber</td>
+                                                <td>@Html.ActionLink("Выплачено по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)</td>
                                                 <td>@doc.CTName</td>
-                                                <td>@(doc.ChargingDate.HasValue?(BaseBl.GetMonthName(doc.ChargingDate.Value.Month)+" "+doc.ChargingDate.Value.Year):"")</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>@doc.AmountPayment</td>

@@ -84,10 +84,61 @@ namespace Reports.Core.Dao.Impl
                                         int SortBy, 
                                         bool? SortDescending)
         {
-            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] as A ";
+            string sqlQuery = @"SELECT  A.[Id]
+              ,A.[CreatorID]
+              ,A.[ActDate]
+              ,A.[ActNumber]
+              ,A.[GCCount]
+              ,A.[PersonID]
+              ,A.[Surname]
+              ,A.[NameContract]
+              ,A.[NumContract]
+              ,A.[ContractBeginDate]
+              ,A.[ContractEndDate]
+              ,A.[CreatorName]
+              ,A.[CreateDate]
+              ,A.[DepLevel3Name]
+              ,A.[ChargingDate]
+              ,A.[DateBegin]
+              ,A.[DateEnd]
+              ,A.[Amount]
+              ,A.[AmountPayment]
+              ,A.[POrderDate]
+              ,A.[PurposePayment]
+              ,A.[ESSSNum]
+              ,A.[StatusID]
+              ,A.[StatusName]
+              ,A.[SendTo1C]
+              ,A.[GCID]
+              ,A.[flgRed]
+              ,A.[CTName]
+              ,A.[CTType]
+              ,A.[DateP]
+              ,A.[DepLevel7Name]
+              ,A.[GPDID]
+              ,A.[DepartmentId]
+              ,A.[PayerID]
+              ,A.[PayerName]
+              ,A.[PayerINN]
+              ,A.[PayerKPP]
+              ,A.[PayerAccount]
+              ,A.[PayerBankName]
+              ,A.[PayerBankBIK]
+              ,A.[PayerCorrAccount]
+              ,A.[PayeeID]
+              ,A.[PayeeName]
+              ,A.[PayeeINN]
+              ,A.[PayeeKPP]
+              ,A.[PayeeAccount]
+              ,A.[PayeeBankName]
+              ,A.[PayeeBankBIK]
+              ,A.[PayeeCorrAccount]
+              ,A.[PAccountID]
+              ,A.[Account]  
+            FROM [dbo].[vwGpdActList] as A ";
             string sqlWhere=""; 
             if (!IsFind)
-                sqlWhere += "WHERE Id = " + ID.ToString();
+                sqlWhere += "WHERE A.Id = " + ID.ToString();
             else
                 sqlWhere += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber, ID) + ActListSqlOrderBy(SortBy, SortDescending);
             
@@ -98,11 +149,11 @@ namespace Reports.Core.Dao.Impl
             }
             if (!String.IsNullOrWhiteSpace(CardNumber))
             {
-                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE PersonId= " + CardNumber+" "; else sqlWhere += " AND PersonId=" + CardNumber+" ";
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE A.PersonId= " + CardNumber+" "; else sqlWhere += " AND A.PersonId=" + CardNumber+" ";
             }
             if(CTType>0)
             {
-                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE CTType=" + CTType + " "; else sqlWhere += " AND CTType=" + CTType+" ";
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE A.CTType=" + CTType + " "; else sqlWhere += " AND A.CTType=" + CTType+" ";
             }
             sqlQuery += sqlWhere;
             IQuery query = CreateActQuery(sqlQuery);
