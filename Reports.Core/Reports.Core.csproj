@@ -92,6 +92,7 @@
     <Compile Include="Dao\IDeductionImportDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
+    <Compile Include="Dao\Impl\GpdChargingTypeDao.cs" />
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
     <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
@@ -442,6 +444,7 @@
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
     <Compile Include="Domain\GpdAct.cs" />
     <Compile Include="Domain\GpdActComment.cs" />
+    <Compile Include="Domain\GpdChargingType.cs" />
     <Compile Include="Domain\GpdContract.cs" />
     <Compile Include="Domain\GpdMagProlongation.cs" />
     <Compile Include="Domain\GpdRefDetail.cs" />
@@ -1155,6 +1158,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
+    <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>

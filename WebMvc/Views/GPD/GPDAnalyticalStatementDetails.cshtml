@@ -1,0 +1,167 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@using Reports.Presenters.UI.Bl;
+@model Reports.Presenters.UI.ViewModel.GpdActListModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Карточка работающего по ГПХ.";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Карточка физ лица, работающего по договору ГПХ</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                ФИО:
+                            </td>
+                            <td>
+                                @Model.Documents[0].Surname
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CardNumber)
+                            </td>
+                            <td>
+                                @Model.CardNumber
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                Подразделение 3 уровня
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.Documents[0].DepLevel3Name</label>                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                Подразделение 7 уровня
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.Documents[0].DepLevel7Name</label>                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+                                <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+                                <table class="grid" width='100%'>
+                                    <tr>
+                                        <th>
+                                          №<br />п/п
+                                        </th>
+                                        
+                                        <th>
+                                            Дата
+                                        </th>
+                                        <th>
+                                            Операция
+                                        </th>
+                                        
+                                        <th>
+                                            Вид<br />начисления
+                                        </th>
+                                        <th>
+                                            За<br />период
+                                        </th>
+                                        
+                                        <th>
+                                           Сумма <br />начисленная
+                                        </th>
+                                        <th>
+                                            НДФЛ<br /> удержанный
+                                        </th>
+                                        <th>
+                                            Сумма<br />выплаченная
+                                        </th>
+                                        <th>
+                                            Остаток
+                                        </th>
+                                        
+                                    </tr>
+
+                                    @if (Model.Documents != null && Model.Documents.Count > 0)
+                                    {
+                                        int i = 1;
+                                        decimal saldo = 0;
+                                        foreach (var doc in Model.Documents)
+                                        {
+                                            saldo += doc.Amount;
+                                            <tr>
+                                                <td>@i.ToString()</td>
+                                                <td>@(doc.ActDate.HasValue?doc.ActDate.Value.ToShortDateString():null)</td>
+                                                <td>@Html.ActionLink("Начисленно по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)</td>
+                                                <td>@doc.CTName</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
+                                                <td>@doc.Amount</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>@saldo</td>
+                                            </tr>
+                                            if (doc.SendTo1C.HasValue)
+                                            {
+                                                i += 1;
+                                                saldo -= Math.Round(doc.Amount / 100 * 13);
+                                            <tr>
+                                                <td>@i.ToString()</td>
+                                                <td>@doc.SendTo1C.Value.ToShortDateString()</td>
+                                                <td>@Html.ActionLink("Удержан НДФЛ по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)
+                                                </td>
+                                                <td>@doc.CTName</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
+                                                <td></td>
+                                                <td>@Math.Round(doc.Amount / 100 * 13)</td>
+                                                <td></td>
+                                                <td>@saldo</td>
+                                            </tr>
+                                                i += 1;
+                                                saldo -= doc.AmountPayment;
+                                            <tr>
+                                                <td>@i.ToString()</td>
+                                                <td>@doc.SendTo1C.Value.ToShortDateString()</td>
+                                                <td>@Html.ActionLink("Выплачено по акту " + doc.ActNumber, "GPDActEdit", "GPD", new { id = (doc.Id), GCID = doc.GCID }, null)</td>
+                                                <td>@doc.CTName</td>
+                                                <td>@(doc.ChargingDate.HasValue ? (BaseBl.GetMonthName(doc.ChargingDate.Value.Month) + " " + doc.ChargingDate.Value.Year) : "")</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>@doc.AmountPayment</td>
+                                                <td>@saldo</td>
+                                            </tr>
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                    
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>   
+        </tr>
+    </table>
+}
+
+
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        setActiveMenuItem("moAnalyticalStatement");
+    });
+ </script>   

@@ -25,7 +25,7 @@ namespace WebMvc.Controllers
     /// Контролер для ГПД.
     /// </summary>
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Chief | UserRole.Manager)]
 
     public class GPDController : BaseController
     {
@@ -43,6 +43,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult Index()
         {
             GpdContractModel model = new GpdContractModel();
@@ -55,6 +56,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult Index(GpdContractModel model)
         {
             GpdBl.SetGpdContractView(model);
@@ -67,6 +69,7 @@ namespace WebMvc.Controllers
         /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdContractEdit(int Id, int PersonID, string Msg)
         {
             GpdContractEditModel model = GpdBl.SetGpdContractEdit(Id, PersonID, 0, null);
@@ -83,6 +86,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Обрабатываемая модель.</param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
             ModelState.Clear();
@@ -128,6 +132,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdRefDetail()
         {
             GpdRefDetailModel model = new GpdRefDetailModel();
@@ -144,6 +149,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdRefDetail(GpdRefDetailModel model)
         {
             ModelState.Clear();
@@ -159,6 +165,7 @@ namespace WebMvc.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdRefDetailEdit(int Id)
         {
             GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0, 0);
@@ -173,6 +180,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Модель редактирования.</param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdRefDetailEdit(GpdRefDetailEditModel model)
         {
             ModelState.Clear();
@@ -212,6 +220,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdActList()
         {
             bool hasError = false;
@@ -221,12 +230,42 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
             return View(model);
         }
+        [HttpGet]
+        public ActionResult GpdAnalyticalStatement()
+        {
+            bool hasError = false;
+            GpdActListModel model = new GpdActListModel();
+            GpdBl.SetGpdActFind(model, hasError);
+            if (model.hasErrors)
+                ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult GpdAnalyticalStatement(GpdActListModel model)
+        {
+            bool hasError = false;
+            GpdBl.SetGpdAnalyticalStatementView(model, hasError);
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult GpdAnalyticalStatementDetails(int id)
+        {
+            GpdActListModel model = new GpdActListModel 
+            {
+                CardNumber=id.ToString()    ,
+                IsFind=true
+            };
+            bool hasError = false;
+            GpdBl.SetGpdActView(model, hasError);
+            return View(model);
+        }
         /// <summary>
         /// Просмотр актов ГПД с возможными сортировками в таблице.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdActList(GpdActListModel model)
         {
             //GpdContractModel model = new GpdContractModel();
@@ -241,6 +280,7 @@ namespace WebMvc.Controllers
         /// <param name="GCID">ID договора.</param>
         /// <returns></returns>
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager| UserRole.Manager)]
         public ActionResult GpdActEdit(int Id, int GCID, string Msg)
         {
             bool hasError = false;
@@ -260,6 +300,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Модель создания/редактирования акта ГПД.</param>
         /// <returns></returns>
         [HttpPost]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult GpdActEdit(GpdActEditModel model)
         {
             bool hasError = false;
@@ -307,6 +348,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
+        /// 
         public ActionResult AutocompleteDetailPayer(string term)
         {
             IList<GpdContractDetailDto> Details = GpdBl.GetDetailsAutocomplete(term, 0);

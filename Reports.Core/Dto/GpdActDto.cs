@@ -15,6 +15,7 @@ namespace Reports.Core.Dto
         public DateTime? ActDate { get; set; }
         public string ActNumber { get; set; }
         public int GCCount { get; set; }
+        public int PersonId { get; set; }
         public string Surname { get; set; }
         public string NameContract { get; set; }
         public string NumContract { get; set; }
@@ -27,14 +28,17 @@ namespace Reports.Core.Dto
         public DateTime? DateBegin { get; set; }
         public DateTime? DateEnd { get; set; }
         public decimal Amount { get; set; }
+        public decimal Ndfl { get; set; }
         public decimal AmountPayment { get; set; }
         public DateTime? POrderDate { get; set; }
         public string PurposePayment { get; set; }
         public string ESSSNum { get; set; }
         public int StatusID { get; set; }
         public string StatusName { get; set; }
+        public DateTime? SendTo1C { get; set; }
         public int GCID { get; set; }
         public string CTName { get; set; }
+        public int CTType { get; set; }
         //public int DSID { get; set; }
         public string DetailName { get; set; }
         public DateTime? DateP { get; set; }
@@ -82,4 +86,30 @@ namespace Reports.Core.Dto
         public DateTime CreateDate { get; set; }
         public string Creator { get; set; }
     }
+
+    public class GpdActEqualityComparerByPersonId : IEqualityComparer<GpdActDto>
+    {
+        public bool Equals(GpdActDto x, GpdActDto y)
+        {
+            return (x.PersonId == y.PersonId);
+        }
+
+        public int GetHashCode(GpdActDto obj)
+        {
+            return (obj.PersonId+obj.Surname).GetHashCode();
+        }
+    }
+    public class GpdActEqualityComparerByPersonIdandCTName : IEqualityComparer<GpdActDto>
+    {
+        public bool Equals(GpdActDto x, GpdActDto y)
+        {
+            return (x.PersonId == y.PersonId && x.CTName==y.CTName);
+        }
+
+        public int GetHashCode(GpdActDto obj)
+        {
+            return (obj.PersonId + obj.Surname+obj.CTName).GetHashCode();
+        }
+    }
+
 }
