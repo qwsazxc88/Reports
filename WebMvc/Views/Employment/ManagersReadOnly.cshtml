@@ -131,12 +131,13 @@
             @Html.EditorFor(m => m.RequestNumber)
         </div>
 
-        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue) || (dto.UserRole & UserRole.PersonnelManager) > 0)
+        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
                 <button id="btnManagerDraft">Черновик</button>
             </div>
         }
+        
     </fieldset>
     
     
