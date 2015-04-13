@@ -120,6 +120,13 @@
 
                                     @if (Model.Documents != null && Model.Documents.Count > 0)
                                     {
+                                        <tr>
+                                            <td colspan='6'>Итого:</td>
+                                            <td>@RequestBl.FormatSum(Model.Documents.Aggregate((decimal)0,(sum,next)=>sum+=next.Amount))</td>
+                                            <td>@RequestBl.FormatSum(Model.Documents.Aggregate((decimal)0,(sum,next)=>sum+=next.Ndfl))</td>
+                                            <td>@RequestBl.FormatSum(Model.Documents.Aggregate((decimal)0, (sum, next) => sum += next.AmountPayment))</td>
+                                            <td>@RequestBl.FormatSum(Model.Documents.Aggregate((decimal)0, (sum, next) => sum += next.Amount-next.AmountPayment- next.Ndfl))</td>
+                                        </tr>
                                         int i = 1;
                                         foreach (var doc in Model.Documents)
                                         {
@@ -128,7 +135,6 @@
                                                 <td>@Html.ActionLink(doc.PersonId.ToString(), "GPDAnalyticalStatementDetails", "GPD", new { id = (doc.PersonId) }, null)</td>
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
-                                                
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@RequestBl.FormatSum(@doc.Amount)</td>
