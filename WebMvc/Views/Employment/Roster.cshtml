@@ -208,34 +208,7 @@
         </th>
         *@
         
-@*        
-        <th>
-            <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Номер<br />приказа</a></div>
-        </th>
-        
-        <th>
-            <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Дата<br />приказа</a></div>
-        </th>
-
-        <th>
-            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">Номер<br />трудового<br />договора</a></div>
-        </th>
-        <th>
-            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">График<br />работы</a></div>
-        </th>
-
-        <th>
-            <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Дата<br />рождения</a></div>
-        </th>
-
-        
-
-        <th>
-            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Грейд</a></div>
-        </th>
-
-  *@      
-
+@*
         @if (Model.IsBulkApproveByManagerAvailable)
         {
             <th>
@@ -251,7 +224,7 @@
                 <input type="checkbox" id="setAllByHigherManager" />
             </th>
         }
-    
+  *@  
     </tr>
     <tbody id="tblBody">
         @{ int i = 1; }
@@ -342,32 +315,8 @@
                 
 
 
-        
                 
-@*        
-                <td>
-                    &nbsp;@candidate.EmploymentOrderNumber
-                </td>
-        
-                <td>
-                    &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
-                </td>
-
-                <td>
-                    &nbsp;@candidate.ContractNumber
-                </td>
-                <td>
-                    &nbsp;@candidate.Schedule
-                </td>
-
-                <td>
-                    &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
-                </td>
-                <td>
-                    &nbsp;@candidate.Grade
-                </td>
-*@              
-        
+                @*        
                 @if (Model.IsBulkApproveByManagerAvailable)
                 {
                     <td rowspan="2" class="centered">
@@ -389,6 +338,7 @@
                 }        
 
                 @{i++;}
+                *@
             </tr>
         
         }
