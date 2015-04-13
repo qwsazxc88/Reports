@@ -44,13 +44,21 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 }
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 2)
 {
-    <label>1.5. Договор заключается временно, на период отсутствия основного работника @Model.ContractPointsFio, за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами.</label><br />
+    <label>1.5. Настоящий Договор является срочным и заключается на период отсутствия основного работника @Model.ContractPointsFio, за которым сохраняется место работы.</label><br />
+    <label>Трудовой договор вступает в силу с даты начала работы, указанной в пункте 1.5.1 Договора.</label><br /><text>&nbsp;</text>
+    <label>1.5.1. Дата начала работы @(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToShortDateString() : "____________________")</label><br /><text>&nbsp;</text>
+    <label>1.5.2. Настоящий трудовой договор прекращается с выходом отсутствующего работника на работу.</label><br />
 }
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 3)
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
-Дата начала работы - <b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
+
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value != 2)
+{
+    <text>Дата начала работы - </text><b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
+}
+
 Если РАБОТНИК не приступил к работе в день начала работы, то РАБОТОДАТЕЛЬ имеет право аннулировать настоящий Договор.<br />
 &nbsp;
 @*1.6. Фактическое место работы РАБОТНИКА: @Model.WorkCity<BR>&nbsp;*@
@@ -131,7 +139,7 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 4. УСЛОВИЯ ОПЛАТЫ ТРУДА<BR></STRONG>&nbsp;
 4.1. Оплата труда РАБОТНИКА производится в соответствии с трудовым законодательством и внутренними документами РАБОТОДАТЕЛЯ.<BR>&nbsp;
 4.2. РАБОТОДАТЕЛЬ производит оплату труда РАБОТНИКА в размере, установленным штатным расписанием РАБОТОДАТЕЛЯ.<BR>&nbsp;
-@if(Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value == 1)
+@if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value == 1)
 {
     <text>
     РАБОТНИКУ устанавливается:<BR>&nbsp;&nbsp;- базовый должностной оклад в размере
@@ -174,7 +182,7 @@ else
     {
         <text>в месяц;<BR>&nbsp;</text>
     }
-    
+
 }
 
 @if (Model.PositionAddition.HasValue)

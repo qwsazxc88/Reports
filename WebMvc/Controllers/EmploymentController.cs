@@ -1102,11 +1102,11 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus)
+        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, out error);
+            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -1602,7 +1602,30 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult CandidateDocuments(int? id)
         {
-            var model = EmploymentBl.GetCandidateDocumentsModel(id);
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            CandidateDocumentsModel model = new CandidateDocumentsModel();
+
+            if (Session["CandidateDocumentsM" + SPPath] != null)
+            {
+                model = (CandidateDocumentsModel)Session["CandidateDocumentsM" + SPPath];
+                Session.Remove("CandidateDocumentsM" + SPPath);
+            }
+            else
+                model = EmploymentBl.GetCandidateDocumentsModel(id);
+
+
+
+            if (Session["CandidateDocumentsMS" + SPPath] != null)
+            {
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).ElementAt(i));
+                }
+                Session.Remove("CandidateDocumentsMS" + SPPath);
+            }
+
+
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
                 return View(model);
             else
@@ -1615,6 +1638,8 @@ namespace WebMvc.Controllers
         {
             //, IEnumerable<HttpPostedFileBase> files
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+
             if (model.DeleteAttachmentId == 0)
             {
                 //кадровик не может менять список документов после выгрузки кандидата в 1С
@@ -1623,7 +1648,23 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SendTo1C", "Кандидат выгружен в 1С! Изменение перечня документов для подписи не возможно!");
                 }
                 else
+                {
                     EmploymentBl.SaveCandidateDocumentsAttachments(model);
+                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Отправлено сообщение руководителю!");
+                }
+
+                if (Session["CandidateDocumentsM" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsM" + SPPath);
+                if (Session["CandidateDocumentsM" + SPPath] == null)
+                    Session.Add("CandidateDocumentsM" + SPPath, model);
+
+                if (Session["CandidateDocumentsMS" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsMS" + SPPath);
+                if (Session["CandidateDocumentsMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("CandidateDocumentsMS" + SPPath, mst);
+                }
             }
             else
             {
@@ -1908,7 +1949,9 @@ namespace WebMvc.Controllers
             
             if (!model.SendTo1C.HasValue)
             {
-                if (!model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                if (!model.RegistrationDate.HasValue)
+                    ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
+                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
             return ModelState.IsValid;
@@ -1918,12 +1961,13 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(PersonnelManagersModel model)
         {
             bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            model.IsFixedTermContract = isFixedTermContract;
             bool flgError = false;
 
-            if (model.ContractEndDate == null && isFixedTermContract)
+            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value != 2)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
-                ModelState.AddModelError("MessageStr", "*");
+                ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
                 flgError = true;
             }
             if (model.ContractEndDate != null && !isFixedTermContract)
@@ -1976,6 +2020,7 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    flgError = true;
                 }
 
                 //if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
@@ -1983,6 +2028,7 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
                     ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    flgError = true;
                 }
 
                 if (model.ContractDate.HasValue && model.EmploymentDate.HasValue)
@@ -1991,11 +2037,12 @@ namespace WebMvc.Controllers
                     {
                         ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        flgError = true;
                     }
                 }
             }
 
-            if (!ModelState.IsValid && !flgError)
+            if (!ModelState.IsValid && flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
