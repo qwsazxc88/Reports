@@ -101,7 +101,7 @@ namespace Reports.Core.Dao.Impl
                 , Personnel.Name as PersonnelName
                 , case when candidate.IsTrainingNeeded = 0 then 'Не требуется'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 1 and isnull(J.IsFinal, 0) = 1 then 'Пройдено'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Непройдено'
+							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Не пройдено'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
                 ,personnelManagers.CompleteDate as CompleteDate
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
