@@ -274,7 +274,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
 
-                foreach (var item in entity.NameChanges)
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -340,8 +340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
                 }
 
-                
-                foreach (var item in entity.NameChanges)
+
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -488,7 +488,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.Certifications)
+                foreach (var item in entity.Certifications.OrderBy(x => x.CertificationDate))
                 {
                     model.Certifications.Add(new CertificationDto {
                         Id = item.Id,
@@ -526,7 +526,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherEducationDiplomaScanId = attachmentId;
                 model.HigherEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.PostGraduateEducationDiplomas)
+                foreach (var item in entity.PostGraduateEducationDiplomas.OrderBy(x => x.AdmissionYear))
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
                     {
@@ -545,7 +545,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostGraduateEducationDiplomaScanId = attachmentId;
                 model.PostGraduateEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.Training)
+                foreach (var item in entity.Training.OrderBy(x => x.BeginningDate))
                 {
                     model.Training.Add(new TrainingDto
                     {
@@ -593,6 +593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FamillyStatuses = EmploymentFamilyDao.GetFamilyStatuses();
                 model.FamilyStatusId = entity.FamilyStatusId;
                 model.Children = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
+                    .OrderBy(x => x.DateOfBirth)
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
@@ -833,7 +834,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
@@ -885,7 +886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
