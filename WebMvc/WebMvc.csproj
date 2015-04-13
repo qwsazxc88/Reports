@@ -771,6 +771,8 @@
     <Content Include="Views\Shared\_LayoutSurcharge.cshtml" />
     <Content Include="Views\Employment\PrintInstructionOfSecret.cshtml" />
     <Content Include="Views\Employment\PrintInstructionEnsuringSafety.cshtml" />
+    <Content Include="Views\GPD\GPDAnalyticalStatement.cshtml" />
+    <Content Include="Views\GPD\GPDAnalyticalStatementDetails.cshtml" />
     <Content Include="Views\Employment\PrintAgreePersonForChecking.cshtml" />
     <Content Include="Views\Employment\PrintCashWorkAddition1.cshtml" />
     <Content Include="Views\Employment\PrintCashWorkAddition2.cshtml" />
