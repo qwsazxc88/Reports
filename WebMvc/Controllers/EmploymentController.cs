@@ -1102,11 +1102,11 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus)
+        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, out error);
+            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -1908,7 +1908,9 @@ namespace WebMvc.Controllers
             
             if (!model.SendTo1C.HasValue)
             {
-                if (!model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                if (!model.RegistrationDate.HasValue)
+                    ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
+                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
             return ModelState.IsValid;
@@ -1918,9 +1920,10 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(PersonnelManagersModel model)
         {
             bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            model.IsFixedTermContract = isFixedTermContract;
             bool flgError = false;
 
-            if (model.ContractEndDate == null && isFixedTermContract)
+            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value != 2)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
                 ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
