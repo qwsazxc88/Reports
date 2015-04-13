@@ -1602,7 +1602,30 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult CandidateDocuments(int? id)
         {
-            var model = EmploymentBl.GetCandidateDocumentsModel(id);
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            CandidateDocumentsModel model = new CandidateDocumentsModel();
+
+            if (Session["CandidateDocumentsM" + SPPath] != null)
+            {
+                model = (CandidateDocumentsModel)Session["CandidateDocumentsM" + SPPath];
+                Session.Remove("CandidateDocumentsM" + SPPath);
+            }
+            else
+                model = EmploymentBl.GetCandidateDocumentsModel(id);
+
+
+
+            if (Session["CandidateDocumentsMS" + SPPath] != null)
+            {
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).ElementAt(i));
+                }
+                Session.Remove("CandidateDocumentsMS" + SPPath);
+            }
+
+
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
                 return View(model);
             else
@@ -1615,6 +1638,8 @@ namespace WebMvc.Controllers
         {
             //, IEnumerable<HttpPostedFileBase> files
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+
             if (model.DeleteAttachmentId == 0)
             {
                 //кадровик не может менять список документов после выгрузки кандидата в 1С
@@ -1623,7 +1648,23 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SendTo1C", "Кандидат выгружен в 1С! Изменение перечня документов для подписи не возможно!");
                 }
                 else
+                {
                     EmploymentBl.SaveCandidateDocumentsAttachments(model);
+                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Отправлено сообщение руководителю!");
+                }
+
+                if (Session["CandidateDocumentsM" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsM" + SPPath);
+                if (Session["CandidateDocumentsM" + SPPath] == null)
+                    Session.Add("CandidateDocumentsM" + SPPath, model);
+
+                if (Session["CandidateDocumentsMS" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsMS" + SPPath);
+                if (Session["CandidateDocumentsMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("CandidateDocumentsMS" + SPPath, mst);
+                }
             }
             else
             {

@@ -17,6 +17,7 @@
     @Html.HiddenFor(m => m.UserId)    
     @Html.HiddenFor(m => m.IsSave)
     @Html.HiddenFor(m => m.SendTo1C)
+    <span style="font-size:large;">@Html.ValidationMessageFor(m => m.SendTo1C)</span>
 
     <input type="hidden" id="DeleteAttachmentId" name="DeleteAttachmentId" value="@Model.DeleteAttachmentId" />
     <fieldset class="bordered doc-wrap panel">
@@ -31,7 +32,8 @@
             }
         </tr>
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ApplicationLetterScanFileNeeded) {<text> style = "display:none;" </text>} >
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ApplicationLetterScanFileNeeded)
+            {<text> style = "display:none;" </text>} >
             <td>Заявление о приеме</td>
             <td style="width:5%">
                 <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';">Печать</button>
@@ -63,7 +65,8 @@
             }
         </tr>
         
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentContractFileNeeded){<text> style = "display:none;" </text>} >
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentContractFileNeeded)
+            {<text> style = "display:none;" </text>} >
         <td>Печать трудового договора</td>
             <td style="width:5%">
                 <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
@@ -551,7 +554,7 @@
                 </td>
             </tr>
         }
-        
+      
     </table>
     
     
