@@ -62,6 +62,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsConsultantOutsourcingEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
         public bool IsNotEndWorkAvailable { get; set; }
+        public bool IsNotScanView { get; set; } //не показывать скан, только пустую ссылку
 
         public bool IsUserEmployee { get; set; }
         public int Operation { get; set; }
