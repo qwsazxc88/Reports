@@ -117,6 +117,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<EmploymentCandidateCommentDto> Comments { get; set; }
         public bool IsAddCommentAvailable { get; set; }
 
+        [Display(Name = "Ссылка на задачу в системе Pyrus")]
+        public string PyrusRef { get; set; } //ok
+
         public BackgroundCheckModel()
         {
             this.Version = 0;

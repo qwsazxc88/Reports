@@ -93,7 +93,12 @@ namespace Reports.Core.Dao
             if (departmentId > 0)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " U.DepartmentId="+departmentId;
+                AddToWhere +=  string.Format(@" exists 
+                    (select d1.ID from dbo.Department d
+                     inner join dbo.Department d1 on d1.Path like d.Path +'%'
+                     and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
+                     and d.Id = {0}) "
+                    , departmentId);
             }
             if (!string.IsNullOrWhiteSpace(userName))
             {

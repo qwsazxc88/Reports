@@ -101,7 +101,7 @@ namespace Reports.Core.Dao.Impl
                 , Personnel.Name as PersonnelName
                 , case when candidate.IsTrainingNeeded = 0 then 'Не требуется'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 1 and isnull(J.IsFinal, 0) = 1 then 'Пройдено'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Непройдено'
+							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Не пройдено'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
                 ,personnelManagers.CompleteDate as CompleteDate
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
@@ -181,8 +181,25 @@ namespace Reports.Core.Dao.Impl
 
             if ((role & UserRole.Manager) == UserRole.Manager)
             {
-                // кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
-                sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+                //// кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
+                //sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+
+                string IdList = string.Empty;
+                //решили, что показывать кандидата нужно не только руководителю-инициатору, но и его замам. До этого работала строка, закомментаренная выше
+                IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                        .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager)
+                        .ToList<User>();
+                foreach (User mu in managers)
+                {
+                    if (!string.IsNullOrEmpty(mu.Email))
+                    {
+                        //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + "zagryazkin@ruscount.ru";//для теста
+                        IdList += (string.IsNullOrEmpty(IdList) ? "" : ", ") + mu.Id.ToString();//рабочая строка
+                    }
+                }
+
+                sqlQueryPart = string.Format(@" candidate.AppointmentCreatorId in ({0}) ", IdList);
+
                 // кандидаты, которых текущий пользователь может согласовать как вышестоящий руководитель
                 switch (currentUser.Level)
                 {

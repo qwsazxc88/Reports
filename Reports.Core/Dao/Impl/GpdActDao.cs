@@ -70,27 +70,112 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         public IList<GpdActDto> GetAct(UserRole role, 
+                                        int userId,
                                         int? ID, 
                                         bool IsFind,
                                         DateTime? DateBegin,
                                         DateTime? DateEnd, 
-                                        int DepartmentId, 
+                                        int DepartmentId,
+                                        int CTType,
                                         string Surname, 
                                         int StatusID,
                                         string ActNumber,
+                                        string CardNumber,
                                         int SortBy, 
                                         bool? SortDescending)
         {
-            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] as A ";
-
+            string sqlQuery = @"SELECT  A.[Id]
+              ,A.[CreatorID]
+              ,A.[ActDate]
+              ,A.[ActNumber]
+              ,A.[GCCount]
+              ,A.[PersonID]
+              ,A.[Surname]
+              ,A.[NameContract]
+              ,A.[NumContract]
+              ,A.[ContractBeginDate]
+              ,A.[ContractEndDate]
+              ,A.[CreatorName]
+              ,A.[CreateDate]
+              ,A.[DepLevel3Name]
+              ,A.[ChargingDate]
+              ,A.[DateBegin]
+              ,A.[DateEnd]
+              ,A.[Amount]
+              ,A.[AmountPayment]
+              ,A.[POrderDate]
+              ,A.[PurposePayment]
+              ,A.[ESSSNum]
+              ,A.[StatusID]
+              ,A.[StatusName]
+              ,A.[SendTo1C]
+              ,A.[GCID]
+              ,A.[flgRed]
+              ,A.[CTName]
+              ,A.[CTType]
+              ,A.[DateP]
+              ,A.[DepLevel7Name]
+              ,A.[GPDID]
+              ,A.[DepartmentId]
+              ,A.[PayerID]
+              ,A.[PayerName]
+              ,A.[PayerINN]
+              ,A.[PayerKPP]
+              ,A.[PayerAccount]
+              ,A.[PayerBankName]
+              ,A.[PayerBankBIK]
+              ,A.[PayerCorrAccount]
+              ,A.[PayeeID]
+              ,A.[PayeeName]
+              ,A.[PayeeINN]
+              ,A.[PayeeKPP]
+              ,A.[PayeeAccount]
+              ,A.[PayeeBankName]
+              ,A.[PayeeBankBIK]
+              ,A.[PayeeCorrAccount]
+              ,A.[PAccountID]
+              ,A.[Account]  
+            FROM [dbo].[vwGpdActList] as A ";
+            string sqlWhere=""; 
             if (!IsFind)
-                sqlQuery += "WHERE Id = " + ID.ToString();
+                sqlWhere += "WHERE A.Id = " + ID.ToString();
             else
-                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber, ID) + ActListSqlOrderBy(SortBy, SortDescending);
-
+                sqlWhere += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber, ID) + ActListSqlOrderBy(SortBy, SortDescending);
+            
+            string forUserRole = GetWhereForUserRole(role,ref sqlQuery);
+            if (!String.IsNullOrWhiteSpace(forUserRole))
+            {
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE " + forUserRole; else sqlWhere += " AND " + forUserRole;
+            }
+            if (!String.IsNullOrWhiteSpace(CardNumber))
+            {
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE A.PersonId= " + CardNumber+" "; else sqlWhere += " AND A.PersonId=" + CardNumber+" ";
+            }
+            if(CTType>0)
+            {
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE A.CTType=" + CTType + " "; else sqlWhere += " AND A.CTType=" + CTType+" ";
+            }
+            sqlQuery += sqlWhere;
             IQuery query = CreateActQuery(sqlQuery);
+            if(sqlQuery.Contains(":userId")) query.SetInt32("userId", userId);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
             return documentList;
+        }
+        private string GetWhereForUserRole(UserRole role, ref string sqlQuery)
+        {
+            string where = "";
+            switch (role)
+            {
+                case UserRole.Chief:
+                case UserRole.Manager:
+                    sqlQuery =sqlQuery+@" INNER JOIN Department dep on A.DepartmentId=dep.Id
+	                            INNER JOIN Users currentUser on currentUser.Id=:userId
+	                            INNER JOIN Department userDep on currentUser.DepartmentId=userDep.Id
+                                ";
+                    where= " dep.Path like userDep.Path+'%' ";
+                    break;
+            }
+            return where;
         }
         /// <summary>
         /// Создание запроса для актов.
@@ -105,6 +190,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ActDate", NHibernateUtil.DateTime).
                 AddScalar("ActNumber", NHibernateUtil.String).
                 AddScalar("GCCount", NHibernateUtil.Int32).
+                AddScalar("PersonId",NHibernateUtil.Int32).
                 AddScalar("Surname", NHibernateUtil.String).
                 AddScalar("NameContract", NHibernateUtil.String).
                 AddScalar("NumContract", NHibernateUtil.String).
@@ -123,6 +209,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ESSSNum", NHibernateUtil.String).
                 AddScalar("StatusID", NHibernateUtil.Int32).
                 AddScalar("StatusName", NHibernateUtil.String).
+                AddScalar("SendTo1C",NHibernateUtil.DateTime).
                 AddScalar("GCID", NHibernateUtil.Int32).
                 AddScalar("CTName", NHibernateUtil.String).
                 AddScalar("DateP", NHibernateUtil.DateTime).
@@ -148,7 +235,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
                 AddScalar("PAccountID", NHibernateUtil.Int32).
                 AddScalar("Account", NHibernateUtil.String).
-                AddScalar("flgRed", NHibernateUtil.Boolean);
+                AddScalar("flgRed", NHibernateUtil.Boolean).
+                AddScalar("CTType",NHibernateUtil.Int32);
         }
         /// <summary>
         /// Список статусов актов.
@@ -212,7 +300,7 @@ namespace Reports.Core.Dao.Impl
 
             if (ID != null && ID != 0)
                 SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ID = " + ID.ToString() + "" : " and ID = " + ID.ToString() + "";
-
+           
             return SqlWhere;
         }
         /// <summary>
@@ -223,7 +311,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         private string ActListSqlOrderBy(int SortBy, bool? SortDescending)
         {
-            if (SortBy == 0) return "";
+            if (SortBy == 0 || SortBy == 21|| SortBy==23) return "";
 
             string SqlOrderBy = " ORDER BY ";
             switch (SortBy)
@@ -287,6 +375,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 20:
                     SqlOrderBy += "CreateDate";
+                    break;
+                case 21:
+                    //SqlOrderBy += "(Amount-AmountPayment-(Amount/100*13))"; Сортировка выполняется в GpdBL
+                    break;
+                case 22:
+                    SqlOrderBy += "PersonId";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
@@ -406,5 +500,6 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.CreateSQLQuery(sqlQuery).AddScalar("flgExists", NHibernateUtil.Boolean);
         }
+        
     }
 }

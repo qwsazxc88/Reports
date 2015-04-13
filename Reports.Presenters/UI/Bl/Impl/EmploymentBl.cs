@@ -274,7 +274,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
 
-                foreach (var item in entity.NameChanges)
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -340,8 +340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
                 }
 
-                
-                foreach (var item in entity.NameChanges)
+
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -488,7 +488,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.Certifications)
+                foreach (var item in entity.Certifications.OrderBy(x => x.CertificationDate))
                 {
                     model.Certifications.Add(new CertificationDto {
                         Id = item.Id,
@@ -526,7 +526,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherEducationDiplomaScanId = attachmentId;
                 model.HigherEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.PostGraduateEducationDiplomas)
+                foreach (var item in entity.PostGraduateEducationDiplomas.OrderBy(x => x.AdmissionYear))
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
                     {
@@ -545,7 +545,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostGraduateEducationDiplomaScanId = attachmentId;
                 model.PostGraduateEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.Training)
+                foreach (var item in entity.Training.OrderBy(x => x.BeginningDate))
                 {
                     model.Training.Add(new TrainingDto
                     {
@@ -593,6 +593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FamillyStatuses = EmploymentFamilyDao.GetFamilyStatuses();
                 model.FamilyStatusId = entity.FamilyStatusId;
                 model.Children = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
+                    .OrderBy(x => x.DateOfBirth)
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
@@ -833,7 +834,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
@@ -885,7 +886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
@@ -1032,6 +1033,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsDraft = !entity.IsFinal;
                 model.IsFinal = entity.IsFinal;
                 model.IsValidate = entity.IsValidate;
+
+                //сылка на Pyrus
+                model.PyrusRef = entity.PyrusRef;
 
                 //сканы
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PersonalDataProcessingScan);
@@ -1232,24 +1236,41 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             EmploymentCandidate candidate = GetCandidate(userId.Value);
-            //согласовывает руководитель-инициатор
-            model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
-                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
-                && candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id;
+            
+            //решили, что согласовать кандидата может не только руководитель-инициатор, но и его зам
+            //по текущему пользователю определяем, находится ли руководитель-инициатор в его подразделении
+            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if (currentUser.UserRole == UserRole.Manager)
+            {
+                IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                        .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager && x.Id == candidate.AppointmentCreator.Id)
+                        .ToList<User>();
+                //согласовывает руководитель-инициатор
+                model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
+                    && (candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id || managers.Count != 0);
+            }
+            else
+                model.IsApproveByManagerAvailable = false;
 
+
+
+
+
+            
             //утверждать кандидата может руководитель выше уровнем, чем руководитель-инициатор
             //автоматическая привязка утверждающего
-            IList<User> managers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
+            IList<User> HighManagers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
                 .Where<User>(x => x.Level < candidate.AppointmentCreator.Level && x.Level != candidate.AppointmentCreator.Level && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
-                    .OrderByDescending<User, int?>(manager => manager.Level)
-                    .ToList<User>();
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
             //ручная привязка утверждающего
             IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(candidate.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
 
             
             model.IsApproveByHigherManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
                 && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
-                && (managers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
+                && (HighManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
                     manualRoleManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0);
 
             
@@ -1274,24 +1295,36 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             EmploymentCandidate candidate = GetCandidate(model.UserId);
-            //согласовывает руководитель-инициатор
-            model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
-                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
-                && candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id;
+
+            //решили, что согласовать кандидата может не только руководитель-инициатор, но и его зам
+            //по текущему пользователю определяем, находится ли руководитель-инициатор в его подразделении
+            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if (currentUser.UserRole == UserRole.Manager)
+            {
+                IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                        .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager && x.Id == candidate.AppointmentCreator.Id)
+                        .ToList<User>();
+                //согласовывает руководитель-инициатор
+                model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
+                    && (candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id || managers.Count != 0);
+            }
+            else
+                model.IsApproveByManagerAvailable = false;
 
             //утверждать кандидата может руководитель выше уровнем, чем руководитель-инициатор
             //автоматическая привязка утверждающего
-            IList<User> managers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
+            IList<User>  HighManagers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
                 .Where<User>(x => x.Level < candidate.AppointmentCreator.Level && x.Level != candidate.AppointmentCreator.Level && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
-                    .OrderByDescending<User, int?>(manager => manager.Level)
-                    .ToList<User>();
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
             //ручная привязка утверждающего
             IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(candidate.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
 
 
             model.IsApproveByHigherManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
                 && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
-                && (managers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
+                && (HighManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
                     manualRoleManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0);
 
             LoadDictionaries(model);
@@ -1697,7 +1730,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
                 //model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
-                //model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
                 model.PositionAddition = candidate.PersonnelManagers.PositionAddition;
                 model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
@@ -2624,11 +2657,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 new SelectListItem {Text = "Ожидает согласование ДБ", Value = "1"},
                 new SelectListItem {Text = "Обучение", Value = "2"},
-                new SelectListItem {Text = "Ожидает согласование руководителем", Value = "3"},
-                new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "4"},
+                new SelectListItem {Text = "Ожидается заявление о приеме", Value = "3"},
+                new SelectListItem {Text = "Ожидает согласование руководителем", Value = "4"},
+                new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "5"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
                 new SelectListItem {Text = "Завершено", Value = "7"},
-                new SelectListItem {Text = "Выгружено в 1С", Value = "8"}
+                new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
+                new SelectListItem {Text = "Отклонен", Value = "9"}
             };
         }
 
@@ -2647,7 +2682,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //общий списк бъется на 3 части для отображения в трех комбобоксах
             IList<ContractPointDto> cpv = new List<ContractPointDto> { };
             cpv.Add(new ContractPointDto { PointId = 1, PointTypeId = 1, PointTypeName = "Вариант 1", PointNamePart_1 = "Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами." });
-            cpv.Add(new ContractPointDto { PointId = 2, PointTypeId = 1, PointTypeName = "Вариант 2", PointNamePart_1 = "Настоящий Договор заключается временно, на период отсутствия основного работника ", PointNamePart_2 = ", за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами." });
+            cpv.Add(new ContractPointDto { PointId = 2, PointTypeId = 1, PointTypeName = "Вариант 2", PointNamePart_1 = "Настоящий Договор является срочным и заключается на период отсутствия основного работника ", PointNamePart_2 = ", за которым сохраняется место работы." });
             cpv.Add(new ContractPointDto { PointId = 3, PointTypeId = 1, PointTypeName = "Вариант 3", PointNamePart_1 = "Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами." });
             cpv.Add(new ContractPointDto { PointId = 4, PointTypeId = 2, PointTypeName = "Вариант 1", PointNamePart_1 = "Фактическое место работы Работника:" });
             cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
@@ -2831,7 +2866,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //сообщение в ДП
                 //если идет сохранение черновика руководителя или кадров, то не делать рассылку
                 if (model.GetType().Name != "ManagersModel" && model.GetType().Name != "PersonnelManagersModel")
+                {
                     EmploymentSendEmail(user.Id, 1, false);
+                }
                     
             }
             catch (Exception)
@@ -3068,9 +3105,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             //сохраняем сканы
             if (model.ApplicationLetterScanFile != null)
             {
+                
                 UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+
+                //после скана заявления о приеме, меняем статус
+                if (candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER)
+                {
+                    candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+                }
             }
             DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ApplicationLetterScan, IsNeeded = model.ApplicationLetterScanFileNeeded });
 
@@ -3454,6 +3499,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Patronymic = viewModel.IsPatronymicAbsent ? String.Empty : viewModel.Patronymic;
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3493,6 +3545,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.ZipCode = viewModel.ZipCode;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3592,6 +3651,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.IsFinal = !viewModel.IsDraft;
             entity.IsValidate = viewModel.IsValidate;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3719,6 +3785,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.IsFinal = !viewModel.IsDraft;
             entity.IsValidate = viewModel.IsValidate;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3777,6 +3850,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SpecialityCategoryId = viewModel.SpecialityCategoryId;
             entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
             entity.IsValidate = viewModel.IsValidate;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3820,6 +3900,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.WorkBookSupplementNumber = viewModel.WorkBookSupplementNumber;
             entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries;
             entity.IsValidate = viewModel.IsValidate;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3872,6 +3959,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.WorkPhone = viewModel.WorkPhone;
             entity.ZipCode = viewModel.ZipCode;
             entity.IsValidate = viewModel.IsValidate;
+
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
             #endregion
 
             return true;
@@ -3934,8 +4028,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
-            // TODO: EMPL Добавить проверку завершенности всех предыдущих документов
-            if (entity.IsFinal)
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
             }
@@ -4194,7 +4289,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Approve
 
-        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, out string error)
+        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, out string error)
         {
             error = string.Empty;
 
@@ -4213,6 +4308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {                            
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
+                        entity.PyrusRef = PyrusRef;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4234,6 +4330,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
+                        entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
@@ -4337,11 +4434,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
-                    if (entity.Candidate.AppointmentCreator.Id != current.Id)
-                    {
-                        error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
-                        return false;
-                    }
+                    //if (entity.Candidate.AppointmentCreator.Id != current.Id)
+                    //{
+                    //    error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
+                    //    return false;
+                    //}
+
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
                     {
                         entity.Bonus = viewModel.Bonus;
@@ -4374,7 +4472,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
                             entity.ManagerApprovalStatus = false;
                         }
-                        entity.ApprovingManager = entity.Candidate.AppointmentCreator;
+
+                        //решили что за инициатора может согласовать его зам
+                        User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                        IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                                .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager && x.Id == entity.Candidate.AppointmentCreator.Id)
+                                .ToList<User>();
+
+                        if (managers.Count == 0)
+                        {
+                            error = "Для текущего пользователя не определены права для согласования данного кандидата!";
+                            return false;
+                        }
+
+                        entity.ApprovingManager = managers.Count != 0 ? currentUser : entity.Candidate.AppointmentCreator;
                         entity.ManagerApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
@@ -4494,6 +4605,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
+                    //нет сканов необходимых документов
+                    if (!EmploymentCandidateDao.GetCandidateState(candidate.Id).Single().CandidateApp)
+                    {
+                        error = "Нет сканов документов для приема!";
+                        return false;
+                    }
                     //формирование номера ТД  и приказа о приеме перенес в сохранение кадровиком списка документов для подписи кандидатом
                     //string NewEmploymentContractNumber = null;
                     //if (viewModel.ContractDate.HasValue)
@@ -4739,6 +4856,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<User> managers = null;
             int CurrentLevel = 0;
 
+            //все вкладки анкеты кандидата должны быть посланы на утверждение
+            //даже если будет последующая редакция кадровиком посланных на утверждение анкет кандидата, почта уйдет 1 раз
+            if (!entity.GeneralInfo.IsFinal || !entity.Passport.IsFinal || !entity.Education.IsFinal || !entity.Family.IsFinal || !entity.MilitaryService.IsFinal || !entity.Experience.IsFinal || !entity.Contacts.IsFinal || !entity.BackgroundCheck.IsFinal) return;
+
             //проверка на наличие адреса в базе для руководителя
             if (EmailType == 2 || EmailType == 3)
             {
@@ -4765,6 +4886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
                     Emailaddress = "list-priem-bezopas@sovcombank.ru";
+                    //Emailaddress = "zagryazkin@ruscount.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
                     Subject = "Оформлена заявка на прием";
                     body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо согласование сотрудника Департамента безопасности.";

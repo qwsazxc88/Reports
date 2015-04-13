@@ -37,6 +37,7 @@ namespace Reports.Core.Domain
         public virtual string PsychiatricAndAddictionTreatment { get; set; }
         public virtual string Smoking { get; set; }
         public virtual string Drinking { get; set; }
+        public virtual string PyrusRef { get; set; } //ok
 
         public virtual bool IsApprovalSkipped { get; set; }
         public virtual bool? ApprovalStatus { get; set; }
