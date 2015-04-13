@@ -4605,6 +4605,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
+                    //нет сканов необходимых документов
+                    if (!EmploymentCandidateDao.GetCandidateState(candidate.Id).Single().CandidateApp)
+                    {
+                        error = "Нет сканов документов для приема!";
+                        return false;
+                    }
                     //формирование номера ТД  и приказа о приеме перенес в сохранение кадровиком списка документов для подписи кандидатом
                     //string NewEmploymentContractNumber = null;
                     //if (viewModel.ContractDate.HasValue)
