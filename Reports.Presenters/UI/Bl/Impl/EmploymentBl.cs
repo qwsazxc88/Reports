@@ -1777,6 +1777,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintEmploymentOrderModel model = new PrintEmploymentOrderModel();
 
+            //табельный номер
+            model.UserCode = candidate.User.Code == null ? string.Empty : candidate.User.Code;
+
             if (candidate.GeneralInfo != null)
             {
                 model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
