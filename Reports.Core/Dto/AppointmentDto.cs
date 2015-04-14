@@ -29,5 +29,7 @@ namespace Reports.Core.Dto
                 public string StaffName { get; set; }
                 public int Number { get; set; }
                 public string Status { get; set; }
+                public bool BankAccountantAccept { get; set; }
+                public int BankAccountantAcceptCount { get; set; }
     }
 }
