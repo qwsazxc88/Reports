@@ -104,8 +104,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать приказа о приеме</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @*<button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                <button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
             </td>
             <td>
                 <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />

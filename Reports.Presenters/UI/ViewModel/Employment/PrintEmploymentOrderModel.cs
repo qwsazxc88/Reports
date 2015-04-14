@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Conditions { get; set; }
         public decimal? SalaryBasis { get; set; }
         public string UserCode { get; set; }//табельный номер
+        public string ContractCondition { get; set; }//условие приема на работу
 
         // Надбавки, вводимые руководителем
         [Display(Name = "Персональная надбавка")]
