@@ -109,6 +109,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
+    <Compile Include="Controllers\StaffListController.cs" />
     <Compile Include="Controllers\SurchargeController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="CustomModelMetadataProvider.cs" />
@@ -779,6 +780,9 @@
     <Content Include="Views\Employment\PrintObligationTradeSecret.cshtml" />
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
+    <Content Include="Views\StaffList\TreeView.cshtml" />
+    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

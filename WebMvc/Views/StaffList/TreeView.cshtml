@@ -1,0 +1,27 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Тест Дерева";
+}
+
+@using (Html.BeginForm("TreeView", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "TreeView-form" }))
+{
+    <table>
+        <thead>
+            <tr>
+                <th>@Model.Departments[0].Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            </tr>
+        </tbody>
+    </table>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moTreeView");
+    });
+</script>
