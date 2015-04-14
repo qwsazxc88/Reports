@@ -484,8 +484,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
-
-                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11)
+                    //чтобы видно было, но в работу не принималось и скан не выкачивался
+                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7)
                     {
                         model.IsNotScanView = true;
                         model.IsBeginWorkAvailable = false;
