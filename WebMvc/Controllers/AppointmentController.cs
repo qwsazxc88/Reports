@@ -44,14 +44,14 @@ namespace WebMvc.Controllers
         }
         #region Appointment
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManager)]
         public ActionResult Index()
         {
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManager)]
         public ActionResult Index(AppointmentListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -66,14 +66,14 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager| UserRole.PersonnelManager)]
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
         {
 
@@ -113,6 +113,12 @@ namespace WebMvc.Controllers
             /*if (!string.IsNullOrEmpty(error))
                 return View(model);
             return RedirectToAction("Index");*/
+        }
+        
+        public ActionResult Note(int id)
+        {
+            var model = AppointmentBl.GetNoteModel(id);
+            return View(model);
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {

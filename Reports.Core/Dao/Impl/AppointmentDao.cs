@@ -60,12 +60,17 @@ namespace Reports.Core.Dao.Impl
                 ur.Name as StaffName,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=0 then N'Нет подходящих вакансий'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
                         when v.DeleteDate is not null then N'Отменена'
                         else N''
-                        end as Status
+                        end as Status,
+                        v.BankAccountantAccept as BankAccountantAccept,
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount
                 from dbo.Appointment v
                 left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
@@ -112,7 +117,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RReject", NHibernateUtil.String).
                 AddScalar("StaffName", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("Status", NHibernateUtil.String);
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("BankAccountantAccept",NHibernateUtil.Boolean).
+                AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)

@@ -3,6 +3,7 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.AppointmentEditModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
     ViewBag.Title = "Заявка на подбор сотрудника";
 }
@@ -10,7 +11,7 @@
 {
     <div class="doc-wrap">
         <table style="width:100%">
-            <tr>
+        <tr>
                 <td colspan="2">
                     @Html.ValidationSummary(false)
                     <div id="Error" style="color:Red;display:none;"></div>
@@ -21,6 +22,13 @@
                     @Html.Partial("ManagerInfoView", Model)
                 </td>
             </tr>
+        </table>
+    </div>
+    <div class="doc-wrap">
+    <fieldset>
+    <legend>Реквизиты кандидата</legend>
+        <table style="width:100%">
+            
             @if (Model.IsDeleted)
             { 
             <tr>
@@ -217,15 +225,28 @@
                     } 
                 </td>
             </tr>
-             <tr>
+            
+             
+        </table>
+        </fieldset>
+        <table style="width:100%">
+        @if (dto.UserRole == UserRole.PersonnelManager)
+        {
+         <tr>
                 <td>
                     @Html.LabelFor(m => m.IsVacationExists):
                 </td>
-                <td>
-                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                <td> 
+                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount<int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
                 </td>
             </tr>
+            
+                <tr>
+                    <td></td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" })</div></td>
+                </tr>
+        }   
             @* <tr>
                 <td>
                     @Html.LabelFor(m => m.BeginDate):
@@ -267,6 +288,8 @@
                     
                 </td>
             </tr>
+             @if (Model.BankAccountantAccept && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount)))
+             {
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
@@ -310,16 +333,22 @@
                     <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
                 </td>
             </tr>
-             <tr>
+             }
+        <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                    <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
+                   @if (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount)))
+                    {
+                        <input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />
+                    }
                    <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
                 <td style="text-align:right">
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
                 </td>
+                
             </tr>
         </table>
     </div>
@@ -338,6 +367,16 @@
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
+    $("#IsVacationExists").change(function()
+    {
+        $("#IsVacationExistsHidden").val($("#IsVacationExists").val());
+        if($("#IsVacationExists").val()==="1")
+        {
+            $("#VacancyCountApprove").show();
+        }
+        else $("#VacancyCountApprove").hide();
+    });
+    
     $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
     $("#DesirableBeginDate").datepicker({changeMonth: true, changeYear: true});
     $("#ReasonBeginDate").datepicker({changeMonth: true, changeYear: true});

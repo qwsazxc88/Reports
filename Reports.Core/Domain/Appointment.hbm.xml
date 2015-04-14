@@ -36,7 +36,8 @@
 	<property name="DesirableBeginDate" not-null="false"/>
 	<property name="IsVacationExists" not-null="true"/>
 	<!--<property name="BeginDate" not-null="false"/>-->
-	  
+    <property name="BankAccountantAccept"   not-null="false"/>
+    <property name="BankAccountantAcceptCount" not-null="false"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Appointment_CreatorUser" index="IX_Appointment_CreatorUser_Id"  not-null="true"/>
   <many-to-one name="StaffCreator" class="User" column="StaffCreatorId" foreign-key="FK_Appointment_StaffCreatorUser" index="IX_Appointment_StaffCreatorUser_Id"  not-null="false"/>
 	<property name="ManagerDateAccept" not-null="false"/>
