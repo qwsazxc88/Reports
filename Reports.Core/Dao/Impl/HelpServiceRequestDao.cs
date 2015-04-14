@@ -365,9 +365,9 @@ namespace Reports.Core.Dao.Impl
                         return string.Empty;
                     }
                 case UserRole.ConsultantOutsorsingManager://кадровики ОК
-                    //4, 2, 5, 10, 11 - эти услуги только для просмотра, не могут принять в работу и посмотреть прикрепленный расчетчиками скан
+                    //4, 2, 5, 7, 10, 11, 21 - эти услуги только для просмотра, не могут принять в работу и посмотреть прикрепленный расчетчиками скан
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 10, 11) ";
+                    return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
