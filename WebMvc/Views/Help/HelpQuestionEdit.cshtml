@@ -62,7 +62,8 @@
              <tr>
                     <td>@Html.LabelFor(model => model.Question):</td>
                     <td style="vertical-align:top">
-                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsQuestionEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsQuestionEditable ? (object)new { style = "resize: none;", maxlength = "500" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                       <textarea></textarea>
                     </td>
              </tr>
              <tr>
