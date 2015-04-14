@@ -12,17 +12,17 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     {
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
+            //RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
             Required(ErrorMessage = "*")]
         public string LastName { get; set; } //ok
         [Display(Name = "Имя"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
+            //RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
             Required(ErrorMessage = "*")]
         public string FirstName { get; set; } //ok
         [Display(Name = "Отчество"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),]
+            /*RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),*/]
         public string Patronymic { get; set; } //ok
         [Display(Name = "Отчество отсутствует")]
         public bool IsPatronymicAbsent { get; set; } //ok
