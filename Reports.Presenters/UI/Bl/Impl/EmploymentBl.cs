@@ -1811,6 +1811,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
                 model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
                 model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
+                if (candidate.PersonnelManagers.ContractPoint_1_Id.HasValue)
+                {
+                    if (candidate.PersonnelManagers.ContractPoint_1_Id.Value == 2)
+                        model.ContractCondition = "Договор заключается временно, на период отсутствия основного работника " + candidate.PersonnelManagers.ContractPointsFio;
+                    else
+                    {
+                        model.ContractCondition = (candidate.Managers.IsSecondaryJob ? "Работа по совместительству" : "Основная работа");
+                    }
+                }
 
                 if (candidate.PersonnelManagers.Signer != null)
                 {
