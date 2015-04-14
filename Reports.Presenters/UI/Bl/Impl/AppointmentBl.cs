@@ -445,7 +445,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManager && model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount));
+                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManager && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
