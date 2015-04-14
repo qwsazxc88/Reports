@@ -213,7 +213,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortBy,
                 model.SortDescending);
         }
+        public NoteModel GetNoteModel(int id)
+        {
+            var appointment = AppointmentDao.Load(id);
+            IList<string> dep = new List<string>();
+            var dept = appointment.Department;
 
+            for (int i = 3; i < dept.ItemLevel; i++)
+            {
+                var tmp = DepartmentDao.GetParentDepartmentWithLevel(dept, i);
+                if(tmp!=null) dep.Add(tmp.Name);
+            }
+            dep.Add(dept.Name);
+            var result = new NoteModel 
+            { 
+                Date=DateTime.Now,
+                To="",
+                From=appointment.AcceptManager.Name,
+                Theme="Согласование кандидата на приём",
+                Reason=appointment.Reason.Name,
+                Position=appointment.PositionName,
+                Departments=dep
+
+            };
+            return result;
+        }
         public AppointmentEditModel GetAppointmentEditModel(int id,int? managerId)
         {
             AppointmentEditModel model = new AppointmentEditModel { Id = id };
@@ -241,6 +265,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsVacationExists = entity.IsVacationExists ? 1 : 0;
                 model.DocumentNumber = entity.Number.ToString();
                 model.OtherRequirements = entity.OtherRequirements;
+                model.BankAccountantAccept = entity.BankAccountantAccept;
+                model.BankAccountantAcceptCount = entity.BankAccountantAcceptCount;
                 //model.Period = entity.Period;
                 model.PositionName = entity.PositionName;
                 model.ReasonId = entity.Reason.Id;
@@ -332,7 +358,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -412,11 +438,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
+                case UserRole.PersonnelManager:
+                    
+                    break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable;
+                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManager && model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
@@ -685,7 +714,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User currUser = UserDao.Load(current.Id);
-            if (!model.IsDelete && model.IsEditable)
+            if (!model.IsDelete && (model.IsEditable || model.IsSaveAvailable))
             {
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.Bonus = Decimal.Parse(model.Bonus);
@@ -706,6 +735,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = model.Schedule;
                 entity.Type = model.TypeId == 1?true:false;
+                if (current.UserRole == UserRole.PersonnelManager)
+                {
+                    model.BankAccountantAccept = true;
+                    entity.BankAccountantAccept = model.BankAccountantAccept;
+                    entity.BankAccountantAcceptCount = model.BankAccountantAcceptCount;
+                }
                 entity.VacationCount = int.Parse(model.VacationCount);
                 if (model.StaffCreatorId != 0)
                     entity.StaffCreator = UserDao.Load(model.StaffCreatorId);
@@ -827,6 +862,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
+                case UserRole.PersonnelManager: break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }

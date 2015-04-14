@@ -28,7 +28,7 @@ namespace Reports.Presenters.UI.ViewModel
         //public int PositionIdHidden { get; set; }
         //public IList<IdNameDto> Positions;
 
-        [Display(Name = "Количество вакансий")]
+        [Display(Name = "Количество требуемых сотрудников")]
         public string VacationCount { get; set; }
 
         [Display(Name = "Основание появления вакансии")]
@@ -52,7 +52,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Заработная плата (премия)")]
         public string Bonus { get; set; }
 
-        [Display(Name = "Форма оформления сотрудника")]
+        [Display(Name = "Тип договора")]
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
@@ -86,7 +86,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Display(Name = "Работа с даты")]
         //public string BeginDate { get; set; }
 
-        [Display(Name = "Руководитель (заказчик)")]
+        [Display(Name = "Руководитель (инициатор)")]
         public bool IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
@@ -125,5 +125,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int StaffCreatorId { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
+
+        public bool BankAccountantAccept { get; set; }
+        public int BankAccountantAcceptCount { get; set; }
     }
 }

@@ -1,0 +1,149 @@
+﻿@model Reports.Presenters.UI.ViewModel.NoteModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<meta charset='UTF-8'/>
+<style>
+body{font-size: 10px;}
+.table
+{
+font-size: 10px;
+	border-collapse: collapse;
+ border: 2px solid #888;
+ width:100%;
+}
+.table tr td
+{
+	border: 1px solid #888;
+	height:20px;
+}
+.table tr th
+{
+	border: 1px solid #888;
+}
+.description
+{
+	text-align:center;
+	font-size: 8px;
+	vertical-align: top;
+}
+</style>
+</HEAD>
+<BODY>
+	<TABLE style="font-size: 10px; width:80%;">
+		<TR>
+		<td width='30%'><img src='/Content/logo-skb.jpg'/></td>
+		<td width='70%'><H1>СЛУЖЕБНАЯ ЗАПИСКА</H1></td>
+		</TR>
+		<tr>
+			<td style="text-align:right;">Кому: </td>
+			<td style="border-bottom:1px solid #888;">@Model.To</td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">От кого: </td>
+			<td style="border-bottom:1px solid #888;">@Model.From</td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">Тема </td>
+			<td style="border-bottom:1px solid #888;">@Model.Theme</td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">Дата: </td>
+			<td style="border-bottom:1px solid #888;">@Model.Date.ToShortDateString()</td>
+		</tr>
+	</TABLE>
+	<TABLE  style="font-size: 10px; width:90%;">
+		<tr>
+			<td>В связи с </td>
+			<td colspan='2' style="border-bottom:1px solid #888;">@Model.Reason</td>
+			
+		</tr>
+		<tr>
+			<td></td>
+			<td colspan='2' class="description">(обоснование необходимости внесения изменений в штатное расписание)</td>
+			
+		</tr>
+		<tr>
+			<td colspan='2'>прошу внести изменения в действующее штатное расписание </td>
+			<td style="border-bottom:1px solid #888;">@foreach (var e in Model.Departments)
+                                             { <text>@e;</text>
+                                             }
+                                                 </td>
+		</tr>
+		<tr>
+			<td colspan='2'></td>
+			<td  class="description"> (наименование структурного подразделения: Отдел/ Офис/ Управление/ Департамент/ Дирекция/ Филиал/ Головной офис)</td>
+		</tr>
+	</TABLE>
+	<br/>
+	<TABLE class="table">
+	<THEAD>
+		<TR>
+			<th colspan='7'>Действующее штатное расписание</th>
+			<th colspan='7'>Проект изменений в штатном расписании</th>
+			<th rowspan='3'>Примечание (ФИО сотрудника, доп. сведения)</th>
+		</TR>
+		<TR>
+			<th rowspan='2'>Полное наименование должности</th>
+			<th rowspan='2'>Кол-во<br/> штатных <br/>единиц</th>
+			<th rowspan='2'>Оклад</th>
+			<th>Надбавка</th>
+			<th rowspan='2'>Районный коэфф-т</th>
+			<th rowspan='2'>Северная надбавка</th>
+			<th rowspan='2'>Общая сумма выплат</th>
+			<th rowspan='2'>Полное наименование должности</th>
+			<th rowspan='2'>Кол-во<br/>штатных<br/>единиц</th>
+			<th rowspan='2'>Оклад</th>
+			<th>Надбавка</th>
+			<th rowspan='2'>Районный коэфф-т</th>
+			<th rowspan='2'>Северная надбавка</th>
+			<th rowspan='2'>Общая сумма выплат</th>
+		</TR>
+		<TR>
+		<th>Территориальная</th>
+		<th>Территориальная</th>
+		</TR>
+	</THEAD>
+	<TBODY>
+	<tr>
+	<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td style="text-align:right;">ИТОГО</td><td></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right;">ИТОГО</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	</TBODY>
+	</TABLE>
+	<br/>
+	<TABLE  style="font-size: 10px; width:50%;">
+		<tr>
+			<td colspan='3'>Данные изменения в штатное расписание прошу внести с ______________ 20__ года </td>
+		</tr>
+		<tr>
+			<td>Руководитель подразделения</td>
+			<td >_________________________________________________</td>
+			<td >/_____________________________________________________/</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td class="description">(подпись)</td>
+			<td class="description">(ФИО)</td>
+		</tr>
+	</TABLE>
+</BODY>
+</HTML>
