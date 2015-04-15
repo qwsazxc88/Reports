@@ -1,4 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeViewModel
+@using Reports.Presenters.UI.Bl.Impl;
+
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
     ViewBag.Title = "Тест Дерева";
@@ -6,17 +8,29 @@
 
 @using (Html.BeginForm("TreeView", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "TreeView-form" }))
 {
-    <table>
-        <thead>
-            <tr>
-                <th>@Model.Departments[0].Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            </tr>
-        </tbody>
-    </table>
+    <div class="filter-wrap">
+        @*
+        <table>
+            <thead>
+                <tr>
+                    <th>Подразделение</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        *@
+
+        @foreach (var item in Model.Departments.OrderBy(x => x.Code))
+        {
+            <i>
+                <span>
+                    @item.Name
+                </span>
+            </i><br />
+        }
+    </div>
 }
 
 
