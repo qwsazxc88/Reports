@@ -12,14 +12,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public TreeViewModel GetDepartmentList()
         {
             TreeViewModel model = new TreeViewModel();
-            model.Departments = DepartmentDao.GetDepartmentsTree((int)DepartmentDao.LoadAll().Where(x => x.ItemLevel == 1).Single().Id);
+            //model.Departments = DepartmentDao.LoadAll().Where(x => x.ItemLevel < 5).ToList();
+            model.Departments = DepartmentDao.LoadAll();
             return model;
-        }
-
-        public IList<Department> GetDepartmentNodes(int DepartmentId)
-        {
-            //IList<Department> depList = DepartmentDao.GetDepartmentsTree(DepartmentId);
-            return DepartmentDao.GetDepartmentsTree(DepartmentId);
         }
     }
 }

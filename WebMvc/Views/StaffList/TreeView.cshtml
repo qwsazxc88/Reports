@@ -1,41 +1,125 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeViewModel
 @using Reports.Presenters.UI.Bl.Impl;
-
+@using Reports.Core.Domain;
+@helper GetTreeView(IList<Department> Departments, string ParentId)
+{
+    foreach(var item in Departments.Where(x => x.ParentId.ToString() == ParentId))
+    {
+        <li>
+            @{var subDepartments = Departments.Where(x => x.ParentId.Equals(item.ParentId)).Count();}
+            @if(subDepartments > 0)
+            {
+                <span class="collapse collapsible">&nbsp;</span>
+            }
+            else
+            {
+                <span style="width:15px; display:inline-block">&nbsp;</span>
+            }
+            <span>
+                <a class="Acollapse Acollapsible" href="#">@item.Name&nbsp;&nbsp;(@item.ItemLevel) </a>
+            </span>
+            @if (subDepartments > 0)
+            {
+                <ul>
+                    @GetTreeView(Departments, item.Code.Trim()) 
+                </ul>
+            }
+        </li>
+    }
+}
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
     ViewBag.Title = "Тест Дерева";
 }
 
-@using (Html.BeginForm("TreeView", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "TreeView-form" }))
-{
-    <div class="filter-wrap">
-        @*
-        <table>
-            <thead>
-                <tr>
-                    <th>Подразделение</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-            </tbody>
-        </table>
-        *@
 
-        @foreach (var item in Model.Departments.OrderBy(x => x.Code))
+<style>
+    .collapse 
+    {
+        width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -36px -17px;
+        display:inline-block;
+        cursor:pointer;
+    }
+    .expand
+    {
+        width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -50px -17px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    .Acollapse 
+    {
+        width:15px;
+        background-repeat:no-repeat;
+        display:inline-block;
+        cursor:pointer;
+    }
+    .Aexpand
+    {
+        width:15px;
+        background-repeat:no-repeat;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    .treeview ul
+    {
+        font:14px Arial Sans-Serif;
+        margin:0px;
+        padding-left:20px;
+        list-style:none;
+    }
+    .treeview > li > a
+    {
+        font-weight:bold;
+    }
+    .treeview li
+    {
+    }
+    .treeview li a
+    {
+        padding:4px;
+        font-size:12px;
+        display:inline-block;
+        text-decoration:none;
+        width:auto;
+    }
+</style>
+
+<div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+    <div class="treeview">
+        @if (Model.Departments != null && Model.Departments.Count > 0)
         {
-            <i>
-                <span>
-                    @item.Name
-                </span>
-            </i><br />
+            <ul>
+                @GetTreeView(Model.Departments, "9900424")
+            </ul>
         }
     </div>
-}
+</div>
 
 
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("moTreeView");
+        $(".treeview li>ul").css('display', 'none'); //скрываем все 2 уровня
+        //для кликов по иконкам
+        $(".collapsible").click(function (e) {
+            e.preventDefault();
+            //$(this).toggleClass("collapse expand");
+            $(this).closest('li').children('ul').slideToggle();
+        })
+
+        //для кликов по строкам
+        $(".Acollapsible").click(function (e) {
+            e.preventDefault();
+            $(this).toggleClass("Acollapse Aexpand");
+            $(this).closest('li').children('ul').slideToggle();
+            //$(this).parent.toggleClass("collapse expand");
+        })
     });
+
 </script>

@@ -10,6 +10,5 @@ namespace Reports.Presenters.UI.Bl
     public interface IStaffListBl : IBaseBl
     {
         TreeViewModel GetDepartmentList();
-        //IList<Department> GetDepartmentNodes(int DepartmentId);
     }
 }
