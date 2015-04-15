@@ -1453,10 +1453,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentGeneralInfoDao.Get(id.Value);
             }
 
-            //состояние кандидата
-            model.CandidateStateModel = new CandidateStateModel();
-            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
-
             
             if (entity != null)
             {
@@ -1569,6 +1565,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
 
             
             return model;
