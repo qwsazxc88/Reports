@@ -172,4 +172,12 @@ function IsFieldNotEmpty(control) {
     }
     return true;
 }
+function validateMaxLength(control, maxLength) {
+    clearControlErrors(control);
+    if ((control.val() != '') && (control.val().length > maxLength)) {
+        addControlError(control, 'Текст не может превышать ' + maxLength + ' символов');
+        return false;
+    }
+    return true;
+}
   

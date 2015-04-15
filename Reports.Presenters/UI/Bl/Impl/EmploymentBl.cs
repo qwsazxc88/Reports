@@ -1453,10 +1453,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentGeneralInfoDao.Get(id.Value);
             }
 
-            //состояние кандидата
-            model.CandidateStateModel = new CandidateStateModel();
-            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
-
             
             if (entity != null)
             {
@@ -1569,6 +1565,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
 
             
             return model;
@@ -2831,6 +2830,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             candidate.Managers = new Managers
             {
                 Candidate = candidate,
+                Department = department,
                 IsFront = false,
                 IsLiable = false
             };
@@ -4109,6 +4109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;

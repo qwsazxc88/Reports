@@ -90,6 +90,10 @@
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                 }
+                else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
+                }
                 else if (UserDto.IsHelpTemplateAvailable(dto))
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 

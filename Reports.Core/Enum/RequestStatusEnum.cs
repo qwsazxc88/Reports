@@ -28,7 +28,8 @@
         ClearanceChecklist = 15,
         HelpServiceRequest = 16,
         HelpQuestionRequest = 17,
-        Surcharge = 18
+        HelpPersonnelBillingRequest = 18,
+        Surcharge = 19
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -51,6 +52,7 @@
         HelpTemplate = 9,
         HelpServiceRequestTemplate = 10,
         HelpServiceRequest = 11,
+        HelpPersonnelBillingRequest = 12,
 
         // Order Scans
 
