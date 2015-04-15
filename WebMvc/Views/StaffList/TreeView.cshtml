@@ -7,6 +7,7 @@
     {
         <li>
             @{var subDepartments = Departments.Where(x => x.ParentId.Equals(item.ParentId)).Count();}
+            @*
             @if(subDepartments > 0)
             {
                 <span class="collapse collapsible">&nbsp;</span>
@@ -15,8 +16,9 @@
             {
                 <span style="width:15px; display:inline-block">&nbsp;</span>
             }
+            *@
             <span>
-                <a class="Acollapse Acollapsible" href="#">@item.Name&nbsp;&nbsp;(@item.ItemLevel) </a>
+                <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name&nbsp;&nbsp;(@item.ItemLevel) </a>
             </span>
             @if (subDepartments > 0)
             {
@@ -55,6 +57,8 @@
     .Acollapse 
     {
         width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-position: -36px -17px;
         background-repeat:no-repeat;
         display:inline-block;
         cursor:pointer;
@@ -62,6 +66,8 @@
     .Aexpand
     {
         width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-position: -50px -17px;
         background-repeat:no-repeat;
         display:inline-block;
         cursor:pointer;   
@@ -109,14 +115,16 @@
         //для кликов по иконкам
         $(".collapsible").click(function (e) {
             e.preventDefault();
-            //$(this).toggleClass("collapse expand");
+            $(this).toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
         })
 
         //для кликов по строкам
         $(".Acollapsible").click(function (e) {
             e.preventDefault();
-            $(this).toggleClass("Acollapse Aexpand");
+            //$(this).toggleClass("Acollapse Aexpand");
+
+            $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
             //$(this).parent.toggleClass("collapse expand");
         })
