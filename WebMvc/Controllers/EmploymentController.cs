@@ -1642,6 +1642,7 @@ namespace WebMvc.Controllers
 
             if (model.DeleteAttachmentId == 0)
             {
+                ModelState.Clear();
                 //кадровик не может менять список документов после выгрузки кандидата в 1С
                 if (model.IsSave && model.SendTo1C.HasValue)
                 {
@@ -1650,7 +1651,8 @@ namespace WebMvc.Controllers
                 else
                 {
                     EmploymentBl.SaveCandidateDocumentsAttachments(model);
-                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Отправлено сообщение руководителю!");
+                    model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!");
                 }
 
                 if (Session["CandidateDocumentsM" + SPPath] != null)
@@ -1670,8 +1672,8 @@ namespace WebMvc.Controllers
             {
                 DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
                 EmploymentBl.DeleteAttachment(modelDel);
+                model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
             }
-            model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
 
             if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
