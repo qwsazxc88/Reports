@@ -13,7 +13,7 @@ using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
-
+using System.Linq;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
@@ -119,6 +119,13 @@ namespace WebMvc.Controllers
         {
             var model = AppointmentBl.GetNoteModel(id);
             return View(model);
+        }
+        public FileResult NoteDocX(int id)
+        {
+             var model = AppointmentBl.GetNoteModel(id);
+            
+            var data=NoteDocumentCreator.NoteCreator.CreateNote(Server.MapPath("~/Files"),model.To,model.From,model.Theme,model.Date,model.Reason,model.Departments.Aggregate("",(sum,next)=>sum+="; "+next));
+            return File(data,"application/vnd.openxmlformats-officedocument.wordprocessingml.document",id+".docx");
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {
