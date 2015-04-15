@@ -1453,10 +1453,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentGeneralInfoDao.Get(id.Value);
             }
 
-            //состояние кандидата
-            model.CandidateStateModel = new CandidateStateModel();
-            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
-
             
             if (entity != null)
             {
@@ -1569,6 +1565,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
 
             
             return model;
@@ -2726,12 +2725,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
 
-            // временная проверка на создание кандидата для дальневосточной и московской дирекции
-            if (!department.Path.StartsWith("9900424.9900920.9904119.") && !department.Path.StartsWith("9900424.9901038.9901164.") && !department.Path.StartsWith("9900424.9900426."))
-            {
-                error = "Раздел 'Прием' пока работает в тестовом режиме для дирекций: Московской, Дальневосточной и ГО АУП!.";
-                return null;
-            }
+            //// временная проверка на создание кандидата для дальневосточной и московской дирекции
+            //if (!department.Path.StartsWith("9900424.9900920.9904119.") && !department.Path.StartsWith("9900424.9901038.9901164.") && !department.Path.StartsWith("9900424.9900426."))
+            //{
+            //    error = "Раздел 'Прием' пока работает в тестовом режиме для дирекций: Московской, Дальневосточной и ГО АУП!.";
+            //    return null;
+            //}
 
             // Проверка прав руководителя на подразделение
             if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
