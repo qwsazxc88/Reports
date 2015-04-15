@@ -13,8 +13,11 @@ namespace NoteDocumentCreator
             StreamReader reader = new StreamReader(Path.Combine(WebPath,@"Template\word\document.xml"));
             string data = reader.ReadToEnd();
             reader.Close();
-            data = data.Replace("{{FROM}}", "БАРАНОВ АРТЁМ");
-            data = data.Replace("{{THEME}}", "ТЕСТОВЫЙ ДОКУМЕНТ");
+            data = data.Replace("{{FROM}}", From);
+            data = data.Replace("{{THEME}}", Theme);
+            data = data.Replace("{{DATE}}", Date.ToShortDateString());
+            data = data.Replace("{{REASON}}", Reason);
+            data = data.Replace("{{DEPARTMENTS}}", Departments);
             StreamWriter writer = new StreamWriter(Path.Combine(WebPath,@"doc\word\document.xml"));
             writer.WriteLine(data);
             writer.Flush(); writer.Close();
@@ -25,6 +28,7 @@ namespace NoteDocumentCreator
             StreamReader r = new StreamReader(filename);
             var b = ReadFull(r.BaseStream);
             r.Close();
+            File.Delete(filename);
             return b;
             
         }
@@ -69,6 +73,8 @@ namespace NoteDocumentCreator
         private static string GetContentType(string filename)
         {
             if (filename.Contains(".rels")) return "application/vnd.openxmlformats-package.relationships+xml";
+            if (filename.Contains(".jpeg")) return "image/jpeg";
+            if (filename.Contains(".jpg")) return "image/jpeg";
             switch (filename)
             {
                case "document.xml": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";

@@ -44,32 +44,6 @@
     <Compile Include="NoteCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="doc\docProps\app.xml" />
-    <Content Include="doc\docProps\core.xml" />
-    <Content Include="doc\word\document.xml" />
-    <Content Include="doc\word\fontTable.xml" />
-    <Content Include="doc\word\settings.xml" />
-    <Content Include="doc\word\styles.xml" />
-    <Content Include="doc\word\theme\theme1.xml" />
-    <Content Include="doc\word\webSettings.xml" />
-    <Content Include="doc\[Content_Types].xml" />
-    <Content Include="Template\docProps\app.xml" />
-    <Content Include="Template\docProps\core.xml" />
-    <Content Include="Template\word\document.xml" />
-    <Content Include="Template\word\fontTable.xml" />
-    <Content Include="Template\word\settings.xml" />
-    <Content Include="Template\word\styles.xml" />
-    <Content Include="Template\word\theme\theme1.xml" />
-    <Content Include="Template\word\webSettings.xml" />
-    <Content Include="Template\[Content_Types].xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="doc\word\_rels\document.xml.rels" />
-    <None Include="doc\_rels\.rels" />
-    <None Include="Template\word\_rels\document.xml.rels" />
-    <None Include="Template\_rels\.rels" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

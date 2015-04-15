@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
         {
              var model = AppointmentBl.GetNoteModel(id);
             
-            var data=NoteDocumentCreator.NoteCreator.CreateNote(Server.MapPath("~/Files"),model.To,model.From,model.Theme,model.Date,model.Reason,model.Departments.Aggregate("",(sum,next)=>sum+="; "+next));
+            var data=NoteDocumentCreator.NoteCreator.CreateNote(Server.MapPath("~/Files"),model.To,model.From,model.Theme,model.Date,model.Reason,model.Departments.Aggregate("",(sum,next)=>sum+=next+"; "));
             return File(data,"application/vnd.openxmlformats-officedocument.wordprocessingml.document",id+".docx");
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
