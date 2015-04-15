@@ -1,6 +1,6 @@
 ﻿--select * from [dbo].[HelpBillingUrgency]
 -- delete from [dbo].[HelpBillingUrgency]
-insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'',1)
+insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'В текущем режиме',1)
 insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'Срочно',2)
 insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'Очень срочно',3)
 
