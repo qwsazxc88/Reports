@@ -8043,7 +8043,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var creator=UserDao.Load(CurrentUser.Id);
             String body = String.Format("По авансовому отчёту №{0} с Вас будет удержанно {1:0.00} рублей. \r\n Автор: {2}, e-mail: {3}."
                 ,mr.Number
-                ,mr.UserSumReceived+mr.PurchaseBookAllSum
+                ,mr.UserSumReceived+mr.PurchaseBookAllSum-mr.AccountantAllSum
                 ,creator.Name
                 ,creator.Email);
             EmailDto dto = SendEmail(mr.User.Email, "Удержание", body);

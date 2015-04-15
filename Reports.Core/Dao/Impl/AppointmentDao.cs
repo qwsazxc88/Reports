@@ -60,8 +60,8 @@ namespace Reports.Core.Dao.Impl
                 ur.Name as StaffName,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null then N'Отправлена на согласование в кадровую службу'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=0 then N'Нет подходящих вакансий'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
