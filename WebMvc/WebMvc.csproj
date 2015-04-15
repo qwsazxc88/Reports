@@ -764,6 +764,12 @@
     <Content Include="Views\MissionOrder\AnalyticalStatement.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementsPartial.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementDetails.cshtml" />
+    <Content Include="Views\Help\PersonnelBillingList.cshtml" />
+    <Content Include="Views\Help\EditPersonnelBillingRequest.cshtml" />
+    <Content Include="Views\Help\BillingRequestInfoView.cshtml" />
+    <Content Include="Views\Help\RequestAttachmentsPartial.cshtml" />
+    <Content Include="Views\Help\AddAttachmentDialog.cshtml" />
+    <Content Include="Views\Help\AttachmentDialogError.cshtml" />
     <Content Include="Views\Deduction\DeductionImport.cshtml" />
     <Content Include="Views\Employment\PrintT2.cshtml" />
     <Content Include="Views\Surcharge\Index.cshtml" />

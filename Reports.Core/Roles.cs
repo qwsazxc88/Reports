@@ -98,7 +98,11 @@ namespace Reports.Core
          /// <summary>
          /// Уволеный сотрудник
          /// </summary>
-        DismissedEmployee = 2097152
+        DismissedEmployee = 2097152,
+          /// <summary>
+         /// Расчетчик (биллинг) 
+         /// </summary>
+        Estimator = 4194304
     }
 
     public enum UserManualRole
@@ -134,6 +138,7 @@ namespace Reports.Core
         public const string ConsultantAccountant = "524288";
         public const string ConsultantOutsorsingManager = "1048576";
         public const string DismissedEmployee = "2097152";
+        public const string Estimator = "4194304";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -164,7 +169,8 @@ namespace Reports.Core
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
                              {UserRole.ConsultantAccountant, ConsultantAccountant},
                              {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
-                             {UserRole.DismissedEmployee, DismissedEmployee}
+                             {UserRole.DismissedEmployee, DismissedEmployee},
+                             {UserRole.Estimator, Estimator}
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}
