@@ -4158,6 +4158,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
                 entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
                 entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+                entity.ContractEndDate = viewModel.ContractEndDate;
             }
             entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
