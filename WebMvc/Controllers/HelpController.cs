@@ -681,6 +681,201 @@ namespace WebMvc.Controllers
         }
 
         #endregion
+        #region Personnel Billing
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult PersonnelBillingList()
+        {
+            var model = HelpBl.GetPersonnelBillingList();
+            return View(model);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            HelpBl.SetPersonnelBillingListModel(model, hasError);
+            return View(model);
+        }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        public ActionResult EditPersonnelBillingRequest(int id)
+        {
+            EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult EditPersonnelBillingRequest(EditPersonnelBillingRequestViewModel model)
+        {
+            CorrectCheckboxes(model);
+            CorrectDropdowns(model);
+            //UploadFileDto fileDto = GetFileContext();
+            //bool needToReload;
+            //string error;
+            if (!ValidateModel(model))
+            {
+                HelpBl.ReloadDictionariesToModel(model);
+                return View(model);
+            }
+            string error;
+            if (!HelpBl.SavePersonnelBillingRequestModel(model, out error))
+            {
+                //HttpContext.AddError(new Exception(error));
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(HelpBl.GetPersonnelBillingRequestEditModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected void CorrectDropdowns(EditPersonnelBillingRequestViewModel model)
+        {
+            if (!model.IsEditable)
+            {
+                model.TitleId = model.TitleIdHidden;
+                model.RecipientId = model.RecipientIdHidden;
+                model.UrgencyId = model.UrgencyIdHidden;
+            }
+        }
+        protected void CorrectCheckboxes(EditPersonnelBillingRequestViewModel model)
+        {
+            if (!model.IsWorkBeginAvailable)
+            {
+                if (ModelState.ContainsKey("IsWorkBegin"))
+                    ModelState.Remove("IsWorkBegin");
+                model.IsWorkBegin = model.IsWorkBeginHidden;
+            }
+        }
+        #endregion
+        #region Attachments
+        [HttpGet]
+        public FileContentResult ViewAttachment(int id)
+        {
+            try
+            {
+                AttachmentModel model = RequestBl.GetFileContext(id);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on ViewAttachment:", ex);
+                throw;
+            }
+        }
+        [HttpGet]
+        public ActionResult RenderAttachments(int id, int typeId)
+        {
+            //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+            RequestAttachmentsModel model = HelpBl.GetBillingAttachmentsModel(id, (RequestAttachmentTypeEnum)typeId);
+            return PartialView("RequestAttachmentsPartial", model);
+        }
+        [HttpGet]
+        public ActionResult AddAttachmentDialog(int id, int typeId, string name)
+        {
+            try
+            {
+                AddAttachmentModel model = new AddAttachmentModel
+                {
+                    DocumentId = id,
+                    Description = string.Empty,
+                    IsDescriptionDisabled = false
+                };
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        [HttpPost]
+        public ContentResult SaveAttachment(int id,int type, string description, object qqFile)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                var length = Request.ContentLength;
+                var bytes = new byte[length];
+                Request.InputStream.Read(bytes, 0, length);
+
+                saveResult = true;
+                if (length > MaxFileSize)
+                {
+                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                }
+                else if (description == null || string.IsNullOrEmpty(description.Trim()))
+                {
+                    error = "Описание - обязательное поле";
+                }
+                else if (description.Trim().Length > MaxCommentLength)
+                {
+                    error = string.Format("Длина поля 'Описание' не может превышать {0} символов.", MaxCommentLength);
+                }
+                else
+                {
+                    byte[] context;
+                    string fileName = MissionOrderController.GetFileName(qqFile, out context);
+                    if (context != null)
+                        bytes = context;
+                    var model = new SaveAttacmentModel
+                    {
+                        EntityId = id,
+                        EntityTypeId = (RequestAttachmentTypeEnum)type,
+                        Description = description.Trim(),
+                        FileDto = new UploadFileDto
+                        {
+                            Context = bytes,
+                            FileName = fileName,
+                        }
+                    };
+                    saveResult = RequestBl.SaveAttachment(model);
+                    error = model.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        [HttpGet]
+        public ContentResult DeleteAttachment(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = RequestBl.DeleteAttachment(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        #endregion
     }
 }
