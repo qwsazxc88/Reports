@@ -13,10 +13,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
             TreeViewModel model = new TreeViewModel();
-            model.Departments = DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(currentUser.Department.Path)).ToList();
-            model.ParentId = currentUser.Department.ParentId.ToString();
-            //model.Departments = DepartmentDao.LoadAll().Where(x => x.ItemLevel < 5).ToList();
-            //model.Departments = DepartmentDao.LoadAll();
+            //model.Departments = DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(currentUser.Department.Path)).ToList();
+            //model.ParentId = currentUser.Department.ParentId.ToString();
+            model.Departments = DepartmentDao.LoadAll();
             return model;
         }
     }
