@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebMvc", "WebMvc\WebMvc.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsTaskRunner", "ReportsTaskRunner\ReportsTaskRunner.csproj", "{572EB1FB-A8F0-461B-B497-EA2A9F67462D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteDocumentCreator", "NoteDocumentCreator\NoteDocumentCreator.csproj", "{36B24501-97E9-4890-9F3A-A3BAF8E132F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -133,6 +135,18 @@ Global
 		{572EB1FB-A8F0-461B-B497-EA2A9F67462D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{572EB1FB-A8F0-461B-B497-EA2A9F67462D}.Release|x86.ActiveCfg = Release|x86
 		{572EB1FB-A8F0-461B-B497-EA2A9F67462D}.Release|x86.Build.0 = Release|x86
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|.NET.ActiveCfg = Release|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,5 +158,6 @@ Global
 		{19456CBC-5700-43D2-8F1C-752EBEE15BD1} = {2B497784-3969-43DD-ACBD-A00EB8B15138}
 		{8E372201-505D-471C-A720-3A20965F4645} = {2B497784-3969-43DD-ACBD-A00EB8B15138}
 		{572EB1FB-A8F0-461B-B497-EA2A9F67462D} = {2B497784-3969-43DD-ACBD-A00EB8B15138}
+		{36B24501-97E9-4890-9F3A-A3BAF8E132F3} = {2B497784-3969-43DD-ACBD-A00EB8B15138}
 	EndGlobalSection
 EndGlobal
