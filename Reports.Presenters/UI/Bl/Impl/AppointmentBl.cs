@@ -358,7 +358,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManager)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -438,14 +438,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
-                case UserRole.PersonnelManager:
+                case UserRole.PersonnelManagerBank:
                     
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManager && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
+                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManagerBank && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
@@ -515,8 +515,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>
                               {
-                                  new IdNameDto {Id = 0,Name = "Бессрочная"},
-                                  new IdNameDto {Id = 1,Name = "Срочная"},
+                                  new IdNameDto {Id = 0,Name = "Бессрочный"},
+                                  new IdNameDto {Id = 1,Name = "Срочный"},
                               };
             //model.Positions = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
             model.Reasons = AppointmentReasonDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
@@ -735,7 +735,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = model.Schedule;
                 entity.Type = model.TypeId == 1?true:false;
-                if (current.UserRole == UserRole.PersonnelManager)
+                if (current.UserRole == UserRole.PersonnelManagerBank)
                 {
                     model.BankAccountantAccept = true;
                     entity.BankAccountantAccept = model.BankAccountantAccept;
@@ -862,7 +862,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
-                case UserRole.PersonnelManager: break;
+                case UserRole.PersonnelManagerBank: break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }

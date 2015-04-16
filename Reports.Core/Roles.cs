@@ -102,7 +102,11 @@ namespace Reports.Core
           /// <summary>
          /// Расчетчик (биллинг) 
          /// </summary>
-        Estimator = 4194304
+        Estimator = 4194304,
+         /// <summary>
+         /// Кадровик банк
+         /// </summary>
+        PersonnelManagerBank = 8388608
     }
 
     public enum UserManualRole
