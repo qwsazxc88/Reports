@@ -1642,6 +1642,7 @@ namespace WebMvc.Controllers
 
             if (model.DeleteAttachmentId == 0)
             {
+                ModelState.Clear();
                 //кадровик не может менять список документов после выгрузки кандидата в 1С
                 if (model.IsSave && model.SendTo1C.HasValue)
                 {
@@ -1650,7 +1651,8 @@ namespace WebMvc.Controllers
                 else
                 {
                     EmploymentBl.SaveCandidateDocumentsAttachments(model);
-                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Отправлено сообщение руководителю!");
+                    model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                    ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!");
                 }
 
                 if (Session["CandidateDocumentsM" + SPPath] != null)
@@ -1670,8 +1672,8 @@ namespace WebMvc.Controllers
             {
                 DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
                 EmploymentBl.DeleteAttachment(modelDel);
+                model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
             }
-            model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
 
             if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
@@ -1951,7 +1953,7 @@ namespace WebMvc.Controllers
             {
                 if (!model.RegistrationDate.HasValue)
                     ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
-                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
             return ModelState.IsValid;
@@ -2038,6 +2040,15 @@ namespace WebMvc.Controllers
                         ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         flgError = true;
+                    }
+                }
+
+                if (model.ContractEndDate.HasValue)
+                {
+                    if (model.ContractEndDate.Value < model.ContractDate.Value)
+                    {
+                        ModelState.AddModelError("ContractEndDate", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
                     }
                 }
             }
