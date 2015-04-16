@@ -117,7 +117,7 @@
                  @if ((dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-                     || (dto.UserRole & UserRole.PersonnelManager)>0
+                     || (dto.UserRole & UserRole.PersonnelManagerBank)>0
                       )
                  {
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
