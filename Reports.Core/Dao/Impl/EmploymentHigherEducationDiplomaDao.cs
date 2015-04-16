@@ -22,7 +22,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<HigherEducationDiplomaDto> GetHighEducationTypes(int EducationId)
         {
-            string sqlQuery = @"SELECT * FROM [dbo].[vwEmploymentHighEducations] WHERE EducationId = " + EducationId.ToString();
+            string sqlQuery = @"SELECT * FROM [dbo].[vwEmploymentHighEducations] WHERE EducationId = " + EducationId.ToString() + " ORDER BY AdmissionYear";
             IQuery query = CreateQuery(sqlQuery);
             IList<HigherEducationDiplomaDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(HigherEducationDiplomaDto))).List<HigherEducationDiplomaDto>();
             return documentList;

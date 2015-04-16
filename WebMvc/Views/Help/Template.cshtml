@@ -1,14 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.HelpTemplateListModel
 @{
-    Layout = "~/Views/Shared/_LayoutTemplate.cshtml";
-    ViewBag.Title = "Шаблоны";
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Образцы документов";
 }
 
 @using (Html.BeginForm())
 {
 <table style="width:100%">
     <tr>
-        <td style="font-weight:bold">Шаблоны документов</td>
+        <td style="font-weight:bold">Образцы документов</td>
     </tr>
   <tr>
       <td>
@@ -110,6 +110,11 @@
             <a href="@Url.Content("~/Templates/zayavlenie_o_vyplate_posobiya_kak_vstavshej_na_uchet_v_rannie_sroki_beremennosti.doc")" target="_blank">Заявление о выплате пособия, как вставшей на учет в ранние сроки беременности</a>
         </td>
     </tr> 
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_perenose_otpuska.doc")" target="_blank">Заявление о переносе отпуска</a>
+        </td>
+    </tr> 
   <tr>
       <td>
             <a href="@Url.Content("~/Templates/zayavlenie_o_predostavlenii_otpuska_po_beremennosti_i_rodam.doc")" target="_blank">Заявление о предоставлении отпуска по беременности и родам</a>
@@ -170,7 +175,41 @@
             <a href="@Url.Content("~/Templates/sluzhebnaya_zapiska_na_perevod_sotrudnika.doc")" target="_blank">Служебная записка на перевод сотрудника</a>
         </td>
     </tr> 
-
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/instruction_for_the_staff_of_Bank_on_filling_of_the_sicklist.docx")" target="_blank">ПАМЯТКА для сотрудников Банка по заполнению больничного листа</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/sample_sicklist_itself_more_15days_2015.pdf")" target="_blank">2015 ОБРАЗЕЦ БЛ (на СЕБЯ более 15 дней-2015)</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/sample_sicklist_itself_before_15days_2015.pdf")" target="_blank">ОБРАЗЕЦ БЛ (НА СЕБЯ) до 15 дней - 2015</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/sample_sicklist_on_a_maternity_leave_2015.pdf")" target="_blank">ОБРАЗЕЦ БЛ на отпуск по беременности и родам 2015</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/sample_sicklist_on_care_of_the_child_2015.pdf")" target="_blank">ОБРАЗЕЦ БЛ по уходу за РЕБЕНКОМ 2015</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_original_tk.doc")" target="_blank">Заявление на выдачу оригинала трудовой книжки</a>
+        </td>
+    </tr> 
+    <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_legkii_tryd.doc")" target="_blank">Заявление на легкий труд</a>
+        </td>
+    </tr> 
 </table> 
  <script type="text/javascript">
  </script>   

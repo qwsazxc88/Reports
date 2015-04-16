@@ -274,7 +274,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
 
-                foreach (var item in entity.NameChanges)
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -340,8 +340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
                 }
 
-                
-                foreach (var item in entity.NameChanges)
+
+                foreach (var item in entity.NameChanges.OrderBy(x => x.Date))
                 {
                     model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
@@ -488,7 +488,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.Certifications)
+                foreach (var item in entity.Certifications.OrderBy(x => x.CertificationDate))
                 {
                     model.Certifications.Add(new CertificationDto {
                         Id = item.Id,
@@ -526,7 +526,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherEducationDiplomaScanId = attachmentId;
                 model.HigherEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.PostGraduateEducationDiplomas)
+                foreach (var item in entity.PostGraduateEducationDiplomas.OrderBy(x => x.AdmissionYear))
                 {
                     model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto
                     {
@@ -545,7 +545,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostGraduateEducationDiplomaScanId = attachmentId;
                 model.PostGraduateEducationDiplomaScanFileName = attachmentFilename;
 
-                foreach (var item in entity.Training)
+                foreach (var item in entity.Training.OrderBy(x => x.BeginningDate))
                 {
                     model.Training.Add(new TrainingDto
                     {
@@ -593,6 +593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FamillyStatuses = EmploymentFamilyDao.GetFamilyStatuses();
                 model.FamilyStatusId = entity.FamilyStatusId;
                 model.Children = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
+                    .OrderBy(x => x.DateOfBirth)
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
@@ -833,7 +834,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
@@ -885,7 +886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
-                foreach (var item in entity.ExperienceItems)
+                foreach (var item in entity.ExperienceItems.OrderBy(x => x.BeginningDate))
                 {
                     model.ExperienceItems.Add(new ExperienceItemDto
                     {
@@ -1452,10 +1453,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = EmploymentGeneralInfoDao.Get(id.Value);
             }
 
-            //состояние кандидата
-            model.CandidateStateModel = new CandidateStateModel();
-            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
-
             
             if (entity != null)
             {
@@ -1568,6 +1565,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            //состояние кандидата
+            model.CandidateStateModel = new CandidateStateModel();
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
 
             
             return model;
@@ -1776,6 +1776,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintEmploymentOrderModel model = new PrintEmploymentOrderModel();
 
+            //табельный номер
+            model.UserCode = candidate.User.Code == null ? string.Empty : candidate.User.Code;
+
             if (candidate.GeneralInfo != null)
             {
                 model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
@@ -1807,6 +1810,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
                 model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
                 model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
+                if (candidate.PersonnelManagers.ContractPoint_1_Id.HasValue)
+                {
+                    if (candidate.PersonnelManagers.ContractPoint_1_Id.Value == 2)
+                        model.ContractCondition = "Договор заключается временно, на период отсутствия основного работника " + candidate.PersonnelManagers.ContractPointsFio;
+                    else
+                    {
+                        model.ContractCondition = (candidate.Managers.IsSecondaryJob ? "Работа по совместительству" : "Основная работа");
+                    }
+                }
 
                 if (candidate.PersonnelManagers.Signer != null)
                 {
@@ -2713,12 +2725,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
 
-            // временная проверка на создание кандидата для дальневосточной и московской дирекции
-            if (!department.Path.StartsWith("9900424.9900920.9904119.") && !department.Path.StartsWith("9900424.9901038.9901164.") && !department.Path.StartsWith("9900424.9900426."))
-            {
-                error = "Раздел 'Прием' пока работает в тестовом режиме для дирекций: Московской, Дальневосточной и ГО АУП!.";
-                return null;
-            }
+            //// временная проверка на создание кандидата для дальневосточной и московской дирекции
+            //if (!department.Path.StartsWith("9900424.9900920.9904119.") && !department.Path.StartsWith("9900424.9901038.9901164.") && !department.Path.StartsWith("9900424.9900426."))
+            //{
+            //    error = "Раздел 'Прием' пока работает в тестовом режиме для дирекций: Московской, Дальневосточной и ГО АУП!.";
+            //    return null;
+            //}
 
             // Проверка прав руководителя на подразделение
             if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
@@ -2818,6 +2830,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             candidate.Managers = new Managers
             {
                 Candidate = candidate,
+                Department = department,
                 IsFront = false,
                 IsLiable = false
             };
@@ -4096,6 +4109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
@@ -4144,6 +4158,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Candidate.Managers.RegistrationDate = viewModel.EmploymentDate;
                 entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
                 entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+                entity.ContractEndDate = viewModel.ContractEndDate;
             }
             entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
@@ -4604,6 +4619,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
+                    //нет сканов необходимых документов
+                    if (!EmploymentCandidateDao.GetCandidateState(candidate.Id).Single().CandidateApp)
+                    {
+                        error = "Нет сканов документов для приема!";
+                        return false;
+                    }
                     //формирование номера ТД  и приказа о приеме перенес в сохранение кадровиком списка документов для подписи кандидатом
                     //string NewEmploymentContractNumber = null;
                     //if (viewModel.ContractDate.HasValue)
