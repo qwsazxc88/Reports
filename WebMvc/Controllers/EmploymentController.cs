@@ -1953,7 +1953,7 @@ namespace WebMvc.Controllers
             {
                 if (!model.RegistrationDate.HasValue)
                     ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
-                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
             return ModelState.IsValid;
@@ -2040,6 +2040,15 @@ namespace WebMvc.Controllers
                         ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
                         flgError = true;
+                    }
+                }
+
+                if (model.ContractEndDate.HasValue)
+                {
+                    if (model.ContractEndDate.Value < model.ContractDate.Value)
+                    {
+                        ModelState.AddModelError("ContractEndDate", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
                     }
                 }
             }
