@@ -9,5 +9,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class TreeViewModel
     {
         public IList<Department> Departments { get; set; }
+        public string ParentId { get; set; }
     }
 }

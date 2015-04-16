@@ -18,7 +18,14 @@
             }
             *@
             <span>
-                <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name&nbsp;&nbsp;(@item.ItemLevel) </a>
+                @if (subDepartments > 0)
+                {
+                    <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) </a>
+                }
+                else
+                {
+                    <a href="#">@item.Name &nbsp;&nbsp;(@item.ItemLevel) </a>
+                }
             </span>
             @if (subDepartments > 0)
             {
@@ -101,7 +108,8 @@
         @if (Model.Departments != null && Model.Departments.Count > 0)
         {
             <ul>
-                @GetTreeView(Model.Departments, "9900424")
+                @*@GetTreeView(Model.Departments, "9900424")*@
+                @GetTreeView(Model.Departments, Model.ParentId)
             </ul>
         }
     </div>
