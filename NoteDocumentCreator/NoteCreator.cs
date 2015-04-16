@@ -8,7 +8,7 @@ namespace NoteDocumentCreator
 {
     public class NoteCreator
     {
-        public static byte[] CreateNote(string WebPath,string To, string From, string Theme, DateTime Date, string Reason, string Departments)
+        public static byte[] CreateNote(string WebPath,string To, string From, string Theme, DateTime Date, string Reason, string Departments, string Position, int PositionCount, decimal Salary, decimal Premium)
         {
             StreamReader reader = new StreamReader(Path.Combine(WebPath,@"Template\word\document.xml"));
             string data = reader.ReadToEnd();
@@ -18,6 +18,11 @@ namespace NoteDocumentCreator
             data = data.Replace("{{DATE}}", Date.ToShortDateString());
             data = data.Replace("{{REASON}}", Reason);
             data = data.Replace("{{DEPARTMENTS}}", Departments);
+            data = data.Replace("{{POSITION}}", Position);
+            data = data.Replace("{{POSITIONCOUNT}}", PositionCount.ToString());
+            data = data.Replace("{{SALARY}}", Salary.ToString());
+            data = data.Replace("{{PREMIUM}}", Premium.ToString());
+            data = data.Replace("{{TOTALSUM}}", (Salary + Premium).ToString());
             StreamWriter writer = new StreamWriter(Path.Combine(WebPath,@"doc\word\document.xml"));
             writer.WriteLine(data);
             writer.Flush(); writer.Close();
