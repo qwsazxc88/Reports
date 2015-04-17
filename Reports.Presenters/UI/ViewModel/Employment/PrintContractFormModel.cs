@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // public string City { get; set; }
         public DateTime? ContractDate { get; set; }
         public DateTime? EmploymentDate { get; set; }
+        public DateTime? ContractEndDate { get; set; }
         //public DateTime? ContractEndDate { get; set; }
         public string ContractNumber { get; set; }
         public string EmployeeName { get; set; }
@@ -62,6 +63,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         //для пункта 5.1
         [Display(Name = "Пункт 5.1 трудового договора")]
         public int? ContractPoint_3_Id { get; set; } //ok
+
+        public string City { get; set; }
 
         //поля вводимые по результатам выбора вариантов пуктов меню
         [StringLength(20, ErrorMessage = "Не более 100 знаков.")]
