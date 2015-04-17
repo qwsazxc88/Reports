@@ -1,32 +1,7 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeViewAjaxModel
 @using Reports.Presenters.UI.Bl.Impl;
 @using Reports.Core.Domain;
-@*@helper GetTreeView(IList<Department> Departments, string ParentId)
-    {
-    foreach (var item in Departments.Where(x => x.ParentId.ToString() == ParentId))
-    {
-        <li>
-            @{var subDepartments = Departments.Where(x => x.ParentId.Equals(item.ParentId)).Count();}
-            @{var subDepartments2 = Departments.Where(x => x.Path.StartsWith(item.Path)).Count();}
-            <span>
-                @if (subDepartments > 0 && subDepartments2 > 1)
-                {
-                    <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
-                }
-                else
-                {
-                    <a href="#">@item.Name &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
-                }
-            </span>
-            @if (subDepartments > 0)
-            {
-                <ul id=@item.Code>
-                    @GetTreeView(Departments, item.Code.Trim()) 
-                </ul>
-            }
-        </li>
-    }
-}*@
+
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
     ViewBag.Title = "TreeViewAjax";
@@ -104,18 +79,9 @@
                             <span>
                                 <a class="Acollapsible" href="#" id="getnodes-@item.Code" onclick="GetNodes(@item.Code);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                             </span>
-                            @*
-                            @if (subDepartments > 0)
-                            {
-                                <ul id=@item.Code>
-                                    @GetTreeView(Departments, item.Code.Trim()) 
-                                </ul>
-                            }
-                            *@
                         </li>                
                     </ul>
                 }
-
             }
         </div>
     </div>
@@ -136,9 +102,9 @@
     });
 
     function GetNodes(Id) {
-        ;
-        if (!$("#getnodes-" + Id.toString().trim()).hasClass("aaa")){alert("нет");}
-        else{alert("есть");}
+        
+        //if (!$("#getnodes-" + Id.toString().trim()).hasClass("aaa")){alert("нет");}
+        //else{alert("есть");}
 
         $("#getnodes-" + Id.toString().trim()).addClass("aaa");
 
@@ -155,12 +121,13 @@
                 success: function(result){
                     var $ul = $("#" + Id.toString() + ">ul");
                     var $li = $("#li-" + Id.toString() + ">li");
-                    var $a = $("#getnodes-" + Id.toString().trim());
+                    var $a = $("#getnodes-" + Id.toString().trim() + ">a");
                     var $aa = $("#test");
+                    var ResultStr = "";
 
                     for (var i = 0; i < result.length; i++)
-                    {
-                        $li.append(
+                    {   
+                        ResultStr = 
                             "<ul id='" + result[i].Code.trim() + "'>" + 
                                 "<li id='li-" + result[i].Code.trim() + "'>" + 
                                     "<span>"+
@@ -169,11 +136,15 @@
                                     "</span>" +
                                 "</li>" +
                             "</ul>"
-                        );
-                        //$a.addClass("aaa");
-                        //$ul.closest('li').children('ul').slideToggle();
+                        
+                        //console.log(ResultStr);
+                        
+                        
                     }
-                    
+                    $li.append(ResultStr);
+                    //$a.unbind("click");
+                    //$a.addClass("aaa");
+                    $li.slideDown();
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
