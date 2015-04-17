@@ -1450,6 +1450,11 @@ namespace WebMvc.Controllers
                     EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
                     ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
                 }
+                else if (model.IsReject)
+                {
+                    EmploymentBl.SavePersonnelManagersRejecting(model, out error);
+                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат отклонен!" : error);
+                }
                 else
                 {
                     EmploymentBl.SavePersonnelManagersReport(model, out error);

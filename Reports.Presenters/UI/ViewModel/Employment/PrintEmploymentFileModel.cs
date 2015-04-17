@@ -57,6 +57,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string InternationalPassportNumber { get; set; }
         public DateTime? InternationalPassportDateOfIssue { get; set; }
         public string InternationalPassportIssuedBy { get; set; }
+        public string FamilyStatusName { get; set; }
+        public string Educations { get; set; }
+        public string ChronicalDiseases { get; set; }
+        public string Penalties { get; set; }
+        public string PsychiatricAndAddictionTreatment { get; set; }
+        public string Drinking { get; set; }
+        public string Smoking { get; set; }
 
         public PrintEmploymentFileModel()
         {
