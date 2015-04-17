@@ -243,7 +243,10 @@
                 <button >Утвердить</button>     
                 
             </div>            
-            <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
+            if (!Model.SendTo1C.HasValue)
+            {
+                <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
+            }
         }
 
     </fieldset>
