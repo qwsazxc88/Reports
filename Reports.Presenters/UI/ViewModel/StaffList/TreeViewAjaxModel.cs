@@ -6,10 +6,10 @@ using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
-    public class TreeViewModel
+    public class TreeViewAjaxModel
     {
         public IList<Department> Departments { get; set; }
         public string DepId { get; set; }
-        public string ParentId { get; set; }
+        //public string ParentId { get; set; }
     }
 }

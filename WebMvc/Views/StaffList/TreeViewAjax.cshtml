@@ -1,0 +1,204 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeViewAjaxModel
+@using Reports.Presenters.UI.Bl.Impl;
+@using Reports.Core.Domain;
+@*@helper GetTreeView(IList<Department> Departments, string ParentId)
+    {
+    foreach (var item in Departments.Where(x => x.ParentId.ToString() == ParentId))
+    {
+        <li>
+            @{var subDepartments = Departments.Where(x => x.ParentId.Equals(item.ParentId)).Count();}
+            @{var subDepartments2 = Departments.Where(x => x.Path.StartsWith(item.Path)).Count();}
+            <span>
+                @if (subDepartments > 0 && subDepartments2 > 1)
+                {
+                    <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                }
+                else
+                {
+                    <a href="#">@item.Name &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                }
+            </span>
+            @if (subDepartments > 0)
+            {
+                <ul id=@item.Code>
+                    @GetTreeView(Departments, item.Code.Trim()) 
+                </ul>
+            }
+        </li>
+    }
+}*@
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "TreeViewAjax";
+}
+
+<h2>Тест дерева с постепенной загрузкой</h2>
+
+
+<style>
+    .collapse 
+    {
+        width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -36px -17px;
+        display:inline-block;
+        cursor:pointer;
+    }
+    .expand
+    {
+        width:15px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -50px -17px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    .Acollapse 
+    {
+        width:15px;
+        display:inline-block;
+        cursor:pointer;
+    }
+    .Aexpand
+    {
+        width:15px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    .treeview ul
+    {
+        font:14px Arial Sans-Serif;
+        margin:0px;
+        padding-left:20px;
+        list-style:none;
+    }
+    .treeview > li > a
+    {
+        font-weight:bold;
+    }
+    .treeview li
+    {
+    }
+    .treeview li a
+    {
+        padding:4px;
+        font-size:12px;
+        display:inline-block;
+        text-decoration:none;
+        width:auto;
+    }
+</style>
+@using (Html.BeginForm("TreeViewAjax", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Tree-View-Ajax-form" }))
+{
+    @Html.HiddenFor(m => m.DepId)
+
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div class="treeview" id="test">
+            @if (Model.Departments != null && Model.Departments.Count > 0)
+            {
+                foreach (var item in Model.Departments)
+                {
+                    <ul id=@item.Code>
+                        <li id="li-@item.Code">
+                            <span>
+                                <a class="Acollapsible" href="#" id="getnodes-@item.Code" onclick="GetNodes(@item.Code);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                            </span>
+                            @*
+                            @if (subDepartments > 0)
+                            {
+                                <ul id=@item.Code>
+                                    @GetTreeView(Departments, item.Code.Trim()) 
+                                </ul>
+                            }
+                            *@
+                        </li>                
+                    </ul>
+                }
+
+            }
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moTreeViewAjax");
+        $(".treeview li>ul").css('display', 'none'); //скрываем все 2 уровня
+
+        //для кликов по строкам
+        $(".Acollapsible").click(function (e) {
+            e.preventDefault();
+            $(this).children('span').toggleClass("collapse expand");
+            $(this).closest('li').children('ul').slideToggle();
+        })
+    });
+
+    function GetNodes(Id) {
+        ;
+        if (!$("#getnodes-" + Id.toString().trim()).hasClass("aaa")){alert("нет");}
+        else{alert("есть");}
+
+        $("#getnodes-" + Id.toString().trim()).addClass("aaa");
+
+        var actionUrl="@Url.Action("TreeViewAjax", "StaffList")";
+            //var url = actionUrl + "?DepId=" + Id;
+            $("#DepId").val(Id);
+            var dataToSend = $("#Tree-View-Ajax-form").serialize();
+
+            jQuery.ajax({
+                url: actionUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: dataToSend,
+                success: function(result){
+                    var $ul = $("#" + Id.toString() + ">ul");
+                    var $li = $("#li-" + Id.toString() + ">li");
+                    var $a = $("#getnodes-" + Id.toString().trim());
+                    var $aa = $("#test");
+
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        $li.append(
+                            "<ul id='" + result[i].Code.trim() + "'>" + 
+                                "<li id='li-" + result[i].Code.trim() + "'>" + 
+                                    "<span>"+
+                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' onclick='GetNodes(" + result[i].Code.trim() + ");'>" +
+                                        "<span class='collapse collapsible'>&nbsp;</span> " + result[i].Name + " &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
+                                    "</span>" +
+                                "</li>" +
+                            "</ul>"
+                        );
+                        //$a.addClass("aaa");
+                        //$ul.closest('li').children('ul').slideToggle();
+                    }
+                    
+                },
+                error: function(){
+                    alert("При загрузке данных произошла ошибка.");
+                }
+            });
+
+//            $.post(actionUrl, dataToSend, function(dataReceived){
+//                
+//                //var $rows = $("#name-changes-container>table .name-change-row");
+//                //$rows.remove();
+//                for (var i = 0; i < dataReceived.length; i++)
+//                {
+//                    $li.append(
+//                        "<ul id='" + dataReceived[i].Code + "'>" + 
+//                            "<li id='li-" + dataReceived[i].Code     + "'>" + 
+//                                "<span>"+
+//                                    "<a class='Acollapsible' href='#' id='getnodes-" + dataReceived[i].Code + " onclick='GetNodes(" + dataReceived[i].Code + ");'>" +
+//                                    "<span class='collapse collapsible'>&nbsp;</span> " + dataReceived[i].Name + " &nbsp;&nbsp;(" + dataReceived[i].ItemLevel + ") &nbsp;&nbsp; " + dataReceived[i].Code + "</a>" +
+//                                "</span>" +
+//                            "</li>" +
+//                        "</ul>"
+//                    );
+//                    $("#getnodes-" + dataReceived[i].Code);
+//                }
+//            }, "json");
+    }
+
+</script>

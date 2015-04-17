@@ -2,11 +2,12 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @using Reports.Core.Domain;
 @helper GetTreeView(IList<Department> Departments, string ParentId)
-{
-    foreach(var item in Departments.Where(x => x.ParentId.ToString() == ParentId))
+    {
+    foreach (var item in Departments.Where(x => x.ParentId.ToString() == ParentId))
     {
         <li>
             @{var subDepartments = Departments.Where(x => x.ParentId.Equals(item.ParentId)).Count();}
+            @{var subDepartments2 = Departments.Where(x => x.Path.StartsWith(item.Path)).Count();}
             @*
             @if(subDepartments > 0)
             {
@@ -18,18 +19,18 @@
             }
             *@
             <span>
-                @if (subDepartments > 0 && item.ItemLevel != 7)
+                @if (subDepartments > 0 && subDepartments2 > 1)
                 {
-                    <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) </a>
+                    <a class="Acollapsible" href="#"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                 }
                 else
                 {
-                    <a href="#">@item.Name &nbsp;&nbsp;(@item.ItemLevel) </a>
+                    <a href="#">@item.Name &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                 }
             </span>
             @if (subDepartments > 0)
             {
-                <ul>
+                <ul id=@item.Code>
                     @GetTreeView(Departments, item.Code.Trim()) 
                 </ul>
             }
@@ -64,18 +65,12 @@
     .Acollapse 
     {
         width:15px;
-        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
-        background-position: -36px -17px;
-        background-repeat:no-repeat;
         display:inline-block;
         cursor:pointer;
     }
     .Aexpand
     {
         width:15px;
-        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
-        background-position: -50px -17px;
-        background-repeat:no-repeat;
         display:inline-block;
         cursor:pointer;   
     }
@@ -107,7 +102,7 @@
     <div class="treeview">
         @if (Model.Departments != null && Model.Departments.Count > 0)
         {
-            <ul>
+            <ul id=@Model.DepId>
                 @GetTreeView(Model.Departments, "9900424")
                 @*@GetTreeView(Model.Departments, Model.ParentId)*@
             </ul>
@@ -120,18 +115,16 @@
     $(document).ready(function () {
         setActiveMenuItem("moTreeView");
         $(".treeview li>ul").css('display', 'none'); //скрываем все 2 уровня
-        //для кликов по иконкам
-        $(".collapsible").click(function (e) {
-            e.preventDefault();
-            $(this).toggleClass("collapse expand");
-            $(this).closest('li').children('ul').slideToggle();
-        })
+        //для кликов по иконкам, закомментарил, потому что при клике по иконке выполнялось в придачу обратное действие
+//        $(".collapsible").click(function (e) {
+//            e.preventDefault();
+//            $(this).toggleClass("collapse expand");
+//            $(this).closest('li').children('ul').slideToggle();
+//        })
 
         //для кликов по строкам
         $(".Acollapsible").click(function (e) {
             e.preventDefault();
-            //$(this).toggleClass("Acollapse Aexpand");
-
             $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
             //$(this).parent.toggleClass("collapse expand");

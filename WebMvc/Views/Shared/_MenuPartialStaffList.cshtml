@@ -106,7 +106,7 @@
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
-                    <div id="liGPD" class="mainOn">@Html.ActionLink("ГПД", "Index", "GPD")</div>
+                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
                   @if ((dto.UserRole & UserRole.Manager) > 0)
                   {
@@ -115,9 +115,9 @@
                  <div id="liStaffList" class="mainOn">@Html.ActionLink("Штатное расписание", "TreeView", "StaffList")</div>
         </div>  
         <div class="podmenu">
-
-         <div class="menuitem" id="moTreeView">@Html.ActionLink("Дерево", "TreeView", "StaffList")</div>
-         <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+            <div class="menuitem" id="moTreeViewAjax">@Html.ActionLink("Дерево Ajax", "TreeViewAjax", "StaffList")</div>
+            <div class="menuitem" id="moTreeView">@Html.ActionLink("Дерево", "TreeView", "StaffList")</div>
+            <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
         </div>
     </div>   
 }

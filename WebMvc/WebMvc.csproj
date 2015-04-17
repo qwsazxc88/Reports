@@ -783,6 +783,7 @@
     <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
+    <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
