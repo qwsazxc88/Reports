@@ -14,5 +14,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string Reason { get; set; }
         public IList<string> Departments { get; set; }
         public string Position { get; set; }
+        public int PositionsCount { get; set; }
+        public decimal Salary { get; set; }
+        public decimal Premium { get; set; }
     }
 }

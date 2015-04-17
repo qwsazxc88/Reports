@@ -233,7 +233,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Theme="Согласование кандидата на приём",
                 Reason=appointment.Reason.Name,
                 Position=appointment.PositionName,
-                Departments=dep
+                Departments=dep,
+                PositionsCount=appointment.VacationCount,
+                Salary=appointment.Salary,
+                Premium=appointment.Bonus
 
             };
             return result;
