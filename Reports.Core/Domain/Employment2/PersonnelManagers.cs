@@ -54,6 +54,9 @@ namespace Reports.Core.Domain
 
         public virtual DateTime? CompleteDate { get; set; } //ok
 
+        public virtual DateTime? RejectDate { get; set; } //дата отклонения
+        public virtual User RejectUser { get; set; } //сотрудник проводящий отклонение кандидат
+
         //дополнения для трудового договора
         public virtual int? ContractPoint_1_Id { get; set; }
         public virtual int? ContractPoint_2_Id { get; set; }

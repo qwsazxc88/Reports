@@ -2109,6 +2109,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionSought = candidate.BackgroundCheck.PositionSought;
                 model.PreviousDismissalReason = candidate.BackgroundCheck.PreviousDismissalReason;
                 model.PreviousSuperior = candidate.BackgroundCheck.PreviousSuperior;
+                model.ChronicalDiseases = candidate.BackgroundCheck.ChronicalDiseases;
+                model.Penalties = candidate.BackgroundCheck.Penalties;
+                model.PsychiatricAndAddictionTreatment = candidate.BackgroundCheck.PsychiatricAndAddictionTreatment;
+                model.Drinking = candidate.BackgroundCheck.Drinking;
+                model.Smoking = candidate.BackgroundCheck.Smoking;
+                
                 if (candidate.BackgroundCheck.References != null)
                 {
                     foreach (var item in candidate.BackgroundCheck.References)
@@ -2133,14 +2139,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (candidate.Contacts != null)
             {
                 model.ActualAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}{7}",
-                    string.IsNullOrEmpty(candidate.Contacts.ZipCode) ? (candidate.Contacts.ZipCode + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.District) ? (candidate.Contacts.District + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.City) ? (candidate.Contacts.City + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Contacts.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                    !string.IsNullOrEmpty(candidate.Contacts.ZipCode) ? (candidate.Contacts.ZipCode + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.District) ? (candidate.Contacts.District + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.City) ? (candidate.Contacts.City + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
+                    !string.IsNullOrEmpty(candidate.Contacts.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
                 );
                 model.PhoneNumbers = string.Format("{0}, {1}", candidate.Contacts.HomePhone, candidate.Contacts.Mobile);
 
@@ -2169,6 +2175,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     foreach (var item in candidate.Education.HigherEducationDiplomas)
                     {
+                        model.Educations += (string.IsNullOrEmpty(model.Educations) ? "" : ", ") + item.EducationTypes.Name;
                         model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
                         {
                             AdmissionYear = item.AdmissionYear,
@@ -2278,6 +2285,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
                 model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
+                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0)
+                    model.FamilyStatusName = EmploymentFamilyDao.GetFamilyStatuses().Where(x => x.Id == candidate.Family.FamilyStatusId).Single().Name;
 
             } 
             #endregion
@@ -2335,13 +2344,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RegistrationZipCode = candidate.Contacts.ZipCode;
 
                 model.RegistrationAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}",
-                    string.IsNullOrEmpty(candidate.Passport.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.District) ? (candidate.Contacts.District + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.City) ? (candidate.Contacts.City + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
-                    string.IsNullOrEmpty(candidate.Passport.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                    (!string.IsNullOrEmpty(candidate.Passport.Region) ? (candidate.Contacts.Region + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.District) ? (candidate.Contacts.District + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.City) ? (candidate.Contacts.City + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.Street) ? (candidate.Contacts.Street + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.Building) ? (candidate.Contacts.Building + ", ") : string.Empty),
+                    (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? (candidate.Contacts.Apartment) : string.Empty)
                 );
 
             } 
@@ -4313,6 +4322,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             IUser current = AuthenticationService.CurrentUser;
+            User CurUser = UserDao.Load(current.Id);
             if ((current.UserRole & UserRole.Security) == UserRole.Security)
             {
                 BackgroundCheck entity = null;
@@ -4335,6 +4345,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (approvalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.PersonnelManagers.RejectDate = DateTime.Now;
+                            entity.Candidate.PersonnelManagers.RejectUser = CurUser;
                             entity.Candidate.User.IsActive = false;
                         }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
@@ -4444,6 +4456,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             IUser current = AuthenticationService.CurrentUser;
+            User CurUser = UserDao.Load(current.Id);
             if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
             {
                 Managers entity = null;
@@ -4490,6 +4503,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (viewModel.ManagerApprovalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.PersonnelManagers.RejectDate = DateTime.Now;
+                            entity.Candidate.PersonnelManagers.RejectUser = CurUser;
                             entity.Candidate.User.IsActive = false;
                             entity.ManagerApprovalStatus = false;
                         }
@@ -4568,6 +4583,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (approvalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.PersonnelManagers.RejectDate = DateTime.Now;
+                            entity.Candidate.PersonnelManagers.RejectUser = current;
                             entity.Candidate.User.IsActive = false;
                             entity.HigherManagerApprovalStatus = false;
                         }
@@ -4711,6 +4728,67 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 error = "Документ может сохранить только сотрудник отдела кадров.";
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Отклонение приема кадровиком
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SavePersonnelManagersRejecting(PersonnelManagersModel viewModel, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            User curUser = UserDao.Load(current.Id);
+            if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            {
+                PersonnelManagers entity = null;
+                EmploymentCandidate candidate = GetCandidate(viewModel.UserId);
+
+                int? id = EmploymentCommonDao.GetDocumentId<PersonnelManagers>(viewModel.UserId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentPersonnelManagersDao.Get(id.Value);
+                }
+                if (entity == null)
+                {
+                    entity = new PersonnelManagers { Candidate = candidate };
+                }
+
+                if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                {
+                    error = StrNotAgreedToPersonalDataProcessing;
+                    return false;
+                }
+
+                EmploymentStatus candidateStatus = candidate.Status;
+
+                if (candidateStatus != EmploymentStatus.REJECTED)
+                {
+                    entity.Candidate.Status = EmploymentStatus.REJECTED;
+                    entity.Candidate.User.IsActive = false;
+                    entity.RejectDate = DateTime.Now;
+                    entity.RejectUser = curUser;
+                    if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
+                    {
+                        error = "Ошибка сохранения.";
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    error = "Кандидат уже был отклонен ранее!";
+                }
+
+            }
+            else
+            {
+                error = "Отклонить кандидата может только сотрудник отдела кадров!";
             }
 
             return false;

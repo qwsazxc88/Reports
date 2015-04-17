@@ -111,6 +111,8 @@ GO
 			[CompleteDate] [datetime] NULL,
 			[PersonalAddition] [decimal](19, 2) NULL,
 			[PositionAddition] [decimal](19, 2) NULL,
+			[RejectDate] [datetime] NULL,
+			[RejectUserId] [int] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1085,7 +1087,14 @@ GO
 
 	
 --ССЫЛКИ НАЧАЛО
-		ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate] FOREIGN KEY([CandidateId])
+	ALTER TABLE [dbo].[PersonnelManagers]  WITH CHECK ADD  CONSTRAINT [FK_PersonnelManagers_Users] FOREIGN KEY([RejectUserId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[PersonnelManagers] CHECK CONSTRAINT [FK_PersonnelManagers_Users]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate] FOREIGN KEY([CandidateId])
 	REFERENCES [dbo].[EmploymentCandidate] ([Id])
 	GO
 
@@ -1528,6 +1537,12 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата отклонения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'RejectDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника, который провел отклонение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'RejectUserId'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ссылка на задачу в системе Pyrus' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'BackgroundCheck', @level2type=N'COLUMN',@level2name=N'PyrusRef'
 	GO
 

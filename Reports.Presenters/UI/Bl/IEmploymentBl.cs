@@ -111,6 +111,7 @@ namespace Reports.Presenters.UI.Bl
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
+        bool SavePersonnelManagersRejecting(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
         /// <summary>

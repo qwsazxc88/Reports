@@ -20,6 +20,7 @@
     @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.IsDraftPM)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsReject)
     
     
     <fieldset class="bordered doc-wrap panel">
@@ -239,8 +240,13 @@
         {
             <div class="formfield clearleft">
                 <button id="btnPMDraft" >Сохранить</button>         
-                <button >Утвердить</button>         
+                <button >Утвердить</button>     
+                
             </div>            
+            if (!Model.SendTo1C.HasValue)
+            {
+                <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
+            }
         }
 
     </fieldset>
@@ -330,6 +336,10 @@
 
         $("#btnPMDraft").click(function () {
             $("#IsDraftPM").val(true);
+        });
+
+        $("#btnReject").click(function (){
+            $("#IsReject").val(true);
         });
 
         var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
