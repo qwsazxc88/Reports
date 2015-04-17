@@ -1715,6 +1715,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (candidate.Managers != null)
             {
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
                 //model.WorkCity = candidate.Managers.WorkCity;
@@ -1727,7 +1728,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (candidate.PersonnelManagers != null)
             {
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
-                //model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
@@ -1814,6 +1815,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (candidate.PersonnelManagers.ContractPoint_1_Id.Value == 2)
                         model.ContractCondition = "Договор заключается временно, на период отсутствия основного работника " + candidate.PersonnelManagers.ContractPointsFio;
+                    else if (candidate.PersonnelManagers.ContractPoint_1_Id.Value == 1)
+                        model.ContractCondition = "Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников";
                     else
                     {
                         model.ContractCondition = (candidate.Managers.IsSecondaryJob ? "Работа по совместительству" : "Основная работа");
@@ -1977,6 +1980,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
             }
 
             if (candidate.PersonnelManagers != null)
@@ -2695,6 +2699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 1, PointTypeId = 1, PointTypeName = "Вариант 1", PointNamePart_1 = "Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами." });
             cpv.Add(new ContractPointDto { PointId = 2, PointTypeId = 1, PointTypeName = "Вариант 2", PointNamePart_1 = "Настоящий Договор является срочным и заключается на период отсутствия основного работника ", PointNamePart_2 = ", за которым сохраняется место работы." });
             cpv.Add(new ContractPointDto { PointId = 3, PointTypeId = 1, PointTypeName = "Вариант 3", PointNamePart_1 = "Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами." });
+            cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 1, PointTypeName = "Вариант 4", PointNamePart_1 = "Настоящий Договор заключается на срок с даты начала по дату окончания ТД." });
             cpv.Add(new ContractPointDto { PointId = 4, PointTypeId = 2, PointTypeName = "Вариант 1", PointNamePart_1 = "Фактическое место работы Работника:" });
             cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
             cpv.Add(new ContractPointDto { PointId = 6, PointTypeId = 3, PointTypeName = "Вариант 2", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов." });
@@ -4330,6 +4335,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (approvalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.User.IsActive = false;
                         }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
@@ -4484,6 +4490,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (viewModel.ManagerApprovalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.User.IsActive = false;
                             entity.ManagerApprovalStatus = false;
                         }
 
@@ -4561,6 +4568,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else if (approvalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.User.IsActive = false;
                             entity.HigherManagerApprovalStatus = false;
                         }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
