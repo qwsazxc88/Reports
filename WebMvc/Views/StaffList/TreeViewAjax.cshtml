@@ -77,7 +77,7 @@
                     <ul id=@item.Code>
                         <li id="li-@item.Code">
                             <span>
-                                <a class="Acollapsible" href="#" id="getnodes-@item.Code" onclick="GetNodes(@item.Code);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                                <a class="Acollapsible" href="#" id="getnodes-@item.Code"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                             </span>
                         </li>                
                     </ul>
@@ -95,6 +95,7 @@
 
         //для кликов по строкам
         $(".Acollapsible").click(function (e) {
+            GetNodes("9900425");
             e.preventDefault();
             $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
@@ -106,7 +107,7 @@
         //if (!$("#getnodes-" + Id.toString().trim()).hasClass("aaa")){alert("нет");}
         //else{alert("есть");}
 
-        $("#getnodes-" + Id.toString().trim()).addClass("aaa");
+        //$("#getnodes-" + Id.toString().trim()).addClass("aaa");
 
         var actionUrl="@Url.Action("TreeViewAjax", "StaffList")";
             //var url = actionUrl + "?DepId=" + Id;
@@ -119,10 +120,10 @@
                 dataType: 'json',
                 data: dataToSend,
                 success: function(result){
-                    var $ul = $("#" + Id.toString() + ">ul");
-                    var $li = $("#li-" + Id.toString() + ">li");
-                    var $a = $("#getnodes-" + Id.toString().trim() + ">a");
-                    var $aa = $("#test");
+                    //var $ul = $("#" + Id.toString() + ">ul");
+                    var $liParent = $("#li-" + Id.toString());
+                    //var $a = $("#getnodes-" + Id.toString().trim() + ">a");
+                    //var $aa = $("#test");
                     var ResultStr = "";
 
                     for (var i = 0; i < result.length; i++)
@@ -131,20 +132,21 @@
                             "<ul id='" + result[i].Code.trim() + "'>" + 
                                 "<li id='li-" + result[i].Code.trim() + "'>" + 
                                     "<span>"+
-                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' onclick='GetNodes(" + result[i].Code.trim() + ");'>" +
+                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' >" +
                                         "<span class='collapse collapsible'>&nbsp;</span> " + result[i].Name + " &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
                                     "</span>" +
                                 "</li>" +
                             "</ul>"
                         
-                        //console.log(ResultStr);
+                        console.log(ResultStr);
                         
                         
                     }
-                    $li.append(ResultStr);
+                    $liParent.append(ResultStr);
+                    console.log($liParent);
                     //$a.unbind("click");
                     //$a.addClass("aaa");
-                    $li.slideDown();
+                    //$li.slideDown();
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");

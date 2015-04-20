@@ -58,6 +58,7 @@
                          {<text>class="mainMenuItem"</text>} id="mainCharge">
                             @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
                     </div> 
+                    @*
                     <div @if (Model.menuId == 2)
                          {<text>class="mainOn"</text>}
                          else
@@ -65,21 +66,23 @@
                          id="mainMember">
                             @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                     </div>
+                    *@
+                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "TreeViewAjax", "StaffList")</div>
                 }
-                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                @if ((dto.UserRole & UserRole.Accountant) > 0
                 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     <div @if (Model.menuId == 4)
-                     {<text>class="mainOn"</text>}
-                     else
-                     {<text>class="mainMenuItem"</text>}
+                         {<text>class="mainOn"</text>}
+                         else
+                         {<text>class="mainMenuItem"</text>}
                      id="mainDeduction">
                         @Html.ActionLink("Удержания", "Index", "Deduction")
                     </div>
                 }
                 
-                @if (dto.Id==10
-                     ||(dto.UserRole & UserRole.Employee) > 0
+                @if (dto.Id == 10
+                     || (dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Director) > 0
@@ -95,14 +98,14 @@
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                     else
-                    if (dto.Id == 10)
+                        if (dto.Id == 10)
                         { 
                             <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
                         }
-                    else
-                    {
+                        else
+                        {
                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
-                    }
+                        }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -159,12 +162,11 @@
                 {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                 }
-                 @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 @if ((dto.UserRole & UserRole.Manager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
                  }
                  
-                 <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "TreeViewAjax", "StaffList")</div>
              </div>
             </div>
             
