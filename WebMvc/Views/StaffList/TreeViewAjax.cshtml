@@ -75,9 +75,9 @@
                 foreach (var item in Model.Departments)
                 {
                     <ul id=@item.Code>
-                        <li id="li-@item.Code">
+                        <li id="li-@item.Code.Trim()">
                             <span>
-                                <a class="Acollapsible" href="#" id="getnodes-@item.Code"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                                <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                             </span>
                         </li>                
                     </ul>
@@ -85,6 +85,7 @@
             }
         </div>
     </div>
+    <button type="button" onclick=" $('#getnodes-9900425 Acollapsible').click();">test</button>
 }
 
 
@@ -95,10 +96,13 @@
 
         //для кликов по строкам
         $(".Acollapsible").click(function (e) {
-            GetNodes("9900425");
+            //console.log(e);
+            //GetNodes('9900425');
             e.preventDefault();
             $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
+            GetNodes('9900425');
+            //$("#9900425").append("<span>aaa</span>");
         })
     });
 
@@ -115,14 +119,12 @@
                 success: function(result){
                     var $ulParent = $("#" + Id.toString());
                     var $liParent = $("#li-" + Id.toString());
-                    //var $a = $("#getnodes-" + Id.toString().trim() + ">a");
                     //var $aa = $("#test");
                     var ResultStr = "";
 
                     for (var i = 0; i < result.length; i++)
                     {   
-                        //ResultStr = 
-                        $liParent.append(
+                        ResultStr = 
                             "<ul id='" + result[i].Code.trim() + "'>" + 
                                 "<li id='li-" + result[i].Code.trim() + "'>" + 
                                     "<span>"+
@@ -130,16 +132,18 @@
                                         "<span class='collapse collapsible'>&nbsp;</span> " + result[i].Name + " &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
                                     "</span>" +
                                 "</li>" +
-                            "</ul>");//;
+                            "</ul>";
 
                         console.log(ResultStr);
                         
                         
                     }
-                    //$liParent.append(ResultStr);
+                    $liParent.append(ResultStr);
                     //console.log($ulParent);
                     //console.log($liParent);
-                    $liParent.slideDown();
+                    //$ulParent.slideDown();
+                    //$("#9900756").slideDown();
+
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
