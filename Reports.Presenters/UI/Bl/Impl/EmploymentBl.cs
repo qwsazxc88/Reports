@@ -1239,29 +1239,37 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             //решили, что согласовать кандидата может не только руководитель-инициатор, но и его зам
             //по текущему пользователю определяем, находится ли руководитель-инициатор в его подразделении
+            //для отображения списка
+            IList<User> managers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, false)
+                        .Where<User>(x => x.Level == candidate.AppointmentCreator.Level && x.RoleId == (int)UserRole.Manager /*&& x.Id == candidate.AppointmentCreator.Id*/)
+                        .ToList<User>();
+
             User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
             if (currentUser.UserRole == UserRole.Manager)
             {
-                IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                IList<User> managersApproval = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
                         .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager && x.Id == candidate.AppointmentCreator.Id)
                         .ToList<User>();
                 //согласовывает руководитель-инициатор
                 model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager)
-                    && (candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id || managers.Count != 0);
+                    && (candidate.AppointmentCreator.Id == AuthenticationService.CurrentUser.Id || managersApproval.Count != 0);
             }
             else
                 model.IsApproveByManagerAvailable = false;
 
 
-
-
+            //список руководителей
+            foreach (var item in managers)
+            {
+                model.ManagerApprovalList += (string.IsNullOrEmpty(model.ManagerApprovalList) ? "" : ", ") + item.Name;
+            }
 
             
             //утверждать кандидата может руководитель выше уровнем, чем руководитель-инициатор
             //автоматическая привязка утверждающего
             IList<User> HighManagers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
-                .Where<User>(x => x.Level < candidate.AppointmentCreator.Level && x.Level != candidate.AppointmentCreator.Level && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
+                .Where<User>(x => x.Level < candidate.AppointmentCreator.Level /*&& x.Level != candidate.AppointmentCreator.Level*/ && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
             //ручная привязка утверждающего
@@ -1273,7 +1281,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && (HighManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0 ||
                     manualRoleManagers.Where<User>(x => x.Id == AuthenticationService.CurrentUser.Id).ToList<User>().Count != 0);
 
-            
+            //список 
+            foreach (var item in HighManagers)
+            {
+                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name;
+            }
+
+            foreach (var item in manualRoleManagers)
+            {
+                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name;
+            }
+
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
