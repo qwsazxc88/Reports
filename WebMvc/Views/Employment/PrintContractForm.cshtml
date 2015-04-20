@@ -12,7 +12,7 @@
   <br /><br />
 <P align=center><img src="../../Content/SKB_logo.png" /></P><br /><br />
 
-<P align=center><STRONG>ТРУДОВОЙ ДОГОВОР № @Model.ContractNumber<BR></STRONG><STRONG>г. Кострома
+<P align=center><STRONG>ТРУДОВОЙ ДОГОВОР № @Model.ContractNumber<BR></STRONG><STRONG>г. @Model.City @*Кострома*@
 @for (int i = 0; i < 150; i++) { <text>&nbsp;</text> i += 1;
 }
 </STRONG><STRONG><FONT size=2 face=Arial>&nbsp;@(Model.ContractDate.HasValue ?
@@ -40,7 +40,9 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 *@
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 1)
 {
-    <label>1.5. Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label><br />
+    <label>1.5. Настоящий Договор заключается временно на срок с 
+    @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___") 
+    для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label><br />
 }
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 2)
 {
@@ -53,7 +55,12 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
-
+@*
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 11)
+{
+    <label>1.5. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
+}
+*@
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value != 2)
 {
     <text>Дата начала работы - </text><b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
