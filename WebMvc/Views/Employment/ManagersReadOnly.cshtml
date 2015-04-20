@@ -141,8 +141,10 @@
     </fieldset>
     
     
-    
-    <div class="clear">
+    <div class="formfield clear">
+        <label><b>Список руководителей: </b></label>
+        @Model.ManagerApprovalList<br /><br />
+
         @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
         {        
             @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
@@ -157,13 +159,18 @@
         {
             <button>Применить</button>
         }
+        <br /><br />
     </div>
+    
 }
 
 @using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.UserId)
     <div class="clear">
+        <label><b>Список вышестоящих руководителей: </b></label>
+        @Model.HigherManagerApprovalList<br /><br />
+
         @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
         {        
             @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>
