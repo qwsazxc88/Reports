@@ -36,7 +36,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Идентификатор личного дела")]
+        [Display(Name = "Номер заявки")]
         public int? CandidateId { get; set; }
 
         [Display(Name = "Номер документа из 1С")]
