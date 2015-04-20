@@ -103,14 +103,7 @@
     });
 
     function GetNodes(Id) {
-        
-        //if (!$("#getnodes-" + Id.toString().trim()).hasClass("aaa")){alert("нет");}
-        //else{alert("есть");}
-
-        //$("#getnodes-" + Id.toString().trim()).addClass("aaa");
-
         var actionUrl="@Url.Action("TreeViewAjax", "StaffList")";
-            //var url = actionUrl + "?DepId=" + Id;
             $("#DepId").val(Id);
             var dataToSend = $("#Tree-View-Ajax-form").serialize();
 
@@ -120,7 +113,7 @@
                 dataType: 'json',
                 data: dataToSend,
                 success: function(result){
-                    //var $ul = $("#" + Id.toString() + ">ul");
+                    var $ulParent = $("#" + Id.toString());
                     var $liParent = $("#li-" + Id.toString());
                     //var $a = $("#getnodes-" + Id.toString().trim() + ">a");
                     //var $aa = $("#test");
@@ -128,7 +121,8 @@
 
                     for (var i = 0; i < result.length; i++)
                     {   
-                        ResultStr = 
+                        //ResultStr = 
+                        $liParent.append(
                             "<ul id='" + result[i].Code.trim() + "'>" + 
                                 "<li id='li-" + result[i].Code.trim() + "'>" + 
                                     "<span>"+
@@ -136,42 +130,21 @@
                                         "<span class='collapse collapsible'>&nbsp;</span> " + result[i].Name + " &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
                                     "</span>" +
                                 "</li>" +
-                            "</ul>"
-                        
+                            "</ul>");//;
+
                         console.log(ResultStr);
                         
                         
                     }
-                    $liParent.append(ResultStr);
-                    console.log($liParent);
-                    //$a.unbind("click");
-                    //$a.addClass("aaa");
-                    //$li.slideDown();
+                    //$liParent.append(ResultStr);
+                    //console.log($ulParent);
+                    //console.log($liParent);
+                    $liParent.slideDown();
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
                 }
             });
-
-//            $.post(actionUrl, dataToSend, function(dataReceived){
-//                
-//                //var $rows = $("#name-changes-container>table .name-change-row");
-//                //$rows.remove();
-//                for (var i = 0; i < dataReceived.length; i++)
-//                {
-//                    $li.append(
-//                        "<ul id='" + dataReceived[i].Code + "'>" + 
-//                            "<li id='li-" + dataReceived[i].Code     + "'>" + 
-//                                "<span>"+
-//                                    "<a class='Acollapsible' href='#' id='getnodes-" + dataReceived[i].Code + " onclick='GetNodes(" + dataReceived[i].Code + ");'>" +
-//                                    "<span class='collapse collapsible'>&nbsp;</span> " + dataReceived[i].Name + " &nbsp;&nbsp;(" + dataReceived[i].ItemLevel + ") &nbsp;&nbsp; " + dataReceived[i].Code + "</a>" +
-//                                "</span>" +
-//                            "</li>" +
-//                        "</ul>"
-//                    );
-//                    $("#getnodes-" + dataReceived[i].Code);
-//                }
-//            }, "json");
     }
 
 </script>
