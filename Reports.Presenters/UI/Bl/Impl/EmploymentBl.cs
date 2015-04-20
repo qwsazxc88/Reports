@@ -151,12 +151,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { countryDao = value; }
         }
 
-        protected IAccessGroupDao accessGroupDao;
-        public IAccessGroupDao AccessGroupDao
-        {
-            get { return Validate.Dependency(accessGroupDao); }
-            set { accessGroupDao = value; }
-        }
+        //protected IAccessGroupDao accessGroupDao;
+        //public IAccessGroupDao AccessGroupDao
+        //{
+        //    get { return Validate.Dependency(accessGroupDao); }
+        //    set { accessGroupDao = value; }
+        //}
 
         protected IDisabilityDegreeDao disabilityDegreeDao;
         public IDisabilityDegreeDao DisabilityDegreeDao
