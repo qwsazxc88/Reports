@@ -21,6 +21,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string EmployeePassportSeriesNumber { get; set; }
         public DateTime? EmployeePassportDateOfIssue { get; set; }
         public string EmployeePassportIssuedBy { get; set; }
+        public string City { get; set; }
         
         public PrintLiabilityContractModel()
         {
