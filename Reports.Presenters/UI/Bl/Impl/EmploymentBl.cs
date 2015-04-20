@@ -1262,7 +1262,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //список руководителей
             foreach (var item in managers)
             {
-                model.ManagerApprovalList += (string.IsNullOrEmpty(model.ManagerApprovalList) ? "" : ", ") + item.Name;
+                model.ManagerApprovalList += (string.IsNullOrEmpty(model.ManagerApprovalList) ? "" : ", ") + item.Name + "(" + item.Position.Name + ")";
             }
 
             
@@ -1284,12 +1284,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //список 
             foreach (var item in HighManagers)
             {
-                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name;
+                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name + "(" + item.Position.Name + ")";
             }
 
             foreach (var item in manualRoleManagers)
             {
-                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name;
+                model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name + "(" + item.Position.Name + ")";
             }
 
             //состояние кандидата
