@@ -177,6 +177,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public string MessageStr { get; set; }
         public bool IsDraftPM { get; set; } //так как все модели наследуют поле IsDraft, то на вкладках проблематично присвоить значение для параметра необходимой моделипришлось добавить параметр
+        public bool IsReject { get; set; }//отклонить кандидата
 
         [Display(Name = "Текст комментария"),
             StringLength(256, ErrorMessage = "Не более 256 знаков.")]

@@ -17,6 +17,7 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftPM)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsReject)
     @Html.HiddenFor(m => m.IsFixedTermContract)
     
     
@@ -239,6 +240,7 @@
                 <button id="btnPMDraft" >Сохранить</button>         
                 <button >Утвердить</button>         
             </div>            
+            <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
         }
     </fieldset>
     @*
@@ -321,6 +323,10 @@
 
         $("#btnPMDraft").click(function () {
             $("#IsDraftPM").val(true);
+        });
+
+        $("#btnReject").click(function (){
+            $("#IsReject").val(true);
         });
         
         var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
