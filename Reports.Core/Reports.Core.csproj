@@ -541,6 +541,7 @@
     <Compile Include="Domain\Employment2\DisabilityDegree.cs" />
     <Compile Include="Domain\Schedule.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
+    <Compile Include="Dto\AccessGroupListDto.cs" />
     <Compile Include="Dto\AnalyticalStatementDetailsDto.cs" />
     <Compile Include="Dto\AnalyticalStatementDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />

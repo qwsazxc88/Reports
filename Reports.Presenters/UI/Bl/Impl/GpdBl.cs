@@ -15,7 +15,6 @@ using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
-using Reports.Core.Dao;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class GpdBl : BaseBl, IGpdBl
