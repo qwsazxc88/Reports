@@ -7,7 +7,7 @@
     ViewBag.Title = "TreeViewAjax";
 }
 
-<h2>Тест дерева с постепенной загрузкой</h2>
+<h2>Структура подразделений с подзагрузкой</h2>
 
 
 <style>
@@ -77,7 +77,7 @@
                     <ul id=@item.Code>
                         <li id="li-@item.Code.Trim()">
                             <span>
-                                <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                                <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                             </span>
                         </li>                
                     </ul>
@@ -85,7 +85,6 @@
             }
         </div>
     </div>
-    <button type="button" onclick=" $('#getnodes-9900425 Acollapsible').click();">test</button>
 }
 
 
@@ -94,19 +93,25 @@
         setActiveMenuItem("moTreeViewAjax");
         $(".treeview li>ul").css('display', 'none'); //скрываем все 2 уровня
 
-        //для кликов по строкам
+        //для раскрытия веток
         $(".Acollapsible").click(function (e) {
-            //console.log(e);
-            //GetNodes('9900425');
             e.preventDefault();
             $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
-            GetNodes('9900425');
-            //$("#9900425").append("<span>aaa</span>");
         })
     });
 
     function GetNodes(Id) {
+        //опыты нчало
+        //var aa = prompt("Подгружать?");
+        //alert(aa);
+        //опыты конец
+
+
+        //чтобы не подгружались данные вторично
+        if($("#getnodes-" + Id).hasClass("IsLoading")){return;}
+        else{$("#getnodes-" + Id).addClass("IsLoading");}
+
         var actionUrl="@Url.Action("TreeViewAjax", "StaffList")";
             $("#DepId").val(Id);
             var dataToSend = $("#Tree-View-Ajax-form").serialize();
@@ -117,9 +122,7 @@
                 dataType: 'json',
                 data: dataToSend,
                 success: function(result){
-                    var $ulParent = $("#" + Id.toString());
                     var $liParent = $("#li-" + Id.toString());
-                    //var $aa = $("#test");
                     var ResultStr = "";
 
                     for (var i = 0; i < result.length; i++)
@@ -128,22 +131,28 @@
                             "<ul id='" + result[i].Code.trim() + "'>" + 
                                 "<li id='li-" + result[i].Code.trim() + "'>" + 
                                     "<span>"+
-                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' >" +
-                                        "<span class='collapse collapsible'>&nbsp;</span> " + result[i].Name + " &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
+                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' onclick='GetNodes(" + result[i].Code.trim() + ");'>" +
+                                        "<span Id='span-'" + result[i].Code.trim() + "' class='collapse collapsible'>&nbsp;</span> " + result[i].Name +" &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
                                     "</span>" +
                                 "</li>" +
                             "</ul>";
+                        $liParent.append(ResultStr);
+                        $("#span" + result[i].Code.trim()).removeClass("collapse collapsible");
+                        $("#getnodes-" + result[i].Code.trim()).removeClass("Acollapsible");
 
-                        console.log(ResultStr);
-                        
-                        
+                        //для седьмого уровня не надо обработчик
+                        if (result[i].ItemLevel < 7){
+                            $("#span" + result[i].Code.trim()).addClass("collapse collapsible");
+                            $("#getnodes-" + result[i].Code.trim()).addClass("Acollapsible");
+                            //console.log(ResultStr);
+                            //назначаем обработчик для раскрытия веток дерева
+                            $("#getnodes-" + result[i].Code.trim()).click(function (e) {
+                            e.preventDefault();
+                            $(this).children('span').toggleClass("collapse expand");
+                            $(this).closest('li').children('ul').slideToggle();
+                            });
+                        }
                     }
-                    $liParent.append(ResultStr);
-                    //console.log($ulParent);
-                    //console.log($liParent);
-                    //$ulParent.slideDown();
-                    //$("#9900756").slideDown();
-
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
