@@ -781,6 +781,7 @@
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\StaffList\TreeView.cshtml" />
+    <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />

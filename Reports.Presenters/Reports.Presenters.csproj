@@ -131,6 +131,7 @@
     <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
     <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AcceptRequestsModel.cs" />
+    <Compile Include="UI\ViewModel\AccessGroupsListModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
