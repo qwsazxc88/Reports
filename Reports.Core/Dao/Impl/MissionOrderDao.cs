@@ -47,7 +47,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("AirTicketType", NHibernateUtil.String).
                 AddScalar("TrainTicketType", NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("UserDebt",NHibernateUtil.Single);
+                AddScalar("UserDebt",NHibernateUtil.Single).
+                AddScalar("TabelNumber",NHibernateUtil.String);
         }
 
         #region Constants
@@ -155,7 +156,8 @@ namespace Reports.Core.Dao.Impl
                                 case when v.TrainTicketType = 1 then N'Купе'
                                      when v.TrainTicketType = 2 then N'СВ'
                                      else N'' end as TrainTicketType,
-                                {0}  
+                                {0}  ,
+                                u.Code as TabelNumber
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 left join dbo.MissionOrder ao on v.Id = ao.MainOrderId

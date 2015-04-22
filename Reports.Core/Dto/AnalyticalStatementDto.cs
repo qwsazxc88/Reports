@@ -15,6 +15,10 @@ namespace Reports.Core.Dto
         /// </summary>
         public int userId { get; set; }
         /// <summary>
+        /// Табельный номер
+        /// </summary>
+        public string TabelNumber { get; set; }
+        /// <summary>
         /// Имя пользователя
         /// </summary>
         public string Name { get; set; }
