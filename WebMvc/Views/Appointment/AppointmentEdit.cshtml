@@ -402,7 +402,7 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
-                   @if (Model.IsManagerApproved && Model.BankAccountantAccept)
+                   @if (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff)
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }
