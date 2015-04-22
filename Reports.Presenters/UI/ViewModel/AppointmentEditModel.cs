@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
-
+using Reports.Core.Dto.Employment2;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentEditModel : ManagerInfoModel, IContainId
@@ -128,5 +128,6 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool BankAccountantAccept { get; set; }
         public int BankAccountantAcceptCount { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
     }
 }

@@ -52,7 +52,7 @@
                 @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
                 @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
             </div>
-            <input type="hidden" name="AppointmentId" value="@Model.Id"/>
+            <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
         </fieldset>
     </div>
     <div class="clear">        
@@ -319,15 +319,15 @@
             </tr>
              <tr>
                 <td colspan="2">
-                    @if (Model.IsManagerApproved && Model.IsColloquyPassed==1)
+                    @if (Model.IsColloquyPassed==1)
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
                    <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
                                                                                                                                                                      {<text>style="display:none"</text>}/>
-                   <input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
+                   @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
-                                                                {<text>style="display:none"</text>}  />
+                                                                {<text>style="display:none"</text>}  />*@
 
                 </td>
               </tr>

@@ -7,7 +7,62 @@
     Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
     ViewBag.Title = "Заявка на подбор сотрудника";
 }
-@using (Html.BeginForm())
+<div style="visibility:hidden">
+<div id="AddEmployment" title="Добавление кандидата">
+@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
+{
+    <div class="doc-wrap">
+            <fieldset class="bordered doc-wrap panel">
+            <legend>Добавление кандидата</legend>
+            <div class="formfield">
+                <label>ФИО</label>
+                <input type="text" name="Surname"/>
+            </div>
+            <div class="formfield clear">
+                <label>Паспортные данные</label>
+                <input type="text" name="PassportData" />
+            </div>
+            <div class="formfield clear">
+                <label>Снилс</label>
+                <input type="text" name="SNILS" />
+            </div>
+            <div class="formfield clear">
+                <label>Дата рождения</label>
+                <input type="text" class="DateSelector" name="DateOfBirth" />
+            </div>
+            <div class="formfield clear">
+               <label>Департамент</label>
+            </div>
+            <div class="formfield">
+                <label>@Model.DepartmentName</label>
+                <input type="hidden" name="DepartmentId" id="NewUserDepId" />
+            </div>
+            
+            <div class="formfield clear">
+                <label>Сотрудник отдела кадров</label>
+                @Html.DropDownList("PersonnelId", new SelectList(Model.Personnels, "Id", "Name"))
+            </div>
+            <input type="hidden" name ="OnBehalfOfManagerId" value='@Model.UserId' />
+            <div id="IsFixedTermContractContainer" class="formfield clear">
+                Вид ТД<br />
+                @Html.RadioButton("IsFixedTermContract", false)<label>Бессрочный</label>
+                @Html.RadioButton("IsFixedTermContract", true)<label>Срочный</label>
+            </div>
+            <div id="IsTrainingNeededContainer" class="formfield clear">
+                <label>Обучение требуется</label>
+                @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
+                @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
+            </div>
+            <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
+        </fieldset>
+    </div>
+    <div class="clear">        
+       <button type="submit">Сохранить</button>
+    </div>
+}
+</div>
+</div>
+@using (Html.BeginForm("AppointmentEdit","Appointment"))
 {
     <div class="doc-wrap">
         <table style="width:100%">
@@ -86,7 +141,7 @@
                     @Html.LabelFor(m => m.ReasonId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), (Model.IsEditable && Model.ReasonId!=6) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
@@ -161,6 +216,8 @@
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
+            @if (Model.ShowStaff)
+            {
             <tr>
                 <td>
                     @Html.LabelFor(m => m.Compensation):
@@ -225,46 +282,12 @@
                     } 
                 </td>
             </tr>
-            
+            }
              
         </table>
         </fieldset>
         <table style="width:100%">
-        @if (dto.UserRole == UserRole.PersonnelManagerBank)
-        {
-         <tr>
-                <td>
-                    @Html.LabelFor(m => m.IsVacationExists):
-                </td>
-                <td> 
-                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount<int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" }) 
-                    <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
-                </td>
-            </tr>
-            
-                
-        }   
         <tr>
-                    <td></td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" })</div></td>
-                </tr>
-            @* <tr>
-                <td>
-                    @Html.LabelFor(m => m.BeginDate):
-                </td>
-                <td>
-                    @if (Model.IsEditable)
-                    {
-                        @Html.EditorFor(model => model.BeginDate)
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(model => model.BeginDate)
-                        @Html.HiddenFor(model => model.BeginDate)
-                    } 
-                </td>
-            </tr>*@
-             <tr>
                 <td>
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
@@ -289,6 +312,43 @@
                     
                 </td>
             </tr>
+        @if (dto.UserRole == UserRole.PersonnelManagerBank)
+        {
+         <tr>
+                <td>
+                   Специалист УКДиУ:
+                </td>
+                <td> 
+                    @Html.LabelFor(m => m.IsVacationExists):
+                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount<int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
+                </td>
+            </tr>
+            
+                
+        }   
+        <tr>
+                    <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
+                    </td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" })</div></td>
+                </tr>
+            @* <tr>
+                <td>
+                    @Html.LabelFor(m => m.BeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.BeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.BeginDate)
+                        @Html.HiddenFor(model => model.BeginDate)
+                    } 
+                </td>
+            </tr>*@
+             
              @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
              {
             <tr>
@@ -319,26 +379,33 @@
                      <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
                 </td>
             </tr>*@
-             <tr>
-                <td>
-                    @Html.LabelFor(m => m.IsStaffApproved):
-                </td>
-                <td>
-                    @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
-                    Принял в работу
-                    @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
-                    Уведомлен об отклонении заявки
-                    <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
-                    <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
-                    @Model.StaffFio
-                    <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
-                </td>
-            </tr>
+                 if (Model.ShowStaff)
+                 {
+                     <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsStaffApproved):
+                        </td>
+                        <td>
+                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                            Принял в работу
+                            @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
+                            Уведомлен об отклонении заявки
+                            <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
+                            <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
+                            @Model.StaffFio
+                            <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
+                        </td>
+                    </tr>
+                 }
              }
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
+                  @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
+                   @if (Model.IsManagerApproved && Model.BankAccountantAccept)
+                    {
+                    <input type="button" value="Выгрузить в приём" onclick="$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
+                    }
                    @if (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount)))
                     {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
@@ -370,6 +437,8 @@
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
+    $("#AddEmployment").dialog({autoOpen: false});
+    
     $("#IsVacationExists").change(function()
     {
         $("#IsVacationExistsHidden").val($("#IsVacationExists").val());

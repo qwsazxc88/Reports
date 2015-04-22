@@ -82,6 +82,16 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentWithoutStaffEdit(int id, int? managerId)
+        {
+            AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
+            model.ReasonId = 6;
+            model.ReasonIdHidden = 6;
+            model.ShowStaff = false;
+            return View("AppointmentEdit",model);
+        }
+        [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager| UserRole.PersonnelManagerBank)]
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
@@ -171,7 +181,7 @@ namespace WebMvc.Controllers
                     }*/
                 }
             }
-            if (!string.IsNullOrEmpty(model.ReasonBeginDate))
+            if (!string.IsNullOrEmpty(model.ReasonBeginDate) && model.ShowStaff)
             {
                 DateTime beginDate;
                 if (!DateTime.TryParse(model.DesirableBeginDate, out beginDate))
@@ -199,6 +209,10 @@ namespace WebMvc.Controllers
         }
         protected void CorrectDropdowns(AppointmentEditModel model)
         {
+            if (!model.ShowStaff)
+            {
+                model.ReasonId = model.ReasonIdHidden;
+            }
             if (!model.IsEditable)
             {
                 //model.PositionId = model.PositionIdHidden;
