@@ -287,6 +287,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
+                model.ShowStaff = entity.Reason.Id != 6;
                 model.Bonus = FormatSum(entity.Bonus);
                 model.City = entity.City;
                 model.Compensation = entity.Compensation;
@@ -318,6 +319,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.ReasonPosition = entity.ReasonPosition;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
                         break;
+                    case 6:
                     case 3:
                         model.ReasonPosition = entity.ReasonPosition;
                         model.ReasonBeginDate = string.Empty;
@@ -341,6 +343,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 creator =  managerId.HasValue? UserDao.Load(managerId.Value) : currUser;
+                model.ShowStaff = true;
                 model.IsVacationExists = 1;
                 SetCreatorDepartment(creator, model);
                 model.UserId = creator.Id;//currUser.Id;
@@ -545,6 +548,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(AppointmentEditModel model)
         {
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.DepartmentRequiredLevel = 7;
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>
@@ -684,6 +688,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User creator = null;
             Appointment entity = null;
+
             try
             {
                 creator = UserDao.Load(model.UserId);
@@ -753,21 +758,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.Bonus = Decimal.Parse(model.Bonus);
                 entity.City = model.City;
-                entity.Compensation = model.Compensation;
+                entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
-                entity.DesirableBeginDate = DateTime.Parse(model.DesirableBeginDate);
-                entity.EducationRequirements = model.EducationRequirements;
-                entity.ExperienceRequirements = model.ExperienceRequirements;
+                entity.DesirableBeginDate =model.ShowStaff? DateTime.Parse(model.DesirableBeginDate):DateTime.Now;
+                entity.EducationRequirements = (String.IsNullOrWhiteSpace(model.EducationRequirements))?"-":model.EducationRequirements;
+                entity.ExperienceRequirements =(String.IsNullOrWhiteSpace( model.ExperienceRequirements))?"-":model.ExperienceRequirements;
                 entity.IsVacationExists = model.IsVacationExists == 1?true:false;
-                entity.OtherRequirements = model.OtherRequirements;
+                entity.OtherRequirements =(String.IsNullOrWhiteSpace( model.OtherRequirements))?"-":model.OtherRequirements;
                 //entity.Period = model.Period;
                 entity.PositionName = model.PositionName;//PositionDao.Load(model.PositionId);
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = model.ReasonId != 3 ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
-                entity.Responsibility = model.Responsibility;
+                entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
-                entity.Schedule = model.Schedule;
+                entity.Schedule = (String.IsNullOrWhiteSpace(model.Schedule))?"-":model.Schedule;
                 entity.Type = model.TypeId == 1?true:false;
                 if (current.UserRole == UserRole.PersonnelManagerBank)
                 {
@@ -1273,6 +1278,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport entity = AppointmentReportDao.Get(id);
             if (entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+            model.ShowStaff = true;
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);
             model.TypeId = entity.Type.Id;
@@ -1296,6 +1302,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(AppointmentReportEditModel model)
         {
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.AppointmentReport);
             model.IsEducationExistsValues = new List<IdNameDto>
                               {

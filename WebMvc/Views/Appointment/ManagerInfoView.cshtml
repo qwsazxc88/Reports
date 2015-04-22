@@ -61,6 +61,8 @@
             @Html.DisplayFor(m => m.Position)
         </td>
     </tr>
+    @if (Model.ShowStaff)
+    {
    <tr>
         <td>
             @Html.LabelFor(m => m.StaffName)
@@ -69,6 +71,7 @@
             @Html.DisplayFor(m => m.StaffName)
         </td>
     </tr>
+    }
     <tr>
         <td>
             @Html.LabelFor(m => m.Chiefs)

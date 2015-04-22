@@ -25,6 +25,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForAppointmentReportList =
             @"select 
                 v.Number as AppNumber,
+                r.CreateDate,
                 -- N'' as ReportNumber,
                 v.Id as Id,
                 v.EditDate as EditDate,
@@ -94,6 +95,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForAppointmentList =
             @"select 
                 v.Number as AppNumber,
+                v.CreateDate,
                 -- N'' as ReportNumber,
                 v.Id as Id,
                 v.EditDate as EditDate,
@@ -160,7 +162,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("BankAccountantAccept",NHibernateUtil.Boolean).
-                AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32);
+                AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
+                AddScalar("CreateDate", NHibernateUtil.DateTime) ;
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -193,7 +196,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("BankAccountantAccept", NHibernateUtil.Boolean).
                 AddScalar("BankAccountantAcceptCount", NHibernateUtil.Int32).
-                AddScalar("SecondNumber",NHibernateUtil.Int32);
+                AddScalar("SecondNumber",NHibernateUtil.Int32).
+                AddScalar("CreateDate",NHibernateUtil.DateTime);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -421,6 +425,11 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 21:
                     orderBy = @" order by Status";
+                    break;
+                case 22:
+                    if (sqlQuery.Contains("AppointmentReport"))
+                         orderBy = @" order by r.CreateDate";
+                    else orderBy = @" order by v.CreateDate";
                     break;
             }
             if (sortDescending.Value)
