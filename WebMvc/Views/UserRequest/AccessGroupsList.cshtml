@@ -64,6 +64,15 @@
             </div>                          
             </td>
         </tr>
+        <tr>
+            <td >
+                <div class="action-wrap">
+                    @*<span id="LoadingIndicator"></span>*@
+                    <label>Количество записей: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Count.ToString())</label>&nbsp;&nbsp;
+                    <label>Из них в декрете: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Where(x => x.EndDate != null).Count().ToString())</label>
+                </div>
+            </td>
+         </tr>
          <tr>
             <td >
                 <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
@@ -72,19 +81,25 @@
                     <tr>
                         <th>№<br />п/п</th>
                         <th>
-                            <div id="sort1"><a href="#"  onclick = "$('#AGList').remove(); SortChanged(1);">Ф.И.О.</a></div>
+                            <div id="sort1"><a href="#"  onclick = "SortChanged(1);">Ф.И.О.</a></div>
                         </th>
                         <th>
-                            <div id="sort2"><a href="#"  onclick = "$('#AGList').remove(); SortChanged(2);">Должность</a></div>
+                            <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Должность</a></div>
                         </th>
                         <th>
-                            <div id="sort3"><a href="#"  onclick = "$('#AGList').remove(); SortChanged(3);">Подразделение<br /> 3 уровня</a></div>
+                            <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Подразделение<br /> 3 уровня</a></div>
                         </th>
                         <th>
-                            <div id="sort4"><a href="#"  onclick = "$('#AGList').remove(); SortChanged(4);">Подразделение<br />7 уровня</a></div>
+                            <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Подразделение<br />7 уровня</a></div>
                         </th>
                         <th>
-                            <div id="sort5"><a href="#"  onclick = "$('#AGList').remove(); SortChanged(5);">Группа доступа</a></div>
+                            <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Электронная<br />почта</a></div>
+                        </th>
+                        <th>
+                            <div id="sort7"><a href="#"  onclick = "SortChanged(7);">В декрете<br />(конец отпуска)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Группа доступа</a></div>
                         </th>
                     </tr>
                     <tbody id="AGList">
@@ -101,6 +116,8 @@
                                     <td>@doc.PositionName</td>
                                     <td>@doc.Dep3Name</td>
                                     <td>@doc.Dep7Name</td>
+                                    <td>@doc.Email</td>
+                                    <td>@(doc.EndDate.HasValue ? doc.EndDate.Value.ToShortDateString() : string.Empty)</td>
                                     <td>@doc.AccessGroupName</td>
                                 </tr>
                                 i++;
@@ -113,7 +130,7 @@
     </table> 
 }
 
-<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+
 
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
@@ -122,14 +139,48 @@
         //$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         //$("#EndDate").datepicker({changeMonth: true, changeYear: true});
         //$(".hasDatepicker").width("75px");
-        setSortFields();
+        
+        //$(".loading").removeClass("loading");
+
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+
         setActiveMenuItem("userAcceptGroup");
+
         $("#btnSelect").click(function(){
-            $("#AGList").remove();
-            $("#AccessGroupsList").submit();
+            SubmitForm();
         });
         
     });
+
+
+    function SubmitForm(){
+        //$("#LoadingIndicator").addClass("loading");
+        $("#AGList").remove();
+        $("#AccessGroupsList").submit();
+    }
+    
+    function SortChanged(sortedBy)
+    {
+        if($("#SortBy").val() != sortedBy)
+            $("#SortDescending").val(''); 
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+         SubmitForm();
+         return false;
+    }
+
+
     function resetFilter() {
         //$("#BeginDate").val('');
         //$("#EndDate").val('');
@@ -141,3 +192,4 @@
     }
 
  </script>   
+
