@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.Bl
     {
         AppointmentListModel GetAppointmentListModel();
         void SetAppointmentListModel(AppointmentListModel model, bool hasError);
-
+        void SetAppointmentReportsListModel(AppointmentListModel model, bool hasError);
         AppointmentEditModel GetAppointmentEditModel(int id, int? managerId);
 
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);

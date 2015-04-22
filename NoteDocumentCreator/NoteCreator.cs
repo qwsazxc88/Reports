@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
+using System.IO; 
 using System.IO.Packaging;
 namespace NoteDocumentCreator
 {
@@ -13,6 +13,7 @@ namespace NoteDocumentCreator
             StreamReader reader = new StreamReader(Path.Combine(WebPath,@"Template\word\document.xml"));
             string data = reader.ReadToEnd();
             reader.Close();
+            data = data.Replace("{{TO}}", "Председателю Правления ПАО \"Совкомбанк\", Гусеву Д.В.");
             data = data.Replace("{{FROM}}", From);
             data = data.Replace("{{THEME}}", Theme);
             data = data.Replace("{{DATE}}", Date.ToShortDateString());

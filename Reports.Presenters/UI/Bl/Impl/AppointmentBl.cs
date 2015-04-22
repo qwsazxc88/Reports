@@ -146,6 +146,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(configurationService); }
         }
 
+        protected IEmploymentCandidateDao employmentCandidateDao;
+        public IEmploymentCandidateDao EmploymentCandidateDao
+        {
+            get { return Validate.Dependency(employmentCandidateDao); }
+            set { employmentCandidateDao = value; }
+        }
+
         public AppointmentListModel GetAppointmentListModel()
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -197,6 +204,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Documents = new List<AppointmentDto>();
             else
                 SetDocumentsToModel(model, user);
+        }
+        public void SetAppointmentReportsListModel(AppointmentListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if (hasError)
+                model.Documents = new List<AppointmentDto>();
+            else
+                SetDocumentsReportsToModel(model, user);
+        }
+        public void SetDocumentsReportsToModel(AppointmentListModel model, User user)
+        {
+            UserRole role = AuthenticationService.CurrentUser.UserRole;
+            //model.Documents = new List<AppointmentDto>();
+            model.Documents = AppointmentDao.GetReportDocuments(
+                user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
         public void SetDocumentsToModel(AppointmentListModel model, User user)
         {
@@ -872,20 +903,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public int CreateAppointmentReport(Appointment entity/*,User creator*/)
         {
-            AppointmentReport report = new AppointmentReport
-                                           {
-                                               Appointment = entity,
-                                               Creator = entity.AcceptStaff,
-                                               CreateDate = DateTime.Now,
-                                               EditDate = DateTime.Now,
-                                               Email = string.Empty,
-                                               Name = string.Empty,
-                                               Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
-                                               Phone = string.Empty,
-                                               Type = AppointmentEducationTypeDao.Get(1), 
-                                           };
-            AppointmentReportDao.Save(report);
-            return report.Id;
+            int id = 0;
+            for (int i = 0; i < (entity.BankAccountantAcceptCount); i++)
+            {
+                AppointmentReport report = new AppointmentReport
+                                               {
+                                                   Appointment = entity,
+                                                   Creator = entity.AcceptStaff,
+                                                   CreateDate = DateTime.Now,
+                                                   EditDate = DateTime.Now,
+                                                   Email = string.Empty,
+                                                   Name = string.Empty,
+                                                   Number = i,//RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
+                                                   SecondNumber=1,
+                                                   Phone = string.Empty,
+                                                   Type = AppointmentEducationTypeDao.Get(1),
+                                               };
+                AppointmentReportDao.Save(report);
+                id = report.Id;
+            }
+            return id;
         }
         protected void RejectReports(int appointmentId,User user, string rejectReason)
         {
@@ -1227,6 +1264,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             AppointmentReportEditModel model = new AppointmentReportEditModel { Id = id };
             //User creator;
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            
             IUser current = AuthenticationService.CurrentUser;
             User currUser = UserDao.Load(current.Id);
             if(id == 0)
@@ -1241,7 +1280,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsColloquyPassed = !entity.IsColloquyPassed.HasValue ? -1 : (entity.IsColloquyPassed.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
-            model.DocumentNumber = entity.Number.ToString();
+            model.DocumentNumber = entity.Appointment.Id+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
             model.Phone = entity.Phone;
             model.Email = entity.Email;
             model.ColloquyDate = FormatDate(entity.ColloquyDate);
@@ -1409,9 +1448,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.DepartmentName = entity.Appointment.Department.Name;
+                model.DepartmentId = entity.Appointment.Department.Id;
+                model.ManagerId = entity.Appointment.Creator.Id;
                 model.City = entity.Appointment.City;
                 model.CandidatePosition = entity.Appointment.PositionName;
-                model.VacationCount = entity.Appointment.VacationCount.ToString();
+                model.VacationCount = entity.Appointment.BankAccountantAcceptCount.ToString();
                 model.Reason = entity.Appointment.Reason.Name;
                 model.AppointmentNumber = entity.Appointment.Number.ToString();
             }
@@ -1707,7 +1748,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrAppointmentWasDeleted));
             if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id)
                 throw new ValidationException(string.Format(CannotCreateReport));
-            return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
+            //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
+            
+            AppointmentReport report = new AppointmentReport
+            {
+                Appointment = entity.Appointment,
+                Creator = entity.Appointment.AcceptStaff,
+                CreateDate = DateTime.Now,
+                EditDate = DateTime.Now,
+                Email = string.Empty,
+                Name = string.Empty,
+                Number = entity.Number,
+                SecondNumber=entity.SecondNumber+1,
+                Phone = string.Empty,
+                Type = AppointmentEducationTypeDao.Get(1),
+            };
+            AppointmentReportDao.SaveAndFlush(report);
+            return report.Id;
+
         }
         public static string CreatePassword(int length)
         {

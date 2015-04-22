@@ -242,11 +242,12 @@
                 </td>
             </tr>
             
-                <tr>
+                
+        }   
+        <tr>
                     <td></td>
                     <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount))) ? null : (object)new { disabled = "disabled" })</div></td>
                 </tr>
-        }   
             @* <tr>
                 <td>
                     @Html.LabelFor(m => m.BeginDate):
@@ -288,7 +289,7 @@
                     
                 </td>
             </tr>
-             @if (Model.BankAccountantAccept && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount)))
+             @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
              {
             <tr>
                 <td>
