@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
-
+using Reports.Core.Dto.Employment2;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentReportEditModel : ManagerInfoModel, IContainId, IAttachment
@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         [Display(Name = "В структурное подразделение")]
         public string DepartmentName { get; set; }
-
+        public int ManagerId { get; set; }
         [Display(Name = "Место работы (город)")]
         public string City { get; set; }
 
@@ -95,12 +95,13 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Кандидат принят на работу с даты")]
         public string DateAccept { get; set; }
 
-        [Display(Name = "Скан")]
+        [Display(Name = "Скан резюме")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
 
         public CommentsModel CommentsModel { get; set; }
-
+        public int DepartmentId { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
         /*public bool ApproveForAllAvailable { get; set; }
         public bool ApproveForAll { get; set; }*/
     }

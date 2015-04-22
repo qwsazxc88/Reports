@@ -50,12 +50,28 @@ namespace WebMvc.Controllers
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
         }
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentReportList()
+        {
+            var model = AppointmentBl.GetAppointmentListModel();
+            return View(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult Index(AppointmentListModel model)
         {
             bool hasError = !ValidateModel(model);
             AppointmentBl.SetAppointmentListModel(model, hasError);
+            return View(model);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentReportList(AppointmentListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            AppointmentBl.SetAppointmentReportsListModel(model, hasError);
             return View(model);
         }
         protected bool ValidateModel(AppointmentListModel model)
@@ -242,7 +258,6 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsManagerApproved");
             }*/
         }
-
 
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]

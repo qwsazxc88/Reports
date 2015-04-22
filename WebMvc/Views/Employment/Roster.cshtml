@@ -106,7 +106,7 @@
     
     if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
     {
-        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+        @*<div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>*@
     }
     
     <div style="text-align: right;">
@@ -201,6 +201,9 @@
         </th>
         <th>
             <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
+        </th>
+        <th>
+            Статус<br/>загрузки
         </th>
         @*
         <th>
@@ -306,6 +309,16 @@
                 </td>
                 <td>
                     &nbsp;@candidate.Status
+                </td>
+                <td>
+                    @if (candidate.AppointmentReportId > 0)
+                    {
+                        <a href='@Url.Action("AppointmentReportEdit","Appointment", new { id = candidate.AppointmentReportId })'>Загружено из поиска</a>
+                    }
+                    else
+                    {
+                        <text>Из оформления без службы по найму</text>
+                    }
                 </td>
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">

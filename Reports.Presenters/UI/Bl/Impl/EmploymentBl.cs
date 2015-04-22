@@ -2761,7 +2761,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 QuestionnaireDate = DateTime.Now,
                 Personnels = PersonnelUser,
                 IsTrainingNeeded = model.IsTrainingNeeded,
-                IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false
+                IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
+                AppointmentReport=AppointmentDao.Load(model.AppointmentId)
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
