@@ -175,8 +175,8 @@
         type: 'POST',
         data: $("#RequestData").serialize(),
         success: function(result){
-            $("#tableBody tr").remove();
-            $("#tableBody").append(result);
+            $("#AGList tr").remove();
+            $("#AGList").append(result);
             $(".loading").removeClass("loading");
             },
         error: function(){
