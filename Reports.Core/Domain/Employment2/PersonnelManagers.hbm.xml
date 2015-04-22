@@ -45,6 +45,9 @@
     <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
     <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
 
+    <property name="RejectDate" not-null="false"/>
+    <many-to-one name="RejectUser" class="User" column="RejectUserId" foreign-key="FK_PersonnelManagers_Users" index="PersonnelManagers_Users"  not-null="false"/>
+
     <property name="ContractPoint_1_Id" not-null="false"/>
     <property name="ContractPoint_2_Id" not-null="false"/>
     <property name="ContractPoint_3_Id" not-null="false"/>

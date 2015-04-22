@@ -1495,6 +1495,25 @@ namespace WebMvc.Controllers
   
          #endregion
 
+         #region AccessGroupsList
+
+         [HttpGet]
+         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager)]
+         public ActionResult AccessGroupsList()
+         {
+             AccessGroupsListModel model = RequestBl.GetAccessGroupsListModel();
+             return View(model);
+         }
+         [HttpPost]
+         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager)]
+         public ActionResult AccessGroupsList(AccessGroupsListModel model)
+         {
+             model = RequestBl.SetAccessGroupsListModel(model);
+             return View(model);
+         }
+         #endregion
+
+
          #region Comments
          [HttpGet]
          public ActionResult RenderComments(int id, int typeId, string addCommentText = null, bool hasParent = false)

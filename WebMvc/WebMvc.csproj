@@ -807,6 +807,7 @@
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
+    <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />

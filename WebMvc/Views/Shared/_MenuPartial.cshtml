@@ -158,6 +158,15 @@
                         {
                             <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
                         }*@
+                    if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                        || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                            <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Группы доступа", "AccessGroupsList", "UserRequest")</div>
+                    }
+@*                        if (dto.UserRole == UserRole.PersonnelManager)
+                        {
+                            <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
+                        }*@
                 }
                 @*<div class="menuitem" id="templatesList">@Html.ActionLink("Шаблоны документов", "TemplatesList", "UserRequest")</div>*@
                 <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>

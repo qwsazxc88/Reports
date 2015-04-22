@@ -174,6 +174,7 @@ namespace Reports.Core.Domain
         public virtual int? Grade { get; set; }
         public virtual bool? ExperienceIn1C { get; set; }
         public virtual bool? IsFixedTermContract { get; set; }
+        public virtual string AccessGroupCode { get; set; }
         #endregion
 
         #region Constructors
