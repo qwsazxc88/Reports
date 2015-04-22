@@ -807,10 +807,12 @@
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
+    <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />
     <None Include="Files\Template\_rels\.rels" />
+    <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

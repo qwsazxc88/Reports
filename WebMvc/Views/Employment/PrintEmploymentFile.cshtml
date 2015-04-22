@@ -13,7 +13,7 @@
 <BR>
 @foreach (var item in @Model.NameChanges)
 {
-    <span>item.Date + " " + item.Place + " " + item.Reason</span><br />
+    <span>@((item.Date.HasValue ? item.Date.Value.ToShortDateString() : "") + " " + item.Place + " " + item.Reason)</span><br />
 }
 </P>
 <P align=left>2. Пол @(Model.IsMale ? "мужской" : "женский")
@@ -22,9 +22,9 @@
 <P align=left>4. Место рождения @Model.PlaceOfBirth<BR>
 <FONT size=2>(село, деревня, город, район, область, край, республика)<BR>________________________________________________________________________________________</FONT></P>
 @**@
-<P align=left><FONT size=2><FONT size=3>5. Семейное положение </FONT></FONT></P>
-<P align=left><FONT size=2><FONT size=3>6. Образование ________________________________________________________________</FONT></FONT></P><FONT size=2><FONT size=3>
-@**@
+<P align=left><FONT size=2><FONT size=3>5. Семейное положение: @Model.FamilyStatusName</FONT></FONT></P>
+<P align=left><FONT size=2><FONT size=3>6. Образование: @(!string.IsNullOrEmpty(Model.Educations) ? Model.Educations : "________________________________________________________________")</FONT></FONT></P><FONT size=2><FONT size=3>
+@*<P align=left><FONT size=2><FONT size=3>6. Образование ________________________________________________________________</FONT></FONT></P><FONT size=2><FONT size=3>*@
 <P align=left>
 <TABLE cellSpacing=0 width="100%" border=1 <table>
 <TBODY>
@@ -71,14 +71,14 @@
 <P align=center><FONT size=2>Период обучения.<BR></FONT></P></TD>
 <TD>
 <P align=center><FONT size=2>Полученная специальность или<BR>квалификация.</FONT></P></TD></TR>
-
+@*
 <TR>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 </TR>
-
+*@
 @{ i = 0; }
 @foreach (var item in Model.Training)
 {
@@ -107,7 +107,7 @@
 <TD>
 <P align=center><FONT size=2>@Model.RegistrationAddress</FONT></P></TD>
 <TD>
-<P align=center><FONT size=2>@Model.PhoneNumbers</FONT></P></TD></TR>
+<P align=center><FONT size=2>@*@Model.PhoneNumbers*@</FONT></P></TD></TR>
 <TR>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
@@ -131,7 +131,7 @@
 <TR>
     <TD>@Model.ActualAddress</TD>
     <TD>@Model.Cohabitants</TD>
-    <TD>&nbsp;</TD></TR>
+    <TD>@Model.PhoneNumbers</TD></TR>
 <TR>
 
 </TBODY>
@@ -163,8 +163,8 @@
 @foreach (var item in Model.ExperienceItems)
 {
     <TR>
-        <TD>@item.BeginningDate</TD>
-        <TD>@item.EndDate</TD>
+        <TD>@item.BeginningDate.Value.ToShortDateString()</TD>
+        <TD>@item.EndDate.Value.ToShortDateString()</TD>
         <TD>@item.Position<br />@item.Company</TD>
         <TD>@item.CompanyContacts</TD>
     </TR>
@@ -177,7 +177,7 @@
 <BR>______________________________________<BR>
 13. Имеете ли Вы какие-либо финансовые обязательства (закладные, ссуды, кредиты и т.д.), какие, перед кем, срок погашения @Model.Liabilities
 <BR>___________________________________________________________________________________</P>
-<P align=left>14. Причина смены последнего места работы ____________________________________________<BR>@Model.PreviousDismissalReason</P>
+<P align=left>14. Причина смены последнего места работы: @(!string.IsNullOrEmpty(Model.PreviousDismissalReason) ? Model.PreviousDismissalReason : "____________________________________________")<BR></P>
 <P align=left>15. Ф.И.О. и контактный телефон непосредственного руководителя или руководителя кадровой службы по прежнему месту работы
 <BR>@Model.PreviousSuperior</P>
 <P align=left>16. На какую должность претендуете<BR>
@@ -315,7 +315,7 @@
 
 <P>27. Паспорт: серия @Model.InternalPassportSeries №@Model.InternalPassportNumber, код подразделения @Model.InternalPassportSubdivisionCode
 <BR>Дата выдачи @(Model.InternalPassportDateOfIssue.HasValue ? Model.InternalPassportDateOfIssue.Value.ToShortDateString() : string.Empty)
-<BR>Кем выдан @Model.InternationalPassportIssuedBy</P>
+<BR>Кем выдан @Model.InternalPassportIssuedBy</P>
 
 <P>28. Заграничный паспорт: серия @Model.InternationalPassportSeries №@Model.InternationalPassportNumber<BR>Дата выдачи @Model.InternationalPassportDateOfIssue
 <BR>Кем выдан @Model.InternationalPassportIssuedBy</P>
@@ -347,8 +347,38 @@
 <LI><FONT size=2>свидетельство о рождении ребенка; </FONT>
 <LI><FONT size=2>2 фотографии (3x4)</FONT> </LI></UL>
 <P align=center><STRONG>ДОПОЛНИТЕЛЬНЫЙ ЛИСТ ВОПРОСОВ</STRONG><BR>для кандидатов на вакантные должности, предусматривающие заключение договора о полной материальной ответственности</P>
-<P align=left>1. Наличие хронических заболеваний (по желанию) (если есть, то перечислите)<BR>____________________________________________________________________________________</P>
-<P align=left>2. Привлекались ли Вы к уголовной, административной или иной ответственности, когда, за что, мера наказания______________________________________________________________________<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
-<P align=left>3. Состоите ли Вы на психиатрическом или наркологическом учете (если да,то кто и где)<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
-<P align=left>4. Ваше отношение к табакокурению:______________________________________________<BR>____________________________________________________________________________________</P>
-<P align=left>5. Ваше отношение к алкоголю:________________________________________________________<BR>____________________________________________________________________________________</P></BODY></HTML>
+<P align=left>1. Наличие хронических заболеваний (по желанию) (если есть, то перечислите)<BR>@(!string.IsNullOrEmpty(Model.ChronicalDiseases) ? Model.ChronicalDiseases : "____________________________________________________________________________________")</P>
+@if(!string.IsNullOrEmpty(Model.Penalties))
+{
+    <P align=left>2. Привлекались ли Вы к уголовной, административной или иной ответственности, когда, за что, мера наказания @Model.Penalties</P>
+}
+else
+{
+    <P align=left>2. Привлекались ли Вы к уголовной, административной или иной ответственности, когда, за что, мера наказания ______________________________________________________________________<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
+}
+</P>
+@if (!string.IsNullOrEmpty(Model.PsychiatricAndAddictionTreatment))
+{
+    <P align=left>3. Состоите ли Вы на психиатрическом или наркологическом учете (если да,то кто и где)<BR>@Model.PsychiatricAndAddictionTreatment</P>
+}
+else
+{
+    <P align=left>3. Состоите ли Вы на психиатрическом или наркологическом учете (если да,то кто и где)<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
+}
+@if (!string.IsNullOrEmpty(Model.Drinking))
+{
+    <P align=left>4. Ваше отношение к табакокурению: @Model.Drinking</P>
+}
+else
+{
+    <P align=left>4. Ваше отношение к табакокурению:______________________________________________<BR>____________________________________________________________________________________</P>
+}
+@if (!string.IsNullOrEmpty(Model.Smoking))
+{
+    <P align=left>5. Ваше отношение к алкоголю: @Model.Smoking</P>
+}
+else
+{
+    <P align=left>5. Ваше отношение к алкоголю:________________________________________________________<BR>____________________________________________________________________________________</P>
+}
+</BODY></HTML>

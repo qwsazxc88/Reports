@@ -105,6 +105,7 @@ namespace Reports.Core.Dao.Impl
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
                 ,personnelManagers.CompleteDate as CompleteDate
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
+                ,candidate.AppointmentReportId
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
@@ -458,6 +459,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Training", NHibernateUtil.String)
                 .AddScalar("CompleteDate", NHibernateUtil.DateTime)
                 .AddScalar("DocStatus", NHibernateUtil.String)
+                .AddScalar("AppointmentReportId",NHibernateUtil.Int32)
                 ;
 
             return query;

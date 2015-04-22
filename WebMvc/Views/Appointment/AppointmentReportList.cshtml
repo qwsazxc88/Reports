@@ -123,8 +123,9 @@
                      <th>
                         № п/п
                     </th>
-                    <th>
-                        <div id="sort1" style="min-width:70px"><a href="#" onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
+                    
+                     <th>
+                        <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер<br/> отчета</a></div>
                     </th>
                     <th>
                         <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
@@ -159,7 +160,27 @@
                     <th>
                         <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
                     </th>
-                     
+                     <th>
+                        <div id="sort13"  style="min-width:50px"><a href="#"  onclick = "SortChanged(13);">Кандидат<br/> подобран</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">ФИО<br/> кандидата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort15"  style="min-width:110px"><a href="#"  onclick = "SortChanged(15);">Тел.<br/> кандидата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort16" style="min-width:110px"><a href="#"  onclick = "SortChanged(16);">E-mail<br/> кандидата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Принят<br/> на работу</a></div>
+                    </th>
+                    <th>
+                        <div id="sort18" style="min-width:110px"><a href="#"  onclick = "SortChanged(18);">Не принят<br/> (причина отказа)</a></div>
+                    </th>
+                    <th>
+                        <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
+                    </th>
                     <th>
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
                     </th>
@@ -172,9 +193,10 @@
                         <tr>
                             <td>@doc.Number</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
+                                
+                                    <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.RNumber)_@(doc.SecondNumber)</a>
+                                
                             </td>
-                            
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
                             <td>@doc.ManDep7Name</td>
@@ -186,7 +208,13 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            
+                            <td>@doc.RStaffAccept</td>
+                            <td>@doc.RName</td>
+                            <td>@doc.Phone</td>
+                            <td>@doc.Email</td>
+                            <td>@doc.RApprove</td>
+                            <td>@doc.RReject</td>
+                            <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
                         </tr>
                     }
@@ -205,7 +233,7 @@
         $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
-        setActiveMenuItem("appAllRequests");
+        setActiveMenuItem("appAllReports");
     });
     function resetFilter() {
         $("#BeginDate").val('');
