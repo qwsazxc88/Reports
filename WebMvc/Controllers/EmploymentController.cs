@@ -1443,33 +1443,37 @@ namespace WebMvc.Controllers
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
-            if (ValidateModel(model))
+            if (model.IsReject)
             {
-                if (model.IsDraftPM)
-                {
-                    EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
-                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                }
-                else if (model.IsReject)
-                {
-                    EmploymentBl.SavePersonnelManagersRejecting(model, out error);
-                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат отклонен!" : error);
-                }
-                else
-                {
-                    EmploymentBl.SavePersonnelManagersReport(model, out error);
-                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                }
-                model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
-                
+                EmploymentBl.SavePersonnelManagersRejecting(model, out error);
+                ModelState.Clear();
+                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат отклонен!" : error);
             }
             else
-            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-                model = EmploymentBl.GetPersonnelManagersModel(model);
-                if (Session["PersonnelManagersM" + SPPath] != null)
-                    Session.Remove("PersonnelManagersM" + SPPath);
-                if (Session["PersonnelManagersM" + SPPath] == null)
-                    Session.Add("PersonnelManagersM" + SPPath, model);
+            {
+                if (ValidateModel(model))
+                {
+                    if (model.IsDraftPM)
+                    {
+                        EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                    }
+                    else
+                    {
+                        EmploymentBl.SavePersonnelManagersReport(model, out error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                    }
+                    model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
+
+                }
+                else
+                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                    model = EmploymentBl.GetPersonnelManagersModel(model);
+                    if (Session["PersonnelManagersM" + SPPath] != null)
+                        Session.Remove("PersonnelManagersM" + SPPath);
+                    if (Session["PersonnelManagersM" + SPPath] == null)
+                        Session.Add("PersonnelManagersM" + SPPath, model);
+                }
             }
 
 
