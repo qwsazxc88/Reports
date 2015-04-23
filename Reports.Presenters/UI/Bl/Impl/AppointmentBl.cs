@@ -300,7 +300,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsVacationExists = entity.IsVacationExists ? 1 : 0;
                 model.DocumentNumber = entity.Number.ToString();
                 model.OtherRequirements = entity.OtherRequirements;
-                model.BankAccountantAccept = entity.BankAccountantAccept;
+                model.BankAccountantAccept = entity.BankAccountantAccept.HasValue?entity.BankAccountantAccept.Value:false;
                 model.BankAccountantAcceptCount = entity.BankAccountantAcceptCount;
                 //model.Period = entity.Period;
                 model.PositionName = entity.PositionName;
@@ -624,6 +624,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
             model.UserName = user.FullName;
+            model.ManagerId = user.Id;
         }
         public bool CheckDepartment(AppointmentEditModel model,out int level)
         {
@@ -748,6 +749,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        protected void RejectAppointment(Appointment entity)
+        {
+            entity.AcceptChief = null;
+            entity.AcceptManager = null;
+            entity.AcceptStaff = null;
+            entity.BankAccountantAccept = null;
+            entity.ChiefDateAccept = null;
+            entity.ManagerDateAccept = null;
+            entity.StaffDateAccept = null;                            
+        }
         protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, 
             User user,out string error)
         {
@@ -768,7 +779,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.Period = model.Period;
                 entity.PositionName = model.PositionName;//PositionDao.Load(model.PositionId);
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
-                entity.ReasonBeginDate = model.ReasonId != 3 ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
+                entity.ReasonBeginDate = (model.ReasonId != 3 && !String.IsNullOrWhiteSpace(model.ReasonBeginDate)) ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
@@ -792,8 +803,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                             && model.IsDelete)
                         {
-                            entity.DeleteDate = DateTime.Now;
-                            entity.DeleteUser = currUser;
+                            /*entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;*/
+                            RejectAppointment(entity);
                             EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
@@ -817,8 +829,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                            && model.IsDelete)
                         {
-                            entity.DeleteDate = DateTime.Now;
-                            entity.DeleteUser = currUser;
+                            /*entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;*/
+                            RejectAppointment(entity);
                             EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
@@ -857,8 +870,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                             else if (model.IsManagerRejectAvailable && model.IsDelete)
                             {
-                                entity.DeleteDate = DateTime.Now;
-                                entity.DeleteUser = currUser;
+                                /*entity.DeleteDate = DateTime.Now;
+                                entity.DeleteUser = currUser;*/
+                                RejectAppointment(entity);
                                 RejectReports(entity.Id, currUser, "Заявка отклонена");
                             }
                             else if (model.IsChiefApproveAvailable && model.IsChiefApproved)

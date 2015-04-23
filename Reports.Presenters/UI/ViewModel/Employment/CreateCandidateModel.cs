@@ -43,6 +43,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsOnBehalfOfManagerAvailable { get; set; }
         public int AppointmentId { get; set; }
+        public int AppointmentReportId { get; set; }
         [Display(Name = "Обучение требуется")]
         public bool IsTrainingNeeded { get; set; }
         [Display(Name = "До приема")]
