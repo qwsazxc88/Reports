@@ -37,5 +37,9 @@
       <key column="AppointmentReportId" foreign-key="FK_AppointmentReportComment_AppointmentReport"/>
       <one-to-many class="AppointmentReportComment"/>
     </bag>
+    <bag name="Candidates" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="AppointmentReportId" foreign-key="FK_EmploymentCandidate_AppointmentReport"/>
+      <one-to-many class="EmploymentCandidate"/>
+    </bag>
 	</class>
 </hibernate-mapping>

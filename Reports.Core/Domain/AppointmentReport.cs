@@ -41,6 +41,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? SendTo1C { get; set; }
 
         public virtual IList<AppointmentReportComment> Comments { get; set; }
+        public virtual IList<EmploymentCandidate> Candidates { get; set; }
         #endregion
 
         #region Properties

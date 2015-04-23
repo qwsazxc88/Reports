@@ -136,6 +136,7 @@ namespace WebMvc.Controllers
             }
             model.IsDelete = false;
             model.ApproveForAll = false;
+            if (string.IsNullOrEmpty(error)) ViewBag.Message = "Данные успешно сохранены";
             return View(model);
             /*if (!string.IsNullOrEmpty(error))
                 return View(model);

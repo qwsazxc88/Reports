@@ -68,7 +68,7 @@ namespace Reports.Core.Domain
         //public virtual IList<MissionTarget> Targets { get; set; }
 
         public virtual IList<AppointmentComment> Comments { get; set; }
-
+        public virtual IList<EmploymentCandidate> Candidates { get; set; }
         #endregion
 
         #region Properties

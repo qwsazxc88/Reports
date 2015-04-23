@@ -967,7 +967,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Appointment.hbm.xml" />
+    <EmbeddedResource Include="Domain\Appointment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentComment.hbm.xml" />

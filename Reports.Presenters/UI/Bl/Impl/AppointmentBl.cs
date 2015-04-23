@@ -288,6 +288,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 model.FIO = entity.FIO;
                 model.Recruter = entity.Recruter;
+                if (entity.Candidates != null && entity.Candidates.Any())
+                {
+                    model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers != null) ? x.PersonnelManagers.CompleteDate : null, Status = x.SendTo1C.HasValue ? "Выгружено в 1С" : "Не выгружено в 1С" }).ToList();
+                }
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.ShowStaff = entity.Recruter == 1;
                 model.Bonus = FormatSum(entity.Bonus);
@@ -1299,7 +1303,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport entity = AppointmentReportDao.Get(id);
             if (entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+            if (entity.Candidates != null && entity.Candidates.Any())
+            {
+                model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers!=null)?x.PersonnelManagers.CompleteDate:null, Status=x.SendTo1C.HasValue?"Выгружено в 1С":"Не выгружено в 1С" }).ToList();
+            }
             model.ShowStaff = true;
+            model.AppId = entity.Appointment.Id;
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);
             model.TypeId = entity.Type.Id;

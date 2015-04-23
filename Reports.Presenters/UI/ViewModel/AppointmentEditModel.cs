@@ -129,5 +129,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool BankAccountantAccept { get; set; }
         public int BankAccountantAcceptCount { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
+        public IList<CandidateDto> Candidates { get; set; }
     }
 }
