@@ -298,6 +298,8 @@ namespace Reports.Core.Dao.Impl
                     return " ORDER BY PayerName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 12:
                     return " ORDER BY PayeeName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
+                case 13:
+                    return " ORDER BY PAName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
             }
             return "";
         }
@@ -359,6 +361,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PAccountID", NHibernateUtil.Int32).
                 AddScalar("PersonAccount", NHibernateUtil.String).
                 AddScalar("Account", NHibernateUtil.String).
+                AddScalar("PAName", NHibernateUtil.String).
 
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
                 AddScalar("Amount", NHibernateUtil.Decimal).
