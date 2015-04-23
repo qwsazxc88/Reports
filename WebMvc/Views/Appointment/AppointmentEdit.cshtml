@@ -53,7 +53,7 @@
                 @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
                 @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
             </div>
-            <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
+            <input type="hidden" name="AppointmentId" value="@Model.Id"/>
         </fieldset>
     </div>
     <div class="clear">        
@@ -312,7 +312,7 @@
                     
                 </td>
             </tr>
-        @if (dto.UserRole == UserRole.PersonnelManagerBank)
+        @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
         {
          <tr>
                 <td>
@@ -402,11 +402,11 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
-                   @if (Model.IsManagerApproved && Model.BankAccountantAccept)
+                   @if (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved)
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }
-                   @if (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount)))
+                   @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
                     {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
                        <input type="button" value="Создать служебную записку (.docx)"  onClick="javascript:window.location.href='/Appointment/NoteDocX/@Model.Id'" />

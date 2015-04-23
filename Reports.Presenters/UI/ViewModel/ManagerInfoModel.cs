@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Руководитель (инициатор)")]
         public string UserName { get; set; }
-
+        public int ManagerId { get; set; }
         //[Display(Name = "Табельный номер")]
         //public string UserNumber { get; set; }
 

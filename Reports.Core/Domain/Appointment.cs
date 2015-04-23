@@ -59,7 +59,7 @@ namespace Reports.Core.Domain
         public virtual User DeleteUser { get; set; }
 
         public virtual DateTime? SendTo1C { get; set; }
-        public virtual bool BankAccountantAccept { get; set; }
+        public virtual bool? BankAccountantAccept { get; set; }
         public virtual int BankAccountantAcceptCount { get; set; }
         //public virtual bool DeleteAfterSendTo1C { get; set; }
 
