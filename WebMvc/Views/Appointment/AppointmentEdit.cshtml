@@ -20,15 +20,15 @@
             </div>
             <div class="formfield clear">
                 <label>Паспортные данные</label>
-                <input type="text" name="PassportData" />
+                <input type="text" id="PassportData" name="PassportData" />
             </div>
             <div class="formfield clear">
                 <label>Снилс</label>
-                <input type="text" name="SNILS" />
+                <input type="text" id="SNILS" name="SNILS" />
             </div>
             <div class="formfield clear">
                 <label>Дата рождения</label>
-                <input type="text" class="DateSelector" name="DateOfBirth" />
+                <input type="text" class="DateSelector" id="DateOfBirth" name="DateOfBirth" />
             </div>
             <div class="formfield clear">
                <label>Департамент</label>
@@ -69,7 +69,13 @@
         <tr>
                 <td colspan="2">
                     @Html.ValidationSummary(false)
-                    <div id="Error" style="color:Red;display:none;"></div>
+                    <div id="Error" style="color:Red;display:none;">
+                    @if (ViewBag.Message != null)
+                    {
+                        <text>@ViewBag.Message</text>
+                    }
+                    
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -430,7 +436,27 @@
                 
             </tr>
         </table>
-    </div>
+    </div> 
+    if(Model.Candidates!=null && Model.Candidates.Any())
+    {
+    <div class="doc-wrap">
+    Принятые сотрудники(@Model.Candidates.Count):
+    <br />
+    <table class="grid">
+    <thead>
+    <tr>
+    <th>ФИО</th><th>Дата приёма</th><th>Статус</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var el in Model.Candidates)
+    {
+      <tr><td>@el.Name</td><td>@el.EmploymentDate</td><td>@el.Status</td></tr>
+    }
+    </tbody>
+    </table>
+    </div>  
+    }
     <br />
     <div class="comment-wrap">
         <table style="width:100%">
@@ -442,10 +468,18 @@
         </table>
     </div>
 }
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
+  UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+     jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999 99');
+             $('#PassportData').mask('9999 999999');
+        }); 
     $("#AddEmployment").dialog({autoOpen: false});
     
     $("#IsVacationExists").change(function()
