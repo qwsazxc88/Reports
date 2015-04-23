@@ -1172,7 +1172,7 @@ SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName,
 			 A.PayeeID, J.[Name] as PayeeName, J.INN as PayeeINN, J.KPP as PayeeKPP, J.Account as PayeeAccount, J.BankName as PayeeBankName, J.BankBIK as PayeeBankBIK, J.CorrAccount as PayeeCorrAccount,
 			 --null as PayeeContractor,
 			 J.ContractorName as PayeeContractor,--новое поле
-			 A.PaymentPeriodID, A.Amount, A.PAccountID, H.PersonAccount as Account,
+			 A.PaymentPeriodID, A.Amount, A.PAccountID, H.PersonAccount as Account, H.Name as PAName,
 			 H.Name + case when H.PersonAccount is not null then ' (лицевой счет: ' + H.PersonAccount else ' (расчетный счет: ' + H.Account end + ')' as PersonAccount,
 			 A.SendTo1C
 FROM dbo.GpdContract AS A 
@@ -1206,12 +1206,12 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) as GCCount
 			 E.Name AS CreatorName, A.CreateDate, dep3.Name AS DepLevel3Name, A.ChargingDate, A.DateBegin, A.DateEnd,
 			 A.Amount, isnull(A.AmountPayment, 0) as AmountPayment, A.POrderDate, A.PurposePayment, A.ESSSNum, A.StatusID, G.Name AS StatusName, B.Id as GCID, 
 			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 1180 then 1 else 0 end as bit) as flgRed,
-			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
+			 H.[Name] as CTName, H.Id as CTType, A.SendTo1C, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, M.ContractorName as PayerName, M.INN as PayerINN, M.KPP as PayerKPP, M.Account as PayerAccount, M.BankName as PayerBankName, M.BankBIK as PayerBankBIK, M.CorrAccount as PayerCorrAccount,
 			 --получатель
 			 B.PayeeID, N.ContractorName as PayeeName, N.INN as PayeeINN, N.KPP as PayeeKPP, N.Account as PayeeAccount, N.BankName as PayeeBankName, N.BankBIK as PayeeBankBIK, N.CorrAccount as PayeeCorrAccount, 
-			 B.PAccountID, L.PersonAccount as Account
+			 B.PAccountID, L.PersonAccount as Account, L.Name as PAName
 FROM dbo.GpdAct as A
 INNER JOIN dbo.GpdContract as B ON B.Id = A.GCID
 LEFT JOIN (SELECT GCID, count(GCID) as Gcount FROM dbo.GpdAct GROUP BY GCID) as C ON C.GCID = A.GCID
@@ -1246,12 +1246,12 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) + 1 as GCC
 			 'Договор ГПХ # ' + isnull(L.PersonAccount, J.Account) + ' ## ' + D.LastName + ' ' + D.FirstName + ' ' + D.SecondName + ' * ' + B.PurposePayment as PurposePayment, 
 			 A.ESSSNum, G.Id as StatusID, G.Name AS StatusName, B.Id as GCID, 
 			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 1180 then 1 else 0 end as bit) as flgRed,
-			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
+			 H.[Name] as CTName, H.Id as CTType, A.SendTo1C, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, I.ContractorName as PayerName, I.INN as PayerINN, I.KPP as PayerKPP, I.Account as PayerAccount, I.BankName as PayerBankName, I.BankBIK as PayerBankBIK, I.CorrAccount as PayerCorrAccount,
 			 --получатель
 			 B.PayeeID, J.ContractorName as PayeeName, J.INN as PayeeINN, J.KPP as PayeeKPP, J.Account as PayeeAccount, J.BankName as PayeeBankName, J.BankBIK as PayeeBankBIK, J.CorrAccount as PayeeCorrAccount, 
-			 B.PAccountID, L.PersonAccount as Account
+			 B.PAccountID, L.PersonAccount as Account, L.Name as PAName
 FROM dbo.GpdContract as B
 LEFT JOIN dbo.GpdAct as A ON B.Id = A.GCID and B.Id = -1
 LEFT JOIN (SELECT GCID, count(GCID) as Gcount FROM dbo.GpdAct GROUP BY GCID) as C ON C.GCID = B.ID

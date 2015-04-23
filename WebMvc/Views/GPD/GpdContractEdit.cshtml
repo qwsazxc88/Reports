@@ -204,7 +204,7 @@
                                 @Html.LabelFor(m => m.PayerID):
                             </td>
                             <td>
-                                <input type="text" name="PayerName" id="PayerName" value="@Model.PayerName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayer", "GPD")" />
+                                <input type="text" name="PayerName" id="PayerName" placeholder="Введите начальные буквы названия Плательшика" value="@Model.PayerName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayer", "GPD")" />
                                 <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(1, 0);"/>
                                 <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(1, 1);"/>
                                 @*
@@ -222,6 +222,15 @@
                                 @Html.ValidationMessageFor(model => model.PayerID)
                                 
                             </td>
+                            <td rowspan="3">
+                                <div style="border:3px solid red;">
+                                    &nbsp;&nbsp;&nbsp;ВНИМАНИЕ!<br />
+                                    &nbsp;&nbsp;&nbsp;1. Существующие реквизиты выбираются из справочника<br /> &nbsp;путем ввода первых букв названия.<br />
+                                    &nbsp;&nbsp;&nbsp;1. Кнопка "Создать" служит для создания нового реквизита!<br />
+                                    &nbsp;&nbsp;&nbsp;2. Кнопка "Редактировать" служит для редактирования<br /> &nbsp;существующего реквизита. <br />
+                                    &nbsp;&nbsp;&nbsp;3. Если вы изменили сужествующий реквизит, то он <br />&nbsp;поменяется во всех договорах и актах, в которых он уже присутствует!<br />
+                                </div>
+                            </td>
                         </tr>
 
                         <tr>
@@ -229,7 +238,7 @@
                                 @Html.LabelFor(m => m.PayeeID):
                             </td>
                             <td>
-                                <input type="text" name="PayeeName" id="PayeeName" value="@Model.PayeeName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayeer", "GPD")" />
+                                <input type="text" name="PayeeName" id="PayeeName" placeholder="Введите начальные буквы названия Получателя" value="@Model.PayeeName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayeer", "GPD")" />
                                 <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(2, 0);"/>
                                 <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(2, 1);"/>
                                 @*
@@ -254,7 +263,7 @@
                                 @Html.LabelFor(m => m.PAccountID):
                             </td>
                             <td>
-                                <input type="text" name="PersonAccount" id="PersonAccount" value="@Model.PersonAccount" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPAccount", "GPD")" />
+                                <input type="text" name="PersonAccount" id="PersonAccount" placeholder="Введите начальные буквы фио получателя" value="@Model.PersonAccount" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPAccount", "GPD")" />
                                 <input type="button" value="Создать" title="Создать новый лицевой счет" onclick="CreateEditDetail(3, 0);"/>
                                 <input type="button" value="Редактировать" title="Редактировать текущий лицевой счет" onclick="CreateEditDetail(3, 1);"/>
                                 @*
@@ -488,13 +497,28 @@
 
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
         
-        $("#PayerName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayerName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}              }         } );
+        $("#PayerName").change(function(){
+            if ($("#PayerName").val() == ''){
+                $("#PayerID").val(0);
+            }
+        });
         $("#PayerName").blur(function(){ SelectPerson(); if($("#PayerID").val() != 0) { this.form.submit();}});
 
         $("#PayeeName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayeeName").change(function(){
+            if ($("#PayeeName").val() == ''){
+                $("#PayeeID").val(0);
+            }
+        });
         $("#PayeeName").blur(function(){ SelectPerson(); if($("#PayeeID").val() != 0) { this.form.submit();}});
 
         $("#PersonAccount").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PersonAccount").change(function(){
+            if ($("#PersonAccount").val() == ''){
+                $("#PAccountID").val(0);
+            }
+        });
         $("#PersonAccount").blur(function(){ SelectPerson(); if($("#PAccountID").val() != 0) { this.form.submit();}});
 
         if ($("#PayerID").val() == 0 && $("#PayeeID").val() == 0 && $("#PAccountID").val() == 0){
