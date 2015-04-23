@@ -151,12 +151,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { countryDao = value; }
         }
 
-        protected IAccessGroupDao accessGroupDao;
-        public IAccessGroupDao AccessGroupDao
-        {
-            get { return Validate.Dependency(accessGroupDao); }
-            set { accessGroupDao = value; }
-        }
+        //protected IAccessGroupDao accessGroupDao;
+        //public IAccessGroupDao AccessGroupDao
+        //{
+        //    get { return Validate.Dependency(accessGroupDao); }
+        //    set { accessGroupDao = value; }
+        //}
 
         protected IDisabilityDegreeDao disabilityDegreeDao;
         public IDisabilityDegreeDao DisabilityDegreeDao
@@ -4801,11 +4801,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity = new PersonnelManagers { Candidate = candidate };
                 }
 
-                if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
-                {
-                    error = StrNotAgreedToPersonalDataProcessing;
-                    return false;
-                }
+                //if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                //{
+                //    error = StrNotAgreedToPersonalDataProcessing;
+                //    return false;
+                //}
 
                 EmploymentStatus candidateStatus = candidate.Status;
 

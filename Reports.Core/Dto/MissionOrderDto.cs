@@ -6,6 +6,7 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string TabelNumber { get; set; }
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
@@ -44,6 +45,7 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string TabelNumber { get; set; }
         public int Number { get; set; }
         public string UserName { get; set; }
         public string Position { get; set; }
