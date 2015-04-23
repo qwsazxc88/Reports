@@ -72,7 +72,8 @@ namespace Reports.Core.Dao.Impl
                                 case when [IsDocumentsSaveToArchive] = 1 then N'Да' else N'Нет' end as IsDocumentsSaveToArchive,
                                 ArchiveDate,
                                 -- case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
-                                ArchiveNumber
+                                ArchiveNumber,
+                                u.Code as TabelNumber
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
@@ -505,7 +506,8 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("IsDismissal", NHibernateUtil.Boolean);
+                AddScalar("IsDismissal", NHibernateUtil.Boolean).
+                AddScalar("TabelNumber", NHibernateUtil.String) ;
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)
