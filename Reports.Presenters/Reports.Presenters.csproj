@@ -167,6 +167,7 @@
     <Compile Include="UI\ViewModel\EditDayModel.cs" />
     <Compile Include="UI\ViewModel\EditInfoModel.cs" />
     <Compile Include="UI\ViewModel\EditMissionPbDocumentModel.cs" />
+    <Compile Include="UI\ViewModel\EditPersonnelBillingRequestViewModel.cs" />
     <Compile Include="UI\ViewModel\EditSubTypeModel.cs" />
     <Compile Include="UI\ViewModel\EditTypeModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeDocumentEditModel.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="UI\ViewModel\Employment\PrintEmploymentFileModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
+    <Compile Include="UI\ViewModel\HelpPersonnelBillingListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />
     <Compile Include="UI\ViewModel\HelpQuestionEditModel.cs" />
     <Compile Include="UI\ViewModel\HelpQuestionRedirectModel.cs" />
@@ -255,6 +257,7 @@
     <Compile Include="UI\ViewModel\MissionReportEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionReportsListModel.cs" />
     <Compile Include="UI\ViewModel\MissionUserDeptsListModel.cs" />
+    <Compile Include="UI\ViewModel\NoteModel.cs" />
     <Compile Include="UI\ViewModel\PrintArchivistAddressModel.cs" />
     <Compile Include="UI\ViewModel\PrintLoginFormModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionOrderViewModel.cs" />

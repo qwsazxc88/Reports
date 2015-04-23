@@ -60,7 +60,7 @@ function ValidateDepartment() {
     clearDepSelErrors();
     if ($('#DepartmentRequiredLevel').val()) {
         var ctrlName = '#Level' + $('#DepartmentRequiredLevel').val() + 'ID';
-        if (!$(ctrlName).val()) {
+        if (!$(ctrlName).val() || ($(ctrlName).val() == '0')) {
             addDepSelError("Выбор структурного подразделения уровня " + $('#DepartmentRequiredLevel').val() + " обязателен");
             return false;
         }
