@@ -16,7 +16,7 @@
             <legend>Добавление кандидата</legend>
             <div class="formfield">
                 <label>ФИО</label>
-                <input type="text" name="Surname"/>
+                <input type="text" name="Surname" id="CandidateFIO"/>
             </div>
             <div class="formfield clear">
                 <label>Паспортные данные</label>
@@ -141,18 +141,25 @@
                     @Html.LabelFor(m => m.ReasonId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), (Model.IsEditable && Model.ReasonId!=6) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), (Model.IsEditable) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
-            <tr id="ReasonPositionTr">
+           @* <tr id="ReasonPositionTr">
                 <td>
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
                 </td>
+            </tr>*@
+            @if (!Model.ShowStaff)
+            {
+            <tr>
+            <td>ФИО кандидата:</td>
+            <td>@Html.TextBoxFor(m => m.FIO)</td>
             </tr>
+            }
             <tr  id="ReasonDateTr">
                 <td>
                     <span id="ReasonDateLabel">С даты:</span>
@@ -291,6 +298,8 @@
                 <td>
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                @Html.HiddenFor(m => m.ShowStaff)
+                @Html.HiddenFor(m=>m.Recruter)
                 <input type="hidden" id="StaffCreatorId" name="StaffCreatorId" value="@Model.StaffCreatorId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
@@ -404,7 +413,7 @@
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
                    @if (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved)
                     {
-                    <input type="button" value="Выгрузить в приём" onclick="$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
+                    <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }
                    @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
                     {

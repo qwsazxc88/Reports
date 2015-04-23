@@ -86,8 +86,7 @@ namespace WebMvc.Controllers
         public ActionResult AppointmentWithoutStaffEdit(int id, int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
-            model.ReasonId = 6;
-            model.ReasonIdHidden = 6;
+            model.Recruter = 2;
             model.ShowStaff = false;
             return View("AppointmentEdit",model);
         }
@@ -96,6 +95,7 @@ namespace WebMvc.Controllers
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
+            if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
         [HttpPost]
@@ -122,8 +122,9 @@ namespace WebMvc.Controllers
                     ModelState.Clear();
                     if (!string.IsNullOrEmpty(error))
                         ModelState.AddModelError("", error);
-                    return View(AppointmentBl.GetAppointmentEditModel(model.Id,
-                                model.StaffCreatorId == 0?new int?(): model.UserId));
+                    var mdl = AppointmentBl.GetAppointmentEditModel(model.Id,
+                                model.StaffCreatorId == 0 ? new int?() : model.UserId);
+                    return View(mdl);
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
@@ -209,10 +210,7 @@ namespace WebMvc.Controllers
         }
         protected void CorrectDropdowns(AppointmentEditModel model)
         {
-            if (!model.ShowStaff)
-            {
-                model.ReasonId = model.ReasonIdHidden;
-            }
+            
             if (!model.IsEditable)
             {
                 //model.PositionId = model.PositionIdHidden;

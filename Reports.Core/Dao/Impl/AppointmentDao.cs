@@ -118,13 +118,15 @@ namespace Reports.Core.Dao.Impl
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
+                        when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Не требует одобрения специалистом УКДиУ.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
                         when v.DeleteDate is not null then N'Отменена'
                         else N''
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
-                        V.BankAccountantAcceptCount as BankAccountantAcceptCount
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount,
+                        v.Recruter
                 from dbo.Appointment v
                 
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
@@ -163,7 +165,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("BankAccountantAccept",NHibernateUtil.Boolean).
                 AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
-                AddScalar("CreateDate", NHibernateUtil.DateTime) ;
+                AddScalar("CreateDate", NHibernateUtil.DateTime).
+                AddScalar("Recruter",NHibernateUtil.Int32);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -430,6 +433,9 @@ namespace Reports.Core.Dao.Impl
                     if (sqlQuery.Contains("AppointmentReport"))
                          orderBy = @" order by r.CreateDate";
                     else orderBy = @" order by v.CreateDate";
+                    break;
+                case 23:
+                    orderBy = @" order by v.Recruter";
                     break;
             }
             if (sortDescending.Value)

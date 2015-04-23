@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
         public int DepartmentRequiredLevel { get; set; }
-
+        public int Recruter { get; set; }
         [Display(Name = "Место работы (город)")]
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
@@ -27,7 +27,7 @@ namespace Reports.Presenters.UI.ViewModel
         //public int PositionId { get; set; }
         //public int PositionIdHidden { get; set; }
         //public IList<IdNameDto> Positions;
-
+        public string FIO { get; set; }
         [Display(Name = "Количество требуемых сотрудников")]
         public string VacationCount { get; set; }
 

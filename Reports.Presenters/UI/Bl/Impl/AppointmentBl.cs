@@ -286,8 +286,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
+                model.FIO = entity.FIO;
+                model.Recruter = entity.Recruter;
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
-                model.ShowStaff = entity.Reason.Id != 6;
+                model.ShowStaff = entity.Recruter != 1;
                 model.Bonus = FormatSum(entity.Bonus);
                 model.City = entity.City;
                 model.Compensation = entity.Compensation;
@@ -558,6 +560,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                               };
             //model.Positions = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
             model.Reasons = AppointmentReasonDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            
             model.IsVacationExistsValues = new List<IdNameDto>
                               {
                                   new IdNameDto {Id = 1,Name = "Есть"},
@@ -683,6 +686,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // no need to load ManagerFio and other because no error in model after manager approve
             }
             SetManagerInfoModel(user, model,entity,null);
+            
         }
         public bool SaveAppointmentEditModel(AppointmentEditModel model, out string error)
         {
@@ -767,7 +771,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!model.IsDelete && (model.IsEditable || model.IsSaveAvailable))
             {
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
+                entity.FIO = model.FIO;
                 entity.Bonus = Decimal.Parse(model.Bonus);
+                entity.Recruter = model.Recruter;
                 entity.City = model.City;
                 entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
