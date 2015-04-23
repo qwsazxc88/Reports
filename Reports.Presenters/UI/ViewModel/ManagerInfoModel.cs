@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Руководитель (инициатор)")]
         public string UserName { get; set; }
-
+        public int ManagerId { get; set; }
         //[Display(Name = "Табельный номер")]
         //public string UserNumber { get; set; }
 
@@ -28,7 +28,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Специалист по подбору персонала")]
         public string StaffName { get; set; }
-
+        public bool ShowStaff { get; set; }
         [Display(Name = "Вышестоящие руководители")]
         public string Chiefs { get; set; }
 

@@ -19,15 +19,15 @@
             </div>
             <div class="formfield clear">
                 <label>Паспортные данные</label>
-                <input type="text" name="PassportData" />
+                <input type="text" id="PassportData" name="PassportData" />
             </div>
             <div class="formfield clear">
                 <label>Снилс</label>
-                <input type="text" name="SNILS" />
+                <input type="text" id="SNILS" name="SNILS" />
             </div>
             <div class="formfield clear">
                 <label>Дата рождения</label>
-                <input type="text" class="DateSelector" name="DateOfBirth" />
+                <input type="text" class="DateSelector" id="DateOfBirth" name="DateOfBirth" />
             </div>
             <div class="formfield clear">
                <label>Департамент</label>
@@ -52,7 +52,8 @@
                 @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
                 @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
             </div>
-            <input type="hidden" name="AppointmentId" value="@Model.Id"/>
+            <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
+            <input type="hidden" name="AppointmentId" value="@Model.AppId"/>
         </fieldset>
     </div>
     <div class="clear">        
@@ -319,20 +320,40 @@
             </tr>
              <tr>
                 <td colspan="2">
-                    @if (Model.IsManagerApproved && Model.IsColloquyPassed==1)
+                    @if (Model.IsColloquyPassed==1)
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
                    <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
                                                                                                                                                                      {<text>style="display:none"</text>}/>
-                   <input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
+                   @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
-                                                                {<text>style="display:none"</text>}  />
+                                                                {<text>style="display:none"</text>}  />*@
 
                 </td>
               </tr>
      </table>
     </div>
+    if(Model.Candidates!=null && Model.Candidates.Any())
+    {
+    <div class="doc-wrap">
+    Принятые сотрудники(@Model.Candidates.Count):
+    <br />
+    <table class="grid">
+    <thead>
+    <tr>
+    <th>ФИО</th><th>Дата приёма</th><th>Статус</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var el in Model.Candidates)
+    {
+      <tr><td>@el.Name</td><td>@el.EmploymentDate</td><td>@el.Status</td></tr>
+    }
+    </tbody>
+    </table>
+    </div>  
+        }
      <br />
     <div class="comment-wrap">
         <table style="width:100%">
@@ -344,13 +365,20 @@
         </table>
     </div>
 }
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
 
     $("#AddEmployment").dialog({autoOpen: false});
-    $(".DateSelector").datepicker({changeMonth: true, changeYear: true});
+    UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999 99');
+            $('#PassportData').mask('9999 999999');
+        }); 
     $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");

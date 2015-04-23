@@ -43,7 +43,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "К заявке №")]
         public string AppointmentNumber { get; set; }
-
+        public int AppId { get; set; }
         [Display(Name = "Обучение")]
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
@@ -102,6 +102,7 @@ namespace Reports.Presenters.UI.ViewModel
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
+        public IList<CandidateDto> Candidates { get; set; }
         /*public bool ApproveForAllAvailable { get; set; }
         public bool ApproveForAll { get; set; }*/
     }

@@ -6,6 +6,7 @@ namespace Reports.Core.Dto
                 public int AppNumber { get; set; }
                 //public int ReportNumber { get; set; }
                 public int Id {get;set;}
+                public DateTime CreateDate { get; set; }
                 public DateTime EditDate { get; set; }
                 public string UserName { get; set; }
                 public string PositionName { get; set; }
@@ -32,5 +33,6 @@ namespace Reports.Core.Dto
                 public bool BankAccountantAccept { get; set; }
                 public int BankAccountantAcceptCount { get; set; }
                 public int SecondNumber { get; set; }
+                public int Recruter { get; set; }
     }
 }
