@@ -289,7 +289,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FIO = entity.FIO;
                 model.Recruter = entity.Recruter;
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
-                model.ShowStaff = entity.Recruter != 1;
+                model.ShowStaff = entity.Recruter == 1;
                 model.Bonus = FormatSum(entity.Bonus);
                 model.City = entity.City;
                 model.Compensation = entity.Compensation;
@@ -777,15 +777,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.City = model.City;
                 entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
-                entity.DesirableBeginDate =model.ShowStaff? DateTime.Parse(model.DesirableBeginDate):DateTime.Now;
                 entity.EducationRequirements = (String.IsNullOrWhiteSpace(model.EducationRequirements))?"-":model.EducationRequirements;
                 entity.ExperienceRequirements =(String.IsNullOrWhiteSpace( model.ExperienceRequirements))?"-":model.ExperienceRequirements;
-                entity.IsVacationExists = model.IsVacationExists == 1?true:false;
                 entity.OtherRequirements =(String.IsNullOrWhiteSpace( model.OtherRequirements))?"-":model.OtherRequirements;
                 //entity.Period = model.Period;
                 entity.PositionName = model.PositionName;//PositionDao.Load(model.PositionId);
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = (model.ReasonId != 3 && !String.IsNullOrWhiteSpace(model.ReasonBeginDate)) ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
+                entity.DesirableBeginDate = model.ShowStaff ? DateTime.Parse(model.DesirableBeginDate) : entity.ReasonBeginDate.HasValue ? entity.ReasonBeginDate.Value+TimeSpan.FromDays(14) : DateTime.Now;
+                
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
@@ -793,6 +793,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Type = model.TypeId == 1?true:false;
                 if (current.UserRole == UserRole.PersonnelManagerBank)
                 {
+                    entity.IsVacationExists = model.IsVacationExists == 1 ? true : false;
                     model.BankAccountantAccept = true;
                     entity.BankAccountantAccept = model.BankAccountantAccept;
                     entity.BankAccountantAcceptCount = model.BankAccountantAcceptCount;
