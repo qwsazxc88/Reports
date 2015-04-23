@@ -40,14 +40,14 @@ namespace Reports.Core.Dao.Impl
 
 
         public IList<AccessGroupListDto> GetAccessGroupList(
-                int departmentId,
+                Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
                 int sortBy,
                 bool? sortDescending)
         {
             string sqlQuery = "SELECT * FROM dbo.vwAccessGroupList";
-            string whereString = GetDepartmentWhere(departmentId);
+            string whereString = GetDepartmentWhere(depFromFilter);
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -57,12 +57,12 @@ namespace Reports.Core.Dao.Impl
             //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<AccessGroupListDto>()).List<AccessGroupListDto>();
         }
-        public string GetDepartmentWhere(int DepartmentId)
+        public string GetDepartmentWhere(Department depFromFilter)
         {
             string whereString = "";
-            if (DepartmentId > 0)
+            if (depFromFilter != null)
             {
-                whereString = string.Format(@"{0} DepartmentId = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), DepartmentId);
+                whereString = string.Format(@"{0} UserDepPath like '{1}%'", (whereString.Length > 0 ? whereString + @" and" : string.Empty), depFromFilter.Path);
             }
 
             return whereString;
@@ -99,6 +99,8 @@ namespace Reports.Core.Dao.Impl
                 //.AddScalar("DepartmentId", NHibernateUtil.Int32)
                 .AddScalar("AccessGroupCode", NHibernateUtil.String)
                 .AddScalar("AccessGroupName", NHibernateUtil.String)
+                .AddScalar("Email", NHibernateUtil.String)
+                .AddScalar("EndDate", NHibernateUtil.DateTime)
                 ;
             return query;
         }
@@ -129,6 +131,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 5:
                     orderBy = "AccessGroupName";
+                    break;
+                case 6:
+                    orderBy = "Email";
+                    break;
+                case 7:
+                    orderBy = "EndDate";
                     break;
                 default:
                     orderBy = "UserName";
