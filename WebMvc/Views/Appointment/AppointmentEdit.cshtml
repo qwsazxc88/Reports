@@ -71,7 +71,7 @@
                     @Html.ValidationSummary(false)
                     <div id="Error" style="color:Red;display:none;">
                     </div>
-                    <div style="color:Green;">
+                    <div style="color:Red;">
                     @if (ViewBag.Message != null)
                     {
                         <p>@ViewBag.Message</p>
@@ -418,7 +418,7 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
-                   @if (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved)
+                   @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }
