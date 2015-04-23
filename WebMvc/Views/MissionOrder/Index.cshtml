@@ -318,7 +318,9 @@
                             }
                         </th>
                     }
-                   
+                   <th>
+                   Табельный<br />номер
+                   </th>
                         
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -406,8 +408,9 @@
                                         @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @disabled = "disabled" });
                                     }
                                 </td>
+                                
                             }
-                            
+                            <td>@doc.TabelNumber</td>
                             @{i++;}
                         </tr>
                        

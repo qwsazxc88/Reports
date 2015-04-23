@@ -15,6 +15,7 @@ using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
@@ -512,6 +513,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             set { deductionImportDao = value; }
             get { return Validate.Dependency(deductionImportDao); }
+        }
+
+        protected IAccessGroupDao accessGroupDao;
+        public IAccessGroupDao AccessGroupDao
+        {
+            get { return Validate.Dependency(accessGroupDao); }
+            set { accessGroupDao = value; }
         }
         #endregion
 
@@ -6366,6 +6374,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CommentsModel = GetCommentsModel(model.Id, (int) RequestTypeEnum.ChildVacation);
         }
 
+        #endregion
+
+        #region AccessGroupsList
+        public AccessGroupsListModel GetAccessGroupsListModel()
+        {
+            AccessGroupsListModel model = new AccessGroupsListModel();
+            model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
+            return model;
+        }
+
+        public AccessGroupsListModel SetAccessGroupsListModel(AccessGroupsListModel model)
+        {
+            Department dep = null;
+            if (model.DepartmentId != 0)
+                dep = DepartmentDao.Load(model.DepartmentId);
+
+            model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
+            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.SortBy, model.SortDescending);
+            return model;
+        }
         #endregion
 
         #region Comments

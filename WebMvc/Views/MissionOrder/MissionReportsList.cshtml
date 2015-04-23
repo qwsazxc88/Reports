@@ -247,6 +247,9 @@
                     <th>
                         <div id="sort15"  ><a href="#"  onclick = "SortChanged(15);">№ коробки <br/>(полки, места)</a></div>
                     </th>
+                    <th>
+                        Табельный<br /> номер
+                    </th>
                   @*   @if (Model.IsApproveAvailable)
                      {
                         <th>
@@ -288,6 +291,7 @@
                             <td>@doc.IsDocumentsSaveToArchive</td>
                             <td>@BaseBl.FormatDate(doc.ArchiveDate)</td>
                             <td>@doc.ArchiveNumber</td>
+                            <td>@doc.TabelNumber</td>
                            @* <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>*@
                            @* @if (Model.IsApproveAvailable)
                             {

@@ -135,6 +135,7 @@ namespace Reports.Core.Dao.Impl
               ,A.[PayeeCorrAccount]
               ,A.[PAccountID]
               ,A.[Account]  
+              ,A.[PAName]
             FROM [dbo].[vwGpdActList] as A ";
             string sqlWhere=""; 
             if (!IsFind)
@@ -235,6 +236,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
                 AddScalar("PAccountID", NHibernateUtil.Int32).
                 AddScalar("Account", NHibernateUtil.String).
+                AddScalar("PAName", NHibernateUtil.String).
                 AddScalar("flgRed", NHibernateUtil.Boolean).
                 AddScalar("CTType",NHibernateUtil.Int32);
         }
@@ -377,10 +379,10 @@ namespace Reports.Core.Dao.Impl
                     SqlOrderBy += "CreateDate";
                     break;
                 case 21:
-                    //SqlOrderBy += "(Amount-AmountPayment-(Amount/100*13))"; Сортировка выполняется в GpdBL
+                    SqlOrderBy += "PayeeName"; 
                     break;
                 case 22:
-                    SqlOrderBy += "PersonId";
+                    SqlOrderBy += "PAName";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
