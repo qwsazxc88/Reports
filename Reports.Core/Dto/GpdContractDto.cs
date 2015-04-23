@@ -100,6 +100,7 @@ namespace Reports.Core.Dto
         public int PAccountID { get; set; }
         public string PersonAccount { get; set; }
         public string Account { get; set; }
+        public string PAName { get; set; }
 
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }

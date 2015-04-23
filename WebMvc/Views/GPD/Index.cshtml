@@ -7,7 +7,7 @@
     ViewBag.Title = "ГПД";
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Index", "GPD", FormMethod.Post, new { enctype = "multipart/form-data", id = "GpdContractList" }))
 {
     <table style="width:100%">
         <tr>
@@ -88,7 +88,7 @@
                         <tr>
                             <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
-                                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindContract();"/>
+                                <input type="button" id="btnFind" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
                                 <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
                             </td>
                         </tr>
@@ -127,6 +127,12 @@
                                             <div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
                                         </th>
                                         <th>
+                                            <div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">Получатель</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">ФИО<br />(выгодоприобретателя)</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Вид<br /> начисления</a></div>
                                         </th>
                                         <th>
@@ -147,9 +153,6 @@
                                             <div id="sort11" style="min-width:30px"><a href="#" onclick = "SortChanged(11);">Плательщик</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">Получатель</a></div>
-                                        </th>
-                                        <th>
                                             <div id="sort8" style="min-width:30px"><a href="#" onclick = "SortChanged(8);">Дирекция<br />3 ур.</a></div>
                                         </th>
                                         <th>
@@ -159,41 +162,44 @@
                                             <div id="sort10" style="min-width:30px"><a href="#" onclick = "SortChanged(10);">Состояние</a></div>
                                         </th>
                                     </tr>
-                                    @if (Model.Contracts != null && Model.Contracts.Count > 0)
-                                    {
-                                        int i = 1;
-                                        foreach (var doc in Model.Contracts)
+                                    <tbody id="ContractListBody">
+                                        @if (Model.Contracts != null && Model.Contracts.Count > 0)
                                         {
-                                            <tr>
-                                                <td>@i.ToString()</td>
-                                                <!--<td>@doc.Id</td>-->
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.Id</a></td>
-                                                <td>@doc.CreateDate</td>
-                                                <td>@doc.Surname</td>
-                                                <td>@doc.CTName</td>
-                                                <td>@doc.NumContract</td>
-                                                <!--<td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>-->
-                                                <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
-                                                @if (doc.flgRed)
-                                                {
-                                                    <td style="background-color:red">@RequestBl.FormatDate(@doc.DateEnd)</td>
-                                                }
-                                                else
-                                                {
-                                                    <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
-                                                }
-                                                @*
-                                                <td>@RequestBl.FormatDate(@doc.DateP)</td>
-                                                *@
-                                                <td>@doc.PayerContractor</td>
-                                                <td>@doc.PayeeContractor</td>
-                                                <td>@doc.DepLevel3Name</td>
-                                                <td>@doc.DepLevel7Name</td>
-                                                <td>@doc.StatusName</td>
-                                            </tr>
-                                                i += 1;
+                                            int i = 1;
+                                            foreach (var doc in Model.Contracts)
+                                            {
+                                                <tr>
+                                                    <td>@i.ToString()</td>
+                                                    <!--<td>@doc.Id</td>-->
+                                                    <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.Id</a></td>
+                                                    <td>@doc.CreateDate</td>
+                                                    <td>@doc.Surname</td>
+                                                    <td>@doc.PayeeContractor</td>
+                                                    <td>@doc.PAName</td>
+                                                    <td>@doc.CTName</td>
+                                                    <td>@doc.NumContract</td>
+                                                    <!--<td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>-->
+                                                    <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
+                                                    @if (doc.flgRed)
+                                                    {
+                                                        <td style="background-color:red">@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                    }
+                                                    @*
+                                                    <td>@RequestBl.FormatDate(@doc.DateP)</td>
+                                                    *@
+                                                    <td>@doc.PayerContractor</td>
+                                                    <td>@doc.DepLevel3Name</td>
+                                                    <td>@doc.DepLevel7Name</td>
+                                                    <td>@doc.StatusName</td>
+                                                </tr>
+                                                    i += 1;
+                                            }
                                         }
-                                    }
+                                    </tbody>
                                 </table>
                             </td>
                         </tr>
@@ -204,16 +210,29 @@
     </table>
 }
 
-<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+@*<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>*@
 
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#DateBegin").datepicker({changeYear: true});
-        $("#DateEnd").datepicker({changeYear: true});
+        $("#DateBegin").datepicker({changeYear: true, changeMonth: true});
+        $("#DateEnd").datepicker({changeYear: true, changeMonth: true});
         $(".hasDatepicker").width("75px");
-        setSortFields();
+        //setSortFields();
+
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+
+        $("#btnFind").click(function(){
+            GetFindContract();
+        })
+
         setActiveMenuItem("moContract");
     });
 
@@ -233,7 +252,22 @@
 
     function GetFindContract()
     {
+        $("#ContractListBody").remove();
         $("#IsFind").val('True');
-        return true;
+        $("#GpdContractList").submit();
+    }
+
+    function SortChanged(sortedBy)
+    {
+        if($("#SortBy").val() != sortedBy)
+            $("#SortDescending").val(''); 
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+         GetFindContract();
     }
  </script>   
