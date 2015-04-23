@@ -7,7 +7,7 @@
     ViewBag.Title = "Просмотр актов.";
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("GpdActList", "GPD", FormMethod.Post, new { enctype = "multipart/form-data", id = "GpdActList" }))
 {
     <table style="width:100%">
         <tr>
@@ -80,7 +80,7 @@
                         <tr>
                             <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
-                                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindAct();"/>
+                                <input type="button" id="btnFind" value="Выбрать" title="Выбрать записи по указанным параметрам" />
                                 <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
                             </td>
                         </tr>
@@ -100,7 +100,13 @@
                                             <div id="sort20" style="min-width:30px"><a href="#" onclick = "SortChanged(20);">Дата и время <br />акта</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
+                                            <div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">ФИО<br />(ГПД)</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort21" style="min-width:30px"><a href="#" onclick = "SortChanged(21);">ФИО/Название<br />(получателя)</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort22" style="min-width:30px"><a href="#" onclick = "SortChanged(22);">ФИО<br />(выгодоприобретателя)</a></div>
                                         </th>
                                         <th>
                                             <div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Вид<br />начисления</a></div>
@@ -156,50 +162,52 @@
                                             <div id="sort18" style="min-width:30px"><a href="#" onclick = "SortChanged(18);">Состояние</a></div>
                                         </th>
                                     </tr>
-
-                                    @if (Model.Documents != null && Model.Documents.Count > 0)
-                                    {
-                                        int i = 1;
-                                        foreach (var doc in Model.Documents)
+                                    <tbody id="ActListBody">
+                                        @if (Model.Documents != null && Model.Documents.Count > 0)
                                         {
-                                            <tr>
-                                                <td>@i.ToString()</td>
-                                                <!--<td>@doc.Id</td>-->
-                                                <td style="width:50px"><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.Id</a></td>
-                                                <td>@doc.CreateDate</td>
-                                                <td>@doc.Surname</td>
-                                                <td>@doc.CTName</td>
-                                                <td>@doc.NumContract</td>
-                                                <td>@RequestBl.FormatDate(@doc.ContractBeginDate)</td>
-                                                @if (doc.flgRed)
-                                                {
-                                                    <td style="background-color:red">@RequestBl.FormatDate(@doc.ContractEndDate)</td>
-                                                }
-                                                else
-                                                {
-                                                    <td>@RequestBl.FormatDate(@doc.ContractEndDate)</td>
-                                                }
-                                                @*
-                                                <td>@RequestBl.FormatDate(@doc.DateP)</td>
-                                                *@
-                                                <!--<td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>-->
-                                                <td>@doc.ActNumber</td>
-                                                <td>@RequestBl.FormatDate(@doc.ActDate)</td>
-                                                <td>@doc.DepLevel3Name</td>
-                                                <td>@doc.DepLevel7Name</td>
-                                                <td>@RequestBl.FormatDate(@doc.POrderDate)</td>
-                                                <td>@GpdBl.FormatDateMY(@doc.ChargingDate)</td>
-                                                <td>@RequestBl.FormatDate(@doc.DateBegin) @RequestBl.FormatDate(@doc.DateEnd)</td>
-                                                <td>@RequestBl.FormatSum(@doc.Amount)</td>
-                                                <td>@RequestBl.FormatSum(@doc.AmountPayment)</td>
-                                                <td>@doc.GPDID</td>
-                                                <td>@doc.ESSSNum</td>
-                                                <td>@doc.StatusName</td>
-                                            </tr>
-                                            i += 1;
+                                            int i = 1;
+                                            foreach (var doc in Model.Documents)
+                                            {
+                                                <tr>
+                                                    <td>@i.ToString()</td>
+                                                    <!--<td>@doc.Id</td>-->
+                                                    <td style="width:50px"><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.Id</a></td>
+                                                    <td>@doc.CreateDate</td>
+                                                    <td>@doc.Surname</td>
+                                                    <td>@doc.PayeeName</td>
+                                                    <td>@doc.PAName</td>
+                                                    <td>@doc.CTName</td>
+                                                    <td>@doc.NumContract</td>
+                                                    <td>@RequestBl.FormatDate(@doc.ContractBeginDate)</td>
+                                                    @if (doc.flgRed)
+                                                    {
+                                                        <td style="background-color:red">@RequestBl.FormatDate(@doc.ContractEndDate)</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@RequestBl.FormatDate(@doc.ContractEndDate)</td>
+                                                    }
+                                                    @*
+                                                    <td>@RequestBl.FormatDate(@doc.DateP)</td>
+                                                    *@
+                                                    <!--<td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>-->
+                                                    <td>@doc.ActNumber</td>
+                                                    <td>@RequestBl.FormatDate(@doc.ActDate)</td>
+                                                    <td>@doc.DepLevel3Name</td>
+                                                    <td>@doc.DepLevel7Name</td>
+                                                    <td>@RequestBl.FormatDate(@doc.POrderDate)</td>
+                                                    <td>@GpdBl.FormatDateMY(@doc.ChargingDate)</td>
+                                                    <td>@RequestBl.FormatDate(@doc.DateBegin) @RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                    <td>@RequestBl.FormatSum(@doc.Amount)</td>
+                                                    <td>@RequestBl.FormatSum(@doc.AmountPayment)</td>
+                                                    <td>@doc.GPDID</td>
+                                                    <td>@doc.ESSSNum</td>
+                                                    <td>@doc.StatusName</td>
+                                                </tr>
+                                                i += 1;
+                                            }
                                         }
-                                    }
-                                    
+                                    </tbody>
                                 </table>
                             </td>
                         </tr>
@@ -211,16 +219,29 @@
 }
 
 
-<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+@*<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>*@
 
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#DateBegin").datepicker({changeYear: true});
-        $("#DateEnd").datepicker({changeYear: true});
+        $("#DateBegin").datepicker({changeYear: true, changeMonth: true});
+        $("#DateEnd").datepicker({changeYear: true, changeMonth: true});
         $(".hasDatepicker").width("75px");
-        setSortFields();
+        //setSortFields();
+
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+
+        $("#btnFind").click(function(){
+            GetFindAct();
+        })
+
         setActiveMenuItem("moAct");
     });
 
@@ -239,7 +260,22 @@
 
     function GetFindAct()
     {
+        $('#ActListBody').remove();
         $("#IsFind").val('True');
-        return true;
+        $("#GpdActList").submit();
+    }
+
+    function SortChanged(sortedBy)
+    {
+        if($("#SortBy").val() != sortedBy)
+            $("#SortDescending").val(''); 
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+         GetFindAct();
     }
  </script>   
