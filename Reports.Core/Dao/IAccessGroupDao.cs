@@ -9,7 +9,7 @@ namespace Reports.Core.Dao
         //IList<Position> LoadAllSorted();
         IList<AccessGroup> GetAccessGroups();
         IList<AccessGroupListDto> GetAccessGroupList(
-                int departmentId,
+                Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
                 int sortBy,

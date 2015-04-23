@@ -14,5 +14,7 @@ namespace Reports.Core.Dto
         public string AccessGroupName { get; set; }
         public string Dep7Name { get; set; }
         public string Dep3Name { get; set; }
+        public string Email { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

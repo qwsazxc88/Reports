@@ -25,7 +25,8 @@ namespace Reports.Core.Dao
                                     SUM(CASE when [DATE]>=:DateStart  then MO.PurchaseBookAllSum else 0 end) as PurchaseBookAllSum,
                                     MAX(dep.Name) as Dep7Name,
                                     MAX(dep3.Name) as Dep3Name, 
-                                    MAX(up.Name) as Position
+                                    MAX(up.Name) as Position,
+                                    MAX(U.Code) as TabelNumber
                                 FROM [dbo].[vwAnalyticalStatement] MO
                                 INNER JOIN [dbo].[Users] U ON U.Id = MO.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id                                
@@ -59,7 +60,8 @@ namespace Reports.Core.Dao
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("Position", NHibernateUtil.String).
-                AddScalar("PurchaseBookAllSum", NHibernateUtil.Single)
+                AddScalar("PurchaseBookAllSum", NHibernateUtil.Single).
+                AddScalar("TabelNumber",NHibernateUtil.String)
                 ;
         }
         public IList<AnalyticalStatementDto> GetDocuments(
