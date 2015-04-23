@@ -162,7 +162,9 @@
                     <th>
                         <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
                     </th>
-                     
+                    <th>
+                        <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
+                    </th>
                     <th>
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
                     </th>
@@ -189,7 +191,14 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            
+                            <td>@switch(doc.Recruter)
+                                {
+                                    case 1: <text>УПиНП</text>
+                                        break;
+                                    case 2: <text>Руководитель</text>
+                                        break;
+                                        
+                                }</td>
                             <td>@doc.Status</td>
                         </tr>
                     }

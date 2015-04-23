@@ -33,5 +33,6 @@ namespace Reports.Core.Dto
                 public bool BankAccountantAccept { get; set; }
                 public int BankAccountantAcceptCount { get; set; }
                 public int SecondNumber { get; set; }
+                public int Recruter { get; set; }
     }
 }

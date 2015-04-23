@@ -14,8 +14,8 @@ namespace Reports.Core.Domain
         public virtual DateTime EditDate { get; set; }
 
         public virtual int Number { get; set; }
-
-
+        public virtual string FIO { get; set; }
+        public virtual int Recruter { get; set; }
         public virtual Department Department { get; set; }
         public virtual string City { get; set; }
         public virtual string PositionName { get; set; }

@@ -12,11 +12,12 @@
 	
 	<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Appointment_Department" index="Appointment_Department"  not-null="true"/>
 	<property name="City" length="64" not-null="true"/>
+    <property name="Recruter" not-null="true"/>
   <property name="PositionName" length="64" not-null="true"/>
 	<!--<many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Appointment_Position" index="Appointment_Position"  not-null="true"/>-->
 	<property name="VacationCount"  not-null="true"/>
 	<many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_Appointment_AppointmentReason" index="Appointment_AppointmentReason"  not-null="true"/>
-	
+  <property name ="FIO" not-null="false"/>
 	<property name="ReasonBeginDate" not-null="false"/>
 	<property name="ReasonPosition" length="64" not-null="false"/>
 	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
