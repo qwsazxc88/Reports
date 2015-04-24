@@ -92,6 +92,10 @@
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                  }
+                 else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
+                }
                  else if (UserDto.IsHelpTemplateAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
@@ -104,10 +108,10 @@
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-                     //|| (dto.UserRole & UserRole.PersonnelManager) > 0
+                     || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
                     </div> 
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)

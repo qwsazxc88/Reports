@@ -178,7 +178,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentDao); }
             set { appointmentDao = value; }
         }
-
+        protected IAppointmentReportDao appointmentReportDao;
+        public IAppointmentReportDao AppointmentReportDao
+        {
+            get { return Validate.Dependency(appointmentReportDao); }
+            set { appointmentReportDao = value; }
+        }
         protected IScheduleDao scheduleDao;
         public IScheduleDao ScheduleDao
         {
@@ -2817,7 +2822,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 QuestionnaireDate = DateTime.Now,
                 Personnels = PersonnelUser,
                 IsTrainingNeeded = model.IsTrainingNeeded,
-                IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false
+                IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
+                Appointment = (model.AppointmentId!=0)?AppointmentDao.Load(model.AppointmentId):null,
+                AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);

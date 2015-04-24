@@ -25,5 +25,14 @@ namespace Reports.Core.Dao
                                            string userName,
                                            int sortBy,
                                            bool? sortDescending);
+        IList<AppointmentDto> GetReportDocuments(int userId,
+                                           UserRole role,
+                                           int departmentId,
+                                           int statusId,
+                                           DateTime? beginDate,
+                                           DateTime? endDate,
+                                           string userName,
+                                           int sortBy,
+                                           bool? sortDescending);
     }
 }
