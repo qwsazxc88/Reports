@@ -13,7 +13,7 @@ namespace Reports.Core.Domain
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
         public virtual int Number { get; set; }
-
+        public virtual int SecondNumber { get; set; }
 
         public virtual Appointment Appointment { get; set; }
         public virtual string Name { get; set; }
@@ -41,6 +41,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? SendTo1C { get; set; }
 
         public virtual IList<AppointmentReportComment> Comments { get; set; }
+        public virtual IList<EmploymentCandidate> Candidates { get; set; }
         #endregion
 
         #region Properties
