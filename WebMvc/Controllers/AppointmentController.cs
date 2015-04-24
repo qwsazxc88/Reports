@@ -54,7 +54,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult AppointmentReportList()
         {
-            var model = AppointmentBl.GetAppointmentListModel();
+            var model = AppointmentBl.GetAppointmentReportListModel();
             return View(model);
         }
 

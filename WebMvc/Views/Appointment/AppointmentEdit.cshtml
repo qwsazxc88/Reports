@@ -346,7 +346,7 @@
         <tr>
                     <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" })</div></td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div></td>
                 </tr>
             @* <tr>
                 <td>
@@ -404,8 +404,8 @@
                         <td>
                             @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
                             Принял в работу
-                            @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
-                            Уведомлен об отклонении заявки
+                            @*@Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
+                            Уведомлен об отклонении заявки*@
                             <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
                             <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
                             @Model.StaffFio
