@@ -3,7 +3,7 @@ using System.Linq;
 using NHibernate.Criterion;
 using Reports.Core.Domain;
 using Reports.Core.Services;
-
+using System;
 namespace Reports.Core.Dao.Impl
 {
     public class AppointmentReportDao : DefaultDao<AppointmentReport>, IAppointmentReportDao
@@ -16,6 +16,19 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.CreateCriteria(typeof(AppointmentReport))
                           .Add(Restrictions.Eq("Appointment.Id", id)).List<AppointmentReport>().ToList();
+        }
+        public virtual List<AppointmentReport> GetDocuments(int userId,
+                UserRole role,
+                int departmentId,
+                int statusId,
+                DateTime? beginDate,
+                DateTime? endDate,
+                string userName,
+                int sortBy,
+                bool? sortDescending)
+        {
+            var criteria = Session.CreateCriteria<AppointmentReport>();
+            return criteria.List<AppointmentReport>().ToList();
         }
         public virtual bool IsApprovedReportForAppointmentIdExists(int id)
         {

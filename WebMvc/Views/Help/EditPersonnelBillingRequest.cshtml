@@ -1,0 +1,176 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditPersonnelBillingRequestViewModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Редактирование запроса (внутренний биллинг)";
+}
+@using (Html.BeginForm("EditPersonnelBillingRequest", "Help", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+        @*<tr>
+            <td colspan="2" style="font-weight:bold;text-align:center">
+                @Model.DocumentTitle
+             </td>
+        </tr>*@
+        <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.Partial("BillingRequestInfoView", Model)
+            </td>
+        </tr>
+        <tr>
+                <td>
+                    @Html.LabelFor(m => m.TitleId):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />
+                    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                     <input type="hidden" id="IsAnswerEditable" name="IsAnswerEditable" value="@Model.IsAnswerEditable" />
+                     <input type="hidden" id="IsEditable"" name="IsEditable"" value="@Model.IsEditable" />
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TitleIdHidden" name="TitleIdHidden" value="@Model.TitleIdHidden" />
+                </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                @Html.LabelFor(m => m.UserName):
+            </td>
+             <td>
+               @Html.TextBoxFor(model => model.UserName, Model.IsEditable ? (object)new { maxlength = 256, style = "width:655px" } : (object)new { @readonly = "read-only", maxlength = 256, style = "width:655px" }) 
+            </td>
+        </tr>
+        <tr>
+            <td style="width:230px">
+                @Html.LabelFor(m => m.DepartmentName):
+            </td>
+            <td>
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                @if(Model.IsEditable)
+                {
+                    <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
+                }
+            </td>
+        </tr>              
+         <tr>
+                <td>
+                    @Html.LabelFor(m => m.UrgencyId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
+                </td>
+        </tr>
+         <tr>
+                <td>
+                    @Html.LabelFor(m => m.RecipientId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
+                </td>
+        </tr>
+        <tr>
+                    <td>@Html.LabelFor(model => model.Question):</td>
+                    <td style="vertical-align:top">
+                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                    </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.Answer):</td>
+            <td>
+                @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.CheckBox("IsWorkBegin", Model.IsWorkBegin, Model.IsWorkBeginAvailable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsWorkBegin)
+                @if (!Model.IsWorkBeginAvailable)
+                {
+                    <input type="hidden" id="IsWorkBeginHidden" name="IsWorkBeginHidden" value="@Model.IsWorkBeginHidden" />
+                }
+                <input type="hidden" id="IsWorkBeginAvailable" name="IsWorkBeginAvailable" value="@Model.IsWorkBeginAvailable" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div id="AttachmentModelContext">@Html.Partial("RequestAttachmentsPartial", Model.AttachmentsModel)</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
+                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm();" @if (!Model.IsSendAvailable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable) {<text>style="display:none"</text>}/>
+            </td>
+        </tr>
+    </table>
+    </div>
+    }
+    <script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+     $(document).ready(function () {
+            setActiveMenuItem("helpPersonnelBilling");
+        });
+    function ValidateForm()
+    {
+        var result = true;
+        clearControlErrors($("#SelectDepartmentBtn"));
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            result = false;
+        }        
+        if(!IsFieldNotEmpty($("#UserName")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Question")))
+            result = false;
+        else if(!validateMaxLength($("#Question"),8192))
+            result = false;
+        return result;
+    }
+    function ValidateAndSendForm()
+    {
+        if(!ValidateForm())
+            return false;
+        $("#Operation").val(1);
+        return true;
+    }
+    function ValidateAnswer()
+    {
+      var result = true;
+      if(!IsFieldNotEmpty($("#Answer")))
+            result = false;
+       else if(!validateMaxLength($("#Answer"),8192))
+            result = false;
+       $("#Operation").val(2);
+       return result;
+    }
+    </script> 
