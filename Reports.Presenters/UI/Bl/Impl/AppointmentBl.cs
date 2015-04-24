@@ -173,6 +173,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             //SetIsAvailable(model);
             return model;
         }
+        public AppointmentListModel GetAppointmentReportListModel()
+        {
+            //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            //IdNameReadonlyDto dep = GetDepartmentDto(user);
+            UserRole role = AuthenticationService.CurrentUser.UserRole;
+            AppointmentListModel model = new AppointmentListModel
+            {
+                //UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = string.Empty,
+                DepartmentId = 0,
+                DepartmentReadOnly = false,
+            };
+            SetInitialDates(model);
+            SetDictionariesToReportsModel(model);
+            model.IsAddAvailable = (role & UserRole.Manager) == UserRole.Manager;
+            model.IsAddForStaffAvailable = role == UserRole.StaffManager;
+            //SetInitialStatus(model);
+            //SetIsAvailable(model);
+            return model;
+        }
         public void SetDictionariesToReportsModel(AppointmentListModel model)
         {
             model.Statuses = GetAppReportStatuses();
@@ -731,6 +751,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity = new Appointment
                     {
+                        Recruter = model.Recruter,
                         CreateDate = DateTime.Now,
                         Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
@@ -801,7 +822,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
                 entity.Bonus = Decimal.Parse(model.Bonus);
-                entity.Recruter = model.Recruter;
+                
                 entity.City = model.City;
                 entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
