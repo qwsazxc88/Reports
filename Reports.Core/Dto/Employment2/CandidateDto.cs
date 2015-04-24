@@ -87,7 +87,8 @@ namespace Reports.Core.Dto.Employment2
 
         public bool IsContractChangedToIndefinite { get; set; }
 
-        
+        public int AppointmentReportId { get; set; }
+        public int AppointmentId { get; set; }
 
         /*
         [Display(Name = "Паспортные данные"),

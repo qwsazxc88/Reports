@@ -8,8 +8,8 @@
 	<property name="EditDate" not-null="true"/>
     <property name="Number"  not-null="true"/>
 
-	  
-	
+
+    <property name="SecondNumber" not-null="false"/>
 	<many-to-one name="Appointment" class="Appointment" column="AppointmentId" foreign-key="FK_AppointmentReport_Appointment" index="AppointmentReport_Appointment"  not-null="true"/>
 	<property name="Name" length="64" not-null="true"/>
 	<property name="Phone" length="32" not-null="true"/>
@@ -36,6 +36,10 @@
     <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="AppointmentReportId" foreign-key="FK_AppointmentReportComment_AppointmentReport"/>
       <one-to-many class="AppointmentReportComment"/>
+    </bag>
+    <bag name="Candidates" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="AppointmentReportId" foreign-key="FK_EmploymentCandidate_AppointmentReport"/>
+      <one-to-many class="EmploymentCandidate"/>
     </bag>
 	</class>
 </hibernate-mapping>

@@ -103,6 +103,10 @@
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                 }
+                else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                {
+                    <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
+                }
                 else if (UserDto.IsHelpTemplateAvailable(dto))
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
@@ -113,10 +117,10 @@
                  @if ((dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-
+                     || (dto.UserRole & UserRole.PersonnelManagerBank)>0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
                     </div> 
                  }  
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -153,6 +157,10 @@
             else if (UserDto.IsHelpTemplateAvailable(dto))
             {
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
+            }
+            @if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+            {
+                <div class="menuitem" id="helpPersonnelBilling">@Html.ActionLink("Биллинг внутренний", "PersonnelBillingList", "Help")</div>
             }
             <div class="menuitem" id="helpInfo">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>

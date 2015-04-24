@@ -13,11 +13,11 @@ using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
-
+using System.Linq;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
-    [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
+    [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManagerBank | UserRole.StaffManager)]
     public class AppointmentController : BaseController
     {
         //public const int MaxFileSize = 2 * 1024 * 1024;
@@ -44,18 +44,34 @@ namespace WebMvc.Controllers
         }
         #region Appointment
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult Index()
         {
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
         }
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentReportList()
+        {
+            var model = AppointmentBl.GetAppointmentListModel();
+            return View(model);
+        }
+
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult Index(AppointmentListModel model)
         {
             bool hasError = !ValidateModel(model);
             AppointmentBl.SetAppointmentListModel(model, hasError);
+            return View(model);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentReportList(AppointmentListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            AppointmentBl.SetAppointmentReportsListModel(model, hasError);
             return View(model);
         }
         protected bool ValidateModel(AppointmentListModel model)
@@ -66,14 +82,24 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        public ActionResult AppointmentWithoutStaffEdit(int id, int? managerId)
+        {
+            AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
+            model.Recruter = 2;
+            model.ShowStaff = false;
+            return View("AppointmentEdit",model);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager| UserRole.PersonnelManagerBank)]
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
+            if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
         {
 
@@ -96,8 +122,9 @@ namespace WebMvc.Controllers
                     ModelState.Clear();
                     if (!string.IsNullOrEmpty(error))
                         ModelState.AddModelError("", error);
-                    return View(AppointmentBl.GetAppointmentEditModel(model.Id,
-                                model.StaffCreatorId == 0?new int?(): model.UserId));
+                    var mdl = AppointmentBl.GetAppointmentEditModel(model.Id,
+                                model.StaffCreatorId == 0 ? new int?() : model.UserId);
+                    return View(mdl);
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
@@ -109,10 +136,24 @@ namespace WebMvc.Controllers
             }
             model.IsDelete = false;
             model.ApproveForAll = false;
+            if (string.IsNullOrEmpty(error)) ViewBag.Message = "Данные успешно сохранены";
             return View(model);
             /*if (!string.IsNullOrEmpty(error))
                 return View(model);
             return RedirectToAction("Index");*/
+        }
+        
+        public ActionResult Note(int id)
+        {
+            var model = AppointmentBl.GetNoteModel(id);
+            return View(model);
+        }
+        public FileResult NoteDocX(int id)
+        {
+             var model = AppointmentBl.GetNoteModel(id);
+            
+            var data=NoteDocumentCreator.NoteCreator.CreateNote(Server.MapPath("~/Files"),model.To,model.From,model.Theme,model.Date,model.Reason,model.Departments.Aggregate("",(sum,next)=>sum+=next+"; "),model.Position,model.PositionsCount,model.Salary,model.Premium);
+            return File(data,"application/vnd.openxmlformats-officedocument.wordprocessingml.document",id+".docx");
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {
@@ -142,7 +183,7 @@ namespace WebMvc.Controllers
                     }*/
                 }
             }
-            if (!string.IsNullOrEmpty(model.ReasonBeginDate))
+            if (!string.IsNullOrEmpty(model.ReasonBeginDate) && model.ShowStaff)
             {
                 DateTime beginDate;
                 if (!DateTime.TryParse(model.DesirableBeginDate, out beginDate))
@@ -170,6 +211,7 @@ namespace WebMvc.Controllers
         }
         protected void CorrectDropdowns(AppointmentEditModel model)
         {
+            
             if (!model.IsEditable)
             {
                 //model.PositionId = model.PositionIdHidden;
@@ -230,7 +272,6 @@ namespace WebMvc.Controllers
             }*/
         }
 
-
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]
         public ActionResult SelectManagerDialog()
@@ -265,7 +306,7 @@ namespace WebMvc.Controllers
 
         #region AppointmentReport
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
         public ActionResult AppointmentReportEdit(int id)
         {
             AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
