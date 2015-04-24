@@ -166,6 +166,24 @@
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
     <Content Include="favicon.ico" />
     <Content Include="FileSizeTooLarge.htm" />
+    <Content Include="Files\doc\docProps\app.xml" />
+    <Content Include="Files\doc\docProps\core.xml" />
+    <Content Include="Files\doc\word\document.xml" />
+    <Content Include="Files\doc\word\fontTable.xml" />
+    <Content Include="Files\doc\word\settings.xml" />
+    <Content Include="Files\doc\word\styles.xml" />
+    <Content Include="Files\doc\word\theme\theme1.xml" />
+    <Content Include="Files\doc\word\webSettings.xml" />
+    <Content Include="Files\doc\[Content_Types].xml" />
+    <Content Include="Files\Template\docProps\app.xml" />
+    <Content Include="Files\Template\docProps\core.xml" />
+    <Content Include="Files\Template\word\document.xml" />
+    <Content Include="Files\Template\word\fontTable.xml" />
+    <Content Include="Files\Template\word\settings.xml" />
+    <Content Include="Files\Template\word\styles.xml" />
+    <Content Include="Files\Template\word\theme\theme1.xml" />
+    <Content Include="Files\Template\word\webSettings.xml" />
+    <Content Include="Files\Template\[Content_Types].xml" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\DepartmentTree.js" />
@@ -234,10 +252,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Files\" />
     <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">
+      <Project>{36B24501-97E9-4890-9F3A-A3BAF8E132F3}</Project>
+      <Name>NoteDocumentCreator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reports.CommonWeb\Reports.CommonWeb.csproj">
       <Project>{B3032E92-B802-4876-92B3-6E2479EE6CDE}</Project>
       <Name>Reports.CommonWeb</Name>
@@ -764,6 +785,12 @@
     <Content Include="Views\MissionOrder\AnalyticalStatement.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementsPartial.cshtml" />
     <Content Include="Views\MissionOrder\AnalyticalStatementDetails.cshtml" />
+    <Content Include="Views\Help\PersonnelBillingList.cshtml" />
+    <Content Include="Views\Help\EditPersonnelBillingRequest.cshtml" />
+    <Content Include="Views\Help\BillingRequestInfoView.cshtml" />
+    <Content Include="Views\Help\RequestAttachmentsPartial.cshtml" />
+    <Content Include="Views\Help\AddAttachmentDialog.cshtml" />
+    <Content Include="Views\Help\AttachmentDialogError.cshtml" />
     <Content Include="Views\Deduction\DeductionImport.cshtml" />
     <Content Include="Views\Employment\PrintT2.cshtml" />
     <Content Include="Views\Surcharge\Index.cshtml" />
@@ -779,7 +806,13 @@
     <Content Include="Views\Employment\PrintObligationTradeSecret.cshtml" />
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
+    <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
+    <None Include="Files\doc\word\_rels\document.xml.rels" />
+    <None Include="Files\doc\_rels\.rels" />
+    <None Include="Files\Template\word\_rels\document.xml.rels" />
+    <None Include="Files\Template\_rels\.rels" />
+    <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

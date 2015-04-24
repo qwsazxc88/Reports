@@ -211,6 +211,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantOutsorsingManager);
             if ((user.UserRole & UserRole.DismissedEmployee) > 0 && !roles.Contains(UserRole.DismissedEmployee))
                 roles.Add(UserRole.DismissedEmployee);
+            if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))
+                roles.Add(UserRole.Estimator);
+            if ((user.UserRole & UserRole.PersonnelManagerBank) > 0 && !roles.Contains(UserRole.PersonnelManagerBank))
+                roles.Add(UserRole.PersonnelManagerBank);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

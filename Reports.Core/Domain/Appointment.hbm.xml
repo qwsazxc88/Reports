@@ -12,11 +12,12 @@
 	
 	<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Appointment_Department" index="Appointment_Department"  not-null="true"/>
 	<property name="City" length="64" not-null="true"/>
+    <property name="Recruter" not-null="true"/>
   <property name="PositionName" length="64" not-null="true"/>
 	<!--<many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Appointment_Position" index="Appointment_Position"  not-null="true"/>-->
 	<property name="VacationCount"  not-null="true"/>
 	<many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_Appointment_AppointmentReason" index="Appointment_AppointmentReason"  not-null="true"/>
-	
+  <property name ="FIO" not-null="false"/>
 	<property name="ReasonBeginDate" not-null="false"/>
 	<property name="ReasonPosition" length="64" not-null="false"/>
 	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
@@ -36,7 +37,8 @@
 	<property name="DesirableBeginDate" not-null="false"/>
 	<property name="IsVacationExists" not-null="true"/>
 	<!--<property name="BeginDate" not-null="false"/>-->
-	  
+    <property name="BankAccountantAccept"   not-null="false"/>
+    <property name="BankAccountantAcceptCount" not-null="false"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Appointment_CreatorUser" index="IX_Appointment_CreatorUser_Id"  not-null="true"/>
   <many-to-one name="StaffCreator" class="User" column="StaffCreatorId" foreign-key="FK_Appointment_StaffCreatorUser" index="IX_Appointment_StaffCreatorUser_Id"  not-null="false"/>
 	<property name="ManagerDateAccept" not-null="false"/>
@@ -59,5 +61,9 @@
 		<key column="AppointmentId" foreign-key="FK_AppointmentComment_Appointment"/>
 		<one-to-many class="AppointmentComment"/>
 	  </bag>
+    <bag name="Candidates" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="AppointmentId" foreign-key="FK_EmploymentCandidate_Appointment"/>
+      <one-to-many class="EmploymentCandidate"/>
+    </bag>
 	</class>
 </hibernate-mapping>

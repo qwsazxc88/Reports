@@ -67,6 +67,7 @@ namespace Reports.Core.Dao
 
         IList<IdNameDto> GetManagersWithDepartments();
         IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments);
+        IList<IdNameDto> GetUsersWithRole(UserRole role, bool? isActive);
     }
 }
 
