@@ -1472,6 +1472,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.PersonnelManagerBank:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
