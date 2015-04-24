@@ -303,7 +303,10 @@ namespace WebMvc.Controllers
             }
         }
         #endregion
-
+        [HttpGet]
+        public ActionResult Instruction()
+        { return View(); }
+         
         #region AppointmentReport
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
