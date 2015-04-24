@@ -362,6 +362,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             SetFlagsState(id, currUser,current.UserRole, entity, model);
             SetHiddenFields(model);
+            if ((current.UserRole & UserRole.Manager) != UserRole.Manager 
+                && model.StaffCreatorId != current.Id 
+                &&current.UserRole != UserRole.PersonnelManagerBank
+                &&current.UserRole != UserRole.StaffManager
+                )
+            { model.IsEditable = false; model.IsSaveAvailable = false; }
             return model;
         }
         protected void SetCreatorDepartment(User creator,AppointmentEditModel model)
@@ -401,7 +407,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
