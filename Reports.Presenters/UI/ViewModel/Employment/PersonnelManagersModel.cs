@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -71,6 +72,19 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "дней")]
         public int InsurableExperienceDays { get; set; }
+
+        [Display(Name = "Вариант")]
+        public int? NorthExperienceType { get; set; }
+        public IList<IdNameDto> NorthExperienceTypes { get; set; }
+
+        [Display(Name = "лет")]
+        public int NorthExperienceYears { get; set; }
+
+        [Display(Name = "месяцев")]
+        public int NorthExperienceMonths { get; set; }
+
+        [Display(Name = "дней")]
+        public int NorthExperienceDays { get; set; }
 
         [Display(Name = "Персональная надбавка")]
         public decimal? PersonalAddition { get; set; } //ok
