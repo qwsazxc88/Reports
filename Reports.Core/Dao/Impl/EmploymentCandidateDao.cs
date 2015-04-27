@@ -408,7 +408,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = "DocStatus";
                     break;
                 default:
-                    orderBy = "candidate.Id";
+                    orderBy = "candidate.Id desc";
                     break;
             }
 
