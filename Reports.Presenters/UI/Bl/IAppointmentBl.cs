@@ -10,7 +10,7 @@ namespace Reports.Presenters.UI.Bl
         void SetAppointmentListModel(AppointmentListModel model, bool hasError);
         void SetAppointmentReportsListModel(AppointmentListModel model, bool hasError);
         AppointmentEditModel GetAppointmentEditModel(int id, int? managerId);
-
+        AppointmentListModel GetAppointmentReportListModel();
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
         bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
         NoteModel GetNoteModel(int id);
