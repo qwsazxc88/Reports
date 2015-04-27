@@ -32,6 +32,10 @@
     <property name="InsurableExperienceYears" not-null="false"/>
     <property name="InsurableExperienceMonths" not-null="false"/>
     <property name="InsurableExperienceDays" not-null="false"/>
+    <property name="NorthExperienceYears" not-null="false"/>
+    <property name="NorthExperienceMonths" not-null="false"/>
+    <property name="NorthExperienceDays" not-null="false"/>
+    <property name="NorthExperienceType" not-null="false"/>
     <!-- Ознакомлен с регламентными документами -->
     <property name="PersonalAccount" length="23" not-null="false"/>
     <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="false"/>
