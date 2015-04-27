@@ -309,7 +309,7 @@ namespace WebMvc.Controllers
          
         #region AppointmentReport
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank | UserRole.PersonnelManager)]
         public ActionResult AppointmentReportEdit(int id)
         {
             AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
