@@ -21,9 +21,9 @@ namespace NoteDocumentCreator
             data = data.Replace("{{DEPARTMENTS}}", Departments);
             data = data.Replace("{{POSITION}}", Position);
             data = data.Replace("{{POSITIONCOUNT}}", PositionCount.ToString());
-            data = data.Replace("{{SALARY}}", Salary.ToString());
-            data = data.Replace("{{PREMIUM}}", Premium.ToString());
-            data = data.Replace("{{TOTALSUM}}", (Salary + Premium).ToString());
+            data = data.Replace("{{SALARY}}", Salary.ToString("0.00"));
+            data = data.Replace("{{PREMIUM}}", Premium.ToString("0.00"));
+            data = data.Replace("{{TOTALSUM}}", (Salary + Premium).ToString("0.00"));
             StreamWriter writer = new StreamWriter(Path.Combine(WebPath,@"doc\word\document.xml"));
             writer.WriteLine(data);
             writer.Flush(); writer.Close();

@@ -61,15 +61,11 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
-                        when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
-                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
-                        when v.StaffDateAccept is not null then N'Принята в работу'                        
-                        when v.DeleteDate is not null then N'Отменена'
-                        else N''
+                        when r.StaffDateAccept is null then N'Черновик'
+                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 then N'Кандидату отказано'
+                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат принят'
+                        when r.StaffDateAccept is not null then 'Отправлена руководителю'
+                         else N''
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount
@@ -116,9 +112,9 @@ namespace Reports.Core.Dao.Impl
                         when v.ManagerDateAccept is null then N'Черновик'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий. Отправлена на согласование вышестоящему руководителю.'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
-                        when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Не требует одобрения специалистом УКДиУ.'
+                        when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
                         when v.DeleteDate is not null then N'Отменена'
@@ -338,7 +334,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, userId);
             //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             //whereString = GetTypeWhere(whereString, typeId);
-            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetReportStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
@@ -446,6 +442,38 @@ namespace Reports.Core.Dao.Impl
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
         }
+        public string GetReportStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    case 1://1, "Черновик"
+                        statusWhere = @" r.StaffDateAccept is null ";
+                        break;
+                    case 2://2, "Кандидату отказано"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=0 ";
+                        break;
+                    case 3://3, "кандидат принят"
+                        statusWhere = @" r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
+                        break;
+                    case 4://4, "Отправлено руководителю"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
+                        break;
+                    
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                if (statusId != 5)
+                    statusWhere += " and v.DeleteDate is null ";
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere;
+                return whereString;
+            }
+            return whereString;
+        }
         public override string GetStatusWhere(string whereString, int statusId)
         {
             if (statusId != 0)
@@ -457,7 +485,7 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"v.ManagerDateAccept is null ";
                         break;
                     case 2://2, "Отправлена на согласование вышестоящему руководителю"
-                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null ";
+                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
                         break;
                     case 3://3, "Согласована вышестоящим руководителем"
                         statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
@@ -468,7 +496,13 @@ namespace Reports.Core.Dao.Impl
                     case 5://5, "Отменена"
                         statusWhere = @"v.DeleteDate is not null";
                         break;
-                   
+                    case 6://Нет подходящих вакансий
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
+                            break;
+                    case 7://Отправлена на согласование в кадровую службу
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
+                            break;
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
