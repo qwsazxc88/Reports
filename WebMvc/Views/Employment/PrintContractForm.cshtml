@@ -158,7 +158,7 @@ else
 {
 
     <text>
-    Базовый должностной оклад в составляет
+    Базовый должностной оклад составляет
     @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.SalaryBasis.Value.ToString(), Html.ConvertNumberSumToText(Model.SalaryBasis.Value)) :
     "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
     РАБОТНИКУ устанавливается - @(Model.SalaryMultiplier.HasValue ? Model.SalaryMultiplier.Value : 0) ставки от базового должностного оклада, что составляет 

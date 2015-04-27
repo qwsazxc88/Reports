@@ -1455,6 +1455,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractPointsFio = entity.ContractPointsFio;
                 model.ContractPointsAddress = entity.ContractPointsAddress;
 
+                model.NorthExperienceYears = entity.NorthExperienceYears;
+                model.NorthExperienceMonths = entity.NorthExperienceMonths;
+                model.NorthExperienceDays = entity.NorthExperienceDays;
+                model.NorthExperienceType = entity.NorthExperienceType;
+
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
 
@@ -1869,6 +1874,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.ContractCondition = (candidate.Managers.IsSecondaryJob ? "Работа по совместительству" : "Основная работа");
                     }
                 }
+
+                if (candidate.Managers.SalaryMultiplier.HasValue && candidate.Managers.SalaryMultiplier.Value < 1)
+                    model.ContractCondition += ", сотрудник принимается на " + candidate.Managers.SalaryMultiplier.Value.ToString() + " ставки";
+
 
                 if (candidate.PersonnelManagers.Signer != null)
                 {
@@ -2593,6 +2602,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ContractPoint1_Items = GetContractPointVariants().Where(x => x.PointTypeId == 1).OrderBy(x => x.PointId).ToList();
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
             model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
+            model.NorthExperienceTypes = GetNorthExperienceTypes();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -2765,6 +2775,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
 
             return cpv;
+        }
+
+        public IList<IdNameDto> GetNorthExperienceTypes()
+        {
+            IList<IdNameDto> inDto = new List<IdNameDto> { };
+
+            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не пологается северная надбавка" });
+            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутсвтует, начать начисление стажа с даты приема" });
+            inDto.Add(new IdNameDto { Id = 3, Name = "Северный стаж у сотрудника имеется, указать количество северного стажа" });
+
+            return inDto;
         }
 
         #endregion
@@ -4229,7 +4250,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
             entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
             entity.BasicSalary = viewModel.BasicSalary;
-            entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
             entity.OverallExperienceDays = viewModel.OverallExperienceDays;
             entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
@@ -4247,6 +4267,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ContractPointsFio = viewModel.ContractPoint_1_Id == 2 ? viewModel.ContractPointsFio : null;
             entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
             entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
+
+            entity.NorthExperienceYears = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceYears : 0;
+            entity.NorthExperienceMonths = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceMonths : 0;
+            entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
+            entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
+            entity.NorthExperienceType = viewModel.NorthExperienceType;
+
             if (viewModel.ScheduleId.HasValue)
             {
                 entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
@@ -4727,7 +4754,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
                     entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
                     entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
-                    entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
                     entity.OverallExperienceDays = viewModel.OverallExperienceDays;
                     entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
                     entity.OverallExperienceYears = viewModel.OverallExperienceYears;
@@ -4745,6 +4771,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
                     entity.PositionAddition = viewModel.PositionAddition;
                     entity.PersonalAddition = viewModel.PersonalAddition;
+
+                    entity.NorthExperienceYears = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceYears : 0;
+                    entity.NorthExperienceMonths = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceMonths : 0;
+                    entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
+                    entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
+                    entity.NorthExperienceType = viewModel.NorthExperienceType;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {

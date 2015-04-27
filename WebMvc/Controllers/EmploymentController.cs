@@ -2062,6 +2062,25 @@ namespace WebMvc.Controllers
                 }
             }
 
+
+            if (model.NorthExperienceType == 3)
+            {
+                if (model.NorthExperienceYears == 0 && model.NorthExperienceMonths == 0 && model.NorthExperienceDays == 0)
+                {
+                    ModelState.AddModelError("NorthExperienceYears", "*");
+                    ModelState.AddModelError("NorthExperienceMonths", "*");
+                    ModelState.AddModelError("NorthExperienceDays", "*");
+                    ModelState.AddModelError("MessageStr", "Введите северный стаж!");
+                }
+
+                if (!model.NorthernAreaAddition.HasValue)
+                {
+                    ModelState.AddModelError("NorthernAreaAddition", "*");
+                    ModelState.AddModelError("MessageStr", "Укажите северную надбавку!");
+                }
+            }
+            
+
             if (!ModelState.IsValid && flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)

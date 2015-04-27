@@ -523,9 +523,10 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<CandidatePersonnelDto> GetPersonnels()
         {
+            //в запросе исключены Ибрагимова, Рогозина, Тиханова и Чеснова
             IQuery query = CreatePersonnelsQuery(@"SELECT 0 as Id, null as Name
                                                    UNION ALL
-                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 
+                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 and Id not in (1002, 998, 991, 1006)
                                                    ORDER BY Name");
             return query.SetResultTransformer(Transformers.AliasToBean<CandidatePersonnelDto>()).List<CandidatePersonnelDto>();
         }
