@@ -1661,7 +1661,7 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    if (!EmploymentBl.IsUnlimitedEditAvailable())
+                    if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
                     {
                         model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
                         ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
@@ -1689,7 +1689,7 @@ namespace WebMvc.Controllers
             }
             else
             {
-                if (!EmploymentBl.IsUnlimitedEditAvailable())
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
                 {
                     ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
@@ -1967,7 +1967,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ManagersModel model)
         {
-            if (!EmploymentBl.IsUnlimitedEditAvailable())
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
             {
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
@@ -2005,7 +2005,7 @@ namespace WebMvc.Controllers
             model.IsFixedTermContract = isFixedTermContract;
             bool flgError = false;
 
-            if (!EmploymentBl.IsUnlimitedEditAvailable())
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
             {
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
