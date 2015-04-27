@@ -113,6 +113,10 @@ GO
 			[PositionAddition] [decimal](19, 2) NULL,
 			[RejectDate] [datetime] NULL,
 			[RejectUserId] [int] NULL,
+			[NorthExperienceYears] [int] NULL,
+			[NorthExperienceMonths] [int] NULL,
+			[NorthExperienceDays] [int] NULL,
+			[NorthExperienceType] [int] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1537,6 +1541,18 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Год севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceYears'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Месяц севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceMonths'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'День севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceDays'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип северного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceType'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата отклонения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'RejectDate'
 	GO
 
