@@ -173,6 +173,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             //SetIsAvailable(model);
             return model;
         }
+        public AppointmentListModel GetAppointmentReportListModel()
+        {
+            //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            //IdNameReadonlyDto dep = GetDepartmentDto(user);
+            UserRole role = AuthenticationService.CurrentUser.UserRole;
+            AppointmentListModel model = new AppointmentListModel
+            {
+                //UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = string.Empty,
+                DepartmentId = 0,
+                DepartmentReadOnly = false,
+            };
+            SetInitialDates(model);
+            SetDictionariesToReportsModel(model);
+            model.IsAddAvailable = (role & UserRole.Manager) == UserRole.Manager;
+            model.IsAddForStaffAvailable = role == UserRole.StaffManager;
+            //SetInitialStatus(model);
+            //SetIsAvailable(model);
+            return model;
+        }
+        public void SetDictionariesToReportsModel(AppointmentListModel model)
+        {
+            model.Statuses = GetAppReportStatuses();
+        }
         public void SetDictionariesToModel(AppointmentListModel model)
         {
             model.Statuses = GetAppRequestStatuses();
@@ -186,7 +210,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(2, "Отправлена на согласование вышестоящему руководителю"),
                                                            new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
-                                                           new IdNameDto(5, "Отменена"),
+                                                           //new IdNameDto(5, "Отменена"),
+                                                           new IdNameDto(6, "Нет подходящих вакансий")
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(6, "Не одобрен бухгалтером"),
                                                            //new IdNameDto(7, "Требует одобрения руководителем"),
@@ -195,7 +220,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
         }
-
+        protected List<IdNameDto> GetAppReportStatuses()
+        {
+           List<IdNameDto> moStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(4, "Отправлена руководителю"),
+                                                           new IdNameDto(3, "Кандидат принят"),
+                                                           new IdNameDto(2, "Кандидату отказано")
+                                                       }.OrderBy(x => x.Name).ToList();
+            moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return moStatusesList;
+        }
         public void SetAppointmentListModel(AppointmentListModel model, bool hasError)
         {
             SetDictionariesToModel(model);
@@ -207,7 +243,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetAppointmentReportsListModel(AppointmentListModel model, bool hasError)
         {
-            SetDictionariesToModel(model);
+            SetDictionariesToReportsModel(model);
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             if (hasError)
                 model.Documents = new List<AppointmentDto>();
@@ -294,6 +330,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.ShowStaff = entity.Recruter == 1;
+                if(entity.BankAccountant!=null)
+                model.BankAccountantName = entity.BankAccountant.Name;
                 model.Bonus = FormatSum(entity.Bonus);
                 model.City = entity.City;
                 model.Compensation = entity.Compensation;
@@ -362,6 +400,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             SetFlagsState(id, currUser,current.UserRole, entity, model);
             SetHiddenFields(model);
+            if ((current.UserRole & UserRole.Manager) != UserRole.Manager 
+                && model.StaffCreatorId != current.Id 
+                &&current.UserRole != UserRole.PersonnelManagerBank
+                &&current.UserRole != UserRole.StaffManager
+                )
+            { model.IsEditable = false; model.IsSaveAvailable = false; }
             return model;
         }
         protected void SetCreatorDepartment(User creator,AppointmentEditModel model)
@@ -401,7 +445,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -482,7 +526,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.OutsourcingManager:
                     break;
                 case UserRole.PersonnelManagerBank:
-                    
+                case UserRole.PersonnelManager:    
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
@@ -707,6 +751,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity = new Appointment
                     {
+                        Recruter = model.Recruter,
                         CreateDate = DateTime.Now,
                         Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
@@ -777,7 +822,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
                 entity.Bonus = Decimal.Parse(model.Bonus);
-                entity.Recruter = model.Recruter;
+                
                 entity.City = model.City;
                 entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
@@ -797,6 +842,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Type = model.TypeId == 1?true:false;
                 if (current.UserRole == UserRole.PersonnelManagerBank)
                 {
+                    entity.BankAccountant = UserDao.Load(current.Id);
                     entity.IsVacationExists = model.IsVacationExists == 1 ? true : false;
                     model.BankAccountantAccept = true;
                     entity.BankAccountantAccept = model.BankAccountantAccept;
@@ -808,6 +854,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (current.UserRole)
             {
+                case UserRole.PersonnelManagerBank:
+                    if (entity.BankAccountantAccept.HasValue && entity.IsVacationExists)
+                    {
+                        EmailDto dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                        if (!string.IsNullOrEmpty(dto.Error))
+                            error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                    dto.Error);
+                    }
+                    if (entity.BankAccountantAccept.HasValue && !entity.IsVacationExists)
+                    {
+                        EmailDto dto = SendEmailForBankAccountantReject(entity.Creator, entity);
+                        if (!string.IsNullOrEmpty(dto.Error))
+                            error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                    dto.Error);
+                    }
+                    break;
+
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id)
                     {
@@ -829,10 +892,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
-                            EmailDto dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                            EmailDto dto = SendEmailForBankAccountant(entity.Creator, entity); //dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                         dto.Error);
+                            
                         }
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
@@ -926,7 +990,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
-                case UserRole.PersonnelManagerBank: break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }
@@ -974,6 +1037,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #region Emails
+        protected EmailDto SendEmailForBankAccountantReject(User user, Appointment entity)
+        {
+            string BankAccountantEmail = user.Email;
+            if (string.IsNullOrEmpty(BankAccountantEmail))
+                throw new ValidationException("У пользователя нет почты");
+            string body = String.Format("Заявка №{0} от {1} на поиск кандидата не одобрена.", entity.Number, entity.CreateDate);
+            string subject = "Заявка на поиск сотрудника не одобрена";
+            return SendEmail(BankAccountantEmail, subject, body);
+        }
+        protected EmailDto SendEmailForBankAccountant(User user, Appointment entity)
+        {
+            string BankAccountantEmail = ConfigurationService.AppointmentPersonnelManagerEmail;
+            if (string.IsNullOrEmpty(BankAccountantEmail))
+                throw new ValidationException(StrEmailForStaffManagerNotFound);
+            string body=String.Format("Создана заявка №{0} от {1} на поиск кандидата в {2}",entity.Number,entity.CreateDate,entity.Department.Name);
+            string subject = "Создана заявка на поиск сотрудника";
+            return SendEmail(BankAccountantEmail, subject, body);
+        }
         protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
         {
             string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
@@ -992,6 +1073,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(personnel, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
         }*/
+
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
@@ -1473,6 +1555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManagerBank:
+                case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
