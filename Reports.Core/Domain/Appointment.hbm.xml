@@ -51,6 +51,7 @@
 	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_Appointment_StaffUser" index="IX_Appointment_StaffUser"  not-null="false"/>
 	<property name="DeleteDate" not-null="false"/>
 	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_Appointment_DeleteUser" index="IX_Appointment_DeleteUser"  not-null="false"/>
+    <many-to-one name="BankAccountant" class="User" column="BankAccountantId" foreign-key="FK_Appointment_BankAccountant"/>
 	<property name="SendTo1C" not-null="false"/>
 	<!--<property name="DeleteAfterSendTo1C" not-null="true"/>-->
 	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
