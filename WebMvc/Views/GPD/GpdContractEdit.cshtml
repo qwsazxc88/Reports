@@ -504,7 +504,7 @@
                 $("#PayerID").val(0);
             }
         });
-        //$("#PayerName").blur(function(){ SelectPerson(); if($("#PayerID").val() != 0) { this.form.submit();}});
+        $("#PayerName").blur(function(){ SelectPerson(); if($("#PayerID").val() != 0) { this.form.submit();}});
 
         $("#PayeeName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
         $("#PayeeName").change(function(){
@@ -512,7 +512,7 @@
                 $("#PayeeID").val(0);
             }
         });
-        //$("#PayeeName").blur(function(){ SelectPerson(); if($("#PayeeID").val() != 0) { this.form.submit();}});
+        $("#PayeeName").blur(function(){ SelectPerson(); if($("#PayeeID").val() != 0) { this.form.submit();}});
 
         $("#PersonAccount").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
         $("#PersonAccount").change(function(){
@@ -520,7 +520,7 @@
                 $("#PAccountID").val(0);
             }
         });
-        //$("#PersonAccount").blur(function(){ SelectPerson(); if($("#PAccountID").val() != 0) { this.form.submit();}});
+        $("#PersonAccount").blur(function(){ SelectPerson(); if($("#PAccountID").val() != 0) { this.form.submit();}});
 
         if ($("#PayerID").val() == 0 && $("#PayeeID").val() == 0 && $("#PAccountID").val() == 0){
             $("#tblDetail").hide();
