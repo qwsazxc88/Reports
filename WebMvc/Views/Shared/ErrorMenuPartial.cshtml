@@ -107,6 +107,7 @@
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
                      || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                  {
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")

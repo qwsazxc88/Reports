@@ -218,6 +218,22 @@
         }
     }
 
+    function NorthExperienceTypesChange(Id) {
+        if (Id == 3) {
+            $("#divNAA").show();
+            $("#divNEY").show();
+            $("#divNEM").show();
+            $("#divNED").show();
+        }
+        else {
+        
+            $("#divNAA").hide();
+            $("#divNEY").hide();
+            $("#divNEM").hide();
+            $("#divNED").hide();
+        }
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         //создаем вкладки, с обработчиком переключения вкладок
@@ -1075,9 +1091,17 @@
                         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
                         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
                         $('#isHourlySalaryBasisContainer').buttonset();
+
+                        $("#NorthExperienceType").change(function(){
+                            NorthExperienceTypesChange($("#NorthExperienceType").val());
+                        });
+
+
+                        NorthExperienceTypesChange($("#NorthExperienceType").val());
                         ContractPointChange(1);
                         ContractPointChange(2);
                         ContractPointChange(3);
+                        
 
                         $("#btnPMDraft").click(function(){
                             $("#IsDraftPM").val(true);

@@ -813,6 +813,7 @@
     <None Include="Files\Template\word\_rels\document.xml.rels" />
     <None Include="Files\Template\_rels\.rels" />
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
+    <Content Include="Views\Appointment\Instruction.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
