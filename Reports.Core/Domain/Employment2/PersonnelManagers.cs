@@ -57,6 +57,11 @@ namespace Reports.Core.Domain
         public virtual DateTime? RejectDate { get; set; } //дата отклонения
         public virtual User RejectUser { get; set; } //сотрудник проводящий отклонение кандидат
 
+        public virtual int NorthExperienceYears { get; set; } //ok
+        public virtual int NorthExperienceMonths { get; set; } //ok
+        public virtual int NorthExperienceDays { get; set; } //ok
+        public virtual int? NorthExperienceType { get; set; } //ok
+
         //дополнения для трудового договора
         public virtual int? ContractPoint_1_Id { get; set; }
         public virtual int? ContractPoint_2_Id { get; set; }

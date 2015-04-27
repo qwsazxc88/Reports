@@ -95,11 +95,8 @@
             @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
             @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
+        
         <div class="formfield clearleft">
-            @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
-            @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
-        </div>
-        <div class="formfield">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
             @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth" })
         </div>
@@ -156,6 +153,30 @@
             <div class="formfield">
                 @Html.ValidationMessageFor(m => m.InsurableExperienceDays)<br />
                 @Html.EditorFor(m => m.InsurableExperienceDays)&nbsp;@Html.LabelFor(m => m.InsurableExperienceDays)
+            </div>
+        </fieldset>
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Северный стаж</legend>
+            <div class="formfield clearleft">                
+                @Html.LabelFor(m => m.NorthExperienceType)<br />
+                @Html.DropDownListFor(m => m.NorthExperienceType, new SelectList(Model.NorthExperienceTypes, "Id", "Name"))
+            </div>
+            <div id="divNEY" class="formfield">                
+                @Html.ValidationMessageFor(m => m.NorthExperienceYears)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceYears, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceYears)
+            </div>
+            <div id="divNEM" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthExperienceMonths)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceMonths, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceMonths)
+            </div>
+            <div id="divNED" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthExperienceDays)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceDays, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceDays)
+            </div>
+            <div id="divNAA" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
+                @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthernAreaAddition)
             </div>
         </fieldset>
 
@@ -299,6 +320,9 @@
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
         $('#isHourlySalaryBasisContainer').buttonset();
+
+        
+
         //подкрашиваем пол
         $("#IsHourlySalaryBasisTrue").click(function () {
             $("#lblHSBTrue").css("border-color", "red");
@@ -325,10 +349,10 @@
             $("#IsDraftPM").val(true);
         });
 
-        $("#btnReject").click(function (){
+        $("#btnReject").click(function () {
             $("#IsReject").val(true);
         });
-        
+
         var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
         {
             autoOpen: false,
@@ -377,6 +401,21 @@
             $("#Variant39").hide();
             $("#Variant310").hide();
             $("#Variant3" + $("#ContractPoint_3_Id").val().toString()).show();
+        }
+    }
+
+    function NorthExperienceTypesChange(Id) {
+        if (Id == 3) {
+            $("#divNAA").show();
+            $("#divNEY").show();
+            $("#divNEM").show();
+            $("#divNED").show();
+        }
+        else {
+            $("#divNAA").hide();
+            $("#divNEY").hide();
+            $("#divNEM").hide();
+            $("#divNED").hide();
         }
     }
 </script>
