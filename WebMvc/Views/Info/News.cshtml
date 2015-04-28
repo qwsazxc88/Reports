@@ -3,7 +3,8 @@
     var dto = Reports.Presenters.Services.Impl.UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
   }  
 <script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
-<div class="Blog" ng-app="NewsApp">
+<script src="@Url.Content("~/Scripts/angular-sanitize.min.js")" type="text/javascript"></script>
+<div id="Blog" class="Blog" ng-app="NewsApp">
 <div ng-controller="NewsController">
 @if (dto.UserRole == UserRole.Admin)
 {
@@ -19,12 +20,12 @@
 }
 <div class="NewsPost" ng-repeat="post in News">
     <B style="font-size:large">{{post.Header}}</B><span style="color:#aaa; position:absolute; left:auto; right:5px;">{{post.PostDate}}</span>
-    <p>{{post.Text}}</p>
+    <div ng-bind-html="post.Text"></div>
 </div>
 </div>
 </div>
 <script>
-    var NewsApp = angular.module('NewsApp', []);
+    var NewsApp = angular.module('NewsApp', ["ngSanitize"]);
     NewsApp.controller('NewsController', function ($scope, $http) {
 
         $scope.News = {};
@@ -46,6 +47,12 @@
 }
         $scope.LoadData = function () {
             $http.get('/Info/News/').success(function (data) {
+                for(var el in data)
+                {
+                    console.log(data[el]);
+                    data[el].Text=unescape(data[el].Text);
+                    console.log(unescape(data[el].Text));
+                }
                 $scope.News = data;
             });
         };
