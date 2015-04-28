@@ -6391,7 +6391,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dep = DepartmentDao.Load(model.DepartmentId);
 
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
-            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.SortBy, model.SortDescending);
+            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.SortBy, model.SortDescending);
             return model;
         }
         #endregion
