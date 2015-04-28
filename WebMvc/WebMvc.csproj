@@ -186,6 +186,7 @@
     <Content Include="Files\Template\word\webSettings.xml" />
     <Content Include="Files\Template\[Content_Types].xml" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\DepartmentTree.js" />
     <Content Include="Scripts\fileuploader.js" />
@@ -819,6 +820,7 @@
     <None Include="Files\Template\_rels\.rels" />
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
     <Content Include="Views\Appointment\Instruction.cshtml" />
+    <Content Include="Views\Info\News.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
