@@ -19,6 +19,7 @@
 	<many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_Appointment_AppointmentReason" index="Appointment_AppointmentReason"  not-null="true"/>
   <property name ="FIO" not-null="false"/>
 	<property name="ReasonBeginDate" not-null="false"/>
+    <property name="PyrusNumber" not-null="false"/>
 	<property name="ReasonPosition" length="64" not-null="false"/>
 	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
 	<property name="ReasonUser" length="64" not-null="false"/>-->

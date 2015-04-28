@@ -89,10 +89,14 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual User GetManagerForEmployee(string login)
         {
-            var users= Session.CreateCriteria(typeof(User))
-                  .Add(Restrictions.Like("Login", login+"%"))
-                  .List<User>().ToList();
-            var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0);
+            var tmp= Session.CreateCriteria(typeof(User))
+                  .Add(Restrictions.Eq("Login", login))
+                  .List<User>().ToList();//Сначала получаем пользователей с таким логином
+            IList<User> users;
+            if (tmp != null && tmp.Any())//Если нашли - получаем все учётки для его почты
+                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+            else return null;
+            var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0 && x.IsActive==true);//Ищем активную учётку руководителя
             if (managers != null && managers.Any())
                 return managers.First();
             else return null;                 
