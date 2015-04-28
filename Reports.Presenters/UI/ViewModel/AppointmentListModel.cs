@@ -19,7 +19,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
-
+        [Display(Name= "Номер заявки")]
+        public string Number { get; set; }
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
 
