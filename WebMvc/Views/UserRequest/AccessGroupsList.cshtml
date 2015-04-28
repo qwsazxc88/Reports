@@ -50,7 +50,31 @@
                             @Html.LabelFor(m => m.UserName):
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.UserName, (object) new { placeholder = "ФИО" })
+                            @Html.TextBoxFor(model => model.UserName, (object) new { placeholder = "ФИО сотрудника" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.Manager6):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Manager6, (object)new { placeholder = "ФИО руководителя (6)" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.Manager5):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Manager5, (object)new { placeholder = "ФИО руководителя (5)" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.Manager4):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Manager4, (object)new { placeholder = "ФИО руководителя (4)" })
                         </td>
                     </tr>
                       
@@ -67,9 +91,9 @@
         <tr>
             <td >
                 <div class="action-wrap">
-                    @*<span id="LoadingIndicator"></span>*@
-                    <label>Количество записей: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Count.ToString())</label>&nbsp;&nbsp;
-                    <label>Из них в декрете: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Where(x => x.EndDate != null).Count().ToString())</label>
+                    <span id="LoadingIndicator"></span>
+                    <label id="CountRows">Количество записей: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Count.ToString())</label>&nbsp;&nbsp;
+                    <label id="CountPreg">Из них в декрете: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Where(x => x.EndDate != null).Count().ToString())</label>
                 </div>
             </td>
          </tr>
@@ -93,13 +117,22 @@
                             <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Подразделение<br />7 уровня</a></div>
                         </th>
                         <th>
-                            <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Электронная<br />почта</a></div>
+                            <div id="sort8"><a href="#"  onclick = "SortChanged(8);">Руководитель<br />6 уровня</a></div>
+                        </th>
+                        <th>
+                            <div id="sort9"><a href="#"  onclick = "SortChanged(9);">Руководитель<br />5уровня</a></div>
+                        </th>
+                        <th>
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Руководитель<br />4уровня</a></div>
                         </th>
                         <th>
                             <div id="sort7"><a href="#"  onclick = "SortChanged(7);">В декрете<br />(конец отпуска)</a></div>
                         </th>
                         <th>
                             <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Группа доступа</a></div>
+                        </th>
+                        <th>
+                            <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Электронная<br />почта<br />сотрудника</a></div>
                         </th>
                     </tr>
                     <tbody id="AGList">
@@ -116,9 +149,12 @@
                                     <td>@doc.PositionName</td>
                                     <td>@doc.Dep3Name</td>
                                     <td>@doc.Dep7Name</td>
-                                    <td>@doc.Email</td>
+                                    <td>@doc.Manager6</td>
+                                    <td>@doc.Manager5</td>
+                                    <td>@doc.Manager4</td>
                                     <td>@(doc.EndDate.HasValue ? doc.EndDate.Value.ToShortDateString() : string.Empty)</td>
                                     <td>@doc.AccessGroupName</td>
+                                    <td>@doc.Email</td>
                                 </tr>
                                 i++;
                             }
@@ -140,7 +176,7 @@
         //$("#EndDate").datepicker({changeMonth: true, changeYear: true});
         //$(".hasDatepicker").width("75px");
         
-        //$(".loading").removeClass("loading");
+        $(".loading").removeClass("loading");
 
         if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
         {
@@ -160,7 +196,9 @@
 
 
     function SubmitForm(){
-        //$("#LoadingIndicator").addClass("loading");
+        $("#LoadingIndicator").addClass("loading");
+        $("#CountRows").text("Количество записей: 0");
+        $("#CountPreg").text("Из них в декрете: 0");
         $("#AGList").remove();
         $("#AccessGroupsList").submit();
     }
@@ -189,6 +227,9 @@
         $("#DepartmentName").val('');
         $("#AccessGroupCode").val('');
         $("#UserName").val('');
+        $("#Manager6").val('');
+        $("#Manager5").val('');
+        $("#Manager4").val('');
     }
 
  </script>   
