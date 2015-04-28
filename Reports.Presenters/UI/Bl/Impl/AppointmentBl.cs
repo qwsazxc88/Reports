@@ -1984,7 +1984,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<User> mainManagers;
 
             // Для руководителей-замов ближайшие руководители находится на том же уровне
-            if (managerAccount != null && !managerAccount.IsMainManager)
+            if (managerAccount != null && !managerAccount.IsMainManager && false)//Отключено
             {
                 mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
                     .Where<User>(manager => manager.IsMainManager)
