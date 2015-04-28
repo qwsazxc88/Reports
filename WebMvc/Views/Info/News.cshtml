@@ -1,0 +1,20 @@
+﻿<script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
+<div class="Blog" ng-app="NewsApp">
+<div ng-controller="NewsController">
+<div class="NewsPost" ng-repeat="post in News">
+    <B style="font-size:large">{{post.Header}}</B><span style="color:#aaa; position:absolute; left:auto; right:5px;">{{post.PostDate}}</span>
+    <p>{{post.Text}}</p>
+</div>
+</div>
+</div>
+<script>
+    var NewsApp = angular.module('NewsApp', []);
+    NewsApp.controller('NewsController', function ($scope,$http) {
+
+        $scope.News = {
+        };
+        $http.get('/Info/News/').success(function (data) {
+            $scope.News = data;
+        });
+    });
+</script>
