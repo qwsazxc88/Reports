@@ -587,6 +587,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IGpdChargingTypeDao))
                 .ImplementedBy<GpdChargingTypeDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<INewsDao>()
+                .ImplementedBy<NewsDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

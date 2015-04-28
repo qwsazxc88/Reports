@@ -4720,6 +4720,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
                 {
+                    if (!IsUnlimitedEditAvailable())
+                    {
+                        error = "У вас нет прав для редактирования данных!";
+                        return false;
+                    }
+
                     //нет сканов необходимых документов
                     if (!EmploymentCandidateDao.GetCandidateState(candidate.Id).Single().CandidateApp)
                     {
@@ -4850,6 +4856,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (candidateStatus != EmploymentStatus.REJECTED)
                 {
+                    if (!IsUnlimitedEditAvailable())
+                    {
+                        error = "У вас нет прав для редактирования данных!";
+                        return false;
+                    }
+
                     entity.Candidate.Status = EmploymentStatus.REJECTED;
                     entity.Candidate.User.IsActive = false;
                     entity.RejectDate = DateTime.Now;
@@ -4995,7 +5007,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
-                return true;
+                //для кадровикв банка Ибрагимова, Рогозина, Тиханова, Чеснова, Букова (осн) только режим просмотра
+                if (AuthenticationService.CurrentUser.Id == 1002 || AuthenticationService.CurrentUser.Id == 998 || AuthenticationService.CurrentUser.Id == 991 || AuthenticationService.CurrentUser.Id == 1006 || AuthenticationService.CurrentUser.Id == 990)
+                    return false;
+                else
+                    return true;
             }
             else
             {

@@ -89,11 +89,13 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual User GetManagerForEmployee(string login)
         {
-            return (User)Session.CreateCriteria(typeof(User))
-                  .Add(Restrictions.Eq("Login", login+"R"))
-                  .Add(Restrictions.Eq("RoleId", 4))
-                  .Add(Restrictions.Eq("IsActive", true))
-                  .UniqueResult();
+            var users= Session.CreateCriteria(typeof(User))
+                  .Add(Restrictions.Like("Login", login+"%"))
+                  .List<User>().ToList();
+            var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0);
+            if (managers != null && managers.Any())
+                return managers.First();
+            else return null;                 
         }
         public virtual IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath)
         {
