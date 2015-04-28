@@ -18,6 +18,15 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
 
+        [Display(Name = "ФИО руководителя 6 уровня")]
+        public string Manager6 { get; set; }
+
+        [Display(Name = "ФИО руководителя 5 уровня")]
+        public string Manager5 { get; set; }
+
+        [Display(Name = "ФИО руководителя 4 уровня")]
+        public string Manager4 { get; set; }
+
         public IList<AccessGroupListDto> AccessGroupList { get; set; }
         public int SortBy { get; set; }
         public bool SortDescending { get; set; }
