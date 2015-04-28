@@ -1892,8 +1892,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
                             for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
                             {
-                                model.EmployerRepresentativeNameShortened =
-                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
                             }
                         }
                     }
@@ -2053,8 +2052,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
                             for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
                             {
-                                model.EmployerRepresentativeNameShortened =
-                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
                             }
                         }
                     }
@@ -2111,8 +2109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
                             for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
                             {
-                                model.EmployerRepresentativeNameShortened =
-                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
                             }
                         }
                     }
