@@ -20,7 +20,7 @@ namespace Reports.Core.Dao.Impl
         {
             var crit = Session.CreateCriteria<News>();
             crit.Add(Restrictions.Eq("IsVisible", true));
-            crit.AddOrder(Order.Asc("PostDate"));
+            crit.AddOrder(Order.Desc("PostDate"));
             var result =crit.List<News>().Skip(page * count).Take(count);
             return result.Select(x => new NewsDto { Header = x.Header, Text = x.Text, PostDate = x.PostDate.ToShortDateString() }).ToList();
         }
