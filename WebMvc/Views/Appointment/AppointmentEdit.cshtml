@@ -325,7 +325,11 @@
                     <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
                     @Model.ManagerFio
                     <input type="hidden" id="ManagerFio" name="ManagerFio" value="@Model.ManagerFio" />
-                    
+                    @if (Model.Recruter == 2)
+                    {
+                        <br />
+                        @Html.LabelFor(m => m.PyrusNumber)  @Html.TextBoxFor(m => m.PyrusNumber, (dto.Id==Model.ManagerId || Model.Id==0)?null:(object)new {disabled = "disabled" })
+                    }
                 </td>
             </tr>
         @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
