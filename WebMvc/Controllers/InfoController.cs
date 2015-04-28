@@ -23,7 +23,7 @@ namespace WebMvc.Controllers
         public JsonResult News(int page=0)
         {
             var result = Ioc.Resolve<INewsDao>().GetNews(page, 10);
-            return Json(result,JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Admin )]
