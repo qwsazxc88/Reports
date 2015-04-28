@@ -1045,3 +1045,14 @@ legend {
   font-size:90%;
   text-align:right;
   }
+  
+ .NewsPost
+ {
+     position:relative;
+     padding:10px;
+     background-color: #fafafa;
+     color: #101010;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin:5px;
+ }
