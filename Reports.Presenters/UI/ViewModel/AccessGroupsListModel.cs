@@ -18,6 +18,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
 
+        [Display(Name = "Показать руководителей")]
+        public bool IsManagerShow { get; set; }
+
         [Display(Name = "ФИО руководителя 6 уровня")]
         public string Manager6 { get; set; }
 
