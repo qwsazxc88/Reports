@@ -38,11 +38,25 @@ namespace Reports.Core.Dao.Impl
             return query;
         }
 
-
+        /// <summary>
+        /// Функция возвращает список сотрудников по группе доступа
+        /// </summary>
+        /// <param name="depFromFilter">Подразделение</param>
+        /// <param name="AccessGroupCode">Код группы доступа</param>
+        /// <param name="userName">ФИО сотрудника</param>
+        /// <param name="Manager6">ФИО руководителя 6 уровня</param>
+        /// <param name="Manager5">ФИО руководителя 5 уровня</param>
+        /// <param name="Manager4">ФИО руководителя 4 уровня</param>
+        /// <param name="sortBy">Id колонки для сортировки</param>
+        /// <param name="sortDescending">Тип сортировки</param>
+        /// <returns></returns>
         public IList<AccessGroupListDto> GetAccessGroupList(
                 Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
+                string Manager6,
+                string Manager5,
+                string Manager4,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -50,6 +64,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetDepartmentWhere(depFromFilter);
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetManagersWhere(whereString, Manager6, Manager5, Manager4);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQueryForList(sqlQuery);
@@ -88,6 +103,25 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
+        public string GetManagersWhere(string whereString, string manager6, string manager5, string manager4)
+        {
+            if (!string.IsNullOrEmpty(manager6))
+            {
+                whereString = string.Format(@"{0} manager6 like '%{1}%'", (whereString.Length > 0 ? whereString + @" and" : string.Empty), manager6);
+            }
+
+            if (!string.IsNullOrEmpty(manager5))
+            {
+                whereString = string.Format(@"{0} manager5 like '%{1}%'", (whereString.Length > 0 ? whereString + @" and" : string.Empty), manager5);
+            }
+
+            if (!string.IsNullOrEmpty(manager4))
+            {
+                whereString = string.Format(@"{0} manager4 like '%{1}%'", (whereString.Length > 0 ? whereString + @" and" : string.Empty), manager4);
+            }
+            return whereString;
+        }
+
         public IQuery CreateQueryForList(string sqlQuery)
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
@@ -101,6 +135,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AccessGroupName", NHibernateUtil.String)
                 .AddScalar("Email", NHibernateUtil.String)
                 .AddScalar("EndDate", NHibernateUtil.DateTime)
+                .AddScalar("Manager6", NHibernateUtil.String)
+                .AddScalar("Manager5", NHibernateUtil.String)
+                .AddScalar("Manager4", NHibernateUtil.String)
                 ;
             return query;
         }
@@ -137,6 +174,15 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 7:
                     orderBy = "EndDate";
+                    break;
+                case 8:
+                    orderBy = "Manager6";
+                    break;
+                case 9:
+                    orderBy = "Manager5";
+                    break;
+                case 10:
+                    orderBy = "Manager4";
                     break;
                 default:
                     orderBy = "UserName";
