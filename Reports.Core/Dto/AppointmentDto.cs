@@ -34,5 +34,6 @@ namespace Reports.Core.Dto
                 public int BankAccountantAcceptCount { get; set; }
                 public int SecondNumber { get; set; }
                 public int Recruter { get; set; }
+                public string CandidateFIO { get; set; }
     }
 }
