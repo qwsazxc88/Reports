@@ -1056,3 +1056,8 @@ legend {
     border-radius: 5px;
     margin:5px;
  }
+ .HiddenObject
+ {
+     visibility:hidden;
+     height:0px;
+ }
