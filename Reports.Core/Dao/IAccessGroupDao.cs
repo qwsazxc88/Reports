@@ -8,10 +8,25 @@ namespace Reports.Core.Dao
     {
         //IList<Position> LoadAllSorted();
         IList<AccessGroup> GetAccessGroups();
+        /// <summary>
+        /// Функция возвращает список сотрудников по группе доступа
+        /// </summary>
+        /// <param name="depFromFilter">Подразделение</param>
+        /// <param name="AccessGroupCode">Код группы доступа</param>
+        /// <param name="userName">ФИО сотрудника</param>
+        /// <param name="Manager6">ФИО руководителя 6 уровня</param>
+        /// <param name="Manager5">ФИО руководителя 5 уровня</param>
+        /// <param name="Manager4">ФИО руководителя 4 уровня</param>
+        /// <param name="sortBy">Id колонки для сортировки</param>
+        /// <param name="sortDescending">Тип сортировки</param>
+        /// <returns></returns>
         IList<AccessGroupListDto> GetAccessGroupList(
                 Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
+                string Manager6,
+                string Manager5,
+                string Manager4,
                 int sortBy,
                 bool? sortDescending);
     }
