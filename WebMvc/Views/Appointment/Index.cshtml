@@ -202,7 +202,8 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            <td>@doc.CandidateFIO</td>
+                            <td>@if(String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter==1) {<p>Кандидат</p>}
+                            @doc.CandidateFIO</td>
                             <td>@switch(doc.Recruter)
                                 {
                                     case 1: <text>УПиНП</text>
