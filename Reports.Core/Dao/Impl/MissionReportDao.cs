@@ -45,6 +45,8 @@ namespace Reports.Core.Dao.Impl
                                     - isnull([UserSumReceived],0)
                                      else null end as Saldo,
                                 case when v.DeleteDate is not null then N'Отклонен'
+                                     when v.DeductionId is not null AND v.SendTo1C is not null then N'Выгружен в удержания. Выгружен в 1с'
+                                     when v.DeductionId is not null AND v.SendTo1C is null then N'Выгружен в удержания.'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
                                      when v.[AccountantDateAccept] is not null 
                                           -- and v.ManagerDateAccept is not null 
@@ -70,7 +72,8 @@ namespace Reports.Core.Dao.Impl
                                 case when [IsDocumentsSaveToArchive] = 1 then N'Да' else N'Нет' end as IsDocumentsSaveToArchive,
                                 ArchiveDate,
                                 -- case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
-                                ArchiveNumber
+                                ArchiveNumber,
+                                u.Code as TabelNumber
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
@@ -322,6 +325,9 @@ namespace Reports.Core.Dao.Impl
                     case 10:
                         statusWhere = @"v.[DeleteDate] is not null";
                         break;
+                    case 11:
+                        statusWhere = @"v.DeductionId is not null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -500,7 +506,8 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("IsDismissal", NHibernateUtil.Boolean);
+                AddScalar("IsDismissal", NHibernateUtil.Boolean).
+                AddScalar("TabelNumber", NHibernateUtil.String) ;
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)

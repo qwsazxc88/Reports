@@ -21,8 +21,6 @@ namespace Reports.Core.Domain
         public virtual decimal? SalaryBasis { get; set; } // базовый должностной оклад
         public virtual decimal? SalaryMultiplier { get; set; } // ставка        
         public virtual string WorkCity { get; set; } //ok
-        public virtual decimal? PersonalAddition { get; set; } //ok
-        public virtual decimal? PositionAddition { get; set; } //ok
         public virtual bool IsFront { get; set; } //ok
         public virtual decimal? Bonus { get; set; } //ok
         public virtual bool IsLiable { get; set; } //ok

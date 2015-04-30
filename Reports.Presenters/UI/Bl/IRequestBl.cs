@@ -88,7 +88,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(EmploymentEditModel model);
         bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);
         DeductionImportModel GetDeductionImportModel(DeductionImportModel model = null);
-        IList<DeductionDto> ImportDeductionFromFile(string path, ref List<string> Errors);
+        IList<DeductionDto> ImportDeductionFromFile(ref string path, ref List<string> Errors, ref bool isFileExist);
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
@@ -184,7 +184,7 @@ namespace Reports.Presenters.UI.Bl
 
         MissionUserDeptsListModel GetMissionUserDeptsListModel();
         void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError,bool showDepts);
-        void SetDeductionDoc(int deductionNumber, int MissionReportid);
+        string SetDeductionDoc(int deductionNumber, int MissionReportid);
         PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId,
                                                                       DateTime? beginDate,
                                                                       DateTime? endDate, string userName, int sortBy,
@@ -194,6 +194,7 @@ namespace Reports.Presenters.UI.Bl
         PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId);
 
         bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId, int kindId, int uploadingType, bool isFastDissmissal, bool EnableSendEmail);
+        bool SendNotifyEmailToUser(int MissionReportId);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
@@ -205,5 +206,8 @@ namespace Reports.Presenters.UI.Bl
         bool SaveAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model, out string error);
 
         IList<User> GetManagersForEmployee(int userId, int? minManagerLevel = null);
+
+        AccessGroupsListModel GetAccessGroupsListModel();
+        AccessGroupsListModel SetAccessGroupsListModel(AccessGroupsListModel model);
     }
 }

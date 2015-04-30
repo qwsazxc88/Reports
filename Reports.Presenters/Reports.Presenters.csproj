@@ -129,6 +129,7 @@
     <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
     <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AcceptRequestsModel.cs" />
+    <Compile Include="UI\ViewModel\AccessGroupsListModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="UI\ViewModel\EditDayModel.cs" />
     <Compile Include="UI\ViewModel\EditInfoModel.cs" />
     <Compile Include="UI\ViewModel\EditMissionPbDocumentModel.cs" />
+    <Compile Include="UI\ViewModel\EditPersonnelBillingRequestViewModel.cs" />
     <Compile Include="UI\ViewModel\EditSubTypeModel.cs" />
     <Compile Include="UI\ViewModel\EditTypeModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeDocumentEditModel.cs" />
@@ -186,12 +188,20 @@
     <Compile Include="UI\ViewModel\Employment\ExperienceModel.cs" />
     <Compile Include="UI\ViewModel\Employment\FamilyModel.cs" />
     <Compile Include="UI\ViewModel\Employment\GeneralInfoModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\InstructionModel.cs" />
     <Compile Include="UI\ViewModel\Employment\ManagersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\MilitaryServiceModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PassportModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PersonnelInfoModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PersonnelManagersModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintAgreePersonForCheckingModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintCashWorkAddition1Model.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintCashWorkAddition2Model.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintInstructionEnsuringSafetyModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintInstructionOfSecretModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintObligationTradeSecretModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintPersonalDataObligationModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintRegisterPersonalRecordModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintT2Model.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
@@ -215,6 +225,7 @@
     <Compile Include="UI\ViewModel\Employment\PrintEmploymentFileModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
+    <Compile Include="UI\ViewModel\HelpPersonnelBillingListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />
     <Compile Include="UI\ViewModel\HelpQuestionEditModel.cs" />
     <Compile Include="UI\ViewModel\HelpQuestionRedirectModel.cs" />
@@ -246,6 +257,7 @@
     <Compile Include="UI\ViewModel\MissionReportEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionReportsListModel.cs" />
     <Compile Include="UI\ViewModel\MissionUserDeptsListModel.cs" />
+    <Compile Include="UI\ViewModel\NoteModel.cs" />
     <Compile Include="UI\ViewModel\PrintArchivistAddressModel.cs" />
     <Compile Include="UI\ViewModel\PrintLoginFormModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionOrderViewModel.cs" />

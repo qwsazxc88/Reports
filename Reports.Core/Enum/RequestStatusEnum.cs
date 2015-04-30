@@ -28,7 +28,8 @@
         ClearanceChecklist = 15,
         HelpServiceRequest = 16,
         HelpQuestionRequest = 17,
-        Surcharge = 18
+        HelpPersonnelBillingRequest = 18,
+        Surcharge = 19
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -51,6 +52,7 @@
         HelpTemplate = 9,
         HelpServiceRequestTemplate = 10,
         HelpServiceRequest = 11,
+        HelpPersonnelBillingRequest = 12,
 
         // Order Scans
 
@@ -100,6 +102,12 @@
         DataObligationScan = 277,
         EmploymentFileScan = 278,
         RegisterPersonalRecordScan = 279,
+        InstructionOfSecretScan = 280,
+        InstructionEnsuringSafetyScan = 281,
+        AgreePersonForCheckingScan = 282,
+        CashWorkAddition1Scan = 283,
+        CashWorkAddition2Scan = 284,
+        ObligationTradeSecretScan = 285,
 
         // Dismissal Additional Documents Scans
 

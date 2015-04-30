@@ -26,13 +26,7 @@
                    
                 }
                 </div> 
-                 <div id="liSurcharge" class="mainMenuItem"> 
-                 @if ((dto.UserRole & UserRole.Accountant) > 0
-                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                    {
-                               @Html.ActionLink("Доплата", "Index", "Surcharge")
-                    }
-                </div>
+                 
                 @if (dto.Id == 10
                      || (dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -83,6 +77,10 @@
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                 }
+                else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
+                }
                 else if (UserDto.IsHelpTemplateAvailable(dto))
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
@@ -95,15 +93,20 @@
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-                     //|| (dto.UserRole & UserRole.PersonnelManager) > 0
+                     || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
                     </div> 
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
+                 }
+                 @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 {
+                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
                  }
         </div>  
         <div class="podmenu">        
@@ -151,6 +154,15 @@
                         || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                     {
                             <div class="menuitem" id="userAccept">@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</div>
+                    }
+@*                        if (dto.UserRole == UserRole.PersonnelManager)
+                        {
+                            <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
+                        }*@
+                    if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                        || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                            <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Группы доступа", "AccessGroupsList", "UserRequest")</div>
                     }
 @*                        if (dto.UserRole == UserRole.PersonnelManager)
                         {

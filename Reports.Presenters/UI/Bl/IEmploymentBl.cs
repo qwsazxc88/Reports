@@ -57,6 +57,13 @@ namespace Reports.Presenters.UI.Bl
         PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
         PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
         PrintEmploymentFileModel GetPrintEmploymentFileModel(int userId);
+        PrintRegisterPersonalRecordModel GetPrintRegisterPersonalRecordModel(int userId);
+        PrintInstructionOfSecretModel GetPrintInstructionOfSecretModel(int userId);
+        PrintInstructionEnsuringSafetyModel GetPrintInstructionEnsuringSafetyModel(int userId);
+        PrintAgreePersonForCheckingModel GetPrintAgreePersonForCheckingModel(int userId);
+        PrintCashWorkAddition1Model GetPrintCashWorkAddition1Model(int userId);
+        PrintCashWorkAddition2Model GetPrintCashWorkAddition2Model(int userId);
+        PrintObligationTradeSecretModel GetPrintObligationTradeSecretModel(int userId);
         IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending);
         
         void LoadDictionaries(GeneralInfoModel model);
@@ -99,11 +106,12 @@ namespace Reports.Presenters.UI.Bl
         void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel;
 
-        bool ApproveBackgroundCheck (int userId, bool IsApprovalSkipped, bool? approvalStatus, out string error);
+        bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
+        bool SavePersonnelManagersRejecting(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
         /// <summary>

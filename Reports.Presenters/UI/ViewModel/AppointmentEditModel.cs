@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
-
+using Reports.Core.Dto.Employment2;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentEditModel : ManagerInfoModel, IContainId
@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
         public int DepartmentRequiredLevel { get; set; }
-
+        public int Recruter { get; set; }
         [Display(Name = "Место работы (город)")]
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
@@ -27,8 +27,10 @@ namespace Reports.Presenters.UI.ViewModel
         //public int PositionId { get; set; }
         //public int PositionIdHidden { get; set; }
         //public IList<IdNameDto> Positions;
-
-        [Display(Name = "Количество вакансий")]
+        public string FIO { get; set; }
+        [Display(Name="Номер задачи в Pyrus:")]
+        public string PyrusNumber { get; set; }
+        [Display(Name = "Количество требуемых сотрудников")]
         public string VacationCount { get; set; }
 
         [Display(Name = "Основание появления вакансии")]
@@ -52,7 +54,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Заработная плата (премия)")]
         public string Bonus { get; set; }
 
-        [Display(Name = "Форма оформления сотрудника")]
+        [Display(Name = "Тип договора")]
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
@@ -86,7 +88,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Display(Name = "Работа с даты")]
         //public string BeginDate { get; set; }
 
-        [Display(Name = "Руководитель (заказчик)")]
+        [Display(Name = "Руководитель (инициатор)")]
         public bool IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
@@ -125,5 +127,11 @@ namespace Reports.Presenters.UI.ViewModel
         public int StaffCreatorId { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
+
+        public bool BankAccountantAccept { get; set; }
+        public int BankAccountantAcceptCount { get; set; }
+        public string BankAccountantName { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
+        public IList<CandidateDto> Candidates { get; set; }
     }
 }

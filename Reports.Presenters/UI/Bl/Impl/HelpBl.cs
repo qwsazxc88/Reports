@@ -35,6 +35,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
         public const string StrInvalidHelpRequestOwner = "Неверная роль владельца заявки (id {0}) {1} в базе даннных.";
         public const string StrInvalidUserDepartment = "Не указано структурное подразделение для пользователя (id {0}) в базе даннных.";
+
+        public const string StrAllEstimators = "Все расчетчики";
+        public const string StrAllConsultantOutsorsingManagers = "Все консультанты ОК";
+        public const string StrCannotCreatePersonnelBilling = "Вам запрещено сознание запроса";
+        public const string StrInvalidAttachmentType = "Неизвестный тип прикрепленных файлов {0}";
+        public const string StrCannotLoadRecipientForId = "Ошибка при загрузке получателя запроса (Id = {0}) из базы данных.";
+        public const string StrPersonnalBillingRequestNotFound = "Не найден запрос (внутренний биллинг,id {0}) в базе данных";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -126,6 +133,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(helpQuestionRequestDao); }
             set { helpQuestionRequestDao = value; }
+        }
+
+        protected IHelpBillingTitleDao helpBillingTitleDao;
+        public IHelpBillingTitleDao HelpBillingTitleDao
+        {
+            get { return Validate.Dependency(helpBillingTitleDao); }
+            set { helpBillingTitleDao = value; }
+        }
+        protected IHelpBillingUrgencyDao helpBillingUrgencyDao;
+        public IHelpBillingUrgencyDao HelpBillingUrgencyDao
+        {
+            get { return Validate.Dependency(helpBillingUrgencyDao); }
+            set { helpBillingUrgencyDao = value; }
+        }
+        protected IHelpPersonnelBillingRequestDao helpPersonnelBillingRequestDao;
+        public IHelpPersonnelBillingRequestDao HelpPersonnelBillingRequestDao
+        {
+            get { return Validate.Dependency(helpPersonnelBillingRequestDao); }
+            set { helpPersonnelBillingRequestDao = value; }
         }
         #endregion
 
@@ -315,6 +341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 model.TypeId = entity.Type.Id;
+                model.IsForGEMoney = entity.IsForGEMoney;
                 model.ProductionTimeTypeId = entity.ProductionTime.Id;
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
                 model.PeriodId = entity.Period == null? new int?() : entity.Period.Id;
@@ -343,6 +370,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ServiceAttachmentId = serviceAttach.Id;
                     model.ServiceAttachment = serviceAttach.FileName;
+                    model.DocumentsCount = serviceAttach.DocumentsCount;
                 }
                 if (entity.Consultant != null)
                     model.Worker = entity.Consultant.FullName;
@@ -475,11 +503,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsSaveAvailable = true;
                         }
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
                             model.IsBeginWorkAvailable = true;
+                        }
                     }
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
+                    //чтобы видно было, но в работу не принималось и скан не выкачивался
+                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+                    {
+                        model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
+                        model.IsBeginWorkAvailable = false;
+                    }
+                    else
+                        model.IsNotScanView = false;
                     break;
             }
         }
@@ -669,7 +707,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         FiredUserName=model.FiredUserName,
                         FiredUserSurname=model.FiredUserSurname,
                         FiredUserPatronymic=model.FiredUserPatronymic,
-                        Note=noteTypeDao.Load(model.Note)
+                        Note=noteTypeDao.Load(model.Note),
+                        IsForGEMoney=model.IsForGEMoney
                     };
                     if (model.UserBirthDate != null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                     
@@ -742,6 +781,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
                 }
                 entity.Type = type;
+                entity.IsForGEMoney = model.IsForGEMoney;
                 entity.Note = noteTypeDao.Load(model.Note);
                 entity.FiredUserName = model.FiredUserName;
                 entity.FiredUserSurname = model.FiredUserSurname;
@@ -788,6 +828,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         FileName = fileDto.FileName,
                         RequestId = entity.Id,
                         RequestType = (int)RequestAttachmentTypeEnum.HelpServiceRequest,
+                        DocumentsCount =  model.DocumentsCount>0?model.DocumentsCount:1
                     };
                     RequestAttachmentDao.SaveAndFlush(attachment);
                     model.ServiceAttachmentId = attachment.Id;
@@ -2410,6 +2451,520 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
+        #endregion
+        #region Personnel Billing List
+        public HelpPersonnelBillingListModel GetPersonnelBillingList()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            HelpPersonnelBillingListModel model = new HelpPersonnelBillingListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                //DepartmentReadOnly = dep.IsReadOnly,
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            //SetIsOriginalDocsVisible(model);
+            SetIsAvailable(model);
+            return model;
+        }
+        public void SetDictionariesToModel(HelpPersonnelBillingListModel model)
+        {
+            model.Statuses = GetPersonnelBillingStatuses();
+            model.Urgencies = GetPersonnelBillingUrgencies(true);
+            model.Titles = GetPersonnelBillingTitles(true);
+        }
+        protected List<IdNameDto> GetPersonnelBillingStatuses()
+        {
+            List<IdNameDto> statusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(2, "Запрос отправлен"),
+                                                           new IdNameDto(3, "Запрос прочитан"),
+                                                           new IdNameDto(4, "Запрос обработан")
+                                                       }.OrderBy(x => x.Name).ToList();
+            statusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return statusesList;
+        }
+        protected List<IdNameDto> GetPersonnelBillingUrgencies(bool addAll)
+        {
+            List<IdNameDto> list = HelpBillingUrgencyDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if(addAll)
+                list.Insert(0, new IdNameDto(0, SelectAll));
+            return list;
+        }
+        protected List<IdNameDto> GetPersonnelBillingTitles(bool addAll)
+        {
+            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if(addAll)
+                list.Insert(0, new IdNameDto(0, SelectAll));
+            return list;
+        }
+        protected void SetIsAvailable(HelpPersonnelBillingListModel model)
+        {
+            model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0);
+        }
+
+        public void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            //User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<HelpPersonnelBillingRequestDto>();
+            else
+                SetDocumentsToModel(model);
+        }
+        public void SetDocumentsToModel(HelpPersonnelBillingListModel model)
+        {
+            //UserRole role = CurrentUser.UserRole;
+            //model.Documents = new List<HelpPersonnelBillingRequestDto>();
+            model.Documents = HelpPersonnelBillingRequestDao.GetDocuments(
+                CurrentUser.Id,
+                CurrentUser.UserRole,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.InitiatorUserName,
+                model.WorkerUserName,
+                model.Number,
+                model.TitleId,
+                model.UrgencyId,
+                model.SortBy,
+                model.SortDescending
+               );
+        }
+        #endregion
+        #region Personnel Billing Edit
+        public EditPersonnelBillingRequestViewModel GetPersonnelBillingRequestEditModel(int id)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            int userId = 0;
+            HelpPersonnelBillingRequest entity = null;
+            if (id == 0)
+            {
+                if ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0)
+                    userId = current.Id;
+                else
+                    throw new ValidationException(StrCannotCreatePersonnelBilling);
+            }
+            else
+                entity = HelpPersonnelBillingRequestDao.Load(id);
+            EditPersonnelBillingRequestViewModel model = new EditPersonnelBillingRequestViewModel
+            {
+                Id = id,
+                UserId = id == 0 ? userId : entity.Creator.Id,
+            };
+            //User user = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(current.Id);
+            if (id == 0)
+            {
+                entity = new HelpPersonnelBillingRequest
+                {
+                    Creator = currUser,
+                    CreateDate = DateTime.Now,
+                    EditDate = DateTime.Now,
+                    CreatorRoleId = (int)current.UserRole
+                };
+            }
+            else
+            {
+                model.Answer = entity.Answer;
+                model.DepartmentId = entity.Department.Id;
+                model.DepartmentName = entity.Department.Name;
+                model.Question = entity.Question;
+                model.TitleId = entity.Title.Id;
+                model.UrgencyId = entity.Urgency.Id;
+                model.UserName = entity.UserName;
+                model.Version = entity.Version;
+                model.UserId = entity.Creator.Id;
+                model.Version = entity.Version;
+                model.RecipientId = entity.RecipientId;
+                model.IsWorkBegin = entity.BeginWorkDate.HasValue;
+                //model.DocumentNumber = entity.Number.ToString();
+                //model.DateCreated = FormatDate(entity.CreateDate);
+                //model.Creator = entity.Creator.FullName;
+                //model.Address = entity.Address;
+                //RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                //    RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
+                //if (attachment != null)
+                //{
+                //    model.AttachmentId = attachment.Id;
+                //    model.Attachment = attachment.FileName;
+                //}
+                //RequestAttachment serviceAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                //    RequestAttachmentTypeEnum.HelpServiceRequest);
+                //if (serviceAttach != null)
+                //{
+                //    model.ServiceAttachmentId = serviceAttach.Id;
+                //    model.ServiceAttachment = serviceAttach.FileName;
+                //}
+                //if (entity.Consultant != null)
+                //    model.Worker = entity.Consultant.FullName;
+                //if (entity.EndWorkDate.HasValue)
+                //    model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
+                //if (entity.ConfirmWorkDate.HasValue)
+                //    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
+            }
+            //model.NoteList = noteTypeDao.GetAllNoteTypeDto();
+            SetBillingRequestInfoModel(entity, model);
+            model.AttachmentsModel = GetHelpPersonnelBillingAttachmentsModel(entity, RequestAttachmentTypeEnum.HelpPersonnelBillingRequest);
+            LoadDictionaries(model);
+            SetFlagsState(id, currUser, entity, model);
+            SetHiddenFields(model);
+            return model;
+        }
+        protected void SetHiddenFields(EditPersonnelBillingRequestViewModel model)
+        {
+            model.TitleIdHidden = model.TitleId;
+            model.UrgencyIdHidden = model.UrgencyId;
+            model.RecipientIdHidden = model.RecipientId;
+            model.IsWorkBeginHidden = model.IsWorkBegin;
+        }
+        protected void LoadDictionaries(EditPersonnelBillingRequestViewModel model)
+        {
+            model.Urgencies = GetPersonnelBillingUrgencies(false);
+            model.Titles = GetPersonnelBillingTitles(false);
+        }
+        protected void SetBillingRequestInfoModel(HelpPersonnelBillingRequest entity, BillingRequestInfoViewModel model)
+        {
+            model.CreatorName = entity.Creator.FullName;
+            model.DateBeginWork = FormatDate(entity.BeginWorkDate);
+            model.DateCreated = FormatDate(entity.CreateDate);
+            model.DateEndWork = FormatDate(entity.EndWorkDate);
+            model.DateSended = FormatDate(entity.SendDate);
+            model.Department3Name = string.Empty;
+            if(entity.Department != null)
+            {
+                Department dep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3);
+                if (dep3 != null)
+                    model.Department3Name = dep3.Name;
+            }
+            model.DocumentNumber = entity.Id == 0 ? string.Empty : entity.Number.ToString();
+            model.RecipientName = GetRecipientName(entity.RecipientId);
+        }
+        protected string GetRecipientName(int recipientId)
+        {
+            switch (recipientId)
+            {
+                case 0:
+                    return string.Empty;
+                case (int)AllPersonnelBillingRecipientEnum.AllEstimators:
+                    return StrAllEstimators;
+                case (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager:
+                    return StrAllConsultantOutsorsingManagers;
+                default:
+                    User user = UserDao.Load(recipientId);
+                    return user.FullName;
+            }
+        }
+        protected List<IdNameDto> LoadRecepientsDictionary(UserRole creatorRole)
+        {
+            IList<IdNameDto> list;
+            switch (creatorRole)
+            {
+                case UserRole.Estimator:
+                    list = UserDao.GetUsersWithRole(UserRole.ConsultantOutsorsingManager, true);
+                    list.Insert(0,new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager,Name = StrAllConsultantOutsorsingManagers});
+                    return list.ToList();
+                   
+                case UserRole.ConsultantOutsorsingManager:
+                    list = UserDao.GetUsersWithRole(UserRole.Estimator, true);
+                    list.Insert(0,new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllEstimators,Name = StrAllEstimators});
+                    return list.ToList();
+                default:
+                    throw new ValidationException(StrCannotCreatePersonnelBilling);
+            }
+        }
+        protected void SetFlagsState(int id, User current, HelpPersonnelBillingRequest entity, EditPersonnelBillingRequestViewModel model)
+        {
+            UserRole currentRole = AuthenticationService.CurrentUser.UserRole;
+            SetFlagsState(model, false);
+            if (model.Id == 0)
+            {
+                model.IsEditable = true;
+                model.IsSaveAvailable = true;
+                //TODO Load this dictionary here because it depend of entity
+                model.Recipients = LoadRecepientsDictionary(currentRole);
+                model.IsSendAvailable = true; 
+                return;
+            }
+            switch (currentRole)
+            {
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsSendAvailable = true;
+                        }
+                    }
+                    if((int)currentRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
+                           (entity.RecipientId == AuthenticationService.CurrentUser.Id || 
+                            entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
+                        {
+                            model.IsWorkBeginAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        {
+                            model.IsAnswerEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.Estimator:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsSendAvailable = true;
+                        }
+                    }
+                    if ((int)currentRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
+                           (entity.RecipientId == AuthenticationService.CurrentUser.Id ||
+                            entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            model.IsWorkBeginAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        {
+                            model.IsAnswerEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                    }
+                    break;
+            }
+            SetRecepientsDictionary(entity,model);
+        }
+        protected void SetFlagsState(EditPersonnelBillingRequestViewModel model, bool state)
+        {
+            model.IsAnswerEditable = state;
+            model.IsEditable = state;
+            model.IsSaveAvailable = state;
+            model.IsSendAvailable = state;
+            model.IsWorkBeginAvailable = state;
+        }
+        public RequestAttachmentsModel GetHelpPersonnelBillingAttachmentsModel(HelpPersonnelBillingRequest entity, RequestAttachmentTypeEnum typeId)
+        {
+            if(entity.Id == 0)
+            {
+                return new RequestAttachmentsModel
+                           {
+                               AttachmentRequestId = 0,
+                               AttachmentRequestTypeId = (int) typeId,
+                               Attachments = new List<RequestAttachmentModel>(),
+                               IsAddAvailable = false
+                           };
+            }
+            bool isAddAvailable = (!entity.SendDate.HasValue && (entity.Creator.Id == CurrentUser.Id)) ||
+                ((entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && (entity.RecipientId == CurrentUser.Id)));
+            List<RequestAttachment> list = RequestAttachmentDao.FindManyByRequestIdAndTypeId(entity.Id, typeId).ToList();
+            RequestAttachmentsModel model = new RequestAttachmentsModel
+            {
+                AttachmentRequestId = entity.Id,
+                AttachmentRequestTypeId = (int)typeId,
+                IsAddAvailable = isAddAvailable,
+                Attachments = new List<RequestAttachmentModel>()
+            };
+            model.Attachments = list.ConvertAll(x =>
+                            new RequestAttachmentModel
+                            {
+                                Attachment = x.FileName,
+                                AttachmentId = x.Id,
+                                Description = x.Description,
+                                IsDeleteAvailable = ((x.CreatorUserRole & CurrentUser.UserRole) > 0) && isAddAvailable,
+                            });
+            return model;
+        }
+        public void ReloadDictionariesToModel(EditPersonnelBillingRequestViewModel model)
+        {
+            LoadDictionaries(model);
+            if(model.Id == 0)
+                model.Recipients = LoadRecepientsDictionary(AuthenticationService.CurrentUser.UserRole);
+            else
+            {
+                HelpPersonnelBillingRequest request = HelpPersonnelBillingRequestDao.Load(model.Id);
+                SetRecepientsDictionary(request,model);
+            }
+        }
+        protected void SetRecepientsDictionary(HelpPersonnelBillingRequest request, EditPersonnelBillingRequestViewModel model)
+        {
+            if (!request.SendDate.HasValue)
+                model.Recipients = LoadRecepientsDictionary(AuthenticationService.CurrentUser.UserRole);
+            else
+            {
+                IdNameDto dto = new IdNameDto();
+                if (model.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager)
+                    dto = new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager, Name = StrAllConsultantOutsorsingManagers };
+                else if (model.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators)
+                    dto = new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllEstimators, Name = StrAllEstimators };
+                else
+                {
+                    User user = UserDao.Get(model.RecipientId);
+                    if (user != null)
+                        dto = new IdNameDto { Id = user.Id, Name = user.FullName };
+                    else
+                        throw new ValidationException(string.Format(StrCannotLoadRecipientForId,model.RecipientId));
+                }
+                model.Recipients = new List<IdNameDto> { dto };
+                model.RecipientId = dto.Id;
+            }
+        }
+
+        public bool SavePersonnelBillingRequestModel(EditPersonnelBillingRequestViewModel model, out string error)
+        {
+            error = string.Empty;
+            //User user = null;
+            HelpPersonnelBillingRequest entity;
+            try
+            {
+
+                IUser current = AuthenticationService.CurrentUser;
+                User currUser = UserDao.Load(current.Id);
+                //user = UserDao.Load(model.UserId);
+                if (model.Id == 0)
+                {
+                    entity = new HelpPersonnelBillingRequest
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = currUser,
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpPersonnelBillingRequest),
+                        EditDate = DateTime.Now,
+                        CreatorRoleId = (int)current.UserRole
+                    };
+                    ChangeEntityProperties(entity, model, currUser, out error);
+                    HelpPersonnelBillingRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                }
+                else
+                {
+                    entity = HelpPersonnelBillingRequestDao.Get(model.Id);
+                    if (entity == null)
+                        throw new ValidationException(string.Format(StrPersonnalBillingRequestNotFound, model.Id));
+                    if (entity.Version != model.Version)
+                    {
+                        error = StrServiceRequestWasChanged;
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    ChangeEntityProperties(entity, model, currUser, out error);
+                    HelpPersonnelBillingRequestDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
+                        HelpPersonnelBillingRequestDao.SaveAndFlush(entity);
+                    }
+                }
+                model.Version = entity.Version;
+                SetFlagsState(entity.Id, currUser, entity, model);
+                SetBillingRequestInfoModel(entity, model);
+                model.AttachmentsModel = GetHelpPersonnelBillingAttachmentsModel(entity, RequestAttachmentTypeEnum.HelpPersonnelBillingRequest);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HelpServiceRequestDao.RollbackTran();
+                Log.Error("Error on SavePersonnelBillingRequestModel:", ex);
+                error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+            finally
+            {
+                //SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(HelpPersonnelBillingRequest entity, EditPersonnelBillingRequestViewModel model, User currUser, out string error)
+        {
+            error = string.Empty;
+            UserRole currRole = AuthenticationService.CurrentUser.UserRole;
+            if (model.IsEditable)
+            {   
+                entity.Department = DepartmentDao.Load(model.DepartmentId);
+                entity.Question = model.Question;
+                entity.RecipientRoleId = currRole == UserRole.Estimator ? (int)UserRole.ConsultantOutsorsingManager : (int)UserRole.Estimator;
+                entity.RecipientId = model.RecipientId;
+                entity.Title = HelpBillingTitleDao.Load(model.TitleId);
+                entity.Urgency = HelpBillingUrgencyDao.Load(model.UrgencyId);
+                entity.UserName = model.UserName;
+            }
+            if (model.IsAnswerEditable)
+                entity.Answer = model.Answer;
+            switch (currRole)
+            {
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (!entity.SendDate.HasValue && model.Operation == 1) // send
+                        {
+                            entity.SendDate = DateTime.Now;
+                        }
+                    }
+                    else if((int)currRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                            (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.RecipientId = currUser.Id;
+                            model.RecipientId = entity.RecipientId;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                        }
+                    }
+                    break;
+                case UserRole.Estimator:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (!entity.SendDate.HasValue && model.Operation == 1) // send
+                        {
+                            entity.SendDate = DateTime.Now;
+                        }
+                    }
+                    else if ((int)currRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                            (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.RecipientId = currUser.Id;
+                            model.RecipientId = entity.RecipientId;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        public RequestAttachmentsModel GetBillingAttachmentsModel(int id,RequestAttachmentTypeEnum type)
+        {
+            switch (type)
+            {
+                case RequestAttachmentTypeEnum.HelpPersonnelBillingRequest:
+                    return GetHelpPersonnelBillingAttachmentsModel(HelpPersonnelBillingRequestDao.Load(id),type);
+                default:
+                    throw new ValidationException(string.Format(StrInvalidAttachmentType,type));
+            }
+        }
         #endregion
     }
 }

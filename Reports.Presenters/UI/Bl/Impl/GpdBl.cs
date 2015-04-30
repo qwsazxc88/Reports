@@ -15,7 +15,6 @@ using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
-
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class GpdBl : BaseBl, IGpdBl
@@ -1041,6 +1040,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Акты
+        private IGpdChargingTypeDao gpdChargingTypeDao;
+        public IGpdChargingTypeDao GpdChargingTypeDao
+        {
+            get { return Validate.Dependency(gpdChargingTypeDao); }
+            set { gpdChargingTypeDao = value; }            
+        }
         public IGpdActDao gpdActDao;
         public IGpdActDao GpdActDao
         {
@@ -1110,7 +1115,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (Id == 0)
                 document = GpdActDao.GetNewAct(role, GCID);
             else //редактирование существующего
-                document = GpdActDao.GetAct(role, Id, false, model.DateBegin, model.DateEnd, 0, null, 0, null, 0, false);
+                document = GpdActDao.GetAct(role, CurrentUser.Id, Id, false, model.DateBegin, model.DateEnd, 0, 0, null, 0, null,"", 0, false);
 
             if (document.Count > 0)
             {
@@ -1399,6 +1404,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetGpdActFind(GpdActListModel model, bool hasError)
         {
             DateTime today = DateTime.Today;
+            model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
             model.Statuses = GpdActDao.GetStatuses();//список статусов
@@ -1411,6 +1417,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetGpdActView(GpdActListModel model, bool hasError)
         {
             UserRole role = CurrentUser.UserRole;
+            model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
             model.Statuses = GpdActDao.GetStatuses();//список статусов
             if (!model.IsFind)
             {
@@ -1419,8 +1426,49 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd = today;
             }
             GetPermission(model);
-            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.ActNumber, model.SortBy, model.SortDescending);
+            model.Documents = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype, model.Surname, model.StatusID, model.ActNumber,model.CardNumber, model.SortBy, model.SortDescending);
             
+        }
+        public void SetGpdAnalyticalStatementView(GpdActListModel model, bool hasError)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
+            model.Statuses = GpdActDao.GetStatuses();//список статусов
+            if (!model.IsFind)
+            {
+                DateTime today = DateTime.Today;
+                model.DateBegin = new DateTime(today.Year, today.Month, 1);
+                model.DateEnd = today;
+            }
+            GetPermission(model);
+            var docs = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype,model.Surname, model.StatusID, model.ActNumber, model.CardNumber, model.SortBy, model.SortDescending);
+            docs = docs.Distinct(model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonIdandCTName())
+                .GroupJoin(docs, o => o, i => i, (p, op) => new GpdActDto{ 
+                    PersonId=p.PersonId,
+                    Surname=p.Surname,
+                    DepLevel3Name = p.DepLevel3Name,
+                    DepLevel7Name = p.DepLevel7Name,
+                    CTName =model.GroupAll && model.CTtype==0 ?"Все виды": p.CTName,
+                    Amount=op.Sum(s=>s.Amount),
+                    Ndfl=op.Sum(s=>s.SendTo1C.HasValue?Math.Round(s.Amount/100*13):0),
+                    AmountPayment=op.Sum(s=>s.SendTo1C.HasValue?s.AmountPayment:0)
+            },
+            model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonIdandCTName()
+            ).ToList();
+            if (model.SortBy == 21)
+            {
+                var ordered = docs.OrderBy(x => (x.Amount - x.AmountPayment - x.Ndfl));
+                if (model.SortDescending) ordered.Reverse();
+                docs = ordered.ToList();
+            }
+            if (model.SortBy == 23)
+            {
+                var ordered = docs.OrderBy(x => x.Ndfl);
+                if (model.SortDescending) ordered.Reverse();
+                docs = ordered.ToList();
+            }
+            model.Documents=docs;
+
         }
         /// <summary>
         /// Добавляем комментарий.

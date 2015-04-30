@@ -46,6 +46,10 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан")]
         public string ServiceAttachment { get; set; }
         public int ServiceAttachmentId { get; set; }
+        [Display(Name="Количество документов")]
+        public int DocumentsCount { get; set; }
+        [Display(Name="GE Money")]
+        public bool IsForGEMoney { get; set; }
         //public bool IsServiceAttachmentVisible { get; set; }
 
         public CommentsModel CommentsModel { get; set; }
@@ -58,6 +62,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsConsultantOutsourcingEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
         public bool IsNotEndWorkAvailable { get; set; }
+        public bool IsNotScanView { get; set; } //не показывать скан, только пустую ссылку
 
         public bool IsUserEmployee { get; set; }
         public int Operation { get; set; }

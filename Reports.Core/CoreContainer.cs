@@ -479,6 +479,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentPersonnelManagersDao)).
                 ImplementedBy(typeof(EmploymentPersonnelManagersDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentCandidateDocNeededDao)).
+                ImplementedBy(typeof(EmploymentCandidateDocNeededDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(ICountryDao)).
                 ImplementedBy(typeof(CountryDao)).
                 LifeStyle.Is(type));
@@ -552,7 +555,18 @@ namespace Reports.Core
             Register(Component.For<IEmploymentSignersDao>()
                 .ImplementedBy<EmploymentSignersDao>()
                 .LifeStyle.Is(type));
-            
+
+
+            Register(Component.For<IHelpBillingTitleDao>()
+                .ImplementedBy<HelpBillingTitleDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IHelpBillingUrgencyDao>()
+                .ImplementedBy<HelpBillingUrgencyDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IHelpPersonnelBillingRequestDao>()
+               .ImplementedBy<HelpPersonnelBillingRequestDao>()
+               .LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)
@@ -566,6 +580,15 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For(typeof(ISurchargeDao))
                 .ImplementedBy<SurchargeDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For(typeof(IDeductionImportDao))
+                .ImplementedBy<DeductionImportDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdChargingTypeDao))
+                .ImplementedBy<GpdChargingTypeDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<INewsDao>()
+                .ImplementedBy<NewsDao>()
                 .LifeStyle.Is(type));
         }
         #endregion

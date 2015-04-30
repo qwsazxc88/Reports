@@ -27,6 +27,9 @@ namespace Reports.Core.Domain
         public virtual User Personnels { get; set; }
         public virtual bool IsTrainingNeeded { get; set; }
         public virtual bool IsBeforEmployment { get; set; }
+        public virtual DateTime? SendTo1C { get; set; }
+        public virtual AppointmentReport AppointmentReport { get; set; }
+        public virtual Appointment Appointment { get; set; }
         //для фиксирования рассылки
         public virtual bool IsCandidateToBackgroundSendEmail { get; set; }
         public virtual DateTime? CandidateToBackgroundSendEmailDate { get; set; }
@@ -38,5 +41,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? ManagerToTrainingSendEmailDate { get; set; }
         public virtual bool IsManagerToHigherManagerSendEmail { get; set; }
         public virtual DateTime? ManagerToHigherManagerSendEmailDate { get; set; }
+        public virtual bool IsPersonnelManagerToManagerSendEmail { get; set; }
+        public virtual DateTime? PersonnelManagerToManagerSendEmailDate { get; set; }
     }
 }

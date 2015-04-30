@@ -47,7 +47,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("AirTicketType", NHibernateUtil.String).
                 AddScalar("TrainTicketType", NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("UserDebt",NHibernateUtil.Single);
+                AddScalar("UserDebt",NHibernateUtil.Single).
+                AddScalar("TabelNumber",NHibernateUtil.String);
         }
 
         #region Constants
@@ -155,7 +156,8 @@ namespace Reports.Core.Dao.Impl
                                 case when v.TrainTicketType = 1 then N'Купе'
                                      when v.TrainTicketType = 2 then N'СВ'
                                      else N'' end as TrainTicketType,
-                                {0}  
+                                {0}  ,
+                                u.Code as TabelNumber
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
@@ -670,8 +672,9 @@ namespace Reports.Core.Dao.Impl
                     else
                     {
                         if (el.DocType != 3 &&  el.Date!= null && el.Date!=DateTime.MinValue) Saldo = Saldo - el.Ordered + el.Reported;
-                        else if (el.Ordered > 0) Saldo = Saldo - el.Ordered;
+                        else if (el.Ordered > 0 && el.Date!=null && el.Date!=DateTime.MinValue) Saldo = Saldo - el.Ordered;
                     }
+                    Saldo = Saldo - el.PurchaseBookAllSum;
                     Saldo =(float) Math.Round(Saldo, 2);
                     el.SaldoEnd = Saldo;
                 }

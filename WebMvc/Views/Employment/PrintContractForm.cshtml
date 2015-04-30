@@ -12,7 +12,7 @@
   <br /><br />
 <P align=center><img src="../../Content/SKB_logo.png" /></P><br /><br />
 
-<P align=center><STRONG>ТРУДОВОЙ ДОГОВОР № @Model.ContractNumber<BR></STRONG><STRONG>г. Кострома
+<P align=center><STRONG>ТРУДОВОЙ ДОГОВОР № @Model.ContractNumber<BR></STRONG><STRONG>г. @Model.City @*Кострома*@
 @for (int i = 0; i < 150; i++) { <text>&nbsp;</text> i += 1;
 }
 </STRONG><STRONG><FONT size=2 face=Arial>&nbsp;@(Model.ContractDate.HasValue ?
@@ -40,17 +40,32 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 *@
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 1)
 {
-    <label>1.5. Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label><br />
+    <label>1.5. Настоящий Договор заключается временно на срок с 
+    @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___") 
+    для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label><br />
 }
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 2)
 {
-    <label>1.5. Договор заключается временно, на период отсутствия основного работника @Model.ContractPointsFio, за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами.</label><br />
+    <label>1.5. Настоящий Договор является срочным и заключается на период отсутствия основного работника @Model.ContractPointsFio, за которым сохраняется место работы.</label><br />
+    <label>Трудовой договор вступает в силу с даты начала работы, указанной в пункте 1.5.1 Договора.</label><br /><text>&nbsp;</text>
+    <label>1.5.1. Дата начала работы @(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToShortDateString() : "____________________")</label><br /><text>&nbsp;</text>
+    <label>1.5.2. Настоящий трудовой договор прекращается с выходом отсутствующего работника на работу.</label><br />
 }
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 3)
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
-Дата начала работы - <b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
+@*
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 11)
+{
+    <label>1.5. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
+}
+*@
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value != 2)
+{
+    <text>Дата начала работы - </text><b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
+}
+
 Если РАБОТНИК не приступил к работе в день начала работы, то РАБОТОДАТЕЛЬ имеет право аннулировать настоящий Договор.<br />
 &nbsp;
 @*1.6. Фактическое место работы РАБОТНИКА: @Model.WorkCity<BR>&nbsp;*@
@@ -130,13 +145,175 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 <STRONG>&nbsp;
 4. УСЛОВИЯ ОПЛАТЫ ТРУДА<BR></STRONG>&nbsp;
 4.1. Оплата труда РАБОТНИКА производится в соответствии с трудовым законодательством и внутренними документами РАБОТОДАТЕЛЯ.<BR>&nbsp;
-4.2. РАБОТОДАТЕЛЬ производит оплату труда РАБОТНИКА в размере, установленным штатным расписанием РАБОТОДАТЕЛЯ.<BR>
-РАБОТНИКУ устанавливается:<BR>&nbsp;- базовый должностной оклад в размере
-@(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.SalaryBasis.Value.ToString(), Html.ConvertNumberSumToText(Model.SalaryBasis.Value)) :
-"___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
-- надбавка территориальная в размере 
-@(Model.AreaAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.AreaAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.AreaAddition.Value)) :
-"___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
+4.2. РАБОТОДАТЕЛЬ производит оплату труда РАБОТНИКА в размере, установленным штатным расписанием РАБОТОДАТЕЛЯ.<BR>&nbsp;
+@if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value == 1)
+{
+    <text>
+    РАБОТНИКУ устанавливается:<BR>&nbsp;&nbsp;- базовый должностной оклад в размере
+    @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.SalaryBasis.Value.ToString(), Html.ConvertNumberSumToText(Model.SalaryBasis.Value)) :
+    "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
+    </text>
+}
+else
+{
+
+    <text>
+    Базовый должностной оклад составляет
+    @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.SalaryBasis.Value.ToString(), Html.ConvertNumberSumToText(Model.SalaryBasis.Value)) :
+    "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
+    РАБОТНИКУ устанавливается - @(Model.SalaryMultiplier.HasValue ? Model.SalaryMultiplier.Value : 0) ставки от базового должностного оклада, что составляет 
+    @(Model.SalaryBasis.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.SalaryBasis.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.SalaryBasis.Value * Model.SalaryMultiplier.Value)) :
+    "___________________________________ (___________________________________________________________________)") в месяц;<BR>&nbsp;
+    </text>    
+}
+
+
+@if (Model.PersonalAddition.HasValue)
+{
+    <text>
+    - надбавка персональная в размере 
+    @(Model.PersonalAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.PersonalAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.PersonalAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)") 
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.PersonalAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.PersonalAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.PersonalAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+
+}
+
+@if (Model.PositionAddition.HasValue)
+{
+    <text>
+    - надбавка должностная в размере 
+    @(Model.PositionAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.PositionAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.PositionAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)") 
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.PositionAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.PositionAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.PositionAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+}
+
+@if (Model.AreaAddition.HasValue)
+{
+    <text>
+    - надбавка территориальная в размере 
+    @(Model.AreaAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.AreaAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.AreaAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)") 
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.AreaAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.AreaAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.AreaAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+}
+
+@if (Model.TravelRelatedAddition.HasValue)
+{
+    <text>
+    - надбавка за разъездной характер работы в размере 
+    @(Model.TravelRelatedAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.TravelRelatedAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.TravelRelatedAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)") 
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.TravelRelatedAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.TravelRelatedAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.TravelRelatedAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+}
+
+@if (Model.CompetenceAddition.HasValue)
+{
+    <text>
+    - надбавка за квалификацию в размере 
+    @(Model.CompetenceAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.CompetenceAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.CompetenceAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)")
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.CompetenceAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.CompetenceAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.CompetenceAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+}
+
+@if (Model.FrontOfficeExperienceAddition.HasValue)
+{
+    <text>
+    - надбавка за стаж работы специалистом фронт-офиса в размере 
+    @(Model.FrontOfficeExperienceAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Model.FrontOfficeExperienceAddition.Value.ToString(), Html.ConvertNumberSumToText(Model.FrontOfficeExperienceAddition.Value)) :
+    "___________________________________ (___________________________________________________________________)") 
+    </text>
+    if (Model.SalaryMultiplier.HasValue && Model.SalaryMultiplier.Value != 1)
+    {
+        <text>
+        в месяц, что составляет, с учетом @Model.SalaryMultiplier.Value ставки 
+        @(Model.FrontOfficeExperienceAddition.HasValue ? string.Format("{0} рублей(-я) ({1})", Convert.ToString(decimal.Round(Model.FrontOfficeExperienceAddition.Value * Model.SalaryMultiplier.Value, 2)), Html.ConvertNumberSumToText(Model.FrontOfficeExperienceAddition.Value * Model.SalaryMultiplier.Value)) :
+        "___________________________________ (___________________________________________________________________)") 
+        <BR>&nbsp;
+
+        </text>
+    }
+    else
+    {
+        <text>в месяц;<BR>&nbsp;</text>
+    }
+}
+
+@if ((Model.NorthernAreaAddition.HasValue && Model.NorthernAreaAddition.Value != 0) || (Model.AreaMultiplier.HasValue && Model.AreaMultiplier.Value != 0))
+{    
+    <text>
+    - РАБОТНИКУ выплачиваются надбавки, компенсации, доплаты в порядке и размерах не ниже установленных трудовым законодательством и иными нормативными правовыми актами, содержащими нормы трудового права.<BR>&nbsp;
+    </text>
+}
+
 4.3. Заработная плата выплачивается Работнику в следующем порядке: - выплата первой части заработной платы за отработанный месяц в размере не менее 75% от окладно-премиальной системы труда – 30 числа отработанного месяца; 
 выплата второй части заработной платы за отработанный месяц, а также оставшейся части причитающихся сумм начислений – 14 числа месяца, следующего за отработанным месяцем.<br /> 
 При совпадении дня выплаты с выходным или нерабочим праздничным днем выплата заработной платы производится накануне этого дня.  
@@ -191,7 +368,19 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 <BR>&nbsp; Право на использование отпуска за первый год работы возникает у РАБОТНИКА по истечении 6 (шести) месяцев его непрерывной работы.<BR>&nbsp;
  По соглашению между РАБОТНИКОМ и РАБОТОДАТЕЛЕМ оплачиваемый отпуск РАБОТНИКУ может быть предоставлен и до истечения 6 (шести) месяцев.<BR>&nbsp;
 5.5. По соглашению между РАБОТНИКОМ и РАБОТОДАТЕЛЕМ ежегодный основной оплачиваемый отпуск может быть разделен на части. При этом хотя бы одна из частей должна быть не менее 14 (четырнадцати) календарных дней.<BR>&nbsp;
-5.6. По согласованию с РАБОТОДАТЕЛЕМ РАБОТНИКУ может предоставляться ежегодный дополнительный оплачиваемый отпуск.<BR>&nbsp;
+
+@if ((Model.NorthernAreaAddition.HasValue && Model.NorthernAreaAddition.Value != 0) || (Model.AreaMultiplier.HasValue && Model.AreaMultiplier.Value != 0))
+{    
+    <text>
+    5.6. В соответствии с действующими федеральными законами работнику может предоставляться ежегодный дополнительный оплачиваемый отпуск.<BR>&nbsp;
+    </text>
+}
+else
+{
+    <text>
+    5.6. По согласованию с РАБОТОДАТЕЛЕМ РАБОТНИКУ может предоставляться ежегодный дополнительный оплачиваемый отпуск.<BR>&nbsp;
+    </text>    
+}
 5.7. По семейным обстоятельствам и другим уважительным причинам РАБОТНИКУ по его письменному заявлению может быть предоставлен отпуск без сохранения заработной платы, продолжительность которого определяется по соглашению между РАБОТНИКОМ и РАБОТОДАТЕЛЕМ.<BR>&nbsp;
 5.8. Оформление отпусков РАБОТНИКУ производится на основании приказов РАБОТОДАТЕЛЯ.<BR>&nbsp;
 @if (Model.ContractPoint_3_Id.HasValue && Model.ContractPoint_3_Id.Value == 7)
@@ -252,7 +441,7 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 <TD><b>@Model.PassportSeriesNumber</b></TD></TR>
 <TR>
 <TD>Выдан:</TD>
-<TD><b>@Model.PassportDateOfIssue.Value.ToShortDateString(), @Model.PassportIssuedBy</b></TD></TR>
+<TD><b>@(Model.PassportDateOfIssue.HasValue ? Model.PassportDateOfIssue.Value.ToShortDateString() : string.Empty), @Model.PassportIssuedBy</b></TD></TR>
 <TR>
 <TD>Адрес регистрации:</TD>
 <TD><b>@Model.EmployeeAddress</b></TD></TR></TBODY></TABLE><BR><br />

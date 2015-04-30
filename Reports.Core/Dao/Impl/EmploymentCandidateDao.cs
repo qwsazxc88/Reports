@@ -101,9 +101,12 @@ namespace Reports.Core.Dao.Impl
                 , Personnel.Name as PersonnelName
                 , case when candidate.IsTrainingNeeded = 0 then 'Не требуется'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 1 and isnull(J.IsFinal, 0) = 1 then 'Пройдено'
-							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Непройдено'
+							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 1 then 'Не пройдено'
 							 when candidate.IsTrainingNeeded = 1 and isnull(J.IsComplete, 0) = 0 and isnull(J.IsFinal, 0) = 0 then 'Проводится' end as Training
                 ,personnelManagers.CompleteDate as CompleteDate
+                ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
+                ,candidate.AppointmentReportId
+                ,candidate.AppointmentId
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
@@ -121,6 +124,12 @@ namespace Reports.Core.Dao.Impl
                 inner join dbo.Department appointmentCreatorDepartment on appointmentCreator.DepartmentId = appointmentCreatorDepartment.Id
                 left join dbo.Users as Personnel ON Personnel.id = candidate.PersonnelId
                 inner join OnsiteTraining as J ON J.Id = candidate.OnsiteTrainingId
+                LEFT JOIN (SELECT A.CandidateId, A.cnt - isnull(B.cnt, 0) as cnt 
+						    FROM (SELECT CandidateId, count(CandidateId) as cnt FROM EmploymentCandidateDocNeeded WHERE IsNeeded = 1 GROUP BY CandidateId) as A
+						    LEFT JOIN (SELECT B.CandidateId, count(B.CandidateId) as cnt
+										FROM RequestAttachment as A
+										INNER JOIN EmploymentCandidateDocNeeded as B ON B.CandidateId = A.RequestId and B.DocTypeId = A.RequestType and B.IsNeeded = 1
+										GROUP BY B.CandidateId) as B ON B.CandidateId = A.CandidateId) as K ON K.CandidateId = candidate.Id
             ";
 
         #endregion
@@ -174,8 +183,25 @@ namespace Reports.Core.Dao.Impl
 
             if ((role & UserRole.Manager) == UserRole.Manager)
             {
-                // кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
-                sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+                //// кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
+                //sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+
+                string IdList = string.Empty;
+                //решили, что показывать кандидата нужно не только руководителю-инициатору, но и его замам. До этого работала строка, закомментаренная выше
+                IList<User> managers = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
+                        .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager)
+                        .ToList<User>();
+                foreach (User mu in managers)
+                {
+                    if (!string.IsNullOrEmpty(mu.Email))
+                    {
+                        //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + "zagryazkin@ruscount.ru";//для теста
+                        IdList += (string.IsNullOrEmpty(IdList) ? "" : ", ") + mu.Id.ToString();//рабочая строка
+                    }
+                }
+
+                sqlQueryPart = string.Format(@" candidate.AppointmentCreatorId in ({0}) ", IdList);
+
                 // кандидаты, которых текущий пользователь может согласовать как вышестоящий руководитель
                 switch (currentUser.Level)
                 {
@@ -378,8 +404,11 @@ namespace Reports.Core.Dao.Impl
                 case 17:
                     orderBy = "CompleteDate";
                     break;
+                case 18:
+                    orderBy = "DocStatus";
+                    break;
                 default:
-                    orderBy = "candidate.Id";
+                    orderBy = "candidate.Id desc";
                     break;
             }
 
@@ -430,6 +459,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("PersonnelName", NHibernateUtil.String)
                 .AddScalar("Training", NHibernateUtil.String)
                 .AddScalar("CompleteDate", NHibernateUtil.DateTime)
+                .AddScalar("DocStatus", NHibernateUtil.String)
+                .AddScalar("AppointmentReportId",NHibernateUtil.Int32)
+                .AddScalar("AppointmentId",NHibernateUtil.Int32)
                 ;
 
             return query;
@@ -491,9 +523,10 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<CandidatePersonnelDto> GetPersonnels()
         {
+            //в запросе исключены Ибрагимова, Рогозина, Тиханова, Чеснова, Букова (осн)
             IQuery query = CreatePersonnelsQuery(@"SELECT 0 as Id, null as Name
                                                    UNION ALL
-                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 
+                                                   SELECT Id, Name FROM Users WHERE Code like N'%K' and IsActive = 1 and Id not in (1002, 998, 991, 1006, 990)
                                                    ORDER BY Name");
             return query.SetResultTransformer(Transformers.AliasToBean<CandidatePersonnelDto>()).List<CandidatePersonnelDto>();
         }
@@ -506,5 +539,29 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
+        /// <summary>
+        /// Список сканов.
+        /// </summary>
+        /// <param name="CandidateID">Id кандидата</param>
+        /// <returns></returns>
+        public IList<AttachmentListDto> GetCandidateAttachmentList(int CandidateID)
+        {
+            IQuery query = CreateAttachmentListQuery("SELECT  ROW_NUMBER() OVER(ORDER BY AttachmentTypeName) as RowNumber, * FROM dbo.fnGetEmploymentAttachmentList(" + CandidateID.ToString() + ")");
+            return query.SetResultTransformer(Transformers.AliasToBean<AttachmentListDto>()).List<AttachmentListDto>();
+        }
+        public virtual IQuery CreateAttachmentListQuery(string sqlQuery)
+        {
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
+                //.AddScalar("Id", NHibernateUtil.Int32)
+                //.AddScalar("AttachmentType", NHibernateUtil.Int32)
+                .AddScalar("RowNumber", NHibernateUtil.Int32)
+                .AddScalar("AttachmentTypeName", NHibernateUtil.String)
+                .AddScalar("AtachmentAvalable", NHibernateUtil.String)
+                ;
+
+            return query;
+        }
+        
+
     }
 }

@@ -45,6 +45,15 @@ namespace WebMvc.Controllers
 
         #region Main Actions
 
+        #region Instruction
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult Instruction()
+        {
+            return View(new InstructionModel());
+        } 
+        #endregion
+
         #region Index
         [HttpGet]
         [ActionName("Index")]
@@ -135,7 +144,7 @@ namespace WebMvc.Controllers
                 Session.Remove("GeneralInfoMS" + SPPath);
             }
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("GeneralInfo", model);
             else
                 return PartialView(model);
@@ -174,7 +183,7 @@ namespace WebMvc.Controllers
 
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
@@ -276,7 +285,7 @@ namespace WebMvc.Controllers
                 Session.Remove("PassportMS" + SPPath);
             }
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("Passport", model);
             else
                 return PartialView(model);
@@ -312,8 +321,8 @@ namespace WebMvc.Controllers
                 ModelStateDictionary mst = ModelState;
                 Session.Add("PassportMS" + SPPath, mst);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=1");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
@@ -355,7 +364,7 @@ namespace WebMvc.Controllers
             }
 
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("Education", model);
             else
                 return PartialView(model);
@@ -399,8 +408,8 @@ namespace WebMvc.Controllers
                 EmploymentBl.DeleteEducationRow(model);
             }
 
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
@@ -441,8 +450,8 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     model.IsEducationCertificationsNotValid = true;
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return View("Education", model);
@@ -493,8 +502,8 @@ namespace WebMvc.Controllers
                     model.IsHigherEducationNotValid = true;
             }
 
-           
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return View("Education", model);
@@ -545,9 +554,9 @@ namespace WebMvc.Controllers
                     model.IsPostGraduateEducationNotValid = true;
             }
 
-            
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return View("Education", model);
@@ -593,8 +602,8 @@ namespace WebMvc.Controllers
                     model.IsEducationTrainingNotValid = true;
             }
 
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=2");
             else
                 return View("Education", model);
@@ -637,7 +646,7 @@ namespace WebMvc.Controllers
             }
 
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("Family", model);
             else
                 return PartialView(model);
@@ -681,8 +690,8 @@ namespace WebMvc.Controllers
                 EmploymentBl.DeleteFamilyMember(model);
                 model = EmploymentBl.GetFamilyModel(model.UserId);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=3");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
@@ -734,7 +743,7 @@ namespace WebMvc.Controllers
                 Session.Remove("MilitaryServiceMS" + SPPath);
             }
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("MilitaryService", model);
             else
                 return PartialView(model);
@@ -770,8 +779,8 @@ namespace WebMvc.Controllers
                 ModelStateDictionary mst = ModelState;
                 Session.Add("MilitaryServiceMS" + SPPath, mst);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=4");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
@@ -812,7 +821,7 @@ namespace WebMvc.Controllers
                 Session.Remove("ExperienceMS" + SPPath);
             }
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("Experience", model);
             else
                 return PartialView(model);
@@ -857,8 +866,8 @@ namespace WebMvc.Controllers
                 ModelStateDictionary mst = ModelState;
                 Session.Add("ExperienceMS" + SPPath, mst);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=5");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
@@ -905,7 +914,7 @@ namespace WebMvc.Controllers
             }
 
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=5");
             else
                 return View("Experience", model);
@@ -947,7 +956,7 @@ namespace WebMvc.Controllers
                 Session.Remove("ContactsMS" + SPPath);
             }
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("Contacts", model);
             else
                 return PartialView(model);
@@ -983,8 +992,8 @@ namespace WebMvc.Controllers
                 ModelStateDictionary mst = ModelState;
                 Session.Add("ContactsMS" + SPPath, mst);
             }
-            
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=6");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
@@ -1026,7 +1035,7 @@ namespace WebMvc.Controllers
             }
 
 
-            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("BackgroundCheck", model);
             else
                 return PartialView(model);
@@ -1093,11 +1102,11 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus)
+        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, out error);
+            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -1312,7 +1321,7 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;
                 //return View(model);
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
             }
             else
             {
@@ -1349,7 +1358,7 @@ namespace WebMvc.Controllers
                 Session.Add("ManagersMS" + SPPath, mst);
             }
 
-            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + userId.ToString() + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
@@ -1378,7 +1387,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
         }
 
         #endregion
@@ -1417,8 +1426,8 @@ namespace WebMvc.Controllers
                 }
                 Session.Remove("PersonnelManagersMS" + SPPath);
                 //затираются значения, потому что в контроллер приходят пустые поля и присваиваются в коде
-                ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
-                ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("EmploymentOrderNumber", new ValueProviderResult(model.EmploymentOrderNumber, model.EmploymentOrderNumber, System.Globalization.CultureInfo.CurrentCulture));
+                //ModelState.SetModelValue("ContractNumber", new ValueProviderResult(model.ContractNumber, model.ContractNumber, System.Globalization.CultureInfo.CurrentCulture));
             }
             
             //model = EmploymentBl.GetPersonnelManagersModel(id);
@@ -1433,29 +1442,38 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
-
-            if (ValidateModel(model))
+            
+            if (model.IsReject)
             {
-                if (model.IsDraftPM)
-                {
-                    EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
-                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                }
-                else
-                {
-                    EmploymentBl.SavePersonnelManagersReport(model, out error);
-                    ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                }
-                model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
-                
+                EmploymentBl.SavePersonnelManagersRejecting(model, out error);
+                ModelState.Clear();
+                ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат отклонен!" : error);
             }
             else
-            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-                model = EmploymentBl.GetPersonnelManagersModel(model);
-                if (Session["PersonnelManagersM" + SPPath] != null)
-                    Session.Remove("PersonnelManagersM" + SPPath);
-                if (Session["PersonnelManagersM" + SPPath] == null)
-                    Session.Add("PersonnelManagersM" + SPPath, model);
+            {
+                if (ValidateModel(model))
+                {
+                    if (model.IsDraftPM)
+                    {
+                        EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                    }
+                    else
+                    {
+                        EmploymentBl.SavePersonnelManagersReport(model, out error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат утвержден! Данные готовы к выгрузке в 1С!" : error);
+                    }
+                    model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
+
+                }
+                else
+                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                    model = EmploymentBl.GetPersonnelManagersModel(model);
+                    if (Session["PersonnelManagersM" + SPPath] != null)
+                        Session.Remove("PersonnelManagersM" + SPPath);
+                    if (Session["PersonnelManagersM" + SPPath] == null)
+                        Session.Add("PersonnelManagersM" + SPPath, model);
+                }
             }
 
 
@@ -1471,7 +1489,7 @@ namespace WebMvc.Controllers
             if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
-                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+                    return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
                 else
                 {
                     ViewBag.Error = error;
@@ -1511,7 +1529,7 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=12");
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=11");
         }
         #endregion
 
@@ -1593,7 +1611,30 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult CandidateDocuments(int? id)
         {
-            var model = EmploymentBl.GetCandidateDocumentsModel(id);
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            CandidateDocumentsModel model = new CandidateDocumentsModel();
+
+            if (Session["CandidateDocumentsM" + SPPath] != null)
+            {
+                model = (CandidateDocumentsModel)Session["CandidateDocumentsM" + SPPath];
+                Session.Remove("CandidateDocumentsM" + SPPath);
+            }
+            else
+                model = EmploymentBl.GetCandidateDocumentsModel(id);
+
+
+
+            if (Session["CandidateDocumentsMS" + SPPath] != null)
+            {
+                ModelState.Clear();
+                for (int i = 0; i < ((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).Count; i++)
+                {
+                    ModelState.Add(((ModelStateDictionary)Session["CandidateDocumentsMS" + SPPath]).ElementAt(i));
+                }
+                Session.Remove("CandidateDocumentsMS" + SPPath);
+            }
+
+
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
                 return View(model);
             else
@@ -1606,17 +1647,70 @@ namespace WebMvc.Controllers
         {
             //, IEnumerable<HttpPostedFileBase> files
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+
+            
+
             if (model.DeleteAttachmentId == 0)
-                EmploymentBl.SaveCandidateDocumentsAttachments(model);
+            {
+                ModelState.Clear();
+                //кадровик не может менять список документов после выгрузки кандидата в 1С
+                if (model.IsSave && model.SendTo1C.HasValue)
+                {
+                    ModelState.AddModelError("SendTo1C", "Кандидат выгружен в 1С! Изменение перечня документов для подписи не возможно!");
+                }
+                else
+                {
+                    if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                    {
+                        model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                        ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
+                    }
+                    else
+                    {
+                        EmploymentBl.SaveCandidateDocumentsAttachments(model);
+                        model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                        ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!");
+                    }
+                }
+
+                if (Session["CandidateDocumentsM" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsM" + SPPath);
+                if (Session["CandidateDocumentsM" + SPPath] == null)
+                    Session.Add("CandidateDocumentsM" + SPPath, model);
+
+                if (Session["CandidateDocumentsMS" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsMS" + SPPath);
+                if (Session["CandidateDocumentsMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("CandidateDocumentsMS" + SPPath, mst);
+                }
+            }
             else
             {
-                DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
-                EmploymentBl.DeleteAttachment(modelDel);
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                {
+                    ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
+                    model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                    if (Session["CandidateDocumentsMS" + SPPath] != null)
+                        Session.Remove("CandidateDocumentsMS" + SPPath);
+                    if (Session["CandidateDocumentsMS" + SPPath] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("CandidateDocumentsMS" + SPPath, mst);
+                    }
+                }
+                else
+                {
+                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    EmploymentBl.DeleteAttachment(modelDel);
+                    model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                }
             }
-            model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
 
             if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=10");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
             else
                 return View(model);
         }
@@ -1873,8 +1967,34 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ManagersModel model)
         {
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+            {
+                ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
+            }
+
             if (model.PositionId == 0)
                 ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
+
+            if (!model.SalaryMultiplier.HasValue)
+                ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
+            if (!model.SalaryMultiplier.HasValue)
+                ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");
+            else
+            {
+                if (model.SalaryMultiplier.Value == 0)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
+                if (model.SalaryMultiplier.Value > 1)
+                    ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
+            }
+
+            
+            if (!model.SendTo1C.HasValue)
+            {
+                if (!model.RegistrationDate.HasValue)
+                    ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
+                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
+                    ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+            }
             return ModelState.IsValid;
         }
 
@@ -1882,12 +2002,18 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(PersonnelManagersModel model)
         {
             bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            model.IsFixedTermContract = isFixedTermContract;
             bool flgError = false;
 
-            if (model.ContractEndDate == null && isFixedTermContract)
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+            {
+                ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
+            }
+
+            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value == 1)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
-                ModelState.AddModelError("MessageStr", "*");
+                ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
                 flgError = true;
             }
             if (model.ContractEndDate != null && !isFixedTermContract)
@@ -1917,8 +2043,80 @@ namespace WebMvc.Controllers
                 }
             }
 
+
+            if (!model.IsHourlySalaryBasis && model.ScheduleId != 48)
+            {
+                ModelState.AddModelError("ScheduleId", "Для оклада по дням доступен только основной график работы!");
+                ModelState.AddModelError("MessageStr", "Для оклада по дням доступен только основной график работы!");
+                flgError = true;
+            }
+
+            if (model.IsHourlySalaryBasis && model.ScheduleId == 48)
+            {
+                ModelState.AddModelError("ScheduleId", "Для оклада по часам основной график работы не доступен!");
+                ModelState.AddModelError("MessageStr", "Для оклада по часам основной график работы не доступен!");
+                flgError = true;
+            }
+
+            if (!model.SendTo1C.HasValue)
+            {
+                //на время теста разрешили не раньше 1 апреля
+                //if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < DateTime.Today)
+                if (model.EmploymentDate.HasValue && model.EmploymentDate.Value < Convert.ToDateTime("01/04/2015"))
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше текущей даты!");
+                    flgError = true;
+                }
+
+                //if (model.ContractDate.HasValue && model.ContractDate.Value < DateTime.Today)
+                if (model.ContractDate.HasValue && model.ContractDate.Value < Convert.ToDateTime("01/04/2015"))//на время теста
+                {
+                    ModelState.AddModelError("EmploymentDate", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    ModelState.AddModelError("MessageStr", "Дата приказа принятия на работу и дата ТД не должна быть меньше текущей даты!");
+                    flgError = true;
+                }
+
+                if (model.ContractDate.HasValue && model.EmploymentDate.HasValue)
+                {
+                    if (model.ContractDate.Value > model.EmploymentDate.Value)
+                    {
+                        ModelState.AddModelError("EmploymentDate", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата принятия на работу не должна быть меньше даты приказа принятия на работу и даты ТД!");
+                        flgError = true;
+                    }
+                }
+
+                if (model.ContractEndDate.HasValue)
+                {
+                    if (model.ContractEndDate.Value < model.ContractDate.Value)
+                    {
+                        ModelState.AddModelError("ContractEndDate", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
+                        ModelState.AddModelError("MessageStr", "Дата окончания ТД не должна быть меньше, чем дата ТД!");
+                    }
+                }
+            }
+
+
+            if (model.NorthExperienceType == 3)
+            {
+                if (model.NorthExperienceYears == 0 && model.NorthExperienceMonths == 0 && model.NorthExperienceDays == 0)
+                {
+                    ModelState.AddModelError("NorthExperienceYears", "*");
+                    ModelState.AddModelError("NorthExperienceMonths", "*");
+                    ModelState.AddModelError("NorthExperienceDays", "*");
+                    ModelState.AddModelError("MessageStr", "Введите северный стаж!");
+                }
+
+                if (!model.NorthernAreaAddition.HasValue)
+                {
+                    ModelState.AddModelError("NorthernAreaAddition", "*");
+                    ModelState.AddModelError("MessageStr", "Укажите северную надбавку!");
+                }
+            }
             
-            if (!ModelState.IsValid && !flgError)
+
+            if (!ModelState.IsValid && flgError)
                 ModelState.AddModelError("MessageStr", "Проверьте правильность заполнени полей!");
             //if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
             //{
@@ -2030,6 +2228,48 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintRegisterPersonalRecord(int userId)
+        {
+            return GetPrintForm("PrintRegisterPersonalRecord", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionOfSecret(int userId)
+        {
+            return GetPrintForm("PrintInstructionOfSecret", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintInstructionEnsuringSafety(int userId)
+        {
+            return GetPrintForm("PrintInstructionEnsuringSafety", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintAgreePersonForChecking(int userId)
+        {
+            return GetPrintForm("PrintAgreePersonForChecking", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition1(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition1", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintCashWorkAddition2(int userId)
+        {
+            return GetPrintForm("PrintCashWorkAddition2", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintObligationTradeSecret(int userId)
+        {
+            return GetPrintForm("PrintObligationTradeSecret", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
@@ -2085,6 +2325,55 @@ namespace WebMvc.Controllers
         public ActionResult PrintEmploymentFile(int userId)
         {
             PrintEmploymentFileModel model = EmploymentBl.GetPrintEmploymentFileModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintRegisterPersonalRecord(int userId)
+        {
+            PrintRegisterPersonalRecordModel model = EmploymentBl.GetPrintRegisterPersonalRecordModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionOfSecret(int userId)
+        {
+            PrintInstructionOfSecretModel model = EmploymentBl.GetPrintInstructionOfSecretModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintInstructionEnsuringSafety(int userId)
+        {
+            PrintInstructionEnsuringSafetyModel model = EmploymentBl.GetPrintInstructionEnsuringSafetyModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintAgreePersonForChecking(int userId)
+        {
+            PrintAgreePersonForCheckingModel model = EmploymentBl.GetPrintAgreePersonForCheckingModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition1(int userId)
+        {
+            PrintCashWorkAddition1Model model = EmploymentBl.GetPrintCashWorkAddition1Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintCashWorkAddition2(int userId)
+        {
+            PrintCashWorkAddition2Model model = EmploymentBl.GetPrintCashWorkAddition2Model(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintObligationTradeSecret(int userId)
+        {
+            PrintObligationTradeSecretModel model = EmploymentBl.GetPrintObligationTradeSecretModel(userId);
             return View(model);
         }
 

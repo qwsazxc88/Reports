@@ -20,12 +20,13 @@ namespace Reports.Core.Dao
 	                                MAX(U.Name) AS Name,
 	                                (SELECT SUM(Ordered) FROM [dbo].[vwAnalyticalStatement] WHERE UserId=U.Id AND [Date]<:DateStart ) AS OrderedBefore,
 	                                (SELECT SUM(Reported-PurchaseBookAllSum) FROM [dbo].[vwAnalyticalStatement] WHERE [Date] is not null AND UserId=U.Id AND [Date]<:DateStart) As ReportedBefore,
-	                                SUM(MO.Ordered) AS Ordered,
-	                                SUM(MO.Reported) AS Reported,
-                                    SUM(MO.PurchaseBookAllSum) as PurchaseBookAllSum,
+	                                SUM(CASE when [DATE]>=:DateStart  then MO.Ordered else 0 end) AS Ordered,
+	                                SUM(CASE when [DATE]>=:DateStart  then MO.Reported else 0 end) AS Reported,
+                                    SUM(CASE when [DATE]>=:DateStart  then MO.PurchaseBookAllSum else 0 end) as PurchaseBookAllSum,
                                     MAX(dep.Name) as Dep7Name,
                                     MAX(dep3.Name) as Dep3Name, 
-                                    MAX(up.Name) as Position
+                                    MAX(up.Name) as Position,
+                                    MAX(U.Code) as TabelNumber
                                 FROM [dbo].[vwAnalyticalStatement] MO
                                 INNER JOIN [dbo].[Users] U ON U.Id = MO.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id                                
@@ -59,7 +60,8 @@ namespace Reports.Core.Dao
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("Position", NHibernateUtil.String).
-                AddScalar("PurchaseBookAllSum", NHibernateUtil.Single)
+                AddScalar("PurchaseBookAllSum", NHibernateUtil.Single).
+                AddScalar("TabelNumber",NHibernateUtil.String)
                 ;
         }
         public IList<AnalyticalStatementDto> GetDocuments(
@@ -85,11 +87,6 @@ namespace Reports.Core.Dao
 
             AddToWhere = GetWhereForUserRole(role, userId, ref query);
             
-            if (beginDate != null)
-            {
-                if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " MO.Date>= :DateStart";
-            }
             if (endDate != null)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
@@ -98,7 +95,12 @@ namespace Reports.Core.Dao
             if (departmentId > 0)
             {
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
-                AddToWhere += " U.DepartmentId="+departmentId;
+                AddToWhere +=  string.Format(@" exists 
+                    (select d1.ID from dbo.Department d
+                     inner join dbo.Department d1 on d1.Path like d.Path +'%'
+                     and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
+                     and d.Id = {0}) "
+                    , departmentId);
             }
             if (!string.IsNullOrWhiteSpace(userName))
             {
@@ -110,6 +112,7 @@ namespace Reports.Core.Dao
                 if (!String.IsNullOrWhiteSpace(AddToWhere)) AddToWhere += " AND";
                 AddToWhere += " U.Id='" + number + "'";
             }
+            if (String.IsNullOrWhiteSpace(AddToWhere)) whereString = "";
             IQuery SqlQuery = CreateQuery(query+whereString+AddToWhere+groupByString);
             if (query.Contains(sqlCurrentUserJoin)) SqlQuery.SetInt32("userId", userId);
             if (beginDate.HasValue) SqlQuery.SetDateTime("DateStart", beginDate.Value);

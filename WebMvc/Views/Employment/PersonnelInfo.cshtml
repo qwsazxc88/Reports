@@ -41,7 +41,7 @@
 
             @if (Model.IsCandidateInfoAvailable && ((dto.UserRole & UserRole.Security) == 0))
             {
-                <li><a href="#tabs10">Заявление о приеме</a></li>
+                @*<li><a href="#tabs10">Заявление о приеме</a></li>*@
                 <li><a href="#tabs13">Документы</a></li>
             }
             @if (Model.IsManagersAvailable)
@@ -81,7 +81,7 @@
             
         </div>
         <div id="tabs9"></div>
-        <div id="tabs10"></div>
+        @*<div id="tabs10"></div>*@
         <div id="tabs13"></div>
         <div id="tabs11"></div>
         <div id="tabs12"></div>
@@ -202,6 +202,7 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
+            //$("#Variant111").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
         }
         else if (TypeId == 2){
@@ -214,6 +215,22 @@
             $("#Variant39").hide();
             $("#Variant310").hide();
             $("#Variant3" + $("#ContractPoint_3_Id").val().toString()).show();
+        }
+    }
+
+    function NorthExperienceTypesChange(Id) {
+        if (Id == 3) {
+            $("#divNAA").show();
+            $("#divNEY").show();
+            $("#divNEM").show();
+            $("#divNED").show();
+        }
+        else {
+        
+            $("#divNAA").hide();
+            $("#divNEY").hide();
+            $("#divNEM").hide();
+            $("#divNED").hide();
         }
     }
 
@@ -1074,12 +1091,24 @@
                         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
                         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
                         $('#isHourlySalaryBasisContainer').buttonset();
+
+                        $("#NorthExperienceType").change(function(){
+                            NorthExperienceTypesChange($("#NorthExperienceType").val());
+                        });
+
+
+                        NorthExperienceTypesChange($("#NorthExperienceType").val());
                         ContractPointChange(1);
                         ContractPointChange(2);
                         ContractPointChange(3);
+                        
 
                         $("#btnPMDraft").click(function(){
                             $("#IsDraftPM").val(true);
+                        });
+
+                        $("#btnReject").click(function (){
+                            $("#IsReject").val(true);
                         });
 
                         //подкрашиваем оклад
@@ -1145,63 +1174,116 @@
                     AjaxFormRequest("tabs13", "CandidateDocuments", "/Employment/CandidateDocuments?Id=@Model.CandidateID", "GET");
                     //после окончания выполнения запроса цепляем календари и обработчики
                     $("#tabs13").ajaxStop(function () {
-                                                $("#EmploymentContractFile").change(function () { this.form.submit(); });
-                                                $("#OrderOnReceptionFile").change(function () { this.form.submit(); });
-                                                $("#T2File").change(function () { this.form.submit(); });
-                                                $("#ContractMatResponsibleFile").change(function () { this.form.submit(); });
-                                                $("#PersonalDataFile").change(function () { this.form.submit(); });
-                                                $("#DataObligationFile").change(function () { this.form.submit(); });
-                                                $("#EmploymentFile").change(function () { this.form.submit(); });
-                                                $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
+                        $("#ApplicationLetterScanFile").change(function () { this.form.submit(); });
+                        $("#EmploymentContractFile").change(function () { this.form.submit(); });
+                        $("#OrderOnReceptionFile").change(function () { this.form.submit(); });
+                        $("#T2File").change(function () { this.form.submit(); });
+                        $("#ContractMatResponsibleFile").change(function () { this.form.submit(); });
+                        $("#PersonalDataFile").change(function () { this.form.submit(); });
+                        $("#DataObligationFile").change(function () { this.form.submit(); });
+                        $("#EmploymentFile").change(function () { this.form.submit(); });
+                        $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
+                        $("#InstructionOfSecretFile").change(function () { this.form.submit(); });
+                        $("#InstructionEnsuringSafetyFile").change(function () { this.form.submit(); });
+                        $("#AgreePersonForCheckingFile").change(function () { this.form.submit(); });
+                        $("#CashWorkAddition1File").change(function () { this.form.submit(); });
+                        $("#CashWorkAddition2File").change(function () { this.form.submit(); });
+                        $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
 
-                                                $("#btnDelete1").click(function () {
-                                                    var Id = $("#EmploymentContractFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnSaveDocNeeded").click(function () {
+                            $("#IsSave").val(true);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete2").click(function () {
-                                                    var Id = $("#OrderOnReceptionFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete1").click(function () {
+                            var Id = $("#EmploymentContractFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete3").click(function () {
-                                                    var Id = $("#T2FileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete2").click(function () {
+                            var Id = $("#OrderOnReceptionFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete4").click(function () {
-                                                    var Id = $("#ContractMatResponsibleFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete3").click(function () {
+                            var Id = $("#T2FileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete5").click(function () {
-                                                    var Id = $("#PersonalDataFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete4").click(function () {
+                            var Id = $("#ContractMatResponsibleFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete6").click(function () {
-                                                    var Id = $("#DataObligationFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete5").click(function () {
+                            var Id = $("#PersonalDataFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete7").click(function () {
-                                                    var Id = $("#EmploymentFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
+                        $("#btnDelete6").click(function () {
+                            var Id = $("#DataObligationFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
 
-                                                $("#btnDelete8").click(function () {
-                                                    var Id = $("#RegisterPersonalRecordFileId").val();
-                                                    $("#DeleteAttachmentId").val(Id);
-                                                    this.form.submit();
-                                                });
-                                         });
+                        $("#btnDelete7").click(function () {
+                            var Id = $("#EmploymentFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete8").click(function () {
+                            var Id = $("#RegisterPersonalRecordFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete9").click(function () {
+                            var Id = $("#InstructionOfSecretFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete10").click(function () {
+                            var Id = $("#InstructionEnsuringSafetyFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete11").click(function () {
+                            var Id = $("#AgreePersonForCheckingFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete12").click(function () {
+                            var Id = $("#CashWorkAddition1FileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete13").click(function () {
+                            var Id = $("#CashWorkAddition2FileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+
+                        $("#btnDelete14").click(function () {
+                            var Id = $("#ObligationTradeSecretFileId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+                        $("#btnDelete15").click(function () {
+                            var Id = $("#ApplicationLetterScanAttachmentId").val();
+                            $("#DeleteAttachmentId").val(Id);
+                            this.form.submit();
+                        });
+                    });
                 }
             }
         });

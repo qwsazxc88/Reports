@@ -3,6 +3,7 @@ USE WebAppSKB
 GO
 --структура базы данных раздела "ПРИЕМ"
 --EmploymentCandidate
+	--EmploymentCandidateDocNeeded
 	--GeneralInfo
 		--NameChange
 		--Country	 (есть данные) (убрать Франция, Израиль, Туркменистан, Узбекистан)
@@ -108,6 +109,14 @@ GO
 			[ContractPointsAddress] [nvarchar](150) NULL,
 			[ScheduleId] [int] NULL,
 			[CompleteDate] [datetime] NULL,
+			[PersonalAddition] [decimal](19, 2) NULL,
+			[PositionAddition] [decimal](19, 2) NULL,
+			[RejectDate] [datetime] NULL,
+			[RejectUserId] [int] NULL,
+			[NorthExperienceYears] [int] NULL,
+			[NorthExperienceMonths] [int] NULL,
+			[NorthExperienceDays] [int] NULL,
+			[NorthExperienceType] [int] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -232,8 +241,6 @@ GO
 			[EmploymentConditions] [nvarchar](250) NULL,
 			[ProbationaryPeriod] [nvarchar](50) NULL,
 			[WorkCity] [nvarchar](100) NULL,
-			[PersonalAddition] [decimal](19, 2) NULL,
-			[PositionAddition] [decimal](19, 2) NULL,
 			[IsFront] [bit] NOT NULL,
 			[Bonus] [decimal](19, 2) NULL,
 			[IsLiable] [bit] NOT NULL,
@@ -362,6 +369,7 @@ GO
 			[IsFinal] [bit] NOT NULL CONSTRAINT [DF__Backgroun__IsFin__39794BAC]  DEFAULT ((0)),
 			[IsApprovalSkipped] [bit] NOT NULL CONSTRAINT [DF_BackgroundCheck_IsApprovalSkipped]  DEFAULT ((0)),
 			[IsValidate] [bit] NULL CONSTRAINT [DF_BackgroundCheck_IsValidate]  DEFAULT ((0)),
+			[PyrusRef] [nvarchar](150) NULL,
 		 CONSTRAINT [PK_BackgroundCheck] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -989,7 +997,28 @@ GO
 
 		GO
 	--ОСНОВНАЯ ИНФОРМАЦИЯ - КОНЕЦ
+	--ДОКУМЕНТ ДЛЯ ПРИЕМА - НАЧАЛО
+		IF OBJECT_ID ('EmploymentCandidateDocNeeded', 'U') IS NOT NULL
+		DROP TABLE [dbo].[EmploymentCandidateDocNeeded]
+		GO
+	--ДОКУМЕНТ ДЛЯ ПРИЕМА - КОНЕЦ
+		CREATE TABLE [dbo].[EmploymentCandidateDocNeeded](
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[Version] [int] NOT NULL CONSTRAINT [DF_EmploymentCandidateDocNeeded_Version]  DEFAULT ((1)),
+		[CandidateId] [int] NULL,
+		[DocTypeId] [int] NULL,
+		[IsNeeded] [bit] NULL CONSTRAINT [DF_EmploymentCandidateDocNeeded_IsNeeded]  DEFAULT ((0)),
+		[DateCreate] [datetime] NULL,
+		[CreatorId] [int] NULL,
+		[DateEdit] [datetime] NULL,
+		[EditorId] [int] NULL,
+	 CONSTRAINT [PK_EmploymentCandidateDocNeeded] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
 
+	GO
 	--КАНДИДАТ
 		IF OBJECT_ID ('EmploymentCandidate', 'U') IS NOT NULL
 		DROP TABLE [dbo].[EmploymentCandidate]
@@ -1028,6 +1057,8 @@ GO
 			[ManagerToTrainingSendEmailDate] [datetime] NULL,
 			[IsManagerToHigherManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsManagerToHigherManagerSendEmail]  DEFAULT ((0)),
 			[ManagerToHigherManagerSendEmailDate] [datetime] NULL,
+			[IsPersonnelManagerToManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsPersonnelManagerToManagerSendEmail]  DEFAULT ((0)),
+			[PersonnelManagerToManagerSendEmailDate] [datetime] NULL,
 		 CONSTRAINT [PK_EmploymentCandidate] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1060,6 +1091,34 @@ GO
 
 	
 --ССЫЛКИ НАЧАЛО
+	ALTER TABLE [dbo].[PersonnelManagers]  WITH CHECK ADD  CONSTRAINT [FK_PersonnelManagers_Users] FOREIGN KEY([RejectUserId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[PersonnelManagers] CHECK CONSTRAINT [FK_PersonnelManagers_Users]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate] FOREIGN KEY([CandidateId])
+	REFERENCES [dbo].[EmploymentCandidate] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_EmploymentCandidate]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users] FOREIGN KEY([CreatorId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users1] FOREIGN KEY([EditorId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidateDocNeeded] CHECK CONSTRAINT [FK_EmploymentCandidateDocNeeded_Users1]
+	GO
+
 	ALTER TABLE [dbo].[EmploymentCandidateComments]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidateComments_Users] FOREIGN KEY([UserId])
 	REFERENCES [dbo].[Users] ([Id])
 	GO
@@ -1482,6 +1541,63 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Год севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceYears'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Месяц севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceMonths'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'День севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceDays'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип северного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceType'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата отклонения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'RejectDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника, который провел отклонение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'RejectUserId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ссылка на задачу в системе Pyrus' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'BackgroundCheck', @level2type=N'COLUMN',@level2name=N'PyrusRef'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сообщение руководству от кадровика послано' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsPersonnelManagerToManagerSendEmail'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата сообщения руководству от кадровика' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'PersonnelManagerToManagerSendEmailDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'Id'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'Version'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id кандидата' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'CandidateId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DocTypeId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Документ нужен для подписи кандидатом' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'IsNeeded'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DateCreate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'CreatorId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'DateEdit'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded', @level2type=N'COLUMN',@level2name=N'EditorId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Список необходимых документов для подписи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidateDocNeeded'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата готовности кандидата к выгрузке в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'CompleteDate'
 	GO
 
@@ -1762,7 +1878,7 @@ GO
 
 
 
-	IF OBJECT_ID ('vwEmploymentFillState', 'V') IS NOT NULL
+IF OBJECT_ID ('vwEmploymentFillState', 'V') IS NOT NULL
 	DROP VIEW [dbo].[vwEmploymentFillState]
 GO
 
@@ -1779,7 +1895,7 @@ UNION ALL
 SELECT A.Id, B.IsFinal as GeneralFinal, C.IsFinal as PassportFinal, D.IsFinal as EducationFinal, E.IsFinal as FamilyFinal, F.IsFinal as MilitaryFinal, G.IsFinal as ExperienceFinal,
 			 H.IsFinal as ContactFinal, I.IsFinal as BackgroundFinal, 
 			 --cast(case when L.cnt = 8 then 1 else 0 end as bit) as CandidateApp,
-			 cast(case when L.cnt >= 1 then 1 else 0 end as bit) as CandidateApp,
+			 cast(case when L.cnt is null or (isnull(L.cnt, 0) <> 0)  then 0 else 1 end as bit) as CandidateApp,
 			 --кандидат полностью заполнил анкету
 			 cast(case when B.IsFinal = 1 and C.IsFinal = 1 and D.IsFinal = 1 and E.IsFinal = 1 and F.IsFinal = 1 and G.IsFinal = 1 and H.IsFinal = 1 and I.IsFinal = 1 then 1 else 0 end as bit) as CandidateReady,
 			 --согласование
@@ -1796,12 +1912,35 @@ INNER JOIN Contacts as H ON H.Id = A.ContactsId
 INNER JOIN BackgroundCheck as I ON I.Id = A.BackgroundCheckId
 INNER JOIN OnsiteTraining as J ON J.Id = A.OnsiteTrainingId
 INNER JOIN Managers as K ON K.Id = A.ManagersId
-LEFT JOIN (SELECT RequestId, count(RequestId) as cnt 
-					 FROM RequestAttachment 
-					 WHERE RequestType = 271--in (272, 273, 274, 275, 276, 277, 278, 279) 
-					 GROUP BY RequestId) as L ON L.RequestId = A.Id
+LEFT JOIN (SELECT A.CandidateId, A.cnt - isnull(B.cnt, 0) as cnt 
+					FROM (SELECT CandidateId, count(CandidateId) as cnt FROM EmploymentCandidateDocNeeded WHERE IsNeeded = 1 GROUP BY CandidateId) as A
+					LEFT JOIN (SELECT B.CandidateId, count(B.CandidateId) as cnt
+										FROM RequestAttachment as A
+										INNER JOIN EmploymentCandidateDocNeeded as B ON B.CandidateId = A.RequestId and B.DocTypeId = A.RequestType and B.IsNeeded = 1
+										GROUP BY B.CandidateId) as B ON B.CandidateId = A.CandidateId) as L ON L.CandidateId = A.Id	
 
 GO
+
+
+IF OBJECT_ID ('vwEmploymentPositions', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwEmploymentPositions]
+GO
+
+
+
+--достаем комментарии к разделам приема
+CREATE VIEW [dbo].[vwEmploymentPositions]
+AS
+SELECT Id, Name + case when IsMarkedToRemoval = 1 then ' (не использовать)' else '' end as Name
+FROM dbo.Position
+
+
+
+GO
+
+
+
+
 --ПРЕДСТАВЛЕНИЯ КОНЕЦ
 
 --ПЕРВИЧНЫЕ ДАННЫЕ ДЛЯ СПРАВОЧНИКОВ - НАЧАЛО
@@ -2072,3 +2211,384 @@ GO
 		INSERT INTO Signer(Version, Name, PreamblePartyTemplate,Position)
 		VALUES (1, N'Милованова Елена Николаевна', N'специалиста управления кадрового делопроизводства и учета ПАО "СОВКОМБАНК" Миловановой Елены Николаевны, действующей на основании Доверенности № 8 от 15.01.2015 г.', N'Специалист управления кадрового делопроизводства и учета ПАО "СОВКОМБАНК"')
 --ПЕРВИЧНЫЕ ДАННЫЕ ДЛЯ СПРАВОЧНИКОВ - КОНЕЦ
+--ФУНКЦИИ НАЧАЛО
+IF OBJECT_ID ('fnGetEmploymentAttachmentList', 'TF') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetEmploymentAttachmentList]
+GO
+
+
+
+CREATE FUNCTION [dbo].[fnGetEmploymentAttachmentList]
+(
+	@CandidateId int
+)
+RETURNS 
+@ReturnTable TABLE 
+(
+	AttachmentTypeName nvarchar(150),
+	AtachmentAvalable nvarchar(10)
+)
+AS
+BEGIN
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 201 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Фото кандидата', 'да' FROM RequestAttachment WHERE RequestType = 201 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Фото кандидата', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 202 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан ИНН', 'да' FROM RequestAttachment WHERE RequestType = 202 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан ИНН', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 203 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан СНИЛС', 'да' FROM RequestAttachment WHERE RequestType = 203 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан СНИЛС', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 204 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки об инвалидности', 'да' FROM RequestAttachment WHERE RequestType = 204 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки об инвалидности', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 211 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан паспорта', 'да' FROM RequestAttachment WHERE RequestType = 211 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан паспорта', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 221 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа об образовании', 'да' FROM RequestAttachment WHERE RequestType = 221 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа об образовании', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 222 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о послевузовском образовании', 'да' FROM RequestAttachment WHERE RequestType = 222 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о послевузовском образовании', 'нет' 
+	END
+
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 223 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о дополнительном образовании', 'да' FROM RequestAttachment WHERE RequestType = 223 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о дополнительном образовании', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 224 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о повышении квалификации', 'да' FROM RequestAttachment WHERE RequestType = 224 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан документа о повышении квалификации', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 231 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан свидетельства о браке', 'да' FROM RequestAttachment WHERE RequestType = 231 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан свидетельства о браке', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 232 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан свидетельств о рождении детей', 'да' FROM RequestAttachment WHERE RequestType = 232 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан свидетельств о рождении детей', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 241 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан военного билета', 'да' FROM RequestAttachment WHERE RequestType = 241 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан военного билета', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 242 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан мобилизационного талона', 'да' FROM RequestAttachment WHERE RequestType = 242 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан мобилизационного талона', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 251 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан трудовой книжки', 'да' FROM RequestAttachment WHERE RequestType = 251 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан трудовой книжки', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 252 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан вкладыша в трудовую книжку', 'да' FROM RequestAttachment WHERE RequestType = 252 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан вкладыша в трудовую книжку', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 261 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан рукописного текста согласия на обработку персональных данных', 'да' FROM RequestAttachment WHERE RequestType = 261 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан рукописного текста согласия на обработку персональных данных', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 262 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан рукописного текста о достоверности сведений', 'да' FROM RequestAttachment WHERE RequestType = 262 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан рукописного текста о достоверности сведений', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 271 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан заявления о приеме на работу', 'да' FROM RequestAttachment WHERE RequestType = 271 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан заявления о приеме на работу', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 272 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан трудового договора', 'да' FROM RequestAttachment WHERE RequestType = 272 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан трудового договора', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 273 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан приказа о приеме', 'да' FROM RequestAttachment WHERE RequestType = 273 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан приказа о приеме', 'нет' 
+	END
+	/*
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 274 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан Т2', 'да' FROM RequestAttachment WHERE RequestType = 274 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан Т2', 'нет' 
+	END
+	*/
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 275 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан договора о материальной ответственности', 'да' FROM RequestAttachment WHERE RequestType = 275 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан договора о материальной ответственности', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 276 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан ДС персональные данные', 'да' FROM RequestAttachment WHERE RequestType = 276 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан ДС персональные данные', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 277 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан обязательства конфеденциальности', 'да' FROM RequestAttachment WHERE RequestType = 277 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан обязательства конфеденциальности', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 278 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан листка по учету кадров', 'да' FROM RequestAttachment WHERE RequestType = 278 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан листка по учету кадров', 'нет' 
+	END
+	/*
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 279 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан реестра личного дела', 'да' FROM RequestAttachment WHERE RequestType = 279 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан реестра личного дела', 'нет' 
+	END
+	*/
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 280 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан памятки сотруднику о сохранении коммерческой, банковской и служебной тайны', 'да' FROM RequestAttachment WHERE RequestType = 280 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан памятки сотруднику о сохранении коммерческой, банковской и служебной тайны', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 281 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан инструкции по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну', 'да' FROM RequestAttachment WHERE RequestType = 281 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан инструкции по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 282 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан согласия физического лица на проверку персональных данных (Приложение №3)', 'да' FROM RequestAttachment WHERE RequestType = 282 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан согласия физического лица на проверку персональных данных (Приложение №3)', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 283 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан порядка по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)', 'да' FROM RequestAttachment WHERE RequestType = 283 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан порядка по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 284 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан порядка по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)', 'да' FROM RequestAttachment WHERE RequestType = 284 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан порядка по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)', 'нет' 
+	END
+	
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 285 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан обязательства о неразглашении коммерческой и служебной тайны', 'да' FROM RequestAttachment WHERE RequestType = 285 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан обязательства о неразглашении коммерческой и служебной тайны', 'нет' 
+	END
+	
+--select * from dbo.fnGetEmploymentAttachmentList(36) order by AttachmentTypeName
+
+	RETURN 
+END
+
+GO
+--ФУНКЦИИ КОНЕЦ

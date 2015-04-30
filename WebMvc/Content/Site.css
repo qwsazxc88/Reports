@@ -279,6 +279,7 @@ table.grid
   border: 1px solid Black;
   border-collapse: collapse;
   color:Black;
+  width:100%;
 }
 
 table.grid > tbody > tr:nth-of-type(odd) {
@@ -346,14 +347,27 @@ table.buttonTable
   width:100%;
 }
 
+table.buttonTable th 
+{
+  border: 1px solid Silver;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align:center;
+  /*
+  height:100%;
+  width:12%;*/
+}
+
 table.buttonTable td 
 {
   border: 1px solid Silver;
   padding-left: 5px;
   padding-right: 5px;
+  /*
   height:100%;
-  width:12%;
+  width:12%;*/
 }
+
 
 button.PrintButton
 {
@@ -1021,3 +1035,29 @@ a.list-group-item-danger.active:focus {
   margin-bottom: 0;
   line-height: 1.3;
 }
+.doc-wrap fieldset{
+    border-color:#aaa;
+    border-style: solid;
+    margin-bottom:0px;
+}
+legend {
+  padding: 0.2em 0.5em;
+  font-size:90%;
+  text-align:right;
+  }
+  
+ .NewsPost
+ {
+     position:relative;
+     padding:10px;
+     background-color: #fafafa;
+     color: #101010;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin:5px;
+ }
+ .HiddenObject
+ {
+     visibility:hidden;
+     height:0px;
+ }

@@ -32,6 +32,10 @@
     <property name="InsurableExperienceYears" not-null="false"/>
     <property name="InsurableExperienceMonths" not-null="false"/>
     <property name="InsurableExperienceDays" not-null="false"/>
+    <property name="NorthExperienceYears" not-null="false"/>
+    <property name="NorthExperienceMonths" not-null="false"/>
+    <property name="NorthExperienceDays" not-null="false"/>
+    <property name="NorthExperienceType" not-null="false"/>
     <!-- Ознакомлен с регламентными документами -->
     <property name="PersonalAccount" length="23" not-null="false"/>
     <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="false"/>
@@ -42,6 +46,11 @@
     <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_PersonnelManagers_Schedule" index="PersonnelManagers_Schedule"  not-null="false"/>
     <property name="Status" not-null="false"/>
     <property name="CompleteDate" not-null="false"/>
+    <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
+    <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
+
+    <property name="RejectDate" not-null="false"/>
+    <many-to-one name="RejectUser" class="User" column="RejectUserId" foreign-key="FK_PersonnelManagers_Users" index="PersonnelManagers_Users"  not-null="false"/>
 
     <property name="ContractPoint_1_Id" not-null="false"/>
     <property name="ContractPoint_2_Id" not-null="false"/>

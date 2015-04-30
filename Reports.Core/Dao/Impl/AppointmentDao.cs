@@ -22,9 +22,10 @@ namespace Reports.Core.Dao.Impl
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
 
-        protected const string sqlSelectForAppointmentList =
+        protected const string sqlSelectForAppointmentReportList =
             @"select 
                 v.Number as AppNumber,
+                r.CreateDate,
                 -- N'' as ReportNumber,
                 v.Id as Id,
                 v.EditDate as EditDate,
@@ -47,6 +48,7 @@ namespace Reports.Core.Dao.Impl
                         when r.[StaffDateAccept] is null then N'Нет' 
                         else N'Да' end as RStaffAccept,
                 r.Name as RName,
+                r.SecondNumber as SecondNumber,
                 r.[Phone] as Phone,
                 r.[Email] as Email,
                 case when r.[Id] is null then  N'' 
@@ -59,15 +61,16 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
-                        when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
-                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
-                        when v.StaffDateAccept is not null then N'Принята в работу'                        
-                        when v.DeleteDate is not null then N'Отменена'
-                        else N''
-                        end as Status
+                        when r.StaffDateAccept is null then N'Черновик'
+                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 then N'Кандидату отказано'
+                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат принят'
+                        when r.StaffDateAccept is not null then 'Отправлена руководителю'
+                         else N''
+                        end as Status,
+                        v.BankAccountantAccept as BankAccountantAccept,
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount
                 from dbo.Appointment v
-                left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
+                inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                 -- inner join dbo.Position aPos on v.PositionId = aPos.Id
@@ -83,8 +86,87 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
                 ";
         #endregion
-                                //{1}";
+        //{1}";
+        #region Select for list
+        protected const string sqlSelectForAppointmentList =
+            @"select 
+                v.Number as AppNumber,
+                v.CreateDate,
+                -- N'' as ReportNumber,
+                v.Id as Id,
+                v.EditDate as EditDate,
+                -- u.Id as UserId,
+                u.Name as UserName,
+                pos.Name as PositionName,
+                mapDep7.Name as ManDep7Name,
+                -- aPos.Name as CanPosition, 
+                v.PositionName as CanPosition, 
+                dep3.Name as Dep3Name,
+                dep7.Name as Dep7Name,
+                -- v.Period as Period,
+                v.Schedule as Schedule,
+                v.Salary+v.Bonus as Salary,
+                v.DesirableBeginDate as DesirableBeginDate,
+                ar.Name as Reason,
+                case
+                        when v.ManagerDateAccept is null then N'Черновик'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий. Отправлена на согласование вышестоящему руководителю.'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
+                        when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
+                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
+                        when v.StaffDateAccept is not null then N'Принята в работу'                        
+                        when v.DeleteDate is not null then N'Отменена'
+                        else N''
+                        end as Status,
+                        v.BankAccountantAccept as BankAccountantAccept,
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount,
+                        v.Recruter,
+                        v.FIO as CandidateFIO
+                from dbo.Appointment v
+                
+                inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
+                -- inner join dbo.Position aPos on v.PositionId = aPos.Id
+                inner join [dbo].[Users] u on u.Id = v.CreatorId
+                left join dbo.Position pos on u.PositionId = pos.Id
+                inner join dbo.Department dep on v.DepartmentId = dep.Id
+                inner join dbo.Department crDep on u.DepartmentId = crDep.Id
+                inner join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
+                inner join dbo.Department dep7 on dep.[Path] like dep7.[Path]+N'%' and dep7.ItemLevel = 7
+                left join [dbo].[Users] uEmp on uEmp.Login +
+                    case when u.RoleId & 512 > 0 then N'H' else N'R' end  
+                    = u.Login and uEmp.RoleId = 2 
+                left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                ";
+        #endregion
         public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("AppNumber", NHibernateUtil.Int32).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                //AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("PositionName", NHibernateUtil.String).
+                AddScalar("ManDep7Name", NHibernateUtil.String).
+                AddScalar("CanPosition", NHibernateUtil.String).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                //AddScalar("Period", NHibernateUtil.String).
+                AddScalar("Schedule", NHibernateUtil.String).
+                AddScalar("Salary", NHibernateUtil.Decimal).
+                AddScalar("DesirableBeginDate", NHibernateUtil.DateTime).
+                AddScalar("Reason", NHibernateUtil.String).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("BankAccountantAccept",NHibernateUtil.Boolean).
+                AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
+                AddScalar("CreateDate", NHibernateUtil.DateTime).
+                AddScalar("Recruter",NHibernateUtil.Int32).
+                AddScalar("CandidateFIO",NHibernateUtil.String);
+        }
+        public  IQuery CreateReportQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("AppNumber", NHibernateUtil.Int32).
@@ -112,7 +194,11 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RReject", NHibernateUtil.String).
                 AddScalar("StaffName", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("Status", NHibernateUtil.String);
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("BankAccountantAccept", NHibernateUtil.Boolean).
+                AddScalar("BankAccountantAcceptCount", NHibernateUtil.Int32).
+                AddScalar("SecondNumber",NHibernateUtil.Int32).
+                AddScalar("CreateDate",NHibernateUtil.DateTime);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -215,6 +301,7 @@ namespace Reports.Core.Dao.Impl
                 UserRole role,
                 int departmentId,
                 int statusId,
+                string number,
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
@@ -227,12 +314,50 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
+            if (!String.IsNullOrWhiteSpace(number))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" v.Number like '{0}%' ", number);
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(AppointmentDto))).List<AppointmentDto>();
+        }
+        public IList<AppointmentDto> GetReportDocuments(int userId,
+                UserRole role,
+                int departmentId,
+                int statusId,
+                string number,
+                DateTime? beginDate,
+                DateTime? endDate,
+                string userName,
+                int sortBy,
+                bool? sortDescending)
+        {
+            string sqlQuery = sqlSelectForAppointmentReportList;
+            string whereString = GetWhereForUserRole(role, userId);
+            //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
+            //whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetReportStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            if (!String.IsNullOrWhiteSpace(number))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.Number as varchar)+'_'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+            }
+            //whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+
+            IQuery query = CreateReportQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(AppointmentDto))).List<AppointmentDto>();
         }
@@ -257,7 +382,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by AppNumber";
                     break;
                 case 2:
-                    orderBy += @" order by RNumber";
+                    orderBy += @" order by AppNumber,RNumber,SecondNumber";
                     break;
                 case 3:
                     orderBy = @" order by UserName";
@@ -316,6 +441,17 @@ namespace Reports.Core.Dao.Impl
                 case 21:
                     orderBy = @" order by Status";
                     break;
+                case 22:
+                    if (sqlQuery.Contains("AppointmentReport"))
+                         orderBy = @" order by r.CreateDate";
+                    else orderBy = @" order by v.CreateDate";
+                    break;
+                case 23:
+                    orderBy = @" order by v.Recruter";
+                    break;
+                case 24:
+                    orderBy = @" order by v.FIO";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -324,6 +460,38 @@ namespace Reports.Core.Dao.Impl
             return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
+        }
+        public string GetReportStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    case 1://1, "Черновик"
+                        statusWhere = @" r.StaffDateAccept is null ";
+                        break;
+                    case 2://2, "Кандидату отказано"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=0 ";
+                        break;
+                    case 3://3, "кандидат принят"
+                        statusWhere = @" r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
+                        break;
+                    case 4://4, "Отправлено руководителю"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
+                        break;
+                    
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                if (statusId != 5)
+                    statusWhere += " and v.DeleteDate is null ";
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere;
+                return whereString;
+            }
+            return whereString;
         }
         public override string GetStatusWhere(string whereString, int statusId)
         {
@@ -336,7 +504,7 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"v.ManagerDateAccept is null ";
                         break;
                     case 2://2, "Отправлена на согласование вышестоящему руководителю"
-                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null ";
+                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
                         break;
                     case 3://3, "Согласована вышестоящим руководителем"
                         statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
@@ -347,7 +515,12 @@ namespace Reports.Core.Dao.Impl
                     case 5://5, "Отменена"
                         statusWhere = @"v.DeleteDate is not null";
                         break;
-                   
+                    case 6://Нет подходящих вакансий
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
+                            break;
+                    case 7://Отправлена на согласование в кадровую службу
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
+                            break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -447,6 +620,7 @@ namespace Reports.Core.Dao.Impl
                 //    return sqlQueryPart;
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
+                case UserRole.PersonnelManagerBank:
                 case UserRole.StaffManager:
                     return string.Empty;
                 default:

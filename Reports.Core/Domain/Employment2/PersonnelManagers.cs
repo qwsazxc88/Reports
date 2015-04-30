@@ -34,6 +34,8 @@ namespace Reports.Core.Domain
         public virtual int InsurableExperienceYears { get; set; } //ok
         public virtual int InsurableExperienceMonths { get; set; } //ok
         public virtual int InsurableExperienceDays { get; set; } //ok
+        public virtual decimal? PersonalAddition { get; set; } //ok
+        public virtual decimal? PositionAddition { get; set; } //ok
         // TODO: EMPL Ознакомлен с регламентными документами
         public virtual string PersonalAccount { get; set; } //ok
         public virtual PersonalAccountContractor PersonalAccountContractor { get; set; } //ok
@@ -51,6 +53,14 @@ namespace Reports.Core.Domain
         public virtual Schedule Schedule { get; set; } // OK?
 
         public virtual DateTime? CompleteDate { get; set; } //ok
+
+        public virtual DateTime? RejectDate { get; set; } //дата отклонения
+        public virtual User RejectUser { get; set; } //сотрудник проводящий отклонение кандидат
+
+        public virtual int NorthExperienceYears { get; set; } //ok
+        public virtual int NorthExperienceMonths { get; set; } //ok
+        public virtual int NorthExperienceDays { get; set; } //ok
+        public virtual int? NorthExperienceType { get; set; } //ok
 
         //дополнения для трудового договора
         public virtual int? ContractPoint_1_Id { get; set; }

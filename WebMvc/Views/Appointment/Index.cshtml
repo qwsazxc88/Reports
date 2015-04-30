@@ -53,6 +53,14 @@
                              </td>
                         </tr>
                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.Number):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Number)
+                             </td>
+                        </tr>
+                        <tr>
                                 <td>
                                     @Html.LabelFor(m => m.UserName):
                                 </td>
@@ -126,8 +134,8 @@
                     <th>
                         <div id="sort1" style="min-width:70px"><a href="#" onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
                     </th>
-                     <th>
-                        <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер<br/> отчета</a></div>
+                    <th>
+                       <div id="sort22" ><a href="#" onclick = "SortChanged(22);"> Дата<br />создания</a></div>
                     </th>
                     <th>
                         <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
@@ -162,26 +170,11 @@
                     <th>
                         <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
                     </th>
-                     <th>
-                        <div id="sort13"  style="min-width:50px"><a href="#"  onclick = "SortChanged(13);">Кандидат<br/> подобран</a></div>
-                    </th>
-                     <th>
-                        <div id="sort14"  style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">ФИО<br/> кандидата</a></div>
-                    </th>
-                     <th>
-                        <div id="sort15"  style="min-width:110px"><a href="#"  onclick = "SortChanged(15);">Тел.<br/> кандидата</a></div>
-                    </th>
-                     <th>
-                        <div id="sort16" style="min-width:110px"><a href="#"  onclick = "SortChanged(16);">E-mail<br/> кандидата</a></div>
+                    <th>
+                        <div id="sort24" ><a href="#" onclick="SortChanged(24);">ФИО<br />кандидата</a></div>
                     </th>
                     <th>
-                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Принят<br/> на работу</a></div>
-                    </th>
-                    <th>
-                        <div id="sort18" style="min-width:110px"><a href="#"  onclick = "SortChanged(18);">Не принят<br/> (причина отказа)</a></div>
-                    </th>
-                    <th>
-                        <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
+                        <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
                     </th>
                     <th>
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
@@ -197,12 +190,7 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
                             </td>
-                            <td style="text-align:left">
-                                @if(doc.RId.HasValue)
-                                {
-                                    <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@doc.RNumber</a>
-                                }
-                            </td>
+                            <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
                             <td>@doc.ManDep7Name</td>
@@ -214,13 +202,16 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            <td>@doc.RStaffAccept</td>
-                            <td>@doc.RName</td>
-                            <td>@doc.Phone</td>
-                            <td>@doc.Email</td>
-                            <td>@doc.RApprove</td>
-                            <td>@doc.RReject</td>
-                            <td>@doc.StaffName</td>@*19*@
+                            <td>@if(String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter==1) {<p>Кандидат</p>}
+                            @doc.CandidateFIO</td>
+                            <td>@switch(doc.Recruter)
+                                {
+                                    case 1: <text>УПиНП</text>
+                                        break;
+                                    case 2: <text>Руководитель</text>
+                                        break;
+                                        
+                                }</td>
                             <td>@doc.Status</td>
                         </tr>
                     }

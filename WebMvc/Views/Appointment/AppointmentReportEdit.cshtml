@@ -3,9 +3,66 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.AppointmentReportEditModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
     ViewBag.Title = "Отчет по подбору сотрудника";
 }
+<div style="visibility:hidden">
+<div id="AddEmployment" title="Добавление кандидата">
+@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
+{
+    <div class="doc-wrap">
+            <fieldset class="bordered doc-wrap panel">
+            <legend>Добавление кандидата</legend>
+            <div class="formfield">
+                <label>ФИО</label>
+                <input type="text" name="Surname" value="@Model.Name" />
+            </div>
+            <div class="formfield clear">
+                <label>Паспортные данные</label>
+                <input type="text" id="PassportData" name="PassportData" />
+            </div>
+            <div class="formfield clear">
+                <label>Снилс</label>
+                <input type="text" id="SNILS" name="SNILS" />
+            </div>
+            <div class="formfield clear">
+                <label>Дата рождения</label>
+                <input type="text" class="DateSelector" id="DateOfBirth" name="DateOfBirth" />
+            </div>
+            <div class="formfield clear">
+               <label>Департамент</label>
+            </div>
+            <div class="formfield">
+                <label>@Model.DepartmentName</label>
+                <input type="hidden" name="DepartmentId" value="@Model.DepartmentId" />
+            </div>
+            
+            <div class="formfield clear">
+                <label>Сотрудник отдела кадров</label>
+                @Html.DropDownList("PersonnelId", new SelectList(Model.Personnels, "Id", "Name"))
+            </div>
+            <input type="hidden" name ="OnBehalfOfManagerId" value='@Model.ManagerId' />
+            <div id="IsFixedTermContractContainer" class="formfield clear">
+                Вид ТД<br />
+                @Html.RadioButton("IsFixedTermContract", false)<label>Бессрочный</label>
+                @Html.RadioButton("IsFixedTermContract", true)<label>Срочный</label>
+            </div>
+            <div id="IsTrainingNeededContainer" class="formfield clear">
+                <label>Обучение требуется</label>
+                @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
+                @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
+            </div>
+            <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
+            <input type="hidden" name="AppointmentId" value="@Model.AppId"/>
+        </fieldset>
+    </div>
+    <div class="clear">        
+       <button type="submit">Сохранить</button>
+    </div>
+}
+</div>
+</div>
 @using (Html.BeginForm("AppointmentReportEdit", "Appointment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
@@ -21,6 +78,13 @@
                     @Html.Partial("ManagerInfoView", Model)
                 </td>
             </tr>
+       </table>
+    </div>
+    <div class="doc-wrap">
+    <fieldset>
+    <legend>Реквизиты кандидата</legend>
+        <table style="width:100%">
+            
             @if (Model.IsDeleted)
             { 
             <tr>
@@ -123,6 +187,7 @@
                 </td>
             </tr>
             <tr>
+
             <td>@Html.LabelFor(model => model.Attachment):</td>
                 <td>
                     @if (!string.IsNullOrEmpty(Model.Attachment))
@@ -133,14 +198,19 @@
                     <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
                     <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
                     <input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment();" @if (!Model.IsDeleteScanAvailable)
-                                                                                           {<text>style="display:none"</text>}/>
+                                                                                                               {<text>style="display:none"</text>}/>
                 </td>
             </tr>
-            <tr @if (!Model.IsEditable) {<text>style="display:none"</text>}>    
+            <tr @if (!Model.IsEditable)
+                {<text>style="display:none"</text>}>    
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
-             <tr>
+             
+        </table>
+     </fieldset>
+     <table>
+     <tr>
                 <td>
                     @Html.LabelFor(m => m.IsStaffApproved):
                 </td>
@@ -219,7 +289,7 @@
                     @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsManagerEditable || Model.IsStaffSetDateAcceptAvailable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
-            </tr>
+            </tr>@*
             <tr>
                 <td>
                     @Html.LabelFor(m => m.DateAccept)
@@ -235,7 +305,7 @@
                         @Html.HiddenFor(model => model.DateAccept)
                     } 
                 </td>
-            </tr>
+            </tr>*@
              <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
@@ -246,19 +316,45 @@
                 </td>
                 <td style="text-align:right">
                     <input type="submit" value="Отклонить отчет" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
-                                                                                      {<text>style="display:none"</text>}/>
+                                                                                            {<text>style="display:none"</text>}/>
                 </td>
             </tr>
              <tr>
                 <td colspan="2">
-                   <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id}) + "'");" @if (!Model.IsAddAvailable) {<text>style="display:none"</text>}/>
-                   <input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
-                                                                @if (!Model.IsPrintLoginAvailable) {<text>style="display:none"</text>}  />
+                    @if (Model.IsColloquyPassed==1 && (dto.Id==Model.UserId))
+                    {
+                    <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                    }
+                   <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
+                                                                                                                                                                     {<text>style="display:none"</text>}/>
+                   @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
+                                                                @if (!Model.IsPrintLoginAvailable)
+                                                                {<text>style="display:none"</text>}  />*@
 
                 </td>
               </tr>
-        </table>
+     </table>
     </div>
+    if(Model.Candidates!=null && Model.Candidates.Any())
+    {
+    <div class="doc-wrap">
+    Принятые сотрудники(@Model.Candidates.Count):
+    <br />
+    <table class="grid">
+    <thead>
+    <tr>
+    <th>ФИО</th><th>Дата приёма</th><th>Статус</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var el in Model.Candidates)
+    {
+      <tr><td>@el.Name</td><td>@el.EmploymentDate</td><td>@el.Status</td></tr>
+    }
+    </tbody>
+    </table>
+    </div>  
+        }
      <br />
     <div class="comment-wrap">
         <table style="width:100%">
@@ -270,10 +366,20 @@
         </table>
     </div>
 }
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
+
+    $("#AddEmployment").dialog({autoOpen: false});
+    UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+        jQuery(function ($) {
+            $.mask.definitions['~'] = '[+-]';
+            $('#SNILS').mask('999-999-999 99');
+            $('#PassportData').mask('9999 999999');
+        }); 
     $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");

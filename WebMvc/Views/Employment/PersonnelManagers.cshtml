@@ -16,6 +16,9 @@
 {
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftPM)
+    @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsReject)
+    @Html.HiddenFor(m => m.IsFixedTermContract)
     
     
     <fieldset class="bordered doc-wrap panel floatleft">
@@ -84,11 +87,16 @@
             @Html.TextBoxFor(m => m.BasicSalary, new { @class = "calc halfwidth" })
         </div>
         *@
-        <div class="formfield clearleft">
-            @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
-            @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+            @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
+        </div>
+        
+        <div class="formfield clearleft">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
             @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth" })
         </div>
@@ -149,6 +157,30 @@
         </fieldset>
 
         <fieldset class="bordered nomargin clear">
+        <legend class="level2">Северный стаж</legend>
+            <div class="formfield clearleft">                
+                @Html.LabelFor(m => m.NorthExperienceType)<br />
+                @Html.DropDownListFor(m => m.NorthExperienceType, new SelectList(Model.NorthExperienceTypes, "Id", "Name"))
+            </div>
+            <div id="divNEY" class="formfield">                
+                @Html.ValidationMessageFor(m => m.NorthExperienceYears)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceYears, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceYears)
+            </div>
+            <div id="divNEM" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthExperienceMonths)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceMonths, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceMonths)
+            </div>
+            <div id="divNED" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthExperienceDays)<br />
+                @Html.TextBoxFor(m => m.NorthExperienceDays, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthExperienceDays)
+            </div>
+            <div id="divNAA" class="formfield">
+                @Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
+                @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthernAreaAddition)
+            </div>
+        </fieldset>
+
+        <fieldset class="bordered nomargin clear">
             <legend class="level2">Пункты трудового договора</legend>
             <table width="100%">
                 <tr>
@@ -160,6 +192,7 @@
                         <label id="Variant11">Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label>
                         <label id="Variant12"><label>Договор заключается временно, на период отсутствия основного работника </label>@Html.TextBoxFor(m => m.ContractPointsFio, new { placeholder = "ФИО", style = "width:400px" })<label>, за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами.</label> </label>
                         <label id="Variant13">Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label>
+                        <label id="Variant111">Настоящий Договор заключается на срок с даты начала по дату окончания ТД.</label>
                     </td>
                 </tr>
                 <tr>
@@ -202,10 +235,12 @@
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
             @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroups)
         </div>
+        @*
         <div class="formfield">
             @Html.LabelFor(m => m.Level)&nbsp;@Html.ValidationMessageFor(m => m.Level)<br />
             @Html.TextBoxFor(m => m.Level, new { @class = "calc halfwidth" })
         </div>
+        *@
         <div class="formfield clear">
             @Html.LabelFor(m => m.SignerId)&nbsp;@Html.ValidationMessageFor(m => m.SignerId)<br />
             @Html.DropDownListFor(m => m.SignerId, Model.Signers, string.Empty)
@@ -226,6 +261,7 @@
                 <button id="btnPMDraft" >Сохранить</button>         
                 <button >Утвердить</button>         
             </div>            
+            <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
         }
     </fieldset>
     @*
@@ -284,6 +320,9 @@
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
         $('#isHourlySalaryBasisContainer').buttonset();
+
+        
+
         //подкрашиваем пол
         $("#IsHourlySalaryBasisTrue").click(function () {
             $("#lblHSBTrue").css("border-color", "red");
@@ -300,6 +339,7 @@
                 $("#ContractDate").val($("#EmploymentOrderDate").val());
             }
         });
+
         $("#ContractDate").change(function () {
             if ($("#ContractDate").val() != "") {
                 $("#EmploymentOrderDate").val($("#ContractDate").val());
@@ -309,7 +349,11 @@
         $("#btnPMDraft").click(function () {
             $("#IsDraftPM").val(true);
         });
-        
+
+        $("#btnReject").click(function () {
+            $("#IsReject").val(true);
+        });
+
         var $addPersonnelManagersCommentDialog = $('#add-personnel-managers-comment-dialog').dialog(
         {
             autoOpen: false,
@@ -345,6 +389,7 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
+            //$("#Variant111").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
         }
         else if (TypeId == 2) {
@@ -357,6 +402,21 @@
             $("#Variant39").hide();
             $("#Variant310").hide();
             $("#Variant3" + $("#ContractPoint_3_Id").val().toString()).show();
+        }
+    }
+
+    function NorthExperienceTypesChange(Id) {
+        if (Id == 3) {
+            $("#divNAA").show();
+            $("#divNEY").show();
+            $("#divNEM").show();
+            $("#divNED").show();
+        }
+        else {
+            $("#divNAA").hide();
+            $("#divNEY").hide();
+            $("#divNEM").hide();
+            $("#divNED").hide();
         }
     }
 </script>

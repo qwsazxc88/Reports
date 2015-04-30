@@ -106,9 +106,9 @@
     
     if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
     {
-        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+        @*<div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>*@
     }
-    
+    <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала ( согласование  кандидата) " => Инструкция =>   Согласование кандидата  от Руководителя.</label>
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
         {
@@ -197,7 +197,13 @@
             <div id="sort14"><a href="#" onclick = "SortColumnChanged(14);">Кадровик</a></div>
         </th>
         <th>
+            <div id="sort18"><a href="#" onclick = "SortColumnChanged(18);">Состояние<br />документов<br />приема</a></div>
+        </th>
+        <th>
             <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
+        </th>
+        <th>
+            Статус<br/>загрузки
         </th>
         @*
         <th>
@@ -205,34 +211,7 @@
         </th>
         *@
         
-@*        
-        <th>
-            <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Номер<br />приказа</a></div>
-        </th>
-        
-        <th>
-            <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Дата<br />приказа</a></div>
-        </th>
-
-        <th>
-            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">Номер<br />трудового<br />договора</a></div>
-        </th>
-        <th>
-            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">График<br />работы</a></div>
-        </th>
-
-        <th>
-            <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Дата<br />рождения</a></div>
-        </th>
-
-        
-
-        <th>
-            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Грейд</a></div>
-        </th>
-
-  *@      
-
+@*
         @if (Model.IsBulkApproveByManagerAvailable)
         {
             <th>
@@ -248,7 +227,7 @@
                 <input type="checkbox" id="setAllByHigherManager" />
             </th>
         }
-    
+  *@  
     </tr>
     <tbody id="tblBody">
         @{ int i = 1; }
@@ -326,7 +305,20 @@
                     &nbsp;@candidate.PersonnelName
                 </td>
                 <td>
+                    &nbsp;@candidate.DocStatus
+                </td>
+                <td>
                     &nbsp;@candidate.Status
+                </td>
+                <td>
+                    @if (candidate.AppointmentReportId > 0)
+                    {
+                        <a href='@Url.Action("AppointmentReportEdit","Appointment", new { id = candidate.AppointmentReportId })'>Загружено из поиска</a>
+                    }
+                    else
+                    {
+                        <text>Из оформления без службы по найму</text>
+                    }
                 </td>
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
@@ -336,32 +328,8 @@
                 
 
 
-        
                 
-@*        
-                <td>
-                    &nbsp;@candidate.EmploymentOrderNumber
-                </td>
-        
-                <td>
-                    &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
-                </td>
-
-                <td>
-                    &nbsp;@candidate.ContractNumber
-                </td>
-                <td>
-                    &nbsp;@candidate.Schedule
-                </td>
-
-                <td>
-                    &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
-                </td>
-                <td>
-                    &nbsp;@candidate.Grade
-                </td>
-*@              
-        
+                @*        
                 @if (Model.IsBulkApproveByManagerAvailable)
                 {
                     <td rowspan="2" class="centered">
@@ -382,6 +350,8 @@
                     </td>
                 }        
 
+                
+                *@
                 @{i++;}
             </tr>
         

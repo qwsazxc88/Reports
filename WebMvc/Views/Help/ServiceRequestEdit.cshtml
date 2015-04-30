@@ -68,10 +68,11 @@
                 <tr id="AttachmentTrId">    
                     <td>Прикрепить скан образца</td>
                     <td>
-                        <input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>
+                        <input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red;">размер файла - не более 2 Мб</span><br />
+                        <span id="spanInfo" style="color:Red;"  @if(Model.TypeId == 8) {<text>style="display:block;"</text>}  else{ <text>style="display:none;"</text>}>Образец справки для центра занятости необходимо получить в Вашем центре занятости</span>
                     </td>
                 </tr>
-            }
+             }
             <tr id="RequirementsTrId">
                 <td>
                     @Html.LabelFor(m => m.Requirements):
@@ -112,12 +113,25 @@
                     <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
                 </td>
             </tr>
+            
+            <tr>
+                <td>@Html.LabelFor(m => m.IsForGEMoney)</td>
+                <td>@Html.CheckBoxFor(m => m.IsForGEMoney, Model.IsConsultantOutsourcingEditable ? null : (object)new { disabled = "disabled" })</td>
+            </tr>
             <tr id="ViewServiceAttachmentTrId">
                 <td>@Html.LabelFor(model => model.ServiceAttachment):</td>
                 <td>
                     @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
                     {
-                        <a class="ui-notify-close" id="ViewServiceAttachmentId"  href='@Url.Action("ViewTemplate", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
+                        if (Model.IsNotScanView)
+                        {
+                            <label>@Model.ServiceAttachment</label>
+                            
+                        }
+                        else
+                        {
+                            <a class="ui-notify-close" id="ViewServiceAttachmentId"  href='@Url.Action("ViewTemplate", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
+                        }
                         <input type="hidden" id="ServiceAttachment" name="ServiceAttachment" value="@Model.ServiceAttachment" />
                         <input type="hidden" id="ServiceAttachmentId" name="ServiceAttachmentId" value="@Model.ServiceAttachmentId" />
                         if (Model.IsConsultantOutsourcingEditable)
@@ -125,11 +139,25 @@
                     }
                 </td>
             </tr>
+            <tr>
+            <td></td>
+            <td>
+             @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
+             { 
+                 <p>Количество документов: @Model.DocumentsCount</p>
+             }
+            </td>
+            </tr>
+           
             @if (Model.IsConsultantOutsourcingEditable)
             {
             <tr>    
                 <td>Прикрепить скан</td>
                 <td><input id="ServiceFileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            </tr>
+                 <tr>
+                <td>@Html.LabelFor(m => m.DocumentsCount)</td>
+                <td>@Html.EditorFor(m => m.DocumentsCount)</td>
             </tr>
             }
              <tr>
@@ -139,22 +167,23 @@
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
-                                                                                              {<text>style="display:none"</text>}/>
+                                                                                                       {<text>style="display:none"</text>}/>
                  
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
-                                                                                           {<text>style="display:none"</text>}/>
+                                                                                                {<text>style="display:none"</text>}/>
                     @*
                    @if (Model.IsAttachmentVisible)
                    {
                         
                    }
                    *@
-                   <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
+                   <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
               
                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable || !Model.IsUserEmployee)
-                                                                                              {<text>style="display:none"</text>}/>
+                                                                                                                                                                 {<text>style="display:none"</text>}/>
 
                 </td>
             </tr>
@@ -243,6 +272,9 @@
     }
     function onTypeChange()
     {
+        if ($("#TypeId").val() == 8){ $("#spanInfo").show(); }
+        else {$("#spanInfo").hide();}
+
         clearControlErrors($('#Requirements'));
        getDictionariesStates();
     }

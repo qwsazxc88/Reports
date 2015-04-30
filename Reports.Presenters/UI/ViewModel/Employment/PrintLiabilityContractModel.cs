@@ -8,6 +8,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     public class PrintLiabilityContractModel : AbstractEmploymentModel
     {
         public DateTime ContractDate { get; set; }
+        public string ContractNumber { get; set; }
         public string EmployerRepresentativeNameShortened { get; set; }
         public string EmployerRepresentativePosition { get; set; }
         public string EmployerRepresentativeTemplate { get; set; }
@@ -20,6 +21,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string EmployeePassportSeriesNumber { get; set; }
         public DateTime? EmployeePassportDateOfIssue { get; set; }
         public string EmployeePassportIssuedBy { get; set; }
+        public string City { get; set; }
         
         public PrintLiabilityContractModel()
         {

@@ -21,9 +21,13 @@
     <property name="Status" not-null="false"/>
     <property name="QuestionnaireDate" not-null="false"/>
     <many-to-one name="AppointmentCreator" class="User" column="AppointmentCreatorId" foreign-key="FK_Candidate_AppointmentCreator" index="Candidate_AppointmentCreator"  not-null="false"/>
+    <many-to-one name="AppointmentReport" class="AppointmentReport" column="AppointmentReportId" foreign-key="FK_EmploymentCandidate_AppointmentReport" not-null="false"/>
+    <many-to-one name="Appointment" class="Appointment" column="AppointmentId" foreign-key="FK_EmploymentCandidate_Appointment" not-null="false"/>
+
     <many-to-one name="Personnels" class="User" column="PersonnelId" foreign-key="FK_EmploymentCandidate_Users" index="EmploymentCandidate_Users"  not-null="false"/>
     <property name="IsTrainingNeeded" not-null="false"/>
     <property name="IsBeforEmployment" not-null="false"/>
+    <property name="SendTo1C" not-null="false"/>
 
     <property name="IsCandidateToBackgroundSendEmail" not-null="false"/>
     <property name="CandidateToBackgroundSendEmailDate" not-null="false"/>
@@ -35,6 +39,8 @@
     <property name="ManagerToTrainingSendEmailDate" not-null="false"/>
     <property name="IsManagerToHigherManagerSendEmail" not-null="false"/>
     <property name="ManagerToHigherManagerSendEmailDate" not-null="false"/>
+    <property name="IsPersonnelManagerToManagerSendEmail" not-null="false"/>
+    <property name="PersonnelManagerToManagerSendEmailDate" not-null="false"/>
 
   </class>
 </hibernate-mapping>

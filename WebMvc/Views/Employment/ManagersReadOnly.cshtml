@@ -14,6 +14,7 @@
 {
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftM)
+    @Html.HiddenFor(m => m.SendTo1C)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
@@ -92,14 +93,6 @@
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
             @Html.EditorFor(m => m.WorkCity)
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
-            @Html.EditorFor(m => m.PersonalAddition)
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
-            @Html.EditorFor(m => m.PositionAddition)
-        </div>
         <div class="formfield clear" id="isFrontContainer">
             @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label id="lblFTrue" for="IsFrontTrue" @if (Model.IsFront)
                                                                                                                           {<text>style="border-color:red;"</text>}
@@ -138,17 +131,20 @@
             @Html.EditorFor(m => m.RequestNumber)
         </div>
 
-        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.HasValue) || (dto.UserRole & UserRole.PersonnelManager) > 0)
+        @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
                 <button id="btnManagerDraft">Черновик</button>
             </div>
         }
+        
     </fieldset>
     
     
-    
     <div class="clear">
+        <label><b>Список руководителей: </b></label>
+        @Model.ManagerApprovalList<br /><br />
+
         @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
         {        
             @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
@@ -163,13 +159,18 @@
         {
             <button>Применить</button>
         }
+        <br /><br />
     </div>
+    
 }
 
 @using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.UserId)
     <div class="clear">
+        <label><b>Список вышестоящих руководителей: </b></label>
+        @Model.HigherManagerApprovalList<br /><br />
+
         @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
         {        
             @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>

@@ -54,13 +54,7 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div>
-                <div id="liSurcharge" class="mainMenuItem"> 
-                 @if ((dto.UserRole & UserRole.Accountant) > 0
-                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                    {
-                               @Html.ActionLink("Доплата", "Index", "Surcharge")
-                    }
-                </div>
+                
                 @if (dto.Id==10
                      ||(dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -109,6 +103,10 @@
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                 }
+                else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                {
+                    <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
+                }
                 else if (UserDto.IsHelpTemplateAvailable(dto))
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
@@ -119,43 +117,53 @@
                  @if ((dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-
+                     || (dto.UserRole & UserRole.PersonnelManagerBank)>0
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
                     </div> 
                  }  
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
+                  @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 {
+                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
+                 }
         </div>  
          <div class="podmenu">    
+            <div class="menuitem" id="helpVersion">@Html.ActionLink("Инструкция", "Version", "Help")</div>
             @if (UserDto.IsHelpServiceAvailable(dto))
             {
                 if ((dto.UserRole & UserRole.PersonnelManager) > 0)
                 {
                     <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
+                    <div class="menuitem" id="helpFaq">@Html.ActionLink("Типовые вопросы", "Faq", "Help")</div>
                 }
                 else
                 {
                     <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
+                    <div class="menuitem" id="helpFaq">@Html.ActionLink("Типовые вопросы", "Faq", "Help")</div>
                     <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Задать вопрос", "ServiceQuestionsList", "Help")</div> 
                 }
-                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
+                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
             }
             else if (UserDto.IsHelpQuestionAvailable(dto))
             {
                 <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Реестр вопросов", "ServiceQuestionsList", "Help")</div> 
-                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
+                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
             }
             else if (UserDto.IsHelpTemplateAvailable(dto))
             {
-                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
+                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
+            }
+            @if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+            {
+                <div class="menuitem" id="helpPersonnelBilling">@Html.ActionLink("Биллинг внутренний", "PersonnelBillingList", "Help")</div>
             }
             <div class="menuitem" id="helpInfo">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")</div>
-            <div class="menuitem" id="helpFaq">@Html.ActionLink("Часто задаваемые вопросы", "Faq", "Help")</div>
-            <div class="menuitem" id="helpVersion">@Html.ActionLink("О программе", "Version", "Help")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
          </div> 
         </div> 

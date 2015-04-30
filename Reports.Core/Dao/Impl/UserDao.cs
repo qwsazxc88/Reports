@@ -72,13 +72,34 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.IsNull("DateRelease"))
                   .List<User>();
         }
+        public virtual IList<IdNameDto> GetUsersWithRole(UserRole role,bool? isActive)
+        {
+            string sqlQuery = string.Format(@" select u.Id,u.[Name] as Name from Users u 
+                    where {0}
+                    (RoleId & :roleId) > 0 
+                    and DateRelease is null 
+                    order by Name",isActive.HasValue? " IsActive = :isActive and ":string.Empty);
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetInt32("roleId", (int)role);
+            if (isActive.HasValue)
+                query = query.SetBoolean("isActive", isActive.Value);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
         public virtual User GetManagerForEmployee(string login)
         {
-            return (User)Session.CreateCriteria(typeof(User))
-                  .Add(Restrictions.Eq("Login", login+"R"))
-                  .Add(Restrictions.Eq("RoleId", 4))
-                  .Add(Restrictions.Eq("IsActive", true))
-                  .UniqueResult();
+            var tmp= Session.CreateCriteria(typeof(User))
+                  .Add(Restrictions.Eq("Login", login))
+                  .List<User>().ToList();//Сначала получаем пользователей с таким логином
+            IList<User> users;
+            if (tmp != null && tmp.Any())//Если нашли - получаем все учётки для его почты
+                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+            else return null;
+            var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0 && x.IsActive==true);//Ищем активную учётку руководителя
+            if (managers != null && managers.Any())
+                return managers.First();
+            else return null;                 
         }
         public virtual IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath)
         {
