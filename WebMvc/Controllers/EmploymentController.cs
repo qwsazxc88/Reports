@@ -1461,7 +1461,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         EmploymentBl.SavePersonnelManagersReport(model, out error);
-                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат утвержден! Данные готовы к выгрузке в 1С!" : error);
                     }
                     model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
 
@@ -2010,7 +2010,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
 
-            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value != 2)
+            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value == 1)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
                 ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");

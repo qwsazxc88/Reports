@@ -95,6 +95,7 @@ namespace WebMvc.Controllers
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
+            if(id==0) model.Recruter = 1;
             if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
@@ -162,6 +163,10 @@ namespace WebMvc.Controllers
             //    ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
             if (model.IsDelete)
                 return true;
+            if (model.Recruter == 2 && String.IsNullOrWhiteSpace(model.FIO))
+            {
+                ModelState.AddModelError("FIO", "ФИО Кандидата должно быть заполнено!");
+            }
             if(model.ReasonId != 3 && !string.IsNullOrEmpty(model.ReasonBeginDate))
             {
                 DateTime beginDate;

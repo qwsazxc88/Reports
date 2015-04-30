@@ -186,6 +186,7 @@
     <Content Include="Files\Template\word\webSettings.xml" />
     <Content Include="Files\Template\[Content_Types].xml" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\angular-sanitize.min.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\DepartmentTree.js" />
