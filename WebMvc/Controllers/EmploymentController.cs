@@ -1461,7 +1461,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         EmploymentBl.SavePersonnelManagersReport(model, out error);
-                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                        ModelState.AddModelError("MessageStr", string.IsNullOrEmpty(error) ? "Кандидат утвержден! Данные готовы к выгрузке в 1С!" : error);
                     }
                     model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
 
