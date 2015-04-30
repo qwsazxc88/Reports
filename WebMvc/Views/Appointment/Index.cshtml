@@ -53,6 +53,14 @@
                              </td>
                         </tr>
                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.Number):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Number)
+                             </td>
+                        </tr>
+                        <tr>
                                 <td>
                                     @Html.LabelFor(m => m.UserName):
                                 </td>
@@ -163,6 +171,9 @@
                         <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
                     </th>
                     <th>
+                        <div id="sort24" ><a href="#" onclick="SortChanged(24);">ФИО<br />кандидата</a></div>
+                    </th>
+                    <th>
                         <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
                     </th>
                     <th>
@@ -191,6 +202,8 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
+                            <td>@if(String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter==1) {<p>Кандидат</p>}
+                            @doc.CandidateFIO</td>
                             <td>@switch(doc.Recruter)
                                 {
                                     case 1: <text>УПиНП</text>

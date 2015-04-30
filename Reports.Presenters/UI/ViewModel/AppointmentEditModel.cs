@@ -28,6 +28,8 @@ namespace Reports.Presenters.UI.ViewModel
         //public int PositionIdHidden { get; set; }
         //public IList<IdNameDto> Positions;
         public string FIO { get; set; }
+        [Display(Name="Номер задачи в Pyrus:")]
+        public string PyrusNumber { get; set; }
         [Display(Name = "Количество требуемых сотрудников")]
         public string VacationCount { get; set; }
 

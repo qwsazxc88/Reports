@@ -259,6 +259,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 role,
                 model.DepartmentId,
                 model.StatusId,
+                model.Number,
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
@@ -274,6 +275,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 role,
                 model.DepartmentId,
                 model.StatusId,
+                model.Number,
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
@@ -323,6 +325,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 model.FIO = entity.FIO;
+                model.PyrusNumber = entity.PyrusNumber;
                 model.Recruter = entity.Recruter;
                 if (entity.Candidates != null && entity.Candidates.Any())
                 {
@@ -388,6 +391,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 creator =  managerId.HasValue? UserDao.Load(managerId.Value) : currUser;
                 model.ShowStaff = true;
+                model.Recruter = 1;
                 model.IsVacationExists = 1;
                 SetCreatorDepartment(creator, model);
                 model.UserId = creator.Id;//currUser.Id;
@@ -822,7 +826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
                 entity.Bonus = Decimal.Parse(model.Bonus);
-                
+                entity.PyrusNumber = model.PyrusNumber;
                 entity.City = model.City;
                 entity.Compensation =(String.IsNullOrWhiteSpace(model.Compensation))?"-":model.Compensation;
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
