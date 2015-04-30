@@ -47,6 +47,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Manager6">ФИО руководителя 6 уровня</param>
         /// <param name="Manager5">ФИО руководителя 5 уровня</param>
         /// <param name="Manager4">ФИО руководителя 4 уровня</param>
+        /// <param name="IsManagerShow">Показать руководителей</param>
         /// <param name="sortBy">Id колонки для сортировки</param>
         /// <param name="sortDescending">Тип сортировки</param>
         /// <returns></returns>
@@ -57,10 +58,11 @@ namespace Reports.Core.Dao.Impl
                 string Manager6,
                 string Manager5,
                 string Manager4,
+                bool IsManagerShow,
                 int sortBy,
                 bool? sortDescending)
         {
-            string sqlQuery = "SELECT * FROM dbo.vwAccessGroupList";
+            string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers" : "vwAccessGroupList");
             string whereString = GetDepartmentWhere(depFromFilter);
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);

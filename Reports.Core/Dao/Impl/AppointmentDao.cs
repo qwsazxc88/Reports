@@ -122,7 +122,8 @@ namespace Reports.Core.Dao.Impl
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount,
-                        v.Recruter
+                        v.Recruter,
+                        v.FIO as CandidateFIO
                 from dbo.Appointment v
                 
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
@@ -162,7 +163,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAccept",NHibernateUtil.Boolean).
                 AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
-                AddScalar("Recruter",NHibernateUtil.Int32);
+                AddScalar("Recruter",NHibernateUtil.Int32).
+                AddScalar("CandidateFIO",NHibernateUtil.String);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -299,6 +301,7 @@ namespace Reports.Core.Dao.Impl
                 UserRole role,
                 int departmentId,
                 int statusId,
+                string number,
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
@@ -311,6 +314,12 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
+            if (!String.IsNullOrWhiteSpace(number))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" v.Number like '{0}%' ", number);
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -324,6 +333,7 @@ namespace Reports.Core.Dao.Impl
                 UserRole role,
                 int departmentId,
                 int statusId,
+                string number,
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
@@ -336,6 +346,12 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetReportStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
+            if (!String.IsNullOrWhiteSpace(number))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.Number as varchar)+'_'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -433,6 +449,9 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = @" order by v.Recruter";
                     break;
+                case 24:
+                    orderBy = @" order by v.FIO";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -502,7 +521,6 @@ namespace Reports.Core.Dao.Impl
                     case 7://Отправлена на согласование в кадровую службу
                         statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
                             break;
-                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }

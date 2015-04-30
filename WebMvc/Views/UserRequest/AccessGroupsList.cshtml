@@ -55,13 +55,32 @@
                     </tr>
                     <tr>
                         <td>
+                            @Html.LabelFor(m => m.IsManagerShow):
+                        </td>
+                        <td>
+                            
+                            @*@Html.CheckBoxFor(model => model.IsManagerShow)*@
+                            <div class="formfield clear" id="IsManagerShowContainer">            
+                                @Html.RadioButtonFor(m => m.IsManagerShow, false, new { @id = "IsManagerShowFalse" })<label id="lblMSFalse" for="IsManagerShowFalse" @if (!Model.IsManagerShow)
+                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                        else
+                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Без руководителей</label>
+                                @Html.RadioButtonFor(m => m.IsManagerShow, true, new { @id = "IsManagerShowTrue" })<label id="lblMSTrue" for="IsManagerShowTrue" @if (Model.IsManagerShow)
+                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                    else
+                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Показать руководителей</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="m6" @if(!Model.IsManagerShow){<text>style="display:none";</text>}>
+                        <td>
                             @Html.LabelFor(m => m.Manager6):
                         </td>
                         <td>
                             @Html.TextBoxFor(model => model.Manager6, (object)new { placeholder = "ФИО руководителя (6)" })
                         </td>
                     </tr>
-                    <tr>
+                    <tr id="m5" @if(!Model.IsManagerShow){<text>style="display:none;"</text>}>
                         <td>
                             @Html.LabelFor(m => m.Manager5):
                         </td>
@@ -69,7 +88,7 @@
                             @Html.TextBoxFor(model => model.Manager5, (object)new { placeholder = "ФИО руководителя (5)" })
                         </td>
                     </tr>
-                    <tr>
+                    <tr id="m4" @if(!Model.IsManagerShow){<text>style="display:none;"</text>}>
                         <td>
                             @Html.LabelFor(m => m.Manager4):
                         </td>
@@ -191,7 +210,26 @@
         $("#btnSelect").click(function(){
             SubmitForm();
         });
-        
+
+        //обрабатываем переключатель
+        $("#IsManagerShowContainer").buttonset();
+        $("#IsManagerShowTrue").click(function () {
+            $("#lblMSTrue").css("border-color", "red");
+            $("#lblMSFalse").css("border-color", "silver");
+            $("#m6").show();
+            $("#m5").show();
+            $("#m4").show();
+        });
+        $("#IsManagerShowFalse").click(function () {
+            $("#lblMSTrue").css("border-color", "silver");
+            $("#lblMSFalse").css("border-color", "red");
+            $("#m6").hide();
+            $("#m5").hide();
+            $("#m4").hide();
+        });
+
+
+
     });
 
 
