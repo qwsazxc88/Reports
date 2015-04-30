@@ -2010,7 +2010,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
 
-            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value != 2)
+            if (model.ContractEndDate == null && isFixedTermContract && model.ContractPoint_1_Id.Value == 1)
             {
                 ModelState.AddModelError("ContractEndDate", "*");
                 ModelState.AddModelError("MessageStr", "Укажите дату окончания ТД");
