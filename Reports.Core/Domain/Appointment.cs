@@ -41,7 +41,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? DesirableBeginDate { get; set; }
         public virtual bool IsVacationExists { get; set; }
         //public virtual DateTime? BeginDate { get; set; }
-
+        public virtual string PyrusNumber { get; set; }
 
         public virtual User Creator { get; set; }
 
