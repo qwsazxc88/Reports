@@ -148,9 +148,9 @@
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-        <button type="button" onclick="$('#IsDraft').val('true'); this.form.submit();">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false');" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        @Html.HiddenFor(m => m.IsContactDraft)
+        <button id="btnContactDraft" type="button">Черновик</button>
+        <button id="btnContact" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -162,6 +162,16 @@
             $('#WorkPhone').mask('+7(999) 999-99-99');
             $('#HomePhone').mask('+7(999) 999-99-99');
             $('#Mobile').mask('+7(999) 999-99-99');
+        });
+
+        $("#btnContactDraft").click(function () {
+            $("#IsContactDraft").val(true);
+            $("#Contacts").submit();
+        });
+
+        $("#btnContact").click(function () {
+            $("#IsContactDraft").val(false);
+            $("#Contacts").submit();
         });
     });
 </script>

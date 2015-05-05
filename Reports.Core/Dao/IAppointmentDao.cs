@@ -15,7 +15,7 @@ namespace Reports.Core.Dao
         List<IdNameDto> GetParentForManager3(int childId);
         List<IdNameDto> GetParentForManager4Department(int departmentId);
         List<IdNameDto> GetParentForManagerDepartment(int departmentId);
-
+        List<IdNameDto> GetForManagersParentDepartment(int departmentId);
         IList<AppointmentDto> GetDocuments(int userId,
                                            UserRole role,
                                            int departmentId,

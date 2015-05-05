@@ -58,6 +58,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsContactDraft { get; set; } //ok
+
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
