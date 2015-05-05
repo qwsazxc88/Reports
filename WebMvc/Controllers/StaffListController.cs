@@ -8,6 +8,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Presenters.UI.ViewModel.StaffList;
+using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
@@ -60,6 +61,29 @@ namespace WebMvc.Controllers
         {
             AddressModel model = StaffListBl.GetAddress();
             return View(model);
+        }
+
+        [HttpGet]
+        public ContentResult GetArea(string RegionCode)
+        {
+            //DepartmentChildrenDto model;
+            //try
+            //{
+            //    model = RequestBl.GetChildren(parentId, level);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error("Exception on GetChildren:", ex);
+            //    string error = ex.GetBaseException().Message;
+            //    model = new DepartmentChildrenDto
+            //    {
+            //        Error = string.Format("Ошибка: {0}", error),
+            //        Children = new List<IdNameDto>()
+            //    };
+            //}
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(StaffListBl.GetAreas(RegionCode));
+            return Content(jsonString);
         }
     }
 }

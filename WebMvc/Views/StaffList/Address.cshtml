@@ -15,7 +15,7 @@
                     @Html.ValidationMessageFor(model => model.errorMessage)
                 </h5>
                 <div class="doc-wrap">
-                    <table style="width:100%">
+                    <table >
                         <tr>
                             <td colspan="2">
                                 <b>Российский адрес</b>
@@ -26,7 +26,7 @@
                                 @Html.LabelFor(m => m.RegionCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "RegionCode", "Name")) 
+                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "RegionCode", "Name"), new { style = "width:95%", onchange = "RegionCodeChange();" }) 
                             </td>
                         </tr>
                         
@@ -35,16 +35,15 @@
                                 @Html.LabelFor(m => m.AreaCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "AreaCode", "Name")) 
+                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "AreaCode", "Name"), new { style = "width:95%", onchange = "AreaCodeChange();" }) 
                             </td>
                         </tr>
-                        @*
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.CityCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "CityCode", "Name")) 
+                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "CityCode", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
                         <tr>
@@ -52,15 +51,16 @@
                                 @Html.LabelFor(m => m.SettlementCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "SettlementCode", "Name")) 
+                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "SettlementCode", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
+                        @*
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "StreetCode", "Name")) 
+                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "StreetCode", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
                         *@
@@ -72,8 +72,75 @@
 }
 
 <script type="text/javascript">
+    var actionAreaUrl = "@Url.Action("GetArea", "StaffList")";    
+    var actionCityUrl = "@Url.Action("DepartmentDialog", "StaffList")";
+    var actionSettlementUrl = "@Url.Action("DepartmentDialog", "StaffList")";
+    var actionStreetUrl = "@Url.Action("DepartmentDialog", "StaffList")";
+
     $(document).ready(function () {
         setActiveMenuItem("moAddress");
     });
 
+
+    function RegionCodeChange() {
+    if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
+            setEmptyToDropdown("RegionCode");
+        else
+            GetChilds(actionAreaUrl, "AreaCode", $("#RegionCode").val());
+        //setEmptyToDropdown('Level4ID');
+        //setEmptyToDropdown('Level5ID');
+        //setEmptyToDropdown('Level6ID');
+        //setEmptyToDropdown('Level7ID');
+    }
+
+    function AreaCodeChange() {
+    if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
+            setEmptyToDropdown("AreaCode");
+        else
+            GetChilds(actionAreaUrl, "AreaCode", $("#RegionCode").val());
+        //setEmptyToDropdown('Level4ID');
+        //setEmptyToDropdown('Level5ID');
+        //setEmptyToDropdown('Level6ID');
+        //setEmptyToDropdown('Level7ID');
+    }
+
+    function GetChilds(actionUrl, controlName,code) {
+        //clearDepSelErrors();
+        var url = actionUrl + '?RegionCode='+ code;
+        $.getJSON(url,
+            function (result) {
+                if (result.Error != "") {
+                    //addDepSelError(result.Error);
+                }
+                else {
+                    setValuesToDropdown(controlName, result);
+                }
+            });
+
+    }
+
+    //заполняем данными комбобокс
+    function setValuesToDropdown(controlName,data)
+    {
+        //var options = $('#' + controlName);
+        //options.attr("disabled", "disabled");
+        var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+        optionsValues += '<option value=""></option>';
+        $.each(data, function (item, data) {
+            optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
+        })
+        optionsValues += '</select>';
+        var options = $('#' + controlName );
+        options.replaceWith(optionsValues);
+        //options.removeAttr("disabled");
+    }
+
+    //чистим комбобоксы
+    function setEmptyToDropdown(controlName) {
+        var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+        optionsValues += '<option value="0"></option>';
+        optionsValues += '</select>';
+        var options = $('#' + controlName);
+        options.replaceWith(optionsValues);
+    }
 </script>

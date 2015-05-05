@@ -20,13 +20,56 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<KladrDto> GetRegions()
         {
-            IQuery query = CreateRegionQuery(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.vwKladrRegions
+            IQuery query = CreateKladrQuery(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.vwKladrRegions
                                          ORDER BY Name");
 
             return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
         }
+        /// <summary>
+        /// Достаем список райнонов.
+        /// </summary>
+        /// <param name="RegionCode">Код региона.</param>
+        /// <returns></returns>
+        public IList<KladrDto> GetAreas(string RegionCode)
+        {
+            IQuery query = CreateKladrQuery(string.Format(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.vwKladrAreas {0} ORDER BY Name", 
+                string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null" : " WHERE RegionCode = '" + RegionCode + "' "));
 
-        public IQuery CreateRegionQuery(string sqlQuery)
+            return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
+        }
+
+        /// <summary>
+        /// Достаем список городов.
+        /// </summary>
+        /// <param name="RegionCode">Код региона.</param>
+        /// <param name="AreaCode">Код района.</param>
+        /// <returns></returns>
+        public IList<KladrDto> GetCityes(string RegionCode, string AreaCode)
+        {
+            IQuery query = CreateKladrQuery(string.Format(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.vwKladrCityes {0} {1} ORDER BY Name",
+                string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null" : " WHERE RegionCode = '" + RegionCode + "' ",
+                string.IsNullOrEmpty(RegionCode) ? "and AreaCode is null" : " and AreaCode = '" + AreaCode + "' "));
+
+            return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
+        }
+
+        /// <summary>
+        /// Достаем список населенных пунктов.
+        /// </summary>
+        /// <param name="RegionCode">Код региона.</param>
+        /// <param name="AreaCode">Код района.</param>
+        /// <param name="CityCode">Код города.</param>
+        /// <returns></returns>
+        public IList<KladrDto> GetSettlements(string RegionCode, string AreaCode, string CityCode)
+        {
+            IQuery query = CreateKladrQuery(string.Format(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.vwKladrCityes {0} {1} ORDER BY Name",
+                string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null" : " WHERE RegionCode = '" + RegionCode + "' ",
+                string.IsNullOrEmpty(RegionCode) ? "and AreaCode is null" : " and AreaCode = '" + AreaCode + "' "));
+
+            return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
+        }
+
+        public IQuery CreateKladrQuery(string sqlQuery)
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Name", NHibernateUtil.String)

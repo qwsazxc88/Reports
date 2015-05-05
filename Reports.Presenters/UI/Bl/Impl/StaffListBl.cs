@@ -56,7 +56,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             AddressModel model = new AddressModel();
             model.Regions = KladrDao.GetRegions();
+            model.Areas = KladrDao.GetAreas(null);
+            model.Cityes = KladrDao.GetCityes(null, null);
+            model.Settlements = KladrDao.GetSettlements(null, null, null);
             return model;
+        }
+        /// <summary>
+        /// Загружаем список районов.
+        /// </summary>
+        /// <param name="RegionCode">Код региона.</param>
+        /// <returns></returns>
+        public IList<KladrDto> GetAreas(string RegionCode)
+        {
+            return KladrDao.GetAreas(RegionCode);
         }
     }
 }
