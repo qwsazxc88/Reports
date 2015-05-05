@@ -202,9 +202,9 @@
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        @Html.HiddenFor(m => m.IsExpDraft)
+        <button id="btnExpDraft" type="button">Черновик</button>
+        <button id="btnExp" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -260,6 +260,15 @@
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
         UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
+        $("#btnExpDraft").click(function(){
+            $("#IsExpDraft").val(true);
+            $("#ExperienceForm").submit();
+        });
+
+        $("#btnExp").click(function(){
+            $("#IsExpDraft").val(false);
+            $("#ExperienceForm").submit();
+        });
 
         var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
         {

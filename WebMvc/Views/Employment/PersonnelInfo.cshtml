@@ -280,6 +280,16 @@
                         else {$("#DisabilityCertificateExpirationDate").show();}
                         //$("#btn").click(AjaxFormRequest("tabs1", "GeneralInfo", "/Employment/GeneralInfo", "POST"););
 
+                    $("#btnGIDraft").click(function(){
+                        $("#IsGIDraft").val(true);
+                        $("#general-info-form").submit();
+                    });
+
+                    $("#btnGI").click(function(){
+                        $("#IsGIDraft").val(false);
+                        $("#general-info-form").submit();
+                    });
+
 
 
                         //var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
@@ -413,31 +423,6 @@
                             },
                             true
                         );
-
-//                        UIHelpers.handleSelectStates($("#CitizenshipId"), [
-//                                {
-//                                    text: "РОССИЯ",
-//                                    actOnSelect: function(){
-//                                        $("#InsuredPersonTypeId").val("");
-//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-//                                    },
-//                                    actOnDeselect: function(){
-//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-//                                    }
-//                                },
-//                                {
-//                                    value: "",
-//                                    actOnSelect: function(){
-//                                        $("#InsuredPersonTypeId").val("");
-//                                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
-//                                    },
-//                                    actOnDeselect: function(){
-//                                        $("#InsuredPersonTypeId").removeAttr("disabled");
-//                                    }
-//                                }
-//                            ],        
-//                            true
-//                        );
                     });
                 }
 
@@ -448,8 +433,18 @@
                     $("#tabs2").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
                         jQuery(function ($) {
-                        $.mask.definitions['~'] = '[+-]';
-                        $('#InternalPassportSeries').mask('99 99');
+                            $.mask.definitions['~'] = '[+-]';
+                            $('#InternalPassportSeries').mask('99 99');
+                        });
+
+                        $("#btnPassportDraft").click(function(){
+                            $("#IsPassportDraft").val(true);
+                            $("#PassportForm").submit();
+                        });
+
+                        $("#btnPassport").click(function(){
+                            $("#IsPassportDraft").val(false);
+                            $("#PassportForm").submit();
                         });
                     });
                     
@@ -461,6 +456,17 @@
                     AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs3").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue, #BeginningDate, #EndDate'), "-50:+0", true);
+
+                        $("#btnEducationDraft").click(function(){
+                            $("#IsEducationDraft").val(true);
+                            $("#EducationForm").submit();
+                        });
+
+                        $("#btnEducation").click(function(){
+                            $("#IsEducationDraft").val(false);
+                            $("#EducationForm").submit();
+                        });
+
                         //var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
                         $('#add-higher-education-diploma-dialog').dialog(
                         {
@@ -634,6 +640,16 @@
                             true
                         );
 
+                        $("#btnFDraft").click(function(){
+                            $("#IsFDraft").val(true);
+                            $("#FamilyForm").submit();
+                        });
+
+                        $("#btnFamily").click(function(){
+                            $("#IsFDraft").val(false);
+                            $("#FamilyForm").submit();
+                        });
+
                         //var $addChildDialog = $('#add-child-dialog').dialog(
                         $('#add-child-dialog').dialog(
                         {
@@ -698,6 +714,15 @@
                     AjaxFormRequest("tabs5", "MilitaryServiceReadOnly", "/Employment/MilitaryServiceReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs5").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#MilitaryCardDate'), "-60:+0", true);
+                        $("#btnMSDraft").click(function(){
+                            $("#IsMSDraft").val(true);
+                            $("#MilitaryServiceForm").submit();
+                        });
+
+                        $("#btnMS").click(function(){
+                            $("#IsMSDraft").val(false);
+                            $("#MilitaryServiceForm").submit();
+                        });
                     });
                 }
 
@@ -707,6 +732,16 @@
                     AjaxFormRequest("tabs6", "ExperienceReadOnly", "/Employment/ExperienceReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs6").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
+
+                        $("#btnExpDraft").click(function(){
+                            $("#IsExpDraft").val(true);
+                            $("#ExperienceForm").submit();
+                        });
+
+                        $("#btnExp").click(function(){
+                            $("#IsExpDraft").val(false);
+                            $("#ExperienceForm").submit();
+                        });
 
                         //var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
                         $('#add-experience-item-dialog').dialog(
@@ -783,6 +818,16 @@
                             $('#HomePhone').mask('+7(999) 999-99-99');
                             $('#Mobile').mask('+7(999) 999-99-99');
                         });
+
+                        $("#btnContactDraft").click(function () {
+                            $("#IsContactDraft").val(true);
+                            $("#Contacts").submit();
+                        });
+
+                        $("#btnContact").click(function () {
+                            $("#IsContactDraft").val(false);
+                            $("#Contacts").submit();
+                        });
                     });
                     
                 }
@@ -827,6 +872,15 @@
                             $("#lblRFalse").css("border-color", "red");
                         });
 
+                        $("#btnBGDraft").click(function(){
+                            $("#IsBGDraft").val(true);
+                            $("#BackgroundCheckForm").submit();
+                        });
+
+                        $("#btnBG").click(function(){
+                            $("#IsBGDraft").val(false);
+                            $("#BackgroundCheckForm").submit();
+                        });
 
                         UIHelpers.handleCheckboxState($("#IsApprovalSkipped"),
                         {
