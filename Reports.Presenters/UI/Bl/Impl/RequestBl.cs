@@ -7874,8 +7874,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             List<Deduction> MailList = new List<Deduction>();
             ///В случае ошибки нужно откатить транзакции.
-            DeductionDao.BeginTran();
-            MissionReportDao.BeginTran();
+            //DeductionDao.BeginTran();
+            //MissionReportDao.BeginTran();
             try
             {
                 foreach (var id in DocIds)
@@ -7906,13 +7906,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                DeductionDao.RollbackTran();
-                MissionReportDao.RollbackTran();
+                //DeductionDao.RollbackTran();
+                //MissionReportDao.RollbackTran();
                 Log.Error("Во время экспорта записей произошла ошибка.", ex);
                 return false;
             }
-            DeductionDao.CommitTran();
-            MissionReportDao.CommitTran();
+            //DeductionDao.CommitTran();
+            //MissionReportDao.CommitTran();
             if(EnableSendEmail)
             foreach(var el in MailList)
                 SendEmailToUser(null, el);
