@@ -102,6 +102,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsGIDraft { get; set; } //ok
+
         public HttpPostedFileBase PhotoFile { get; set; }
         public HttpPostedFileBase INNScanFile { get; set; }
         public HttpPostedFileBase SNILSScanFile { get; set; }

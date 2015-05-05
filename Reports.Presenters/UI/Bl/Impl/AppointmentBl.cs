@@ -1173,7 +1173,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             break;
                         case 5:
                         case 6:
-                            users = AppointmentDao.GetParentForManagerDepartment(creator.Department.Id);
+                            users = AppointmentDao.GetForManagersParentDepartment(creator.Department.Id);
                             if (users.Count == 0)
                             {
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id);

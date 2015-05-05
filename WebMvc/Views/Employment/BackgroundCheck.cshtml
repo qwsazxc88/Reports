@@ -302,9 +302,9 @@
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        @Html.HiddenFor(m => m.IsBGDraft)
+        <button id="btnBGDraft" type="button">Черновик</button>
+        <button id="btnBG" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -420,6 +420,16 @@
         $("#IsRFalse").click(function(){
             $("#lblRTrue").css("border-color", "silver");
             $("#lblRFalse").css("border-color", "red");
+        });
+
+        $("#btnBGDraft").click(function(){
+            $("#IsBGDraft").val(true);
+            $("#BackgroundCheckForm").submit();
+        });
+
+        $("#btnBG").click(function(){
+            $("#IsBGDraft").val(false);
+            $("#BackgroundCheckForm").submit();
         });
 
         var $addReferenceDialog = $('#add-reference-dialog').dialog(

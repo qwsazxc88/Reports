@@ -245,9 +245,9 @@
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        @Html.HiddenFor(m => m.IsFDraft)
+        <button id="btnFDraft" type="button">Черновик</button>
+        <button id="btnFamily" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 
     </fieldset>
@@ -316,6 +316,16 @@
             },            
             true
         );
+
+        $("#btnFDraft").click(function(){
+            $("#IsFDraft").val(true);
+            $("#FamilyForm").submit();
+        });
+
+        $("#btnFamily").click(function(){
+            $("#IsFDraft").val(false);
+            $("#FamilyForm").submit();
+        });
 
         var $addChildDialog = $('#add-child-dialog').dialog(
         {
