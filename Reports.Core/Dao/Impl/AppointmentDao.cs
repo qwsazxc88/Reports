@@ -537,7 +537,6 @@ namespace Reports.Core.Dao.Impl
                     case 7://Отправлена на согласование в кадровую службу
                         statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
                             break;
-                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
