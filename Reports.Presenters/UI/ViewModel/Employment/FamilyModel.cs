@@ -31,6 +31,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsFDraft { get; set; } //ok
+
         [Display(Name = "Семейное положение"),
             Required(ErrorMessage = "*")]
         public int? FamilyStatusId { get; set; }

@@ -102,6 +102,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsPassportDraft { get; set; } //ok
+
         public HttpPostedFileBase InternalPassportScanFile { get; set; }
 
         public string InternalPassportScanAttachmentFilename { get; set; }
