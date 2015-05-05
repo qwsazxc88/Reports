@@ -38,6 +38,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsExpDraft { get; set; } //ok
 
         public HttpPostedFileBase WorkBookScanFile { get; set; }
         public HttpPostedFileBase WorkBookSupplementScanFile { get; set; }

@@ -15,10 +15,10 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "PassportForm" }))
 {
     @Html.HiddenFor(m => m.UserId)
-    
+    @Html.HiddenFor(m => m.IsDraft)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Паспорт</legend>
@@ -141,9 +141,9 @@
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate) <br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-        <button type="submit" onclick="$('#IsDraft').val('true')">Черновик</button>
-        <button type="submit" onclick="$('#IsDraft').val('false')" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        @Html.HiddenFor(m => m.IsPassportDraft)
+        <button id="btnPassportDraft" type="button">Черновик</button>
+        <button id="btnPassport" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 
 }
@@ -173,6 +173,16 @@
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
             $('#InternalPassportSeries').mask('99 99');
+        });
+
+        $("#btnPassportDraft").click(function(){
+            $("#IsPassportDraft").val(true);
+            $("#PassportForm").submit();
+        });
+
+        $("#btnPassport").click(function(){
+            $("#IsPassportDraft").val(false);
+            $("#PassportForm").submit();
         });
     });
 </script>
