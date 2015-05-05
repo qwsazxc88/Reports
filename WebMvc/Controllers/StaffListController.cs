@@ -54,5 +54,12 @@ namespace WebMvc.Controllers
             model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
             return Json(model.Departments);
         }
+
+        [HttpGet]
+        public ActionResult Address()
+        {
+            AddressModel model = StaffListBl.GetAddress();
+            return View(model);
+        }
     }
 }

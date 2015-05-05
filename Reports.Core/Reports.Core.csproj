@@ -95,6 +95,7 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IKladrDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
     <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\Impl\KladrDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
@@ -571,6 +573,7 @@
     <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />
     <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
+    <Compile Include="Dto\KladrDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryValidityCategoryDto.cs" />

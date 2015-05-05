@@ -11,5 +11,7 @@ namespace Reports.Presenters.UI.Bl
     {
         TreeViewModel GetDepartmentList();
         IList<Department> GetDepartmentListByParent(string DepId);
+
+        AddressModel GetAddress();
     }
 }

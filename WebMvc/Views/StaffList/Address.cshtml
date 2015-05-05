@@ -1,0 +1,79 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.AddressModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Address";
+}
+
+<b>Адрес</b>
+
+@using (Html.BeginForm("Address", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Address-form" }))
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="doc-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Российский адрес</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.RegionCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "RegionCode", "Name")) 
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AreaCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "AreaCode", "Name")) 
+                            </td>
+                        </tr>
+                        @*
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CityCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "CityCode", "Name")) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.SettlementCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "SettlementCode", "Name")) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.StreetCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "StreetCode", "Name")) 
+                            </td>
+                        </tr>
+                        *@
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moAddress");
+    });
+
+</script>

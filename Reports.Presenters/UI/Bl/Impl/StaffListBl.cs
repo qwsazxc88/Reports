@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Reports.Presenters.UI.ViewModel.StaffList;
+using Reports.Core;
 using Reports.Core.Domain;
+using Reports.Core.Dao;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class StaffListBl : RequestBl, IStaffListBl
     {
+        #region Dependencies
+        protected IKladrDao kladrDao;
+        public IKladrDao KladrDao
+        {
+            get { return Validate.Dependency(kladrDao); }
+            set { kladrDao = value; }
+        }
+        #endregion
         /// <summary>
         /// собираем полное дерево
         /// </summary>
@@ -35,6 +46,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
             else
                 return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();
+        }
+
+        /// <summary>
+        /// Загружаем модель для составления Российских адресов.
+        /// </summary>
+        /// <returns></returns>
+        public AddressModel GetAddress()
+        {
+            AddressModel model = new AddressModel();
+            model.Regions = KladrDao.GetRegions();
+            return model;
         }
     }
 }
