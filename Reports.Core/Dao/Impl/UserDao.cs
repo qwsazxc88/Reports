@@ -601,7 +601,8 @@ namespace Reports.Core.Dao.Impl
                     User currentUser = Get(managerId);
                     if (currentUser == null)
                         throw new ArgumentException(string.Format("Ќе могу загрузить пользовател€ {0} из базы даннных", managerId));
-
+#region Deprecated
+                    /*
                     switch (currentUser.Level)
                     {
                         case 2:
@@ -675,9 +676,11 @@ namespace Reports.Core.Dao.Impl
                             (
                                 {1}
                             )
-                        )", sqlWhere, userSelectionSubquery);
+                        )", sqlWhere, userSelectionSubquery);*/
+#endregion
+                    if (!String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere = sqlWhere + " or ";
                     sqlWhere = string.Format(@"{0}
-                        or u.Id in
+                        u.Id in
                         (
                             select mrr.TargetUserId
                             from [dbo].[ManualRoleRecord] mrr
@@ -700,6 +703,15 @@ namespace Reports.Core.Dao.Impl
                                         on mrr.RoleId = 2
                             )
                         )
+                        or
+                        u.DepartmentId in 
+						(
+							 select distinct ud.Id from Department ud
+                                    inner join [dbo].[Department] branchDept
+                                        on ud.Path like branchDept.Path + '%'
+                                    inner join Users us
+                                        on us.Id = :userId AND branchDept.Id=us.DepartmentId
+						)
                         ", sqlWhere);
 
                     //sqlWhere += "u.ManagerId = :userId";
@@ -731,6 +743,8 @@ namespace Reports.Core.Dao.Impl
             if(sqlQuery.Contains(":userId"))
                 query.
                 SetInt32("userId", managerId);
+            if (sqlQuery.Contains(":userName"))
+                query.SetString("userName", userName);
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
