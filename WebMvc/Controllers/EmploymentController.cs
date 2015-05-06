@@ -159,6 +159,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
+                model.IsDraft = model.IsGIDraft;
                 EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 //ViewBag.Error = error;
                 model = EmploymentBl.GetGeneralInfoModel(model.UserId);
@@ -300,6 +301,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
+                model.IsDraft = model.IsPassportDraft;
                 EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 model = EmploymentBl.GetPassportModel(model.UserId);
                 ViewBag.Error = error;
@@ -381,6 +383,7 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))
                 {
+                    model.IsDraft = model.IsEducationDraft;
                     EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
                     model = EmploymentBl.GetEducationModel(model.UserId);
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
@@ -663,6 +666,7 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))
                 {
+                    model.IsDraft = model.IsFDraft;
                     EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
                     model = EmploymentBl.GetFamilyModel(model.UserId);
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
@@ -758,6 +762,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
+                model.IsDraft = model.IsMSDraft;
                 EmploymentBl.ProcessSaving<MilitaryServiceModel, MilitaryService>(model, out error);
                 model = EmploymentBl.GetMilitaryServiceModel(model.UserId);
                 ViewBag.Error = error;
@@ -838,6 +843,7 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))
                 {
+                    model.IsDraft = model.IsExpDraft;
                     EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
                     model = EmploymentBl.GetExperienceModel(model.UserId);
                     ViewBag.Error = error;
@@ -971,6 +977,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
+                model.IsDraft = model.IsContactDraft;
                 EmploymentBl.ProcessSaving<ContactsModel, Contacts>(model, out error);
                 model = EmploymentBl.GetContactsModel(model.UserId);
                 ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
@@ -1052,6 +1059,7 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))
                 {
+                    model.IsDraft = model.IsBGDraft;
                     EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
                     model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
                     ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
@@ -1668,9 +1676,10 @@ namespace WebMvc.Controllers
                     }
                     else
                     {
+                        string str = model.IsSave ? "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!" : "Файл загружен!";
                         EmploymentBl.SaveCandidateDocumentsAttachments(model);
                         model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                        ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!");
+                        ModelState.AddModelError("SendTo1C", str);
                     }
                 }
 
@@ -1693,19 +1702,21 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                    if (Session["CandidateDocumentsMS" + SPPath] != null)
-                        Session.Remove("CandidateDocumentsMS" + SPPath);
-                    if (Session["CandidateDocumentsMS" + SPPath] == null)
-                    {
-                        ModelStateDictionary mst = ModelState;
-                        Session.Add("CandidateDocumentsMS" + SPPath, mst);
-                    }
                 }
                 else
                 {
                     DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
                     EmploymentBl.DeleteAttachment(modelDel);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                    ModelState.AddModelError("SendTo1C", "Файл удален!");
+                }
+
+                if (Session["CandidateDocumentsMS" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsMS" + SPPath);
+                if (Session["CandidateDocumentsMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("CandidateDocumentsMS" + SPPath, mst);
                 }
             }
 
@@ -1838,7 +1849,7 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
             ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile");
 
-            if (!model.IsDraft)
+            if (!model.IsGIDraft)
             {
                 if (!model.IsValidate)
                 {
@@ -1852,7 +1863,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(PassportModel model)
         {
-            if (!model.IsDraft)
+            if (!model.IsPassportDraft)
             {
                 if (!model.IsValidate)
                 {
@@ -1866,7 +1877,7 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(EducationModel model)
         {
             ModelState.Clear();
-            if (!model.IsDraft)
+            if (!model.IsEducationDraft)
             {
                 if (!model.IsValidate)
                 {
@@ -1879,7 +1890,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(FamilyModel model)
         {
-            if (!model.IsDraft)
+            if (!model.IsFDraft)
             {
                 if (!model.IsValidate)
                 {
@@ -1892,7 +1903,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(MilitaryServiceModel model)
         {
-            if (!model.IsDraft)
+            if (!model.IsMSDraft)
             {
                 if (!model.IsValidate)
                 {
@@ -1912,7 +1923,7 @@ namespace WebMvc.Controllers
             ModelState.Remove("Position");
             ModelState.Remove("CompanyContacts");
             
-            if (!model.IsDraft)
+            if (!model.IsExpDraft)
             {
                 ModelState.Clear();
                 if (!model.IsValidate)
@@ -1926,7 +1937,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ContactsModel model)
         {
-            if (!model.IsDraft)
+            if (!model.IsContactDraft)
             {
                 //ModelState.Clear();
                 if (!model.IsValidate)
@@ -1940,7 +1951,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(BackgroundCheckModel model)
         {
-            if (!model.IsDraft)
+            if (!model.IsBGDraft)
             {
                 if (!model.IsValidate)
                 {
