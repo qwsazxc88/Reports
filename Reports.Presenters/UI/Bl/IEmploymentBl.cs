@@ -138,6 +138,6 @@ namespace Reports.Presenters.UI.Bl
         void DeleteExperiensRow(ExperienceModel model);
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
-        void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model);
+        void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
     }
 }
