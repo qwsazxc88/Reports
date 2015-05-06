@@ -493,6 +493,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerApproveAvailable = true;
                                 model.IsEditable = true;
                             }
+                            else
+                            {
+                               if(entity.BankAccountantAccept.HasValue)
+                                   model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                            }
                     }
                     else if (!entity.DeleteDate.HasValue 
                             && entity.ManagerDateAccept.HasValue 
