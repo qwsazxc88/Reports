@@ -15,6 +15,19 @@ namespace Reports.Core.Dao.Impl
         {
         }
         /// <summary>
+        /// Достаем запись справочика по коду.
+        /// </summary>
+        /// <param name="Code">Код записи.</param>
+        /// <returns></returns>
+        public IList<KladrDto> GetKladrByCode(string Code)
+        {
+            IQuery query = CreateKladrQuery(string.Format(@"SELECT top 1 Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.Kladr {0}",
+                string.IsNullOrEmpty(Code) ? "WHERE Code is null" : " WHERE Code = '" + Code + "' "));
+
+            return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
+        }
+
+        /// <summary>
         /// Достаем список регионов из базы данных.
         /// </summary>
         /// <returns></returns>

@@ -7,6 +7,12 @@ namespace Reports.Core.Dao
     public interface IKladrDao : IDao<KladrDto>
     {
         /// <summary>
+        /// Достаем запись справочика по коду.
+        /// </summary>
+        /// <param name="Code">Код записи.</param>
+        /// <returns></returns>
+        IList<KladrDto> GetKladrByCode(string Code);
+        /// <summary>
         /// Достаем список регионов из базы данных.
         /// </summary>
         /// <returns></returns>

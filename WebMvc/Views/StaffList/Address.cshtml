@@ -26,7 +26,7 @@
                                 @Html.LabelFor(m => m.RegionCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "RegionCode", "Name"), new { style = "width:95%", onchange = "RegionCodeChange();" }) 
+                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "RegionCodeChange();" }) 
                             </td>
                         </tr>
                         
@@ -35,7 +35,7 @@
                                 @Html.LabelFor(m => m.AreaCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "AreaCode", "Name"), new { style = "width:95%", onchange = "AreaCodeChange();" }) 
+                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "AreaCodeChange();" }) 
                             </td>
                         </tr>
                         <tr>
@@ -43,7 +43,7 @@
                                 @Html.LabelFor(m => m.CityCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "CityCode", "Name"), new { style = "width:95%" }) 
+                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
                         <tr>
@@ -51,7 +51,7 @@
                                 @Html.LabelFor(m => m.SettlementCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "SettlementCode", "Name"), new { style = "width:95%" }) 
+                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
                         @*
@@ -60,7 +60,7 @@
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "StreetCode", "Name"), new { style = "width:95%" }) 
+                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%" }) 
                             </td>
                         </tr>
                         *@
@@ -83,10 +83,10 @@
 
 
     function RegionCodeChange() {
-    if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
-            setEmptyToDropdown("RegionCode");
-        else
-            GetChilds(actionAreaUrl, "AreaCode", $("#RegionCode").val());
+        if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
+                setEmptyToDropdown("RegionCode");
+            else
+                GetArea(actionAreaUrl, "AreaCode", $("#RegionCode").val());
         //setEmptyToDropdown('Level4ID');
         //setEmptyToDropdown('Level5ID');
         //setEmptyToDropdown('Level6ID');
@@ -94,29 +94,37 @@
     }
 
     function AreaCodeChange() {
-    if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
-            setEmptyToDropdown("AreaCode");
-        else
-            GetChilds(actionAreaUrl, "AreaCode", $("#RegionCode").val());
+        if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
+                setEmptyToDropdown("AreaCode");
+            else
+                GetChilds(actionCityUrl, "AreaCode", $("#AreaCode").val(), "GET");
         //setEmptyToDropdown('Level4ID');
         //setEmptyToDropdown('Level5ID');
         //setEmptyToDropdown('Level6ID');
         //setEmptyToDropdown('Level7ID');
     }
 
-    function GetChilds(actionUrl, controlName,code) {
+    function GetArea(actionUrl, controlName,code, RequestType) {
         //clearDepSelErrors();
         var url = actionUrl + '?RegionCode='+ code;
-        $.getJSON(url,
-            function (result) {
-                if (result.Error != "") {
-                    //addDepSelError(result.Error);
-                }
-                else {
+
+        var dataToSend = $("#Address-form").serialize();
+        
+        jQuery.ajax({
+                url: url,
+                type: RequestType,
+                dataType: 'json',
+                data: dataToSend,
+                success: function(result){
+                    console.log("да");
                     setValuesToDropdown(controlName, result);
+                },
+                error: function(){
+                    //alert("При загрузке данных произошла ошибка.");
+                    console.log("нет");
+                    console.log(result.Error);
                 }
             });
-
     }
 
     //заполняем данными комбобокс
@@ -130,7 +138,10 @@
             optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
         })
         optionsValues += '</select>';
-        var options = $('#' + controlName );
+
+        console.log(optionsValues);
+
+        var options = $("#" + controlName );
         options.replaceWith(optionsValues);
         //options.removeAttr("disabled");
     }
@@ -138,7 +149,7 @@
     //чистим комбобоксы
     function setEmptyToDropdown(controlName) {
         var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
-        optionsValues += '<option value="0"></option>';
+        optionsValues += '<option value=""></option>';
         optionsValues += '</select>';
         var options = $('#' + controlName);
         options.replaceWith(optionsValues);

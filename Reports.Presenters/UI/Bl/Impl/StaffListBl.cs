@@ -68,7 +68,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public IList<KladrDto> GetAreas(string RegionCode)
         {
-            return KladrDao.GetAreas(RegionCode);
+            KladrDto row = KladrDao.GetKladrByCode(RegionCode).Single();
+            return KladrDao.GetAreas(row.RegionCode);
         }
     }
 }
