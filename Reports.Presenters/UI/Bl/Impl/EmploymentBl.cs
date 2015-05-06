@@ -3195,12 +3195,17 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
             IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
-            
+
 
             //сохраняем сканы
             if (model.ApplicationLetterScanFile != null)
             {
-                
+                if ((int)candidate.Status < (int)EmploymentStatus.PENDING_APPLICATION_LETTER)
+                {
+                    error = "Нельзя добавить скан заявления без проверки департамента безопасности!";
+                    return;
+                }
+
                 UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
@@ -4419,6 +4424,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
+                        entity.IsApprovalSkipped = IsApprovalSkipped;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4441,10 +4447,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
                     {
-                        entity.ApprovalStatus = approvalStatus;
+                        entity.ApprovalStatus = true;
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                        entity.IsApprovalSkipped = IsApprovalSkipped;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка изменения статуса.";
@@ -5099,7 +5106,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.IsBackgroundToManagerSendEmail && entity.BackgroundToManagerSendEmailDate.HasValue) return;  //сообщение было послано ранее
                     defaultEmail = ConfigurationService.EmploymentBackgroundCheckToManagerEmail;
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
-                    if (!entity.BackgroundCheck.ApprovalStatus.HasValue) return;    //ошибка, ДБ не проверяли кандидата
+                    if (!entity.BackgroundCheck.ApprovalStatus.HasValue && !entity.BackgroundCheck.IsApprovalSkipped) return;    //ошибка, ДБ не проверяли кандидата
+
                     if (entity.BackgroundCheck.ApprovalStatus.Value)
                     {
                         Subject = "Сотрудником Департамента безопасности согласован прием кандидата";
