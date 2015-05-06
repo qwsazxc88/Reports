@@ -1359,7 +1359,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
             IList<IdNameDtoWithDates> uDtoList =
-                UserDao.GetUsersForManagerWithDatePagedForGraphics(user.Id, user.UserRole,
+                UserDao.GetUsersForManagerWithDatePagedForGraphics_NEW(user.Id, user.UserRole,
                         dayDtoList.First().Day, dayDtoList.Last().Day
                         , model.DepartmentId, model.UserName);
             Log.Debug("SetGraphicsInfo:After GetUsersForManagerWithDatePaged");
