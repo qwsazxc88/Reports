@@ -20,8 +20,9 @@ namespace Reports.Presenters.UI.Bl
         /// <summary>
         /// Загружаем список районов.
         /// </summary>
-        /// <param name="RegionCode">Код региона.</param>
+        /// <param name="Code">Код записи.</param>
+        /// <param name="AddressType">Тип записи.</param>
         /// <returns></returns>
-        IList<KladrDto> GetAreas(string RegionCode);
+        IList<KladrDto> GetKladr(string Code, int AddressType);
     }
 }

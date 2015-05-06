@@ -26,7 +26,7 @@
                                 @Html.LabelFor(m => m.RegionCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "RegionCodeChange();" }) 
+                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) 
                             </td>
                         </tr>
                         
@@ -35,7 +35,8 @@
                                 @Html.LabelFor(m => m.AreaCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "AreaCodeChange();" }) 
+                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) 
+                                <span id="LIArea"></span>
                             </td>
                         </tr>
                         <tr>
@@ -43,7 +44,8 @@
                                 @Html.LabelFor(m => m.CityCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%" }) 
+                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) 
+                                <span id="LICity"></span>
                             </td>
                         </tr>
                         <tr>
@@ -51,19 +53,19 @@
                                 @Html.LabelFor(m => m.SettlementCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%" }) 
+                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) 
+                                <span id="LISettlement"></span>
                             </td>
                         </tr>
-                        @*
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%" }) 
+                                <span id="LIStreet"></span>
                             </td>
                         </tr>
-                        *@
                     </table>
                 </div>
             </td>
@@ -72,41 +74,69 @@
 }
 
 <script type="text/javascript">
-    var actionAreaUrl = "@Url.Action("GetArea", "StaffList")";    
-    var actionCityUrl = "@Url.Action("DepartmentDialog", "StaffList")";
-    var actionSettlementUrl = "@Url.Action("DepartmentDialog", "StaffList")";
-    var actionStreetUrl = "@Url.Action("DepartmentDialog", "StaffList")";
+    var actionUrl = "@Url.Action("GetKladr", "StaffList")";    
 
     $(document).ready(function () {
         setActiveMenuItem("moAddress");
     });
 
 
-    function RegionCodeChange() {
-        if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
-                setEmptyToDropdown("RegionCode");
+    function CodeChange(AddressType) {
+        //загружаем районы
+        if (AddressType == 2){
+            if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
+                    setEmptyToDropdown("RegionCode");
+            else{
+                //районы
+                $("#LIArea").addClass("loading");                
+                GetArea(actionUrl, "AreaCode", $("#RegionCode").val(), "GET", AddressType);
+                $("#LIArea").removeClass("loading");
+                //города
+                $("#LICity").addClass("loading");
+                GetArea(actionUrl, "CityCode", $("#RegionCode").val(), "GET", AddressType + 1);
+                $("#LICity").removeClass("loading");
+                //населенные пункты
+                $("#LISettlement").addClass("loading");
+                GetArea(actionUrl, "SettlementCode", $("#RegionCode").val(), "GET", AddressType + 2);
+                $("#LISettlement").removeClass("loading");
+                //улицы
+                $("#LISettlement").addClass("loading");
+                GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType + 3);
+                $("#LISettlement").removeClass("loading");
+            }
+        }
+        //загружаем города
+        if (AddressType == 3){
+            if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
+                    setEmptyToDropdown("AreaCode");
             else
-                GetArea(actionAreaUrl, "AreaCode", $("#RegionCode").val());
-        //setEmptyToDropdown('Level4ID');
-        //setEmptyToDropdown('Level5ID');
-        //setEmptyToDropdown('Level6ID');
-        //setEmptyToDropdown('Level7ID');
+                GetArea(actionUrl, "CityCode", $("#AreaCode").val(), "GET", AddressType);
+        }
+        //загружаем населенные пункты
+        if (AddressType == 4){
+            if($("#CityCode").val() == "" || $("#CityCode").val() == null)
+                    setEmptyToDropdown("CityCode");
+            else
+                GetArea(actionUrl, "SettlementCode", $("#CityCode").val(), "GET", AddressType);
+        }
+        //загружаем улицы
+        if (AddressType == 5){
+            if($("#SettlementCode").val() == "" || $("#SettlementCode").val() == null)
+                    setEmptyToDropdown("SettlementCode");
+            else
+                GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
+        }
+        //setEmptyToDropdown('Level4ID', AddressType);
+        //setEmptyToDropdown('Level5ID', AddressType);
+        //setEmptyToDropdown('Level6ID', AddressType);
+        //setEmptyToDropdown('Level7ID', AddressType);
     }
 
-    function AreaCodeChange() {
-        if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
-                setEmptyToDropdown("AreaCode");
-            else
-                GetChilds(actionCityUrl, "AreaCode", $("#AreaCode").val(), "GET");
-        //setEmptyToDropdown('Level4ID');
-        //setEmptyToDropdown('Level5ID');
-        //setEmptyToDropdown('Level6ID');
-        //setEmptyToDropdown('Level7ID');
-    }
 
-    function GetArea(actionUrl, controlName,code, RequestType) {
+
+    function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
         //clearDepSelErrors();
-        var url = actionUrl + '?RegionCode='+ code;
+        var url = actionUrl + '?Code='+ code + '&AddressType=' + AddressType;
 
         var dataToSend = $("#Address-form").serialize();
         
@@ -117,7 +147,7 @@
                 data: dataToSend,
                 success: function(result){
                     console.log("да");
-                    setValuesToDropdown(controlName, result);
+                    setValuesToDropdown(controlName, result, AddressType);
                 },
                 error: function(){
                     //alert("При загрузке данных произошла ошибка.");
@@ -128,11 +158,11 @@
     }
 
     //заполняем данными комбобокс
-    function setValuesToDropdown(controlName,data)
+    function setValuesToDropdown(controlName,data, AddressType)
     {
         //var options = $('#' + controlName);
         //options.attr("disabled", "disabled");
-        var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+        var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
         optionsValues += '<option value=""></option>';
         $.each(data, function (item, data) {
             optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
@@ -147,8 +177,8 @@
     }
 
     //чистим комбобоксы
-    function setEmptyToDropdown(controlName) {
-        var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+    function setEmptyToDropdown(controlName, AddressType) {
+        var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
         optionsValues += '<option value=""></option>';
         optionsValues += '</select>';
         var options = $('#' + controlName);

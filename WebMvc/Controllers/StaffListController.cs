@@ -64,25 +64,10 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ContentResult GetArea(string RegionCode)
+        public ContentResult GetKladr(string Code, int AddressType)
         {
-            //DepartmentChildrenDto model;
-            //try
-            //{
-            //    model = RequestBl.GetChildren(parentId, level);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error("Exception on GetChildren:", ex);
-            //    string error = ex.GetBaseException().Message;
-            //    model = new DepartmentChildrenDto
-            //    {
-            //        Error = string.Format("Ошибка: {0}", error),
-            //        Children = new List<IdNameDto>()
-            //    };
-            //}
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(StaffListBl.GetAreas(RegionCode));
+            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType));
             return Content(jsonString);
         }
     }

@@ -55,21 +55,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         public AddressModel GetAddress()
         {
             AddressModel model = new AddressModel();
-            model.Regions = KladrDao.GetRegions();
-            model.Areas = KladrDao.GetAreas(null);
-            model.Cityes = KladrDao.GetCityes(null, null);
-            model.Settlements = KladrDao.GetSettlements(null, null, null);
+            model.Regions = KladrDao.GetKladr(1, null, null, null, null);
+            model.Areas = KladrDao.GetKladr(2, null, null, null, null);
+            model.Cityes = KladrDao.GetKladr(3, null, null, null, null);
+            model.Settlements = KladrDao.GetKladr(4, null, null, null, null);
+            model.Streets = KladrDao.GetKladr(5, null, null, null, null);
             return model;
         }
         /// <summary>
         /// Загружаем список районов.
         /// </summary>
-        /// <param name="RegionCode">Код региона.</param>
+        /// <param name="Code">Код записи.</param>
+        /// <param name="AddressType">Тип записи.</param>
         /// <returns></returns>
-        public IList<KladrDto> GetAreas(string RegionCode)
+        public IList<KladrDto> GetKladr(string Code, int AddressType)
         {
-            KladrDto row = KladrDao.GetKladrByCode(RegionCode).Single();
-            return KladrDao.GetAreas(row.RegionCode);
+            KladrDto row = KladrDao.GetKladrByCode(Code).Single();
+            return KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode);
         }
     }
 }
