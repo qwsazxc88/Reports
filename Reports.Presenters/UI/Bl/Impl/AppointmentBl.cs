@@ -493,6 +493,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerApproveAvailable = true;
                                 model.IsEditable = true;
                             }
+                            else
+                            {
+                               if(entity.BankAccountantAccept.HasValue)
+                                   model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                            }
                     }
                     else if (!entity.DeleteDate.HasValue 
                             && entity.ManagerDateAccept.HasValue 
@@ -548,6 +553,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
+            var chiefs = GetChiefsForManager(creator.Id);
+            var manualchiefs = ManualRoleRecordDao.GetManualRoleHoldersForUser(creator.Id, UserManualRole.ApprovesCommonRequests);
+            
+            if (chiefs.Contains(current) || manualchiefs.Contains(current)) return true;
+
             if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
@@ -646,7 +656,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region Заполнение списка вышестоящих руководителей
 
             IList<User> chiefs = GetChiefsForManager(user.Id)
-                .Where<User>(chief => chief.Level >= 4)
+                //.Where<User>(chief => chief.Level >= 4)
                 .OrderByDescending<User, int?>(chief => chief.Level)
                 .ToList<User>();
 
@@ -1083,6 +1093,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             string to = string.Empty;
             //IdNameDto user;
             List<IdNameDto> users;
+            var chiefs = GetChiefsForManager(creator.Id).OrderByDescending(x=>x.Level);
+            if (chiefs.Any())
+                foreach(var el in chiefs)
+                {
+                    if (String.IsNullOrWhiteSpace(el.Email)) continue;
+                    string b;
+                    string s = GetSubjectAndBodyForAppointmentManagerAcceptRequest(creator, entity, out b);
+                    return SendEmail(el.Email, s, b);
+                }
+            #region Анахронизм
             switch (creator.UserRole)
             {
                 case UserRole.Manager:
@@ -1207,6 +1227,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(creator, entity, out body);
             return SendEmail(to, subject, body);
+            #endregion
         }
         protected string GetSubjectAndBodyForAppointmentManagerAcceptRequest(User user, Appointment entity, out string body)
         {
@@ -2003,7 +2024,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Руководители вышележащих уровней по ветке для всех
             User currentUserOrManagerAccount = managerAccount ?? user;
             mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
-                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) && manager.Level > 3)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) /*&& manager.Level > 3*/)
                 .ToList<User>();
 
             foreach (var mainManager in mainManagers)
