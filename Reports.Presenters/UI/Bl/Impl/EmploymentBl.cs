@@ -1665,7 +1665,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Roster = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -1) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
@@ -2733,6 +2733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new List<SelectListItem>
             {
+                new SelectListItem {Text = "Анкета в стадии заполнения", Value = "0"},
                 new SelectListItem {Text = "Ожидает согласование ДБ", Value = "1"},
                 new SelectListItem {Text = "Обучение", Value = "2"},
                 new SelectListItem {Text = "Ожидается заявление о приеме", Value = "3"},
