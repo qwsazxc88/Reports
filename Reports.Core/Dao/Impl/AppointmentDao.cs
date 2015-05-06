@@ -598,6 +598,14 @@ namespace Reports.Core.Dao.Impl
                                     inner join  dbo.AppointmentManager2ParentToManager2Child dmtom on  dmtom.ParentId = uC.[Id]
                                     where uC.Id = {0} and dmtom.ChildId = u.Id
                                 )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
+                                )
                                 ", currentUser.Id);
                             break;
                         case 3:
