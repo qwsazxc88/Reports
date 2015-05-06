@@ -549,7 +549,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
             var chiefs = GetChiefsForManager(creator.Id);
-            if (chiefs.Contains(current)) return true;
+            var manualchiefs = ManualRoleRecordDao.GetManualRoleHoldersForUser(creator.Id, UserManualRole.ApprovesCommonRequests);
+            
+            if (chiefs.Contains(current) || manualchiefs.Contains(current)) return true;
 
             if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
