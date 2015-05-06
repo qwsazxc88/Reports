@@ -743,6 +743,8 @@ namespace Reports.Core.Dao.Impl
             if(sqlQuery.Contains(":userId"))
                 query.
                 SetInt32("userId", managerId);
+            if (sqlQuery.Contains(":userName"))
+                query.SetString("userName", userName);
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
