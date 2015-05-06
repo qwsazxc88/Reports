@@ -268,10 +268,11 @@ namespace Reports.Core.Dao.Impl
 
         public override string GetStatusWhere(string whereString, int statusId)
         {
-            if (statusId > 0)
+            if (statusId != -1)
             {
                 whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
             }
+            //whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
 
             return whereString;
         }
