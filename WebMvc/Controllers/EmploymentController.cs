@@ -1677,9 +1677,9 @@ namespace WebMvc.Controllers
                     else
                     {
                         string str = model.IsSave ? "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!" : "Файл загружен!";
-                        EmploymentBl.SaveCandidateDocumentsAttachments(model);
+                        EmploymentBl.SaveCandidateDocumentsAttachments(model, out error);
                         model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                        ModelState.AddModelError("SendTo1C", str);
+                        ModelState.AddModelError("SendTo1C", string.IsNullOrEmpty(error) ? str : error);
                     }
                 }
 
