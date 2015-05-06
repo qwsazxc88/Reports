@@ -70,7 +70,7 @@ namespace Reports.Core.Dao.Impl
 					when candidate.Status = 7 then N'Оформлен'
 					when candidate.Status = 8 then N'Выгружено в 1С'
 					when candidate.Status = 9 then N'Отклонен'
-					else N''
+					else N'Анкета в стадии заполнения'
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
                 , managers.HigherManagerApprovalStatus IsApprovedByHigherManager
