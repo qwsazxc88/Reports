@@ -680,7 +680,7 @@ namespace Reports.Core.Dao.Impl
 #endregion
                     if (!String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere = sqlWhere + " or ";
                     sqlWhere = string.Format(@"{0}
-                        u.Id in
+                        (u.Id in
                         (
                             select mrr.TargetUserId
                             from [dbo].[ManualRoleRecord] mrr
@@ -711,7 +711,7 @@ namespace Reports.Core.Dao.Impl
                                         on ud.Path like branchDept.Path + '%'
                                     inner join Users us
                                         on us.Id = :userId AND branchDept.Id=us.DepartmentId
-						)
+						))
                         ", sqlWhere);
 
                     //sqlWhere += "u.ManagerId = :userId";
@@ -729,7 +729,7 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(userName))
             {
                 if (!String.IsNullOrEmpty(sqlWhere)) sqlWhere += " AND ";
-                sqlWhere += " u.Name like :userName  ";
+                sqlWhere += String.Format(" u.Name like '{0}%'  ",userName);
             }
             if (departmentId != 0 && (managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
@@ -743,8 +743,6 @@ namespace Reports.Core.Dao.Impl
             if(sqlQuery.Contains(":userId"))
                 query.
                 SetInt32("userId", managerId);
-            if (sqlQuery.Contains(":userName"))
-                query.SetString("userName", userName);
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
