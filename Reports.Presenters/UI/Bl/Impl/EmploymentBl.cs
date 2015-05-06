@@ -3186,8 +3186,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        public void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model)
+        public void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error)
         {
+            error = string.Empty;
+
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
@@ -3212,6 +3214,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ApplicationLetterScan, IsNeeded = model.ApplicationLetterScanFileNeeded });
 
+            if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+            {
+                error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                return;
+            }
 
             if (model.EmploymentContractFile != null)
             {
@@ -3389,6 +3396,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 catch 
                 {
                     EmploymentCandidateDocNeededDao.RollbackTran();
+                    error = "Произошла ошибка при сохранении данных!";
                     return;
                 }
             }
