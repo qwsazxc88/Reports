@@ -2739,7 +2739,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "4"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "5"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
-                new SelectListItem {Text = "Завершено", Value = "7"},
+                new SelectListItem {Text = "Оформлен", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
                 new SelectListItem {Text = "Отклонен", Value = "9"}
             };

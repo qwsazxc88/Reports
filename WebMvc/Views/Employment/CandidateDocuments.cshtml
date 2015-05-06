@@ -11,13 +11,14 @@
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.SendTo1C)</span>
 
 @using (Html.BeginForm("CandidateDocuments", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)    
     @Html.HiddenFor(m => m.IsSave)
     @Html.HiddenFor(m => m.SendTo1C)
-    <span style="font-size:large;">@Html.ValidationMessageFor(m => m.SendTo1C)</span>
+    
 
     <input type="hidden" id="DeleteAttachmentId" name="DeleteAttachmentId" value="@Model.DeleteAttachmentId" />
     <fieldset class="bordered doc-wrap panel">
