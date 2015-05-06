@@ -26,6 +26,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
+        public bool IsEducationDraft { get; set; } //ok
+
         //для удаления записей на странице
         public int Operation { get; set; }
         public int RowID { get; set; }
