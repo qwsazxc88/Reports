@@ -103,10 +103,11 @@
     </table>
 
     @* END Выбор параметров *@
-    
-    if ((dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
+   
+    int[] createcandidateapprove = { 15630,1531,1532,1533,1534,1536,1537,1538,1539,1540,1541,1542,1543,1544,1545,1546,1547,1548,1549,1550,16378,16378,16379,20174 };    
+    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id)))
     {
-        @*<div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>*@
+        <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
     <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала ( согласование  кандидата) " => Инструкция =>   Согласование кандидата  от Руководителя.</label>
     <div style="text-align: right;">
