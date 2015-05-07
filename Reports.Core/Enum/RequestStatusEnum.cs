@@ -108,6 +108,8 @@
         CashWorkAddition1Scan = 283,
         CashWorkAddition2Scan = 284,
         ObligationTradeSecretScan = 285,
+        Certificate182HScan = 286,
+        Certificate2NDFLScan = 287,
 
         // Dismissal Additional Documents Scans
 

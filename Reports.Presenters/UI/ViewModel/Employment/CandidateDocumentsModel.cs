@@ -105,6 +105,19 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int ObligationTradeSecretFileId { get; set; }
         public bool ObligationTradeSecretFileNeeded { get; set; }//требуется скан
 
+        //Справка 182-Н от предыдущего работодателя
+        public HttpPostedFileBase Certificate182HFile { get; set; }
+        public string Certificate182HFileName { get; set; }
+        public int Certificate182HFileId { get; set; }
+        public bool Certificate182HFileNeeded { get; set; }//требуется скан
+
+        //Справка 2-НДФЛ от предыдущего работодателя
+        public HttpPostedFileBase Certificate2NDFLFile { get; set; }
+        public string Certificate2NDFLFileName { get; set; }
+        public int Certificate2NDFLFileId { get; set; }
+        public bool Certificate2NDFLFileNeeded { get; set; }//требуется скан
+
+
         //для удаления сканов
         public int DeleteAttachmentId { get; set; }
         //для сохранение выбранного перечня документов
