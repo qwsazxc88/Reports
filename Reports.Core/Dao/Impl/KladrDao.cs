@@ -21,8 +21,14 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<KladrDto> GetKladrByCode(string Code)
         {
-            IQuery query = CreateKladrQuery(string.Format(@"SELECT top 1 Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.Kladr {0}",
-                string.IsNullOrEmpty(Code) ? "WHERE Code is null" : " WHERE Code = '" + Code + "' "));
+            string QueryString = string.Empty;
+            if (string.IsNullOrEmpty(Code))
+                QueryString = @"SELECT     NULL AS Name, NULL AS ShortName, NULL AS [Index], NULL AS AltName, NULL AS AddressType, NULL AS RegionCode, NULL AS AreaCode, NULL AS CityCode, NULL
+                                AS SettlementCode, NULL AS StreetCode, NULL AS Code";
+            else
+                QueryString = @"SELECT top 1 Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.Kladr WHERE Code = '" + Code + "' ";
+
+            IQuery query = CreateKladrQuery(QueryString);
 
             return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
         }

@@ -7,6 +7,7 @@ using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Core.Dto;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
@@ -60,6 +61,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Cityes = KladrDao.GetKladr(3, null, null, null, null);
             model.Settlements = KladrDao.GetKladr(4, null, null, null, null);
             model.Streets = KladrDao.GetKladr(5, null, null, null, null);
+            model.HouseTypes = GetAddressDictionary(1);
+            model.BuildTypes = GetAddressDictionary(2);
+            model.FlatTypes = GetAddressDictionary(3);
             return model;
         }
         /// <summary>
@@ -72,6 +76,37 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             KladrDto row = KladrDao.GetKladrByCode(Code).Single();
             return KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode);
+        }
+        /// <summary>
+        /// Заполняем выпадающие списки.
+        /// </summary>
+        /// <param name="FillType">Переключатель: 1 - дом/владение, 2 - корпус/строение, 3 - квартира/офис.</param>
+        /// <returns></returns>
+        public IList<IdNameDto> GetAddressDictionary(int FillType)
+        {
+            IList<IdNameDto> ht = new List<IdNameDto>();
+
+            switch (FillType)
+            {
+                case 1:
+                    //ht.Add(new IdNameDto { Id = 0, Name = "" });
+                    ht.Add(new IdNameDto { Id = 1, Name = "дом"});
+                    ht.Add(new IdNameDto { Id = 2, Name = "владение" });
+                    break;
+                case 2:
+                    //ht.Add(new IdNameDto { Id = 0, Name = "" });
+                    ht.Add(new IdNameDto { Id = 1, Name = "корпус" });
+                    ht.Add(new IdNameDto { Id = 2, Name = "строение" });
+                    break;
+                case 3:
+                    //ht.Add(new IdNameDto { Id = 0, Name = "" });
+                    ht.Add(new IdNameDto { Id = 1, Name = "кв." });
+                    ht.Add(new IdNameDto { Id = 2, Name = "офис" });
+                    break;
+            }
+            
+
+            return ht;
         }
     }
 }
