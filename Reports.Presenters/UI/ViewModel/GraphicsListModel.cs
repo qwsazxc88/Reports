@@ -32,5 +32,6 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int NumberOfPages { get; set; }
         public int CurrentPage { get; set; }
+        public bool ForPrint { get; set; }
     }
 }
