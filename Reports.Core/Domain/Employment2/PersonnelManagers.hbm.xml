@@ -44,6 +44,7 @@
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_PersonnelManagers_InsuredPersonType" index="PersonnelManagers_InsuredPersonType"  not-null="false"/>
     <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_PersonnelManagers_Schedule" index="PersonnelManagers_Schedule"  not-null="false"/>
+    <many-to-one name="ExtraCharges" class="ExtraCharges" column="ExtraChargesId" foreign-key="FK_PersonnelManagers_PersonnelOrderExtraCharges" index="IX_PersonnelManagers_PersonnelOrderExtraCharges" not-null="false"/>
     <property name="Status" not-null="false"/>
     <property name="CompleteDate" not-null="false"/>
     <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
