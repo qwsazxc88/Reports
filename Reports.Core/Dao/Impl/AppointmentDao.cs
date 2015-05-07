@@ -284,6 +284,22 @@ namespace Reports.Core.Dao.Impl
                     AddScalar("Name", NHibernateUtil.String); ;
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
         }
+        public virtual List<IdNameDto> GetForManagersParentDepartment(int departmentId)
+        {
+            string sqlQuery = string.Format(@"select top(1) u.Id,u.email as Name from users u
+                        inner join dbo.Department dParent on dParent.Id = u.DepartmentId
+                        inner join dbo.Department dChild on dChild.Path like dParent.Path +N'%' 
+                        where u.IsActive=1 and u.Level is not null and  dChild.Id = {0} and dParent.ItemLevel<dChild.ItemLevel
+						order by Level desc, IsMainManager desc", departmentId);
+                        
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                    AddScalar("Id", NHibernateUtil.Int32).
+                    AddScalar("Name", NHibernateUtil.String); ;
+            var result= query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
+            
+            return result;
+            
+        }
         public virtual List<IdNameDto> GetParentForManagerDepartment(int departmentId)
         {
             string sqlQuery = string.Format(@"select distinct u.Id,u.email as Name from users u
@@ -581,6 +597,14 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join  dbo.AppointmentManager2ParentToManager2Child dmtom on  dmtom.ParentId = uC.[Id]
                                     where uC.Id = {0} and dmtom.ChildId = u.Id
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
                                 )
                                 ", currentUser.Id);
                             break;
