@@ -69,7 +69,8 @@ namespace Reports.Core.Dao.Impl
                                 end as Status,
                                 v.Address as address,
                                 dep3.Name as Dep3Name,
-                                L.Name as ProdTimeName
+                                L.Name as ProdTimeName,
+                                O.Name as PeriodName
                                 from dbo.HelpServiceRequest v
                                 left join [dbo].[RequestAttachment] att on v.Id=att.RequestId and att.RequestType=11
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id
@@ -82,6 +83,7 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
+                                LEFT JOIN [dbo].[HelpServicePeriod] as O ON O.Id = v.PeriodId
                                 {0}";
         
         public override IQuery CreateQuery(string sqlQuery)
@@ -113,7 +115,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserBirthDate",NHibernateUtil.Date).
                 AddScalar("IsOriginalReceived",NHibernateUtil.Boolean).
                 AddScalar("IsForGEMoney",NHibernateUtil.Boolean).
-                AddScalar("DocumentsCount",NHibernateUtil.Int32)
+                AddScalar("DocumentsCount",NHibernateUtil.Int32).
+                AddScalar("PeriodName", NHibernateUtil.String)
                 ;  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,
@@ -217,6 +220,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     orderBy = @" order by NoteName";
+                    break;
+                case 18:
+                    orderBy = @" order by PeriodName";
                     break;
             }
             if (sortDescending.Value)

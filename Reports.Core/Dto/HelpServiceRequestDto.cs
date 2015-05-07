@@ -32,6 +32,7 @@ namespace Reports.Core.Dto
         public bool IsOriginalReceived { get; set; }
         public bool IsForGEMoney { get; set; }
         public int DocumentsCount { get; set; }
+        public string PeriodName { get; set; }
     }
       //AddScalar("Id", NHibernateUtil.Int32).
       //          AddScalar("UserId", NHibernateUtil.Int32).

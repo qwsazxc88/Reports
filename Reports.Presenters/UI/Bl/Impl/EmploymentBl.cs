@@ -233,6 +233,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentCandidateDocNeededDao = value; }
         }
 
+        protected IExtraChargesDao extraChargesDao;
+        public IExtraChargesDao ExtraChargesDao
+        {
+            get { return Validate.Dependency(extraChargesDao); }
+            set { extraChargesDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -1589,6 +1596,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ObligationTradeSecretFileId = attachmentId;
                 model.ObligationTradeSecretFileName = attachmentFilename;
 
+                //Справка 182-Н от предыдущего работодателя
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate182HScan);
+                model.Certificate182HFileId = attachmentId;
+                model.Certificate182HFileName = attachmentFilename;
+
+                //Справка 2-НДФЛ от предыдущего работодателя
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate2NDFLScan);
+                model.Certificate2NDFLFileId = attachmentId;
+                model.Certificate2NDFLFileName = attachmentFilename;
+
                 //достаем метки для документов
                 IList<AttachmentNeedListDto> adl = EmploymentCandidateDocNeededDao.GetCandidateDocListNeeded(entity.Candidate.Id);
                 if (adl != null && adl.Count != 0)
@@ -1608,6 +1625,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.CashWorkAddition1FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition1Scan).Single().IsNeeded;
                     model.CashWorkAddition2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition2Scan).Single().IsNeeded;
                     model.ObligationTradeSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan).Single().IsNeeded;
+                    //для уже существующего списка
+                    if (model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Count() != 0)
+                        model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Single().IsNeeded;
+                    if (model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Count() != 0)
+                        model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Single().IsNeeded;
                 }
                 else
                 {
@@ -2600,6 +2622,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
             model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
             model.NorthExperienceTypes = GetNorthExperienceTypes();
+            model.ExtraCharges = ExtraChargesDao.LoadAll();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -3337,6 +3360,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SaveAttachment(candidateId, model.ObligationTradeSecretFileId, fileDto, RequestAttachmentTypeEnum.ObligationTradeSecretScan, out fileName);
             }
             DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan, IsNeeded = model.ObligationTradeSecretFileNeeded });
+
+            if (model.Certificate182HFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.Certificate182HFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.Certificate182HFileId, fileDto, RequestAttachmentTypeEnum.Certificate182HScan, out fileName);
+            }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.Certificate182HScan, IsNeeded = model.Certificate182HFileNeeded });
+
+            if (model.Certificate2NDFLFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.Certificate2NDFLFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.Certificate2NDFLFileId, fileDto, RequestAttachmentTypeEnum.Certificate2NDFLScan, out fileName);
+            }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.Certificate2NDFLScan, IsNeeded = model.Certificate2NDFLFileNeeded });
 
             if (model.IsSave)
             {
@@ -4284,6 +4323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
             entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
             entity.NorthExperienceType = viewModel.NorthExperienceType;
+            entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
             if (viewModel.ScheduleId.HasValue)
             {
@@ -4796,6 +4836,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
                     entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
                     entity.NorthExperienceType = viewModel.NorthExperienceType;
+                    entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {
