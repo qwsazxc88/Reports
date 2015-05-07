@@ -66,8 +66,16 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
-        public ActionResult IndexPrint(GraphicsListModel model)
+        public ActionResult IndexPrint(int month, int year, int departmentId, string userName, int? currentPage)
         {
+            GraphicsListModel model = new GraphicsListModel
+            {
+                Month=month,
+                Year=year,
+                DepartmentId=departmentId,
+                UserName=userName,
+                CurrentPage=currentPage.HasValue?currentPage.Value:0
+            };
             model.ForPrint = false;
             return Index(model);
         }
