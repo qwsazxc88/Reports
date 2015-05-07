@@ -59,13 +59,17 @@ namespace WebMvc.Controllers
         {
             if (model.ForPrint)
             {
-                return GetPrintForm("Graphics", "Table", model.ToParamsString(), false);
+                return GetPrintForm("Graphics", "IndexPrint", model.ToParamsString(), false);
             }
             EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetGraphicsListModel(model);
             return View(model);
         }
-        
+        [HttpGet]
+        public ActionResult IndexPrint(GraphicsListModel model)
+        {
+            return Index(model);
+        }
         
         [HttpGet]
         public PartialViewResult Table(int month, int year, int departmentId, string userName,int? currentPage)
