@@ -4323,7 +4323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
             entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
             entity.NorthExperienceType = viewModel.NorthExperienceType;
-            entity.ExtraCharges = viewModel.ExtraChargesId.HasValue ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
+            entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
             if (viewModel.ScheduleId.HasValue)
             {
@@ -4836,6 +4836,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
                     entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
                     entity.NorthExperienceType = viewModel.NorthExperienceType;
+                    entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {
