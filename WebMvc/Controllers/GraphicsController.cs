@@ -6,7 +6,14 @@ using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
-
+using System.Web;
+using System.Configuration;
+using System.IO;
+using System.Web.Security;
+using System.Text;
+using System.Diagnostics;
+using System.Reflection;
+using WebMvc.Helpers;
 namespace WebMvc.Controllers
 {
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager)]
@@ -50,11 +57,30 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Index(GraphicsListModel model)
         {
+            if (model.ForPrint)
+            {
+                return GetPrintForm("Graphics", "IndexPrint", model.ToParamsString(), false);
+            }
             EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetGraphicsListModel(model);
-            return View(model);
+            return View("Index",model);
         }
-
+        [HttpGet]
+        public ActionResult IndexPrint(int month, int year, int departmentId, string userName, int? currentPage)
+        {
+            GraphicsListModel model = new GraphicsListModel
+            {
+                Month=month,
+                Year=year,
+                DepartmentId=departmentId,
+                UserName=userName,
+                CurrentPage=currentPage.HasValue?currentPage.Value:0
+            };
+            model.ForPrint = false;
+            ViewBag.HideLayout = true;
+            return Index(model);
+        }
+        
         [HttpGet]
         public PartialViewResult Table(int month, int year, int departmentId, string userName,int? currentPage)
         {
@@ -237,5 +263,109 @@ namespace WebMvc.Controllers
             }
             return string.IsNullOrEmpty(model.Error);
         }
+
+        #region Print
+        [HttpGet]
+        public ActionResult GetPrintForm(string controller, string actionName, string param, bool isLandscape)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var argumrnts = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                if (isLandscape)
+                    argumrnts.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
+                    GetConverterCommandParam(param, actionName,controller)
+                    , cookieName, authCookie.Value);
+                else
+                    argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                    GetConverterCommandParam(param, actionName,controller)
+                    , cookieName, authCookie.Value);
+                argumrnts.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = argumrnts.ToString(),
+                        UseShellExecute = true,
+                    },
+                    EnableRaisingEvents = true,
+
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", controller+".pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetPrintForm", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+        public static ActionResult GetFile(HttpResponseBase Response, HttpRequestBase Request, HttpServerUtilityBase Server,
+            string filePath, string fileName, string contentType, string userFileName)
+        {
+            byte[] value;
+            using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+            {
+                value = new byte[stream.Length];
+                stream.Read(value, 0, (int)stream.Length);
+            }
+            //const string userFileName = "MissionOrder.pdf";
+            //const string contentType = "application/pdf";
+            Response.Clear();
+            if (Request.Browser.Browser == "IE")
+            {
+                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(userFileName));
+                Response.AddHeader("Content-Disposition", attachment);
+            }
+            else
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + userFileName + "\"");
+
+            Response.ContentType = contentType;
+            Response.Charset = "utf-8";
+            Response.HeaderEncoding = Encoding.UTF8;
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.BinaryWrite(value);
+            Response.End();
+            return null;
+        }
+        protected string GetConverterCommandParam(string param, string actionName, string controller)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            string urlTemplate = string.Format("{0}/{1}", controller, actionName);
+            string args = @"?" + param;
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}{2}", localhostUrl, urlTemplate, args)
+                       : Url.Content(string.Format(@"{0}{1}", urlTemplate, args));
+        }
+        #endregion
     }
 }

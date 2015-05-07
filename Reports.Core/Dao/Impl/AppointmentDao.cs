@@ -459,14 +459,14 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 22:
                     if (sqlQuery.Contains("AppointmentReport"))
-                         orderBy = @" order by r.CreateDate";
-                    else orderBy = @" order by v.CreateDate";
+                         orderBy = @" order by CreateDate";
+                    else orderBy = @" order by CreateDate";
                     break;
                 case 23:
-                    orderBy = @" order by v.Recruter";
+                    orderBy = @" order by Recruter";
                     break;
                 case 24:
-                    orderBy = @" order by v.FIO";
+                    orderBy = @" order by CandidateFIO";
                     break;
             }
             if (sortDescending.Value)
@@ -597,6 +597,14 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join  dbo.AppointmentManager2ParentToManager2Child dmtom on  dmtom.ParentId = uC.[Id]
                                     where uC.Id = {0} and dmtom.ChildId = u.Id
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
                                 )
                                 ", currentUser.Id);
                             break;

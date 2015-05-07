@@ -1676,9 +1676,10 @@ namespace WebMvc.Controllers
                     }
                     else
                     {
-                        EmploymentBl.SaveCandidateDocumentsAttachments(model);
+                        string str = model.IsSave ? "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!" : "Файл загружен!";
+                        EmploymentBl.SaveCandidateDocumentsAttachments(model, out error);
                         model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                        ModelState.AddModelError("SendTo1C", "Список документов для подписи сформирован! Если список документов сформирован впервые или был изменен, то будет отправлено сообщение руководителю!");
+                        ModelState.AddModelError("SendTo1C", string.IsNullOrEmpty(error) ? str : error);
                     }
                 }
 
@@ -1701,19 +1702,21 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("SendTo1C", "У вас нет прав для редактирования данных!");
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                    if (Session["CandidateDocumentsMS" + SPPath] != null)
-                        Session.Remove("CandidateDocumentsMS" + SPPath);
-                    if (Session["CandidateDocumentsMS" + SPPath] == null)
-                    {
-                        ModelStateDictionary mst = ModelState;
-                        Session.Add("CandidateDocumentsMS" + SPPath, mst);
-                    }
                 }
                 else
                 {
                     DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
                     EmploymentBl.DeleteAttachment(modelDel);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
+                    ModelState.AddModelError("SendTo1C", "Файл удален!");
+                }
+
+                if (Session["CandidateDocumentsMS" + SPPath] != null)
+                    Session.Remove("CandidateDocumentsMS" + SPPath);
+                if (Session["CandidateDocumentsMS" + SPPath] == null)
+                {
+                    ModelStateDictionary mst = ModelState;
+                    Session.Add("CandidateDocumentsMS" + SPPath, mst);
                 }
             }
 
