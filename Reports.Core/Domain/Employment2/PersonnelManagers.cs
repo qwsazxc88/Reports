@@ -68,6 +68,8 @@ namespace Reports.Core.Domain
         public virtual int? ContractPoint_3_Id { get; set; }
         public virtual string ContractPointsFio { get; set; }
         public virtual string ContractPointsAddress { get; set; }
+
+        public virtual ExtraCharges ExtraCharges { get; set; }
         #endregion
 
         #region Constructors
