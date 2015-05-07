@@ -555,6 +555,9 @@ namespace Reports.Core
             Register(Component.For<IEmploymentSignersDao>()
                 .ImplementedBy<EmploymentSignersDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IExtraChargesDao>()
+                .ImplementedBy<ExtraChargesDao>()
+                .LifeStyle.Is(type));
 
 
             Register(Component.For<IHelpBillingTitleDao>()
