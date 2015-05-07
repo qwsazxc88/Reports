@@ -198,6 +198,9 @@
                     <th>
                         <div id="sort17" ><a href="#"  onclick = "SortChanged(17);">Кол-во<br />документов</a></div>
                     </th>
+                    <th>
+                        <div id="sort18" ><a href="#"  onclick = "SortChanged(18);">Период</a></div>
+                    </th>
                 </tr>
                 <tbody id="grid">
                     @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -274,6 +277,9 @@
                                 </td>
                                 <td>
                                 @doc.DocumentsCount
+                                </td>
+                                <td>
+                                    @doc.PeriodName
                                 </td>
                             </tr>
                             i++;

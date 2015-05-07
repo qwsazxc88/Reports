@@ -19,6 +19,7 @@
                     <b>Выбор параметров</b><br/><br/>
                         @*@Html.HiddenFor(m => m.ManagerId)*@
                         @*@Html.HiddenFor(m => m.IsEditable)*@
+                        @Html.HiddenFor(m => m.ForPrint)
                         @Html.LabelFor(m => m.Month):
                         @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name")) 
                         @Html.LabelFor(m => m.Year):
@@ -54,6 +55,7 @@
                   <td colspan="2">
                       <input type="submit" value="Применить"/>
                       <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                      <input type="button" value="Печать" onclick="PrintForm();" />
                   </td>
                 </tr>
          </table>
@@ -97,6 +99,12 @@
      $(document).ready(function () {
         //setActiveMenuItem("userTimesheet");
     });
+    function PrintForm()
+    {
+    $("#ForPrint").val("true");
+    document.forms[0].submit();
+     $("#ForPrint").val("false");
+    }
     function resetFilter() {
         $("#UserName").val('');
         if ($("#DepartmentReadOnly").val() == "False") {
