@@ -63,7 +63,7 @@ namespace WebMvc.Controllers
             }
             EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetGraphicsListModel(model);
-            return View(model);
+            return View("Index",model);
         }
         [HttpGet]
         public ActionResult IndexPrint(int month, int year, int departmentId, string userName, int? currentPage)
@@ -77,6 +77,7 @@ namespace WebMvc.Controllers
                 CurrentPage=currentPage.HasValue?currentPage.Value:0
             };
             model.ForPrint = false;
+            ViewBag.HideLayout = true;
             return Index(model);
         }
         
