@@ -68,6 +68,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult IndexPrint(GraphicsListModel model)
         {
+            model.ForPrint = false;
             return Index(model);
         }
         
