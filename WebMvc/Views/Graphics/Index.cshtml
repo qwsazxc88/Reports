@@ -19,7 +19,7 @@
                     <b>Выбор параметров</b><br/><br/>
                         @*@Html.HiddenFor(m => m.ManagerId)*@
                         @*@Html.HiddenFor(m => m.IsEditable)*@
-                        @Html.HiddenFor(m => m.ForPrint);
+                        @Html.HiddenFor(m => m.ForPrint)
                         @Html.LabelFor(m => m.Month):
                         @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name")) 
                         @Html.LabelFor(m => m.Year):
