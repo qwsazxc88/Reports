@@ -100,7 +100,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsorsingManager)]
         public ActionResult CreateServiceRequest(int? isForQuestion)
         {
             CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();

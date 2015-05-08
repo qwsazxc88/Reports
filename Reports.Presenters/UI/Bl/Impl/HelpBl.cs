@@ -198,7 +198,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.ConsultantOutsorsingManager) == UserRole.ConsultantOutsorsingManager);
         }
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
