@@ -1466,6 +1466,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.NorthExperienceMonths = entity.NorthExperienceMonths;
                 model.NorthExperienceDays = entity.NorthExperienceDays;
                 model.NorthExperienceType = entity.NorthExperienceType;
+                model.ExtraChargesId = entity.ExtraCharges.Id;
 
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
