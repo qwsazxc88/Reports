@@ -476,6 +476,7 @@
     function onPrintClick() {
 
         window.location.href = '@Url.Action("GetPrintRoster", "Employment")?' +
+        //window.location.href = '@Url.Action("PrintRoster", "Employment")?' + //для теста
             'beginDate='+ SetLocale($("#BeginDate").val()) +
             '&endDate=' + SetLocale($("#EndDate").val()) +
             '&departmentId=' + $("#DepartmentId").val() +

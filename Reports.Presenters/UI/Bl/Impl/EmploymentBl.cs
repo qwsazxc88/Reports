@@ -2542,7 +2542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -1) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
