@@ -55,6 +55,9 @@
                 </td>
                 <td>
                    @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
+                   <input type="text" name="Surname" id="Surname" value="@Model.Surname" placeholder="Введите начальные буквы фио сотрудника" style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "Help")" />
+                   @Html.HiddenFor(m => m.UserId)
+                   @Html.HiddenFor(m => m.Surname)
                 </td>
             </tr>
         </table>
@@ -106,6 +109,28 @@
     var options = $('#' + controlName );
     options.replaceWith(optionsValues);
     }*/
+
+    $(document).ready(function () {
+        //автозаполнение сотруников
+        $(function () {
+            $("[data-autocomplete-source]").each(
+                function () {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                        select: function (event, ui) {
+                            //для физиков
+                            if (ui.item.Id != null) {
+                                $("#Surname").val(ui.item.Name);
+                                $("#UserId").val(ui.item.Id);
+                            }
+                            return true;
+                    }
+                });
+            });
+        });
+
+    });
+
     function addUsersSelError(value) {
         $("#Error").text(value);
         $("#Error").show();

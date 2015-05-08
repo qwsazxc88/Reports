@@ -68,7 +68,8 @@ namespace Reports.Core.Dao
         IList<IdNameAddressDto> GetArchivistAddresses();
 
         IList<IdNameDto> GetManagersWithDepartments();
-        IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments);
+        IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments, string Surname);
+        IList<IdNameDto> GetEmployeesForCreateHelpServiceRequestOK(string Surname);
         IList<IdNameDto> GetUsersWithRole(UserRole role, bool? isActive);
     }
 }

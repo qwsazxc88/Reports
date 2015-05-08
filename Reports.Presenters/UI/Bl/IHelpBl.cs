@@ -1,6 +1,7 @@
 ﻿using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
+using System.Collections.Generic;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -12,6 +13,7 @@ namespace Reports.Presenters.UI.Bl
 
         CreateHelpServiceRequestModel GetCreateHelpServiceRequestModel();
         HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
+        IList<IdNameDto> GetPersonAutocomplete(string Name);
         void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
         void ReloadDictionariesToModel(HelpServiceRequestEditModel model);
         bool SaveServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto, out string error);
