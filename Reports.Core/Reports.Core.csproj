@@ -570,6 +570,7 @@
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
     <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateTechDissmissDto.cs" />
     <Compile Include="Dto\Employment2\ContractPointDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />

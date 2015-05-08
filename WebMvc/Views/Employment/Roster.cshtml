@@ -122,7 +122,12 @@
             <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
             <button id="SaveRosterButton" style="margin: 5px;">Записать</button>
         }
+        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id))){
+            <button type="button" id="btnSaveTechDissmiss">Сохранить техн. увольнения</button>
+        }
     </div>
+    
+    
     
     @* END CreateCandidate *@
 
@@ -159,6 +164,9 @@
         </th>
         <th>
             <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Структурное<br />подразделение<br />7 ур.</a></div>
+        </th>
+        <th>
+            Техническое<br/>увольнение
         </th>
         <th>
             <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Город<br />места<br />работы</a></div>
@@ -264,6 +272,10 @@
                 <td>
                     &nbsp;@candidate.Department
                 </td>
+                <td class="centered">
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
+
+                </td>
                 <td>
                     &nbsp;@candidate.WorkCity
                 </td>
@@ -321,6 +333,7 @@
                         <text>Из оформления без службы по найму</text>
                     }
                 </td>
+                
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                     <span class="buttonLink">Разделы</span>
@@ -438,6 +451,8 @@
                 url = "/Employment/RosterBulkChangeContractToIndefinite";
             }
 
+            
+
             $.post(url,
                 $("#mainForm").serialize(),
                 function (data) {
@@ -452,6 +467,26 @@
 
             e.preventDefault();
         });
+
+
+        $("#btnSaveTechDissmiss").click(function () {
+            var url="@Url.Action("CandidateSaveTechDissmiss", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        alert("Пометки о техническом увольнени сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
+            
 
     });
 
@@ -496,5 +531,10 @@
         $("tblBody").remove();
         SortChanged(OrderId);
     }
+
+
+
+    
+
 
 </script>

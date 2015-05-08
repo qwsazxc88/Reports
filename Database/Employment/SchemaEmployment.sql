@@ -1074,6 +1074,9 @@ GO
 			[ManagerToHigherManagerSendEmailDate] [datetime] NULL,
 			[IsPersonnelManagerToManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsPersonnelManagerToManagerSendEmail]  DEFAULT ((0)),
 			[PersonnelManagerToManagerSendEmailDate] [datetime] NULL,
+			[AppointmentReportId] [int] NULL,
+			[AppointmentId] [int] NULL,
+			[IsTechDissmiss] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsTtechDissmiss]  DEFAULT ((0)),
 		 CONSTRAINT [PK_EmploymentCandidate] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1564,6 +1567,9 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак технического увольнения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsTechDissmiss'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Version'
 	GO
 
