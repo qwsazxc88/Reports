@@ -3448,6 +3448,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+
+        
         /// <summary>
         /// Проверяем наличие изменений в списке документов для подписи кандидатом
         /// </summary>
@@ -4372,6 +4374,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
             }
+        }
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        public bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster)
+        {
+            try
+            {
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
+                    entity.IsTechDissmiss = item.IsTechDissmiss;
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
 
         #endregion
