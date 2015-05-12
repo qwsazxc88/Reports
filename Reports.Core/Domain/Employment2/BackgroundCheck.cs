@@ -42,6 +42,7 @@ namespace Reports.Core.Domain
         public virtual bool IsApprovalSkipped { get; set; }
         public virtual bool? ApprovalStatus { get; set; }
         public virtual User Approver { get; set; }
+        public virtual DateTime? ApprovalDate { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }
         public virtual bool IsValidate { get; set; }
