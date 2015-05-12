@@ -11759,7 +11759,27 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
-        
+
+        #region SurchageNote
+        public SurchargeNoteEditModel GetSurchargeNoteEditModel()
+        {
+
+        }
+        public void SaveSurchargeNote(SurchargeNoteEditModel model)
+        {
+            var creator=UserDao.Load(CurrentUser.Id);
+            
+            if (model.Id == 0)
+            {
+                var entity = new SurchargeNote { Creator = creator, CreateDate=DateTime.Now, NoteType=model.NoteType, PayDay=model.PayDay, User =UserDao.Load(model.UserId) };
+            }
+            else
+            { 
+            }
+        }
+
+        #endregion
+
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);

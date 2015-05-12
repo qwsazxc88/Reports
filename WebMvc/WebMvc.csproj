@@ -110,6 +110,7 @@
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
     <Compile Include="Controllers\SurchargeController.cs" />
+    <Compile Include="Controllers\SurchargeNoteController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="CustomModelMetadataProvider.cs" />
     <Compile Include="Global.asax.cs">
