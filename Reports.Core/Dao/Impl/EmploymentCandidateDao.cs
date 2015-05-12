@@ -67,10 +67,10 @@ namespace Reports.Core.Dao.Impl
 					when candidate.Status = 4 then N'Ожидает согласование руководителем'
 					when candidate.Status = 5 then N'Ожидает согласование вышестоящим руководителем'
 					when candidate.Status = 6 then N'Оформление Кадры'
-					when candidate.Status = 7 then N'Принят'
+					when candidate.Status = 7 then N'Оформлен'
 					when candidate.Status = 8 then N'Выгружено в 1С'
 					when candidate.Status = 9 then N'Отклонен'
-					else N''
+					else N'Анкета в стадии заполнения'
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
                 , managers.HigherManagerApprovalStatus IsApprovedByHigherManager
@@ -268,10 +268,11 @@ namespace Reports.Core.Dao.Impl
 
         public override string GetStatusWhere(string whereString, int statusId)
         {
-            if (statusId > 0)
+            if (statusId != -1)
             {
                 whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
             }
+            //whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
 
             return whereString;
         }

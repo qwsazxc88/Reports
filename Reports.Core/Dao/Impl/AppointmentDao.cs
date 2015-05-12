@@ -459,14 +459,14 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 22:
                     if (sqlQuery.Contains("AppointmentReport"))
-                         orderBy = @" order by r.CreateDate";
-                    else orderBy = @" order by v.CreateDate";
+                         orderBy = @" order by CreateDate";
+                    else orderBy = @" order by CreateDate";
                     break;
                 case 23:
-                    orderBy = @" order by v.Recruter";
+                    orderBy = @" order by Recruter";
                     break;
                 case 24:
-                    orderBy = @" order by v.FIO";
+                    orderBy = @" order by CandidateFIO";
                     break;
             }
             if (sortDescending.Value)
