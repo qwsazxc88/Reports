@@ -178,6 +178,10 @@
                 @Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
                 @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })&nbsp;@Html.LabelFor(m => m.NorthernAreaAddition)
             </div>
+            <div id="divEC" class="formfield">                
+                @Html.LabelFor(m => m.ExtraChargesId)<br />
+                @Html.DropDownListFor(m => m.ExtraChargesId, new SelectList(Model.ExtraCharges, "Id", "Name"))
+            </div>
         </fieldset>
 
         <fieldset class="bordered nomargin clear">
@@ -417,6 +421,13 @@
             $("#divNEY").hide();
             $("#divNEM").hide();
             $("#divNED").hide();
+        }
+
+        if (Id == 2 || Id == 3) {
+            $("#divEC").show();
+        }
+        else {
+            $("#divEC").hide();
         }
     }
 </script>

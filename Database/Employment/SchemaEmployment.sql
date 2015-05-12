@@ -117,6 +117,7 @@ GO
 			[NorthExperienceMonths] [int] NULL,
 			[NorthExperienceDays] [int] NULL,
 			[NorthExperienceType] [int] NULL,
+			[ExtraChargesId] [int] NULL,
 		 CONSTRAINT [PK_PersonnelManagers] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -125,6 +126,20 @@ GO
 
 		GO
 
+
+
+		CREATE TABLE [dbo].[PersonnelOrderExtraCharges](
+			[Id] [int] IDENTITY(1,1) NOT NULL,
+			[Version] [int] NOT NULL,
+			[Code1C] [nvarchar](5) NULL,
+			[Name] [nvarchar](50) NULL,
+		 CONSTRAINT [PK_PersonnelOrderExtraCharges] PRIMARY KEY CLUSTERED 
+		(
+			[Id] ASC
+		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+		) ON [PRIMARY]
+
+		GO
 
 
 		IF OBJECT_ID ('Schedule', 'U') IS NOT NULL
@@ -1538,9 +1553,35 @@ GO
 
 	ALTER TABLE [dbo].[PersonnelManagers] CHECK CONSTRAINT [FK_PersonnelManagers_Signer]
 	GO
+
+	ALTER TABLE [dbo].[PersonnelManagers]  WITH CHECK ADD  CONSTRAINT [FK_PersonnelManagers_PersonnelOrderExtraCharges] FOREIGN KEY([ExtraChargesId])
+	REFERENCES [dbo].[PersonnelOrderExtraCharges] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[PersonnelManagers] CHECK CONSTRAINT [FK_PersonnelManagers_PersonnelOrderExtraCharges]
+	GO
+
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Version'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Порядок начисления надбавок' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'ExtraChargesId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Id'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Code1C'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Name'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник начисления надбавок' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Год севернного стажа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelManagers', @level2type=N'COLUMN',@level2name=N'NorthExperienceYears'
 	GO
 
@@ -2210,6 +2251,19 @@ GO
 
 		INSERT INTO Signer(Version, Name, PreamblePartyTemplate,Position)
 		VALUES (1, N'Милованова Елена Николаевна', N'специалиста управления кадрового делопроизводства и учета ПАО "СОВКОМБАНК" Миловановой Елены Николаевны, действующей на основании Доверенности № 8 от 15.01.2015 г.', N'Специалист управления кадрового делопроизводства и учета ПАО "СОВКОМБАНК"')
+
+
+		--PersonnelOrderExtraCharges
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'1', N'Группа 1 обычная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'2', N'Группа 2 обычная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'3', N'Группа 3 обычная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'4', N'Группа 4 обычная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'5', N'Группа 1 льготная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'6', N'Группа 2 льготная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'7', N'Группа 3 льготная')
+		INSERT INTO PersonnelOrderExtraCharges(Version, Code1C, Name)	VALUES(1, N'8', N'Группа 4 льготная')
+		
+
 --ПЕРВИЧНЫЕ ДАННЫЕ ДЛЯ СПРАВОЧНИКОВ - КОНЕЦ
 --ФУНКЦИИ НАЧАЛО
 IF OBJECT_ID ('fnGetEmploymentAttachmentList', 'TF') IS NOT NULL

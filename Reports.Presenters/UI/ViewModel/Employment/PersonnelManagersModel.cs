@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
 using Reports.Core.Dto;
+using Reports.Core.Domain;
 using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -185,6 +186,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string ContractPointsAddress { get; set; }
 
+        [Display(Name = "Порядок начисления надбавок")]
+        public int? ExtraChargesId { get; set; }
+        public IList<ExtraCharges> ExtraCharges { get; set; }
+        
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }
