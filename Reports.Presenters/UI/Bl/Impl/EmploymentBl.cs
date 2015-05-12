@@ -4388,8 +4388,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var item in roster)
                 {
                     EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
-                    entity.IsTechDissmiss = item.IsTechDissmiss;
-                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                    if (entity.IsTechDissmiss != item.IsTechDissmiss)
+                    {
+                        entity.IsTechDissmiss = item.IsTechDissmiss;
+                        EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                    }
                 }
                 
                 return true;
