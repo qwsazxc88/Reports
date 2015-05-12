@@ -1151,13 +1151,15 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Для автозаполнения.
         /// </summary>
-        /// <param name="Surname"></param>
+        /// <param name="Surname">Фио сотрудника.</param>
+        /// <param name="UserId">Id кадровика</param>
         /// <returns></returns>
-        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequestOK(string Surname)
+        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequestOK(string Surname, int UserId)
         {
             string sqlQuery = @"select emp.Id,emp.Name from Users emp
-                    inner join dbo.Department d on emp.DepartmentId = d.Id
-                    inner join dbo.Department dm on d.Path like dm.Path+N'%'
+                    --inner join dbo.Department d on emp.DepartmentId = d.Id
+                    --inner join dbo.Department dm on d.Path like dm.Path+N'%'
+                    INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = emp.Id and N.[PersonnelId] = " + UserId.ToString() + @"  
                     where emp.RoleId in (2, 2097152) " + (string.IsNullOrEmpty(Surname) ? "" : " and emp.Name like N'" + Surname + "%'") + @" 
                     and emp.IsActive = 1 
                     order by Name";
@@ -1166,7 +1168,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
             IList<IdNameDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
-            return users.ToList();
+            return users;
         }
     }
 }

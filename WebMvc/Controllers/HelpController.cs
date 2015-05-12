@@ -9,6 +9,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WebMvc.Controllers
 {
@@ -127,9 +128,9 @@ namespace WebMvc.Controllers
         {
             IList<IdNameDto> Persons = HelpBl.GetPersonAutocomplete(term);
 
-            //var PersonList = Persons.Select(a => new { label = a.LongName, PersonID = a.Id }).Distinct();
+            var PersonList = Persons.Select(a => new { label = a.Name, Id = a.Id }).Distinct();
 
-            return Json(Persons, JsonRequestBehavior.AllowGet);
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult CreateServiceRequestForFired()

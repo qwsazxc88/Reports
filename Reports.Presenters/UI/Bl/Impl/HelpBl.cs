@@ -339,7 +339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //model.Users = list;
                     break;
                 default:
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name);
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name, AuthenticationService.CurrentUser.Id);
                     break;
             }
             return list.ToList();
@@ -440,7 +440,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.ConsultantOutsorsingManager) != UserRole.ConsultantOutsorsingManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -556,6 +556,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                         model.IsNotScanView = false;
+
+                    //консультант составляет за сотрудника
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            //if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                            model.IsSendAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
                     break;
             }
         }
@@ -984,6 +998,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.BeginWorkDate = DateTime.Now;
                         entity.Consultant = currUser;
                     }
+
+                    //если консультант создает заявку за сотрудника
+                    if (entity.Creator.Id == currUser.Id && model.Operation == 1 && !entity.SendDate.HasValue)
+                        entity.SendDate = DateTime.Now;
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
