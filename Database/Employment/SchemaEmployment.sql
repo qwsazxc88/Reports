@@ -381,6 +381,7 @@ GO
 			[Drinking] [nvarchar](250) NULL,
 			[ApprovalStatus] [bit] NULL,
 			[ApproverId] [int] NULL,
+			[ApprovalDate] [datetime] NULL,
 			[IsFinal] [bit] NOT NULL CONSTRAINT [DF__Backgroun__IsFin__39794BAC]  DEFAULT ((0)),
 			[IsApprovalSkipped] [bit] NOT NULL CONSTRAINT [DF_BackgroundCheck_IsApprovalSkipped]  DEFAULT ((0)),
 			[IsValidate] [bit] NULL CONSTRAINT [DF_BackgroundCheck_IsValidate]  DEFAULT ((0)),
@@ -1567,6 +1568,9 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'BackgroundCheck', @level2type=N'COLUMN',@level2name=N'ApprovalDate'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак технического увольнения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsTechDissmiss'
 	GO
 

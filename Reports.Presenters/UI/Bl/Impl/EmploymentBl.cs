@@ -1061,6 +1061,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
@@ -1119,6 +1120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
@@ -4497,6 +4499,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4524,6 +4527,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка изменения статуса.";
