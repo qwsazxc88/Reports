@@ -2026,7 +2026,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintLiabilityContractModel model = new PrintLiabilityContractModel();
 
-            model.ContractDate = DateTime.Now;
+            
 
             if (candidate.GeneralInfo != null)
             {
@@ -2086,6 +2086,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            model.ContractDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
             model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
 
             return model;
@@ -2143,7 +2144,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            model.AgreementDate = DateTime.Now;
+
+            model.AgreementDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
 
             return model;
         }
