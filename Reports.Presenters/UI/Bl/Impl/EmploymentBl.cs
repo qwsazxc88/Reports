@@ -1796,7 +1796,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
                 //model.WorkCity = candidate.Managers.WorkCity;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 //model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
@@ -1873,7 +1873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
                 model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
@@ -5112,6 +5112,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// К испытательному сроку дописываем прописью дни и месяцы.
+        /// </summary>
+        /// <param name="ProbationaryPeriod"></param>
+        /// <returns></returns>
+        protected string GetProbationaryPeriodString(string ProbationaryPeriod)
+        {
+            if (string.IsNullOrEmpty(ProbationaryPeriod)) return "";
+
+            int i = Convert.ToInt32(ProbationaryPeriod);
+            string str = string.Empty;
+
+            if (i == 1) return ProbationaryPeriod + " месяц";
+            if (i > 1 && i < 5) return ProbationaryPeriod + " месяца";
+            if (i >= 5 && i <= 12) return ProbationaryPeriod + " месяцев";
+            if (i > 12 && i <= 20) str = " дней";
+            else if (Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) == 1) str = " день";
+            else if (Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) > 1 && Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) < 5) str = " дня";
+            else str = " дней";
+
+            return ProbationaryPeriod + str;
         }
 
         public string GetStartView()

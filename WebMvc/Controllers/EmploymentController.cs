@@ -2014,6 +2014,16 @@ namespace WebMvc.Controllers
                 else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
+
+            if (!string.IsNullOrEmpty(model.ProbationaryPeriod))
+            {
+                try { Convert.ToInt32(model.ProbationaryPeriod); }
+                catch 
+                {
+                    ModelState.AddModelError("ProbationaryPeriod", "Испытательный срок должен содержать только цифры!");
+                }
+            }
+
             return ModelState.IsValid;
         }
 
