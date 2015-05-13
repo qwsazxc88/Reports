@@ -2291,17 +2291,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         });
                     }
                 }
-                foreach (var item in candidate.Experience.ExperienceItems)
-                {
-                    model.ExperienceItems.Add(new ExperienceItemDto
-                    {
-                        BeginningDate = item.BeginningDate,
-                        Company = item.Company,
-                        CompanyContacts = item.CompanyContacts,
-                        EndDate = item.EndDate,
-                        Position = item.Position
-                    });
-                }
+                //foreach (var item in candidate.Experience.ExperienceItems)
+                //{
+                //    model.ExperienceItems.Add(new ExperienceItemDto
+                //    {
+                //        BeginningDate = item.BeginningDate,
+                //        Company = item.Company,
+                //        CompanyContacts = item.CompanyContacts,
+                //        EndDate = item.EndDate,
+                //        Position = item.Position
+                //    });
+                //}
 
             } 
             #endregion
