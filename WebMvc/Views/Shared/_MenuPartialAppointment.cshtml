@@ -112,7 +112,7 @@
                     
                       )
                 {
-                    <div id="liAppointment" class="mainOn">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
+                    <div id="liAppointment" class="mainOn">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
                     </div> 
                 }
                 @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -135,7 +135,10 @@
              {  
                  <div class="menuitem" id="appInstruction">@Html.ActionLink("Инструкция", "Instruction", "Appointment")</div>
                 <div class="menuitem" id="appAllRequests">@Html.ActionLink("Реестр заявок на подбор", "Index", "Appointment")</div>
+                 if (dto.UserRole != UserRole.Manager)
+                 {
                  <div class="menuitem" id="appAllReports">@Html.ActionLink("Реестр отчетов по подбору", "AppointmentReportList", "Appointment")</div> 
+                 }
                  if (dto.UserRole != UserRole.StaffManager && dto.UserRole!=UserRole.PersonnelManager)
                  {
                  <div class="menuitem" id="appCreateCandidate">@Html.ActionLink("Согласование кандидата от Руководителя", "AppointmentWithoutStaffEdit", "Appointment", (object)new { id = 0 }, null)</div>
