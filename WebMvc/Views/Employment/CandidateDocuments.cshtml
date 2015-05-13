@@ -546,6 +546,72 @@
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ObligationTradeSecretFileNeeded)</td>
             }
         </tr>
+
+
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate182HFileNeeded)
+            {<text> style = "display:none;" </text>} >
+            <td>Справка 182-Н от предыдущего работодателя</td>
+            <td></td>
+            <td>
+                <input type="hidden" id="Certificate182HFileId" name="Certificate182HFileId" value="@Model.Certificate182HFileId" />
+                @if (string.IsNullOrEmpty(Model.Certificate182HFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="Certificate182HFile" id="Certificate182HFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Certificate182HFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.Certificate182HFileId })' style="cursor:hand" target="_blank">
+                            @Model.Certificate182HFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete16" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            {
+                <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate182HFileNeeded)</td>
+            }
+        </tr>
+
+
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate2NDFLFileNeeded)
+            {<text> style = "display:none;" </text>} >
+            <td>Справка 2-НДФЛ от предыдущего работодателя</td>
+            <td></td>
+            <td>
+                <input type="hidden" id="Certificate2NDFLFileId" name="Certificate2NDFLFileId" value="@Model.Certificate2NDFLFileId" />
+                @if (string.IsNullOrEmpty(Model.Certificate2NDFLFileName))
+                {
+                    <div class="formfield clear">
+                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="Certificate2NDFLFile" id="Certificate2NDFLFile"/>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Certificate2NDFLFileName))
+                {
+                    <div class="formfield">
+                        <br />Скан:
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.Certificate2NDFLFileId })' style="cursor:hand" target="_blank">
+                            @Model.Certificate2NDFLFileName
+                        </a>
+                    </div>
+                    <div class="formfield">
+                        <br /><input type="button" id="btnDelete17" value="Удалить скан"/>
+                    </div>
+                }
+            </td>
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            {
+                <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate2NDFLFileNeeded)</td>
+            }
+        </tr>
+
+
         @if (dto.UserRole == UserRole.PersonnelManager && !Model.SendTo1C.HasValue)
         {
             <tr>
@@ -580,6 +646,8 @@
         $("#CashWorkAddition1File").change(function () { this.form.submit(); });
         $("#CashWorkAddition2File").change(function () { this.form.submit(); });
         $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
+        $("#Certificate182HFile").change(function () { this.form.submit(); });
+        $("#Certificate2NDFLFile").change(function () { this.form.submit(); });
         $("#btnSaveDocNeeded").click(function () {
             $("#IsSave").val(true);
             this.form.submit();
@@ -672,6 +740,18 @@
 
         $("#btnDelete15").click(function () {
             var Id = $("#ApplicationLetterScanAttachmentId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete16").click(function () {
+            var Id = $("#Certificate182HFileId").val();
+            $("#DeleteAttachmentId").val(Id);
+            this.form.submit();
+        });
+
+        $("#btnDelete17").click(function () {
+            var Id = $("#Certificate2NDFLFileId").val();
             $("#DeleteAttachmentId").val(Id);
             this.form.submit();
         });

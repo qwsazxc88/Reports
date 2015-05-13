@@ -91,6 +91,7 @@
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
     <Compile Include="Dao\IDeductionImportDao.cs" />
+    <Compile Include="Dao\IExtraChargesDao.cs" />
     <Compile Include="Dao\IHelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
+    <Compile Include="Dao\Impl\ExtraChargesDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
     <Compile Include="Dao\Impl\GpdChargingTypeDao.cs" />
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
@@ -413,6 +415,7 @@
     <Compile Include="Domain\Employment.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidateComment.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidateDocNeeded.cs" />
+    <Compile Include="Domain\Employment2\ExtraCharges.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
@@ -567,6 +570,7 @@
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
     <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateTechDissmissDto.cs" />
     <Compile Include="Dto\Employment2\ContractPointDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />
@@ -1176,6 +1180,7 @@
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
     <EmbeddedResource Include="Domain\News.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\ExtraCharges.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

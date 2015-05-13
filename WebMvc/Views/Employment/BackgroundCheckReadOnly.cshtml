@@ -286,6 +286,10 @@
             @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
             {
                 <span class="fakeFormField">@Model.ApproverName</span>
+                if (Model.ApprovalDate.HasValue)
+                {
+                    <span class="fakeFormField">@Model.ApprovalDate.Value.ToShortDateString()</span>
+                }
             }
             @if (Model.IsApproveBySecurityAvailable)
             {

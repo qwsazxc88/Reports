@@ -233,6 +233,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentCandidateDocNeededDao = value; }
         }
 
+        protected IExtraChargesDao extraChargesDao;
+        public IExtraChargesDao ExtraChargesDao
+        {
+            get { return Validate.Dependency(extraChargesDao); }
+            set { extraChargesDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -1054,6 +1061,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
@@ -1112,6 +1120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
@@ -1459,6 +1468,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.NorthExperienceMonths = entity.NorthExperienceMonths;
                 model.NorthExperienceDays = entity.NorthExperienceDays;
                 model.NorthExperienceType = entity.NorthExperienceType;
+                model.ExtraChargesId = entity.ExtraCharges == null ? 0 : entity.ExtraCharges.Id;
 
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
@@ -1589,6 +1599,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ObligationTradeSecretFileId = attachmentId;
                 model.ObligationTradeSecretFileName = attachmentFilename;
 
+                //Справка 182-Н от предыдущего работодателя
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate182HScan);
+                model.Certificate182HFileId = attachmentId;
+                model.Certificate182HFileName = attachmentFilename;
+
+                //Справка 2-НДФЛ от предыдущего работодателя
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate2NDFLScan);
+                model.Certificate2NDFLFileId = attachmentId;
+                model.Certificate2NDFLFileName = attachmentFilename;
+
                 //достаем метки для документов
                 IList<AttachmentNeedListDto> adl = EmploymentCandidateDocNeededDao.GetCandidateDocListNeeded(entity.Candidate.Id);
                 if (adl != null && adl.Count != 0)
@@ -1608,6 +1628,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.CashWorkAddition1FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition1Scan).Single().IsNeeded;
                     model.CashWorkAddition2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition2Scan).Single().IsNeeded;
                     model.ObligationTradeSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan).Single().IsNeeded;
+                    //для уже существующего списка
+                    if (model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Count() != 0)
+                        model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Single().IsNeeded;
+                    if (model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Count() != 0)
+                        model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Single().IsNeeded;
                 }
                 else
                 {
@@ -2001,7 +2026,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintLiabilityContractModel model = new PrintLiabilityContractModel();
 
-            model.ContractDate = DateTime.Now;
+            
 
             if (candidate.GeneralInfo != null)
             {
@@ -2061,6 +2086,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            model.ContractDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
             model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
 
             return model;
@@ -2118,7 +2144,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            model.AgreementDate = DateTime.Now;
+
+            model.AgreementDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
 
             return model;
         }
@@ -2264,17 +2291,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         });
                     }
                 }
-                foreach (var item in candidate.Experience.ExperienceItems)
-                {
-                    model.ExperienceItems.Add(new ExperienceItemDto
-                    {
-                        BeginningDate = item.BeginningDate,
-                        Company = item.Company,
-                        CompanyContacts = item.CompanyContacts,
-                        EndDate = item.EndDate,
-                        Position = item.Position
-                    });
-                }
+                //foreach (var item in candidate.Experience.ExperienceItems)
+                //{
+                //    model.ExperienceItems.Add(new ExperienceItemDto
+                //    {
+                //        BeginningDate = item.BeginningDate,
+                //        Company = item.Company,
+                //        CompanyContacts = item.CompanyContacts,
+                //        EndDate = item.EndDate,
+                //        Position = item.Position
+                //    });
+                //}
 
             } 
             #endregion
@@ -2520,7 +2547,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -1) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
@@ -2600,6 +2627,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
             model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
             model.NorthExperienceTypes = GetNorthExperienceTypes();
+            model.ExtraCharges = ExtraChargesDao.LoadAll();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -3338,6 +3366,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan, IsNeeded = model.ObligationTradeSecretFileNeeded });
 
+            if (model.Certificate182HFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.Certificate182HFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.Certificate182HFileId, fileDto, RequestAttachmentTypeEnum.Certificate182HScan, out fileName);
+            }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.Certificate182HScan, IsNeeded = model.Certificate182HFileNeeded });
+
+            if (model.Certificate2NDFLFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.Certificate2NDFLFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.Certificate2NDFLFileId, fileDto, RequestAttachmentTypeEnum.Certificate2NDFLScan, out fileName);
+            }
+            DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.Certificate2NDFLScan, IsNeeded = model.Certificate2NDFLFileNeeded });
+
             if (model.IsSave)
             {
                 try
@@ -3408,6 +3452,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+
+        
         /// <summary>
         /// Проверяем наличие изменений в списке документов для подписи кандидатом
         /// </summary>
@@ -4284,6 +4330,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
             entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
             entity.NorthExperienceType = viewModel.NorthExperienceType;
+            entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
             if (viewModel.ScheduleId.HasValue)
             {
@@ -4331,6 +4378,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
             }
+        }
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        public bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster)
+        {
+            try
+            {
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
+                    if (entity.IsTechDissmiss != item.IsTechDissmiss)
+                    {
+                        entity.IsTechDissmiss = item.IsTechDissmiss;
+                        EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                    }
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
 
         #endregion
@@ -4426,6 +4501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4453,6 +4529,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка изменения статуса.";
@@ -4796,6 +4873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
                     entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
                     entity.NorthExperienceType = viewModel.NorthExperienceType;
+                    entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                     {
