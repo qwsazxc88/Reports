@@ -1697,6 +1697,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
+                    filters != null ? filters.AppointmentReportNumber : null,
+                    filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -2554,6 +2556,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
+                    filters != null ? filters.AppointmentReportNumber : null,
+                    filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
