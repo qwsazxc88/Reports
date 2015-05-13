@@ -1061,6 +1061,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
@@ -1119,6 +1120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
@@ -2024,7 +2026,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintLiabilityContractModel model = new PrintLiabilityContractModel();
 
-            model.ContractDate = DateTime.Now;
+            
 
             if (candidate.GeneralInfo != null)
             {
@@ -2084,6 +2086,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            model.ContractDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
             model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
 
             return model;
@@ -2141,7 +2144,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            model.AgreementDate = DateTime.Now;
+
+            model.AgreementDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
 
             return model;
         }
@@ -2287,17 +2291,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         });
                     }
                 }
-                foreach (var item in candidate.Experience.ExperienceItems)
-                {
-                    model.ExperienceItems.Add(new ExperienceItemDto
-                    {
-                        BeginningDate = item.BeginningDate,
-                        Company = item.Company,
-                        CompanyContacts = item.CompanyContacts,
-                        EndDate = item.EndDate,
-                        Position = item.Position
-                    });
-                }
+                //foreach (var item in candidate.Experience.ExperienceItems)
+                //{
+                //    model.ExperienceItems.Add(new ExperienceItemDto
+                //    {
+                //        BeginningDate = item.BeginningDate,
+                //        Company = item.Company,
+                //        CompanyContacts = item.CompanyContacts,
+                //        EndDate = item.EndDate,
+                //        Position = item.Position
+                //    });
+                //}
 
             } 
             #endregion
@@ -3448,6 +3452,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+
+        
         /// <summary>
         /// Проверяем наличие изменений в списке документов для подписи кандидатом
         /// </summary>
@@ -4373,6 +4379,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
         }
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        public bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster)
+        {
+            try
+            {
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
+                    if (entity.IsTechDissmiss != item.IsTechDissmiss)
+                    {
+                        entity.IsTechDissmiss = item.IsTechDissmiss;
+                        EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                    }
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
 
         #endregion
 
@@ -4467,6 +4501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4494,6 +4529,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка изменения статуса.";

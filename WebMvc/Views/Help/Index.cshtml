@@ -115,12 +115,15 @@
                                 @if (Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
-                                    <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
+                                    if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantOutsorsingManager)
+                                    {
+                                        <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
+                                    }
                                 } 
                                 @if (Model.IsOriginalDocsEditable)
                                 {
                                     <input type="submit" value="Сохранить изменения" style="float:right" onclick="OriginalsChanged()" />
-                                    @Html.HiddenFor(m=>m.IsOriginalsReceivedChanged)
+                                    @Html.HiddenFor(m => m.IsOriginalsReceivedChanged)
                                 }                                                                                    
                             </td>
                             @*<td style = "text-align:right">
@@ -184,11 +187,11 @@
                         <div id="sort9"  style="min-width:100px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
                     </th>
                     @if (Model.IsOriginalDocsVisible)
-                            {
+                    {
                                 <th>
                                    <div id="sort15" ><a href="#"  onclick = "SortChanged(15);">Оригинал док-в <br />от сотр. получен</a></div> 
                                 </th>
-                            }
+                    }
                     <th>
                         <div id="sort10"  style="min-width:100px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
                     </th>
@@ -205,7 +208,7 @@
                 <tbody id="grid">
                     @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
-                        int i=0;
+                        int i = 0;
                         foreach (var doc in Model.Documents)
                         {
                             string color = "white";
@@ -282,7 +285,7 @@
                                     @doc.PeriodName
                                 </td>
                             </tr>
-                            i++;
+                                i++;
                         }
                     }
                 </tbody>

@@ -1114,6 +1114,8 @@ BEGIN
 	insert into dbo.GpdChargingType (name, code) values ('Оплата по договорам аренды транспортного средства#3605', '3605')
 	insert into dbo.GpdChargingType (name, code) values ('Оплата по договорам аренды имущества#3607', '3607')
 	insert into dbo.GpdChargingType (name, code) values ('Оплата по договорам аренды имущества (не уменьшающая НОБ)#3611', '3611')
+	insert into dbo.GpdChargingType (name, code) values ('Подарки в денежной форме Ф.Л.(ГПД)#3613', '3613')
+	insert into dbo.GpdChargingType (name, code) values ('Подарки в неденежной форме Ф.Л.(ГПД)#3614', '3614')
 END
 
 

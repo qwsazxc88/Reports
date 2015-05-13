@@ -1565,6 +1565,14 @@ namespace WebMvc.Controllers
             */
             return View(model);
         }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager)]
+        public ActionResult CandidateSaveTechDissmiss(IList<CandidateTechDissmissDto> roster)
+        {
+            bool result = EmploymentBl.SaveCandidateTechDissmiss(roster);
+            return Json(new { ok = result });
+        }
         
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]

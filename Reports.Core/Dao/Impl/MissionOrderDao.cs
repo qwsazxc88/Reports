@@ -758,6 +758,12 @@ namespace Reports.Core.Dao.Impl
                 case 7:
                     orderBy = @" order by Status";
                     break;
+                case 8:
+                    orderBy = @" order by DeductionId";
+                    break;
+                case 9:
+                    orderBy = @" order by DeductionUploadingDate";
+                    break;
                 //case 8:
                 //    orderBy = @" order by GradeSum";
                 //    break;
