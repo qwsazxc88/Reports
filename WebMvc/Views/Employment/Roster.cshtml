@@ -82,6 +82,22 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AppointmentReportNumber):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.AppointmentReportNumber)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AppointmentNumber):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.AppointmentNumber)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -104,8 +120,8 @@
 
     @* END Выбор параметров *@
    
-    int[] createcandidateapprove = { 15630,1531,1532,1533,1534,1536,1537,1538,1539,1540,1541,1542,1543,1544,1545,1546,1547,1548,1549,1550,16378,16378,16379,20174 };    
-    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id)))
+    int[] createcandidateapprove = { 991, 998, 1002, 1006 };    
+    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
     {
         <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
@@ -122,7 +138,13 @@
             <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
             <button id="SaveRosterButton" style="margin: 5px;">Записать</button>
         }
+        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+        {
+            <button type="button" id="btnSaveTechDissmiss">Сохранить техн. увольнения</button>
+        }
     </div>
+    
+    
     
     @* END CreateCandidate *@
 
@@ -159,6 +181,9 @@
         </th>
         <th>
             <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Структурное<br />подразделение<br />7 ур.</a></div>
+        </th>
+        <th>
+            Техническое<br/>увольнение
         </th>
         <th>
             <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Город<br />места<br />работы</a></div>
@@ -204,7 +229,10 @@
             <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
         </th>
         <th>
-            Статус<br/>загрузки
+            <div id="sort19"><a href="#" onclick = "SortColumnChanged(19);">Номер<br />отчета<br />из подбора<br />персонала</a></div>
+        </th>
+        <th>
+            <div id="sort20"><a href="#" onclick = "SortColumnChanged(20);">Номер<br />заявки<br />из подбора<br />персонала</a></div>
         </th>
         @*
         <th>
@@ -252,7 +280,14 @@
                     @candidate.ContractNumber1C
                 </td>
                 <td>
-                    <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+                    @if ((dto.UserRole & UserRole.StaffManager) == 0)
+                    {
+                        <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+                    }
+                    else
+                    {
+                        @candidate.Name
+                    }
                 </td>
                 <td>
                     &nbsp;@candidate.Position
@@ -263,6 +298,10 @@
 
                 <td>
                     &nbsp;@candidate.Department
+                </td>
+                <td class="centered">
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
+
                 </td>
                 <td>
                     &nbsp;@candidate.WorkCity
@@ -314,13 +353,24 @@
                 <td>
                     @if (candidate.AppointmentReportId > 0)
                     {
-                        <a href='@Url.Action("AppointmentReportEdit","Appointment", new { id = candidate.AppointmentReportId })'>Загружено из поиска</a>
+                        <a href='@Url.Action("AppointmentReportEdit", "Appointment", new { id = candidate.AppointmentReportId })'>@candidate.AppointmentReportNumber</a>
                     }
                     else
                     {
-                        <text>Из оформления без службы по найму</text>
+                        @*<text>Из оформления без службы по найму</text>*@
                     }
                 </td>
+                <td>
+                    @if (candidate.AppointmentId > 0)
+                    {
+                        <a href='@Url.Action("AppointmentEdit", "Appointment", new { id = candidate.AppointmentId })'>@candidate.AppointmentNumber</a>
+                    }
+                    else
+                    {
+                        @*<text>Из оформления без службы по найму</text>*@
+                    }
+                </td>
+                
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                     <span class="buttonLink">Разделы</span>
@@ -438,6 +488,8 @@
                 url = "/Employment/RosterBulkChangeContractToIndefinite";
             }
 
+            
+
             $.post(url,
                 $("#mainForm").serialize(),
                 function (data) {
@@ -452,6 +504,26 @@
 
             e.preventDefault();
         });
+
+
+        $("#btnSaveTechDissmiss").click(function () {
+            var url="@Url.Action("CandidateSaveTechDissmiss", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        alert("Пометки о техническом увольнени сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
+            
 
     });
 
@@ -476,6 +548,7 @@
     function onPrintClick() {
 
         window.location.href = '@Url.Action("GetPrintRoster", "Employment")?' +
+        //window.location.href = '@Url.Action("PrintRoster", "Employment")?' + //для теста
             'beginDate='+ SetLocale($("#BeginDate").val()) +
             '&endDate=' + SetLocale($("#EndDate").val()) +
             '&departmentId=' + $("#DepartmentId").val() +
@@ -495,5 +568,10 @@
         $("tblBody").remove();
         SortChanged(OrderId);
     }
+
+
+
+    
+
 
 </script>
