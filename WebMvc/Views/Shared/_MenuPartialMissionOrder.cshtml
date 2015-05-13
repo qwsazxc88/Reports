@@ -116,7 +116,7 @@
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
                     </div> 
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
