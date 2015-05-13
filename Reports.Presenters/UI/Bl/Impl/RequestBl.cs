@@ -9913,6 +9913,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             canEdit = true;
                             return true;
                         }
+
+                        if (usersManagerAccount == currentUser && !usersManagerAccount.Department.Path.StartsWith("9900424.9900426.9900427."))
+                        {
+                            canEdit = true;
+                            return true;
+                        }
                     }
 
                     // Определение подчиненности рядовых сотрудников
