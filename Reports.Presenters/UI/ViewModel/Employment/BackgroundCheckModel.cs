@@ -99,6 +99,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool? ApprovalStatus { get; set; }
         public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
         public string ApproverName { get; set; }
+        [Display(Name = "Дата согласования")]        
+        public DateTime? ApprovalDate { get; set; }
 
         public HttpPostedFileBase PersonalDataProcessingScanFile { get; set; }
         public HttpPostedFileBase InfoValidityScanFile { get; set; }

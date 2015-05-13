@@ -198,7 +198,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.ConsultantOutsorsingManager) == UserRole.ConsultantOutsorsingManager);
         }
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
@@ -292,7 +292,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     IList<Department> depList =  ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
                     if(depList == null || depList.Count() == 0)
                             throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList());
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), null);
                     model.Users = list;
                     break;
                 case 4:
@@ -300,11 +300,49 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 6:
                     if (currentUser.Department == null)
                         throw new ValidationException(string.Format(StrNoDepartmentForUser,currentUser.Id));
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> {currentUser.Department.Id});
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> {currentUser.Department.Id}, null);
                     model.Users = list;
                     break;
             }
             return model;
+        }
+        /// <summary>
+        /// Автозаполнение физических лиц
+        /// </summary>
+        /// <param name="Name">ФИО физического лица</param>
+        /// <param name="PersonID">ID физического лица</param>
+        /// <returns></returns>
+        public IList<IdNameDto> GetPersonAutocomplete(string Name)
+        {
+            User currentUser = UserDao.Load(CurrentUser.Id);
+
+            //if (currentUser == null)
+            //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
+            //        CurrentUser.Id));
+            IList<IdNameDto> list = null;
+            switch (currentUser.Level)
+            {
+                case 2:
+                case 3:
+                    IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                    if (depList == null || depList.Count() == 0)
+                        throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);
+                    //model.Users = list;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    if (currentUser.Department == null)
+                        throw new ValidationException(string.Format(StrNoDepartmentForUser, currentUser.Id));
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { currentUser.Department.Id }, Name);
+                    //model.Users = list;
+                    break;
+                default:
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name, AuthenticationService.CurrentUser.Id);
+                    break;
+            }
+            return list.ToList();
         }
         public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
         {
@@ -402,7 +440,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.ConsultantOutsorsingManager) != UserRole.ConsultantOutsorsingManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -518,6 +556,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                         model.IsNotScanView = false;
+
+                    //консультант составляет за сотрудника
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            //if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                            model.IsSendAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
                     break;
             }
         }
@@ -946,6 +998,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.BeginWorkDate = DateTime.Now;
                         entity.Consultant = currUser;
                     }
+
+                    //если консультант создает заявку за сотрудника
+                    if (entity.Creator.Id == currUser.Id && model.Operation == 1 && !entity.SendDate.HasValue)
+                        entity.SendDate = DateTime.Now;
                     break;
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))

@@ -89,6 +89,7 @@ namespace Reports.Core.Dto.Employment2
 
         public int AppointmentReportId { get; set; }
         public int AppointmentId { get; set; }
+        public bool IsTechDissmiss { get; set; }
 
         /*
         [Display(Name = "Паспортные данные"),

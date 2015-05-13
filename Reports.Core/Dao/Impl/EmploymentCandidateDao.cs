@@ -107,6 +107,7 @@ namespace Reports.Core.Dao.Impl
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
                 ,candidate.AppointmentReportId
                 ,candidate.AppointmentId
+                ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
@@ -463,6 +464,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DocStatus", NHibernateUtil.String)
                 .AddScalar("AppointmentReportId",NHibernateUtil.Int32)
                 .AddScalar("AppointmentId",NHibernateUtil.Int32)
+                .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 ;
 
             return query;
