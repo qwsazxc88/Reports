@@ -106,7 +106,9 @@ namespace Reports.Core.Dao.Impl
                 ,personnelManagers.CompleteDate as CompleteDate
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
                 ,candidate.AppointmentReportId
+                ,cast(L.Number as nvarchar(10)) + N'/' + cast(M.Number as nvarchar(10)) + N'_' + cast(M.SecondNumber as nvarchar(10)) as AppointmentReportNumber
                 ,candidate.AppointmentId
+                ,L.Number as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
@@ -131,6 +133,8 @@ namespace Reports.Core.Dao.Impl
 										FROM RequestAttachment as A
 										INNER JOIN EmploymentCandidateDocNeeded as B ON B.CandidateId = A.RequestId and B.DocTypeId = A.RequestType and B.IsNeeded = 1
 										GROUP BY B.CandidateId) as B ON B.CandidateId = A.CandidateId) as K ON K.CandidateId = candidate.Id
+                LEFT JOIN Appointment as L ON L.Id = candidate.AppointmentId
+                LEFT JOIN AppointmentReport as M ON M.Id = candidate.AppointmentReportId
             ";
 
         #endregion
@@ -145,6 +149,8 @@ namespace Reports.Core.Dao.Impl
                 string userName,
                 string ContractNumber1C,
                 int CandidateId,
+                string AppointmentReportNumber,
+                int AppointmentNumber,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -156,11 +162,12 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
+            whereString = GetAppointmentWhere(whereString, AppointmentReportNumber, AppointmentNumber);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
 
-            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate);
+            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate, AppointmentReportNumber, AppointmentNumber);
 
             //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
@@ -255,7 +262,8 @@ namespace Reports.Core.Dao.Impl
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
                 | UserRole.Trainer
-                | UserRole.OutsourcingManager)) > 0)
+                | UserRole.OutsourcingManager
+                | UserRole.StaffManager)) > 0)
             {
                 //сотрудников ДБ и тренеров дополнительная фильтрация сейчас не производится
             }
@@ -343,6 +351,23 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
+        public string GetAppointmentWhere(string whereString, string AppointmentReportNumber, int AppointmentNumber)
+        {
+            if (!string.IsNullOrEmpty(AppointmentReportNumber))
+            {
+                whereString = string.Format(@"{0} cast(L.Number as nvarchar(10)) + N'/' + cast(M.Number as nvarchar(10)) + N'_' + cast(M.SecondNumber as nvarchar(10)) = :AppointmentReportNumber ",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            if (AppointmentNumber != 0)
+            {
+                whereString = string.Format(@"{0} L.Number = :AppointmentNumber ",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            return whereString;
+        }
+
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
                     int sortedBy,
                     bool? sortDescending)
@@ -409,6 +434,12 @@ namespace Reports.Core.Dao.Impl
                 case 18:
                     orderBy = "DocStatus";
                     break;
+                case 19:
+                    orderBy = "AppointmentReportNumber";
+                    break;
+                case 20:
+                    orderBy = "AppointmentNumber";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -463,14 +494,16 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("CompleteDate", NHibernateUtil.DateTime)
                 .AddScalar("DocStatus", NHibernateUtil.String)
                 .AddScalar("AppointmentReportId",NHibernateUtil.Int32)
+                .AddScalar("AppointmentReportNumber", NHibernateUtil.String)
                 .AddScalar("AppointmentId",NHibernateUtil.Int32)
+                .AddScalar("AppointmentNumber", NHibernateUtil.Int32)
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 ;
 
             return query;
         }
 
-        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate)
+        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate, string AppointmentReportNumber, int AppointmentNumber)
         {
             query.SetInt32("currentId", currentId);
             if (beginDate.HasValue)
@@ -490,6 +523,16 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(ContractNumber1C))
             {
                 query.SetString("ContractNumber1C", ContractNumber1C);
+            }
+
+            if (!string.IsNullOrEmpty(AppointmentReportNumber))
+            {
+                query.SetString("AppointmentReportNumber", AppointmentReportNumber);
+            }
+
+            if (AppointmentNumber != 0)
+            {
+                query.SetInt32("AppointmentNumber", AppointmentNumber);
             }
         }
         /// <summary>
