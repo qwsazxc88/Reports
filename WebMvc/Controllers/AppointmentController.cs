@@ -100,7 +100,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager  | UserRole.PersonnelManagerBank)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager  | UserRole.PersonnelManagerBank | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
         {
 
