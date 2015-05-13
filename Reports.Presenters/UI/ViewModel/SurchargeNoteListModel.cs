@@ -13,7 +13,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
-        
+        public bool DepartmentReadonly { get; set; }
+       
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
@@ -30,5 +31,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
+        public int SortBy { get; set; }
+        public bool SortDescending { get; set; }
+
+        public IList<SurchargeNoteDto> Documents { get; set; }
     }
 }

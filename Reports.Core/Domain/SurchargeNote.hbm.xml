@@ -8,12 +8,12 @@
     <property name="Number" not-null="true"/>
     <property name="PayDay" not-null="true"/>
     <property name="PersonnelDateAccept" not-null="false"/>
-    <property name="CountantDateAccept" not-null="true"/>
+    <property name="CountantDateAccept" not-null="false"/>
     <property name="NoteType" not-null="true"/>
+    <property name="DocumentDepartment" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_SurchargeNote_Crator" not-null="true"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_SurchargeNote_User" not-null="true"/>
     <many-to-one name="Personnel" class="User" column="PersonnelId" foreign-key="FK_SurchargeNote_Personnel" not-null="false"/>
     <many-to-one name="Countant" class="User" column="CountantId" foreign-key="FK_SurchargeNote_Countant" not-null="false"/>
-    <many-to-one name="Attachment" class="Attachment" column="AttachmentId" foreign-key="FK_SurchargeNote_Attachment" not-null="true"/>
   </class>
 </hibernate-mapping>

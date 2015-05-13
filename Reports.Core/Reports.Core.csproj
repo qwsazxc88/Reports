@@ -339,6 +339,7 @@
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
     <Compile Include="Dao\ISurchargeDao.cs" />
+    <Compile Include="Dao\ISurchargeNoteDao.cs" />
     <Compile Include="Dao\ITerraGraphicDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITerraPointToUserDao.cs" />
@@ -1178,7 +1179,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Domain\SurchargeNote.hbm.xml" />
+    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml" />
     <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />

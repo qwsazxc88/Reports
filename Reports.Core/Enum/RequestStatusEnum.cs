@@ -121,7 +121,10 @@
         
 
         UnsignedT2Scan = 251,        
-        UnsignedDismissalAgreementScan = 252
+        UnsignedDismissalAgreementScan = 252,
+
+        //SurchargeNote
+        SurchargeNoteAttachment= 288
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

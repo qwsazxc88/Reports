@@ -819,6 +819,8 @@
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
     <Content Include="Views\Appointment\Instruction.cshtml" />
     <Content Include="Views\Info\News.cshtml" />
+    <Content Include="Views\SurchargeNote\SurchargeNoteEdit.cshtml" />
+    <Content Include="Views\SurchargeNote\SurchargeNoteList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
