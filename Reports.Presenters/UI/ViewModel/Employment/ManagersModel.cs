@@ -34,7 +34,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsExternalPTWorker { get; set; } //ok
 
         [Display(Name = "Испытательный срок"),
-            StringLength(50, ErrorMessage = "Не более 200 знаков.")]
+            StringLength(3, ErrorMessage = "Не более 3 знаков.")]
         public string ProbationaryPeriod { get; set; } //ok
 
         [Display(Name = "Должностной оклад согласно штатному расписанию")]

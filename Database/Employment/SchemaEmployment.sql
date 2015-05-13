@@ -254,7 +254,7 @@ GO
 			[PositionId] [int] NULL,
 			[DepartmentId] [int] NULL,
 			[EmploymentConditions] [nvarchar](250) NULL,
-			[ProbationaryPeriod] [nvarchar](50) NULL,
+			[ProbationaryPeriod] [nvarchar](3) NULL,
 			[WorkCity] [nvarchar](100) NULL,
 			[IsFront] [bit] NOT NULL,
 			[Bonus] [decimal](19, 2) NULL,

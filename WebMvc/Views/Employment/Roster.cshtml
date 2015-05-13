@@ -82,6 +82,22 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AppointmentReportNumber):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.AppointmentReportNumber)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AppointmentNumber):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.AppointmentNumber)
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -213,7 +229,10 @@
             <div id="sort15"><a href="#" onclick = "SortColumnChanged(15);">Текущее<br />состояние</a></div>
         </th>
         <th>
-            Статус<br/>загрузки
+            <div id="sort19"><a href="#" onclick = "SortColumnChanged(19);">Номер<br />отчета<br />из подбора<br />персонала</a></div>
+        </th>
+        <th>
+            <div id="sort20"><a href="#" onclick = "SortColumnChanged(20);">Номер<br />заявки<br />из подбора<br />персонала</a></div>
         </th>
         @*
         <th>
@@ -261,7 +280,14 @@
                     @candidate.ContractNumber1C
                 </td>
                 <td>
-                    <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+                    @if ((dto.UserRole & UserRole.StaffManager) == 0)
+                    {
+                        <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable, TabIndex = 0 })' style="cursor:hand">@candidate.Name</a>
+                    }
+                    else
+                    {
+                        @candidate.Name
+                    }
                 </td>
                 <td>
                     &nbsp;@candidate.Position
@@ -327,11 +353,21 @@
                 <td>
                     @if (candidate.AppointmentReportId > 0)
                     {
-                        <a href='@Url.Action("AppointmentReportEdit","Appointment", new { id = candidate.AppointmentReportId })'>Загружено из поиска</a>
+                        <a href='@Url.Action("AppointmentReportEdit", "Appointment", new { id = candidate.AppointmentReportId })'>@candidate.AppointmentReportNumber</a>
                     }
                     else
                     {
-                        <text>Из оформления без службы по найму</text>
+                        @*<text>Из оформления без службы по найму</text>*@
+                    }
+                </td>
+                <td>
+                    @if (candidate.AppointmentId > 0)
+                    {
+                        <a href='@Url.Action("AppointmentEdit", "Appointment", new { id = candidate.AppointmentId })'>@candidate.AppointmentNumber</a>
+                    }
+                    else
+                    {
+                        @*<text>Из оформления без службы по найму</text>*@
                     }
                 </td>
                 
