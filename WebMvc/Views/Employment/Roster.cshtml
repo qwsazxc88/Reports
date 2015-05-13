@@ -104,8 +104,8 @@
 
     @* END Выбор параметров *@
    
-    int[] createcandidateapprove = { 15630,1531,1532,1533,1534,1536,1537,1538,1539,1540,1541,1542,1543,1544,1545,1546,1547,1548,1549,1550,16378,16378,16379,20174 };    
-    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id)))
+    int[] createcandidateapprove = { 991, 998, 1002, 1006 };    
+    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
     {
         <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
@@ -122,7 +122,8 @@
             <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
             <button id="SaveRosterButton" style="margin: 5px;">Записать</button>
         }
-        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id))){
+        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+        {
             <button type="button" id="btnSaveTechDissmiss">Сохранить техн. увольнения</button>
         }
     </div>
@@ -273,7 +274,7 @@
                     &nbsp;@candidate.Department
                 </td>
                 <td class="centered">
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
 
                 </td>
                 <td>
