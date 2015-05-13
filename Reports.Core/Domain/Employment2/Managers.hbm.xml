@@ -12,7 +12,7 @@
     <property name="EmploymentConditions" length="250" not-null="false"/>
     <property name="IsSecondaryJob" not-null="true"/>
     <property name="IsExternalPTWorker" not-null="true"/>
-    <property name="ProbationaryPeriod" length="50" not-null="false"/>
+    <property name="ProbationaryPeriod" length="3" not-null="false"/>
     <property name="SalaryBasis" precision="15" scale="2" not-null="false"/>
     <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
     <property name="WorkCity" length="100" not-null="false"/>
