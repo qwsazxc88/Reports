@@ -254,7 +254,7 @@ GO
 			[PositionId] [int] NULL,
 			[DepartmentId] [int] NULL,
 			[EmploymentConditions] [nvarchar](250) NULL,
-			[ProbationaryPeriod] [nvarchar](50) NULL,
+			[ProbationaryPeriod] [nvarchar](3) NULL,
 			[WorkCity] [nvarchar](100) NULL,
 			[IsFront] [bit] NOT NULL,
 			[Bonus] [decimal](19, 2) NULL,
@@ -381,6 +381,7 @@ GO
 			[Drinking] [nvarchar](250) NULL,
 			[ApprovalStatus] [bit] NULL,
 			[ApproverId] [int] NULL,
+			[ApprovalDate] [datetime] NULL,
 			[IsFinal] [bit] NOT NULL CONSTRAINT [DF__Backgroun__IsFin__39794BAC]  DEFAULT ((0)),
 			[IsApprovalSkipped] [bit] NOT NULL CONSTRAINT [DF_BackgroundCheck_IsApprovalSkipped]  DEFAULT ((0)),
 			[IsValidate] [bit] NULL CONSTRAINT [DF_BackgroundCheck_IsValidate]  DEFAULT ((0)),
@@ -1074,6 +1075,9 @@ GO
 			[ManagerToHigherManagerSendEmailDate] [datetime] NULL,
 			[IsPersonnelManagerToManagerSendEmail] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsPersonnelManagerToManagerSendEmail]  DEFAULT ((0)),
 			[PersonnelManagerToManagerSendEmailDate] [datetime] NULL,
+			[AppointmentReportId] [int] NULL,
+			[AppointmentId] [int] NULL,
+			[IsTechDissmiss] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsTtechDissmiss]  DEFAULT ((0)),
 		 CONSTRAINT [PK_EmploymentCandidate] PRIMARY KEY CLUSTERED 
 		(
 			[Id] ASC
@@ -1564,6 +1568,12 @@ GO
 --ССЫЛКИ КОНЕЦ
 
 --ОПИСАНИЯ К ТАБЛИЦАМ И ПОЛЯМ - НАЧАЛО (встречаются не везде)
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'BackgroundCheck', @level2type=N'COLUMN',@level2name=N'ApprovalDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак технического увольнения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsTechDissmiss'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PersonnelOrderExtraCharges', @level2type=N'COLUMN',@level2name=N'Version'
 	GO
 

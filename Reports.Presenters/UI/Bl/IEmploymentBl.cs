@@ -139,5 +139,13 @@ namespace Reports.Presenters.UI.Bl
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
         void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
+
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster);
     }
 }

@@ -497,6 +497,23 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public string GetDatesWhere_Reports(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[AccountantDateAccept] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[AccountantDateAccept] < :endDate ";
+            }
+            return whereString;
+        }
         public override string GetStatusWhere(string whereString, int statusId)
         {
             if (statusId != 0)
@@ -599,7 +616,7 @@ namespace Reports.Core.Dao.Impl
                             v.Id,
                             u.Name as UserName,
                             cast(v.Number as nvarchar(10)) as ReportNumber,
-                            v.EditDate as ReportDate,
+                            v.AccountantDateAccept as ReportDate,
                             v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived as DiffSum,
                             v.AccountantAllSum as AccountantSum,
                             v.UserAllSum as UserSum,
@@ -616,7 +633,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = @" (v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived)" +
                                  (showDepts ? " < 0 " : " > 0 ");
             whereString = GetUdStatusWhere(whereString, statusId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetDatesWhere_Reports(whereString, beginDate, endDate);
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -740,6 +757,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 7:
                     orderBy = @" order by Status";
+                    break;
+                case 8:
+                    orderBy = @" order by DeductionId";
+                    break;
+                case 9:
+                    orderBy = @" order by DeductionUploadingDate";
                     break;
                 //case 8:
                 //    orderBy = @" order by GradeSum";

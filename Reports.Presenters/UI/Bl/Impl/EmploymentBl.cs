@@ -1061,6 +1061,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
@@ -1119,6 +1120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
+                model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
@@ -1695,6 +1697,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
+                    filters != null ? filters.AppointmentReportNumber : null,
+                    filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -1792,7 +1796,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
                 //model.WorkCity = candidate.Managers.WorkCity;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 //model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
@@ -1869,7 +1873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
                 model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
@@ -2024,7 +2028,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintLiabilityContractModel model = new PrintLiabilityContractModel();
 
-            model.ContractDate = DateTime.Now;
+            
 
             if (candidate.GeneralInfo != null)
             {
@@ -2084,6 +2088,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            model.ContractDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
             model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
 
             return model;
@@ -2141,7 +2146,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            model.AgreementDate = DateTime.Now;
+
+            model.AgreementDate = candidate.PersonnelManagers.ContractDate.HasValue ? candidate.PersonnelManagers.ContractDate.Value : DateTime.Now;
 
             return model;
         }
@@ -2287,17 +2293,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         });
                     }
                 }
-                foreach (var item in candidate.Experience.ExperienceItems)
-                {
-                    model.ExperienceItems.Add(new ExperienceItemDto
-                    {
-                        BeginningDate = item.BeginningDate,
-                        Company = item.Company,
-                        CompanyContacts = item.CompanyContacts,
-                        EndDate = item.EndDate,
-                        Position = item.Position
-                    });
-                }
+                //foreach (var item in candidate.Experience.ExperienceItems)
+                //{
+                //    model.ExperienceItems.Add(new ExperienceItemDto
+                //    {
+                //        BeginningDate = item.BeginningDate,
+                //        Company = item.Company,
+                //        CompanyContacts = item.CompanyContacts,
+                //        EndDate = item.EndDate,
+                //        Position = item.Position
+                //    });
+                //}
 
             } 
             #endregion
@@ -2550,6 +2556,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
+                    filters != null ? filters.AppointmentReportNumber : null,
+                    filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -3448,6 +3456,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+
+        
         /// <summary>
         /// Проверяем наличие изменений в списке документов для подписи кандидатом
         /// </summary>
@@ -4373,6 +4383,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
         }
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        public bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster)
+        {
+            try
+            {
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
+                    if (entity.IsTechDissmiss != item.IsTechDissmiss)
+                    {
+                        entity.IsTechDissmiss = item.IsTechDissmiss;
+                        EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                    }
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
 
         #endregion
 
@@ -4467,6 +4505,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -4494,6 +4533,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PyrusRef = PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.ApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка изменения статуса.";
@@ -5072,6 +5112,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// К испытательному сроку дописываем прописью дни и месяцы.
+        /// </summary>
+        /// <param name="ProbationaryPeriod"></param>
+        /// <returns></returns>
+        protected string GetProbationaryPeriodString(string ProbationaryPeriod)
+        {
+            if (string.IsNullOrEmpty(ProbationaryPeriod)) return "";
+
+            int i = Convert.ToInt32(ProbationaryPeriod);
+            string str = string.Empty;
+
+            if (i == 1) return ProbationaryPeriod + " месяц";
+            if (i > 1 && i < 5) return ProbationaryPeriod + " месяца";
+            if (i >= 5 && i <= 12) return ProbationaryPeriod + " месяцев";
+            if (i > 12 && i <= 20) str = " дней";
+            else if (Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) == 1) str = " день";
+            else if (Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) > 1 && Convert.ToInt32(ProbationaryPeriod.Substring(ProbationaryPeriod.Length - 1, 1)) < 5) str = " дня";
+            else str = " дней";
+
+            return ProbationaryPeriod + str;
         }
 
         public string GetStartView()

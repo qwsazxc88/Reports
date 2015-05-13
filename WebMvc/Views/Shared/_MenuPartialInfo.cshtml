@@ -78,7 +78,7 @@
                 </div> *@
                     
                 @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
-                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0 || (dto.UserRole & UserRole.StaffManager) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
@@ -110,7 +110,7 @@
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала(Согласование кандидата)", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
                     </div> 
                  }  
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
