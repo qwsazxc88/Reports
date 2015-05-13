@@ -88,7 +88,9 @@ namespace Reports.Core.Dto.Employment2
         public bool IsContractChangedToIndefinite { get; set; }
 
         public int AppointmentReportId { get; set; }
+        public string AppointmentReportNumber { get; set; }
         public int AppointmentId { get; set; }
+        public int? AppointmentNumber { get; set; }
         public bool IsTechDissmiss { get; set; }
 
         /*
