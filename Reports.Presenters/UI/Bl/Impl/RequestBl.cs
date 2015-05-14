@@ -11929,7 +11929,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PersonnelsId = entity.Personnel.Id;
                     }
                 }
-                if (CurrentUser.UserRole == UserRole.Accountant)
+                if (CurrentUser.Id == 10)
                 {
                     if (model.CountantAccept)
                     {

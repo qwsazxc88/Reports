@@ -101,22 +101,22 @@
         Сотрудник отдела кадров:
         </td>
         <td>
-        @if(dto.UserRole==UserRole.PersonnelManager)     {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
+        @if(dto.UserRole==UserRole.PersonnelManager  && dto.Id!=10)     {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
         &nbsp;@Model.PersonnelDateAccept &nbsp; @Model.PersonnelName
         </td>
         </tr>
         <tr>
         <td>
-        Бухгалтер:
+        Сотрудник расчетного отдела:
         </td>
         <td>
-        @if (dto.UserRole == UserRole.Accountant)       {      @Html.CheckBoxFor(m => m.CountantAccept) } 
+        @if (dto.Id == 10)       {      @Html.CheckBoxFor(m => m.CountantAccept) } 
         &nbsp;  @Model.CountantDateAccept &nbsp; @Model.CountantName
         </td>
         </tr>
     }
     <tr>
-    @if ((dto.UserRole == UserRole.Accountant) || (dto.UserRole == UserRole.PersonnelManager) || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
+    @if ((dto.UserRole == UserRole.PersonnelManager) || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
     {<td><button >Сохранить</button></td>}
     </tr>
     </table>
