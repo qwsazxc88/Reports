@@ -7,6 +7,7 @@ using Reports.Core.Domain;
 using Reports.Core.Services;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class SurchargeNoteDao : DefaultDao<SurchargeNote>, ISurchargeNoteDao
@@ -29,6 +30,12 @@ namespace Reports.Core.Dao.Impl
                string docNumber
             )
         {
+            var depts=Session.Query<ManualRoleRecord>()
+                .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == userId && x.TargetDepartment.ItemLevel == 3)
+                .Select(x => x.TargetDepartment).Distinct()
+                .ToList();
+            var user = UserDao.Load(userId);
+            Department dep=null;
             var crit=Session.CreateCriteria<SurchargeNote>();
             crit.CreateAlias("Creator", "creator", NHibernate.SqlCommand.JoinType.InnerJoin);
             crit.CreateAlias("Creator.Department", "department", NHibernate.SqlCommand.JoinType.LeftOuterJoin);
@@ -45,9 +52,17 @@ namespace Reports.Core.Dao.Impl
             }
             if (departmentId > 0)
             {
-                var dep=Ioc.Resolve<IDepartmentDao>().Load(departmentId);
-                if(dep!=null)
-                    crit.Add(Restrictions.Like("department.Path", dep.Path+"%"));
+                dep = Ioc.Resolve<IDepartmentDao>().Load(departmentId);
+                if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
+            }
+            if (dep != null)
+            {
+                    crit.Add(Restrictions.Eq("department.Id", dep.Id));
+            }
+            else
+            {                
+                if (user != null && user.Department!=null)
+                    crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));
             }
             if (beginDate.HasValue)
             {
