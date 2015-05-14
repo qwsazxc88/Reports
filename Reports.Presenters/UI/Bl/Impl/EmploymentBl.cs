@@ -5122,6 +5122,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected string GetProbationaryPeriodString(string ProbationaryPeriod)
         {
             if (string.IsNullOrEmpty(ProbationaryPeriod)) return "";
+            //если пользователи уже успели что-то внести строковые символы
+            try { Convert.ToInt32(ProbationaryPeriod); }
+            catch {return ProbationaryPeriod;}
 
             int i = Convert.ToInt32(ProbationaryPeriod);
             string str = string.Empty;
