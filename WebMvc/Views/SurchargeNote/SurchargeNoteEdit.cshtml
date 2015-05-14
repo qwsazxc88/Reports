@@ -1,0 +1,138 @@
+﻿@model Reports.Presenters.UI.ViewModel.SurchargeNoteEditModel
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+
+@{
+    Layout = "~/Views/Shared/_LayoutSurchargeNote.cshtml";
+    ViewBag.Title = "Начисления";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    
+}
+<form action="/SurchargeNote/SurchargeNoteEdit" method="post" enctype = "multipart/form-data"> 
+    @Html.HiddenFor(m => m.NoteType)
+    @Html.HiddenFor(m => m.CreatorId)
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+        </td>
+    </tr>
+    
+   <tr>
+       <td>Дата создания документа:</td>
+       <td>@Html.DisplayFor(m => m.CreateDate)</td>
+   </tr>
+   <tr>
+       <td>Номер документа:</td>
+       <td>@Html.DisplayFor(m => m.Number)</td>
+   </tr>
+   <tr>
+       <td>ФИО Руководителя:</td>
+       <td>@Html.DisplayFor(m => m.CreatorName)</td>
+   </tr>
+   <tr>
+       <td>Должность:</td>
+       <td>@Html.DisplayFor(m => m.Position)</td>
+   </tr>
+   <tr>
+       <td>Подразделение:</td>
+       <td>@Html.DisplayFor(m => m.CreatorDepartment)</td>
+   </tr>
+   <tr>
+    <td>Вышестоящие руководители:</td>
+    <td>@Model.Chiefs</td>
+   </tr>
+   <tr>
+                <td>
+                    Подразделение 7 уровня:
+                </td>
+                <td>
+                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                    <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="@Model.DepartmentRequiredLevel" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @if (Model.IsEditable)
+                    {
+                        <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
+                    }            
+                </td>
+            </tr>
+   <tr>
+       <td>Оплачиваемый день:</td>
+       <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled="disabled"})</td>
+   </tr>
+   
+    <tr>
+         <td>
+            <label>Файл:</label>
+         </td>
+         <td>
+         @if (Model.AttachmentId > 0)
+         {
+             @Html.ActionLink(Model.AttachmentName, "ViewAttachment", (object)new { Id = Model.AttachmentId }, null);
+         }
+         @if (Model.IsEditable && dto.Id==Model.CreatorId)
+         {
+             <input type="file" name="File"/>
+             @Html.ValidationMessageFor(m => m.File)
+         }
+         
+         </td>
+    </tr>
+    @*<tr>
+        <td>
+           Сотрудник:
+        </td>
+        <td>
+            @Html.DropDownListFor(m => m.UserId, new SelectList(Model.Users, "Id", "Name"), Model.IsEditable ? null : new { diasebled = "disabled" }) 
+         </td>
+    </tr>*@
+    @if (Model.Id > 0)
+    {
+        <tr>
+        <td>
+        Сотрудник отдела кадров:
+        </td>
+        <td>
+        @if(dto.UserRole==UserRole.PersonnelManager)     {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
+        &nbsp;@Model.PersonnelDateAccept &nbsp; @Model.PersonnelName
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Бухгалтер:
+        </td>
+        <td>
+        @if (dto.UserRole == UserRole.Accountant)       {      @Html.CheckBoxFor(m => m.CountantAccept) } 
+        &nbsp;  @Model.CountantDateAccept &nbsp; @Model.CountantName
+        </td>
+        </tr>
+    }
+    <tr>
+    @if ((dto.UserRole == UserRole.Accountant) || (dto.UserRole == UserRole.PersonnelManager) || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
+    {<td><button >Сохранить</button></td>}
+    </tr>
+    </table>
+    </div>
+</form>
+    <script type="text/javascript">
+        var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+        var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+   
+        $(document).ready(function () {
+        var menuitem="moSurchargeNoteList"+"@Model.NoteType";
+        console.log(menuitem);
+            setActiveMenuItem(menuitem);
+            $("#PayDay").datepicker();
+        });
+    </script>
+
+
+
