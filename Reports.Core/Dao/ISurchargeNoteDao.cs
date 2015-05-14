@@ -13,6 +13,7 @@ namespace Reports.Core.Dao
                UserRole role,
                int departmentId,
                int typeId,
+               int status,
                DateTime? beginDate,
                DateTime? endDate,
                string userName,

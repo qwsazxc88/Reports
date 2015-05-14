@@ -58,7 +58,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    @if (Model.IsEditable)
+                    @if (Model.CreatorId == dto.Id && Model.IsEditable)
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            

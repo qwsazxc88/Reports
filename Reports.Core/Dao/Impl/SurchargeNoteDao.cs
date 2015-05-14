@@ -20,6 +20,7 @@ namespace Reports.Core.Dao.Impl
                UserRole role,
                int departmentId,
                int typeId,
+               int status,
                DateTime? beginDate,
                DateTime? endDate,
                string userName,
@@ -32,6 +33,12 @@ namespace Reports.Core.Dao.Impl
             crit.CreateAlias("Creator", "creator", NHibernate.SqlCommand.JoinType.InnerJoin);
             crit.CreateAlias("Creator.Department", "department", NHibernate.SqlCommand.JoinType.LeftOuterJoin);
             crit.Add(Restrictions.Eq("NoteType",typeId));
+            if (status > 0)
+            {
+                if (status == 1) { crit.Add(Restrictions.IsNull("CountantDateAccept")); crit.Add(Restrictions.IsNull("PersonnelDateAccept")); };
+                if (status == 2) { crit.Add(Restrictions.IsNotNull("PersonnelDateAccept")); crit.Add(Restrictions.IsNull("CountantDateAccept")); };
+                if (status == 3) { crit.Add(Restrictions.IsNotNull("CountantDateAccept")); };
+            }
             if (!String.IsNullOrWhiteSpace(userName))
             { 
                 crit.Add(Restrictions.Like("creator.Name",userName.Trim()+"%"));
@@ -75,8 +82,8 @@ namespace Reports.Core.Dao.Impl
                 PersonnelsId=x.Personnel!=null?x.Personnel.Id:0,
                 DepartmentId=x.DocDep7.Id,
                 Dep3Name=x.DocDep3.Name,
-                DepartmentName=x.DocDep7.Name
-
+                DepartmentName=x.DocDep7.Name,
+                Status=(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":"Заявка создана"
             });
             return res.ToList();
         }
