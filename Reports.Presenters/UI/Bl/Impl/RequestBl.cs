@@ -16,7 +16,7 @@ using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
 using System.Web.Mvc;
-
+using Reports.Core.Enum;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class  RequestBl : BaseBl, IRequestBl
@@ -72,7 +72,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDismissalTypeDao dismissalTypeDao;
         protected IDismissalDao dismissalDao;
         protected IDismissalCommentDao dismissalCommentDao;
-
+        
         protected IClearanceChecklistCommentDao clearanceChecklistCommentDao;
 
         protected ITimesheetCorrectionTypeDao timesheetCorrectionTypeDao;
@@ -102,7 +102,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITerraPointToUserDao terraPointToUserDao;
         protected ITerraGraphicDao terraGraphicDao;
         protected IDeductionImportDao deductionImportDao;
+        protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public ISurchargeNoteDao SurchargeNoteDao
+        {
+            get { return Validate.Dependency(surcharcheNoteDao); }
+            set { surcharcheNoteDao = value; }
+        }
         public IAnalyticalStatementDao AnalyticalStatementDao
         {
             get { return Validate.Dependency(analyticalStatementDao); }
@@ -1131,7 +1137,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //        model.NdflAttachment = fileName;
         //    }
         //}
-        protected int? SaveAttachment(int entityId, int id, UploadFileDto dto,RequestAttachmentTypeEnum type, out string attachment)
+        public int? SaveAttachment(int entityId, int id, UploadFileDto dto,RequestAttachmentTypeEnum type, out string attachment)
         {
             attachment = string.Empty;
             if(dto == null)
@@ -11765,7 +11771,194 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
-        
+
+        #region SurchageNote
+        public void GetDictionaries(SurchargeNoteEditModel model)
+        {
+            
+            if (model.Id > 0)
+            {
+                var attach = RequestAttachmentDao.FindByRequestIdAndTypeId(model.Id, RequestAttachmentTypeEnum.SurchargeNoteAttachment);
+                if (attach != null)
+                {
+                    model.AttachmentId = attach.Id;
+                    model.AttachmentName = attach.FileName;
+                }
+            }
+            if (model.Id == 0)
+            {
+                model.CreatorId = CurrentUser.Id;
+                model.CreatorName = CurrentUser.Name;
+                model.CreateDate = DateTime.Now;
+            }
+            var user = UserDao.Load(model.CreatorId);
+            if (user != null)
+            {
+                model.Position = user.Position.Name;
+                model.CreatorDepartment = user.Department.Name;
+            }
+            if (model.CountantDateAccept.HasValue || model.PersonnelDateAccept.HasValue) model.IsEditable = false;
+            else model.IsEditable = true;
+            model.CountantAccept = model.CountantDateAccept.HasValue;
+            model.PersonnelAccept = model.PersonnelDateAccept.HasValue;
+            var chiefs = GetChiefsForManager(model.CreatorId);
+            StringBuilder chiefsBuilder = new StringBuilder();
+            foreach (var chief in chiefs)
+            {
+                chiefsBuilder.AppendFormat("{0} ({1}), ", chief.Name, chief.Position == null ? "<не указана>" : chief.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (chiefsBuilder.Length >= 2)
+            {
+                chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
+            }
+            model.Chiefs = chiefsBuilder.ToString();
+        }
+        public void GetDictionaries(SurchargeNoteListModel model)
+        {
+            model.Statuses = new List<IdNameDto>();
+            model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
+            model.Statuses.Add(new IdNameDto { Id = 1, Name = "Заявка создана" });
+            model.Statuses.Add(new IdNameDto { Id = 2, Name = "Заявка отработана отделом кадров" });
+            model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
+        }
+        public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
+        {
+            var user = UserDao.Load(CurrentUser.Id);           
+            SurchargeNoteEditModel model = new SurchargeNoteEditModel();
+            model.DepartmentRequiredLevel = 7;
+            if (id == 0)
+            {                
+                model.CreateDate = DateTime.Now;
+                model.CreatorId = CurrentUser.Id;
+                model.CreatorName = user.Name;
+                
+                var d3 = DepartmentDao.GetParentDepartmentWithLevel(user.Department,3);
+                model.Dep3Name = d3 != null ? d3.Name : "";
+            }
+            else
+            {
+                var entity = SurchargeNoteDao.Load(id);
+                model.Id = entity.Id;
+                model.CreateDate = entity.CreateDate;
+                model.CreatorId = entity.Creator.Id;
+                model.CreatorName = entity.Creator.Name;
+                model.Position = entity.Creator.Position.Name;
+                model.Number = entity.Number.ToString();
+                model.CreatorDepartment = entity.Creator.Department.Name;
+                model.PayDay = entity.PayDay;
+                model.CountantDateAccept = entity.CountantDateAccept;
+                model.CountantName =entity.Countant!=null? entity.Countant.Name:"";
+                model.PersonnelDateAccept = entity.PersonnelDateAccept;
+                model.PersonnelName =entity.Personnel!=null?  entity.Personnel.Name:"";
+                model.NoteType = entity.NoteType;
+                model.Dep3Name = entity.DocDep3.Name;
+                model.DepartmentName = entity.DocDep7.Name;
+            }
+            GetDictionaries(model);
+                
+            return model;
+        }
+        public SurchargeNoteListModel GetSurchargeNoteListModel()
+        {
+            SurchargeNoteListModel model = new SurchargeNoteListModel();
+            GetDictionaries(model);
+            return model;
+        }
+        public void SaveSurchargeNote(SurchargeNoteEditModel model)
+        {
+            var creator=UserDao.Load(CurrentUser.Id);
+            
+            if (model.Id == 0)
+            {
+                var entity = new SurchargeNote { Creator = creator,
+                    CreateDate=DateTime.Now, 
+                    NoteType=model.NoteType, 
+                    PayDay=model.PayDay,                   
+                    DocDep7=DepartmentDao.Load(model.DepartmentId),                    
+                    Number =  RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType==0)?RequestTypeEnum.SurchargeNote0:RequestTypeEnum.SurchargeNote1))                    
+                };
+                entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
+                SurchargeNoteDao.SaveAndFlush(entity);
+                ChangeModelProperties(model, entity);
+            }
+            else
+            {
+                var entity = SurchargeNoteDao.Load(model.Id);
+                if (!model.PersonnelDateAccept.HasValue && !model.CountantDateAccept.HasValue)
+                {
+                    //entity.DocumentDepartment = model.DepartmentId;
+                    entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
+                    entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
+                    entity.PayDay = model.PayDay;
+                }
+                if (CurrentUser.UserRole == UserRole.PersonnelManager)
+                {
+                    if (model.PersonnelAccept)
+                    {
+                        entity.PersonnelDateAccept = DateTime.Now;
+                        entity.Personnel = UserDao.Load(CurrentUser.Id);
+
+                        model.PersonnelDateAccept = entity.PersonnelDateAccept;
+                        model.PersonnelName = entity.Personnel.Name;
+                        model.PersonnelsId = entity.Personnel.Id;
+                    }
+                }
+                if (CurrentUser.UserRole == UserRole.Accountant)
+                {
+                    if (model.CountantAccept)
+                    {
+                        entity.CountantDateAccept = DateTime.Now;
+                        entity.Countant = UserDao.Load(CurrentUser.Id);
+
+                        model.CountantDateAccept = entity.CountantDateAccept;
+                        model.CountantName = entity.Countant.Name;
+                        model.CountantId = entity.Countant.Id;
+                    }
+                }
+                SurchargeNoteDao.SaveAndFlush(entity);
+                ChangeModelProperties(model, entity);
+            }
+            
+            GetDictionaries(model);
+        }
+        private void ChangeModelProperties(SurchargeNoteEditModel model, SurchargeNote entity)
+        {
+            model.Id = entity.Id;
+            model.Number = entity.Number.ToString();
+            model.NoteType = entity.NoteType;
+            model.CreateDate = entity.CreateDate;
+            model.CreatorDepartment = entity.Creator.Department.Name;
+            model.CreatorId = entity.Creator.Id;
+            model.PayDay = entity.PayDay;
+            model.DepartmentId = entity.DocDep7.Id;
+            model.Position = entity.Creator.Position.Name;
+            if (entity.Personnel != null)
+            {
+                model.PersonnelName = entity.Personnel.Name;
+                model.PersonnelsId = entity.Personnel.Id;
+            }
+            model.PersonnelDateAccept = entity.PersonnelDateAccept;
+            if (entity.Countant != null)
+            {
+                model.CountantId = entity.Countant.Id;
+                model.CountantName = entity.Countant.Name;
+            }
+            model.CountantDateAccept = entity.CountantDateAccept;
+        }
+        public void SetDocumentsToModel(SurchargeNoteListModel model)
+        {
+            model.Documents = SurchargeNoteDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole, model.DepartmentId, model.NoteType, model.BeginDate, model.EndDate, model.UserName, model.SortBy, model.SortDescending, model.Number);
+           
+            GetDictionaries(model);
+        }
+        public bool CheckDepartmentLevel(int id, int level)
+        {
+            var dep=DepartmentDao.Load(id);
+            return dep.ItemLevel == level;
+        }
+        #endregion
+
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
