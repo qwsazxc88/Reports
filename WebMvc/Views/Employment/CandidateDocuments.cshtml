@@ -44,7 +44,7 @@
                 @if (string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан трудового договора<br /><input type="file" name="ApplicationLetterScanFile" id="ApplicationLetterScanFile"/>
+                        Выбрать для загрузки скан заявления о приеме<br /><input type="file" name="ApplicationLetterScanFile" id="ApplicationLetterScanFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
@@ -350,7 +350,7 @@
                 @if (string.IsNullOrEmpty(Model.InstructionOfSecretFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="InstructionOfSecretFile" id="InstructionOfSecretFile"/>
+                        Выбрать для загрузки скан памятки сотруднику о сохранении коммерческой, банковской и служебной тайны<br /><input type="file" name="InstructionOfSecretFile" id="InstructionOfSecretFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.InstructionOfSecretFileName))
@@ -385,7 +385,7 @@
                 @if (string.IsNullOrEmpty(Model.InstructionEnsuringSafetyFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="InstructionEnsuringSafetyFile" id="InstructionEnsuringSafetyFile"/>
+                        Выбрать для загрузки скан инструкции по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну<br /><input type="file" name="InstructionEnsuringSafetyFile" id="InstructionEnsuringSafetyFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.InstructionEnsuringSafetyFileName))
@@ -420,7 +420,7 @@
                 @if (string.IsNullOrEmpty(Model.AgreePersonForCheckingFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="AgreePersonForCheckingFile" id="AgreePersonForCheckingFile"/>
+                        Выбрать для загрузки скан приложения №3<br /><input type="file" name="AgreePersonForCheckingFile" id="AgreePersonForCheckingFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.AgreePersonForCheckingFileName))
@@ -455,7 +455,7 @@
                 @if (string.IsNullOrEmpty(Model.CashWorkAddition1FileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="CashWorkAddition1File" id="CashWorkAddition1File"/>
+                        Выбрать для загрузки скан приложения №1<br /><input type="file" name="CashWorkAddition1File" id="CashWorkAddition1File"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.CashWorkAddition1FileName))
@@ -490,7 +490,7 @@
                 @if (string.IsNullOrEmpty(Model.CashWorkAddition2FileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="CashWorkAddition2File" id="CashWorkAddition2File"/>
+                        Выбрать для загрузки скан приложения №2<br /><input type="file" name="CashWorkAddition2File" id="CashWorkAddition2File"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.CashWorkAddition2FileName))
@@ -525,7 +525,7 @@
                 @if (string.IsNullOrEmpty(Model.ObligationTradeSecretFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="ObligationTradeSecretFile" id="ObligationTradeSecretFile"/>
+                        Выбрать для загрузки скан обязательства о неразглашении коммерческой и служебной тайны<br /><input type="file" name="ObligationTradeSecretFile" id="ObligationTradeSecretFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.ObligationTradeSecretFileName))
@@ -557,7 +557,7 @@
                 @if (string.IsNullOrEmpty(Model.Certificate182HFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="Certificate182HFile" id="Certificate182HFile"/>
+                        Выбрать для загрузки скан справки 182-Н от предыдущего работодателя<br /><input type="file" name="Certificate182HFile" id="Certificate182HFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.Certificate182HFileName))
@@ -589,7 +589,7 @@
                 @if (string.IsNullOrEmpty(Model.Certificate2NDFLFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="Certificate2NDFLFile" id="Certificate2NDFLFile"/>
+                        Выбрать для загрузки скан справки 2-НДФЛ от предыдущего работодателя<br /><input type="file" name="Certificate2NDFLFile" id="Certificate2NDFLFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.Certificate2NDFLFileName))
@@ -608,6 +608,19 @@
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate2NDFLFileNeeded)</td>
+            }
+        </tr>
+
+        <tr>
+            <td>Заявление на получение банковской карты</td>
+            <td>
+                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';">Печать</button>
+            </td>
+            <td>
+            </td>
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            {
+                <td style="text-align:center;"></td>
             }
         </tr>
 
