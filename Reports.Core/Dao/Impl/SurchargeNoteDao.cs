@@ -31,6 +31,7 @@ namespace Reports.Core.Dao.Impl
             var crit=Session.CreateCriteria<SurchargeNote>();
             crit.CreateAlias("Creator", "creator", NHibernate.SqlCommand.JoinType.InnerJoin);
             crit.CreateAlias("Creator.Department", "department", NHibernate.SqlCommand.JoinType.LeftOuterJoin);
+            crit.Add(Restrictions.Eq("NoteType",typeId));
             if (!String.IsNullOrWhiteSpace(userName))
             { 
                 crit.Add(Restrictions.Like("creator.Name",userName.Trim()+"%"));
@@ -71,7 +72,10 @@ namespace Reports.Core.Dao.Impl
                 PayDay=x.PayDay,
                 PersonnelDateAccept=x.PersonnelDateAccept,
                 PersonnelName=x.Personnel!=null?x.Personnel.Name:"",
-                PersonnelsId=x.Personnel!=null?x.Personnel.Id:0
+                PersonnelsId=x.Personnel!=null?x.Personnel.Id:0,
+                DepartmentId=x.DocDep7.Id,
+                Dep3Name=x.DocDep3.Name,
+                DepartmentName=x.DocDep7.Name
 
             });
             return res.ToList();

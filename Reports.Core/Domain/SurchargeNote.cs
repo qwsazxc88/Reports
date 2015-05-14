@@ -17,7 +17,8 @@ namespace Reports.Core.Domain
         public virtual User Creator { get; set; }
         public virtual User Personnel { get; set; }
         public virtual User Countant { get; set; }
-        public virtual int DocumentDepartment { get; set; }
+        public virtual Department DocDep3 { get; set; }
+        public virtual Department DocDep7 { get; set; }
 
     }
 }

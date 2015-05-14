@@ -3,11 +3,12 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.SurchargeNoteListModel
 @{
-    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
-    ViewBag.Title = "Приказ - реестр";
+    Layout = "~/Views/Shared/_LayoutSurchargeNote.cshtml";
+    ViewBag.Title = "Начисления";
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.NoteType)
      <table style="width:100%">
      <tr>
         <td colspan="2">
@@ -96,7 +97,7 @@
                             <td>
                                 @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)
                                 {
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("SurchargeNoteEdit", "SurchargeNote", new { id = 0 })'"/>   
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("SurchargeNoteEdit", "SurchargeNote", new { id = 0 , type=Model.NoteType})'"/>   
                                 }                                                                                                                    
                             </td>
                    </tr>
@@ -146,20 +147,28 @@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
-                    int i = 0;
+                    int i = 1;
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
                             <td>@i</td>
-                            <td>@doc.CreateDate</td>
-                            <td>@doc.Number</td>
+                            <td>@doc.CreateDate.ToShortDateString()</td>
+                            <td>@Html.ActionLink(doc.Number,"SurchargeNoteEdit",new {id=doc.Id},null)</td>
                             <td>@doc.CreatorName</td>
                             <td>@doc.Position</td>
                             <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
-                            <td>@doc.PayDay</td>
-                            <td>@doc.PersonnelDateAccept</td>
-                            <td>@doc.CountantDateAccept</td>
+                            <td>@doc.DepartmentName</td>
+                            <td>@doc.PayDay.ToShortDateString()</td>
+                            <td>@if(doc.PersonnelDateAccept.HasValue)
+                                {
+                                    @doc.PersonnelDateAccept.Value.ToShortDateString()
+                                }
+                            </td>
+                            <td>@if(doc.CountantDateAccept.HasValue)
+                                {
+                                    @doc.CountantDateAccept.Value.ToShortDateString()
+                                }
+                            </td>
                             <td>@doc.Status</td>
                             @{i++;}
                         </tr>
@@ -175,12 +184,16 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var menuitem="moSurchargeNoteList"+"@Model.NoteType";
     $(document).ready(function () {
+    setSortFields();
+        
+        console.log(menuitem);
+            setActiveMenuItem(menuitem);
         $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         $("#EndDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
-        setSortFields();
-        setActiveMenuItem("moAllOrders");
+        
     });
     function resetFilter() {
         $("#BeginDate").val('');

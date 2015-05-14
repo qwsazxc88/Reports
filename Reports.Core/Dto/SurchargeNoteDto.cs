@@ -24,9 +24,11 @@ namespace Reports.Core.Dto
         public int NoteType { get; set; }
         public string Number { get; set; }
         public string CreatorName { get; set; }
+        public string CreatorDepartment { get; set; }
         public string Position { get; set; }
         public string Dep3Name { get; set; }
-        public string Dep7Name { get; set; }
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
         public string Status { get; set; }
     }
 }

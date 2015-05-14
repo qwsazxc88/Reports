@@ -29,7 +29,9 @@
         HelpServiceRequest = 16,
         HelpQuestionRequest = 17,
         HelpPersonnelBillingRequest = 18,
-        Surcharge = 19
+        Surcharge = 19,
+        SurchargeNote0=20,
+        SurchargeNote1=21
     }
     public enum RequestAttachmentTypeEnum
     {

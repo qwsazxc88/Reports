@@ -216,6 +216,7 @@ namespace Reports.Presenters.UI.Bl
         SurchargeNoteEditModel GetSurchargeNoteEditModel(int id);
         SurchargeNoteListModel GetSurchargeNoteListModel();
         void SetDocumentsToModel(SurchargeNoteListModel model);
-
+        void GetDictionaries(SurchargeNoteEditModel model);
+        bool CheckDepartmentLevel(int id, int level);
     }
 }
