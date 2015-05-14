@@ -11885,7 +11885,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 var entity = SurchargeNoteDao.Load(model.Id);
-                if (!model.PersonnelDateAccept.HasValue && !model.CountantDateAccept.HasValue)
+                if (!model.PersonnelDateAccept.HasValue && !model.CountantDateAccept.HasValue && model.CreatorId==CurrentUser.Id)
                 {
                     //entity.DocumentDepartment = model.DepartmentId;
                     entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
@@ -11928,6 +11928,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Number = entity.Number.ToString();
             model.NoteType = entity.NoteType;
             model.CreateDate = entity.CreateDate;
+            model.CreatorName = entity.Creator.Name;
             model.CreatorDepartment = entity.Creator.Department.Name;
             model.CreatorId = entity.Creator.Id;
             model.PayDay = entity.PayDay;
@@ -11948,7 +11949,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(SurchargeNoteListModel model)
         {
-            model.Documents = SurchargeNoteDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole, model.DepartmentId, model.NoteType, model.BeginDate, model.EndDate, model.UserName, model.SortBy, model.SortDescending, model.Number);
+            model.Documents = SurchargeNoteDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole, model.DepartmentId, model.NoteType,model.StatusId, model.BeginDate, model.EndDate, model.UserName, model.SortBy, model.SortDescending, model.Number);
            
             GetDictionaries(model);
         }
