@@ -151,7 +151,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Руководители вышележащих уровней по ветке для всех
             User currentUserOrManagerAccount = managerAccount ?? user;
             mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
-                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) /*&& manager.Level > 3*/)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) && manager.Level > 3)
                 .ToList<User>();
 
             foreach (var mainManager in mainManagers)
