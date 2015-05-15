@@ -11836,6 +11836,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
             }
             model.Chiefs = chiefsBuilder.ToString();
+            if (user != null)
+            {
+                var personnels = user.Personnels;
+                if (personnels != null && personnels.Any())
+                {
+                    model.Personnels = personnels.Aggregate("", (sum, next) =>  sum += next.Name + ',');
+                    model.PersonnelsApproved = personnels.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                }
+            }
         }
         public void GetDictionaries(SurchargeNoteListModel model)
         {
@@ -11877,6 +11886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.NoteType = entity.NoteType;
                 model.Dep3Name = entity.DocDep3.Name;
                 model.DepartmentName = entity.DocDep7.Name;
+                model.DepartmentId = entity.DocDep7.Id;
             }
             GetDictionaries(model);
 

@@ -8,7 +8,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class UserDao : DefaultDao<User>, IUserDao
@@ -519,7 +519,7 @@ namespace Reports.Core.Dao.Impl
                 query.SetString("userName", "%" + userName + "%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
-
+        
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole)
         {
             string sqlQuery =
@@ -990,6 +990,10 @@ namespace Reports.Core.Dao.Impl
                 .Skip((currentPage - 1) * PageSize)
                 .Take(PageSize);
             return userList.ToList();
+        }
+        public IList<User> GetUsersForPersonnel(int persId)
+        {
+            return Session.Query<User>().Where(x => x.Personnels.Any(y => y.Id == persId)).ToList();
         }
         public IList<User> GetUsersForPersonnel(string userName,int personnelId,ref int currentPage, out int numberOfPages)
         {
