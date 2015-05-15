@@ -11864,7 +11864,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreateDate = DateTime.Now;
                 model.CreatorId = CurrentUser.Id;
                 model.CreatorName = user.Name;
-
+                model.PayDay = DateTime.Now;
                 var d3 = DepartmentDao.GetParentDepartmentWithLevel(user.Department, 3);
                 model.Dep3Name = d3 != null ? d3.Name : "";
             }
