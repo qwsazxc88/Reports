@@ -29,14 +29,26 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Admin )]
         public void AddNews(Reports.Core.Dto.NewsDto post)
         {
-            News result = new News { 
-                PostDate=DateTime.Now,
-                Header=post.Header,
-                Text=post.Text,
-                IsVisible=true,
-                Author = Ioc.Resolve<IUserDao>().Load(AuthenticationService.CurrentUser.Id)
-            };
-            Ioc.Resolve<INewsDao>().SaveAndFlush(result);
+            News result = null;
+            var dao = Ioc.Resolve<INewsDao>();
+            if (post.id <= 0)
+            {
+                result = new News
+                {
+                    PostDate = DateTime.Now,
+                    Header = post.Header,
+                    Text = post.Text,
+                    IsVisible = true,
+                    Author = Ioc.Resolve<IUserDao>().Load(AuthenticationService.CurrentUser.Id)
+                };
+            }
+            else
+            {
+                result = dao.Load(post.id);
+                result.Text = post.Text;
+                result.Header = post.Header;
+            }
+            dao.SaveAndFlush(result);
         }
     }
 }
