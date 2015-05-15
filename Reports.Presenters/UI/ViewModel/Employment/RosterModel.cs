@@ -46,6 +46,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? CompleteDate { get; set; }
 
+        [Display(Name = "Номер отчета из подбора персонала")]
+        public string AppointmentReportNumber { get; set; }
+
+        [Display(Name = "Номер заявки из подбора персонала")]
+        public int? AppointmentNumber { get; set; }
+
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
 

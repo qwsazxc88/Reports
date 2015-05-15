@@ -1303,6 +1303,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.ESSSNum == null)
                 ms.AddModelError("ESSSNum", "Укажите № заявки ЭССС!");
+            else
+            {
+                try { Convert.ToInt32(model.ESSSNum); }
+                catch { ms.AddModelError("ESSSNum", "№ заявки ЭССС является числовым полем!"); }
+            }
 
         }
         /// <summary>
