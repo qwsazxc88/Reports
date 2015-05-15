@@ -2,35 +2,47 @@
 @{
     var dto = Reports.Presenters.Services.Impl.UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
   }  
+<script src="../../Scripts/jquery-1.4.4.min.js" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular-sanitize.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/textAngular-rangy.min.js")" type="text/javascript"></script>
+<link href="../../Content/textAngular.css" rel="stylesheet" type="text/css" />
 
-<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")"></script>
-<script src="../../Scripts/jquery-ui.min.js" type="text/javascript"></script>
-
-<script type="text/javascript" src="@Url.Content("~/Scripts/jHtmlArea-0.7.0.min.js")"></script>
-<link rel="Stylesheet" type="text/css" href="@Url.Content("~/Content/jHtmlArea/jHtmlArea.css")" />
-
+<link rel='stylesheet prefetch' href='http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'>
+<script src="@Url.Content("~/Scripts/textAngular.min.js")" type="text/javascript"></script>
+<style>
+.ta-editor 
+{
+  min-height: 300px;
+  height: auto;
+  overflow: auto;
+  font-family: inherit;
+  font-size: 100%;
+  width:90%;
+}
+</style>
 <div id="Blog" class="Blog" ng-app="NewsApp">
 <div ng-controller="NewsController">
 @if (dto.UserRole == UserRole.Admin)
 {
-    <fieldset style="border:1px solid #ddd; border-radius: 5px; margin:5px;">
-        <legend><input type="button" style="cursor:hand;" ng-click="Toggle()" value="Добавление новости"/></legend>
-    
-        <div id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">
-            <input style="width:100%; margin:5px;" class="form-control"  ng-model="NewPost.Header" placeholder = "Заголовок" />
-            <textarea id="HTMLEditor" style="width:100%; margin:5px" class="form-control" ng-model="NewPost.Text" placeholder = "Текст новости" ></textarea>
-            
-            <input style="margin:5px" type="button" ng-click="AddPost()" value="Добавить новость" /> 
-            <input style="margin:5px" type="button" ng-click="ClearPost()" value="Очистить" /> 
+    <div  >
+        <input type="button" style="margin:5px;" class="btn btn-link btn-small" style="cursor:hand;" ng-click="Toggle()" value="Добавление новости"/>
+        
+        <div style="border:0px solid #ddd; border-radius: 5px; margin:5px;"  id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">
+            <div style="width:80%"><input class="form-control"  ng-model="NewPost.Header" placeholder = "Заголовок" /></div>
+            <div style="height:5px;"></div>    
+            <div class="ta-editor" id="HTMLEditor" text-angular class="form-control" ng-model="NewPost.Text" placeholder = "Текст новости" ></div>
+            <div>
+                <input class="btn btn-primary" style="margin:5px" type="button" ng-click="AddPost()" value="Добавить новость" /> 
+                <input class="btn btn-primary" style="margin:5px" type="button" ng-click="ClearPost()" value="Очистить" /> 
+            </div>
         </div>
-    </fieldset>
+    </div>
 }
 <div class="NewsPost" ng-repeat="post in News">
     @if (dto.UserRole == UserRole.Admin)
     { 
-        <a href="#" data-ng-click="Edit(post);" >Редактировать</a><br />
+        <a href="#" data-ng-click="Edit(post);" >Редактировать </a> <br />
     }
     <B style="font-size:large">{{post.Header}}</B><span style="color:#aaa; position:absolute; left:auto; right:5px;">{{post.PostDate}}</span>
     <div ng-bind-html="post.Text"></div>
@@ -40,29 +52,29 @@
 
 <script>
     
-    var NewsApp = angular.module('NewsApp', ["ngSanitize"]);
+    var NewsApp = angular.module('NewsApp', ["ngSanitize","textAngular"]);
     NewsApp.controller('NewsController', function ($scope, $http) {
 
         $scope.News = {};
 @if (dto.UserRole == UserRole.Admin)
 {
         <text>
-        $(document).ready(function () {
-         $("#HTMLEditor").htmlarea(); 
-        });
+        
         $scope.NewPost = {};
         $scope.Edit= function (post){
-            $scope.NewPost=post;
-            setTimeout(function(){ $('#HTMLEditor').htmlarea('updateHtmlArea'); }, 1000);
-            
+            $scope.NewPost=post;             
         };
         $scope.ClearPost = function () {
             $scope.Edit({});
         };
+        $scope.DeletePost=function(id){
+        console.log(id);
+        $http.post("/Info/DeleteNews/", id).success(function () {
+                $scope.LoadData();
+            });
+        };
         $scope.AddPost = function () {
-            var txt=$("#HTMLEditor").htmlarea('toHtmlString');
-            $scope.NewPost.Text=txt;
-            $http.post("/Info/AddNews/", $scope.NewPost).success(function () {
+                $http.post("/Info/AddNews/", $scope.NewPost).success(function () {
                 $scope.LoadData();
                 $scope.NewPost = {};
             });
