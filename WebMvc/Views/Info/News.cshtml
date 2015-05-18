@@ -1,7 +1,7 @@
 ﻿@using Reports.Core;
 @{
     var dto = Reports.Presenters.Services.Impl.UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-  }  <link rel='stylesheet prefetch' href='./../Content/css/font-awesome.min.css'>
+  } 
 <script src="../../Scripts/jquery-1.4.4.min.js" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular-sanitize.min.js")" type="text/javascript"></script>
@@ -14,11 +14,12 @@
 .ta-editor 
 {
   min-height: 300px;
+  display:block;
   height: auto;
   overflow: auto;
   font-family: inherit;
   font-size: 100%;
-  width:90%;
+  width:100%;
 }
 </style>
 <div id="Blog" class="Blog" ng-app="NewsApp">
@@ -31,7 +32,9 @@
         <div style="border:0px solid #ddd; border-radius: 5px; margin:5px;"  id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">
             <div style="width:80%"><input class="form-control"  ng-model="NewPost.Header" placeholder = "Заголовок" /></div>
             <div style="height:5px;"></div>    
-            <div class="ta-editor" id="HTMLEditor" text-angular class="form-control" ng-model="NewPost.Text" placeholder = "Текст новости" ></div>
+            
+            <div text-angular ng-model="NewPost.Text" ta-toolbar="[['h1','h2','h3'],['bold','italics','underline']]"></div>
+            
             <div>
                 <input class="btn btn-primary" style="margin:5px" type="button" ng-click="AddPost()" value="Добавить новость" /> 
                 <input class="btn btn-primary" style="margin:5px" type="button" ng-click="ClearPost()" value="Очистить" /> 
@@ -83,6 +86,7 @@
             $scope.AddNewsEnable = !$scope.AddNewsEnable;
         };
         $scope.AddNewsEnable = true;
+
         </text>
 }
         $scope.LoadData = function () {
