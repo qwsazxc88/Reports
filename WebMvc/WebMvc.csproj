@@ -125,6 +125,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\ajax-loader.gif" />
+    <Content Include="Content\css\font-awesome.css" />
+    <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\Default.css" />
     <Content Include="Content\favicon.ico" />
     <Content Include="Content\files\NewYear.jpg" />
@@ -132,7 +134,7 @@
     <Content Include="Content\fileuploader.css" />
     <Content Include="Content\fileuploader.js" />
     <Content Include="Content\floating_beams.GIF" />
-    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\icon_down_sort_arrow.png" />
     <Content Include="Content\icon_up_sort_arrow.png" />
     <Content Include="Content\loading.gif" />
@@ -817,6 +819,37 @@
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
+    <None Include="Content\fonts\fontawesome-webfont.eot" />
+    <None Include="Content\fonts\fontawesome-webfont.ttf" />
+    <None Include="Content\fonts\fontawesome-webfont.woff" />
+    <None Include="Content\fonts\fontawesome-webfont.woff2" />
+    <None Include="Content\fonts\FontAwesome.otf" />
+    <None Include="Content\less\animated.less" />
+    <None Include="Content\less\bordered-pulled.less" />
+    <None Include="Content\less\core.less" />
+    <None Include="Content\less\fixed-width.less" />
+    <None Include="Content\less\font-awesome.less" />
+    <None Include="Content\less\icons.less" />
+    <None Include="Content\less\larger.less" />
+    <None Include="Content\less\list.less" />
+    <None Include="Content\less\mixins.less" />
+    <None Include="Content\less\path.less" />
+    <None Include="Content\less\rotated-flipped.less" />
+    <None Include="Content\less\stacked.less" />
+    <None Include="Content\less\variables.less" />
+    <None Include="Content\scss\font-awesome.scss" />
+    <None Include="Content\scss\_animated.scss" />
+    <None Include="Content\scss\_bordered-pulled.scss" />
+    <None Include="Content\scss\_core.scss" />
+    <None Include="Content\scss\_fixed-width.scss" />
+    <None Include="Content\scss\_icons.scss" />
+    <None Include="Content\scss\_larger.scss" />
+    <None Include="Content\scss\_list.scss" />
+    <None Include="Content\scss\_mixins.scss" />
+    <None Include="Content\scss\_path.scss" />
+    <None Include="Content\scss\_rotated-flipped.scss" />
+    <None Include="Content\scss\_stacked.scss" />
+    <None Include="Content\scss\_variables.scss" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />
