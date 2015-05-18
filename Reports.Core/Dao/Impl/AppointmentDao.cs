@@ -316,6 +316,7 @@ namespace Reports.Core.Dao.Impl
         public IList<AppointmentDto> GetDocuments(int userId,
                 UserRole role,
                 int departmentId,
+                int reasonId,
                 int statusId,
                 string number,
                 DateTime? beginDate,
@@ -335,6 +336,12 @@ namespace Reports.Core.Dao.Impl
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString += String.Format(@" v.Number like '{0}%' ", number);
+            }
+            if (reasonId > 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" ar.id={0} ", reasonId);
             }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);

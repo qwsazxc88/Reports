@@ -200,6 +200,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToModel(AppointmentListModel model)
         {
             model.Statuses = GetAppRequestStatuses();
+            model.Reasons = AppointmentReasonDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Reasons.Add(new IdNameDto{Id=0,Name="Все"});
         }
         protected List<IdNameDto> GetAppRequestStatuses()
         {
@@ -274,6 +276,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 user.Id,
                 role,
                 model.DepartmentId,
+                model.ReasonId,
                 model.StatusId,
                 model.Number,
                 model.BeginDate,
