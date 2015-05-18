@@ -17,6 +17,8 @@ namespace Reports.Core.Dao
                 string userName,
                 string ContractNumber1C,
                 int CandidateId,
+                string AppointmentReportNumber,
+                int AppointmentNumber,
                 int sortBy,
                 bool? sortDescending);
 

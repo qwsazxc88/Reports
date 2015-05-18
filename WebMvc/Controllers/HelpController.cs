@@ -171,7 +171,7 @@ namespace WebMvc.Controllers
         {
             //CorrectCheckboxes(model);
             CorrectDropdowns(model);
-            UploadFileDto fileDto = GetFileContext();
+            UploadFileDto fileDto = GetFileContext(); 
             //bool needToReload;
             //string error;
             if (!ValidateServiceRequestEditModel(model, fileDto))

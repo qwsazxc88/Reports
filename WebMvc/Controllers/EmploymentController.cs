@@ -57,7 +57,7 @@ namespace WebMvc.Controllers
         #region Index
         [HttpGet]
         [ActionName("Index")]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.StaffManager)]
         public ActionResult Index()
         {
             return RedirectToAction(EmploymentBl.GetStartView());
@@ -1543,7 +1543,7 @@ namespace WebMvc.Controllers
 
         #region Roster
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.StaffManager)]
         public ActionResult Roster()
         {
             var model = EmploymentBl.GetRosterModel(null);
@@ -1551,7 +1551,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.StaffManager)]
         public ActionResult Roster(RosterFiltersModel input, RosterModel roster, bool isApproveModified = false)
         {
             RosterModel model = EmploymentBl.GetRosterModel(input);
@@ -2014,6 +2014,16 @@ namespace WebMvc.Controllers
                 else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                     ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
             }
+
+            if (!string.IsNullOrEmpty(model.ProbationaryPeriod))
+            {
+                try { Convert.ToInt32(model.ProbationaryPeriod); }
+                catch 
+                {
+                    ModelState.AddModelError("ProbationaryPeriod", "Испытательный срок должен содержать только цифры!");
+                }
+            }
+
             return ModelState.IsValid;
         }
 
