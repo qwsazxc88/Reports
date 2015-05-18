@@ -50,5 +50,23 @@ namespace WebMvc.Controllers
             }
             dao.SaveAndFlush(result);
         }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Admin)]
+        public void DeleteNews(int id)
+        {
+            News result = null;
+            var dao = Ioc.Resolve<INewsDao>();
+            if (id <= 0)
+            {
+                return;
+            }
+            else
+            {
+                result = dao.Load(id);
+                if (result == null) return;
+                result.IsVisible = false;
+            }
+            dao.SaveAndFlush(result);
+        }
     }
 }
