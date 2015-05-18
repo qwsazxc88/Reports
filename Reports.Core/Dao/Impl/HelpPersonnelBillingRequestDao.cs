@@ -138,6 +138,7 @@ namespace Reports.Core.Dao.Impl
                         userId, (int)role);
                 case UserRole.OutsourcingManager:
                 case UserRole.Estimator:
+                case UserRole.PersonnelManager:
                 //case UserRole.Admin:
                     //sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Empty;

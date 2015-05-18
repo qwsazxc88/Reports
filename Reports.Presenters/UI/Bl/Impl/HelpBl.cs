@@ -2561,7 +2561,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpPersonnelBillingListModel model)
         {
-            model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0);
+            model.IsAddAvailable = ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0) ||
+                ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10);
         }
 
         public void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError)
@@ -2602,7 +2603,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpPersonnelBillingRequest entity = null;
             if (id == 0)
             {
-                if ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0)
+                if ((CurrentUser.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager)) > 0 || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
                     userId = current.Id;
                 else
                     throw new ValidationException(StrCannotCreatePersonnelBilling);
@@ -2726,6 +2727,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     list = UserDao.GetUsersWithRole(UserRole.ConsultantOutsorsingManager, true);
                     list.Insert(0,new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager,Name = StrAllConsultantOutsorsingManagers});
                     return list.ToList();
+
+                case UserRole.PersonnelManager: //для расчетсиков
+                    list = UserDao.GetUsersWithRole(UserRole.ConsultantOutsorsingManager, true);
+                    list.Insert(0, new IdNameDto { Id = (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager, Name = StrAllConsultantOutsorsingManagers });
+                    return list.ToList();
                    
                 case UserRole.ConsultantOutsorsingManager:
                     list = UserDao.GetUsersWithRole(UserRole.Estimator, true);
@@ -2777,6 +2783,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Estimator:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsSendAvailable = true;
+                        }
+                    }
+                    if ((int)currentRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
+                           (entity.RecipientId == AuthenticationService.CurrentUser.Id ||
+                            entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            model.IsWorkBeginAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
+                        {
+                            model.IsAnswerEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
                     if (entity.Creator.Id == current.Id)
                     {
                         if (!entity.SendDate.HasValue)
@@ -2952,7 +2984,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {   
                 entity.Department = DepartmentDao.Load(model.DepartmentId);
                 entity.Question = model.Question;
-                entity.RecipientRoleId = currRole == UserRole.Estimator ? (int)UserRole.ConsultantOutsorsingManager : (int)UserRole.Estimator;
+                entity.RecipientRoleId = currRole == UserRole.Estimator || currRole == UserRole.PersonnelManager ? (int)UserRole.ConsultantOutsorsingManager : (int)UserRole.Estimator;
                 entity.RecipientId = model.RecipientId;
                 entity.Title = HelpBillingTitleDao.Load(model.TitleId);
                 entity.Urgency = HelpBillingUrgencyDao.Load(model.UrgencyId);
@@ -2986,6 +3018,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Estimator:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (!entity.SendDate.HasValue && model.Operation == 1) // send
+                        {
+                            entity.SendDate = DateTime.Now;
+                        }
+                    }
+                    else if ((int)currRole == entity.RecipientRoleId)
+                    {
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && model.IsWorkBegin &&
+                            (entity.RecipientId == currUser.Id || entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllEstimators))
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.RecipientId = currUser.Id;
+                            model.RecipientId = entity.RecipientId;
+                        }
+                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && model.Operation == 2 && entity.RecipientId == currUser.Id)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
                     if (entity.Creator.Id == currUser.Id)
                     {
                         if (!entity.SendDate.HasValue && model.Operation == 1) // send
