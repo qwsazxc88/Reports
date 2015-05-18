@@ -23,7 +23,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string Number { get; set; }
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
-
+        public int ReasonId { get; set; }
+        public IList<IdNameDto> Reasons { get; set; }
         public bool IsAddAvailable { get; set; }
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
