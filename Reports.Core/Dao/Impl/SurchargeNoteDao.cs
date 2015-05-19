@@ -40,6 +40,7 @@ namespace Reports.Core.Dao.Impl
             crit.CreateAlias("Creator", "creator", NHibernate.SqlCommand.JoinType.InnerJoin);
             crit.CreateAlias("Creator.Department", "department", NHibernate.SqlCommand.JoinType.LeftOuterJoin);
             crit.Add(Restrictions.Eq("NoteType",typeId));
+            
             if (status > 0)
             {
                 if (status == 1) { crit.Add(Restrictions.IsNull("CountantDateAccept")); crit.Add(Restrictions.IsNull("PersonnelDateAccept")); };
@@ -100,6 +101,11 @@ namespace Reports.Core.Dao.Impl
                 DepartmentName=x.DocDep7.Name,
                 Status=(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":"Заявка создана"
             });
+            if (role == UserRole.PersonnelManager && userId != 10)
+            {
+                var employees = UserDao.GetUsersForPersonnel(userId).ToArray();
+                res = res.Where(x => employees.Any(y => y.Id == x.CreatorId));
+            }
             return res.ToList();
         }
     }

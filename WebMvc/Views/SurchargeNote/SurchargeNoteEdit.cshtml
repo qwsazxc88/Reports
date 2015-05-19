@@ -12,6 +12,7 @@
 <form action="/SurchargeNote/SurchargeNoteEdit" method="post" enctype = "multipart/form-data"> 
     @Html.HiddenFor(m => m.NoteType)
     @Html.HiddenFor(m => m.CreatorId)
+    @Html.HiddenFor(m => m.Id)
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
@@ -44,6 +45,10 @@
    <tr>
     <td>Вышестоящие руководители:</td>
     <td>@Model.Chiefs</td>
+   </tr>
+   <tr>
+    <td>Сотрудники отдела кадров:</td>
+    <td>@Model.Personnels</td>
    </tr>
    <tr>
                 <td>
@@ -101,7 +106,8 @@
         Сотрудник отдела кадров:
         </td>
         <td>
-        @if(dto.UserRole==UserRole.PersonnelManager  && dto.Id!=10)     {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
+        @if (dto.UserRole == UserRole.PersonnelManager && dto.Id != 10 && Model.PersonnelsApproved.Any(x => x.Id == dto.Id))
+        {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
         &nbsp;@Model.PersonnelDateAccept &nbsp; @Model.PersonnelName
         </td>
         </tr>
@@ -116,21 +122,22 @@
         </tr>
     }
     <tr>
-    @if ((dto.UserRole == UserRole.PersonnelManager) || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
+    @if ((dto.UserRole == UserRole.PersonnelManager && Model.PersonnelsApproved.Any(x=>x.Id==dto.Id))|| dto.Id==10 || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
     {<td><button >Сохранить</button></td>}
     </tr>
     </table>
     </div>
 </form>
+<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
     <script type="text/javascript">
         var actionDepUrl = "@Url.Action("GetChildren", "Home")";
         var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
    
         $(document).ready(function () {
         var menuitem="moSurchargeNoteList"+"@Model.NoteType";
-        console.log(menuitem);
+            $('#PayDay').mask('99.99.9999');
             setActiveMenuItem(menuitem);
-            $("#PayDay").datepicker();
+            $("#PayDay").datepicker({changeMonth: true, changeYear: true});
         });
     </script>
 

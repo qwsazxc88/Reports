@@ -140,6 +140,7 @@
     <Content Include="Content\logobg.gif" />
     <Content Include="Content\PrintForm.css" />
     <Content Include="Content\SKB_logo.png" />
+    <Content Include="Content\textAngular.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -212,6 +213,9 @@
     <Content Include="Scripts\mustache.js" />
     <Content Include="Scripts\TableSort.js" />
     <Content Include="Scripts\TerraGraphicsShortNameDialog.js" />
+    <Content Include="Scripts\textAngular-rangy.min.js" />
+    <Content Include="Scripts\textAngular-sanitize.min.js" />
+    <Content Include="Scripts\textAngular.min.js" />
     <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
