@@ -21,5 +21,6 @@ namespace Reports.Core.Dao
                                                           int sortBy,
                                                           bool? sortDescending
             );
+
     }
 }

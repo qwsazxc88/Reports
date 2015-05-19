@@ -56,6 +56,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int Operation { get; set; }
 
         public RequestAttachmentsModel AttachmentsModel { get; set; }
+
+        //переписка
+        public IList<HelpPersonnelBillingCommentsDto> Comments { get; set; }
     }
     public class BillingRequestInfoViewModel : PreventDCModel
     {

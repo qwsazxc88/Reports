@@ -92,6 +92,7 @@
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
     <Compile Include="Dao\IDeductionImportDao.cs" />
     <Compile Include="Dao\IExtraChargesDao.cs" />
+    <Compile Include="Dao\IHelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\IHelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
     <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
     <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
+    <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
@@ -460,6 +462,7 @@
     <Compile Include="Domain\HelpBillingTitle.cs" />
     <Compile Include="Domain\HelpBillingUrgency.cs" />
     <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpPersonnelBillingComments.cs" />
     <Compile Include="Domain\HelpPersonnelBillingRequest.cs" />
     <Compile Include="Domain\HelpQuestionHistoryEntity.cs" />
     <Compile Include="Domain\HelpQuestionRequest.cs" />
@@ -1181,6 +1184,7 @@
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
     <EmbeddedResource Include="Domain\News.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\ExtraCharges.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpPersonnelBillingComments.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

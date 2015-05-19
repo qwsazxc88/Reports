@@ -569,6 +569,9 @@ namespace Reports.Core
             Register(Component.For<IHelpPersonnelBillingRequestDao>()
                .ImplementedBy<HelpPersonnelBillingRequestDao>()
                .LifeStyle.Is(type));
+            Register(Component.For<IHelpPersonnelBillingCommentDao>()
+               .ImplementedBy<HelpPersonnelBillingCommentDao>()
+               .LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

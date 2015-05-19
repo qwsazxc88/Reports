@@ -35,7 +35,7 @@
                      <input type="hidden" id="IsEditable"" name="IsEditable"" value="@Model.IsEditable" />
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TitleIdHidden" name="TitleIdHidden" value="@Model.TitleIdHidden" />
                 </td>
         </tr>
@@ -59,7 +59,7 @@
         </tr>
          <tr>
             <td colspan="2">
-                @if(Model.IsEditable)
+                @if (Model.IsEditable)
                 {
                     <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                 }
@@ -70,7 +70,7 @@
                     @Html.LabelFor(m => m.UrgencyId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
                 </td>
         </tr>
@@ -79,7 +79,7 @@
                     @Html.LabelFor(m => m.RecipientId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
                 </td>
         </tr>
@@ -97,8 +97,9 @@
         </tr>
         <tr>
             <td colspan="2">
+                @*
                 @Html.CheckBox("IsWorkBegin", Model.IsWorkBegin, Model.IsWorkBeginAvailable ? null : (object)new { disabled = "disabled" }) 
-                @Html.LabelFor(model => model.IsWorkBegin)
+                @Html.LabelFor(model => model.IsWorkBegin)*@
                 @if (!Model.IsWorkBeginAvailable)
                 {
                     <input type="hidden" id="IsWorkBeginHidden" name="IsWorkBeginHidden" value="@Model.IsWorkBeginHidden" />
@@ -124,15 +125,38 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-                <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                        {<text>style="display:none"</text>}/>
                 <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
-                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm();" @if (!Model.IsSendAvailable) {<text>style="display:none"</text>}/>
-                <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm(1);" @if (!Model.IsSendAvailable)
+                                                                                                      {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable)
+                                                                                                {<text>style="display:none"</text>}/>
+                <input type="submit" value="Закрыть тему" onclick="return ValidateAndSendForm(3);" @if (!Model.IsSendAvailable || (Model.IsSendAvailable && Model.Id == 0))
+                                                                                                      {<text>style="display:none"</text>}/>
             </td>
         </tr>
     </table>
     </div>
-    }
+    
+    <table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td style="font-weight:bold">Вопрос/Ответ</td>
+        </tr>
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var doc in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@(doc.IsQuestion ? "Вопрос" : "Ответ") @doc.Creator  @doc.CreatedDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@doc.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+}
     <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
@@ -156,11 +180,11 @@
             result = false;
         return result;
     }
-    function ValidateAndSendForm()
+    function ValidateAndSendForm(OperationId)
     {
         if(!ValidateForm())
             return false;
-        $("#Operation").val(1);
+        $("#Operation").val(OperationId);
         return true;
     }
     function ValidateAnswer()
@@ -173,4 +197,5 @@
        $("#Operation").val(2);
        return result;
     }
+
     </script> 

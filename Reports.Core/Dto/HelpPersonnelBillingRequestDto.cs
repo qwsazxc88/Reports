@@ -19,4 +19,12 @@ namespace Reports.Core.Dto
         public string Status { get; set; }
         public int Number { get; set; }
     }
+
+    public class HelpPersonnelBillingCommentsDto
+    {
+        public string Creator { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string Comment { get; set; }
+        public bool IsQuestion { get; set; }
+    }
 }
