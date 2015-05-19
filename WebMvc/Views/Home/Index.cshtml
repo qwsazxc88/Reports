@@ -56,7 +56,7 @@
                          {<text>class="mainOn"</text>}
                          else
                          {<text>class="mainMenuItem"</text>} id="mainCharge">
-                            @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                            @Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                     </div> 
                     <div @if (Model.menuId == 2)
                          {<text>class="mainOn"</text>}

@@ -281,6 +281,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
     <Compile Include="Dao\Impl\SurchargeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
@@ -338,6 +339,7 @@
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
     <Compile Include="Dao\ISurchargeDao.cs" />
+    <Compile Include="Dao\ISurchargeNoteDao.cs" />
     <Compile Include="Dao\ITerraGraphicDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITerraPointToUserDao.cs" />
@@ -523,6 +525,7 @@
     <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\Surcharge.cs" />
+    <Compile Include="Domain\SurchargeNote.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
     <Compile Include="Domain\TerraPoint.cs" />
     <Compile Include="Domain\TerraPointToUser.cs" />
@@ -616,6 +619,7 @@
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
+    <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
@@ -1176,6 +1180,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml" />
     <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
