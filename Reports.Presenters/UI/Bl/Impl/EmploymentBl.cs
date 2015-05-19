@@ -5114,6 +5114,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        public int CheckExistsEducationRecord(int UserId, int Type)
+        {
+            return EmploymentEducationDao.CheckExistsEducationRecord(UserId, Type);
+        }
+
         /// <summary>
         /// К испытательному сроку дописываем прописью дни и месяцы.
         /// </summary>

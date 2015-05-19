@@ -1,33 +1,6 @@
 --РАЗОВАЯ ПРОЦЕДУРА
 --после отработки процедуры в ручнеом режиме назначить новым колонкам свойство Identity и приоритет 
-/*
-	этот кусок запустить после того, как в ручном режиме установят свойство Identity
 
-	dbcc checkident ('EmploymentCandidate', reseed)
-	go
-	dbcc checkident ('PersonnelManagers', reseed)
-	go
-	dbcc checkident ('GeneralInfo', reseed)
-	go
-	dbcc checkident ('Passport', reseed)
-	go
-	dbcc checkident ('Education', reseed)
-	go
-	dbcc checkident ('Family', reseed)
-	go
-	dbcc checkident ('MilitaryService', reseed)
-	go
-	dbcc checkident ('Experience', reseed)
-	go
-	dbcc checkident ('Contacts', reseed)
-	go
-	dbcc checkident ('BackgroundCheck', reseed)
-	go
-	dbcc checkident ('OnsiteTraining', reseed)
-	go
-	dbcc checkident ('Managers', reseed)
-	go
-	*/
 return
 --удаление ссылок
 	--кадры
@@ -747,5 +720,32 @@ return
 	GO
 
 
+	--сбрасываем счетчик до максимального значения имеющихся данных
+	/*
+	этот кусок запустить после того, как в ручном режиме установят свойство Identity
 
-	
+	dbcc checkident ('EmploymentCandidate', reseed)
+	go
+	dbcc checkident ('PersonnelManagers', reseed)
+	go
+	dbcc checkident ('GeneralInfo', reseed)
+	go
+	dbcc checkident ('Passport', reseed)
+	go
+	dbcc checkident ('Education', reseed)
+	go
+	dbcc checkident ('Family', reseed)
+	go
+	dbcc checkident ('MilitaryService', reseed)
+	go
+	dbcc checkident ('Experience', reseed)
+	go
+	dbcc checkident ('Contacts', reseed)
+	go
+	dbcc checkident ('BackgroundCheck', reseed)
+	go
+	dbcc checkident ('OnsiteTraining', reseed)
+	go
+	dbcc checkident ('Managers', reseed)
+	go
+	*/

@@ -222,7 +222,7 @@
     @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename) && !Model.IsValidate)
     {
         <div class="formfield clear">
-            Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="ChildBirthCertificateScanFile" />
+            Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="ChildBirthCertificateScanFile" /> @Html.ValidationMessageFor(m => m.ChildBirthCertificateScanFile)
         </div>
     }
     @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
