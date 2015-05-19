@@ -2880,7 +2880,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             EmploymentCommonDao.SaveAndFlush(candidate);
 
-            candidate.User.Login = "c0" + candidate.Id.ToString();
+            candidate.User.Login = "c" + candidate.User.Id.ToString();
             candidate.User.Name = model.Surname;//candidate.User.Login;
 
             // Create blank employment pages
