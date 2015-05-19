@@ -121,6 +121,7 @@
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" />
+                    @Html.ValidationMessageFor(m => m.HigherEducationDiplomaScanFile)
                 </div>
             }
             
@@ -210,6 +211,7 @@
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" />
+                    @Html.ValidationMessageFor(m => m.PostGraduateEducationDiplomaScanFile)
                 </div>
             }
             @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
@@ -296,6 +298,7 @@
                 {
                     <div class="formfield">
                         Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" />
+                        @Html.ValidationMessageFor(m => m.CertificationScanFile)
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
@@ -382,6 +385,7 @@
                 {
                     <div class="formfield">
                         Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" />
+                        @Html.ValidationMessageFor(m => m.TrainingScanFile)
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
