@@ -35,6 +35,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int RecipientId { get; set; }
         public int RecipientIdHidden { get; set; }
         public IList<IdNameDto> Recipients;
+        public IList<HelpPersonnelBillingRecipientDto> RecipientList { get; set; }
 
         [Display(Name = "Вопрос")]
         public string Question { get; set; }

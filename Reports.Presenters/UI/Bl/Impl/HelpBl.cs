@@ -2646,7 +2646,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator.Id;
                 model.Version = entity.Version;
                 model.RecipientId = entity.RecipientId;
-                model.IsWorkBegin = entity.BeginWorkDate.HasValue;
+                //model.IsWorkBegin = entity.BeginWorkDate.HasValue;
                 //model.DocumentNumber = entity.Number.ToString();
                 //model.DateCreated = FormatDate(entity.CreateDate);
                 //model.Creator = entity.Creator.FullName;
@@ -2693,6 +2693,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Urgencies = GetPersonnelBillingUrgencies(false);
             model.Titles = GetPersonnelBillingTitles(false);
             model.Comments = HelpPersonnelBillingCommentDao.GetComments(model.Id);
+            model.RecipientList = HelpPersonnelBillingRequestDao.GetHelpBillingRecipients();
         }
         protected void SetBillingRequestInfoModel(HelpPersonnelBillingRequest entity, BillingRequestInfoViewModel model)
         {

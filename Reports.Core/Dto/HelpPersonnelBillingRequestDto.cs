@@ -27,4 +27,13 @@ namespace Reports.Core.Dto
         public string Comment { get; set; }
         public bool IsQuestion { get; set; }
     }
+
+    public class HelpPersonnelBillingRecipientDto
+    {
+        public int UserId { get; set; }
+        public int RoleId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsRecipient { get; set; }
+    }
 }

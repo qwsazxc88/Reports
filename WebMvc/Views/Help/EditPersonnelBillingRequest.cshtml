@@ -79,6 +79,37 @@
                     @Html.LabelFor(m => m.RecipientId):
                 </td>
                 <td>
+                    <div id="accordion">
+                        <h3><a href="#">@Html.LabelFor(m => m.RecipientId)</a></h3>
+                        <div>
+                            <table class="grid">
+                                <tr>
+                                    <td style="display:none;"></td>
+                                    <td style="display:none;"></td>
+                                    <th>Исполнитель</th>
+                                    <th>ФИО</th>
+                                    <th>Группа</th>
+                                </tr>
+                                <tbody>
+                                    @{ int i = 1; }
+                                    @foreach (var item in Model.RecipientList)
+                                    {
+                                        <tr>
+                                            <td style="display:none;">@item.UserId</td>
+                                            <td style="display:none;">@item.RoleId</td>
+                                            <td class="centered">
+                                                &nbsp;@Html.CheckBoxFor(m => m.RecipientList[i - 1].IsRecipient, Model.Id == 0 ? null : new { disabled = "disabled" })
+                                            </td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Description</td>
+                                            @{i++;}
+                                        </tr>
+                                        
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
                 </td>
@@ -162,6 +193,15 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
      $(document).ready(function () {
             setActiveMenuItem("helpPersonnelBilling");
+            //чтобы не было видно анимации при загрузке страницы, делаем элемент невидимым
+            $("#accordion").hide();
+            $("#accordion").accordion({
+                header: "h3",
+                collapsible: true,
+                autoHeight: false
+            });
+            $("#accordion").accordion("activate", -1);
+            $("#accordion").show();
         });
     function ValidateForm()
     {

@@ -297,6 +297,31 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        
+        /// <summary>
+        /// Список сотрудников получателей задачи.
+        /// </summary>
+        /// <returns></returns>
+        public IList<HelpPersonnelBillingRecipientDto> GetHelpBillingRecipients()
+        {
+            //string sqlWhere = "";
+            string sqlQuery = @"SELECT cast(0 as bit) as IsRecipient, A.UserId, B.Name, A.RoleId, C.[Description]
+                                FROM HelpBillingRoleRecord as A
+                                INNER JOIN Users as B ON B.id = A.UserId
+                                INNER JOIN HelpBillingRole as C ON C.Id = A.RoleId";
+            sqlQuery += " ORDER BY B.Name desc";
+
+            IQuery query = CreateCommentQuery(sqlQuery);
+            IList<HelpPersonnelBillingRecipientDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(HelpPersonnelBillingRecipientDto))).List<HelpPersonnelBillingRecipientDto>();
+            return documentList;
+        }
+        public IQuery CreateCommentQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("RoleId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Description", NHibernateUtil.String).
+                AddScalar("IsRecipient", NHibernateUtil.Boolean);
+        }
     }
 }

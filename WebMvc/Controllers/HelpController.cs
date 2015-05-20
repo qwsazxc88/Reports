@@ -750,6 +750,36 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
+        /// <summary>
+        /// Сохраняем список исполнителей при создании новой задачи в биллинге.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> Executors)
+        {
+            
+            //string error;
+            if (!ValidateModel(model))
+            {
+                
+            }
+            string error;
+            if (!HelpBl.SavePersonnelBillingRequestModel(model, out error))
+            {
+                //HttpContext.AddError(new Exception(error));
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(HelpBl.GetPersonnelBillingRequestEditModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
             return ModelState.IsValid;
