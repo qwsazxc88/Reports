@@ -40,7 +40,12 @@ namespace WebMvc.Controllers
                 employmentBl = Ioc.Resolve<IEmploymentBl>();
                 return Validate.Dependency(employmentBl);
             }
-        } 
+        }
+
+        
+       
+
+        
         #endregion
 
         #region Main Actions
@@ -1859,6 +1864,27 @@ namespace WebMvc.Controllers
 
             if (!model.IsGIDraft)
             {
+                GeneralInfoModel mt = EmploymentBl.GetGeneralInfoModel(model.UserId);
+                //должен быть скан инн и снилс
+                if (model.INNScanFile == null && string.IsNullOrEmpty(mt.INNScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("INNScanFile", "Не выбран файл скана ИНН для загрузки!");
+                }
+                if (model.SNILSScanFile == null && string.IsNullOrEmpty(mt.SNILSScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("SNILSScanFile", "Не выбран файл скана СНИЛС для загрузки!");
+                }
+
+                //скан справки по инвалидости, если какие-то из полей заполнены
+                if (!string.IsNullOrEmpty(model.DisabilityCertificateSeries) || !string.IsNullOrEmpty(model.DisabilityCertificateNumber) || model.DisabilityCertificateDateOfIssue.HasValue ||
+                    model.DisabilityCertificateExpirationDate.HasValue || (model.DisabilityDegreeId.HasValue && model.DisabilityDegreeId != 0) || model.IsDisabilityTermLess)
+                {
+                    if (model.DisabilityCertificateScanFile == null && string.IsNullOrEmpty(mt.DisabilityCertificateScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("DisabilityCertificateScanFile", "Не выбран файл скана справки об инвалидности для загрузки!");
+                    }
+                }
+
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1873,6 +1899,12 @@ namespace WebMvc.Controllers
         {
             if (!model.IsPassportDraft)
             {
+                PassportModel mt = EmploymentBl.GetPassportModel(model.UserId);
+                if (model.InternalPassportScanFile == null && string.IsNullOrEmpty(mt.InternalPassportScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
+                }
+
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1887,6 +1919,28 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             if (!model.IsEducationDraft)
             {
+                EducationModel mt = EmploymentBl.GetEducationModel(model.UserId);
+
+                if (EmploymentBl.CheckExistsEducationRecord(model.UserId, 1) != 0 && model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                {
+                    ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                }
+
+                if (EmploymentBl.CheckExistsEducationRecord(model.UserId, 2) != 0 && model.PostGraduateEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.PostGraduateEducationDiplomaScanFileName))
+                {
+                    ModelState.AddModelError("PostGraduateEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                }
+
+                if (EmploymentBl.CheckExistsEducationRecord(model.UserId, 3) != 0 && model.CertificationScanFile == null && string.IsNullOrEmpty(mt.CertificationScanFileName))
+                {
+                    ModelState.AddModelError("CertificationScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                }
+
+                if (EmploymentBl.CheckExistsEducationRecord(model.UserId, 4) != 0 && model.TrainingScanFile == null && string.IsNullOrEmpty(mt.TrainingScanFileName))
+                {
+                    ModelState.AddModelError("TrainingScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                }
+                
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1900,6 +1954,23 @@ namespace WebMvc.Controllers
         {
             if (!model.IsFDraft)
             {
+                FamilyModel mt = EmploymentBl.GetFamilyModel(model.UserId);
+                if (model.IsMarried)
+                {
+                    if (model.MarriageCertificateScanFile == null && string.IsNullOrEmpty(mt.MarriageCertificateScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("MarriageCertificateScanFile", "Не выбран файл скана свидетельства о браке для загрузки!");
+                    }
+                }
+
+                if (mt.Children.Count != 0)
+                {
+                    if (model.ChildBirthCertificateScanFile == null && string.IsNullOrEmpty(mt.ChildBirthCertificateScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("ChildBirthCertificateScanFile", "Не выбран файл скана свидетельств о рождении детей для загрузки!");
+                    }
+                }
+
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1913,6 +1984,14 @@ namespace WebMvc.Controllers
         {
             if (!model.IsMSDraft)
             {
+                MilitaryServiceModel mt = EmploymentBl.GetMilitaryServiceModel(model.UserId);
+                if (model.IsLiableForMilitaryService)
+                {
+                    if (model.MilitaryCardScanFile == null && string.IsNullOrEmpty(mt.MilitaryCardScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("MilitaryCardScanFile", "Не выбран файл скана военного билета для загрузки!");
+                    }
+                }
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1934,6 +2013,21 @@ namespace WebMvc.Controllers
             if (!model.IsExpDraft)
             {
                 ModelState.Clear();
+
+                ExperienceModel mt = EmploymentBl.GetExperienceModel(model.UserId);
+                if (model.WorkBookScanFile == null && string.IsNullOrEmpty(mt.WorkBookScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("WorkBookScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                }
+
+                if (!string.IsNullOrEmpty(model.WorkBookSupplementSeries) || !string.IsNullOrEmpty(model.WorkBookSupplementNumber) || model.WorkBookSupplementDateOfIssue.HasValue)
+                {
+                    if (model.WorkBookSupplementScanFile == null && string.IsNullOrEmpty(mt.WorkBookSupplementScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("WorkBookSupplementScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                    }
+                }
+
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -1961,6 +2055,18 @@ namespace WebMvc.Controllers
         {
             if (!model.IsBGDraft)
             {
+                BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+
+                if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("PersonalDataProcessingScanFile", "Не выбран файл скана для загрузки!");
+                }
+
+                if (model.InfoValidityScanFile == null && string.IsNullOrEmpty(mt.InfoValidityScanAttachmentFilename))
+                {
+                    ModelState.AddModelError("InfoValidityScanFile", "Не выбран файл скана для загрузки!");
+                }
+
                 if (!model.IsValidate)
                 {
                     ModelState.AddModelError("IsValidate", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");

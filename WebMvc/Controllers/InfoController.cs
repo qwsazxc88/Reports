@@ -29,14 +29,44 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Admin )]
         public void AddNews(Reports.Core.Dto.NewsDto post)
         {
-            News result = new News { 
-                PostDate=DateTime.Now,
-                Header=post.Header,
-                Text=post.Text,
-                IsVisible=true,
-                Author = Ioc.Resolve<IUserDao>().Load(AuthenticationService.CurrentUser.Id)
-            };
-            Ioc.Resolve<INewsDao>().SaveAndFlush(result);
+            News result = null;
+            var dao = Ioc.Resolve<INewsDao>();
+            if (post.id <= 0)
+            {
+                result = new News
+                {
+                    PostDate = DateTime.Now,
+                    Header = post.Header,
+                    Text = post.Text,
+                    IsVisible = true,
+                    Author = Ioc.Resolve<IUserDao>().Load(AuthenticationService.CurrentUser.Id)
+                };
+            }
+            else
+            {
+                result = dao.Load(post.id);
+                result.Text = post.Text;
+                result.Header = post.Header;
+            }
+            dao.SaveAndFlush(result);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Admin)]
+        public void DeleteNews(int id)
+        {
+            News result = null;
+            var dao = Ioc.Resolve<INewsDao>();
+            if (id <= 0)
+            {
+                return;
+            }
+            else
+            {
+                result = dao.Load(id);
+                if (result == null) return;
+                result.IsVisible = false;
+            }
+            dao.SaveAndFlush(result);
         }
     }
 }

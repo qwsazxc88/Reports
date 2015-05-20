@@ -36,7 +36,7 @@
                         }
                     </div> 
                 }
-                <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
+                <div id="liCharge" class="mainOn">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
@@ -62,16 +62,16 @@
                 {
                     if ((dto.UserRole & UserRole.Archivist) > 0)
                     {
-                         <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
+                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                     else
                         if (dto.Id == 10)
                         { 
-                            <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
+                            <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
                         }
                         else
                     {
-                        <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
+                        <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
                     }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
@@ -84,7 +84,7 @@
                 </div> *@
                     
                 @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
-                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0 || (dto.UserRole & UserRole.StaffManager) > 0)
+                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
@@ -129,63 +129,8 @@
                  }
         </div>  
         <div class="podmenu">
-            @if (dto.Id != 10)
-            {
-                <div class="menuitem" id="moInstructions">@Html.ActionLink("Памятка отбывающего в командировку", "Instructions", "MissionOrder")</div>
-            }
-                @if ((dto.UserRole & UserRole.Archivist) == 0 || dto.Id == 10)
-                {
-                    <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
-                }
-             @if ((dto.UserRole & UserRole.Employee) > 0
-                     || (dto.UserRole & UserRole.Manager) > 0
-                     || (dto.UserRole & UserRole.Accountant) > 0
-                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                     || (dto.UserRole & UserRole.Findep) > 0
-                     || (dto.UserRole & UserRole.Archivist) > 0
-                      )
-             {
-                <div class="menuitem" id="moAllReports">@Html.ActionLink("Авансовый отчет - реестр", "MissionReportsList", "MissionOrder")</div> 
-             }
-             @if ((dto.UserRole & UserRole.Accountant) > 0
-                 || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                 || (dto.UserRole & UserRole.Findep) > 0
-                 )
-             {
-                <div class="menuitem" id="moAllPurchaseBookDoc">@Html.ActionLink("Книга покупок (документы)", "MissionPurchaseBookDocList", "MissionOrder")</div> 
-                <div class="menuitem" id="moAllPurchaseBookRecords">@Html.ActionLink("Книга покупок (отчет)", "MissionPurchaseBookRecordsList", "MissionOrder")</div> 
-             }
-              @if ((dto.UserRole & UserRole.Accountant) > 0
-                  || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                  || (dto.UserRole & UserRole.Employee) > 0
-                  || (dto.UserRole & UserRole.Manager) > 0)
-              {
-                <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div>
-                <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
-              }
-            @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager)>0)
-            {
-              <div class="menuitem" id="moSurcharge"> @Html.ActionLink("Ручная доплата", "Index", "Surcharge")</div>
-      
-            }
-            @if ((dto.UserRole & UserRole.Accountant) > 0
-                  || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                  || (dto.UserRole & UserRole.Employee) > 0
-                  || (dto.UserRole & UserRole.Manager) > 0
-                  || (dto.UserRole & UserRole.Director) > 0)
-            { 
-                <div class="menuitem" id="moAnaliticalStatementList">@Html.ActionLink("Аналитическая ведомость", "AnalyticalStatement", "MissionOrder")</div>
-            }   
-            @if (dto.Id != 10)
-            {
-            <div class="menuitem" id="moGradeList">@Html.ActionLink("Справочник расчета лимитов", "GradeList", "MissionOrder")</div>              
-            <div class="menuitem" id="moHotelList">@Html.ActionLink("Контрагенты", "MissionHotels", "MissionOrder")</div>              
-            <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
-            }
-            else
-            {
-                <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
-            }
+            <div class="menuitem" id="moSurchargeNoteList0">@Html.ActionLink("Служебная записка на оплату выходных дней", "SurchargeNoteList", "SurchargeNote", new { type=0 },null)</div> 
+            <div class="menuitem" id="moSurchargeNoteList1">@Html.ActionLink("Служебная записка на оплату праздничных дней", "SurchargeNoteList", "SurchargeNote", new { type=1 },null)</div> 
         </div>
     </div>   
 }
