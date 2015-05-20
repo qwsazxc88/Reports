@@ -2880,7 +2880,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             EmploymentCommonDao.SaveAndFlush(candidate);
 
-            candidate.User.Login = "c" + candidate.Id.ToString();
+            candidate.User.Login = "c" + candidate.User.Id.ToString();
             candidate.User.Name = model.Surname;//candidate.User.Login;
 
             // Create blank employment pages
@@ -5114,6 +5114,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        public int CheckExistsEducationRecord(int UserId, int Type)
+        {
+            return EmploymentEducationDao.CheckExistsEducationRecord(UserId, Type);
+        }
+
         /// <summary>
         /// К испытательному сроку дописываем прописью дни и месяцы.
         /// </summary>
@@ -5122,6 +5127,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected string GetProbationaryPeriodString(string ProbationaryPeriod)
         {
             if (string.IsNullOrEmpty(ProbationaryPeriod)) return "";
+            //если пользователи уже успели что-то внести строковые символы
+            try { Convert.ToInt32(ProbationaryPeriod); }
+            catch {return ProbationaryPeriod;}
 
             int i = Convert.ToInt32(ProbationaryPeriod);
             string str = string.Empty;

@@ -1,0 +1,213 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.SurchargeNoteListModel
+@{
+    Layout = "~/Views/Shared/_LayoutSurchargeNote.cshtml";
+    ViewBag.Title = "Начисления";
+}
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.NoteType)
+     <table style="width:100%">
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadonly" />
+                                @if (!Model.DepartmentReadonly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName)
+                                    </td>
+                             </tr>
+                          }
+                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    <tr>
+                            <td>
+                                @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)
+                                {
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("SurchargeNoteEdit", "SurchargeNote", new { id = 0 , type=Model.NoteType})'"/>   
+                                }                                                                                                                    
+                            </td>
+                   </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+     <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                    <th>
+                        №<br />п/п
+                    </th>
+                    <th>
+                        <div id="sort1" ><a href="#" onclick = "SortChanged(1);">Дата<br />создания</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2" ><a href="#" onclick = "SortChanged(2);">Номер<br />документа</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3" ><a href="#" onclick = "SortChanged(3);">ФИО<br />автора</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4" ><a href="#" onclick = "SortChanged(4);">Должность</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5" ><a href="#" onclick = "SortChanged(5);">Подразделение<br />3 уровня</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6" ><a href="#" onclick = "SortChanged(6);">Подразделение<br />7 уровня</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Оплачиваемый<br />день</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" ><a href="#" onclick = "SortChanged(8);">Отработано <br />отделом кадров</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" ><a href="#" onclick = "SortChanged(9);">Отработано <br />расчётным отделом</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" ><a href="#" onclick = "SortChanged(10);">Статус</a></div>
+                    </th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    int i = 1;
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@doc.CreateDate.ToShortDateString()</td>
+                            <td>@Html.ActionLink(doc.Number,"SurchargeNoteEdit",new {id=doc.Id},null)</td>
+                            <td>@doc.CreatorName</td>
+                            <td>@doc.Position</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.DepartmentName</td>
+                            <td>@doc.PayDay.ToShortDateString()</td>
+                            <td>@if(doc.PersonnelDateAccept.HasValue)
+                                {
+                                    @doc.PersonnelDateAccept.Value.ToShortDateString()
+                                }
+                            </td>
+                            <td>@if(doc.CountantDateAccept.HasValue)
+                                {
+                                    @doc.CountantDateAccept.Value.ToShortDateString()
+                                }
+                            </td>
+                            <td>@doc.Status</td>
+                            @{i++;}
+                        </tr>
+                       
+                    }
+                }
+            </table>
+        </td>
+     </tr>
+    </table> 
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var menuitem="moSurchargeNoteList"+"@Model.NoteType";
+    $(document).ready(function () {
+    setSortFields();
+        
+        console.log(menuitem);
+            setActiveMenuItem(menuitem);
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+        $(".hasDatepicker").width("75px");
+        
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+
+ </script> 
