@@ -756,7 +756,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult HelpBillingExecutorTasks(IList<HelpPersonnelBillingRecipientDto> Executors)
+        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> Executors)
         {
             var jsonSerializer = new JavaScriptSerializer();
             string jsonString = jsonSerializer.Serialize(Executors);
