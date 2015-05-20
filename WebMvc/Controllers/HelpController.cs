@@ -756,30 +756,13 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> Executors)
+        public ActionResult HelpBillingExecutorTasks(IList<HelpPersonnelBillingRecipientDto> Executors)
         {
-            
-            //string error;
-            if (!ValidateModel(model))
-            {
-                
-            }
-            string error;
-            if (!HelpBl.SavePersonnelBillingRequestModel(model, out error))
-            {
-                //HttpContext.AddError(new Exception(error));
-                if (model.ReloadPage)
-                {
-                    ModelState.Clear();
-                    if (!string.IsNullOrEmpty(error))
-                        ModelState.AddModelError("", error);
-                    return View(HelpBl.GetPersonnelBillingRequestEditModel(model.Id));
-                }
-                if (!string.IsNullOrEmpty(error))
-                    ModelState.AddModelError("", error);
-            }
-            return View(model);
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(Executors);
+            return Content(jsonString);
         }
+
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
             return ModelState.IsValid;

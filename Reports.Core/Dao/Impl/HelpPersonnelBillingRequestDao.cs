@@ -308,7 +308,7 @@ namespace Reports.Core.Dao.Impl
                                 FROM HelpBillingRoleRecord as A
                                 INNER JOIN Users as B ON B.id = A.UserId
                                 INNER JOIN HelpBillingRole as C ON C.Id = A.RoleId";
-            sqlQuery += " ORDER BY B.Name desc";
+            sqlQuery += " ORDER BY B.Name";
 
             IQuery query = CreateCommentQuery(sqlQuery);
             IList<HelpPersonnelBillingRecipientDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(HelpPersonnelBillingRecipientDto))).List<HelpPersonnelBillingRecipientDto>();
