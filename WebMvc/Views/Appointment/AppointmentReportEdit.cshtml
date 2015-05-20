@@ -65,6 +65,19 @@
 </div>
 @using (Html.BeginForm("AppointmentReportEdit", "Appointment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
+                <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
+                <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
+                <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
     <div class="doc-wrap">
         <table style="width:100%">
             <tr>
@@ -194,9 +207,7 @@
                     {
                         <a class="ui-notify-close" id="ScanUrl" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
                     }
-                    <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
-                    <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
-                    <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
+                    
                     <input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment();" @if (!Model.IsDeleteScanAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
                 </td>
@@ -225,16 +236,7 @@
             </tr>
              <tr>
                 <td>
-                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
-                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
-                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
-                <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
-                <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
-                <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
+                
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
@@ -321,7 +323,7 @@
             </tr>
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed==1 && (dto.Id==Model.UserId) && !Model.Candidates.Any())
+                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !Model.Candidates.Any())
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
@@ -338,8 +340,8 @@
               </tr>
      </table>
     </div>
-    if(Model.Candidates!=null && Model.Candidates.Any())
-    {
+                    if (Model.Candidates != null && Model.Candidates.Any())
+                    {
     <div class="doc-wrap">
     Принятые сотрудники(@Model.Candidates.Count):
     <br />
@@ -350,14 +352,14 @@
     </tr>
     </thead>
     <tbody>
-    @foreach(var el in Model.Candidates)
+    @foreach (var el in Model.Candidates)
     {
       <tr><td>@el.Name</td><td>@el.EmploymentDate</td><td>@el.Status</td></tr>
     }
     </tbody>
     </table>
     </div>  
-        }
+                    }
      <br />
     <div class="comment-wrap">
         <table style="width:100%">

@@ -9,7 +9,7 @@
 }
 <div style="visibility:hidden">
 <div id="AddEmployment" title="Добавление кандидата">
-@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
+@*@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
     <div class="doc-wrap">
             <fieldset class="bordered doc-wrap panel">
@@ -59,7 +59,7 @@
     <div class="clear">        
        <button type="submit">Сохранить</button>
     </div>
-}
+}*@
 </div>
 </div>
 @using (Html.BeginForm("AppointmentEdit","Appointment"))
@@ -426,10 +426,10 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
-                   @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
+                  @* @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
-                    }
+                    }*@
                    @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
                     {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
