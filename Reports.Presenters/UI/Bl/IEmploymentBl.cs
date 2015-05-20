@@ -139,5 +139,21 @@ namespace Reports.Presenters.UI.Bl
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
         void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
+
+        /// <summary>
+        /// сохраняем признак технического увольнения из реестра
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата.</param>
+        /// <param name="IsDT">ghbpyfr</param>
+        /// <returns></returns>
+        bool SaveCandidateTechDissmiss(IList<CandidateTechDissmissDto> roster);
+        /// <summary>
+        /// Определяем наличие сведений об образовании по количеству строк.
+        /// </summary>
+        /// <param name="UserId">Id кандидата.</param>
+        /// <param name="Type">Тип образования: 1 - Сведения об образовании, 2 - Послевузовское образование, 3 - Аттестация, 4 - Повышение квалификации.</param>
+        /// <returns></returns>
+        int CheckExistsEducationRecord(int UserId, int Type);
+        
     }
 }

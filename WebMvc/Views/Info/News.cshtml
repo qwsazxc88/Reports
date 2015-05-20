@@ -1,40 +1,83 @@
 ﻿@using Reports.Core;
 @{
     var dto = Reports.Presenters.Services.Impl.UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-  }  
+  } 
+<script src="../../Scripts/jquery-1.4.4.min.js" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/angular-sanitize.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/textAngular-rangy.min.js")" type="text/javascript"></script>
+<link href="../../Content/textAngular.css" rel="stylesheet" type="text/css" />
+
+
+<script src="@Url.Content("~/Scripts/textAngular.min.js")" type="text/javascript"></script>
+<style>
+.ta-editor 
+{
+  min-height: 300px;
+  display:block;
+  height: auto;
+  overflow: auto;
+  font-family: inherit;
+  font-size: 100%;
+  width:100%;
+}
+</style>
 <div id="Blog" class="Blog" ng-app="NewsApp">
 <div ng-controller="NewsController">
 @if (dto.UserRole == UserRole.Admin)
 {
-    <fieldset style="border:1px solid #ddd; border-radius: 5px; margin:5px;">
-        <legend><input type="button" style="cursor:hand;" ng-click="Toggle()" value="Добавление новости"/></legend>
-    
-        <div id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">
-            <input style="width:100%; margin:5px;" class="form-control" ng-model="NewPost.Header" placeholder = "Заголовок" />
-            <textarea style="width:100%; margin:5px" class="form-control" ng-model="NewPost.Text" placeholder = "Текст новости" ></textarea>
-            <input style="margin:5px" type="button" ng-click="AddPost()" value="Добавить новость" /> 
+    <div  >
+        <input type="button" style="margin:5px;" class="btn btn-link btn-small" style="cursor:hand;" ng-click="Toggle()" value="Добавление новости"/>
+        
+        <div style="border:0px solid #ddd; border-radius: 5px; margin:5px;"  id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">
+            <div style="width:80%"><input class="form-control"  ng-model="NewPost.Header" placeholder = "Заголовок" /></div>
+            <div style="height:5px;"></div>    
+            
+            <div text-angular ng-model="NewPost.Text" ta-toolbar="[['h1','h2','h3'],['bold','italics','underline']]"></div>
+            
+            <div>
+                <input class="btn btn-primary" style="margin:5px" type="button" ng-click="AddPost()" value="Добавить новость" /> 
+                <input class="btn btn-primary" style="margin:5px" type="button" ng-click="ClearPost()" value="Очистить" /> 
+            </div>
         </div>
-    </fieldset>
+    </div>
 }
 <div class="NewsPost" ng-repeat="post in News">
+    @if (dto.UserRole == UserRole.Admin)
+    { 
+        <a href="#" data-ng-click="Edit(post);" >Редактировать </a> <br />
+    }
     <B style="font-size:large">{{post.Header}}</B><span style="color:#aaa; position:absolute; left:auto; right:5px;">{{post.PostDate}}</span>
     <div ng-bind-html="post.Text"></div>
 </div>
 </div>
 </div>
+
 <script>
-    var NewsApp = angular.module('NewsApp', ["ngSanitize"]);
+    
+    var NewsApp = angular.module('NewsApp', ["ngSanitize","textAngular"]);
     NewsApp.controller('NewsController', function ($scope, $http) {
 
         $scope.News = {};
 @if (dto.UserRole == UserRole.Admin)
 {
         <text>
+        
         $scope.NewPost = {};
+        $scope.Edit= function (post){
+            $scope.NewPost=post;             
+        };
+        $scope.ClearPost = function () {
+            $scope.Edit({});
+        };
+        $scope.DeletePost=function(id){
+        console.log(id);
+        $http.post("/Info/DeleteNews/", id).success(function () {
+                $scope.LoadData();
+            });
+        };
         $scope.AddPost = function () {
-            $http.post("/Info/AddNews/", $scope.NewPost).success(function () {
+                $http.post("/Info/AddNews/", $scope.NewPost).success(function () {
                 $scope.LoadData();
                 $scope.NewPost = {};
             });
@@ -43,15 +86,14 @@
             $scope.AddNewsEnable = !$scope.AddNewsEnable;
         };
         $scope.AddNewsEnable = true;
+
         </text>
 }
         $scope.LoadData = function () {
             $http.get('/Info/News/').success(function (data) {
                 for(var el in data)
                 {
-                    console.log(data[el]);
                     data[el].Text=unescape(data[el].Text);
-                    console.log(unescape(data[el].Text));
                 }
                 $scope.News = data;
             });

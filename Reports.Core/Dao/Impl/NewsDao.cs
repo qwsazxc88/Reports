@@ -22,7 +22,7 @@ namespace Reports.Core.Dao.Impl
             crit.Add(Restrictions.Eq("IsVisible", true));
             crit.AddOrder(Order.Desc("PostDate"));
             var result =crit.List<News>().Skip(page * count).Take(count);
-            return result.Select(x => new NewsDto { Header = x.Header, Text = x.Text, PostDate = x.PostDate.ToShortDateString() }).ToList();
+            return result.Select(x => new NewsDto { id=x.Id, Header = x.Header, Text = x.Text, PostDate = x.PostDate.ToShortDateString() }).ToList();
         }
     }
 }

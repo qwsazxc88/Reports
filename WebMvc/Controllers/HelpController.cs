@@ -8,6 +8,8 @@ using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace WebMvc.Controllers
 {
@@ -100,7 +102,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsorsingManager)]
         public ActionResult CreateServiceRequest(int? isForQuestion)
         {
             CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();
@@ -117,6 +119,20 @@ namespace WebMvc.Controllers
                                             {"userId", model.UserId}
                                           });
         }
+        /// <summary>
+        /// Автозаполнение фио в создании набора реквизитов.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompletePersonSearch(string term)
+        {
+            IList<IdNameDto> Persons = HelpBl.GetPersonAutocomplete(term);
+
+            var PersonList = Persons.Select(a => new { label = a.Name, Id = a.Id }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult CreateServiceRequestForFired()
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(0, AuthenticationService.CurrentUser.Id);
@@ -155,7 +171,7 @@ namespace WebMvc.Controllers
         {
             //CorrectCheckboxes(model);
             CorrectDropdowns(model);
-            UploadFileDto fileDto = GetFileContext();
+            UploadFileDto fileDto = GetFileContext(); 
             //bool needToReload;
             //string error;
             if (!ValidateServiceRequestEditModel(model, fileDto))

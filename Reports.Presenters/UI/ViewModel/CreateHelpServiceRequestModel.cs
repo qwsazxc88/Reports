@@ -16,6 +16,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "За сотрудника")]
         public int UserId { get; set; }
 
+        public string Surname { get; set; }
+
         public bool IsForQuestion { get; set; }
     }
 }

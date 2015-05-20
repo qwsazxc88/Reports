@@ -8,7 +8,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class UserDao : DefaultDao<User>, IUserDao
@@ -519,7 +519,7 @@ namespace Reports.Core.Dao.Impl
                 query.SetString("userName", "%" + userName + "%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
-
+        
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole)
         {
             string sqlQuery =
@@ -991,6 +991,10 @@ namespace Reports.Core.Dao.Impl
                 .Take(PageSize);
             return userList.ToList();
         }
+        public IList<User> GetUsersForPersonnel(int persId)
+        {
+            return Session.Query<User>().Where(x => x.Personnels.Any(y => y.Id == persId)).ToList();
+        }
         public IList<User> GetUsersForPersonnel(string userName,int personnelId,ref int currentPage, out int numberOfPages)
         {
             ICriteria criteria = Session.CreateCriteria(typeof(User));
@@ -1131,20 +1135,44 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Address", NHibernateUtil.String);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameAddressDto))).List<IdNameAddressDto>();
         }
-        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments)
+        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments, string Surname)
         {
-            const string sqlQuery = @"select emp.Id,emp.Name from Users emp
+            string sqlQuery = @"select emp.Id,emp.Name from Users emp
                     inner join dbo.Department d on emp.DepartmentId = d.Id
                     inner join dbo.Department dm on d.Path like dm.Path+N'%'
-                    where ((emp.RoleId & 2) > 0) 
+                    where ((emp.RoleId & 2) > 0) " + (string.IsNullOrEmpty(Surname) ? "" : " and emp.Name like N'" + Surname + "%'") + @" 
                     and dm.Id in (:departmentIds)
                     and emp.IsActive = 1 
                     order by Name";
+            
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 SetParameterList("departmentIds", departments);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            IList<IdNameDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            return users.ToList();
+        }
+        /// <summary>
+        /// Для автозаполнения.
+        /// </summary>
+        /// <param name="Surname">Фио сотрудника.</param>
+        /// <param name="UserId">Id кадровика</param>
+        /// <returns></returns>
+        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequestOK(string Surname, int UserId)
+        {
+            string sqlQuery = @"select emp.Id,emp.Name from Users emp
+                    --inner join dbo.Department d on emp.DepartmentId = d.Id
+                    --inner join dbo.Department dm on d.Path like dm.Path+N'%'
+                    INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = emp.Id and N.[PersonnelId] = " + UserId.ToString() + @"  
+                    where emp.RoleId in (2, 2097152) " + (string.IsNullOrEmpty(Surname) ? "" : " and emp.Name like N'" + Surname + "%'") + @" 
+                    and emp.IsActive = 1 
+                    order by Name";
+
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String);
+            IList<IdNameDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            return users;
         }
     }
 }
