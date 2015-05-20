@@ -2880,7 +2880,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             EmploymentCommonDao.SaveAndFlush(candidate);
 
-            candidate.User.Login = "c" + candidate.Id.ToString();
+            candidate.User.Login = "c" + candidate.User.Id.ToString();
             candidate.User.Name = model.Surname;//candidate.User.Login;
 
             // Create blank employment pages
@@ -5112,6 +5112,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return false;
             }
+        }
+
+        public int CheckExistsEducationRecord(int UserId, int Type)
+        {
+            return EmploymentEducationDao.CheckExistsEducationRecord(UserId, Type);
         }
 
         /// <summary>

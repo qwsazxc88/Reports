@@ -92,6 +92,7 @@ namespace Reports.Presenters.UI.Bl
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
+        int? SaveAttachment(int entityId, int id, UploadFileDto dto, RequestAttachmentTypeEnum type, out string attachment);
         bool DeleteAttachment(DeleteAttacmentModel model);
         int GetAttachmentsCount(int entityId,RequestAttachmentTypeEnum typeId);
 
@@ -209,5 +210,13 @@ namespace Reports.Presenters.UI.Bl
 
         AccessGroupsListModel GetAccessGroupsListModel();
         AccessGroupsListModel SetAccessGroupsListModel(AccessGroupsListModel model);
+
+
+        void SaveSurchargeNote(SurchargeNoteEditModel model);
+        SurchargeNoteEditModel GetSurchargeNoteEditModel(int id);
+        SurchargeNoteListModel GetSurchargeNoteListModel();
+        void SetDocumentsToModel(SurchargeNoteListModel model);
+        void GetDictionaries(SurchargeNoteEditModel model);
+        bool CheckDepartmentLevel(int id, int level);
     }
 }
