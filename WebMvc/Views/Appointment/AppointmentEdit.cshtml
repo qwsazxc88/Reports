@@ -111,7 +111,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (Model.IsEditable)
+                    @if (Model.IsEditable || (dto.UserRole== UserRole.PersonnelManagerBank))
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -152,14 +152,18 @@
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
-           @* <tr id="ReasonPositionTr">
+            @*<tr id="FIO_for_reason" class="HiddenObject">
+            <td><span id="FIO_for_reason_text"></span></td>
+            <td>@Html.EditorFor(m=>m.FiredFIO)</td>
+            </tr>*@
+           <tr id="ReasonPositionTr">
                 <td>
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
                 </td>
-            </tr>*@
+            </tr>
             @if (!Model.ShowStaff)
             {
             <tr>
@@ -601,7 +605,7 @@
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
-                $("#ReasonPositionTr").show();
+                $("#ReasonPositionTr").hide ();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');

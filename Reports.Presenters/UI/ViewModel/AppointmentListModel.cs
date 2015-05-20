@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
-
+using System.Web.Mvc;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentListModel : BeginEndCreateDate
@@ -15,7 +15,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
-
+        public IEnumerable<SelectListItem> EmploymentStatuses { get; set; }
 
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }

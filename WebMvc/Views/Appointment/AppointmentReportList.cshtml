@@ -131,7 +131,9 @@
                      <th>
                         № п/п
                     </th>
-                    
+                    <th>
+                        <div id="sort1" style="min-width:70px"><a href="#"  onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
+                    </th>
                      <th>
                         <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер<br/> отчета</a></div>
                     </th>
@@ -195,6 +197,9 @@
                     <th>
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
                     </th>
+                    <th>
+                        <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -202,7 +207,9 @@
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
+                            
                             <td>@doc.Number</td>
+                            <td>@doc.AppNumber</td>
                             <td style="text-align:left">
                                 
                                     <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.RNumber)_@(doc.SecondNumber)</a>
@@ -228,6 +235,14 @@
                             <td>@doc.RReject</td>
                             <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
+                            <td>@{if(doc.EmploymentStatus!=null)
+                                {
+                                    var es=Model.EmploymentStatuses.Where(x=>x.Value==doc.EmploymentStatus.ToString());
+                                    if(es!=null) {
+                                    <text>@es.First().Text</text>;   }                              
+                                    
+                                }}
+                            </td>
                         </tr>
                     }
                 }

@@ -321,12 +321,15 @@
             </tr>
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed==1 && (dto.Id==Model.UserId))
+                    @if (Model.IsColloquyPassed==1 && (dto.Id==Model.UserId) && !Model.Candidates.Any())
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
-                   <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
-                                                                                                                                                                     {<text>style="display:none"</text>}/>
+                    @if (!Model.IsClosed)
+                    {
+                   <input type="button" value="Добавить резюме кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
+                                                                                                                                                                             {<text>style="display:none"</text>}/>
+                    }
                    @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
                                                                 {<text>style="display:none"</text>}  />*@

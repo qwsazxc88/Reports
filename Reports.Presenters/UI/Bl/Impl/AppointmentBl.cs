@@ -196,6 +196,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToReportsModel(AppointmentListModel model)
         {
             model.Statuses = GetAppReportStatuses();
+            var employmentBl=Ioc.Resolve<IEmploymentBl>();
+            model.EmploymentStatuses = employmentBl.GetEmploymentStatuses();
         }
         public void SetDictionariesToModel(AppointmentListModel model)
         {
@@ -885,6 +887,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!string.IsNullOrEmpty(dto.Error))
                             error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                     dto.Error);
+                        if (entity.Recruter == 2)
+                        {
+                            entity.AcceptStaff = entity.Creator;
+                            CreateAppointmentReport(entity);
+                        }
                     }
                     break;
 
@@ -913,7 +920,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                         dto.Error);
-                            
+                            var dto2=SendEmailForStaffManager(entity);
+                            if (!string.IsNullOrEmpty(dto2.Error))
+                                error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                        dto2.Error);
                         }
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
@@ -1014,9 +1024,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public int CreateAppointmentReport(Appointment entity/*,User creator*/)
         {
             int id = 0;
-            for (int i = 0; i < (entity.BankAccountantAcceptCount); i++)
-            {
-                AppointmentReport report = new AppointmentReport
+            AppointmentReport report = new AppointmentReport
                                                {
                                                    Appointment = entity,
                                                    Creator = entity.AcceptStaff,
@@ -1024,14 +1032,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    EditDate = DateTime.Now,
                                                    Email = string.Empty,
                                                    Name = string.Empty,
-                                                   Number = i,//RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
+                                                   Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
                                                    SecondNumber=1,
                                                    Phone = string.Empty,
                                                    Type = AppointmentEducationTypeDao.Get(1),
                                                };
                 AppointmentReportDao.Save(report);
                 id = report.Id;
-            }
+            
             return id;
         }
         protected void RejectReports(int appointmentId,User user, string rejectReason)
@@ -1079,6 +1087,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(StrEmailForStaffManagerNotFound);
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(chief, entity, out body);
+            return SendEmail(staffManagerEmail, subject, body);
+        }
+        protected EmailDto SendEmailForStaffManager(Appointment entity)
+        {
+            string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
+            if (string.IsNullOrEmpty(staffManagerEmail))
+                throw new ValidationException(StrEmailForStaffManagerNotFound);
+            DepartmentDto dep3 = AppointmentDao.GetDepartmentForPathAndLevel(entity.Department.Path, 3);
+            if (dep3 == null)
+                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptDepartment3NotFound, entity.Department.Id);
+            string body = string.Format("Создана заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}",
+                                 entity.Number,
+                                 entity.PositionName,
+                                 dep3 == null ? "<не найдено в базе данных>" : dep3.Name,
+                                 entity.Creator.Name);
+            string subject = "Создана заявка на поиск кандидата.";
             return SendEmail(staffManagerEmail, subject, body);
         }
         /*protected EmailDto SendEmailForAppointmentPersonnelAccept(User personnel, Appointment entity)
@@ -1416,7 +1440,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidates != null && entity.Candidates.Any())
             {
                 model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers!=null)?x.PersonnelManagers.CompleteDate:null, Status=x.SendTo1C.HasValue?"Выгружено в 1С":"Не выгружено в 1С" }).ToList();
+                var candidates = entity.Appointment.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED);
+                if (candidates.Count() >= entity.Appointment.BankAccountantAcceptCount)  model.IsClosed = true;
             }
+            
             model.ShowStaff = true;
             model.AppId = entity.Appointment.Id;
             model.Version = entity.Version;
