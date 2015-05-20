@@ -118,7 +118,8 @@
             @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) && !Model.IsValidate)
             {
                 <div class="formfield">
-                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
+                    Выбрать скан для загрузки (Если вы принимаетесь на работу впервые, вам необходимо прикрепить скан заявления на выдачу трудовой книжки)<br />
+                    <input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
                 </div>
             }
             
