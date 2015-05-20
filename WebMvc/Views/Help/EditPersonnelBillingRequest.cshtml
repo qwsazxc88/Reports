@@ -86,11 +86,13 @@
                         <div>
                             <button id="btnSaveExecutor" type="button">Назначить исполнителей</button><br /><br />
                             <table id="tblExecutors" class="grid">
-                                <tr>
-                                    <th>Исполнитель</th>
-                                    <th>ФИО</th>
-                                    <th>Группа</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <td class="tdheader">Исполнитель</td>
+                                        <td class="tdheader">ФИО</td>
+                                        <td class="tdheader">Группа</td>
+                                    </tr>
+                                </thead>
                                 <tbody id="tblBody">
                                     @{ int i = 1; }
                                     @foreach (var item in Model.RecipientList)
@@ -101,7 +103,7 @@
                                                 @Html.HiddenFor(m => m.RecipientList[i - 1].RoleId)
                                                 @Html.HiddenFor(m => m.RecipientList[i - 1].Name)
                                                 @Html.HiddenFor(m => m.RecipientList[i - 1].Description)
-                                                &nbsp;@Html.CheckBoxFor(m => m.RecipientList[i - 1].IsRecipient, Model.Id == 0 ? null : new { disabled = "disabled" })
+                                                &nbsp;@Html.CheckBoxFor(m => m.RecipientList[i - 1].IsRecipient, Model.IsEditable ? (object) new { onchange = "CheckedChange(" + i.ToString() + ");" } : new { disabled = "disabled" })
                                             </td>
                                             <td>@item.Name</td>
                                             <td>@item.Description</td>
@@ -207,7 +209,43 @@
             $("#accordion").accordion("activate", -1);
             $("#accordion").show();
 
-            $("#btnSaveExecutor").button().click(function(){ SaveExecutors(); });
+            $("#btnSaveExecutor").button().click(function(){ 
+                var actionUrl="@Url.Action("HelpBillingExecutorTasks", "Help")";
+                var dataToSend = $("#EditBillingRequestForm").serialize();
+                jQuery.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: dataToSend,
+                    success: function(result){
+                        var ResultStr = "<tbody id='tblBody'>";
+                        for (var i = 0; i < result.length; i++)
+                        {
+                            ResultStr += "<tr>"+
+                                            "<td class='centered'>" +
+                                                "<input id='RecipientList_" + i + "__UserId' type='hidden' value='" + result[i].UserId + "' name='RecipientList[" + i + "].UserId' data-val='true'></input>" +
+                                                "<input id='RecipientList_" + i + "__RoleId' type='hidden' value='" + result[i].RoleId + "' name='RecipientList[" + i + "].RoleId' data-val='true'></input>" +
+                                                "<input id='RecipientList_" + i + "__Name' type='hidden' value='" + result[i].Name + "' name='RecipientList[" + i + "].Name'></input>" +
+                                                "<input id='RecipientList_" + i + "__Description' type='hidden' value='" + result[i].Description + "' name='RecipientList[" + i + "].Description'></input>" +
+                                                "<input Id='RecipientList_" + i + "__IsRecipient' Name='RecipientList_" + i + "__IsRecipient' type='checkbox' " + (result[i].IsRecipient == true ? "checked='checked'" : "") + 
+                                                " value='" + result[i].IsRecipient + "' onchange='CheckedChange(" + i + ")' data-val='true'></input>" +
+                                                "<input Id='RecipientList_" + i + "__IsRecipient' name='RecipientList[" + i + "].IsRecipient' value='" + result[i].IsRecipient + "' type='hidden'></input></td>" +
+                                            "<td>" + result[i].Name + "</td>" +
+                                            "<td>" + result[i].Description + "</td>" +
+                                            "</tr>";
+
+                        }
+
+                        ResultStr += "</tbody>";
+                            //console.log(ResultStr);
+                        $("#tblBody").remove();
+                        $("#tblExecutors").append(ResultStr);
+                    },
+                    error: function(){
+                        alert("При загрузке данных произошла ошибка.");
+                    }
+                });
+            });
         });
     function ValidateForm()
     {
@@ -244,64 +282,22 @@
         return result;
     }
 
-    function SaveExecutors() {
-        var actionUrl="@Url.Action("HelpBillingExecutorTasks", "Help")";
-        var dataToSend = $("#EditBillingRequestForm").serialize();
+    function CheckedChange(controlindex){
+        var controlname = "#RecipientList_" + controlindex + "__IsRecipient";
+        //var controlname2 = "RecipientList[" + controlindex + "].IsRecipient";
+        //var hiddencontrol = document.g.getElementsByName(controlname2);
 
-//        $.post(actionUrl,
-//                $("#EditBillingRequestForm").serialize(),
-//                function (result) {
-//                    if (result != null) {
-//                        var ResultStr = "<tbody id='tblBody'>";
-//                        for (var i = 0; i < result.length; i++)
-//                        {
-//                            ResultStr += "<tr>"+
-//                                            "<td style='display:none;'>" + result[i].UserId + "</td>" +
-//                                            "<td style='display:none;'>" + result[i].RoleId + "</td>" +
-//                                            "<td class='centered'><input Id='RecipientList_" + i + "__IsRecipient' type='checkbox' value='" + result[i].IsRecipient + "'</input> </td>" +
-//                                            "<td>" + result[i].Name + "</td>" +
-//                                            "<td'>" + result[i].Description + "</td>" +
-//                                            "</tr>";
-//                        }
 
-//                        ResultStr += "</tbody>";
-//                        $("#tblBody").remove();
-//                        $("#tblExecutors").append(ResultStr);
-//                    }
-//                    else {
-//                        alert("Ошибка при сохранении данных!.");
-//                    }
-//                }
-//            );
+        if($(controlname).val() == true){
+            $(controlname).val(false);
+            //hiddencontrol.val(false);
+        }
+        else{
+            $(controlname).val(true);
+            //hiddencontrol.val(true);
+        }
 
-        console.log(dataToSend);
-
-        jQuery.ajax({
-            url: actionUrl,
-            type: 'POST',
-            dataType: 'json',
-            data: dataToSend,
-            success: function(result){
-                var ResultStr = "<tbody id='tblBody'>";
-                for (var i = 0; i < result.length; i++)
-                {
-                    ResultStr += "<tr>"+
-                                    "<td style='display:none;'>" + result[i].UserId + "</td>" +
-                                    "<td style='display:none;'>" + result[i].RoleId + "</td>" +
-                                    "<td class='centered'><input Id='RecipientList_" + i + "__IsRecipient' type='checkbox' value='" + result[i].IsRecipient + "'</input> </td>" +
-                                    "<td>" + result[i].Name + "</td>" +
-                                    "<td'>" + result[i].Description + "</td>" +
-                                    "</tr>";
-                }
-
-                ResultStr += "</tbody>";
-                console.log(ResultStr);
-                $("#tblBody").remove();
-                $("#tblExecutors").append(ResultStr);
-            },
-            error: function(){
-                alert("При загрузке данных произошла ошибка.");
-            }
-        });
+        
     }
+
 </script> 

@@ -2694,6 +2694,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Titles = GetPersonnelBillingTitles(false);
             model.Comments = HelpPersonnelBillingCommentDao.GetComments(model.Id);
             model.RecipientList = HelpPersonnelBillingRequestDao.GetHelpBillingRecipients();
+            
         }
         protected void SetBillingRequestInfoModel(HelpPersonnelBillingRequest entity, BillingRequestInfoViewModel model)
         {

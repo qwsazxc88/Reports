@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
 using Reports.Core;
+using Reports.Core.Dao;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
@@ -32,6 +33,15 @@ namespace WebMvc.Controllers
             {
                 requestBl = Ioc.Resolve<IRequestBl>();
                 return Validate.Dependency(requestBl);
+            }
+        }
+        protected IHelpPersonnelBillingRequestDao helpPersonnelBillingRequestDao;
+        public IHelpPersonnelBillingRequestDao HelpPersonnelBillingRequestDao
+        {
+            get
+            {
+                helpPersonnelBillingRequestDao = Ioc.Resolve<IHelpPersonnelBillingRequestDao>();
+                return Validate.Dependency(helpPersonnelBillingRequestDao);
             }
         }
 
@@ -756,10 +766,14 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> Executors)
+        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> RecipientList)
         {
+            //var r = Request.Params;
+            //RecipientList.Where(x => x.UserId == 10).Single().IsRecipient = true;
+            //попробовать
+            HelpPersonnelBillingRequestDao.GetHelpBillingRecipients();
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(Executors);
+            string jsonString = jsonSerializer.Serialize(RecipientList);
             return Content(jsonString);
         }
 
