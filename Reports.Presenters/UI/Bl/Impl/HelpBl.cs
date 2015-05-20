@@ -263,6 +263,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<UserRole> ApprovedUsers = new List<UserRole>
             {
                 UserRole.ConsultantPersonnel,
+                UserRole.ConsultantOutsorsingManager,
                 UserRole.PersonnelManager
             };
             if (!ApprovedUsers.Contains(CurrentUser.UserRole) || model.Documents==null) return;
