@@ -887,11 +887,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!string.IsNullOrEmpty(dto.Error))
                             error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                     dto.Error);
-                        if (entity.Recruter == 2)
-                        {
-                            entity.AcceptStaff = entity.Creator;
-                            CreateAppointmentReport(entity);
-                        }
+                        
                     }
                     break;
 
@@ -950,6 +946,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                         dto.Error);
+                            if (entity.Recruter == 2)
+                            {
+                                entity.AcceptStaff = entity.Creator;
+                                CreateAppointmentReport(entity);
+                            }
                         }
                     }
                     break;
@@ -1031,12 +1032,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    CreateDate = DateTime.Now,
                                                    EditDate = DateTime.Now,
                                                    Email = string.Empty,
-                                                   Name = string.Empty,
+                                                   Name = entity.FIO,
                                                    Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
                                                    SecondNumber=1,
                                                    Phone = string.Empty,
                                                    Type = AppointmentEducationTypeDao.Get(1),
-                                               };
+                                                   IsColloquyPassed=entity.Recruter==2,
+                                                                                                  };
                 AppointmentReportDao.Save(report);
                 id = report.Id;
             
@@ -1443,8 +1445,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 var candidates = entity.Appointment.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED);
                 if (candidates.Count() >= entity.Appointment.BankAccountantAcceptCount)  model.IsClosed = true;
             }
-            
-            model.ShowStaff = true;
+            if (entity.Appointment.Recruter == 2)
+            {
+                model.ShowStaff = false;
+                model.IsColloquyPassed = 1;
+            }
+            else model.ShowStaff = true;
             model.AppId = entity.Appointment.Id;
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);

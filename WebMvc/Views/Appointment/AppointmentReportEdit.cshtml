@@ -77,9 +77,16 @@
                 <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
                 <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
                 <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
+                <input type="hidden" id="City" name="City" value="@Model.City" />
     <div class="doc-wrap">
         <table style="width:100%">
+        <tr>
+        <td colspan='2'>
+        Данный отчёт к заявке №@Model.AppointmentNumber необходимо заполнить специалисту по подбору персонала. При необходимости создания еще одного отчёта к данной заявке для другого кандидата, необходимо нажать на кнопку "Добавить резюме кандидата."
+        </td>
+        </tr>
             <tr>
                 <td colspan="2">
                     @Html.ValidationSummary(false)
@@ -110,7 +117,6 @@
                 </td>
                 <td>
                     <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 </td>
             </tr>
             <tr>
@@ -119,7 +125,6 @@
                 </td>
                 <td>
                      <label>@Model.City</label>
-                     <input type="hidden" id="City" name="City" value="@Model.City" />
                 </td>
             </tr>
             <tr>
@@ -157,6 +162,7 @@
                     @Html.TextBoxFor(model => model.Name, Model.IsEditable ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
+            @if(Model.ShowStaff){
              <tr>
                 <td>
                     @Html.LabelFor(m => m.Phone):
@@ -173,6 +179,7 @@
                     @Html.TextBoxFor(model => model.Email, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
+            }
              <tr>
                 <td>
                     @Html.LabelFor(m => m.AppointmentNumber):
@@ -182,6 +189,8 @@
                     <input type="hidden" id="AppointmentNumber" name="AppointmentNumber" value="@Model.AppointmentNumber" />
                 </td>
             </tr>
+            @if (Model.ShowStaff)
+            {
             <tr>
                 <td>
                     @Html.LabelFor(m => m.TypeId):
@@ -217,10 +226,12 @@
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
-             
+            }
         </table>
      </fieldset>
      <table>
+     @if (Model.ShowStaff)
+     {
      <tr>
                 <td>
                     @Html.LabelFor(m => m.IsStaffApproved):
@@ -321,9 +332,10 @@
                                                                                             {<text>style="display:none"</text>}/>
                 </td>
             </tr>
+     }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !Model.Candidates.Any())
+                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates!=null && Model.Candidates.Any()))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
