@@ -1667,3 +1667,19 @@ legend {
      visibility:hidden;
      height:0px;
  }
+ .bgGray
+ {
+     background-color:#929D9D;
+ }
+ .bgRed
+ {
+     background-color:#FF6666;
+ }
+ .bgGreen
+ {
+     background-color:#75FF75;
+ }
+.bgBlue
+{
+    background-color:#75A3FF;
+}
