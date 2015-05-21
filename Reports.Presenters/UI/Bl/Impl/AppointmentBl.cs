@@ -1032,7 +1032,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    CreateDate = DateTime.Now,
                                                    EditDate = DateTime.Now,
                                                    Email = string.Empty,
-                                                   Name = entity.FIO,
+                                                   Name = entity.FIO!=null?entity.FIO:"",
                                                    Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
                                                    SecondNumber=1,
                                                    Phone = string.Empty,
@@ -1519,7 +1519,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StaffFio = entity.AcceptStaff.FullName;
             if (entity.DeleteDate.HasValue)
                 model.DeleteUser = entity.DeleteUser.FullName;
-            
+            model.ShowStaff = entity.Appointment.Recruter == 1;
             switch (currRole)
             {
                 case UserRole.Manager:
@@ -1745,6 +1745,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
+                
                 SetFlagsState(entity.Id, UserDao.Load(current.Id), current.UserRole, entity, model);
                 return true;
             }
