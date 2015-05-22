@@ -47,6 +47,7 @@ namespace Reports.Core.Dao.Impl
                 if (status == 2) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNotNull("PersonnelDateAccept")); crit.Add(Restrictions.IsNull("CountantDateAccept")); };
                 if (status == 3) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNotNull("CountantDateAccept")); };
                 if (status == 4) { crit.Add(Restrictions.IsNotNull("DeleteDate")); };
+                if (status == 5) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNotNull("PersonnelManagerDateAccept")); crit.Add(Restrictions.IsNull("CountantDateAccept")); crit.Add(Restrictions.IsNull("PersonnelDateAccept")); };
             }
             if (!String.IsNullOrWhiteSpace(userName))
             { 
@@ -63,7 +64,7 @@ namespace Reports.Core.Dao.Impl
             }
             else
             {                
-                if (user != null && user.Department!=null)
+                if (user != null && user.Department!=null && role!= UserRole.PersonnelManagerBank)
                     crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));
             }
             if (beginDate.HasValue)
@@ -97,16 +98,56 @@ namespace Reports.Core.Dao.Impl
                 PersonnelDateAccept=x.PersonnelDateAccept,
                 PersonnelName=x.Personnel!=null?x.Personnel.Name:"",
                 PersonnelsId=x.Personnel!=null?x.Personnel.Id:0,
+                PersonnelManagerBankDateAccept=x.PersonnelManagerDateAccept,
+                PersonnelManagerBankName=x.PersonnelManagerBank!=null?x.PersonnelManagerBank.Name:"",
                 DepartmentId=x.DocDep7.Id,
                 Dep3Name=x.DocDep3.Name,
                 DepartmentName=x.DocDep7.Name,
-                Status=x.DeleteDate.HasValue?"Заявка отменена":(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":"Заявка создана"
+                Status=x.DeleteDate.HasValue?"Заявка отклонена":(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":(x.PersonnelManagerDateAccept.HasValue)?"Отработана УКДиУ":"Заявка создана"
             });
             if (role == UserRole.PersonnelManager && userId != 10)
             {
                 var employees = UserDao.GetUsersForPersonnel(userId).ToArray();
                 res = res.Where(x => employees.Any(y => y.Id == x.CreatorId));
             }
+            switch (sortedBy)
+            {
+                case 1:
+                    res=res.OrderBy(x => x.CreateDate);
+                    break;
+                case 2:
+                    res = res.OrderBy(x => x.Number);
+                    break;
+                case 3:
+                    res = res.OrderBy(x => x.CreatorName);
+                    break;
+                case 4:
+                    res = res.OrderBy(x => x.Position);
+                    break;
+                case 5:
+                    res = res.OrderBy(x => x.Dep3Name);
+                    break;
+                case 6:
+                    res = res.OrderBy(x => x.DepartmentName);
+                    break;
+                case 7:
+                    res = res.OrderBy(x => x.PayDay);
+                    break;
+                case 8:
+                    res = res.OrderBy(x => x.PersonnelDateAccept);
+                    break;
+                case 9:
+                    res = res.OrderBy(x => x.CountantDateAccept);
+                    break;
+                case 10:
+                    res = res.OrderBy(x => x.Status);
+                    break;
+                case 11:
+                    res = res.OrderBy(x => x.PersonnelManagerBankDateAccept);
+                    break;
+            }
+            if (sortDescending.HasValue && sortDescending.Value)
+                res=res.Reverse();
             return res.ToList();
         }
     }

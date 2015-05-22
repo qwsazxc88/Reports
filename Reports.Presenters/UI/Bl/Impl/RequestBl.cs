@@ -11854,6 +11854,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 2, Name = "Заявка отработана отделом кадров" });
             model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
             model.Statuses.Add(new IdNameDto { Id = 4, Name = "Заявка отклонена" });
+            model.Statuses.Add(new IdNameDto { Id = 5, Name = "Заявка отработана УКДиУ" });
         }
         public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
         {
@@ -11873,6 +11874,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 var entity = SurchargeNoteDao.Load(id);
                 model.IsDelete = entity.DeleteDate.HasValue;
+                model.PersonnelManagerBankAccept = entity.PersonnelManagerDateAccept.HasValue;
+                model.PersonnelManagerBankDateAccept = entity.PersonnelManagerDateAccept;
+                model.PersonnelManagerBankName =entity.PersonnelManagerBank!=null? entity.PersonnelManagerBank.Name:"";
                 model.Id = entity.Id;
                 model.CreateDate = entity.CreateDate;
                 model.CreatorId = entity.Creator.Id;
@@ -11933,6 +11937,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
                     entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
                     entity.PayDay = model.PayDay;
+                }
+                if (CurrentUser.UserRole == UserRole.PersonnelManagerBank)
+                {
+                    if (model.PersonnelManagerBankAccept)
+                    {
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                        entity.PersonnelManagerBank = UserDao.Load(CurrentUser.Id);
+
+                        model.PersonnelManagerBankDateAccept = entity.PersonnelManagerDateAccept.Value;
+                        model.PersonnelManagerBankName = entity.PersonnelManagerBank.Name;
+                    }
                 }
                 if (CurrentUser.UserRole == UserRole.PersonnelManager)
                 {
