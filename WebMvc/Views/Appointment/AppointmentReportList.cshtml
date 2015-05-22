@@ -126,7 +126,7 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table class="grid2" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
@@ -206,7 +206,17 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr>
+                        <tr
+                        @switch((int)doc.EmploymentStatus)
+                        {
+                            case 8: <text> class="bgGray";</text>
+                                break;
+                            case -1: <text> </text>
+                                break;
+                            default:<text> class="bgBlue";</text>
+                                break;
+                        }
+                        >
                             
                             <td>@doc.Number</td>
                             <td>@doc.AppNumber</td>
@@ -235,13 +245,15 @@
                             <td>@doc.RReject</td>
                             <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
-                            <td>@{if(doc.EmploymentStatus!=null)
-                                {
-                                    var es=Model.EmploymentStatuses.Where(x=>x.Value==doc.EmploymentStatus.ToString());
-                                    if(es!=null) {
-                                    <text>@es.First().Text</text>;   }                              
-                                    
-                                }}
+                            <td>@{if (doc.EmploymentStatus != null)
+                                  {
+                                      var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());
+                                      if (es != null && es.Any())
+                                      {
+                                    <text>@es.First().Text</text>;
+                                      }
+
+                                  }}
                             </td>
                         </tr>
                     }

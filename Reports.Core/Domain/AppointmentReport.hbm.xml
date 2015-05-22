@@ -32,7 +32,7 @@
 	<property name="DeleteDate" not-null="false"/>
 	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_AppointmentReport_DeleteUser" index="IX_AppointmentReport_DeleteUser"  not-null="false"/>
 	<property name="SendTo1C" not-null="false"/>
-
+    <property name="ResumeComment" not-null="false"/>
     <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="AppointmentReportId" foreign-key="FK_AppointmentReportComment_AppointmentReport"/>
       <one-to-many class="AppointmentReportComment"/>

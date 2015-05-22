@@ -43,9 +43,10 @@ namespace Reports.Core.Dao.Impl
             
             if (status > 0)
             {
-                if (status == 1) { crit.Add(Restrictions.IsNull("CountantDateAccept")); crit.Add(Restrictions.IsNull("PersonnelDateAccept")); };
-                if (status == 2) { crit.Add(Restrictions.IsNotNull("PersonnelDateAccept")); crit.Add(Restrictions.IsNull("CountantDateAccept")); };
-                if (status == 3) { crit.Add(Restrictions.IsNotNull("CountantDateAccept")); };
+                if (status == 1) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNull("CountantDateAccept")); crit.Add(Restrictions.IsNull("PersonnelDateAccept")); };
+                if (status == 2) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNotNull("PersonnelDateAccept")); crit.Add(Restrictions.IsNull("CountantDateAccept")); };
+                if (status == 3) { crit.Add(Restrictions.IsNull("DeleteDate")); crit.Add(Restrictions.IsNotNull("CountantDateAccept")); };
+                if (status == 4) { crit.Add(Restrictions.IsNotNull("DeleteDate")); };
             }
             if (!String.IsNullOrWhiteSpace(userName))
             { 
@@ -99,7 +100,7 @@ namespace Reports.Core.Dao.Impl
                 DepartmentId=x.DocDep7.Id,
                 Dep3Name=x.DocDep3.Name,
                 DepartmentName=x.DocDep7.Name,
-                Status=(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":"Заявка создана"
+                Status=x.DeleteDate.HasValue?"Заявка отменена":(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":"Заявка создана"
             });
             if (role == UserRole.PersonnelManager && userId != 10)
             {

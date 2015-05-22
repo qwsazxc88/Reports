@@ -69,7 +69,11 @@ namespace Reports.Core.Dao.Impl
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount,
-                EC.Status as EmploymentStatus
+                case
+                    when EC.Status is null then -1
+                    else                    
+                    EC.Status 
+                end as EmploymentStatus   
                 from dbo.Appointment v
                 inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId

@@ -1039,6 +1039,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    Type = AppointmentEducationTypeDao.Get(1),
                                                    IsColloquyPassed=entity.Recruter==2,
                                                                                                   };
+            if (entity.Recruter == 2) report.StaffDateAccept = DateTime.Now;
                 AppointmentReportDao.Save(report);
                 id = report.Id;
             
@@ -1466,6 +1467,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EducationTime = entity.EducationTime;
             model.RejectReason = entity.RejectReason;
             model.DateAccept = FormatDate(entity.DateAccept);
+            model.ResumeComment = entity.ResumeComment;
             SetManagerInfoModel(entity.Appointment.Creator, model,null,entity);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.AppointmentReport);
             LoadDictionaries(model);
@@ -1791,6 +1793,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (model.IsManagerEditable)
                 {
+
+                    entity.ResumeComment = model.ResumeComment;
                     if (model.IsEducationExists >= 0)
                         entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
                     else
@@ -1869,7 +1873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = currUser;
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
-
+                        entity.ResumeComment = model.ResumeComment;
                         CreateCandidate(entity);
                     }
                     if (!entity.DeleteDate.HasValue && entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
