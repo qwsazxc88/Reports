@@ -22,6 +22,5 @@ namespace Reports.Core.Dao
                                                           bool? sortDescending
             );
 
-        IList<HelpPersonnelBillingRecipientDto> GetHelpBillingRecipients();
     }
 }

@@ -35,15 +35,6 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(requestBl);
             }
         }
-        protected IHelpPersonnelBillingRequestDao helpPersonnelBillingRequestDao;
-        public IHelpPersonnelBillingRequestDao HelpPersonnelBillingRequestDao
-        {
-            get
-            {
-                helpPersonnelBillingRequestDao = Ioc.Resolve<IHelpPersonnelBillingRequestDao>();
-                return Validate.Dependency(helpPersonnelBillingRequestDao);
-            }
-        }
 
         //public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
         public const string StrCommentIsRequired = "Комментарий - обязательное поле";
@@ -709,14 +700,14 @@ namespace WebMvc.Controllers
         #endregion
         #region Personnel Billing
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelBillingList()
         {
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -725,7 +716,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult EditPersonnelBillingRequest(int id)
         {
             EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
@@ -736,9 +727,6 @@ namespace WebMvc.Controllers
         {
             CorrectCheckboxes(model);
             CorrectDropdowns(model);
-            //UploadFileDto fileDto = GetFileContext();
-            //bool needToReload;
-            //string error;
             if (!ValidateModel(model))
             {
                 HelpBl.ReloadDictionariesToModel(model);
@@ -747,7 +735,6 @@ namespace WebMvc.Controllers
             string error;
             if (!HelpBl.SavePersonnelBillingRequestModel(model, out error))
             {
-                //HttpContext.AddError(new Exception(error));
                 if (model.ReloadPage)
                 {
                     ModelState.Clear();
@@ -766,19 +753,20 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult HelpBillingExecutorTasks(int? Id, IList<HelpPersonnelBillingRecipientDto> RecipientList)
+        public ActionResult HelpBillingExecutorTasks(IList<HelpPersonnelBillingRecipientDto> RecipientList, IList<HelpPersonnelBillingRecipientGroupsDto> RecipientGroups)
         {
-            //var r = Request.Params;
-            //RecipientList.Where(x => x.UserId == 10).Single().IsRecipient = true;
-            //попробовать
-            HelpPersonnelBillingRequestDao.GetHelpBillingRecipients();
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(RecipientList);
+            HelpPersonnelBillingExecutorsDto ExecutorList = HelpBl.GetRecipients(RecipientList, RecipientGroups);
+
+
+            string jsonString = jsonSerializer.Serialize(ExecutorList);
             return Content(jsonString);
         }
 
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
+            if (model.Operation == 1 && model.RecipientList.Where(x => x.IsRecipient == true).Count() == 0)
+                ModelState.AddModelError("RecipientList", "Выберите исполнителя!");
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(EditPersonnelBillingRequestViewModel model)
@@ -786,7 +774,7 @@ namespace WebMvc.Controllers
             if (!model.IsEditable)
             {
                 model.TitleId = model.TitleIdHidden;
-                model.RecipientId = model.RecipientIdHidden;
+                //model.RecipientId = model.RecipientIdHidden;
                 model.UrgencyId = model.UrgencyIdHidden;
             }
         }
