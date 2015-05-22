@@ -13,6 +13,7 @@ namespace Reports.Core.Dto
         public string UserName { get; set; }
         public int? PersonnelsId { get; set; }
         public string PersonnelName { get; set; }
+        public string PersonnelManagerBankName { get; set; }
         public int? CountantId { get; set; }
         public string CountantName { get; set; }
         public int AttachmentId { get; set; }
@@ -21,6 +22,7 @@ namespace Reports.Core.Dto
         public DateTime PayDay { get; set; }
         public DateTime? PersonnelDateAccept { get; set; }
         public DateTime? CountantDateAccept { get; set; }
+        public DateTime? PersonnelManagerBankDateAccept { get; set; }
         public int NoteType { get; set; }
         public string Number { get; set; }
         public string CreatorName { get; set; }

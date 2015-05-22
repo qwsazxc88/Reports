@@ -20,5 +20,7 @@ namespace Reports.Core.Domain
         public virtual Department DocDep3 { get; set; }
         public virtual Department DocDep7 { get; set; }
         public virtual DateTime? DeleteDate { get; set; }
+        public virtual User PersonnelManagerBank {get;set;}
+        public virtual DateTime? PersonnelManagerDateAccept { get; set; }
     }
 }
