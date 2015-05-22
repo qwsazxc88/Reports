@@ -11853,6 +11853,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 1, Name = "Заявка создана" });
             model.Statuses.Add(new IdNameDto { Id = 2, Name = "Заявка отработана отделом кадров" });
             model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
+            model.Statuses.Add(new IdNameDto { Id = 4, Name = "Заявка отклонена" });
         }
         public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
         {
@@ -11871,6 +11872,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 var entity = SurchargeNoteDao.Load(id);
+                model.IsDelete = entity.DeleteDate.HasValue;
                 model.Id = entity.Id;
                 model.CreateDate = entity.CreateDate;
                 model.CreatorId = entity.Creator.Id;
@@ -11889,7 +11891,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId = entity.DocDep7.Id;
             }
             GetDictionaries(model);
-
+            if (model.IsDelete) model.IsEditable = false;
+                
             return model;
         }
         public SurchargeNoteListModel GetSurchargeNoteListModel()
@@ -11920,6 +11923,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 var entity = SurchargeNoteDao.Load(model.Id);
+                if (model.IsDelete)
+                {
+                    entity.DeleteDate = DateTime.Now;
+                }
                 if (!model.PersonnelDateAccept.HasValue && !model.CountantDateAccept.HasValue && model.CreatorId == CurrentUser.Id)
                 {
                     //entity.DocumentDepartment = model.DepartmentId;

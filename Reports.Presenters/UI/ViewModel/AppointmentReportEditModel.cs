@@ -98,7 +98,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан резюме")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
-
+        public string ResumeComment { get; set; }
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }

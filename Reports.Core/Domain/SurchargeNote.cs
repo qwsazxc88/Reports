@@ -19,6 +19,6 @@ namespace Reports.Core.Domain
         public virtual User Countant { get; set; }
         public virtual Department DocDep3 { get; set; }
         public virtual Department DocDep7 { get; set; }
-
+        public virtual DateTime? DeleteDate { get; set; }
     }
 }
