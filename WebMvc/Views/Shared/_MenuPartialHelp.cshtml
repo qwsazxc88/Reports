@@ -159,6 +159,7 @@
             {
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
             }
+            
             @if (UserDto.IsHelpPersonnelBillingAvailable(dto))
             {
                 <div class="menuitem" id="helpPersonnelBilling">@Html.ActionLink("Биллинг внутренний", "PersonnelBillingList", "Help")</div>

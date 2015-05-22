@@ -317,6 +317,15 @@ td.centered
     text-align: center;
 }
 
+td.tdheader
+{
+  border: 1px solid Black;
+  text-align: center;
+  white-space:nowrap;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 /* TABLE-STATE
 ----------------------------------------------------------*/
 table.state

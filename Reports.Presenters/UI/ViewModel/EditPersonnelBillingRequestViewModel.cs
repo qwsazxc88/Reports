@@ -32,9 +32,13 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> Urgencies;
 
         [Display(Name = "Получатель(и)")]
-        public int RecipientId { get; set; }
-        public int RecipientIdHidden { get; set; }
-        public IList<IdNameDto> Recipients;
+        //public int RecipientId { get; set; }
+        //public int RecipientIdHidden { get; set; }
+        //public IList<IdNameDto> Recipients;
+        public IList<HelpPersonnelBillingRecipientDto> RecipientList { get; set; }
+        public IList<HelpPersonnelBillingRecipientGroupsDto> RecipientGroups { get; set; }
+        //public bool IsRecipientGroups { get; set; }
+
 
         [Display(Name = "Вопрос")]
         public string Question { get; set; }
@@ -56,6 +60,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int Operation { get; set; }
 
         public RequestAttachmentsModel AttachmentsModel { get; set; }
+
+        //переписка
+        public IList<HelpPersonnelBillingCommentsDto> Comments { get; set; }
     }
     public class BillingRequestInfoViewModel : PreventDCModel
     {
@@ -73,9 +80,6 @@ namespace Reports.Presenters.UI.ViewModel
        
         [Display(Name = "Дата отправки")]
         public string DateSended { get; set; }
-
-        [Display(Name = "Получатель")]
-        public string RecipientName { get; set; }
 
         [Display(Name = "Дата прочтения")]
         public string DateBeginWork { get; set; }
