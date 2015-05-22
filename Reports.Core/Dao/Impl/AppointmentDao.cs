@@ -68,7 +68,12 @@ namespace Reports.Core.Dao.Impl
                          else N''
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
-                        V.BankAccountantAcceptCount as BankAccountantAcceptCount
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount,
+                case
+                    when EC.Status is null then -1
+                    else                    
+                    EC.Status 
+                end as EmploymentStatus   
                 from dbo.Appointment v
                 inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
@@ -84,6 +89,7 @@ namespace Reports.Core.Dao.Impl
                     case when u.RoleId & 512 > 0 then N'H' else N'R' end  
                     = u.Login and uEmp.RoleId = 2 
                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                Left join EmploymentCandidate EC ON r.id=EC.AppointmentReportId
                 ";
         #endregion
         //{1}";
@@ -198,7 +204,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAccept", NHibernateUtil.Boolean).
                 AddScalar("BankAccountantAcceptCount", NHibernateUtil.Int32).
                 AddScalar("SecondNumber",NHibernateUtil.Int32).
-                AddScalar("CreateDate",NHibernateUtil.DateTime);
+                AddScalar("CreateDate",NHibernateUtil.DateTime).
+                AddScalar("EmploymentStatus",NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -316,6 +323,7 @@ namespace Reports.Core.Dao.Impl
         public IList<AppointmentDto> GetDocuments(int userId,
                 UserRole role,
                 int departmentId,
+                int reasonId,
                 int statusId,
                 string number,
                 DateTime? beginDate,
@@ -335,6 +343,12 @@ namespace Reports.Core.Dao.Impl
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString += String.Format(@" v.Number like '{0}%' ", number);
+            }
+            if (reasonId > 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" ar.id={0} ", reasonId);
             }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
@@ -467,6 +481,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 24:
                     orderBy = @" order by CandidateFIO";
+                    break;
+                case 25:
+                    orderBy = @" order by BankAccountantAcceptCount";
                     break;
             }
             if (sortDescending.Value)
