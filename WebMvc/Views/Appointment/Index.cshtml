@@ -54,6 +54,14 @@
                         </tr>
                         <tr>
                              <td>
+                                @Html.LabelFor(m => m.ReasonId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                             <td>
                                 @Html.LabelFor(m => m.Number):
                             </td>
                             <td>
@@ -135,6 +143,9 @@
                         <div id="sort1" style="min-width:70px"><a href="#" onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
                     </th>
                     <th>
+                        <div id="sort25"><a href="#" onclick="SortChanged(25);" >Кол-во<br />вакансий</a></div>
+                    </th>
+                    <th>
                        <div id="sort22" ><a href="#" onclick = "SortChanged(22);"> Дата<br />создания</a></div>
                     </th>
                     <th>
@@ -190,6 +201,7 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
                             </td>
+                            <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
