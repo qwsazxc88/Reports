@@ -1,0 +1,56 @@
+﻿@using Reports.Core;
+@{
+    var dto = Reports.Presenters.Services.Impl.UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+  } 
+
+<script src="@Url.Content("~/Scripts/angular.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/angular-sanitize.min.js")" type="text/javascript"></script>
+
+<div id="Blog" class="Blog" ng-app="NewsApp">
+<div ng-controller="NewsController">
+    <div style="display:block">
+        <input type="button" style="margin:5px;"  style="cursor:hand;" ng-click="Toggle()" value="Добавить комментарий"/>        
+        <div style="border:0px solid #ddd; border-radius: 5px; margin:5px;"  id="AddNews" ng-class="{'HiddenObject': AddNewsEnable}">            
+            <textarea style="width:500px; resize: both;" ng-model="NewPost.Comment"></textarea>            
+            <div>
+                <input  style="margin:5px" type="button" ng-click="AddPost()" value="Добавить комментарий" /> 
+                <input  style="margin:5px" type="button" ng-click="ClearPost()" value="Очистить" /> 
+            </div>
+        </div>
+    </div><br />
+    <h3>Комментарии:</h3>
+<div class="NewsPost" ng-repeat="post in News">    
+    <B>{{post.CreatorName}}</B>
+    <div ng-bind-html="post.Comment"></div>
+</div>
+</div>
+</div>
+<script>    
+    var NewsApp = angular.module('NewsApp', ["ngSanitize","textAngular"]);
+    NewsApp.controller('NewsController', function ($scope, $http) {
+        $scope.News = {};        
+        $scope.NewPost = {};        
+        $scope.ClearPost = function () {
+            $scope.Edit({});
+        };        
+        $scope.AddPost = function () {
+                $scope.NewPost.PlaceTypeId=@(ViewBag.PlaceTypeId);
+                $scope.NewPost.PlaceId=@(ViewBag.PlaceId);
+                $http.post("/Base/AddComment/", $scope.NewPost).success(function () {
+                $scope.LoadData();
+                $scope.NewPost = {};
+            });
+            $scope.LoadData();
+        };
+        $scope.Toggle = function () {
+            $scope.AddNewsEnable = !$scope.AddNewsEnable;
+        };
+        $scope.AddNewsEnable = true;
+        $scope.LoadData = function () {
+            $http.get('/Base/GetComments?PlaceTypeId=@(ViewBag.PlaceTypeId)&PlaceId=@(ViewBag.PlaceId)').success(function (data) {
+                $scope.News = data;
+            });
+        };
+        $scope.LoadData();
+    });
+</script>

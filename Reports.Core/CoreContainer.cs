@@ -596,6 +596,9 @@ namespace Reports.Core
             Register(Component.For<ISurchargeNoteDao>()
                 .ImplementedBy<SurchargeNoteDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IMessagesDao>()
+                .ImplementedBy<MessagesDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 
