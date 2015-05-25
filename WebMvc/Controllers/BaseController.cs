@@ -23,7 +23,18 @@ namespace WebMvc.Controllers
 
         #endregion
         public const int MaxCommentLength = 256;
-
+        public ActionResult GetComments(int PlaceTypeId, int PlaceId)
+        {
+            var basebl = Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
+            var model = basebl.GetComments(PlaceTypeId, PlaceId);
+            return Json(model,JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult AddComment(MessagesDto message)
+        {
+            var basebl = Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
+            basebl.AddComment(message);
+            return Json("ok");
+        }
         public IAuthenticationService AuthenticationService
         {
             get
