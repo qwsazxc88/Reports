@@ -98,6 +98,7 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IMessagesDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\IEmploymentSignersDao.cs" />
+    <Compile Include="Dao\Impl\MessagesDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -487,6 +489,7 @@
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
     <Compile Include="Domain\InspectorToUser.cs" />
+    <Compile Include="Domain\Messages.cs" />
     <Compile Include="Domain\Mission.cs" />
     <Compile Include="Domain\MissionAirTicketType.cs" />
     <Compile Include="Domain\MissionAirTicketTypeGradeValue.cs" />
@@ -613,6 +616,7 @@
     <Compile Include="Dto\ImportDto.cs" />
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
+    <Compile Include="Dto\MessagesDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionHotelsDto.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
@@ -1193,6 +1197,7 @@
     <EmbeddedResource Include="Domain\News.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\ExtraCharges.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpPersonnelBillingComments.hbm.xml" />
+    <EmbeddedResource Include="Domain\Messages.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
