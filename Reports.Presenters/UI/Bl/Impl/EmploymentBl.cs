@@ -4947,6 +4947,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    return false;
                 //}
 
+                if (entity.Candidate.SendTo1C.HasValue)
+                {
+                    error = "Нельзя отклонить данного кандидата, так как его данные выгружены в 1С!";
+                    return false;
+                }
+
                 EmploymentStatus candidateStatus = candidate.Status;
 
                 if (candidateStatus != EmploymentStatus.REJECTED)
