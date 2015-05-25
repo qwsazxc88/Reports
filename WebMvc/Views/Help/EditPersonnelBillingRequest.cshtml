@@ -30,7 +30,7 @@
                     <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                     <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
-                    <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />
+                    @*<input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />*@
                     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
                      <input type="hidden" id="IsAnswerEditable" name="IsAnswerEditable" value="@Model.IsAnswerEditable" />
                      <input type="hidden" id="IsEditable"" name="IsEditable"" value="@Model.IsEditable" />
@@ -307,28 +307,28 @@
                 $("#tblExecutors").append(ResultStr);
 
 
-//                //список групп
-//                ResultStr = "<tbody id='tblEGBody'>";
-//                for (var i = 0; i < result.RecipientGroups.length; i++)
-//                {
-//                    ResultStr += "<tr>"+
-//                                    "<td class='centered'>" +
-//                                        "<input id='RecipientList_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientList[" + i + "].RoleId' data-val='true'></input>" +
-//                                        "<input id='RecipientList_" + i + "__Description' type='hidden' value='" + result.RecipientGroups[i].Description + "' name='RecipientList[" + i + "].Description'></input>" +
-//                                        "<input id='RecipientList_" + i + "__IsRecipientOld' type='hidden' value='" + result.RecipientGroups[i].IsRecipientOld + "' name='RecipientList[" + i + "].IsRecipientOld'></input>" +
-//                                        "<input Id='RecipientList_" + i + "__IsRecipient' Name='RecipientList[" + i + "].IsRecipient' type='checkbox' " + (result.RecipientGroups[i].IsRecipient == true ? "checked='checked'" : "") + 
-//                                        " value='" + result.RecipientGroups[i].IsRecipient + "' onchange='CheckedChange(" + i + ")' data-val='true'></input>" +
-//                                        //"</td>" +
-//                                        "<input Id='RecipientList_" + i + "_IsRecipient' name='RecipientList[" + i + "].IsRecipient' value='" + result.RecipientGroups[i].IsRecipient + "' type='hidden'></input></td>" +
-//                                    "<td>" + result.RecipientGroups[i].Description + "</td>" +
-//                                    "</tr>";
+                //список групп
+                ResultStr = "<tbody id='tblEGBody'>";
+                for (var i = 0; i < result.RecipientGroups.length; i++)
+                {
+                    ResultStr += "<tr>"+
+                                    "<td class='centered'>" +
+                                        "<input id='RecipientGroups_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientGroups[" + i + "].RoleId' data-val='true'></input>" +
+                                        "<input id='RecipientGroups_" + i + "__Description' type='hidden' value='" + result.RecipientGroups[i].Description + "' name='RecipientGroups[" + i + "].Description'></input>" +
+                                        "<input id='RecipientGroups_" + i + "__IsRecipientOld' type='hidden' value='" + result.RecipientGroups[i].IsRecipientOld + "' name='RecipientGroups[" + i + "].IsRecipientOld'></input>" +
+                                        "<input Id='RecipientGroups_" + i + "__IsRecipient' Name='RecipientGroups[" + i + "].IsRecipient' type='checkbox' " + (result.RecipientGroups[i].IsRecipient == true ? "checked='checked'" : "") + 
+                                        " value='" + result.RecipientGroups[i].IsRecipient + "' onchange='GroupCheckedChange(" + i + ")' data-val='true'></input>" +
+                                        //"</td>" +
+                                        "<input Id='RecipientGroups_" + i + "_IsRecipient' name='RecipientGroups[" + i + "].IsRecipient' value='" + result.RecipientGroups[i].IsRecipient + "' type='hidden'></input></td>" +
+                                    "<td>" + result.RecipientGroups[i].Description + "</td>" +
+                                    "</tr>";
 
-//                }
+                }
 
-//                ResultStr += "</tbody>";
-//                    //console.log(ResultStr);
-//                $("#tblEGBody").remove();
-//                $("#tblExecutorGroups").append(ResultStr);
+                ResultStr += "</tbody>";
+                    //console.log(ResultStr);
+                $("#tblEGBody").remove();
+                $("#tblExecutorGroups").append(ResultStr);
             },
             error: function(){
                 alert("При загрузке данных произошла ошибка.");
@@ -388,9 +388,10 @@
     function GroupCheckedChange(i){
         var controlname = "#RecipientGroups_" + i + "__IsRecipient";
         var controlname2 = "#RecipientGroups_" + i + "_IsRecipient";
+        var controlOldname = "#RecipientGroups[" + i + "].IsRecipientOld";
 
-        var IsChecked = document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[1].value;
-        IsChecked = IsChecked == 'true' ? 'false' : 'true';
+        var IsChecked = document.getElementsByName("RecipientGroups[" + i + "].IsRecipientOld")[0].value;
+        IsChecked = IsChecked == 'True' || IsChecked == 'true' ? 'false' : 'true';
         
         document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[0].value = IsChecked;
         document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[1].value = IsChecked;
@@ -399,7 +400,7 @@
 
         AjaxRequest();
         //старое значение обновляем после запроса
-        document.getElementsByName("RecipientGroups[" + i + "].IsRecipientOld")[0].value = IsChecked;
+        //document.getElementsByName(controlOldname)[0].value = IsChecked;
     }
 
 </script> 
