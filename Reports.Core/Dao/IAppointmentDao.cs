@@ -19,6 +19,7 @@ namespace Reports.Core.Dao
         IList<AppointmentDto> GetDocuments(int userId,
                                            UserRole role,
                                            int departmentId,
+                                           int reasonId,
                                            int statusId,
                                            string number,
                                            DateTime? beginDate,

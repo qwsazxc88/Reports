@@ -30,7 +30,7 @@ namespace Reports.Core.Domain
         public virtual bool? IsColloquyPassed { get; set; }
         public virtual DateTime? DateAccept { get; set; }
 
-
+        public virtual string ResumeComment { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? StaffDateAccept { get; set; }
         public virtual User AcceptStaff { get; set; }

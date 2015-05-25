@@ -78,7 +78,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDeleteScanAvailable { get; set; }
         public bool IsStaffSetDateAcceptAvailable { get; set; }
         public bool ReloadPage { get; set; }
-
+        public bool IsClosed { get; set; }
         [Display(Name = "Отказано по причине")]
         public string RejectReason { get; set; }
 
@@ -98,11 +98,12 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан резюме")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
-
+        public string ResumeComment { get; set; }
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
         public IList<CandidateDto> Candidates { get; set; }
+
         /*public bool ApproveForAllAvailable { get; set; }
         public bool ApproveForAll { get; set; }*/
     }

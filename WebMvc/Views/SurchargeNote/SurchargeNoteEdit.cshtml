@@ -13,6 +13,7 @@
     @Html.HiddenFor(m => m.NoteType)
     @Html.HiddenFor(m => m.CreatorId)
     @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IsDelete)
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
@@ -71,7 +72,7 @@
             </tr>
    <tr>
        <td>Оплачиваемый день:</td>
-       <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled="disabled"})</td>
+       <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
    </tr>
    
     <tr>
@@ -83,7 +84,7 @@
          {
              @Html.ActionLink(Model.AttachmentName, "ViewAttachment", (object)new { Id = Model.AttachmentId }, null);
          }
-         @if (Model.IsEditable && dto.Id==Model.CreatorId)
+         @if (Model.IsEditable && dto.Id == Model.CreatorId)
          {
              <input type="file" name="File"/>
              @Html.ValidationMessageFor(m => m.File)
@@ -103,10 +104,20 @@
     {
         <tr>
         <td>
+        Сотрудник УКДиУ:
+        </td>
+        <td>
+        @if (dto.UserRole == UserRole.PersonnelManagerBank )
+        {     @Html.CheckBoxFor(m => m.PersonnelManagerBankAccept)      } 
+        &nbsp;@Model.PersonnelManagerBankDateAccept &nbsp; @Model.PersonnelManagerBankName
+        </td>
+        </tr>
+        <tr>
+        <td>
         Сотрудник отдела кадров:
         </td>
         <td>
-        @if (dto.UserRole == UserRole.PersonnelManager && dto.Id != 10 && Model.PersonnelsApproved.Any(x => x.Id == dto.Id))
+        @if (Model.PersonnelManagerBankAccept && dto.UserRole == UserRole.PersonnelManager && dto.Id != 10 && Model.PersonnelsApproved.Any(x => x.Id == dto.Id))
         {     @Html.CheckBoxFor(m => m.PersonnelAccept)      } 
         &nbsp;@Model.PersonnelDateAccept &nbsp; @Model.PersonnelName
         </td>
@@ -116,14 +127,26 @@
         Сотрудник расчетного отдела:
         </td>
         <td>
-        @if (dto.Id == 10)       {      @Html.CheckBoxFor(m => m.CountantAccept) } 
+        @if (dto.Id == 10 && Model.PersonnelAccept)
+        {      @Html.CheckBoxFor(m => m.CountantAccept) } 
         &nbsp;  @Model.CountantDateAccept &nbsp; @Model.CountantName
         </td>
         </tr>
     }
     <tr>
-    @if ((dto.UserRole == UserRole.PersonnelManager && Model.PersonnelsApproved.Any(x=>x.Id==dto.Id))|| dto.Id==10 || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue))
+    @if (!Model.IsDelete && 
+        (dto.UserRole == UserRole.PersonnelManagerBank 
+        || (dto.UserRole == UserRole.PersonnelManager && Model.PersonnelsApproved.Any(x => x.Id == dto.Id)) 
+        || dto.Id == 10 
+        || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue)))
     {<td><button >Сохранить</button></td>}
+    </tr>
+    <tr>
+    <td>@if (!Model.IsDelete && (dto.UserRole == UserRole.PersonnelManager || dto.Id == 10))
+        {
+            <input type="submit" onclick="$('#IsDelete').val('true');" value="Отклонить заявку" />
+        }
+    </td>
     </tr>
     </table>
     </div>
