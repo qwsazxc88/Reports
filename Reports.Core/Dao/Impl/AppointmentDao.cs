@@ -380,7 +380,7 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.Number as varchar)+'_'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
             }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);

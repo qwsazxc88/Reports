@@ -559,9 +559,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
             var chiefs = GetChiefsForManager(creator.Id);
-            var manualchiefs = ManualRoleRecordDao.GetManualRoleHoldersForUser(creator.Id, UserManualRole.ApprovesCommonRequests);
-            
-            if (chiefs.Contains(current) || manualchiefs.Contains(current)) return true;
+            //foreach(var el in manualchiefs)
+
+            if (chiefs.Contains(current) ) return true;
 
             if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
@@ -1568,7 +1568,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     model.IsDeleteScanAvailable = true;
                                     model.IsManagerApproveAvailable = true;
                                     model.IsColloquyDateEditable = true;
-                                    model.IsManagerEditable = true;
+                                    model.IsManagerEditable = false;
                                 }
                             }
                             else if (!entity.ManagerDateAccept.HasValue)
@@ -1576,12 +1576,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerRejectAvailable = true;
                                 model.IsManagerApproveAvailable = true;
                                 model.IsColloquyDateEditable = true;
-                                model.IsManagerEditable = true;
+                                model.IsManagerEditable = false;
                             }
                             else if (entity.AcceptManager.Id == current.Id)
                             {
                                 model.IsManagerRejectAvailable = true;
-                                model.IsManagerEditable = true;
+                                model.IsManagerEditable = false;
                             }
                             /*if (!entity.StaffDateAccept.HasValue)
                             {
