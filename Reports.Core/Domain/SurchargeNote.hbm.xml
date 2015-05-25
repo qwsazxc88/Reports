@@ -10,10 +10,12 @@
     <property name="PersonnelDateAccept" not-null="false"/>
     <property name="CountantDateAccept" not-null="false"/>
     <property name="NoteType" not-null="true"/>
-    
+    <property name="DeleteDate" not-null="false"/>
+    <property name="PersonnelManagerDateAccept" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_SurchargeNote_Crator" not-null="true"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_SurchargeNote_User" not-null="false"/>
     <many-to-one name="Personnel" class="User" column="PersonnelId" foreign-key="FK_SurchargeNote_Personnel" not-null="false"/>
+    <many-to-one name="PersonnelManagerBank" class="User" column="PersonnelManagerBankId" foreign-key="FK_SurchargeNote_PersonnelManagerBank" not-null="false"/>
     <many-to-one name="Countant" class="User" column="CountantId" foreign-key="FK_SurchargeNote_Countant" not-null="false"/>
     <many-to-one name="DocDep7" class="Department" column="DocumentDepartment" foreign-key="FK_SurchargeNote_Dep7" not-null="false"/>
     <many-to-one name="DocDep3" class="Department" column="DocumentDep3" foreign-key="FK_SurchargeNote_Dep3" not-null="false"/>
