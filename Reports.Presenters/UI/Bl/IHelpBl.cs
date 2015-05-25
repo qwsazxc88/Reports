@@ -54,5 +54,11 @@ namespace Reports.Presenters.UI.Bl
 
 
         RequestAttachmentsModel GetBillingAttachmentsModel(int id, RequestAttachmentTypeEnum type);
+        /// <summary>
+        /// По выбранным группам и отдельным сотрудникам формируем список ответственных за поставленную задачу.
+        /// </summary>
+        /// <param name="RecipientList">Список сотрудников.</param>
+        /// <param name="RecipientGroups">Список групп сотрудников.</param>
+        HelpPersonnelBillingExecutorsDto GetRecipients(IList<HelpPersonnelBillingRecipientDto> RecipientList, IList<HelpPersonnelBillingRecipientGroupsDto> RecipientGroups);
     }
 }

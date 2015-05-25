@@ -5064,25 +5064,33 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
+            bool IsValid = false;
             // Контроль уровня вышестоящего руководителя
             if (!IsManagerLevelValid(current))
             {
+                IsValid = false;
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
             }
+            else
+                IsValid = true;
             // Контроль уровня руководителя-инициатора
             if (!IsManagerLevelValid(creator))
             {
+                IsValid = false;
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             }
+            else
+                IsValid = true;
+
 
             switch (current.Level)
             {
                 case 2:
                 case 3:
-                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
-                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям, если первые две проверки по автоматическим правам не прошли.
+                    return IsValid ? IsValid :  MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000058")
                         .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
                 case 4:
                 case 5:

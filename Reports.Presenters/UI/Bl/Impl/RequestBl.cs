@@ -16,7 +16,7 @@ using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
 using System.Web.Mvc;
-using Reports.Core.Enum;
+
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class RequestBl : BaseBl, IRequestBl
