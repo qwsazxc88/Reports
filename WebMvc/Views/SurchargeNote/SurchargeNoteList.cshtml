@@ -136,11 +136,15 @@
                         <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Оплачиваемый<br />день</a></div>
                     </th>
                     <th>
+                        <div id="sort11" ><a href="#" onclick = "SortChanged(11);">Отработано <br />УКДиУ</a></div>
+                    </th>
+                    <th>
                         <div id="sort8" ><a href="#" onclick = "SortChanged(8);">Отработано <br />отделом кадров</a></div>
                     </th>
                     <th>
                         <div id="sort9" ><a href="#" onclick = "SortChanged(9);">Отработано <br />расчётным отделом</a></div>
                     </th>
+                    
                     <th>
                         <div id="sort10" ><a href="#" onclick = "SortChanged(10);">Статус</a></div>
                     </th>
@@ -159,6 +163,11 @@
                             <td>@doc.Dep3Name</td>
                             <td>@doc.DepartmentName</td>
                             <td>@doc.PayDay.ToShortDateString()</td>
+                            <td>@if(doc.PersonnelManagerBankDateAccept.HasValue)
+                                {
+                                    @doc.PersonnelManagerBankDateAccept.Value.ToShortDateString()
+                                }
+                            </td>
                             <td>@if(doc.PersonnelDateAccept.HasValue)
                                 {
                                     @doc.PersonnelDateAccept.Value.ToShortDateString()
@@ -169,6 +178,7 @@
                                     @doc.CountantDateAccept.Value.ToShortDateString()
                                 }
                             </td>
+                            
                             <td>@doc.Status</td>
                             @{i++;}
                         </tr>

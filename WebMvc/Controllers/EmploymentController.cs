@@ -1355,6 +1355,7 @@ namespace WebMvc.Controllers
             if (!string.IsNullOrEmpty(error))
             {
                 ViewBag.Error = error;
+                ModelState.AddModelError("MessageStr", error);
                 return View("Managers", EmploymentBl.GetManagersModel(userId));
             }
             else

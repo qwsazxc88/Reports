@@ -27,10 +27,10 @@ namespace Reports.Core.Dao.Impl
                                     ,dep7.Name as Dep7Name
                                     ,v.Number as RequestNumber
                                     ,u.Name as CreatorName
-                                    ,case when RecipientId = -1 then N'Все расчетчики'
-	                                      when RecipientId = -2 then N'Все консультанты ОК'
-	                                      when uRep.Id is  null then N''
-	                                      else uRep.Name end as RepicientName
+                                    --,case when RecipientId = -1 then N'Все расчетчики'
+	                                      --when RecipientId = -2 then N'Все консультанты ОК'
+	                                      --when uRep.Id is  null then N''
+	                                      --else uRep.Name end as RepicientName
                                     ,case when v.[SendDate] is null then 1
                                                                          when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
                                                                          when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
@@ -49,7 +49,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join [dbo].[Users] u on u.Id = v.CreatorId
                                     inner join [dbo].[Department] dep7 on v.DepartmentId = dep7.Id 
                                     left join  [dbo].[Department] dep3 on dep7.Path like dep3.Path+N'%' and dep3.ItemLevel = 3
-                                    left join [dbo].[Users] uRep on uRep.Id = v.RecipientId 
+                                    
                                     ";
        
         public HelpPersonnelBillingRequestDao(ISessionManager sessionManager)
@@ -58,20 +58,6 @@ namespace Reports.Core.Dao.Impl
         }
         public override IQuery CreateQuery(string sqlQuery)
         {
-        //public int Id { get; set; }
-        //public int UserId { get; set; }
-        //public string Title { get; set; }
-        //public string Urgency { get; set; }
-        //public DateTime CreateDate { get; set; }
-        //public string ForUserName { get; set; }
-        //public string Dep3Name { get; set; }
-        //public string Dep7Name { get; set; }
-        //public int RequestNumber { get; set; }
-        //public string CreatorName { get; set; }
-        //public string RepicientName { get; set; }
-        //public int StatusNumber { get; set; }
-        //public string Status { get; set; }
-        //public int Number { get; set; }
             return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
@@ -83,7 +69,6 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.Int32).
                 AddScalar("CreatorName", NHibernateUtil.String).
-                AddScalar("RepicientName", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32);
@@ -133,13 +118,15 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.ConsultantOutsorsingManager:
-                    //sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return string.Format(" ((u.Id = {0} and v.[CreatorRoleId] = {1}) or (([RecipientRoleId] = {1}) and ((RecipientId = -2) or (uRep.Id = {0})))) ", 
-                        userId, (int)role);
-                case UserRole.OutsourcingManager:
                 case UserRole.Estimator:
-                //case UserRole.Admin:
-                    //sqlQuery = string.Format(sqlQuery, string.Empty);
+                case UserRole.PersonnelManager:
+                    sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT * 
+												                   FROM (SELECT Id AS HelpBillingId, CreatorId as UserId FROM HelpPersonnelBillingRequest
+															             UNION ALL
+															             SELECT HelpBillingId, UserId FROM HelpBillingExecutorTasks) as tbl) as UB ON UB.HelpBillingId = v.id and UB.UserId = " + userId.ToString());
+                    return string.Empty;
+                case UserRole.OutsourcingManager:
+                case UserRole.ConsultantOutsourcing:
                     return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
@@ -295,5 +282,6 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+       
     }
 }

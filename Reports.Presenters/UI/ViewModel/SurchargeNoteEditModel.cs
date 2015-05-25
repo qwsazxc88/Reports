@@ -12,7 +12,9 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> Users { get; set; }
         public IList<IdNameDto> PersonnelsApproved { get; set; }
         public bool IsEditable { get; set; }
+        public bool IsDelete { get; set; }
         public bool CountantAccept { get; set; }
+        public bool PersonnelManagerBankAccept { get; set; }
         public bool PersonnelAccept { get; set; }
         public int DepartmentRequiredLevel {get;set;}
         public string Chiefs { get; set; }

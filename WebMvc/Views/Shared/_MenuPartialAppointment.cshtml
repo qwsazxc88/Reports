@@ -136,7 +136,7 @@
              {  
                  <div class="menuitem" id="appInstruction">@Html.ActionLink("Инструкция", "Instruction", "Appointment")</div>
                 <div class="menuitem" id="appAllRequests">@Html.ActionLink("Реестр заявок на подбор", "Index", "Appointment")</div>
-                 if (dto.UserRole != UserRole.Manager)
+                 if (dto.UserRole != UserRole.Manager || true)
                  {
                  <div class="menuitem" id="appAllReports">@Html.ActionLink("Реестр отчетов по подбору", "AppointmentReportList", "Appointment")</div> 
                  }

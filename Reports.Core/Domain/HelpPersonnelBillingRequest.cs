@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -24,11 +25,11 @@ namespace Reports.Core.Domain
         public virtual string Question { get; set; }
         public virtual string Answer { get; set; }
 
-        public virtual int RecipientId { get; set; }
-        public virtual int RecipientRoleId { get; set; }
         public virtual User Creator { get; set; }
         public virtual int CreatorRoleId { get; set; }
         public virtual User Worker { get; set; }
+
+        public virtual IList<HelpBillingExecutorTasks> Executors { get; set; } //ok
         #endregion
 
         #region Properties
