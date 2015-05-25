@@ -480,12 +480,12 @@
              }
              if(($("#ColloquyDate").val() != '') && !isCheckboxChecked($("#IsManagerApproved")))
              {
-                 addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Дата собеседования". ');
+                 addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должено быть отмечено - заполнено поле "Дата собеседования". ');
                  result = false;
              }
              if(isCheckboxChecked($("#IsManagerApproved")) && !isCheckboxChecked($("#IsStaffApproved")))
              {
-                addControlError($("#IsStaffApproved"),'Чекбокс "Отправить на согласование" должен быть отмечен - установлен чекбокс "Кандидат приглашен на собеседование". ');
+                addControlError($("#IsStaffApproved"),'Поле "Отправить на согласование" должено быть отмечено - отмечено поле "Кандидат приглашен на собеседование". ');
                 result = false;
              }
         }
@@ -511,17 +511,17 @@
         {
             if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsColloquyPassed").val() != -1))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Собеседование пройдено/не пройдено". ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - заполнено поле "Собеседование пройдено/не пройдено". ');
                   result = false;
             }
              if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsEducationExists").val() != -1))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Обучение пройдено/не пройдено". ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - заполнено поле "Обучение пройдено/не пройдено". ');
                   result = false;
             }
              if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#DateAccept").val()))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - установлено дата приема на работу. ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - установлено дата приема на работу. ');
                   result = false;
             }
             if(($("#DateAccept").val() || ($("#IsEducationExists").val() != -1)) && ($("#IsColloquyPassed").val() == -1))
