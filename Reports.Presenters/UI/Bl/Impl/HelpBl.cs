@@ -2720,38 +2720,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    //ЗАКОММЕНТАРЕННЫЙ КУСОК ПЕРЕДЕЛАТЬ
-                    //роль кому направлена тема
-                    //if ((int)currentRole == entity.RecipientRoleId)
-                    //{
-                    //    if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue &&
-                    //       (entity.RecipientId == AuthenticationService.CurrentUser.Id ||
-                    //        entity.RecipientId == (int)AllPersonnelBillingRecipientEnum.AllConsultantOutsorsingManager))
-                    //    {
-                    //        model.IsWorkBeginAvailable = true;
-                    //        model.IsSaveAvailable = true;
-                    //    }
-                    //    if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && entity.RecipientId == AuthenticationService.CurrentUser.Id)
-                    //    {
-                    //        model.IsAnswerEditable = true;
-                    //        model.IsSaveAvailable = true;
-                    //    }
-                    //}
-
+                    //кому доступно сообщение в реестре могут отвечать
                     //консультант может закрыть тему созданную другими
-                    if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                    if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                     {
-                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
-                        {
-                            model.IsWorkBeginAvailable = true;
-                            model.IsSaveAvailable = true;
-                        }
+                        model.IsWorkBeginAvailable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsAnswerEditable = true;
+                    }
 
-                        if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
-                        {
-                            model.IsSendAvailable = true;
-                            model.IsAnswerEditable = true;
-                        }
+                    if (entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                    {
+                        model.IsSendAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false; //консультант может закрыть тему созданную другими
+                        model.IsAnswerEditable = true;
                     }
                 }
             }
@@ -2798,7 +2779,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Attachment = x.FileName,
                                 AttachmentId = x.Id,
                                 Description = x.Description,
-                                IsDeleteAvailable = ((x.CreatorUserRole & CurrentUser.UserRole) > 0) && isAddAvailable,
+                                IsDeleteAvailable = ((x.CreatorUserRole & CurrentUser.UserRole) > 0 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing) && isAddAvailable,
                             });
             return model;
         }
