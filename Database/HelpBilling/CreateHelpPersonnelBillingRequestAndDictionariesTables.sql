@@ -347,3 +347,16 @@ insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Служба з
 insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка по месту требования',2)
 insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка с предыдущего места работы сотрудника',3)
 insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справки уволенному',4)
+
+
+
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Аналитики')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Аудиторы')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Бухгалтерия')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Кадровики')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Программисты')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Расчетчики')
+INSERT INTO HelpBillingRole(Version, [Description] ) VALUES(1, N'Юристы')
+
+INSERT INTO HelpBillingRoleRecord(Version, UserId, RoleId)
+select 1, id, case when id = 10 then 6 else 4 end from users where RoleId & 1048576 > 0 or id = 10
