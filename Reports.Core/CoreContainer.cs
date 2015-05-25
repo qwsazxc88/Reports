@@ -569,6 +569,12 @@ namespace Reports.Core
             Register(Component.For<IHelpPersonnelBillingRequestDao>()
                .ImplementedBy<HelpPersonnelBillingRequestDao>()
                .LifeStyle.Is(type));
+            Register(Component.For<IHelpPersonnelBillingCommentDao>()
+               .ImplementedBy<HelpPersonnelBillingCommentDao>()
+               .LifeStyle.Is(type));
+            Register(Component.For<IHelpBillingExecutorTaskDao>()
+               .ImplementedBy<HelpBillingExecutorTaskDao>()
+               .LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
@@ -592,6 +598,9 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For<INewsDao>()
                 .ImplementedBy<NewsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<ISurchargeNoteDao>()
+                .ImplementedBy<SurchargeNoteDao>()
                 .LifeStyle.Is(type));
         }
         #endregion

@@ -3,8 +3,9 @@
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
     ViewBag.Title = "Редактирование запроса (внутренний биллинг)";
 }
-@using (Html.BeginForm("EditPersonnelBillingRequest", "Help", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
+@using (Html.BeginForm("EditPersonnelBillingRequest", "Help", FormMethod.Post, new { onkeydown = "return event.keyCode!=13", enctype = "multipart/form-data", Id = "EditBillingRequestForm" }))
 {
+    @*@Html.HiddenFor(m => m.IsRecipientGroups)*@
     <div class="doc-wrap">
     <table style="width:100%">
         @*<tr>
@@ -35,7 +36,7 @@
                      <input type="hidden" id="IsEditable"" name="IsEditable"" value="@Model.IsEditable" />
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TitleId, new SelectList(Model.Titles, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TitleIdHidden" name="TitleIdHidden" value="@Model.TitleIdHidden" />
                 </td>
         </tr>
@@ -59,7 +60,7 @@
         </tr>
          <tr>
             <td colspan="2">
-                @if(Model.IsEditable)
+                @if (Model.IsEditable)
                 {
                     <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                 }
@@ -70,17 +71,106 @@
                     @Html.LabelFor(m => m.UrgencyId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.UrgencyId, new SelectList(Model.Urgencies, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
                 </td>
         </tr>
          <tr>
+         @*
                 <td>
                     @Html.LabelFor(m => m.RecipientId):
                 </td>
-                <td>
-                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null: (object)new { disabled = "disabled" }) 
+                *@
+                <td colspan="2">
+                    <div id="accordion">
+                        <h3><a href="#">@Html.LabelFor(m => m.RecipientList) &nbsp;&nbsp;&nbsp; @Html.ValidationMessageFor(m => m.RecipientList)</a></h3>
+                        <div>
+                            <label @if (Model.Id != 0)
+                                   {<text>style="display:none;"</text>}>Список сотрудников будет доступен после сохранения черновика!</label>
+                            @if (Model.Id != 0)
+                            {
+                                @*<button id="btnSaveExecutor" type="button">Назначить исполнителей</button><br /><br />*@
+                                <div id="tabs">
+                                    <ul>
+                                        <li><a href="#tabs1">Сотрудники</a></li>
+                                        @if (string.IsNullOrEmpty(Model.DateSended))
+                                        {
+                                            <li><a href="#tabs2">Группы</a></li>
+                                        }
+                                    </ul>
+                                    <div id="tabs1">
+                                        <table id="tblExecutors" class="grid">
+                                            <thead>
+                                                <tr>
+                                                    <td class="tdheader">Исполнитель</td>
+                                                    <td class="tdheader">ФИО</td>
+                                                    <td class="tdheader">Группа</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tblEBody">
+                                                @{ int i = 1; }
+                                                @foreach (var item in Model.RecipientList)
+                                                {
+                                                    <tr>
+                                                        <td class="centered">
+                                                            @Html.HiddenFor(m => m.RecipientList[i - 1].Id)
+                                                            @Html.HiddenFor(m => m.RecipientList[i - 1].UserId)
+                                                            @Html.HiddenFor(m => m.RecipientList[i - 1].RoleId)
+                                                            @Html.HiddenFor(m => m.RecipientList[i - 1].Name)
+                                                            @Html.HiddenFor(m => m.RecipientList[i - 1].Description)
+                                                            &nbsp;@Html.CheckBoxFor(m => m.RecipientList[i - 1].IsRecipient, string.IsNullOrEmpty(Model.DateSended) ? (object)new { onchange = "CheckedChange(" + Convert.ToString(i - 1) + ");", value = Convert.ToString(Model.RecipientList[i - 1].IsRecipient) } : new { disabled = "disabled" })
+                                                        </td>
+                                                        <td>@item.Name</td>
+                                                        <td>@item.Description</td>
+                                                        @{i++;}
+                                                    </tr>
+                                        
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    @if (string.IsNullOrEmpty(Model.DateSended))
+                                    {
+                                            <div id="tabs2">
+                                            <table id="tblExecutorGroups" class="grid">
+                                                <thead>
+                                                    <tr>
+                                                        <td class="tdheader">Исполнитель</td>
+                                                        <td class="tdheader">Группа</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tblEGBody">
+                                                    @{ int j = 1; }
+                                                    @foreach (var item in Model.RecipientGroups)
+                                                    {
+                                                        <tr>
+                                                            <td class="centered">
+                                                                @Html.HiddenFor(m => m.RecipientGroups[j - 1].RoleId)
+                                                                @Html.HiddenFor(m => m.RecipientGroups[j - 1].Description)
+                                                                @Html.HiddenFor(m => m.RecipientGroups[j - 1].IsRecipientOld)
+                                                                &nbsp;@Html.CheckBoxFor(m => m.RecipientGroups[j - 1].IsRecipient, string.IsNullOrEmpty(Model.DateSended) ? (object)new { onchange = "GroupCheckedChange(" + Convert.ToString(j - 1) + ");", value = Convert.ToString(Model.RecipientGroups[j - 1].IsRecipient) } : new { disabled = "disabled" })
+                                                            </td>
+                                                            <td>@item.Description</td>
+                                                            @{j++;}
+                                                        </tr>
+                                        
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    
+                                </div>
+                                
+                                
+                            }
+                        </div>
+                    </div>
+                    @*
+                    @Html.DropDownListFor(model => model.RecipientId, new SelectList(Model.Recipients, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
+                    *@
                 </td>
         </tr>
         <tr>
@@ -97,8 +187,9 @@
         </tr>
         <tr>
             <td colspan="2">
+                @*
                 @Html.CheckBox("IsWorkBegin", Model.IsWorkBegin, Model.IsWorkBeginAvailable ? null : (object)new { disabled = "disabled" }) 
-                @Html.LabelFor(model => model.IsWorkBegin)
+                @Html.LabelFor(model => model.IsWorkBegin)*@
                 @if (!Model.IsWorkBeginAvailable)
                 {
                     <input type="hidden" id="IsWorkBeginHidden" name="IsWorkBeginHidden" value="@Model.IsWorkBeginHidden" />
@@ -124,21 +215,127 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-                <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if ((!Model.IsSaveAvailable && !string.IsNullOrEmpty(Model.DateSended)) || !Model.IsSaveAvailable)
+                                                                                        {<text>style="display:none"</text>}/>
                 <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
-                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm();" @if (!Model.IsSendAvailable) {<text>style="display:none"</text>}/>
-                <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable) {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить запрос" onclick="return ValidateAndSendForm(1);" @if (!Model.IsSendAvailable || Model.Id == 0)
+                                                                                                       {<text>style="display:none"</text>}/>
+                <input type="submit" value="Отправить ответ" onclick="return ValidateAnswer();" @if (!Model.IsAnswerEditable)
+                                                                                                {<text>style="display:none"</text>}/>
+                <input type="submit" value="Закрыть тему" onclick="return ValidateAndSendForm(3);" @if (!Model.IsSendAvailable || (Model.IsSendAvailable && Model.Id == 0))
+                                                                                                   {<text>style="display:none"</text>}/>
             </td>
         </tr>
     </table>
     </div>
-    }
-    <script type="text/javascript">
+    
+    <table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td style="font-weight:bold">Вопрос/Ответ</td>
+        </tr>
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var doc in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@(doc.IsQuestion ? "Вопрос" : "Ответ") @doc.Creator  @doc.CreatedDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@doc.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+}
+
+<script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
-     $(document).ready(function () {
+        $(document).ready(function () {
             setActiveMenuItem("helpPersonnelBilling");
+            //чтобы не было видно анимации при загрузке страницы, делаем элемент невидимым
+            $("#accordion").hide();
+            $("#accordion").accordion({
+                header: "h3",
+                collapsible: true,
+                autoHeight: false
+            });
+            $("#accordion").accordion("activate", -1);
+
+            $("#tabs").tabs();
+            $("#accordion").show();
+
+//            $("#btnSaveExecutor").button().click(function(){ 
+//                $("#IsRecipientGroups").val(false);
+//                AjaxRequest();
+//            });
         });
+
+    function AjaxRequest(){
+        var actionUrl="@Url.Action("HelpBillingExecutorTasks", "Help")";
+        var dataToSend = $("#EditBillingRequestForm").serialize();
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            success: function(result){
+                //список сотрудников
+                var ResultStr = "<tbody id='tblEBody'>";
+                for (var i = 0; i < result.RecipientList.length; i++)
+                {
+                    ResultStr += "<tr>"+
+                                    "<td class='centered'>" +
+                                        "<input id='RecipientList_" + i + "__Id' type='hidden' value='" + result.RecipientList[i].Id + "' name='RecipientList[" + i + "].Id' data-val='true'></input>" +
+                                        "<input id='RecipientList_" + i + "__UserId' type='hidden' value='" + result.RecipientList[i].UserId + "' name='RecipientList[" + i + "].UserId' data-val='true'></input>" +
+                                        "<input id='RecipientList_" + i + "__RoleId' type='hidden' value='" + result.RecipientList[i].RoleId + "' name='RecipientList[" + i + "].RoleId' data-val='true'></input>" +
+                                        "<input id='RecipientList_" + i + "__Name' type='hidden' value='" + result.RecipientList[i].Name + "' name='RecipientList[" + i + "].Name'></input>" +
+                                        "<input id='RecipientList_" + i + "__Description' type='hidden' value='" + result.RecipientList[i].Description + "' name='RecipientList[" + i + "].Description'></input>" +
+                                        "<input Id='RecipientList_" + i + "__IsRecipient' Name='RecipientList[" + i + "].IsRecipient' type='checkbox' " + (result.RecipientList[i].IsRecipient == true ? "checked='checked'" : "") + 
+                                        " value='" + result.RecipientList[i].IsRecipient + "' onchange='CheckedChange(" + i + ")' data-val='true'></input>" +
+                                        //"</td>" +
+                                        "<input Id='RecipientList_" + i + "_IsRecipient' name='RecipientList[" + i + "].IsRecipient' value='" + result.RecipientList[i].IsRecipient + "' type='hidden'></input></td>" +
+                                    "<td>" + result.RecipientList[i].Name + "</td>" +
+                                    "<td>" + result.RecipientList[i].Description + "</td>" +
+                                    "</tr>";
+
+                }
+
+                ResultStr += "</tbody>";
+                    //console.log(ResultStr);
+                $("#tblEBody").remove();
+                $("#tblExecutors").append(ResultStr);
+
+
+//                //список групп
+//                ResultStr = "<tbody id='tblEGBody'>";
+//                for (var i = 0; i < result.RecipientGroups.length; i++)
+//                {
+//                    ResultStr += "<tr>"+
+//                                    "<td class='centered'>" +
+//                                        "<input id='RecipientList_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientList[" + i + "].RoleId' data-val='true'></input>" +
+//                                        "<input id='RecipientList_" + i + "__Description' type='hidden' value='" + result.RecipientGroups[i].Description + "' name='RecipientList[" + i + "].Description'></input>" +
+//                                        "<input id='RecipientList_" + i + "__IsRecipientOld' type='hidden' value='" + result.RecipientGroups[i].IsRecipientOld + "' name='RecipientList[" + i + "].IsRecipientOld'></input>" +
+//                                        "<input Id='RecipientList_" + i + "__IsRecipient' Name='RecipientList[" + i + "].IsRecipient' type='checkbox' " + (result.RecipientGroups[i].IsRecipient == true ? "checked='checked'" : "") + 
+//                                        " value='" + result.RecipientGroups[i].IsRecipient + "' onchange='CheckedChange(" + i + ")' data-val='true'></input>" +
+//                                        //"</td>" +
+//                                        "<input Id='RecipientList_" + i + "_IsRecipient' name='RecipientList[" + i + "].IsRecipient' value='" + result.RecipientGroups[i].IsRecipient + "' type='hidden'></input></td>" +
+//                                    "<td>" + result.RecipientGroups[i].Description + "</td>" +
+//                                    "</tr>";
+
+//                }
+
+//                ResultStr += "</tbody>";
+//                    //console.log(ResultStr);
+//                $("#tblEGBody").remove();
+//                $("#tblExecutorGroups").append(ResultStr);
+            },
+            error: function(){
+                alert("При загрузке данных произошла ошибка.");
+            }
+        });
+    }
+
     function ValidateForm()
     {
         var result = true;
@@ -156,21 +353,53 @@
             result = false;
         return result;
     }
-    function ValidateAndSendForm()
+    function ValidateAndSendForm(OperationId)
     {
         if(!ValidateForm())
             return false;
-        $("#Operation").val(1);
+        $("#Operation").val(OperationId);
         return true;
     }
     function ValidateAnswer()
     {
-      var result = true;
-      if(!IsFieldNotEmpty($("#Answer")))
+        var result = true;
+        if(!IsFieldNotEmpty($("#Answer")))
             result = false;
-       else if(!validateMaxLength($("#Answer"),8192))
+        else if(!validateMaxLength($("#Answer"),8192))
             result = false;
-       $("#Operation").val(2);
-       return result;
+        $("#Operation").val(2);
+        return result;
     }
-    </script> 
+
+    function CheckedChange(i){
+        var controlname = "#RecipientList_" + i + "__IsRecipient";
+        var controlname2 = "#RecipientList_" + i + "_IsRecipient";
+
+        if($(controlname2).val() == 'true'){
+            $(controlname2).val(false);
+            $(controlname).val(false);
+        }
+        else{
+            $(controlname2).val(true);
+            $(controlname).val(true);
+        }
+    }
+
+    function GroupCheckedChange(i){
+        var controlname = "#RecipientGroups_" + i + "__IsRecipient";
+        var controlname2 = "#RecipientGroups_" + i + "_IsRecipient";
+
+        var IsChecked = document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[1].value;
+        IsChecked = IsChecked == 'true' ? 'false' : 'true';
+        
+        document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[0].value = IsChecked;
+        document.getElementsByName("RecipientGroups[" + i + "].IsRecipient")[1].value = IsChecked;
+
+        //$("#IsRecipientGroups").val(true);
+
+        AjaxRequest();
+        //старое значение обновляем после запроса
+        document.getElementsByName("RecipientGroups[" + i + "].IsRecipientOld")[0].value = IsChecked;
+    }
+
+</script> 
