@@ -334,8 +334,8 @@ INNER JOIN Users as B ON B.Id = A.UserId
 
 GO
 
-
-
+ 
+delete from RequestNextNumber where RequestTypeId = 18
 
 
 insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'В текущем режиме',1)
@@ -343,10 +343,50 @@ insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'Срочно'
 insert into [dbo].[HelpBillingUrgency] (Name, SortOrder) values (N'Очень срочно',3)
 
 -- select * from [dbo].[HelpBillingTitle]
-insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Служба занятости запрос справка',1)
-insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка по месту требования',2)
-insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка с предыдущего места работы сотрудника',3)
-insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справки уволенному',4)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'2-НДФЛ Запрос',1)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Аванс',2)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Беременность ранние сроки_справка',3)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Больничный лист',4)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'ГПД  Акт',5)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'ДМС_Служ.записка',6)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Доход за два года Запрос/Справка',7)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Информация',8)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Исполнительный лист',9)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Командировка приказ',10)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Лицевые счета сотрудников',11)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Мат_помощь Приказ/Выплата',12)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Налоговая проверка',13)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'НДФЛ Возврат/заявление',14)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'НДФЛ Вычет Имущественный/Стандартный',15)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Отмена_Приказ',16)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Отпуск_Очередной/Другой/Приказ',17)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Отчет',18)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Отчетность',19)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Перерасчет/Удержания/СлужебнаяЗаписка',20)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Пособия',21)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Премия_Приказ/Выплата/Отмена',22)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Приказ изменение штатного',23)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Приказ Отпуск по беременности/По уходу',24)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Р/лист прошедшие года запрос',25)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Р/лист текущий год запрос',26)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Распровести документ',27)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Реестр  ',28)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Реестр отмена',29)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Реквизиты Банка',30)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'РПВ выложена/отмена',31)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'СВОД выложен/отмена',32)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Служба Занятости Запрос/Справка',33)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Сокращение Уведомление_Приказ',34)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Сотовая связь Служебная записка',35)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка по месту требования',36)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справка ПредМестаРаботыСотр',37)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Справки уволенному',38)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Табель за месяц на ОП',39)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Тех.поддержка',40)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Увольнение_Приказ/Расчет/Табель',41)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Удержания',42)
+insert into [dbo].[HelpBillingTitle] (Name, SortOrder) values (N'Фитнес_Служ.Записка',43)
+
 
 
 
