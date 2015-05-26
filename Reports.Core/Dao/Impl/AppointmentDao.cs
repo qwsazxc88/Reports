@@ -33,6 +33,7 @@ namespace Reports.Core.Dao.Impl
                 u.Name as UserName,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
+                mapDep3.Name as ManDep3Name,
                 -- aPos.Name as CanPosition, 
                 v.PositionName as CanPosition, 
                 dep3.Name as Dep3Name,
@@ -62,9 +63,11 @@ namespace Reports.Core.Dao.Impl
                 ur.Name as StaffName,
                 case
                         when r.StaffDateAccept is null then N'Черновик'
-                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 then N'Кандидату отказано'
-                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат принят'
-                        when r.StaffDateAccept is not null then 'Отправлена руководителю'
+                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 and r.IsEducationExists is null then N'Собеседование не пройдено'
+                        when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
+                        when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'
+                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат выгружен в приём'
+                        when r.StaffDateAccept is not null and r.IsColloquyPassed is null then 'Отправлена руководителю'
                          else N''
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
@@ -73,7 +76,12 @@ namespace Reports.Core.Dao.Impl
                     when EC.Status is null then -1
                     else                    
                     EC.Status 
-                end as EmploymentStatus   
+                end as EmploymentStatus ,
+                case
+                    when OnsTr.[IsComplete]=0 then N'Обучение не пройдено'
+                    when OnsTr.[IsComplete]=1 then N'Обучение пройдено'
+                    else N''
+                end  as EducationStatus
                 from dbo.Appointment v
                 inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
@@ -89,7 +97,9 @@ namespace Reports.Core.Dao.Impl
                     case when u.RoleId & 512 > 0 then N'H' else N'R' end  
                     = u.Login and uEmp.RoleId = 2 
                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                left join dbo.Department mapDep3 on mapDep7.Path like  mapDep3.Path+N'%' and mapDep3.ItemLevel = 3
                 Left join EmploymentCandidate EC ON r.id=EC.AppointmentReportId
+                left join OnsiteTraining OnsTr On OnsTr.id=EC.OnsiteTrainingId
                 ";
         #endregion
         //{1}";
@@ -205,7 +215,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAcceptCount", NHibernateUtil.Int32).
                 AddScalar("SecondNumber",NHibernateUtil.Int32).
                 AddScalar("CreateDate",NHibernateUtil.DateTime).
-                AddScalar("EmploymentStatus",NHibernateUtil.Int32);
+                AddScalar("EmploymentStatus",NHibernateUtil.Int32).
+                AddScalar("ManDep3Name", NHibernateUtil.String).
+                AddScalar("EducationStatus",NHibernateUtil.String);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -513,7 +525,15 @@ namespace Reports.Core.Dao.Impl
                     case 4://4, "Отправлено руководителю"
                         statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
                         break;
-                    
+                    case 5://5, "Собеседование пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
+                        break;
+                    case 6://6, "Обучение пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=1 ";
+                        break;
+                    case 7://7, "Обучение не пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=0 ";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
