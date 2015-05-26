@@ -66,6 +66,13 @@ namespace WebMvc.Controllers
             AppointmentBl.SetAppointmentListModel(model, hasError);
             return View(model);
         }
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager)]
+        public ActionResult CreateReportForOldAppointment(int id)
+        {
+            int rid= AppointmentBl.CreateReportForOldAppointment(id);
+            return RedirectToAction("AppointmentReportEdit", new { id = rid });
+        }
         [HttpPost]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank | UserRole.PersonnelManager)]
         public ActionResult AppointmentReportList(AppointmentListModel model)
