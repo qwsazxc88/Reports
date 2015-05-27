@@ -46,7 +46,7 @@
                         </tr>
                          <tr>
                              <td>
-                                @Html.LabelFor(m => m.StatusId):
+                                Статус отчёта:
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
@@ -54,7 +54,7 @@
                         </tr>
                         <tr>
                              <td>
-                                @Html.LabelFor(m => m.Number):
+                                Номер заявки/ отчёта
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.Number)
@@ -146,17 +146,20 @@
                     <th>
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
+                    <th>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Подразделение<br/> 3 ур. руководителя</a></div>
+                    </th>
                      <th>
-                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
                     <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
                     </th>
                    @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
@@ -198,6 +201,9 @@
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
                     </th>
                     <th>
+                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения</a></div>
+                    </th>
+                    <th>
                         <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
                     </th>
                 </tr>
@@ -228,6 +234,7 @@
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
+                            <td>@doc.ManDep3Name</td>
                             <td>@doc.ManDep7Name</td>
                             <td>@doc.CanPosition</td>
                             <td>@doc.Dep3Name</td>
@@ -245,6 +252,7 @@
                             <td>@doc.RReject</td>
                             <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
+                            <td>@doc.EducationStatus</td>
                             <td>@{if (doc.EmploymentStatus != null)
                                   {
                                       var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());

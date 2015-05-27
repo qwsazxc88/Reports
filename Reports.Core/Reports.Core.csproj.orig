@@ -1,0 +1,1220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{918064DA-FDBE-4DF2-8BA2-73F1C72F4DE5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Reports.Core</RootNamespace>
+    <AssemblyName>Reports.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>http://localhost/Reports.Core/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.MicroKernel, Version=1.0.0.2, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.MicroKernel.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=1.0.0.2, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=1.2.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
+    <Compile Include="Dao\IAnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IDeductionImportDao.cs" />
+    <Compile Include="Dao\IExtraChargesDao.cs" />
+    <Compile Include="Dao\IHelpBillingExecutorTaskDao.cs" />
+    <Compile Include="Dao\IHelpPersonnelBillingCommentDao.cs" />
+    <Compile Include="Dao\IHelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\IGpdChargingTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IMessagesDao.cs" />
+    <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHigherEducationDiplomaDao.cs" />
+    <Compile Include="Dao\IGpdActDao.cs" />
+    <Compile Include="Dao\IGpdDetailSetDao.cs" />
+    <Compile Include="Dao\IHelpFaqDao.cs" />
+    <Compile Include="Dao\IHelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\IHelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\IHelpQuestionTypeDao.cs" />
+    <Compile Include="Dao\IHelpServicePeriodDao.cs" />
+    <Compile Include="Dao\IHelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\IHelpServiceRequestCommentDao.cs" />
+    <Compile Include="Dao\IHelpServiceRequestDao.cs" />
+    <Compile Include="Dao\IHelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\IHelpServiceTypeDao.cs" />
+    <Compile Include="Dao\IHelpVersionDao.cs" />
+    <Compile Include="Dao\IAccessGroupDao.cs" />
+    <Compile Include="Dao\IAccountDao.cs" />
+    <Compile Include="Dao\IAppointmentCommentDao.cs" />
+    <Compile Include="Dao\IAppointmentEducationTypeDao.cs" />
+    <Compile Include="Dao\IAppointmentReasonDao.cs" />
+    <Compile Include="Dao\IAppointmentReportCommentDao.cs" />
+    <Compile Include="Dao\IAppointmentReportDao.cs" />
+    <Compile Include="Dao\IChiefToUserDao.cs" />
+    <Compile Include="Dao\IChildVacationCommentDao.cs" />
+    <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistCommentDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistDao.cs" />
+    <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IGpdContractDao.cs" />
+    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IGpdRefDetailDao.cs" />
+    <Compile Include="Dao\IMissionHotelsDao.cs" />
+    <Compile Include="Dao\IManualRoleRecordDao.cs" />
+    <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
+    <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
+    <Compile Include="Dao\IMissionReportCommentDao.cs" />
+    <Compile Include="Dao\IMissionReportCostDao.cs" />
+    <Compile Include="Dao\IMissionReportCostTypeDao.cs" />
+    <Compile Include="Dao\IDeductionDao.cs" />
+    <Compile Include="Dao\IDeductionKindDao.cs" />
+    <Compile Include="Dao\IDeductionTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentAdditionDao.cs" />
+    <Compile Include="Dao\IEmploymentCommentDao.cs" />
+    <Compile Include="Dao\IEmploymentDao.cs" />
+    <Compile Include="Dao\IEmploymentTypeDao.cs" />
+    <Compile Include="Dao\IAbsenceCommentDao.cs" />
+    <Compile Include="Dao\IAbsenceDao.cs" />
+    <Compile Include="Dao\IAbsenceTypeDao.cs" />
+    <Compile Include="Dao\IAttachmentDao.cs" />
+    <Compile Include="Dao\IDao.cs" />
+    <Compile Include="Dao\IDbVersionDao.cs" />
+    <Compile Include="Dao\IDepartmentDao.cs" />
+    <Compile Include="Dao\IDismissalCommentDao.cs" />
+    <Compile Include="Dao\IDismissalDao.cs" />
+    <Compile Include="Dao\IDocumentCommentDao.cs" />
+    <Compile Include="Dao\IDocumentDao.cs" />
+    <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
+    <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHoursTypeDao.cs" />
+    <Compile Include="Dao\IExportImportActionDao.cs" />
+    <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\IHolidayWorkDao.cs" />
+    <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\IInspectorToUserDao.cs" />
+    <Compile Include="Dao\IMissionAirTicketTypeDao.cs" />
+    <Compile Include="Dao\IMissionCommentDao.cs" />
+    <Compile Include="Dao\IMissionCountryDao.cs" />
+    <Compile Include="Dao\IMissionDailyAllowanceDao.cs" />
+    <Compile Include="Dao\IMissionDao.cs" />
+    <Compile Include="Dao\IMissionGoalDao.cs" />
+    <Compile Include="Dao\IMissionGraidDao.cs" />
+    <Compile Include="Dao\IMissionOrderCommentDao.cs" />
+    <Compile Include="Dao\IMissionOrderDao.cs" />
+    <Compile Include="Dao\IMissionReportDao.cs" />
+    <Compile Include="Dao\IMissionResidenceDao.cs" />
+    <Compile Include="Dao\IMissionTargetDao.cs" />
+    <Compile Include="Dao\IMissionTrainTicketTypeDao.cs" />
+    <Compile Include="Dao\IMissionTypeDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
+    <Compile Include="Dao\Impl\AccessGroupDao.cs" />
+    <Compile Include="Dao\Impl\AccountDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentCommentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReportCommentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReportDao.cs" />
+    <Compile Include="Dao\Impl\AttachmentDao.cs" />
+    <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
+    <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
+    <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistCommentDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
+    <Compile Include="Dao\Impl\ContractorDao.cs" />
+    <Compile Include="Dao\IAppointmentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\DeductionImportDao.cs" />
+    <Compile Include="Dao\Impl\DictionariesDaoImplementations.cs" />
+    <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHigherEducationDiplomaDao.cs" />
+    <Compile Include="Dao\Impl\ExtraChargesDao.cs" />
+    <Compile Include="Dao\Impl\GpdActDao.cs" />
+    <Compile Include="Dao\Impl\GpdChargingTypeDao.cs" />
+    <Compile Include="Dao\Impl\GpdContractDao.cs" />
+    <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
+    <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
+    <Compile Include="Dao\Impl\HelpBillingExecutorTaskDao.cs" />
+    <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
+    <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
+    <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
+    <Compile Include="Dao\Impl\HelpFaqDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionTypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpServicePeriodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceRequestCommentDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceRequestDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpVersionDao.cs" />
+    <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
+    <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportCostDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportCostTypeDao.cs" />
+    <Compile Include="Dao\Impl\MissionAirTicketTypeDao.cs" />
+    <Compile Include="Dao\Impl\MissionCountryDao.cs" />
+    <Compile Include="Dao\Impl\DbVersionDao.cs" />
+    <Compile Include="Dao\Impl\DeductionDao.cs" />
+    <Compile Include="Dao\Impl\DeductionKindDao.cs" />
+    <Compile Include="Dao\Impl\DeductionTypeDao.cs" />
+    <Compile Include="Dao\Impl\DefaultDao.cs" />
+    <Compile Include="Dao\Impl\DepartmentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalCommentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalDao.cs" />
+    <Compile Include="Dao\Impl\DismissalTypeDao.cs" />
+    <Compile Include="Dao\Impl\DocumentCommentDao.cs" />
+    <Compile Include="Dao\Impl\DocumentDao.cs" />
+    <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentAdditionDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHoursTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentTypeDao.cs" />
+    <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
+    <Compile Include="Dao\IInformationDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\Impl\IDismissalTypeDao.cs" />
+    <Compile Include="Dao\Impl\IEmploymentCommentDao.cs" />
+    <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\InspectorToUserDao.cs" />
+    <Compile Include="Dao\Impl\MissionCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionDailyAllowanceDao.cs" />
+    <Compile Include="Dao\Impl\MissionDao.cs" />
+    <Compile Include="Dao\Impl\MissionGoalDao.cs" />
+    <Compile Include="Dao\Impl\MissionGraidDao.cs" />
+    <Compile Include="Dao\Impl\MissionOrderCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionOrderDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportDao.cs" />
+    <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
+    <Compile Include="Dao\Impl\MissionTargetDao.cs" />
+    <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
+    <Compile Include="Dao\Impl\MissionTypeDao.cs" />
+    <Compile Include="Dao\Impl\NewsDao.cs" />
+    <Compile Include="Dao\Impl\NoteTypeDao.cs" />
+    <Compile Include="Dao\Impl\PositionDao.cs" />
+    <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
+    <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
+    <Compile Include="Dao\Impl\RequestPrintFormDao.cs" />
+    <Compile Include="Dao\Impl\RequestStatusDao.cs" />
+    <Compile Include="Dao\Impl\RoleDao.cs" />
+    <Compile Include="Dao\Impl\SettingsDao.cs" />
+    <Compile Include="Dao\Impl\SicklistBabyMindingTypeDao.cs" />
+    <Compile Include="Dao\Impl\SicklistCommentDao.cs" />
+    <Compile Include="Dao\Impl\SicklistDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
+    <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeDao.cs" />
+    <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
+    <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
+    <Compile Include="Dao\Impl\TerraPointDao.cs" />
+    <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionCommentDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionTypeDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
+    <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\UserToDepartmentDao.cs" />
+    <Compile Include="Dao\Impl\VacationCommentDao.cs" />
+    <Compile Include="Dao\Impl\VacationDao.cs" />
+    <Compile Include="Dao\Impl\VacationTypeDao.cs" />
+    <Compile Include="Dao\Impl\WorkingCalendarDao.cs" />
+    <Compile Include="Dao\Impl\WorkingGraphicDao.cs" />
+    <Compile Include="Dao\Impl\WorkingDaysConstantDao.cs" />
+    <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCandidateDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCommonDao.cs" />
+    <Compile Include="Dao\Impl\CountryDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentGeneralInfoDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentPassportDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentEducationDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentFamilyDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentMilitaryServiceDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentExperienceDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentContactsDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentBackgroundCheckDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentOnsiteTrainingDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentManagersDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
+    <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
+    <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
+    <Compile Include="Dao\Impl\ScheduleDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
+    <Compile Include="Dao\INewsDao.cs" />
+    <Compile Include="Dao\INoteTypeDao.cs" />
+    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
+    <Compile Include="Dao\IPositionDao.cs" />
+    <Compile Include="Dao\IReportDao.cs" />
+    <Compile Include="Dao\Impl\UserDao.cs" />
+    <Compile Include="Dao\IRequestAttachmentDao.cs" />
+    <Compile Include="Dao\IRequestNextNumberDao.cs" />
+    <Compile Include="Dao\IRequestPrintFormDao.cs" />
+    <Compile Include="Dao\IRequestTypeDao.cs" />
+    <Compile Include="Dao\IRoleDao.cs" />
+    <Compile Include="Dao\IScheduleDao.cs" />
+    <Compile Include="Dao\ISettingsDao.cs" />
+    <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
+    <Compile Include="Dao\ISicklistCommentDao.cs" />
+    <Compile Include="Dao\ISicklistDao.cs" />
+    <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
+    <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ISurchargeDao.cs" />
+    <Compile Include="Dao\ISurchargeNoteDao.cs" />
+    <Compile Include="Dao\ITerraGraphicDao.cs" />
+    <Compile Include="Dao\ITerraPointDao.cs" />
+    <Compile Include="Dao\ITerraPointToUserDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionCommentDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionTypeDao.cs" />
+    <Compile Include="Dao\ITimesheetDao.cs" />
+    <Compile Include="Dao\ITimesheetDayDao.cs" />
+    <Compile Include="Dao\ITimesheetStatusDao.cs" />
+    <Compile Include="Dao\IUserDao.cs" />
+    <Compile Include="Dao\IUserLoginDao.cs" />
+    <Compile Include="Dao\IUserToDepartmentDao.cs" />
+    <Compile Include="Dao\IVacationCommentDao.cs" />
+    <Compile Include="Dao\IVacationDao.cs" />
+    <Compile Include="Dao\IVacationTypeDao.cs" />
+    <Compile Include="Dao\IWorkingCalendarDao.cs" />
+    <Compile Include="Dao\IWorkingGraphicDao.cs" />
+    <Compile Include="Dao\IWorkingDaysConstantDao.cs" />
+    <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentCandidateDao.cs" />
+    <Compile Include="Dao\IEmploymentCommonDao.cs" />
+    <Compile Include="Dao\ICountryDao.cs" />
+    <Compile Include="Dao\IEmploymentGeneralInfoDao.cs" />
+    <Compile Include="Dao\IEmploymentPassportDao.cs" />
+    <Compile Include="Dao\IEmploymentEducationDao.cs" />
+    <Compile Include="Dao\IEmploymentFamilyDao.cs" />
+    <Compile Include="Dao\IEmploymentMilitaryServiceDao.cs" />
+    <Compile Include="Dao\IEmploymentExperienceDao.cs" />
+    <Compile Include="Dao\IEmploymentContactsDao.cs" />
+    <Compile Include="Dao\IEmploymentBackgroundCheckDao.cs" />
+    <Compile Include="Dao\IEmploymentOnsiteTrainingDao.cs" />
+    <Compile Include="Dao\IEmploymentManagersDao.cs" />
+    <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
+    <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentSignersDao.cs" />
+    <Compile Include="Dao\Impl\MessagesDao.cs" />
+    <Compile Include="Domain\Absence.cs" />
+    <Compile Include="Domain\AbsenceComment.cs" />
+    <Compile Include="Domain\AbsenceType.cs" />
+    <Compile Include="Domain\AbstractEntity.cs" />
+    <Compile Include="Domain\AbstractGeneralDocument.cs" />
+    <Compile Include="Domain\AbstractUsedEntity.cs" />
+    <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
+    <Compile Include="Domain\AcceptRequestDate.cs" />
+    <Compile Include="Domain\Account.cs" />
+    <Compile Include="Domain\AccountingTransaction.cs" />
+    <Compile Include="Domain\Appointment.cs" />
+    <Compile Include="Domain\AppointmentComment.cs" />
+    <Compile Include="Domain\AppointmentCreateManager2ToDepartment2.cs" />
+    <Compile Include="Domain\AppointmentEducationType.cs" />
+    <Compile Include="Domain\AppointmentManager23ToDepartment3.cs" />
+    <Compile Include="Domain\AppointmentManager2ParentToManager2Child.cs" />
+    <Compile Include="Domain\AppointmentManager2ToManager3.cs" />
+    <Compile Include="Domain\AppointmentReason.cs" />
+    <Compile Include="Domain\AppointmentReport.cs" />
+    <Compile Include="Domain\AppointmentReportComment.cs" />
+    <Compile Include="Domain\Attachment.cs" />
+    <Compile Include="Domain\ChiefToUser.cs" />
+    <Compile Include="Domain\ChildVacation.cs" />
+    <Compile Include="Domain\ChildVacationComment.cs" />
+    <Compile Include="Domain\ClearanceChecklistApproval.cs" />
+    <Compile Include="Domain\Contractor.cs" />
+    <Compile Include="Domain\DBVersion.cs" />
+    <Compile Include="Domain\Deduction.cs" />
+    <Compile Include="Domain\DeductionImport.cs" />
+    <Compile Include="Domain\DeductionKind.cs" />
+    <Compile Include="Domain\DeductionType.cs" />
+    <Compile Include="Domain\Department.cs" />
+    <Compile Include="Domain\Dismissal.cs" />
+    <Compile Include="Domain\DismissalComment.cs" />
+    <Compile Include="Domain\DismissalType.cs" />
+    <Compile Include="Domain\Document.cs" />
+    <Compile Include="Domain\DocumentComment.cs" />
+    <Compile Include="Domain\EmployeeDocumentSubType.cs" />
+    <Compile Include="Domain\EmployeeDocumentType.cs" />
+    <Compile Include="Domain\Employment.cs" />
+    <Compile Include="Domain\Employment2\EmploymentCandidateComment.cs" />
+    <Compile Include="Domain\Employment2\EmploymentCandidateDocNeeded.cs" />
+    <Compile Include="Domain\Employment2\ExtraCharges.cs" />
+    <Compile Include="Domain\Employment2\GeneralInfo.cs" />
+    <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
+    <Compile Include="Domain\Employment2\Passport.cs" />
+    <Compile Include="Domain\Employment2\Education.cs" />
+    <Compile Include="Domain\Employment2\Family.cs" />
+    <Compile Include="Domain\Employment2\MilitaryService.cs" />
+    <Compile Include="Domain\Employment2\Experience.cs" />
+    <Compile Include="Domain\Employment2\Contacts.cs" />
+    <Compile Include="Domain\Employment2\BackgroundCheck.cs" />
+    <Compile Include="Domain\Employment2\OnsiteTraining.cs" />
+    <Compile Include="Domain\Employment2\Managers.cs" />
+    <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
+    <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
+    <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
+    <Compile Include="Domain\Employment2\SupplementaryAgreement.cs" />
+    <Compile Include="Domain\Employment2\Signer.cs" />
+    <Compile Include="Domain\EmploymentAddition.cs" />
+    <Compile Include="Domain\EmploymentComment.cs" />
+    <Compile Include="Domain\EmploymentEducationType.cs" />
+    <Compile Include="Domain\EmploymentHoursType.cs" />
+    <Compile Include="Domain\EmploymentType.cs" />
+    <Compile Include="Domain\Employment2\FamilyMember.cs" />
+    <Compile Include="Domain\Employment2\ForeignLanguage.cs" />
+    <Compile Include="Domain\Employment2\NameChange.cs" />
+    <Compile Include="Domain\Employment2\Reference.cs" />
+    <Compile Include="Domain\Employment2\HigherEducationDiploma.cs" />
+    <Compile Include="Domain\Employment2\PostGraduateEducationDiploma.cs" />
+    <Compile Include="Domain\Employment2\Certification.cs" />
+    <Compile Include="Domain\Employment2\Training.cs" />
+    <Compile Include="Domain\Employment2\ExperienceItem.cs" />
+    <Compile Include="Domain\EnumFormatter.cs" />
+    <Compile Include="Domain\Enums.cs" />
+    <Compile Include="Domain\ExportImportAction.cs" />
+    <Compile Include="Domain\ClearanceChecklistRole.cs" />
+    <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
+    <Compile Include="Domain\GpdAct.cs" />
+    <Compile Include="Domain\GpdActComment.cs" />
+    <Compile Include="Domain\GpdChargingType.cs" />
+    <Compile Include="Domain\GpdContract.cs" />
+    <Compile Include="Domain\GpdMagProlongation.cs" />
+    <Compile Include="Domain\GpdRefDetail.cs" />
+    <Compile Include="Domain\HelpBillingExecutorTasks.cs" />
+    <Compile Include="Domain\HelpBillingTitle.cs" />
+    <Compile Include="Domain\HelpBillingUrgency.cs" />
+    <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpPersonnelBillingComments.cs" />
+    <Compile Include="Domain\HelpPersonnelBillingRequest.cs" />
+    <Compile Include="Domain\HelpQuestionHistoryEntity.cs" />
+    <Compile Include="Domain\HelpQuestionRequest.cs" />
+    <Compile Include="Domain\HelpQuestionSubtype.cs" />
+    <Compile Include="Domain\HelpQuestionType.cs" />
+    <Compile Include="Domain\HelpServicePeriod.cs" />
+    <Compile Include="Domain\HelpServiceProductionTime.cs" />
+    <Compile Include="Domain\HelpServiceRequest.cs" />
+    <Compile Include="Domain\HelpServiceRequestComment.cs" />
+    <Compile Include="Domain\HelpServiceTransferMethod.cs" />
+    <Compile Include="Domain\HelpServiceType.cs" />
+    <Compile Include="Domain\HelpVersion.cs" />
+    <Compile Include="Domain\HolidayWork.cs" />
+    <Compile Include="Domain\HolidayWorkComment.cs" />
+    <Compile Include="Domain\HolidayWorkType.cs" />
+    <Compile Include="Domain\IAbstractUsedEntity.cs" />
+    <Compile Include="Domain\IEntity.cs" />
+    <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\InspectorToUser.cs" />
+    <Compile Include="Domain\Messages.cs" />
+    <Compile Include="Domain\Mission.cs" />
+    <Compile Include="Domain\MissionAirTicketType.cs" />
+    <Compile Include="Domain\MissionAirTicketTypeGradeValue.cs" />
+    <Compile Include="Domain\MissionComment.cs" />
+    <Compile Include="Domain\MissionCountry.cs" />
+    <Compile Include="Domain\MissionDailyAllowance.cs" />
+    <Compile Include="Domain\MissionDailyAllowanceGradeValue.cs" />
+    <Compile Include="Domain\MissionGoal.cs" />
+    <Compile Include="Domain\MissionGraid.cs" />
+    <Compile Include="Domain\MissionHotels.cs" />
+    <Compile Include="Domain\MissionOrder.cs" />
+    <Compile Include="Domain\MissionOrderComment.cs" />
+    <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
+    <Compile Include="Domain\MissionPurchaseBookRecord.cs" />
+    <Compile Include="Domain\MissionReport.cs" />
+    <Compile Include="Domain\MissionReportComment.cs" />
+    <Compile Include="Domain\MissionReportCost.cs" />
+    <Compile Include="Domain\MissionReportCostType.cs" />
+    <Compile Include="Domain\MissionResidence.cs" />
+    <Compile Include="Domain\MissionResidenceGradeValue.cs" />
+    <Compile Include="Domain\MissionTarget.cs" />
+    <Compile Include="Domain\MissionTrainTicketType.cs" />
+    <Compile Include="Domain\MissionTrainTicketTypeGradeValue.cs" />
+    <Compile Include="Domain\MissionType.cs" />
+    <Compile Include="Domain\News.cs" />
+    <Compile Include="Domain\NoteType.cs" />
+    <Compile Include="Domain\Organization.cs" />
+    <Compile Include="Domain\Position.cs" />
+    <Compile Include="Domain\RequestAttachment.cs" />
+    <Compile Include="Domain\RequestNextNumber.cs" />
+    <Compile Include="Domain\RequestPrintForm.cs" />
+    <Compile Include="Domain\RequestStatus.cs" />
+    <Compile Include="Domain\Role.cs" />
+    <Compile Include="Domain\Settings.cs" />
+    <Compile Include="Domain\Sicklist.cs" />
+    <Compile Include="Domain\SicklistBabyMindingType.cs" />
+    <Compile Include="Domain\SicklistComment.cs" />
+    <Compile Include="Domain\SicklistPaymentPercent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
+    <Compile Include="Domain\SicklistPaymentType.cs" />
+    <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\Surcharge.cs" />
+    <Compile Include="Domain\SurchargeNote.cs" />
+    <Compile Include="Domain\TerraGraphic.cs" />
+    <Compile Include="Domain\TerraPoint.cs" />
+    <Compile Include="Domain\TerraPointToUser.cs" />
+    <Compile Include="Domain\Timesheet.cs" />
+    <Compile Include="Domain\TimesheetCorrection.cs" />
+    <Compile Include="Domain\TimesheetCorrectionComment.cs" />
+    <Compile Include="Domain\TimesheetCorrectionType.cs" />
+    <Compile Include="Domain\TimesheetDay.cs" />
+    <Compile Include="Domain\TimesheetStatus.cs" />
+    <Compile Include="Domain\User.cs" />
+    <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\Vacation.cs" />
+    <Compile Include="Domain\VacationComment.cs" />
+    <Compile Include="Domain\VacationType.cs" />
+    <Compile Include="Domain\WorkingCalendar.cs" />
+    <Compile Include="Domain\WorkingGraphic.cs" />
+    <Compile Include="Domain\WorkingDaysConstant.cs" />
+    <Compile Include="Domain\WorkingGraphicType.cs" />
+    <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
+    <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
+    <Compile Include="Domain\ManualRole.cs" />
+    <Compile Include="Domain\ManualRoleRecord.cs" />
+    <Compile Include="Domain\Employment2\Country.cs" />
+    <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
+    <Compile Include="Domain\DocumentType.cs" />
+    <Compile Include="Domain\AdditionalVacationType.cs" />
+    <Compile Include="Domain\AccessGroup.cs" />
+    <Compile Include="Domain\ClearanceChecklistComment.cs" />
+    <Compile Include="Domain\Employment2\DisabilityDegree.cs" />
+    <Compile Include="Domain\Schedule.cs" />
+    <Compile Include="Dto\AcceptRequestDateDto.cs" />
+    <Compile Include="Dto\AccessGroupListDto.cs" />
+    <Compile Include="Dto\AnalyticalStatementDetailsDto.cs" />
+    <Compile Include="Dto\AnalyticalStatementDto.cs" />
+    <Compile Include="Dto\AppointmentDto.cs" />
+    <Compile Include="Dto\BeginEndDateDto.cs" />
+    <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
+    <Compile Include="Dto\ClearanceChecklistDto.cs" />
+    <Compile Include="Dto\CostDto.cs" />
+    <Compile Include="Dto\DateTimeDto.cs" />
+    <Compile Include="Dto\DeductionDto.cs" />
+    <Compile Include="Dto\DepartmentChildrenDto.cs" />
+    <Compile Include="Dto\DepartmentDto.cs" />
+    <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
+    <Compile Include="Dto\DocumentDto.cs" />
+    <Compile Include="Dto\EmailDto.cs" />
+    <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateTechDissmissDto.cs" />
+    <Compile Include="Dto\Employment2\ContractPointDto.cs" />
+    <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
+    <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />
+    <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
+    <Compile Include="Dto\Employment2\MilitaryValidityCategoryDto.cs" />
+    <Compile Include="Dto\Employment2\NameChangeDto.cs" />
+    <Compile Include="Dto\Employment2\HigherEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment2\PostGraduateEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment2\CertificationDto.cs" />
+    <Compile Include="Dto\Employment2\TrainingDto.cs" />
+    <Compile Include="Dto\Employment2\FamilyMemberDto.cs" />
+    <Compile Include="Dto\Employment2\ExperienceItemDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateDto.cs" />
+    <Compile Include="Dto\Employment2\ReferenceDto.cs" />
+    <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
+    <Compile Include="Dto\Employment2\SignerDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateChangeContractToIndefiniteDto.cs" />
+    <Compile Include="Dto\GpdActDto.cs" />
+    <Compile Include="Dto\GpdContractDto.cs" />
+    <Compile Include="Dto\GpdRefDetailDto.cs" />
+    <Compile Include="Dto\GradeAmountDto.cs" />
+    <Compile Include="Dto\HelpPersonnelBillingRequestDto.cs" />
+    <Compile Include="Dto\HelpServiceDictionariesStatesModel.cs" />
+    <Compile Include="Dto\HelpServiceQuestionDto.cs" />
+    <Compile Include="Dto\HelpServiceRequestDto.cs" />
+    <Compile Include="Dto\HelpVersionDto.cs" />
+    <Compile Include="Dto\IdNameDto.cs" />
+    <Compile Include="Dto\ImportDto.cs" />
+    <Compile Include="Dto\ItemUsedDto.cs" />
+    <Compile Include="Dto\DateDto.cs" />
+    <Compile Include="Dto\MessagesDto.cs" />
+    <Compile Include="Dto\MinMaxDate.cs" />
+    <Compile Include="Dto\MissionHotelsDto.cs" />
+    <Compile Include="Dto\MissionOrderDto.cs" />
+    <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
+    <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
+    <Compile Include="Dto\MissionUserDeptsListDto.cs" />
+    <Compile Include="Dto\NameDto.cs" />
+    <Compile Include="Dto\NewsDto.cs" />
+    <Compile Include="Dto\NoteTypeDto.cs" />
+    <Compile Include="Dto\PrintVacationOrderDto.cs" />
+    <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\SurchargeDto.cs" />
+    <Compile Include="Dto\SurchargeNoteDto.cs" />
+    <Compile Include="Dto\TerraGraphicDto.cs" />
+    <Compile Include="Dto\TimesheetDaysDto.cs" />
+    <Compile Include="Dto\TimesheetDto.cs" />
+    <Compile Include="Dto\UploadFileDto.cs" />
+    <Compile Include="Dto\UserDto.cs" />
+    <Compile Include="Dto\UserLoginItemDto.cs" />
+    <Compile Include="Dto\UserRolesDto.cs" />
+    <Compile Include="Dto\UsersListItemDto.cs" />
+    <Compile Include="Dto\VacationDto.cs" />
+    <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
+    <Compile Include="Dto\SicklistDto.cs" />
+    <Compile Include="Enum\ExportImportType.cs" />
+    <Compile Include="Enum\FamilyRelationship.cs" />
+    <Compile Include="Enum\RequestStatusEnum.cs" />
+    <Compile Include="Enum\EmploymentStatus.cs" />
+    <Compile Include="Exceptions\ModifyDocumentException.cs" />
+    <Compile Include="Filters\BaseListFilter.cs" />
+    <Compile Include="Filters\CalcListFilter.cs" />
+    <Compile Include="Filters\QuestionFilter.cs" />
+    <Compile Include="Filters\UserListFilter.cs" />
+    <Compile Include="Filters\UserLoginFilter.cs" />
+    <Compile Include="Ioc.cs" />
+    <Compile Include="NHibernateHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Roles.cs" />
+    <Compile Include="Services\IConfigurationService.cs" />
+    <Compile Include="Services\IHttpContextService.cs" />
+    <Compile Include="Services\Impl\StartupService.cs" />
+    <Compile Include="Services\ISessionManager.cs" />
+    <Compile Include="Services\IStartupService.cs" />
+    <Compile Include="StringHelper.cs" />
+    <Compile Include="Utils\IncorrectDatabaseVersionException.cs" />
+    <Compile Include="Utils\PasswordManager.cs" />
+    <Compile Include="Utils\Utils.cs" />
+    <Compile Include="Validate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\User.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DbVersion.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Document.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\UserLogin.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Role.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmployeeDocumentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Attachment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmployeeDocumentSubType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetDay.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Timesheet.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Settings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ExportImportAction.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Information.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DocumentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Organization.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Department.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Position.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Vacation.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestNextNumber.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AbsenceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Absence.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Sicklist.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentRestrictType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestAttachment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWorkType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWork.hbm.xml" />
+    <EmbeddedResource Include="Domain\HolidayWorkComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Mission.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentHoursType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentAddition.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DismissalType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Dismissal.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\DismissalComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphic.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetCorrection.hbm.xml" />
+    <EmbeddedResource Include="Domain\TimesheetCorrectionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\EmploymentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestPrintForm.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistBabyMindingType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\InspectorToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AcceptRequestDate.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ChiefToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetCorrectionType.hbm.xml" />
+    <EmbeddedResource Include="Domain\WorkingDaysConstant.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphicType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphicTypeToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingCalendar.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ChildVacation.hbm.xml" />
+    <EmbeddedResource Include="Domain\ChildVacationComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DeductionKind.hbm.xml" />
+    <EmbeddedResource Include="Domain\DeductionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Deduction.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraPoint.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraGraphic.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraPointToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionDailyAllowance.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionGoal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionResidence.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionAirTicketType.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionTrainTicketType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionGraid.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionCountry.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionTarget.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionDailyAllowanceGradeValue.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionResidenceGradeValue.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionAirTicketTypeGradeValue.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionTrainTicketTypeGradeValue.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionOrder.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionOrderComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReport.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\MissionReportComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReportCost.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AccountingTransaction.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReportCostType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Account.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionPurchaseBookDocument.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Contractor.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionPurchaseBookRecord.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistApproval.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistRole.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistRoleRecord.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ManualRoleRecord.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ManualRole.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Appointment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReason.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentManager23ToDepartment3.hbm.xml" />
+    <EmbeddedResource Include="Domain\AppointmentManager2ToManager3.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentManager2ParentToManager2Child.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentCreateManager2ToDepartment2.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReport.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentEducationType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Country.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\InsuredPersonType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DocumentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Training.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidate.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Passport.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Education.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Family.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\MilitaryService.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\OnsiteTraining.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PersonnelManagers.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Certification.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\ExperienceItem.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\FamilyMember.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\ForeignLanguage.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\HigherEducationDiploma.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\NameChange.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PostGraduateEducationDiploma.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AdditionalVacationType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReportComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AccessGroup.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\DisabilityDegree.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PersonalAccountContractor.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionHotels.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdRefDetail.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdContract.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceProductionTime.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceTransferMethod.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServicePeriod.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\HelpServiceRequestComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionSubtype.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionRequest.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\SupplementaryAgreement.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Signer.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdMagProlongation.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdAct.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdActComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdDetailSet.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\NoteType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentEducationType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateComment.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml" />
+    <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
+    <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
+    <EmbeddedResource Include="Domain\News.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\ExtraCharges.hbm.xml" />
+<<<<<<< HEAD
+    <EmbeddedResource Include="Domain\HelpPersonnelBillingComments.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
+=======
+    <EmbeddedResource Include="Domain\Messages.hbm.xml" />
+>>>>>>> artem_dev
+    <Content Include="Domain\SicklistPaymentType.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpBillingUrgency.hbm.xml" />
+    <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
