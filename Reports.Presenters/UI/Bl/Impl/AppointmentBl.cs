@@ -270,6 +270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.CandidateName,
                 model.SortBy,
                 model.SortDescending);
         }
