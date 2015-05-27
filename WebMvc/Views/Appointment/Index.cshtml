@@ -8,6 +8,7 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.ForPrint)
      <table style="width:100%">
       <tr>
         <td colspan="2">
@@ -89,6 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
                           </td>
                         </tr>
             </table>
@@ -101,7 +103,7 @@
         {
           <div class="action-wrap">
             <table style="width:100%">
-                    <tr>
+                    <tr>                    
                             @if (Model.IsAddAvailable)
                             { 
                                 <td>
@@ -199,7 +201,7 @@
                         <tr>
                             <td>@doc.Number</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
+                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter==2?"(У)":"")</a>
                             </td>
                             <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>

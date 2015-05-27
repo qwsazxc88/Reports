@@ -32,11 +32,14 @@ namespace Reports.Presenters.UI.ViewModel
 
         public IList<AppointmentDto> Documents { get; set; }
 
+        [Display(Name = "ФИО кандидата")]
+        public string CandidateName { get; set; }
+
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
 
         public bool HasErrors { get; set; }
-
+        public int ForPrint { get; set; }
         public bool IsAddForStaffAvailable { get; set; }
 
         #region BeginEndCreateDate Members

@@ -8,6 +8,7 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.ForPrint);
      <table style="width:100%">
       <tr>
         <td colspan="2">
@@ -80,7 +81,8 @@
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
-                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>                            
+                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
                           </td>
                         </tr>
             </table>
@@ -225,7 +227,7 @@
                         >
                             
                             <td>@doc.Number</td>
-                            <td>@doc.AppNumber</td>
+                            <td><a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter == 2 ? "(У)" : "")</a></td>
                             <td style="text-align:left">
                                 
                                     <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.SecondNumber)</a>
