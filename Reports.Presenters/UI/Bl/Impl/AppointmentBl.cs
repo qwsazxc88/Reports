@@ -228,10 +228,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
            List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
+                                                           new IdNameDto(5,"Собеседование пройдено"),
+                                                           new IdNameDto(6,"Обучение пройдено"),
+                                                           new IdNameDto(7,"Обучение не пройдено"),
                                                            new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(4, "Отправлена руководителю"),
-                                                           new IdNameDto(3, "Кандидат принят"),
-                                                           new IdNameDto(2, "Кандидату отказано")
+                                                           new IdNameDto(3, "Кандидат выгружен в приём"),
+                                                           new IdNameDto(2, "Собеседование не пройдено")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -559,9 +562,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
             var chiefs = GetChiefsForManager(creator.Id);
-            var manualchiefs = ManualRoleRecordDao.GetManualRoleHoldersForUser(creator.Id, UserManualRole.ApprovesCommonRequests);
-            
-            if (chiefs.Contains(current) || manualchiefs.Contains(current)) return true;
+            //foreach(var el in manualchiefs)
+
+            if (chiefs.Contains(current) ) return true;
 
             if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
@@ -830,6 +833,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ChiefDateAccept = null;
             entity.ManagerDateAccept = null;
             entity.StaffDateAccept = null;                            
+        }
+        /// <summary>
+        /// Заплатка для старых заявок, для которых не создались отчёты
+        /// </summary>
+        /// <param name="id"></param>
+        public int CreateReportForOldAppointment(int id)
+        {
+            var entity = AppointmentDao.Load(id);
+            if (entity.Recruter == 2)
+            {
+                entity.AcceptStaff = entity.Creator;
+            }
+
+            return CreateAppointmentReport(entity);
         }
         protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, 
             User user,out string error)
@@ -1512,6 +1529,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
             SetFlagsState(model, false);
+            model.AppId = entity.Appointment.Id;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
@@ -1568,7 +1586,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     model.IsDeleteScanAvailable = true;
                                     model.IsManagerApproveAvailable = true;
                                     model.IsColloquyDateEditable = true;
-                                    model.IsManagerEditable = true;
+                                    model.IsManagerEditable = false;
                                 }
                             }
                             else if (!entity.ManagerDateAccept.HasValue)
@@ -1576,12 +1594,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerRejectAvailable = true;
                                 model.IsManagerApproveAvailable = true;
                                 model.IsColloquyDateEditable = true;
-                                model.IsManagerEditable = true;
+                                model.IsManagerEditable = false;
                             }
                             else if (entity.AcceptManager.Id == current.Id)
                             {
                                 model.IsManagerRejectAvailable = true;
-                                model.IsManagerEditable = true;
+                                model.IsManagerEditable = false;
                             }
                             /*if (!entity.StaffDateAccept.HasValue)
                             {

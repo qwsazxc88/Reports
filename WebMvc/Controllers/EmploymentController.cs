@@ -1118,21 +1118,27 @@ namespace WebMvc.Controllers
         public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef)
         {
             string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            BackgroundCheckModel model = null;
 
             EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = error;
-                BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
-                return PartialView("BackgroundCheckReadOnly", model);
+                //ViewBag.Error = error;
+                model = EmploymentBl.GetBackgroundCheckModel(userId);
+                //return PartialView("BackgroundCheckReadOnly", model);
+               
             }
             else
             {
-                BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel(userId);
-                return PartialView("BackgroundCheckReadOnly", model);
-                //return RedirectToAction("Roster");
+                model = EmploymentBl.GetBackgroundCheckModel(userId);
             }
+
+            ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Кандидат утвержден!" : error);
+
+            return PartialView("BackgroundCheckReadOnly", model);
+
         }
 
         [HttpPost]

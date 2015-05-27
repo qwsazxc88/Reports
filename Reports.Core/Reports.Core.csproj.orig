@@ -1196,9 +1196,12 @@
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
     <EmbeddedResource Include="Domain\News.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\ExtraCharges.hbm.xml" />
+<<<<<<< HEAD
     <EmbeddedResource Include="Domain\HelpPersonnelBillingComments.hbm.xml" />
-    <EmbeddedResource Include="Domain\Messages.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
+=======
+    <EmbeddedResource Include="Domain\Messages.hbm.xml" />
+>>>>>>> artem_dev
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>
