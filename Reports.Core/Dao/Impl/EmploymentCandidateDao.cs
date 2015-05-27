@@ -70,6 +70,7 @@ namespace Reports.Core.Dao.Impl
 					when candidate.Status = 7 then N'Оформлен'
 					when candidate.Status = 8 then N'Выгружено в 1С'
 					when candidate.Status = 9 then N'Отклонен'
+                    when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then N'Временно заблокирован'
 					else N'Анкета в стадии заполнения'
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
@@ -110,6 +111,7 @@ namespace Reports.Core.Dao.Impl
                 ,candidate.AppointmentId
                 ,L.Number as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
+                ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
@@ -135,6 +137,15 @@ namespace Reports.Core.Dao.Impl
 										GROUP BY B.CandidateId) as B ON B.CandidateId = A.CandidateId) as K ON K.CandidateId = candidate.Id
                 LEFT JOIN Appointment as L ON L.Id = candidate.AppointmentId
                 LEFT JOIN AppointmentReport as M ON M.Id = candidate.AppointmentReportId
+                LEFT JOIN (SELECT B.AppointmentId, C.BankAccountantAcceptCount, count(B.AppointmentId) as CandidateCount,
+								sum(case when A.Status = 8 then 1 else 0 end) as CandidateComplete,
+								sum(case when A.Status = 9 then 1 else 0 end) as CandidateReject,
+								sum(case when A.Status in (5, 6, 7, 8) then 1 else 0 end) as CandidateAgree,	--выгруженные и согласованные
+								cast(case when sum(case when A.Status in (5, 6, 7, 8) then 1 else 0 end) = C.BankAccountantAcceptCount then 1 else 0 end as bit) as IsBlocked
+				            FROM EmploymentCandidate as A
+				            INNER JOIN AppointmentReport as B ON B.Id = A.AppointmentReportId
+				            INNER JOIN Appointment as C ON C.Id = B.AppointmentId
+				            GROUP BY B.AppointmentId, C.BankAccountantAcceptCount) as N ON N.AppointmentId = candidate.AppointmentId
             ";
 
         #endregion
@@ -277,9 +288,9 @@ namespace Reports.Core.Dao.Impl
 
         public override string GetStatusWhere(string whereString, int statusId)
         {
-            if (statusId != -1)
+            if (statusId != -2)
             {
-                whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
+                whereString = string.Format(@"{0} case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then -1 else candidate.Status end = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
             }
             //whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
 
@@ -498,6 +509,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AppointmentId",NHibernateUtil.Int32)
                 .AddScalar("AppointmentNumber", NHibernateUtil.Int32)
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
+                .AddScalar("IsBlocked", NHibernateUtil.Boolean)
                 ;
 
             return query;
