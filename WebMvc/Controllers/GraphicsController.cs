@@ -266,7 +266,7 @@ namespace WebMvc.Controllers
 
         #region Print
         [HttpGet]
-        public ActionResult GetPrintForm(string controller, string actionName, string param, bool isLandscape)
+        public ActionResult GetPrintForm(string controll, string actionName, string param, bool isLandscape)
         {
             string filePath = null;
             try
@@ -287,11 +287,11 @@ namespace WebMvc.Controllers
                     throw new ArgumentException("Ошибка авторизации.");
                 if (isLandscape)
                     argumrnts.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
-                    GetConverterCommandParam(param, actionName,controller)
+                    GetConverterCommandParam(param, actionName,controll)
                     , cookieName, authCookie.Value);
                 else
                     argumrnts.AppendFormat("{0} --cookie {1} {2}",
-                    GetConverterCommandParam(param, actionName,controller)
+                    GetConverterCommandParam(param, actionName,controll)
                     , cookieName, authCookie.Value);
                 argumrnts.AppendFormat(" \"{0}\"", filePath);
                 var serverSideProcess = new Process
@@ -307,7 +307,7 @@ namespace WebMvc.Controllers
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
-                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", controller+".pdf");
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", controll+".pdf");
             }
             catch (Exception ex)
             {
@@ -363,7 +363,7 @@ namespace WebMvc.Controllers
             string urlTemplate = string.Format("{0}/{1}", controller, actionName);
             string args = @"?" + param;
             return !string.IsNullOrEmpty(localhostUrl)
-                       ? string.Format(@"{0}/{1}{2}", localhostUrl, urlTemplate, args)
+                       ? string.Format("\"{0}/{1}{2}\"", localhostUrl, urlTemplate, args)
                        : Url.Content(string.Format(@"{0}{1}", urlTemplate, args));
         }
         #endregion

@@ -17,10 +17,10 @@ namespace WebMvc.Helpers
             {
                 object propValue = prop.GetValue(obj, null);
                 if (param.Length > 0) param.Append("&");
-                param.Append(prop.Name + "=" + su.HtmlEncode(propValue!=null? propValue.ToString():""));
+                param.Append(prop.Name + "=" + su.HtmlEncode(propValue != null ? (propValue is DateTime) ? ((DateTime)propValue).ToString("MM.dd.yyyy") : propValue.ToString() : ""));
                 // Do something with propValue
             }
-            return param.ToString();
+            return (param.ToString());
         }
     }
 }
