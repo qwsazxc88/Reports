@@ -14,6 +14,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Linq;
+using WebMvc.Helpers;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
@@ -62,9 +63,40 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank | UserRole.PersonnelManager)]
         public ActionResult Index(AppointmentListModel model)
         {
+            if(model.ForPrint>0)
+                return RedirectToAction("GetPrintForm", "Graphics", new { param = model.ToParamsString(), controller = "Appointment", actionName = "Print", isLandscape = false });
             bool hasError = !ValidateModel(model);
             AppointmentBl.SetAppointmentListModel(model, hasError);
-            return View(model);
+            return View("Index",model);
+        }
+        public ActionResult Print(
+                int DepartmentId,
+                int StatusId,
+                string Number,
+                DateTime? BeginDate,
+                DateTime? EndDate,
+                string UserName,
+                string CandidateName,
+                int ForPrint,
+                int SortBy,
+                bool? SortDescending)
+        {
+            AppointmentListModel model = new AppointmentListModel
+            {
+                BeginDate = BeginDate,
+                CandidateName = CandidateName,
+                DepartmentId = DepartmentId,
+                EndDate = EndDate,
+                Number = Number,
+                StatusId = StatusId,
+                UserName = UserName,
+                SortBy = SortBy,
+                SortDescending = SortDescending
+            };
+            if(ForPrint==1)
+                return Index(model);
+            else 
+                return AppointmentReportList(model);
         }
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager)]

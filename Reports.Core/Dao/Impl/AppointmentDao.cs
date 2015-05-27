@@ -42,6 +42,7 @@ namespace Reports.Core.Dao.Impl
                 v.Schedule as Schedule,
                 v.Salary+v.Bonus as Salary,
                 v.DesirableBeginDate as DesirableBeginDate,
+                v.Recruter,
                 ar.Name as Reason,
                 r.[Id] as RId,
                 r.[Number] as RNumber,
@@ -217,6 +218,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate",NHibernateUtil.DateTime).
                 AddScalar("EmploymentStatus",NHibernateUtil.Int32).
                 AddScalar("ManDep3Name", NHibernateUtil.String).
+                AddScalar("Recruter", NHibernateUtil.Int32).
                 AddScalar("EducationStatus",NHibernateUtil.String);
         }
         public AppointmentDao(ISessionManager sessionManager)
@@ -379,6 +381,7 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                string CandidateFio,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -393,6 +396,12 @@ namespace Reports.Core.Dao.Impl
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+            }
+            if (!String.IsNullOrWhiteSpace(CandidateFio))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" r.name like '{0}%' ", CandidateFio.Trim());
             }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
