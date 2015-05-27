@@ -70,6 +70,14 @@
                                 </td>
                          </tr>
                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.CandidateName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.CandidateName)
+                                </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -82,7 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>                            
-                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
+                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(2);"/>
                           </td>
                         </tr>
             </table>
