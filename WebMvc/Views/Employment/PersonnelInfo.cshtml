@@ -202,8 +202,11 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
-            //$("#Variant111").hide();
+            if ($("#ContractPoint_1_Id").val() == 3)
+                $("#Variant111").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
+            if ($("#ContractPoint_1_Id").val() != 3)
+                $("#Variant111").show();
         }
         else if (TypeId == 2){
         }
@@ -818,7 +821,7 @@
                 if (ui.panel.id == "tabs7") {
                     $("#tabs7").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs7", "ContactsReadOnly", "/Employment/ContactsReadOnly?Id=@Model.CandidateID", "GET");
-                    $("#tabs8").ajaxStop(function () {
+                    $("#tabs7").ajaxStop(function () {
                         jQuery(function ($) {
                             $.mask.definitions['~'] = '[+-]';
                             $('#WorkPhone').mask('+7(999) 999-99-99');

@@ -10,6 +10,10 @@
     ViewBag.Title = "Прием - Департамент безопасности";
 }
 
+
+<span style="color:red;">@ViewBag.Error</span>
+<span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
+
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <div style="float:left">
@@ -265,6 +269,7 @@
 <form id="CheckApproveForm" action="/Employment/BackgroundCheckReadOnly" target="tabs8" method="post">
         @Html.HiddenFor(m => m.UserId)
         <div class="clear">
+            <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span><br /><br />
             @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
             {
                 @Html.LabelFor(m => m.ApprovalStatus)<br />

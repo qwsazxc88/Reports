@@ -1682,6 +1682,7 @@ legend {
   
  .NewsPost
  {
+     display:block;
      position:relative;
      padding:10px;
      background-color: #fafafa;
