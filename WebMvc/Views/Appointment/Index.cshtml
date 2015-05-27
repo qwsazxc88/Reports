@@ -109,15 +109,17 @@
                                 <td>
                                     <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
+                                    <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>
+                 
                                 </td>
                             }
-                             @if (Model.IsAddForStaffAvailable)
+                           @*  @if (Model.IsAddForStaffAvailable)
                              { 
                                 <td>
                                     <input type="hidden" id="IsAddForStaffAvailable" name="IsAddForStaffAvailable" value="@Model.IsAddForStaffAvailable" />
                                     <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
                                 </td>
-                             }
+                             }*@
                             @*<td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
                                 @if(Model.IsApproveAvailable)
