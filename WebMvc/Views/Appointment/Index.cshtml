@@ -90,6 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
                           </td>
                         </tr>
             </table>
@@ -103,7 +104,6 @@
           <div class="action-wrap">
             <table style="width:100%">
                     <tr>                    
-                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
                             @if (Model.IsAddAvailable)
                             { 
                                 <td>
