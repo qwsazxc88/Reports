@@ -56,7 +56,9 @@ namespace Reports.Core.Dao.Impl
             if (departmentId > 0)
             {
                 dep = Ioc.Resolve<IDepartmentDao>().Load(departmentId);
-                if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
+                if (user.Department == null) dep = null;
+                else
+                    if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
             }
             if (dep != null)
             {

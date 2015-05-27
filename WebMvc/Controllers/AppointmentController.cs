@@ -14,6 +14,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Linq;
+using WebMvc.Helpers;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
@@ -62,9 +63,19 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank | UserRole.PersonnelManager)]
         public ActionResult Index(AppointmentListModel model)
         {
+            if(model.ForPrint>0)
+                return RedirectToAction("GetPrintForm", "Graphics", new { param = model.ToParamsString(), controll = "Appointment", actionName = "Print", isLandscape = false });
             bool hasError = !ValidateModel(model);
             AppointmentBl.SetAppointmentListModel(model, hasError);
-            return View(model);
+            return View("Index",model);
+        }
+        [HttpGet]
+        public ActionResult Print(AppointmentListModel model)
+        {
+            if (model.ForPrint == 1)
+            { model.ForPrint = 0; return Index(model); }
+            else
+            { model.ForPrint = 0; return AppointmentReportList(model); }
         }
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager)]
@@ -77,9 +88,12 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.PersonnelManagerBank | UserRole.PersonnelManager)]
         public ActionResult AppointmentReportList(AppointmentListModel model)
         {
+            if (model.ForPrint > 0)
+                return RedirectToAction("GetPrintForm", "Graphics", new { param = model.ToParamsString(), controll = "Appointment", actionName = "Print", isLandscape = false });
+            
             bool hasError = !ValidateModel(model);
             AppointmentBl.SetAppointmentReportsListModel(model, hasError);
-            return View(model);
+            return View("AppointmentReportList",model);
         }
         protected bool ValidateModel(AppointmentListModel model)
         {

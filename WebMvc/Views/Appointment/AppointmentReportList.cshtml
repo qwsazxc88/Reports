@@ -8,6 +8,7 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.ForPrint);
      <table style="width:100%">
       <tr>
         <td colspan="2">
@@ -69,6 +70,14 @@
                                 </td>
                          </tr>
                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.CandidateName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.CandidateName)
+                                </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -80,7 +89,8 @@
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
-                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>                            
+                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(2);"/>
                           </td>
                         </tr>
             </table>
@@ -147,7 +157,7 @@
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
                     <th>
-                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Подразделение<br/> 3 ур. руководителя</a></div>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
                     </th>
                      <th>
                         <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
@@ -225,7 +235,7 @@
                         >
                             
                             <td>@doc.Number</td>
-                            <td>@doc.AppNumber</td>
+                            <td><a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter == 2 ? "(У)" : "")</a></td>
                             <td style="text-align:left">
                                 
                                     <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.SecondNumber)</a>
