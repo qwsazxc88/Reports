@@ -5067,8 +5067,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             //руководитель
             //высшее руководство
             //кадровик
-            if (candidate.Where(x => x.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER || x.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER ||
-                x.Status == EmploymentStatus.COMPLETE || x.Status == EmploymentStatus.SENT_TO_1C).Count() == entity.Appointment.BankAccountantAcceptCount)
+            if ((candidate.Where(x => x.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER || x.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER ||
+                x.Status == EmploymentStatus.COMPLETE || x.Status == EmploymentStatus.SENT_TO_1C).Count() == entity.Appointment.BankAccountantAcceptCount) &&
+                (entity.Status != EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER && entity.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER &&
+                entity.Status != EmploymentStatus.COMPLETE && entity.Status != EmploymentStatus.SENT_TO_1C))
                 return true;
             else
                 return false;
