@@ -64,7 +64,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(requestNextNumberDao); }
             set { requestNextNumberDao = value; }
         }
-
+        private IMessagesDao messagesDao;
+        public IMessagesDao MessagesDao
+        {
+            get { return Validate.Dependency(messagesDao); }
+            set { messagesDao = value; }
+        }
         public IUser CurrentUser
         {
             get { return AuthenticationService.CurrentUser; }
@@ -134,7 +139,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             User managerAccount = UserDao.GetManagerForEmployee(user.Login);
 
             IList<User> mainManagers;
-
+            var manualchiefs = Ioc.Resolve<Reports.Core.Dao.IManualRoleRecordDao>().GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            foreach (var el in manualchiefs)
+            {
+                chiefs.Add(el);
+            }
+            
             // Для руководителей-замов ближайшие руководители находится на том же уровне
             if (managerAccount != null && !managerAccount.IsMainManager && false)//Отключено
             {
@@ -247,7 +257,21 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return SendEmail(dto);
         }
+        public IList<MessagesDto> GetComments(int PlaceTypeId, int PlaceId)
+        {
+            return MessagesDao.GetMessages(PlaceTypeId, PlaceId);
+        }
+        public void AddComment(MessagesDto message)
+        {
+            Messages msg = new Messages();
+            msg.CreateDate = DateTime.Now;
+            msg.Creator = UserDao.Load(CurrentUser.Id);
+            msg.Comment = message.Comment;
+            msg.PlaceId = message.PlaceId;
+            msg.CommentPlaceType = message.PlaceTypeId;
+            MessagesDao.SaveAndFlush(msg);
 
+        }
         protected bool SendEmailForVacationError(Vacation entity)
         {
             string subject = @"Ошибки в заявке";
