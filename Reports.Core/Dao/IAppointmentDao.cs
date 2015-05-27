@@ -35,6 +35,7 @@ namespace Reports.Core.Dao
                                            DateTime? beginDate,
                                            DateTime? endDate,
                                            string userName,
+                                           string CandidateFio,
                                            int sortBy,
                                            bool? sortDescending);
     }
