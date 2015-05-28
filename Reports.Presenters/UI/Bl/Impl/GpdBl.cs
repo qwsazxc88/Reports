@@ -500,8 +500,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!model.IsFind)
             {
                 DateTime today = DateTime.Today;
-                //model.DateBegin = new DateTime(today.Year, today.Month, 1);
-                model.DateBegin = new DateTime(2010, 1, 1);
+                model.DateBegin = new DateTime(today.Year, today.Month, 1);
+                //model.DateBegin = new DateTime(2010, 1, 1);
                 model.DateEnd = today;
             }
             GetPermission(model);
