@@ -139,10 +139,7 @@
                  {
                  <div class="menuitem" id="appAllReports">@Html.ActionLink("Реестр отчетов по подбору", "AppointmentReportList", "Appointment")</div> 
                  }
-                 if (dto.UserRole != UserRole.StaffManager && dto.UserRole!=UserRole.PersonnelManager)
-                 {
-                 <div class="menuitem" id="appCreateCandidate">@Html.ActionLink("Согласование кандидата от Руководителя", "AppointmentWithoutStaffEdit", "Appointment", (object)new { id = 0 }, null)</div>
-                 }
+                 
              }
                 <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
             </div> 

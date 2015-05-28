@@ -5061,14 +5061,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //проверяем по количеству доступных вакансий в найме и статусам кандидатов в приеме
             EmploymentCandidate entity = GetCandidate(UserId);
+            //если кандидат не из найма, то не проверяем
+            if (entity.Appointment == null) return false;
+
             IList<EmploymentCandidate> candidate = EmploymentCandidateDao.LoadAll().Where(x => x.Appointment != null && x.Appointment.Id == entity.Appointment.Id).ToList();
-            //проверка работает при различных согласованиях
+            //проверка работает при различных согласованиях, если кандидат пришел из найма
             //ДБ
             //руководитель
             //высшее руководство
             //кадровик
-            if (candidate.Where(x => x.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER || x.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER ||
-                x.Status == EmploymentStatus.COMPLETE || x.Status == EmploymentStatus.SENT_TO_1C).Count() == entity.Appointment.BankAccountantAcceptCount)
+            if ((candidate.Where(x => x.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER || x.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER ||
+                x.Status == EmploymentStatus.COMPLETE || x.Status == EmploymentStatus.SENT_TO_1C).Count() == entity.Appointment.BankAccountantAcceptCount) &&
+                (entity.Status != EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER && entity.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER &&
+                entity.Status != EmploymentStatus.COMPLETE && entity.Status != EmploymentStatus.SENT_TO_1C))
                 return true;
             else
                 return false;
