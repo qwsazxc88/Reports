@@ -765,7 +765,7 @@ namespace WebMvc.Controllers
 
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
-            if (model.Operation == 1 && model.RecipientList.Where(x => x.IsRecipient == true).Count() == 0)
+            if (model.Operation == 1 && (model.RecipientList == null || model.RecipientList.Count == 0))
                 ModelState.AddModelError("RecipientList", "Выберите исполнителя!");
             return ModelState.IsValid;
         }
