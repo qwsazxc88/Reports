@@ -5061,8 +5061,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //проверяем по количеству доступных вакансий в найме и статусам кандидатов в приеме
             EmploymentCandidate entity = GetCandidate(UserId);
+            //если кандидат не из найма, то не проверяем
+            if (entity.Appointment == null) return false;
+
             IList<EmploymentCandidate> candidate = EmploymentCandidateDao.LoadAll().Where(x => x.Appointment != null && x.Appointment.Id == entity.Appointment.Id).ToList();
-            //проверка работает при различных согласованиях
+            //проверка работает при различных согласованиях, если кандидат пришел из найма
             //ДБ
             //руководитель
             //высшее руководство
