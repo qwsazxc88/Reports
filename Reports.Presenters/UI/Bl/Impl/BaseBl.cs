@@ -430,7 +430,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return dto;
             }
         }
-
+        
         protected EmailDto GetEmailDto(Settings settings,
                 string to, string subject, string body)
         {
