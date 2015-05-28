@@ -90,7 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
-                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
+                            
                           </td>
                         </tr>
             </table>
@@ -98,47 +98,25 @@
     </td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="2"> <div class="action-wrap">
+        <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
         @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
-        {
-          <div class="action-wrap">
-            <table style="width:100%">
-                    <tr>                    
-                            @if (Model.IsAddAvailable)
-                            { 
-                                <td>
-                                    <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
-                                    <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
-                                    <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>
-                 
-                                </td>
-                            }
-                           @*  @if (Model.IsAddForStaffAvailable)
-                             { 
-                                <td>
-                                    <input type="hidden" id="IsAddForStaffAvailable" name="IsAddForStaffAvailable" value="@Model.IsAddForStaffAvailable" />
-                                    <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
-                                </td>
-                             }*@
-                            @*<td style = "text-align:right">
-                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
-                                @if(Model.IsApproveAvailable)
-                                {
-   
-                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
-                                }
-                            </td>*@
-                   </tr>
-              </table>  
-           </div>
+        {                               
+            if (Model.IsAddAvailable)
+            {                                
+                    <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                    <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
+                    <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
+            } 
         }
+        </div>
         </td>
     </tr>   
      <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table class="grid2" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
@@ -203,10 +181,13 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr>
+                        <tr
+                        @if (doc.ReasonId == 3)
+                        {<text> class="bgRed" </text>}
+                        >
                             <td>@doc.Number</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter==2?"(У)":"")</a>
+                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter == 2 ? "(У)" : "")</a>
                             </td>
                             <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
@@ -222,15 +203,16 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            <td>@if(String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter==1) {<p>Кандидат</p>}
+                            <td>@if (String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter == 1)
+                                {<p>Кандидат</p>}
                             @doc.CandidateFIO</td>
-                            <td>@switch(doc.Recruter)
+                            <td>@switch (doc.Recruter)
                                 {
                                     case 1: <text>УПиНП</text>
                                         break;
                                     case 2: <text>Руководитель</text>
                                         break;
-                                        
+
                                 }</td>
                             <td>@doc.Status</td>
                         </tr>
