@@ -19,6 +19,7 @@ namespace Reports.Presenters.UI.Bl
         int GetRequeredDepartmentLevel();
         bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
         int CreateReportForOldAppointment(int id);
+        int SendEmailForAppointmentManager(int AppId);
         AppointmentReportEditModel GetAppointmentReportEditModel(int id);
         void ReloadDictionariesToModel(AppointmentReportEditModel model);
         bool SaveAppointmentReportEditModel(AppointmentReportEditModel model, UploadFileDto fileDto, out string error);
