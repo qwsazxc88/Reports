@@ -43,6 +43,7 @@ namespace Reports.Core.Dao.Impl
                 v.Salary+v.Bonus as Salary,
                 v.DesirableBeginDate as DesirableBeginDate,
                 v.Recruter,
+                ar.Id as ReasonId,
                 ar.Name as Reason,
                 r.[Id] as RId,
                 r.[Number] as RNumber,
@@ -125,12 +126,15 @@ namespace Reports.Core.Dao.Impl
                 v.Schedule as Schedule,
                 v.Salary+v.Bonus as Salary,
                 v.DesirableBeginDate as DesirableBeginDate,
+                ar.Id as ReasonId,
                 ar.Name as Reason,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped!=1 then N'Отправлена на согласование в кадровую службу'
+                        when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
+                        
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий. Отправлена на согласование вышестоящему руководителю.'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не хватает вакансий. Отправлена на согласование вышестоящему руководителю.'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
@@ -184,7 +188,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Recruter",NHibernateUtil.Int32).
-                AddScalar("CandidateFIO",NHibernateUtil.String);
+                AddScalar("CandidateFIO",NHibernateUtil.String).
+                AddScalar("ReasonId",NHibernateUtil.Int32);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -222,7 +227,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("EmploymentStatus",NHibernateUtil.Int32).
                 AddScalar("ManDep3Name", NHibernateUtil.String).
                 AddScalar("Recruter", NHibernateUtil.Int32).
-                AddScalar("EducationStatus",NHibernateUtil.String);
+                AddScalar("EducationStatus", NHibernateUtil.String).
+                AddScalar("ReasonId", NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -572,7 +578,7 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
                         break;
                     case 3://3, "Согласована вышестоящим руководителем"
-                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
+                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter<2";
                         break;
                     case 4://4, "Принята в работу"
                         statusWhere = @"v.StaffDateAccept is not null ";
@@ -584,8 +590,17 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
                             break;
                     case 7://Отправлена на согласование в кадровую службу
-                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null ";
                             break;
+                    case 8://Согласование приостановленно
+                            statusWhere = @" v.BankAccountantAccept is null and v.IsStoped=1 ";
+                            break;
+                    case 9: //Не хватает вакансий
+                            statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount and v.BankAccountantAcceptCount>0"; 
+                        break;
+                    case 10://3, "Согласована вышестоящим руководителем. Поиск не требуется"
+                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter=2";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }

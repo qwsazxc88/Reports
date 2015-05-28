@@ -77,6 +77,18 @@ namespace WebMvc.Controllers
             else
             { model.ForPrint = 0; return AppointmentReportList(model); }
         }
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManagerBank)]
+        public ActionResult SendEmailFor(int AppointmentId)
+        {
+            int result=AppointmentBl.SendEmailForAppointmentManager(AppointmentId);
+            switch(result)
+            {
+                case 0: return Json(new {status="Сообщение отправлено."});break;
+                case 1: return Json(new {status="Не найден email руководителя."});break;
+                default: return Json(new {status="При отправке сообщения произошла ошибка."}); break;
+            }
+        }
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager)]
         public ActionResult CreateReportForOldAppointment(int id)

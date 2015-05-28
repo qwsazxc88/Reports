@@ -90,7 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>                            
-                            <input type="submit" value="Печать" onclick="$('#ForPrint').val(2);"/>
+                            
                           </td>
                         </tr>
             </table>
@@ -98,10 +98,11 @@
     </td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="2"><div class="action-wrap">
+        <input type="submit" value="Печать" onclick="$('#ForPrint').val(2);"/>
         @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
         {
-          <div class="action-wrap">
+          
             <table style="width:100%">
                     <tr>
                             @if (Model.IsAddAvailable)
@@ -118,18 +119,10 @@
                                     <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
                                 </td>
                              }
-                            @*<td style = "text-align:right">
-                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
-                                @if(Model.IsApproveAvailable)
-                                {
-   
-                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
-                                }
-                            </td>*@
                    </tr>
               </table>  
-           </div>
-        }
+           
+        }</div>
         </td>
     </tr>   
      <tr>
@@ -225,11 +218,11 @@
                         <tr
                         @switch((int)doc.EmploymentStatus)
                         {
-                            case 8: <text> class="bgGray";</text>
+                            case 8: <text> class="bgGray" </text>
                                 break;
                             case -1: <text> </text>
                                 break;
-                            default:<text> class="bgBlue";</text>
+                            default:<text> class="bgBlue" </text>
                                 break;
                         }
                         >
