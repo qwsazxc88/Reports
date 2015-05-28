@@ -220,7 +220,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            //new IdNameDto(6, "Не одобрен бухгалтером"),
                                                            new IdNameDto(7, "Отправленно на согласование в кадровую службу"),
                                                            new IdNameDto(8, "Специалистом УКДиУ приостановленно согласование"),
-                                                           new IdNameDto(9, "Не хватает вакансий"),
+                                                           new IdNameDto(9, "Не хватает вакансий. Отправлена на согласование вышестоящему руководителю"),
                                                            new IdNameDto(10, "Согласована вышестоящим руководителем. Поиск сотрудника не требуется.")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
