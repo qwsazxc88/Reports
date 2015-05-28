@@ -5269,12 +5269,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //проверка на необходимость отправки сообщения
                     IList<CandidateStateDto> CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
                     if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
-
+                    string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
+                    //DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3).Name
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
-                    Emailaddress = "list-priem-bezopas@sovcombank.ru";
+                    Emailaddress = "loseva@ruscount.ru";//"list-priem-bezopas@sovcombank.ru";
                     //Emailaddress = "zagryazkin@ruscount.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
-                    Subject = "Оформлена заявка на прием";
+                    Subject = "Оформлена заявка на прием" + Dep3Name;
                     body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо согласование сотрудника Департамента безопасности.";
                     entity.IsCandidateToBackgroundSendEmail = true;
                     entity.CandidateToBackgroundSendEmailDate = DateTime.Now;
