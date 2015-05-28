@@ -47,6 +47,8 @@
         margin:0px;
         padding-left:20px;
         list-style:none;
+        border-left:1px solid black;
+        border-top:1px solid black;
     }
     .treeview > li > a
     {
@@ -70,20 +72,47 @@
 
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <div class="treeview" id="test">
+            @{ int i = 1; }
             @if (Model.Departments != null && Model.Departments.Count > 0)
             {
                 foreach (var item in Model.Departments)
                 {
-                    <ul id=@item.Code>
+                    <ul id=@item.Code @if(i == Model.Departments.Count) {<text>style="border-bottom:1px solid black; border-right:1px solid black;"</text>} else{<text>style="border-right:1px solid black;"</text>} >
                         <li id="li-@item.Code.Trim()">
-                            <span>
-                                <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
-                            </span>
-                        </li>                
+                                <span>
+                                    <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                                </span>
+                        </li>   
+                        
+                        
+                        @{ i++; }
                     </ul>
+                    
                 }
             }
         </div>
+        <br /><br /><br />
+        <table id="tbl" class="grid">
+            @{ i = 0; }
+            @foreach (var item in Model.Departments)
+            {
+                <tr id="tr-@item.Code.Trim()">
+                <td>
+                    <span>
+                        <a class="Acollapsible" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
+                    </span>
+                </td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                </tr>
+            }
+            @{ i++; }
+        </table>             
+        <table>
+        </table>
     </div>
 }
 
@@ -98,6 +127,7 @@
             e.preventDefault();
             $(this).children('span').toggleClass("collapse expand");
             $(this).closest('li').children('ul').slideToggle();
+            $(this).closest('tr').children('tr').slideToggle();
         })
     });
 
@@ -124,6 +154,7 @@
                 success: function(result){
                     var $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
+                    var tblStr = "";
 
                     for (var i = 0; i < result.length; i++)
                     {   
@@ -137,6 +168,26 @@
                                 "</li>" +
                             "</ul>";
                         $liParent.append(ResultStr);
+
+
+                        tblStr = "<tr id='tr-" + result[i].Code.trim() + "' >" +
+                                  "<td>" +
+                                    "<span>"+
+                                        "<a class='Acollapsible' href='#' id='getnodes-" + result[i].Code.trim() + "' onclick='GetNodes(" + result[i].Code.trim() + ");'>" +
+                                        "<span Id='span-tr'" + result[i].Code.trim() + "' class='collapse collapsible'>&nbsp;</span> " + result[i].Name +" &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
+                                    "</span>" +
+                                    "</td>" + 
+                                    "<td>1</td>" +
+                                    "<td>2</td>" +
+                                    "<td>3</td>" +
+                                    "<td>4</td>" +
+                                    "<td>5</td>" +
+                                    "</tr>";
+
+                        //$("#tbl").append(tblStr);
+                        //$(tblStr).appendTo("#tr-9900425");
+                        $(tblStr).appendTo($("tr[Id = 'tr-9900425']"));
+
                         $("#span" + result[i].Code.trim()).removeClass("collapse collapsible");
                         $("#getnodes-" + result[i].Code.trim()).removeClass("Acollapsible");
 
