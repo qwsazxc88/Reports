@@ -56,16 +56,21 @@ namespace Reports.Core.Dao.Impl
             if (departmentId > 0)
             {
                 dep = Ioc.Resolve<IDepartmentDao>().Load(departmentId);
-                if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
+                if (user.Department != null) 
+                    if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
             }
             if (dep != null)
             {
-                    crit.Add(Restrictions.Eq("department.Id", dep.Id));
+                    crit.Add(Restrictions.Like("department.Path", dep.Path + "%"));
             }
             else
-            {                
-                if (user != null && user.Department!=null && role!= UserRole.PersonnelManagerBank)
+            {
+                if (user != null && role != UserRole.PersonnelManagerBank)
+                {
+                    if(user.Department!=null)
                     crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));
+                    
+                }
             }
             if (beginDate.HasValue)
             {
@@ -105,11 +110,11 @@ namespace Reports.Core.Dao.Impl
                 DepartmentName=x.DocDep7.Name,
                 Status=x.DeleteDate.HasValue?"Заявка отклонена":(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":(x.PersonnelManagerDateAccept.HasValue)?"Отработана УКДиУ":"Заявка создана"
             });
-            if (role == UserRole.PersonnelManager && userId != 10)
+            /*if (role == UserRole.PersonnelManager && userId != 10)
             {
                 var employees = UserDao.GetUsersForPersonnel(userId).ToArray();
                 res = res.Where(x => employees.Any(y => y.Id == x.CreatorId));
-            }
+            }*/
             switch (sortedBy)
             {
                 case 1:

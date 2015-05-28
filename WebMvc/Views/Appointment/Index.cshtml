@@ -8,6 +8,7 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.ForPrint)
      <table style="width:100%">
       <tr>
         <td colspan="2">
@@ -89,6 +90,7 @@
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            
                           </td>
                         </tr>
             </table>
@@ -96,45 +98,25 @@
     </td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="2"> <div class="action-wrap">
+        <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
         @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
-        {
-          <div class="action-wrap">
-            <table style="width:100%">
-                    <tr>
-                            @if (Model.IsAddAvailable)
-                            { 
-                                <td>
-                                    <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
-                                </td>
-                            }
-                             @if (Model.IsAddForStaffAvailable)
-                             { 
-                                <td>
-                                    <input type="hidden" id="IsAddForStaffAvailable" name="IsAddForStaffAvailable" value="@Model.IsAddForStaffAvailable" />
-                                    <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
-                                </td>
-                             }
-                            @*<td style = "text-align:right">
-                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
-                                @if(Model.IsApproveAvailable)
-                                {
-   
-                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
-                                }
-                            </td>*@
-                   </tr>
-              </table>  
-           </div>
+        {                               
+            if (Model.IsAddAvailable)
+            {                                
+                    <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                    <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
+                    <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
+            } 
         }
+        </div>
         </td>
     </tr>   
      <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table class="grid2" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
@@ -154,17 +136,20 @@
                     <th>
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
+                    <th>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
+                    </th>
                      <th>
-                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
                     <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
                     </th>
                    @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
@@ -196,15 +181,19 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr>
+                        <tr
+                        @if (doc.ReasonId == 3)
+                        {<text> class="bgRed" </text>}
+                        >
                             <td>@doc.Number</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
+                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter == 2 ? "(У)" : "")</a>
                             </td>
                             <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
+                            <td>@doc.ManDep3Name</td>
                             <td>@doc.ManDep7Name</td>
                             <td>@doc.CanPosition</td>
                             <td>@doc.Dep3Name</td>
@@ -214,15 +203,16 @@
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.Reason</td>@*12*@
-                            <td>@if(String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter==1) {<p>Кандидат</p>}
+                            <td>@if (String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter == 1)
+                                {<p>Кандидат</p>}
                             @doc.CandidateFIO</td>
-                            <td>@switch(doc.Recruter)
+                            <td>@switch (doc.Recruter)
                                 {
                                     case 1: <text>УПиНП</text>
                                         break;
                                     case 2: <text>Руководитель</text>
                                         break;
-                                        
+
                                 }</td>
                             <td>@doc.Status</td>
                         </tr>

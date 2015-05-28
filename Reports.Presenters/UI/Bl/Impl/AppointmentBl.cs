@@ -215,11 +215,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            //new IdNameDto(5, "Отменена"),
-                                                           new IdNameDto(6, "Нет подходящих вакансий")
+                                                           new IdNameDto(6, "Нет подходящих вакансий"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(6, "Не одобрен бухгалтером"),
-                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
-                                                           //new IdNameDto(8, "Требует одобрения бухгалтером"),
+                                                           new IdNameDto(7, "Отправленно на согласование в кадровую службу"),
+                                                           new IdNameDto(8, "Специалистом УКДиУ приостановленно согласование"),
+                                                           new IdNameDto(9, "Не хватает вакансий. Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(10, "Согласована вышестоящим руководителем. Поиск сотрудника не требуется.")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -270,6 +272,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.CandidateName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -1082,6 +1085,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #region Emails
+        public int SendEmailForAppointmentManager(int AppId)
+        {
+            var app=AppointmentDao.Load(AppId);
+            app.IsStoped = true;
+            AppointmentDao.SaveAndFlush(app);
+            string addr = app.Creator.Email;
+            if (String.IsNullOrEmpty(addr))
+                return 1;
+            string subj=String.Format("Заявка на подбор персонала №{0}",app.Number);
+            string body=String.Format("Ваша заявка на подбор персонала №{0} от {1} рассмотренна кадровой службой. Просьба дать ответ на комментарий.",app.Number,app.CreateDate.ToShortDateString());
+            var dto= SendEmail(addr, subj, body);
+            if (String.IsNullOrEmpty(dto.Error))
+                return 0;
+            else return 2;
+        }
         protected EmailDto SendEmailForBankAccountantReject(User user, Appointment entity)
         {
             string BankAccountantEmail = user.Email;
@@ -1109,6 +1127,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(chief, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
         }
+        
         protected EmailDto SendEmailForStaffManager(Appointment entity)
         {
             string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
@@ -1134,7 +1153,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(personnel, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
         }*/
-
+        
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
