@@ -2644,8 +2644,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 model.Answer = entity.Answer;
-                model.DepartmentId = entity.Department.Id;
-                model.DepartmentName = entity.Department.Name;
+                model.DepartmentId = entity.Department == null ? 0 : entity.Department.Id;
+                model.DepartmentName = entity.Department == null ? string.Empty : entity.Department.Name;
                 model.Question = entity.Question;
                 model.TitleId = entity.Title.Id;
                 model.UrgencyId = entity.Urgency.Id;
@@ -2949,8 +2949,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             UserRole currRole = AuthenticationService.CurrentUser.UserRole;
             if (model.IsEditable)
-            {   
-                entity.Department = DepartmentDao.Load(model.DepartmentId);
+            {
+                entity.Department = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId) : null;
                 entity.Question = model.Question;
                 entity.Title = HelpBillingTitleDao.Load(model.TitleId);
                 entity.Urgency = HelpBillingUrgencyDao.Load(model.UrgencyId);

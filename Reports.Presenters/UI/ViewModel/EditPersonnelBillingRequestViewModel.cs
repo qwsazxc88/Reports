@@ -40,9 +40,9 @@ namespace Reports.Presenters.UI.ViewModel
         //public bool IsRecipientGroups { get; set; }
 
 
-        [Display(Name = "Вопрос")]
+        [Display(Name = "Сообщение")]
         public string Question { get; set; }
-        [Display(Name = "Ответ")]
+        [Display(Name = "Сообщение")]
         public string Answer { get; set; }
 
         [Display(Name = "Запрос прочитан")]
@@ -84,7 +84,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Дата прочтения")]
         public string DateBeginWork { get; set; }
 
-        [Display(Name = "Дата обработки")]
+        [Display(Name = "Дата закрытия вопроса")]
         public string DateEndWork { get; set; }
     }
 

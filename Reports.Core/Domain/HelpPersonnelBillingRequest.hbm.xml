@@ -13,7 +13,7 @@
 
     <many-to-one name="Title" class="HelpBillingTitle" column="TitleId" foreign-key="FK_HelpPersonnelBillingRequest_HelpBillingTitle" index="HelpPersonnelBillingRequest_HelpBillingTitle"  not-null="true"/>
     <many-to-one name="Urgency" class="HelpBillingUrgency" column="UrgencyId" foreign-key="FK_HelpPersonnelBillingRequest_HelpBillingUrgency" index="HelpPersonnelBillingRequest_HelpBillingUrgency"  not-null="true"/>
-    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_HelpPersonnelBillingRequest_Department" index="HelpPersonnelBillingRequest_Department"  not-null="true"/>
+    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_HelpPersonnelBillingRequest_Department" index="HelpPersonnelBillingRequest_Department"  not-null="false"/>
     <property name="UserName" length="256" not-null="false"/>
     <property name="Question" length="8192" not-null="true"/>
     <property name="Answer" length="8192" not-null="false"/>
