@@ -130,12 +130,12 @@ namespace Reports.Core.Dao.Impl
                 ar.Name as Reason,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped!=1 then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование в кадровую службу'
                         when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
                         
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не хватает вакансий. Отправлена на согласование вышестоящему руководителю.'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount>=v.VacationCount then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
@@ -710,6 +710,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManagerBank:
                 case UserRole.StaffManager:
+                case UserRole.Security:
                     return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
