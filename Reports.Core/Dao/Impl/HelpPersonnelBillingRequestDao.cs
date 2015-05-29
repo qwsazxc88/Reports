@@ -24,7 +24,7 @@ namespace Reports.Core.Dao.Impl
                                     ,v.CreateDate
                                     ,v.UserName as ForUserName
                                     ,dep3.Name as Dep3Name
-                                    ,dep7.Name as Dep7Name
+                                    --,dep7.Name as Dep7Name
                                     ,v.Number as RequestNumber
                                     ,u.Name as CreatorName
                                     --,case when RecipientId = -1 then N'Все расчетчики'
@@ -43,11 +43,12 @@ namespace Reports.Core.Dao.Impl
                                                                          when v.[EndWorkDate] is not null then  N'Запрос обработан' 
                                                                         else  N'' 
                                                                     end as Status
+                                    ,dbo.fnGetBillingTaskExecutorNames(v.Id) as RepicientName
                                     from [dbo].[HelpPersonnelBillingRequest] v
                                     inner join [dbo].[HelpBillingTitle] t on t.Id = v.TitleId
                                     inner join [dbo].[HelpBillingUrgency] un on un.Id = v.UrgencyId
                                     inner join [dbo].[Users] u on u.Id = v.CreatorId
-                                    inner join [dbo].[Department] dep7 on v.DepartmentId = dep7.Id 
+                                    left join [dbo].[Department] dep7 on v.DepartmentId = dep7.Id 
                                     left join  [dbo].[Department] dep3 on dep7.Path like dep3.Path+N'%' and dep3.ItemLevel = 3
                                     
                                     ";
@@ -66,12 +67,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("ForUserName", NHibernateUtil.String).
                 AddScalar("Dep3Name", NHibernateUtil.String).
-                AddScalar("Dep7Name", NHibernateUtil.String).
+                //AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.Int32).
                 AddScalar("CreatorName", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("RepicientName", NHibernateUtil.String);
         }
         public List<HelpPersonnelBillingRequestDto> GetDocuments(int userId,
                UserRole role,
