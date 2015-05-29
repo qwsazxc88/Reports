@@ -5272,7 +5272,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
                     //DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3).Name
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
-                    Emailaddress = "loseva@ruscount.ru";//"list-priem-bezopas@sovcombank.ru";
+                    Emailaddress = "list-priem-bezopas@sovcombank.ru";
+                    //Emailaddress = "loseva@ruscount.ru";
                     //Emailaddress = "zagryazkin@ruscount.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
                     Subject = "Оформлена заявка на прием" + Dep3Name;
