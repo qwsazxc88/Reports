@@ -354,7 +354,12 @@
         <tr>
                     <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div></td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
+                    @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+                    { 
+                      <input type="button" value="Отправить Email руководителю" id="SendEmailButton" onclick="SendEmailForManager();"/>                    
+                    }
+                    </td>
                 </tr>
             @* <tr>
                 <td>
@@ -513,6 +518,17 @@
             return false;*/
         $("#IsDelete").val("true");
         return true;
+    }
+    function SendEmailForManager()
+    {
+     $("#SendEmailButton").hide();
+     $.ajax({
+        type: "POST",
+        url: "/Appointment/SendEmailFor",
+        data: {AppointmentId:@Model.Id},
+        success: function(message){$("#SendEmailButton").show();alert(message.status);},
+        error:function(){$("#SendEmailButton").show();alert('При отправки сообщения произошла ошибка.');}
+        });
     }
     function ValidateForm()
     {
