@@ -710,6 +710,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManagerBank:
                 case UserRole.StaffManager:
+                case UserRole.Security:
                     return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
