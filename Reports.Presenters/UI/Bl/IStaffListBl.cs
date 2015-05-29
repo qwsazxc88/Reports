@@ -11,6 +11,12 @@ namespace Reports.Presenters.UI.Bl
     public interface IStaffListBl : IBaseBl
     {
         TreeViewModel GetDepartmentList();
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        TreeGridAjaxModel GetDepartmentStructure(string DepId);
         IList<Department> GetDepartmentListByParent(string DepId);
         /// <summary>
         /// Загружаем модель для составления Российских адресов.

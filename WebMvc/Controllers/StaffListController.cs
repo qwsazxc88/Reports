@@ -59,17 +59,18 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult TreeGridAjax()
         {
-            TreeGridAjaxModel model = new TreeGridAjaxModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
+            TreeGridAjaxModel model = StaffListBl.GetDepartmentStructure("9900424");
             return View(model);
         }
 
         [HttpPost]
         public ActionResult TreeGridAjax(string DepId)
         {
-            TreeGridAjaxModel model = new TreeGridAjaxModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
-            return Json(model.Departments);
+            var jsonSerializer = new JavaScriptSerializer();
+            TreeGridAjaxModel model = StaffListBl.GetDepartmentStructure(DepId);
+            
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
         }
 
         [HttpGet]

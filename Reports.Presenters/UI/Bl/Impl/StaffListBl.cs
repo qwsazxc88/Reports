@@ -37,6 +37,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
         /// <summary>
+        /// Загружаем структуру по заданному коду подразделения
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        public TreeGridAjaxModel GetDepartmentStructure(string DepId)
+        {
+            TreeGridAjaxModel model = new TreeGridAjaxModel();
+            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+            if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
+                model.Departments = GetDepartmentListByParent(DepId);
+            else
+            {
+                model.UserPositions = UserDao.LoadAll().Where(x => x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true).ToList();
+            }
+            return model;
+        }
+        /// <summary>
         /// подгружаем только подчиненые ветки на один уровень ниже
         /// </summary>
         /// <param name="DepId"></param>
