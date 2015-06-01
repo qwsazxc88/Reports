@@ -132,7 +132,7 @@ function setupUploader()
         element: document.getElementById('file-uploader'),
         // path to server-side upload script      
         action: "@Url.Action("SaveAttachment", "Help")",
-        sizeLimit: 2097152,
+        sizeLimit: 10485760,//2097152,
         onSubmit: function (id, fileName) {
             if(!ValidateAttachment())
                 return false;
