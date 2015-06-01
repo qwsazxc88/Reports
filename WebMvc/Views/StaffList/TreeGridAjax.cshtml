@@ -116,22 +116,72 @@
     function GetNodes(Id) {
         //чтобы не подгружались данные вторично
         if($("#getnodes-" + Id).hasClass("IsLoading")){
+            var akParent = "";
+            //console.log(aa[0].accessKey);
+
+//            var str = "Моя строка"
+//	        str.substring(0,3) // Моя
+//	        str.substring(3,0) // Моя
+//	        str.substring(1,2) // о
+//	        str.substring(4) // "строка"
+
+//            x.length
+
             //перебираем строковые элементы страницы
             $("tr").each(function(){
                 if (this.id == "tr-" + Id){
+                    akParent = this.accessKey;
                     //console.log(this);
                 }
                 else{
                     //по пути определяем нужные строки и по наличию класса показываем/скрываем их
                     if (this.accessKey.indexOf(Id + ".") > -1){
-                        if($("#" + this.id).hasClass("IsVisible")){
-                            $("#" + this.id).removeClass("IsVisible");
+
+//                        if (this.accessKey.substring(akParent.length) == this.id)//дочерние следующего уровня
+//                        {
+//                            console.log(this.accessKey + "  -  " + akParent + "  -  " + this.accessKey.substring(akParent.length));
+//                            if($("#" + this.id).hasClass("IsVisible")){
+//                                $("#" + this.id).removeClass("IsVisible");
+//                                $("#" + this.id).hide();
+//                            }
+//                            else{
+//                                $("#" + this.id).addClass("IsVisible");
+//                                $("#" + this.id).show();
+//                            }
+//                        }
+
+
+                        if($("#" + this.id).hasClass("IsVisible"))
+                        {
+                            if (this.accessKey.substring(akParent.length) == this.id.substring(3) + ".")//дочерние следующего уровня
+                            {
+                                $("#" + this.id).removeClass("IsVisible");
+                            }
+                            //$("#" + this.id).removeClass("IsVisible");
                             $("#" + this.id).hide();
                         }
-                        else{
-                            $("#" + this.id).addClass("IsVisible");
-                            $("#" + this.id).show();
+                        else
+                        {
+                            if (this.accessKey.substring(akParent.length) == this.id.substring(3) + ".")//дочерние следующего уровня
+                            {
+                                $("#" + this.id).addClass("IsVisible");
+                                $("#" + this.id).show();
+                            }
+                            //$("#" + this.id).addClass("IsVisible");
+                            else if($("#" + this.id).hasClass("IsVisible"))
+                            {
+                                $("#" + this.id).show();
+                            }
+                            
                         }
+//                        if($("#" + this.id).hasClass("IsVisible")){
+//                            $("#" + this.id).removeClass("IsVisible");
+//                            $("#" + this.id).hide();
+//                        }
+//                        else{
+//                            $("#" + this.id).addClass("IsVisible");
+//                            $("#" + this.id).show();
+//                        }
                         //this.hide();
                     }
                 }
@@ -176,7 +226,8 @@
 
                             var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code.trim());//определяем Id строки после которой нужно добавить новую строку
                             $(ParentRowName).after(tblStr);//вставляем новую строку
-
+                            //var aa = $(ParentRowName);
+                            //console.log(aa);
                             $("#span" + result.Departments[i].Code.trim()).removeClass("collapse collapsible");
                             $("#getnodes-" + result.Departments[i].Code.trim()).removeClass("Acollapsible");
 
