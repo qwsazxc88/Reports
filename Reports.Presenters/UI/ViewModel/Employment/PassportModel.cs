@@ -78,7 +78,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Квартира"),
             StringLength(5, ErrorMessage = "Не более 5 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
+            /*Required(ErrorMessage = "Обязательное поле")*/]
         public string Apartment { get; set; }
 
         // International Passport
