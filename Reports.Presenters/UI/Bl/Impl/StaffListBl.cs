@@ -49,7 +49,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Departments = GetDepartmentListByParent(DepId);
             else
             {
-                model.UserPositions = UserDao.LoadAll().Where(x => x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true).ToList();
+                //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
+                IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
             }
             return model;
         }

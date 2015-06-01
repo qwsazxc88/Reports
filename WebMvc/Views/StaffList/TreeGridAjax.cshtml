@@ -153,45 +153,89 @@
                     var $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
                     var tblStr = "";
-                    var fff = result.Department;
-                    for (var i = 0; i < result.Departments.length; i++)
-                    {   
-                        tblStr = "<tr id='tr-" + result.Departments[i].Code.trim() + "' accessKey='" + result.Departments[i].Path.trim() + "' class='IsVisible'>" +
-                                  "<td>" +
-                                    "<span>";
-                                        var BSCount = (result.Departments[i].ItemLevel - 2) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-                                        for (var j = 0; j < BSCount; j++)
-                                        {
-                                            tblStr += "&nbsp;";
-                                        }
-                                        tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path.trim() + "' href='#' id='getnodes-" + result.Departments[i].Code.trim() + "' onclick='GetNodes(" + result.Departments[i].Code.trim() + ");'>" +
-                                        "<span Id='span-tr'" + result.Departments[i].Code.trim() + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
-                                    "</span>" +
-                                    "</td>" + 
-                                    "<td>" + result.Departments[i].Code.trim() + "</td>" +
-                                    "<td>" + result.Departments[i].Path + "</td>" +
-                                    "<td>" + result.Departments[i].ItemLevel + "</td>" +
-                                    "</tr>";
+                    if(result.Departments != null)//подразделения
+                    {
+                        for (var i = 0; i < result.Departments.length; i++)
+                        {   
+                            tblStr = "<tr id='tr-" + result.Departments[i].Code.trim() + "' accessKey='" + result.Departments[i].Path.trim() + "' class='IsVisible'>" +
+                                      "<td>" +
+                                        "<span>";
+                                            var BSCount = (result.Departments[i].ItemLevel - 2) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                            for (var j = 0; j < BSCount; j++)
+                                            {
+                                                tblStr += "&nbsp;";
+                                            }
+                                            tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path.trim() + "' href='#' id='getnodes-" + result.Departments[i].Code.trim() + "' onclick='GetNodes(" + result.Departments[i].Code.trim() + ");'>" +
+                                            "<span Id='span-tr'" + result.Departments[i].Code.trim() + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.Departments[i].Code.trim() + "</td>" +
+                                        "<td>" + result.Departments[i].Path + "</td>" +
+                                        "<td>" + result.Departments[i].ItemLevel + "</td>" +
+                                        "</tr>";
 
-                        var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code.trim());//определяем Id строки после которой нужно добавить новую строку
-                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                            var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code.trim());//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
 
-                        $("#span" + result.Departments[i].Code.trim()).removeClass("collapse collapsible");
-                        $("#getnodes-" + result.Departments[i].Code.trim()).removeClass("Acollapsible");
+                            $("#span" + result.Departments[i].Code.trim()).removeClass("collapse collapsible");
+                            $("#getnodes-" + result.Departments[i].Code.trim()).removeClass("Acollapsible");
 
-                        //для седьмого уровня не надо обработчик
-                        if (result[i].ItemLevel <= 7){
-                            $("#span" + result.Departments[i].Code.trim()).addClass("collapse collapsible");
-                            $("#getnodes-" + result.Departments[i].Code.trim()).addClass("Acollapsible");
-                            //console.log(ResultStr);
-                            //назначаем обработчик для раскрытия веток дерева
-                            $("#getnodes-" + result.Departments[i].Code.trim()).click(function (e) {
-                                e.preventDefault();
-                                $(this).children('span').toggleClass("collapse expand");
-                                $(this).closest('li').children('ul').slideToggle();
-                            });
+                            //для седьмого уровня не надо обработчик
+                            if (result.Departments[i].ItemLevel <= 7){
+                                $("#span" + result.Departments[i].Code.trim()).addClass("collapse collapsible");
+                                $("#getnodes-" + result.Departments[i].Code.trim()).addClass("Acollapsible");
+                                //console.log(ResultStr);
+                                //назначаем обработчик для раскрытия веток дерева
+                                $("#getnodes-" + result.Departments[i].Code.trim()).click(function (e) {
+                                    e.preventDefault();
+                                    $(this).children('span').toggleClass("collapse expand");
+                                    $(this).closest('li').children('ul').slideToggle();
+                                });
+                            }
                         }
                     }
+                    else//должности
+                    {
+                        for (var i = 0; i < result.UserPositions.length; i++)
+                        {   
+                            tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch.trim() + "' class='IsVisible'>" +
+                                      "<td>" +
+                                        "<span>";
+                                            var BSCount = 6 * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                            for (var j = 0; j < BSCount; j++)
+                                            {
+                                                tblStr += "&nbsp;";
+                                            }
+                                            tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick=''>" +
+                                            "<span Id='span-tr'" + result.UserPositions[i].Id + "' class='collapse collapsible'>&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.UserPositions[i].Id + "</td>" +
+                                        "<td>" + result.UserPositions[i].FullName + "</td>" +
+                                        "<td>8</td>" +
+                                        "</tr>";
+
+                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
+
+                            //$("#span" + result.Departments[i].Code.trim()).removeClass("collapse collapsible");
+                            //$("#getnodes-" + result.Departments[i].Code.trim()).removeClass("Acollapsible");
+
+                            //для седьмого уровня не надо обработчик
+//                            if (result.Departments[i].ItemLevel <= 7){
+//                                $("#span" + result.Departments[i].Code.trim()).addClass("collapse collapsible");
+//                                $("#getnodes-" + result.Departments[i].Code.trim()).addClass("Acollapsible");
+//                                //console.log(ResultStr);
+//                                //назначаем обработчик для раскрытия веток дерева
+//                                $("#getnodes-" + result.Departments[i].Code.trim()).click(function (e) {
+//                                    e.preventDefault();
+//                                    $(this).children('span').toggleClass("collapse expand");
+//                                    $(this).closest('li').children('ul').slideToggle();
+//                                });
+//                            }
+                        }
+                    }
+                    
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
