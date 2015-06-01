@@ -36,10 +36,13 @@
                         }
                     </div> 
                 }
+                @if (!((dto.UserRole & UserRole.Security) > 0))
+                {
                 <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
+                }
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0 
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -109,7 +112,7 @@
                      || (dto.UserRole & UserRole.StaffManager) > 0
                     || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
                     || (dto.UserRole & UserRole.PersonnelManager) > 0
-                    
+                    || (dto.UserRole & UserRole.Security) > 0
                       )
                 {
                     <div id="liAppointment" class="mainOn">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
@@ -131,6 +134,7 @@
                      || (dto.UserRole & UserRole.StaffManager) > 0
                      || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
+                     || (dto.UserRole & UserRole.Security) > 0
                       )
              {  
                  <div class="menuitem" id="appInstruction">@Html.ActionLink("Инструкция", "Instruction", "Appointment")</div>

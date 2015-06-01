@@ -546,6 +546,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.OutsourcingManager:
                     break;
                 case UserRole.PersonnelManagerBank:
+                case UserRole.Security:
                 case UserRole.PersonnelManager:    
                     break;
                 default:
@@ -1657,6 +1658,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManagerBank:
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
+                case UserRole.Security:
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
