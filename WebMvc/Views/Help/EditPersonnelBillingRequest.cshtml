@@ -75,7 +75,25 @@
                     <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
                 </td>
         </tr>
-         <tr>
+        @if(Model.IsEditable)
+        {
+            <tr>
+                <td>@Html.LabelFor(model => model.Question):</td>
+                <td style="vertical-align:top">
+                    @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                </td>
+            </tr>
+        }
+        @if(Model.IsAnswerEditable)
+        {
+            <tr>
+                <td>@Html.LabelFor(model => model.Answer):</td>
+                <td>
+                    @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                </td>
+            </tr>
+        }
+        <tr>
          @*
                 <td>
                     @Html.LabelFor(m => m.RecipientId):
@@ -172,18 +190,6 @@
                     <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
                     *@
                 </td>
-        </tr>
-        <tr>
-                    <td>@Html.LabelFor(model => model.Question):</td>
-                    <td style="vertical-align:top">
-                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
-                    </td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(model => model.Answer):</td>
-            <td>
-                @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
-            </td>
         </tr>
         <tr>
             <td colspan="2">
@@ -340,13 +346,13 @@
     {
         var result = true;
         clearControlErrors($("#SelectDepartmentBtn"));
-        if($("#DepartmentId").val() == 0)
-        {
-            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
-            result = false;
-        }        
-        if(!IsFieldNotEmpty($("#UserName")))
-            result = false;
+//        if($("#DepartmentId").val() == 0)
+//        {
+//            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+//            result = false;
+//        }        
+//        if(!IsFieldNotEmpty($("#UserName")))
+//            result = false;
         if(!IsFieldNotEmpty($("#Question")))
             result = false;
         else if(!validateMaxLength($("#Question"),8192))

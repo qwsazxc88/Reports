@@ -11926,7 +11926,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                var entity = SurchargeNoteDao.Load(model.Id);
+                var entity = SurchargeNoteDao.Get(model.Id);
+                
                 if (model.IsDelete)
                 {
                     entity.DeleteDate = DateTime.Now;
@@ -11991,6 +11992,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PayDay = entity.PayDay;
             model.DepartmentId = entity.DocDep7.Id;
             model.Position = entity.Creator.Position.Name;
+            if (entity.PersonnelManagerBank != null)
+            {
+                model.PersonnelManagerBankName = entity.PersonnelManagerBank.Name;
+                
+            }
+            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerDateAccept;
             if (entity.Personnel != null)
             {
                 model.PersonnelName = entity.Personnel.Name;

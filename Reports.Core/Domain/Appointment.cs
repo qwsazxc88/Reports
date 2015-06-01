@@ -12,7 +12,7 @@ namespace Reports.Core.Domain
 
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
-
+        public virtual bool IsStoped { get; set; }
         public virtual int Number { get; set; }
         public virtual string FIO { get; set; }
         public virtual int Recruter { get; set; }

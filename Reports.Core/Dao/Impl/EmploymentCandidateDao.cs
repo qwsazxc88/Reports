@@ -301,7 +301,7 @@ namespace Reports.Core.Dao.Impl
         {
             if (CandidatId > 0)
             {
-                whereString = string.Format(@"{0} candidate.Id = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), CandidatId);
+                whereString = string.Format(@"{0} candidate.Id = {1}", (whereString.Length > 0 ? "(" + whereString + @") and" : string.Empty), CandidatId);
             }
 
             return whereString;
