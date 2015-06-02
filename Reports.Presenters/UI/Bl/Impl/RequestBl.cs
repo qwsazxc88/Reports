@@ -7928,6 +7928,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailToUser(null, el);
             return true;
         }
+        /// <summary>
+        /// deprecated
+        /// </summary>
+        /// <param name="deductionNumber"></param>
+        /// <param name="MissionReportid"></param>
+        /// <returns></returns>
         public string SetDeductionDoc(int deductionNumber, int MissionReportid)
         {
             var list = DeductionDao.LoadAll().Where(x => x.Number == deductionNumber);
