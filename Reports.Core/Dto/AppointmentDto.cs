@@ -11,6 +11,7 @@ namespace Reports.Core.Dto
                 public string UserName { get; set; }
                 public string PositionName { get; set; }
                 public string ManDep7Name { get; set; }
+                public string ManDep3Name { get; set; }
                 public string CanPosition {get;set;}
                 public string Dep3Name { get; set; }
                 public string Dep7Name { get; set; }
@@ -19,6 +20,7 @@ namespace Reports.Core.Dto
                 public decimal Salary { get; set; }
                 public DateTime? DesirableBeginDate { get; set; }
                 public string Reason { get; set; }
+                public int ReasonId { get; set; }
                 public int? RId { get; set; }
                 public int? RNumber { get; set; }
                 public string RStaffAccept { get; set; }
@@ -33,7 +35,9 @@ namespace Reports.Core.Dto
                 public bool BankAccountantAccept { get; set; }
                 public int BankAccountantAcceptCount { get; set; }
                 public int SecondNumber { get; set; }
+                public string EducationStatus { get; set; }
                 public int Recruter { get; set; }
                 public string CandidateFIO { get; set; }
+                public Reports.Core.Enum.EmploymentStatus EmploymentStatus { get; set; }
     }
 }

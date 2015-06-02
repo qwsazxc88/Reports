@@ -409,8 +409,11 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
-            //$("#Variant111").hide();
+            if ($("#ContractPoint_1_Id").val() == 3)
+                $("#Variant111").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
+            if ($("#ContractPoint_1_Id").val() != 3)
+                $("#Variant111").show();
         }
         else if (TypeId == 2) {
         }

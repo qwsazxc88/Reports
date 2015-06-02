@@ -66,33 +66,79 @@
         UnsignedDismissalOrderScan = 153,
         UnsignedVacationOrderScan = 154,
 
-        // Employment documents
-        
-        Photo = 201,
-        INNScan = 202,
-        SNILSScan = 203,
-        DisabilityCertificateScan = 204,
-
+        // Документы из анкеты кандидата в приеме
+        /// <summary>
+        /// Фото кандидата
+        /// </summary>
+        Photo = 210,//201,
+        /// <summary>
+        /// Скан ИНН
+        /// </summary>
+        INNScan = 212,//202,
+        /// <summary>
+        /// Скан СНИЛС
+        /// </summary>
+        SNILSScan = 213,//203,
+        /// <summary>
+        /// Скан справки об инвалидности
+        /// </summary>
+        DisabilityCertificateScan = 214,//204,
+        /// <summary>
+        /// Скан паспорта
+        /// </summary>
         InternalPassportScan = 211,
-
+        /// <summary>
+        /// Скан диплома об образовании
+        /// </summary>
         HigherEducationDiplomaScan = 221,
+        /// <summary>
+        /// Скан документов о послевузовском обазовании
+        /// </summary>
         PostGraduateEducationDiplomaScan = 222,
+        /// <summary>
+        /// Скан докумнетов о дополнительном образовании
+        /// </summary>
         CertificationScan = 223,
+        /// <summary>
+        /// Скан документов о повышении квалификации
+        /// </summary>
         Training = 224,
-
+        /// <summary>
+        /// Свидетельсвто о браке
+        /// </summary>
         MarriageCertificateScan = 231,
+        /// <summary>
+        /// свидетельство о рождении детей
+        /// </summary>
         ChildBirthCertificateScan = 232,
         //SpousePassportScan = 233,
-
+        /// <summary>
+        /// Скан  военного билета
+        /// </summary>
         MilitaryCardScan = 241,
+        /// <summary>
+        /// Скан мобилизационного талона
+        /// </summary>
         MobilizationTicketScan = 242,
-
-        WorkbookScan = 251,
-        WorkbookSupplementScan = 252,
-
+        /// <summary>
+        /// Скан трудовой книжки
+        /// </summary>
+        WorkbookScan = 215,//251,
+        /// <summary>
+        /// Скан вкладыша трудовой книжки
+        /// </summary>
+        WorkbookSupplementScan = 216,//252,
+        /// <summary>
+        /// Скан согласия на обработку персональных данных
+        /// </summary>
         PersonalDataProcessingScan = 261,
+        /// <summary>
+        /// Скан текста о достоверности сведений
+        /// </summary>
         InfoValidityScan = 262,
-
+        /// <summary>
+        /// Заявление о приеме
+        /// </summary>
         ApplicationLetterScan = 271,
 
         //документы распечатанные и отсканированные кандидатом в приеме
@@ -112,6 +158,8 @@
         ObligationTradeSecretScan = 285,
         Certificate182HScan = 286,
         Certificate2NDFLScan = 287,
+
+        // end Employment documents
 
         // Dismissal Additional Documents Scans
 

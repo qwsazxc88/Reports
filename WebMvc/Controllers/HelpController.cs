@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
 using Reports.Core;
+using Reports.Core.Dao;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
@@ -699,14 +700,14 @@ namespace WebMvc.Controllers
         #endregion
         #region Personnel Billing
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelBillingList()
         {
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -715,7 +716,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
         public ActionResult EditPersonnelBillingRequest(int id)
         {
             EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
@@ -726,9 +727,6 @@ namespace WebMvc.Controllers
         {
             CorrectCheckboxes(model);
             CorrectDropdowns(model);
-            //UploadFileDto fileDto = GetFileContext();
-            //bool needToReload;
-            //string error;
             if (!ValidateModel(model))
             {
                 HelpBl.ReloadDictionariesToModel(model);
@@ -737,7 +735,6 @@ namespace WebMvc.Controllers
             string error;
             if (!HelpBl.SavePersonnelBillingRequestModel(model, out error))
             {
-                //HttpContext.AddError(new Exception(error));
                 if (model.ReloadPage)
                 {
                     ModelState.Clear();
@@ -750,8 +747,26 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
+        /// <summary>
+        /// Сохраняем список исполнителей при создании новой задачи в биллинге.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult HelpBillingExecutorTasks(IList<HelpPersonnelBillingRecipientDto> RecipientList, IList<HelpPersonnelBillingRecipientGroupsDto> RecipientGroups)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            HelpPersonnelBillingExecutorsDto ExecutorList = HelpBl.GetRecipients(RecipientList, RecipientGroups);
+
+
+            string jsonString = jsonSerializer.Serialize(ExecutorList);
+            return Content(jsonString);
+        }
+
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
+            if (model.Operation == 1 && ((model.RecipientList == null || model.RecipientList.Count == 0) || model.RecipientList.Where(x => x.IsRecipient == true).Count() == 0))
+                ModelState.AddModelError("RecipientList", "Выберите исполнителя!");
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(EditPersonnelBillingRequestViewModel model)
@@ -759,7 +774,7 @@ namespace WebMvc.Controllers
             if (!model.IsEditable)
             {
                 model.TitleId = model.TitleIdHidden;
-                model.RecipientId = model.RecipientIdHidden;
+                //model.RecipientId = model.RecipientIdHidden;
                 model.UrgencyId = model.UrgencyIdHidden;
             }
         }

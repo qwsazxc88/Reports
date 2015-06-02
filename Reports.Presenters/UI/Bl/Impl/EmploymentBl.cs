@@ -1690,7 +1690,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Roster = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -1) : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -2) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
@@ -1793,7 +1793,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Managers != null)
             {
-                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                //model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Department = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
@@ -1870,7 +1871,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
                 model.PositionAddition = candidate.PersonnelManagers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
-                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                //model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Department = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
@@ -2062,6 +2064,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.EmployeeDepartment = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
             }
 
@@ -2463,7 +2466,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
             model.EmployeeName = candidate.User.Name;
             model.PositionName = candidate.Managers.Position.Name;
-            model.DepartmentName = candidate.Managers.Department.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+            model.DepartmentName = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
 
             return model;
         }
@@ -2549,7 +2553,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -1) : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : -2) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
@@ -2774,7 +2778,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
                 new SelectListItem {Text = "Оформлен", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
-                new SelectListItem {Text = "Отклонен", Value = "9"}
+                new SelectListItem {Text = "Отклонен", Value = "9"},
+                new SelectListItem {Text = "Временно заблокирован", Value = "-1"}
             };
         }
 
@@ -4499,6 +4504,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
+                    if (CheckCandidateIsBlocked(entity.Candidate.User.Id))
+                    {
+                        error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
+                        return false;
+                    }
+
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !IsApprovalSkipped)
                     {                            
                         entity.ApprovalStatus = approvalStatus;
@@ -4642,6 +4653,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
                     //    return false;
                     //}
+                    if (CheckCandidateIsBlocked(entity.Candidate.User.Id))
+                    {
+                        error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
+                        return false;
+                    }
 
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
                     {
@@ -4735,6 +4751,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
+                    if (CheckCandidateIsBlocked(entity.Candidate.User.Id))
+                    {
+                        error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
+                        return false;
+                    }
+
                     if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {
                         error = "Кандидата может согласовать только руководитель, являющийся вышестоящим для создателя заявки на подбор персонала.";
@@ -4806,6 +4828,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
                 {
                     error = StrNotAgreedToPersonalDataProcessing;
+                    return false;
+                }
+
+                if (CheckCandidateIsBlocked(entity.Candidate.User.Id))
+                {
+                    error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
                     return false;
                 }
 
@@ -4947,6 +4975,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    return false;
                 //}
 
+                if (entity.Candidate.SendTo1C.HasValue)
+                {
+                    error = "Нельзя отклонить данного кандидата, так как его данные выгружены в 1С!";
+                    return false;
+                }
+
                 EmploymentStatus candidateStatus = candidate.Status;
 
                 if (candidateStatus != EmploymentStatus.REJECTED)
@@ -5022,7 +5056,32 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return true;
         }
+        /// <summary>
+        /// Проверка на доступность кандидата для согласования.
+        /// </summary>
+        /// <param name="UserId">Id учетной записи кандидата.</param>
+        /// <returns></returns>
+        public bool CheckCandidateIsBlocked(int UserId)
+        {
+            //проверяем по количеству доступных вакансий в найме и статусам кандидатов в приеме
+            EmploymentCandidate entity = GetCandidate(UserId);
+            //если кандидат не из найма, то не проверяем
+            if (entity.Appointment == null) return false;
 
+            IList<EmploymentCandidate> candidate = EmploymentCandidateDao.LoadAll().Where(x => x.Appointment != null && x.Appointment.Id == entity.Appointment.Id).ToList();
+            //проверка работает при различных согласованиях, если кандидат пришел из найма
+            //ДБ
+            //руководитель
+            //высшее руководство
+            //кадровик
+            if ((candidate.Where(x => x.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER || x.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER ||
+                x.Status == EmploymentStatus.COMPLETE || x.Status == EmploymentStatus.SENT_TO_1C).Count() == entity.Appointment.BankAccountantAcceptCount) &&
+                (entity.Status != EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER && entity.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER &&
+                entity.Status != EmploymentStatus.COMPLETE && entity.Status != EmploymentStatus.SENT_TO_1C))
+                return true;
+            else
+                return false;
+        }
         #endregion
 
         public bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error)
@@ -5064,25 +5123,33 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
+            bool IsValid = false;
             // Контроль уровня вышестоящего руководителя
             if (!IsManagerLevelValid(current))
             {
+                IsValid = false;
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
             }
+            else
+                IsValid = true;
             // Контроль уровня руководителя-инициатора
             if (!IsManagerLevelValid(creator))
             {
+                IsValid = false;
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             }
+            else
+                IsValid = true;
+
 
             switch (current.Level)
             {
                 case 2:
                 case 3:
-                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
-                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям, если первые две проверки по автоматическим правам не прошли.
+                    return IsValid ? IsValid :  MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000058")
                         .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
                 case 4:
                 case 5:
@@ -5206,12 +5273,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //проверка на необходимость отправки сообщения
                     IList<CandidateStateDto> CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
                     if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
-
+                    string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
+                    //DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3).Name
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
                     Emailaddress = "list-priem-bezopas@sovcombank.ru";
+                    //Emailaddress = "loseva@ruscount.ru";
                     //Emailaddress = "zagryazkin@ruscount.ru";
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
-                    Subject = "Оформлена заявка на прием";
+                    Subject = "Оформлена заявка на прием" + Dep3Name;
                     body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо согласование сотрудника Департамента безопасности.";
                     entity.IsCandidateToBackgroundSendEmail = true;
                     entity.CandidateToBackgroundSendEmailDate = DateTime.Now;

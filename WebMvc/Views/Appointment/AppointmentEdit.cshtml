@@ -9,7 +9,7 @@
 }
 <div style="visibility:hidden">
 <div id="AddEmployment" title="Добавление кандидата">
-@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
+@*@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
     <div class="doc-wrap">
             <fieldset class="bordered doc-wrap panel">
@@ -59,7 +59,7 @@
     <div class="clear">        
        <button type="submit">Сохранить</button>
     </div>
-}
+}*@
 </div>
 </div>
 @using (Html.BeginForm("AppointmentEdit","Appointment"))
@@ -111,7 +111,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (Model.IsEditable)
+                    @if (Model.IsEditable || (dto.UserRole== UserRole.PersonnelManagerBank))
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -152,14 +152,18 @@
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
-           @* <tr id="ReasonPositionTr">
+            @*<tr id="FIO_for_reason" class="HiddenObject">
+            <td><span id="FIO_for_reason_text"></span></td>
+            <td>@Html.EditorFor(m=>m.FiredFIO)</td>
+            </tr>*@
+           <tr id="ReasonPositionTr">
                 <td>
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
                 </td>
-            </tr>*@
+            </tr>
             @if (!Model.ShowStaff)
             {
             <tr>
@@ -350,7 +354,12 @@
         <tr>
                     <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div></td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
+                    @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+                    { 
+                      <input type="button" value="Отправить Email руководителю" id="SendEmailButton" onclick="SendEmailForManager();"/>                    
+                    }
+                    </td>
                 </tr>
             @* <tr>
                 <td>
@@ -421,11 +430,12 @@
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                  @* @Html.ActionLink("Создать отчёт","CreateReportForOldAppointment",new {id=Model.Id},null) *@                  
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
-                   @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
+                  @* @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
-                    }
+                    }*@
                    @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
                     {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
@@ -508,6 +518,17 @@
             return false;*/
         $("#IsDelete").val("true");
         return true;
+    }
+    function SendEmailForManager()
+    {
+     $("#SendEmailButton").hide();
+     $.ajax({
+        type: "POST",
+        url: "/Appointment/SendEmailFor",
+        data: {AppointmentId:@Model.Id},
+        success: function(message){$("#SendEmailButton").show();alert(message.status);},
+        error:function(){$("#SendEmailButton").show();alert('При отправки сообщения произошла ошибка.');}
+        });
     }
     function ValidateForm()
     {
@@ -601,7 +622,7 @@
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
-                $("#ReasonPositionTr").show();
+                $("#ReasonPositionTr").hide ();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');

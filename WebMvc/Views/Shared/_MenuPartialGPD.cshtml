@@ -104,6 +104,7 @@
                      || (dto.UserRole & UserRole.StaffManager) > 0
                      || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
+                     || (dto.UserRole & UserRole.Security) > 0
                       )
                  {
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")

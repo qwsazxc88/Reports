@@ -19,6 +19,7 @@ namespace Reports.Core.Dao
         IList<AppointmentDto> GetDocuments(int userId,
                                            UserRole role,
                                            int departmentId,
+                                           int reasonId,
                                            int statusId,
                                            string number,
                                            DateTime? beginDate,
@@ -34,6 +35,7 @@ namespace Reports.Core.Dao
                                            DateTime? beginDate,
                                            DateTime? endDate,
                                            string userName,
+                                           string CandidateFio,
                                            int sortBy,
                                            bool? sortDescending);
     }

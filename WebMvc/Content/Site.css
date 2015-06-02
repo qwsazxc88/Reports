@@ -281,7 +281,19 @@ table.grid
   color:Black;
   width:100%;
 }
-
+table.grid2
+{
+  border: 1px solid Black;
+  border-collapse: collapse;
+  color:Black;
+  width:100%;
+}
+table.grid2 td 
+{
+  border: 1px solid Black;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 table.grid > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
@@ -298,7 +310,7 @@ table.grid tr.warning
 {
     background: #FF6666;
 }
-table.grid th
+table.grid  th
 {
   border: 1px solid Black;
   text-align: center;
@@ -306,7 +318,14 @@ table.grid th
   padding-left: 5px;
   padding-right: 5px;
 }
-
+table.grid2  th
+{
+  border: 1px solid Black;
+  text-align: center;
+  white-space:nowrap;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 table.centered td
 {
     text-align: center;
@@ -315,6 +334,15 @@ table.centered td
 td.centered
 {
     text-align: center;
+}
+
+td.tdheader
+{
+  border: 1px solid Black;
+  text-align: center;
+  white-space:nowrap;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 /* TABLE-STATE
@@ -1654,6 +1682,7 @@ legend {
   
  .NewsPost
  {
+     display:block;
      position:relative;
      padding:10px;
      background-color: #fafafa;
@@ -1667,3 +1696,19 @@ legend {
      visibility:hidden;
      height:0px;
  }
+ .bgGray
+ {
+     background-color:#929D9D;
+ }
+ .bgRed
+ {
+     background-color:#FACFDA;
+ }
+ .bgGreen
+ {
+     background-color:#CFFAE9;
+ }
+.bgBlue
+{
+    background-color:#CFF7FA;
+}

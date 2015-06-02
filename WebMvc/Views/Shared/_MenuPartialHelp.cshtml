@@ -119,6 +119,7 @@
                      || (dto.UserRole & UserRole.StaffManager) > 0
                      || (dto.UserRole & UserRole.PersonnelManagerBank)>0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
+                     || (dto.UserRole & UserRole.Security) > 0
                       )
                  {
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
@@ -159,10 +160,11 @@
             {
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
             }
-            @*@if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+            
+            @if (UserDto.IsHelpPersonnelBillingAvailable(dto))
             {
                 <div class="menuitem" id="helpPersonnelBilling">@Html.ActionLink("Биллинг внутренний", "PersonnelBillingList", "Help")</div>
-            }*@
+            }
             <div class="menuitem" id="helpInfo">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
          </div> 

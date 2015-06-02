@@ -33,6 +33,7 @@ namespace Reports.Core.Dao.Impl
                 u.Name as UserName,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
+                mapDep3.Name as ManDep3Name,
                 -- aPos.Name as CanPosition, 
                 v.PositionName as CanPosition, 
                 dep3.Name as Dep3Name,
@@ -41,6 +42,8 @@ namespace Reports.Core.Dao.Impl
                 v.Schedule as Schedule,
                 v.Salary+v.Bonus as Salary,
                 v.DesirableBeginDate as DesirableBeginDate,
+                v.Recruter,
+                ar.Id as ReasonId,
                 ar.Name as Reason,
                 r.[Id] as RId,
                 r.[Number] as RNumber,
@@ -62,13 +65,25 @@ namespace Reports.Core.Dao.Impl
                 ur.Name as StaffName,
                 case
                         when r.StaffDateAccept is null then N'Черновик'
-                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 then N'Кандидату отказано'
-                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат принят'
-                        when r.StaffDateAccept is not null then 'Отправлена руководителю'
+                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 and r.IsEducationExists is null then N'Собеседование не пройдено'
+                        when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
+                        when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'
+                        when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат выгружен в приём'
+                        when r.StaffDateAccept is not null and r.IsColloquyPassed is null then 'Отправлена руководителю'
                          else N''
                         end as Status,
                         v.BankAccountantAccept as BankAccountantAccept,
-                        V.BankAccountantAcceptCount as BankAccountantAcceptCount
+                        V.BankAccountantAcceptCount as BankAccountantAcceptCount,
+                case
+                    when EC.Status is null then -1
+                    else                    
+                    EC.Status 
+                end as EmploymentStatus ,
+                case
+                    when OnsTr.[IsComplete]=0 then N'Обучение не пройдено'
+                    when OnsTr.[IsComplete]=1 then N'Обучение пройдено'
+                    else N''
+                end  as EducationStatus
                 from dbo.Appointment v
                 inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
@@ -84,6 +99,9 @@ namespace Reports.Core.Dao.Impl
                     case when u.RoleId & 512 > 0 then N'H' else N'R' end  
                     = u.Login and uEmp.RoleId = 2 
                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                left join dbo.Department mapDep3 on mapDep7.Path like  mapDep3.Path+N'%' and mapDep3.ItemLevel = 3
+                Left join EmploymentCandidate EC ON r.id=EC.AppointmentReportId
+                left join OnsiteTraining OnsTr On OnsTr.id=EC.OnsiteTrainingId
                 ";
         #endregion
         //{1}";
@@ -99,6 +117,7 @@ namespace Reports.Core.Dao.Impl
                 u.Name as UserName,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
+                mapDep3.Name as ManDep3Name,
                 -- aPos.Name as CanPosition, 
                 v.PositionName as CanPosition, 
                 dep3.Name as Dep3Name,
@@ -107,13 +126,16 @@ namespace Reports.Core.Dao.Impl
                 v.Schedule as Schedule,
                 v.Salary+v.Bonus as Salary,
                 v.DesirableBeginDate as DesirableBeginDate,
+                ar.Id as ReasonId,
                 ar.Name as Reason,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование в кадровую службу'
+                        when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
+                        
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не достаточно вакансий. Отправлена на согласование вышестоящему руководителю.'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не хватает вакансий. Отправлена на согласование вышестоящему руководителю.'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount>=v.VacationCount then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
@@ -138,6 +160,7 @@ namespace Reports.Core.Dao.Impl
                     case when u.RoleId & 512 > 0 then N'H' else N'R' end  
                     = u.Login and uEmp.RoleId = 2 
                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                left join dbo.Department mapDep3 on mapDep7.Path like  mapDep3.Path+N'%' and mapDep3.ItemLevel = 3
                 ";
         #endregion
         public override IQuery CreateQuery(string sqlQuery)
@@ -150,6 +173,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("PositionName", NHibernateUtil.String).
                 AddScalar("ManDep7Name", NHibernateUtil.String).
+                AddScalar("ManDep3Name", NHibernateUtil.String).
                 AddScalar("CanPosition", NHibernateUtil.String).
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
@@ -164,7 +188,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAcceptCount",NHibernateUtil.Int32).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Recruter",NHibernateUtil.Int32).
-                AddScalar("CandidateFIO",NHibernateUtil.String);
+                AddScalar("CandidateFIO",NHibernateUtil.String).
+                AddScalar("ReasonId",NHibernateUtil.Int32);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -198,7 +223,12 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankAccountantAccept", NHibernateUtil.Boolean).
                 AddScalar("BankAccountantAcceptCount", NHibernateUtil.Int32).
                 AddScalar("SecondNumber",NHibernateUtil.Int32).
-                AddScalar("CreateDate",NHibernateUtil.DateTime);
+                AddScalar("CreateDate",NHibernateUtil.DateTime).
+                AddScalar("EmploymentStatus",NHibernateUtil.Int32).
+                AddScalar("ManDep3Name", NHibernateUtil.String).
+                AddScalar("Recruter", NHibernateUtil.Int32).
+                AddScalar("EducationStatus", NHibernateUtil.String).
+                AddScalar("ReasonId", NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -316,6 +346,7 @@ namespace Reports.Core.Dao.Impl
         public IList<AppointmentDto> GetDocuments(int userId,
                 UserRole role,
                 int departmentId,
+                int reasonId,
                 int statusId,
                 string number,
                 DateTime? beginDate,
@@ -336,6 +367,12 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += String.Format(@" v.Number like '{0}%' ", number);
             }
+            if (reasonId > 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" ar.id={0} ", reasonId);
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -353,6 +390,7 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                string CandidateFio,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -366,7 +404,13 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.Number as varchar)+'_'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+                whereString +=String.Format(@" (CAST(v.Number as varchar)+'/'+CAST(r.SecondNumber as varchar)) like '{0}%' ", number.Trim());
+            }
+            if (!String.IsNullOrWhiteSpace(CandidateFio))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@" r.name like '{0}%' ", CandidateFio.Trim());
             }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
@@ -468,6 +512,9 @@ namespace Reports.Core.Dao.Impl
                 case 24:
                     orderBy = @" order by CandidateFIO";
                     break;
+                case 25:
+                    orderBy = @" order by BankAccountantAcceptCount";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -496,7 +543,15 @@ namespace Reports.Core.Dao.Impl
                     case 4://4, "Отправлено руководителю"
                         statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
                         break;
-                    
+                    case 5://5, "Собеседование пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
+                        break;
+                    case 6://6, "Обучение пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=1 ";
+                        break;
+                    case 7://7, "Обучение не пройдено"
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=0 ";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -523,7 +578,7 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
                         break;
                     case 3://3, "Согласована вышестоящим руководителем"
-                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
+                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter<2";
                         break;
                     case 4://4, "Принята в работу"
                         statusWhere = @"v.StaffDateAccept is not null ";
@@ -535,8 +590,17 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
                             break;
                     case 7://Отправлена на согласование в кадровую службу
-                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null";
+                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null ";
                             break;
+                    case 8://Согласование приостановленно
+                            statusWhere = @" v.BankAccountantAccept is null and v.IsStoped=1 ";
+                            break;
+                    case 9: //Не хватает вакансий
+                            statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount and v.BankAccountantAcceptCount>0"; 
+                        break;
+                    case 10://3, "Согласована вышестоящим руководителем. Поиск не требуется"
+                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter=2";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -646,6 +710,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManagerBank:
                 case UserRole.StaffManager:
+                case UserRole.Security:
                     return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));

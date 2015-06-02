@@ -65,8 +65,28 @@
 </div>
 @using (Html.BeginForm("AppointmentReportEdit", "Appointment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
+                <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
+                <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
+                <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
+                <input type="hidden" id="City" name="City" value="@Model.City" />
     <div class="doc-wrap">
         <table style="width:100%">
+        <tr>
+        <td colspan='2'>
+        Данный отчёт к заявке №@Model.AppointmentNumber необходимо заполнить специалисту по подбору персонала. При необходимости создания еще одного отчёта к данной заявке для другого кандидата, необходимо нажать на кнопку "Добавить резюме кандидата."
+        </td>
+        </tr>
             <tr>
                 <td colspan="2">
                     @Html.ValidationSummary(false)
@@ -97,7 +117,6 @@
                 </td>
                 <td>
                     <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 </td>
             </tr>
             <tr>
@@ -106,7 +125,6 @@
                 </td>
                 <td>
                      <label>@Model.City</label>
-                     <input type="hidden" id="City" name="City" value="@Model.City" />
                 </td>
             </tr>
             <tr>
@@ -144,6 +162,7 @@
                     @Html.TextBoxFor(model => model.Name, Model.IsEditable ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
+            @if(Model.ShowStaff){
              <tr>
                 <td>
                     @Html.LabelFor(m => m.Phone):
@@ -160,6 +179,7 @@
                     @Html.TextBoxFor(model => model.Email, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
+            }
              <tr>
                 <td>
                     @Html.LabelFor(m => m.AppointmentNumber):
@@ -169,6 +189,8 @@
                     <input type="hidden" id="AppointmentNumber" name="AppointmentNumber" value="@Model.AppointmentNumber" />
                 </td>
             </tr>
+            @if (Model.ShowStaff)
+            {
             <tr>
                 <td>
                     @Html.LabelFor(m => m.TypeId):
@@ -194,9 +216,7 @@
                     {
                         <a class="ui-notify-close" id="ScanUrl" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
                     }
-                    <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
-                    <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
-                    <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
+                    
                     <input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment();" @if (!Model.IsDeleteScanAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
                 </td>
@@ -206,10 +226,16 @@
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
-             
+            <tr>
+                <td>Комментарий к резюме</td>
+                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" })</td>
+            </tr>
+            }
         </table>
      </fieldset>
      <table>
+     @if (Model.ShowStaff)
+     {
      <tr>
                 <td>
                     @Html.LabelFor(m => m.IsStaffApproved):
@@ -225,16 +251,7 @@
             </tr>
              <tr>
                 <td>
-                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
-                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
-                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
-                <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
-                <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
-                <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
+                
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
@@ -319,14 +336,18 @@
                                                                                             {<text>style="display:none"</text>}/>
                 </td>
             </tr>
+     }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed==1 && (dto.Id==Model.UserId))
+                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates!=null && Model.Candidates.Any()))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }
-                   <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
-                                                                                                                                                                     {<text>style="display:none"</text>}/>
+                    @if (!Model.IsClosed)
+                    {
+                   <input type="button" value="Добавить резюме кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
+                                                                                                                                                                             {<text>style="display:none"</text>}/>
+                    }
                    @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
                                                                 {<text>style="display:none"</text>}  />*@
@@ -335,8 +356,8 @@
               </tr>
      </table>
     </div>
-    if(Model.Candidates!=null && Model.Candidates.Any())
-    {
+                    if (Model.Candidates != null && Model.Candidates.Any())
+                    {
     <div class="doc-wrap">
     Принятые сотрудники(@Model.Candidates.Count):
     <br />
@@ -347,14 +368,14 @@
     </tr>
     </thead>
     <tbody>
-    @foreach(var el in Model.Candidates)
+    @foreach (var el in Model.Candidates)
     {
       <tr><td>@el.Name</td><td>@el.EmploymentDate</td><td>@el.Status</td></tr>
     }
     </tbody>
     </table>
     </div>  
-        }
+                    }
      <br />
     <div class="comment-wrap">
         <table style="width:100%">
@@ -459,12 +480,12 @@
              }
              if(($("#ColloquyDate").val() != '') && !isCheckboxChecked($("#IsManagerApproved")))
              {
-                 addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Дата собеседования". ');
+                 addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должено быть отмечено - заполнено поле "Дата собеседования". ');
                  result = false;
              }
              if(isCheckboxChecked($("#IsManagerApproved")) && !isCheckboxChecked($("#IsStaffApproved")))
              {
-                addControlError($("#IsStaffApproved"),'Чекбокс "Отправить на согласование" должен быть отмечен - установлен чекбокс "Кандидат приглашен на собеседование". ');
+                addControlError($("#IsStaffApproved"),'Поле "Отправить на согласование" должено быть отмечено - отмечено поле "Кандидат приглашен на собеседование". ');
                 result = false;
              }
         }
@@ -490,17 +511,17 @@
         {
             if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsColloquyPassed").val() != -1))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Собеседование пройдено/не пройдено". ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - заполнено поле "Собеседование пройдено/не пройдено". ');
                   result = false;
             }
              if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsEducationExists").val() != -1))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Обучение пройдено/не пройдено". ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - заполнено поле "Обучение пройдено/не пройдено". ');
                   result = false;
             }
              if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#DateAccept").val()))
             {
-                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - установлено дата приема на работу. ');
+                  addControlError($("#IsManagerApproved"),'Поле "Кандидат приглашен на собеседование" должно быть отмечено - установлено дата приема на работу. ');
                   result = false;
             }
             if(($("#DateAccept").val() || ($("#IsEducationExists").val() != -1)) && ($("#IsColloquyPassed").val() == -1))

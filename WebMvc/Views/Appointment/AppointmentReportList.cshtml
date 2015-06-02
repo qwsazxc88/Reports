@@ -8,6 +8,7 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.ForPrint);
      <table style="width:100%">
       <tr>
         <td colspan="2">
@@ -46,7 +47,7 @@
                         </tr>
                          <tr>
                              <td>
-                                @Html.LabelFor(m => m.StatusId):
+                                Статус отчёта:
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
@@ -54,7 +55,7 @@
                         </tr>
                         <tr>
                              <td>
-                                @Html.LabelFor(m => m.Number):
+                                Номер заявки/ отчёта
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.Number)
@@ -69,6 +70,14 @@
                                 </td>
                          </tr>
                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.CandidateName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.CandidateName)
+                                </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -80,7 +89,8 @@
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
-                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>                            
+                            
                           </td>
                         </tr>
             </table>
@@ -88,10 +98,11 @@
     </td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="2"><div class="action-wrap">
+        <input type="submit" value="Печать" onclick="$('#ForPrint').val(2);"/>
         @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
         {
-          <div class="action-wrap">
+          
             <table style="width:100%">
                     <tr>
                             @if (Model.IsAddAvailable)
@@ -108,30 +119,24 @@
                                     <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
                                 </td>
                              }
-                            @*<td style = "text-align:right">
-                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
-                                @if(Model.IsApproveAvailable)
-                                {
-   
-                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
-                                }
-                            </td>*@
                    </tr>
               </table>  
-           </div>
-        }
+           
+        }</div>
         </td>
     </tr>   
      <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+            <table class="grid2" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                      <th>
                         № п/п
                     </th>
-                    
+                    <th>
+                        <div id="sort1" style="min-width:70px"><a href="#"  onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
+                    </th>
                      <th>
                         <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер<br/> отчета</a></div>
                     </th>
@@ -144,17 +149,20 @@
                     <th>
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
+                    <th>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
+                    </th>
                      <th>
-                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
                     <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур.</a></div>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
                     </th>
                    @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
@@ -195,22 +203,41 @@
                     <th>
                         <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
                     </th>
+                    <th>
+                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения</a></div>
+                    </th>
+                    <th>
+                        <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr>
+                        <tr
+                        @switch((int)doc.EmploymentStatus)
+                        {
+                            case 8: <text> class="bgGray" </text>
+                                break;
+                            case -1: <text> </text>
+                                break;
+                            default:<text> class="bgBlue" </text>
+                                break;
+                        }
+                        >
+                            
                             <td>@doc.Number</td>
+                            <td><a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber @(doc.Recruter == 2 ? "(У)" : "")</a></td>
                             <td style="text-align:left">
                                 
-                                    <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.RNumber)_@(doc.SecondNumber)</a>
+                                    <a class="ui-notify-close" href='@Url.Action("AppointmentReportEdit", new { id = doc.RId.Value })' style="cursor:hand">@(doc.AppNumber)/@(doc.SecondNumber)</a>
                                 
                             </td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
+                            <td>@doc.ManDep3Name</td>
                             <td>@doc.ManDep7Name</td>
                             <td>@doc.CanPosition</td>
                             <td>@doc.Dep3Name</td>
@@ -228,6 +255,17 @@
                             <td>@doc.RReject</td>
                             <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
+                            <td>@doc.EducationStatus</td>
+                            <td>@{if (doc.EmploymentStatus != null)
+                                  {
+                                      var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());
+                                      if (es != null && es.Any())
+                                      {
+                                    <text>@es.First().Text</text>;
+                                      }
+
+                                  }}
+                            </td>
                         </tr>
                     }
                 }
