@@ -67,5 +67,9 @@
       <key column="AppointmentId" foreign-key="FK_EmploymentCandidate_Appointment"/>
       <one-to-many class="EmploymentCandidate"/>
     </bag>
+    <bag name="Recruters" lazy="true" table="AppointmentRecruter" cascade="all">
+      <key column="AppointmentId" foreign-key="FK_AppointmentRecruter_Appointment"/>
+      <many-to-many class="User" column="RecruterId" foreign-key="FK_AppointmentRecruter_Recruter"/>
+    </bag>
 	</class>
 </hibernate-mapping>

@@ -128,11 +128,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int StaffCreatorId { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
-
+        public IList<IdNameDto> AppointmentTypes { get; set; }
+        public int AppointmentType { get; set; }
         public bool BankAccountantAccept { get; set; }
         public int BankAccountantAcceptCount { get; set; }
         public string BankAccountantName { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
         public IList<CandidateDto> Candidates { get; set; }
+        public IList<IdNameDto> Recruters { get; set; }
+        public int Recruter1id { get; set; }
+        public int Recruter2id { get; set; }
+        public int Recruter3id { get; set; }
+        public IList<IdNameDto> AppointmentEducationTypes { get; set; }
+        public int AppointmentEducationType { get; set; }
     }
 }

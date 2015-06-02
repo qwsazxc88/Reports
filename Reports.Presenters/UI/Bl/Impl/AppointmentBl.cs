@@ -625,6 +625,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadDictionaries(AppointmentEditModel model)
         {
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            model.AppointmentEducationTypes=AppointmentEducationTypeDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
+            model.Recruters = UserDao.GetStaffList().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.DepartmentRequiredLevel = 7;
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>

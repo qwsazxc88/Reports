@@ -395,6 +395,7 @@
                      <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
                 </td>
             </tr>
+            
             @* <tr>
                 <td>
                     @Html.LabelFor(m => m.IsPersonnelApproved):
@@ -425,22 +426,43 @@
                             <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
                         </td>
                     </tr>
+                 <tr>
+                     <td>Рекрутер 1:</td>
+                     <td>@Html.DropDownListFor(x=>x.Recruter1id,new SelectList(Model.Recruters,"Id","Name"))
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 2:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"))
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 3:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"))
+                     </td>
+                 </tr>
                  }
+             <tr>
+                 <td>Выбрать принадлежность кандидата</td>
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"))
+                 </td>
+            </tr>
              }
         <tr>
                 <td>
-                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
                   @* @Html.ActionLink("Создать отчёт","CreateReportForOldAppointment",new {id=Model.Id},null) *@                  
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
                   @* @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }*@
-                   @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
-                    {
+                   @if (Model.ManagerId == dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists == 0 || !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
+                   {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
                        <input type="button" value="Создать служебную записку (.docx)"  onClick="javascript:window.location.href='/Appointment/NoteDocX/@Model.Id'" />
-                    }
+                   }
                    <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
@@ -452,8 +474,8 @@
             </tr>
         </table>
     </div> 
-    if(Model.Candidates!=null && Model.Candidates.Any())
-    {
+                                                                                      if (Model.Candidates != null && Model.Candidates.Any())
+                                                                                      {
     <div class="doc-wrap">
     Принятые сотрудники(@Model.Candidates.Count):
     <br />
@@ -471,7 +493,7 @@
     </tbody>
     </table>
     </div>  
-    }
+                                                                                      }
     <br />
     <div class="comment-wrap">
         <table style="width:100%">
