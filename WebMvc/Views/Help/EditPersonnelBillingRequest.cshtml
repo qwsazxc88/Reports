@@ -346,11 +346,11 @@
     {
         var result = true;
         clearControlErrors($("#SelectDepartmentBtn"));
-//        if($("#DepartmentId").val() == 0)
-//        {
-//            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
-//            result = false;
-//        }        
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            result = false;
+        }        
 //        if(!IsFieldNotEmpty($("#UserName")))
 //            result = false;
         if(!IsFieldNotEmpty($("#Question")))
