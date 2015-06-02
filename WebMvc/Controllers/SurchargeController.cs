@@ -65,7 +65,12 @@ namespace WebMvc.Controllers
             //string error=RequestBl.SetDeductionDoc(deductionNumber, missionReportId);
             //if (error != "") return Json(new { status = "Error", message = error });
             int doc = SurchargeBl.AddSurcharge(userId, sum, CurrentUser.Id, DateTime.Now, missionReportId, deductionNumber);
-            if (doc < 1) return Json(new { status = "Error", message = "Ошибка добавления документа." });
+            if (doc < 1)
+            {
+                if (doc == -1) return Json(new { status = "Error", message = "Ошибка добавления документа.  Доплата уже была создана." });
+                
+                return Json(new { status = "Error", message = "Ошибка добавления документа." });
+            }
             return Json(new { status = "Ok", message = String.Format("Добавлен документ №{0}.",doc) });
         }
 

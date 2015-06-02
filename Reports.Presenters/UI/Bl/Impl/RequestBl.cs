@@ -11121,6 +11121,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
             SetFlagsState(model, false);
+            var surchargeDao = Ioc.Resolve<ISurchargeDao>();
+            if (surchargeDao != null)
+                model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
+            else model.IsSurchargeAvailable = true;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
