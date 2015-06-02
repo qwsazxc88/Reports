@@ -1793,7 +1793,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Managers != null)
             {
-                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                //model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Department = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
@@ -1870,7 +1871,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonalAddition = candidate.PersonnelManagers.PersonalAddition;
                 model.PositionAddition = candidate.PersonnelManagers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
-                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                //model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Department = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
@@ -2062,6 +2064,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.EmployeeDepartment = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
                 model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
             }
 
@@ -2463,7 +2466,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
             model.EmployeeName = candidate.User.Name;
             model.PositionName = candidate.Managers.Position.Name;
-            model.DepartmentName = candidate.Managers.Department.Name;
+            //model.DepartmentName = candidate.Managers.Department.Name;
+            model.DepartmentName = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
 
             return model;
         }
