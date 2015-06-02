@@ -7,6 +7,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class DeductionDao : DefaultDao<Deduction>, IDeductionDao
@@ -53,6 +54,12 @@ namespace Reports.Core.Dao.Impl
         public DeductionDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
+        }
+        public Deduction GetDeductionByNumber(int number)
+        {
+            var d=Session.Query<Deduction>().Where(x => x.Number == number);
+            if (d != null && d.Any()) return d.First();
+            else return null;
         }
         public virtual IList<DeductionDto> GetDocuments(
                                 int userId,
