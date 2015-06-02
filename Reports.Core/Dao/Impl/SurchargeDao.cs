@@ -91,11 +91,13 @@ namespace Reports.Core.Dao.Impl
             if (sortDescending.HasValue && sortDescending.Value) dto.Reverse();
             return dto;
         }
-        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
+        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId, int deductionNumber)
         {
             var User = UserDao.Load(userId);
             var Editor = UserDao.Load(creatorId);
             var MissionReport = Ioc.Resolve<IMissionReportDao>().Load(missionReportId);
+            var deductionDao=Ioc.Resolve<IDeductionDao>();
+            var deduction = deductionDao.GetDeductionByNumber(deductionNumber);
 
             var document = new Surcharge { 
                 Sum = sum,
