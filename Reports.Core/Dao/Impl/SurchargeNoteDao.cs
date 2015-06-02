@@ -78,7 +78,7 @@ namespace Reports.Core.Dao.Impl
             }
             if (endDate.HasValue)
             {
-                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value));
+                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value+TimeSpan.FromDays(1)));
             }
             if (!String.IsNullOrWhiteSpace(docNumber))
             {
