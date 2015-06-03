@@ -4,10 +4,12 @@
     ViewBag.Title = "Address";
 }
 
-<b>Адрес</b>
+<b>Адрес AJAX</b>
 
 @using (Html.BeginForm("Address", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Address-form" }))
 {
+    @Html.HiddenFor(m => m.Code)
+    @Html.HiddenFor(m => m.AddressType)
     <table style="width:100%">
         <tr>
             <td colspan="2">
@@ -26,6 +28,7 @@
                                 @Html.LabelFor(m => m.RegionCode):
                             </td>
                             <td style="width:400px">
+                                @*@Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) *@
                                 @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) 
                             </td>
                             <td rowspan="5" align="center"><span id="LoadingIndicator2"></span></td>
@@ -35,6 +38,7 @@
                                 @Html.LabelFor(m => m.AreaCode):
                             </td>
                             <td>
+                                @*@Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) *@
                                 @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) 
                             </td>
                         </tr>
@@ -43,6 +47,7 @@
                                 @Html.LabelFor(m => m.CityCode):
                             </td>
                             <td>
+                                @*@Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) *@
                                 @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) 
                             </td>
                         </tr>
@@ -51,6 +56,7 @@
                                 @Html.LabelFor(m => m.SettlementCode):
                             </td>
                             <td>
+                                @*@Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) *@
                                 @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) 
                             </td>
                         </tr>
@@ -59,6 +65,7 @@
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
+                                @*@Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(-1);" }) *@
                                 @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(-1);" }) 
                             </td>
                         </tr>
@@ -66,6 +73,8 @@
                             <td colspan="3">
                                 <table>
                                     <tr>
+                                        <td>@Html.LabelFor(m => m.Index)</td>
+                                        <td>@Html.TextBoxFor(m => m.Index, new { style = "width:50px" })</td>
                                         <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
                                         <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
@@ -102,10 +111,30 @@
 
 
     function CodeChange(AddressType) {
+//        if (AddressType == 2)
+//            $("#Code").val($("#RegionCode").val());
+//        if (AddressType == 3)
+//            $("#Code").val($("#AreaCode").val());
+//        if (AddressType == 4)
+//            $("#Code").val($("#CityCode").val());
+//        if (AddressType == 5)
+//            $("#Code").val($("#SettlementCode").val());
+
+
+//        $("#AddressType").val(AddressType);
+//        $("#Address-form").submit();
+//        return;
+
+
+
         //загружаем районы
         if (AddressType == 2){
-            if($("#RegionCode").val() == "" || $("#RegionCode").val() == null)
-                    setEmptyToDropdown("RegionCode");
+            if($("#RegionCode").val() == "" || $("#RegionCode").val() == null){
+                    setEmptyToDropdown("AreaCode");
+                    setEmptyToDropdown("CityCode");
+                    setEmptyToDropdown("SettlementCode");
+                    setEmptyToDropdown("StreetCode");
+                }
             else{
                 //районы
                 GetArea(actionUrl, "AreaCode", $("#RegionCode").val(), "GET", AddressType);
@@ -151,16 +180,27 @@
             }
         }
 
+        if (AddressType == 6){
+            GetArea(actionUrl, "StreetCode", $("#StreetCode").val(), "GET", AddressType);
+//            if($("#SettlementCode").val() == "" || $("#SettlementCode").val() == null)
+//                    setEmptyToDropdown("SettlementCode");
+//            else{
+//                //улицы
+//                GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
+//            }
+        }
+
         CreateAddress();
-        //setEmptyToDropdown('Level4ID', AddressType);
-        //setEmptyToDropdown('Level5ID', AddressType);
-        //setEmptyToDropdown('Level6ID', AddressType);
-        //setEmptyToDropdown('Level7ID', AddressType);
     }
 
     //создаем адрес
     function CreateAddress(){
         var StrAddress = "";
+
+        if($("#Index").val() != ""){
+            StrAddress += (StrAddress == "" ? "" :  " ") + $("#Index").val();    
+        }
+
         if($("#RegionCode").val() != null && $("#RegionCode").val() != ""){
             StrAddress = $("#RegionCode option:selected").text().trim();
         }
@@ -208,8 +248,9 @@
     function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
         $("#LoadingIndicator2").addClass("loading2");                
         //$("#LoadingIndicator2").text("Идет загрузка данных...");
-
-        var url = actionUrl + '?Code='+ code + '&AddressType=' + AddressType;
+        $("#Code").val(code);
+        $("#AddressType").val(AddressType);
+        var url = actionUrl;// + '?Code='+ code + '&AddressType=' + AddressType;
 
         var dataToSend = $("#Address-form").serialize();
         
@@ -237,18 +278,28 @@
     {
         //var options = $('#' + controlName);
         //options.attr("disabled", "disabled");
-        var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
-        optionsValues += '<option value=""></option>';
-        $.each(data, function (item, data) {
-            optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
-        })
-        optionsValues += '</select>';
+        if (data.Kladr != null)
+        {
+            var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
+            optionsValues += '<option value=""></option>';
 
-        console.log(optionsValues);
+            for (var i = 0; i < data.Kladr.length; i++)
+            {
+                optionsValues += '<option value="' + data.Kladr[i].Code + '">' + data.Kladr[i].Name + '</option>';
+            }
 
-        var options = $("#" + controlName );
-        options.replaceWith(optionsValues);
-        //options.removeAttr("disabled");
+    //        $.each(data, function (item, data) {
+    //            optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
+    //        })
+            optionsValues += '</select>';
+
+            var options = $("#" + controlName );
+            options.replaceWith(optionsValues);
+        }
+        
+        
+
+        $("#Index").val(data.PostIndex);
     }
 
     //чистим комбобоксы

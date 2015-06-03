@@ -52,12 +52,9 @@
     {
         font-weight:bold;
     }
-    .treeview li
+    .grid tr a
     {
-    }
-    .treeview li a
-    {
-        padding:4px;
+        
         font-size:12px;
         display:inline-block;
         text-decoration:none;
@@ -177,7 +174,6 @@
             $("#DepId").val(Id);
             var dataToSend = $("#Tree-Grid-Ajax-form").serialize();
             ShowFlash(true);
-            //$("#LoadingIndicator2").addClass("loading2");
 
             jQuery.ajax({
                 url: actionUrl,
@@ -253,22 +249,6 @@
 
                             var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                             $(ParentRowName).after(tblStr);//вставляем новую строку
-
-                            //$("#span" + result.Departments[i].Code.trim()).removeClass("collapse collapsible");
-                            //$("#getnodes-" + result.Departments[i].Code.trim()).removeClass("Acollapsible");
-
-                            //для седьмого уровня не надо обработчик
-//                            if (result.Departments[i].ItemLevel <= 7){
-//                                $("#span" + result.Departments[i].Code.trim()).addClass("collapse collapsible");
-//                                $("#getnodes-" + result.Departments[i].Code.trim()).addClass("Acollapsible");
-//                                //console.log(ResultStr);
-//                                //назначаем обработчик для раскрытия веток дерева
-//                                $("#getnodes-" + result.Departments[i].Code.trim()).click(function (e) {
-//                                    e.preventDefault();
-//                                    $(this).children('span').toggleClass("collapse expand");
-//                                    $(this).closest('li').children('ul').slideToggle();
-//                                });
-//                            }
                         }
                     }
 

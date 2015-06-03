@@ -80,11 +80,18 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult Address(AddressModel model)
+        {
+            model = StaffListBl.GetAddress(model);
+            return View(model);
+        }
+
         [HttpGet]
-        public ContentResult GetKladr(string Code, int AddressType)
+        public ContentResult GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType));
+            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladrNew(Code, AddressType, RegionCode, AreaCode, CityCode, SettlementCode));
             return Content(jsonString);
         }
     }

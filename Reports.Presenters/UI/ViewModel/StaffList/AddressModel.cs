@@ -55,7 +55,12 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "№ квартиры")]
         public string FlatNumber { get; set; }
 
+        [Display(Name = "Почтовый индекс")]
+        public string Index { get; set; }
+
         //для сообщений
         public string errorMessage { get; set; }
+        public string Code { get; set; }
+        public int AddressType { get; set; }
     }
 }

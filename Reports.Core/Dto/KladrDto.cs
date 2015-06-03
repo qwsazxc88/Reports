@@ -19,5 +19,12 @@ namespace Reports.Core.Dto
         public string SettlementCode { get; set; }
         public string StreetCode { get; set; }
         public string Code { get; set; }
+        public string SelectedIndex { get; set; }
+    }
+
+    public class KladrWithPostIndex
+    {
+        public IList<KladrDto> Kladr { get; set; }
+        public string PostIndex { get; set; }
     }
 }

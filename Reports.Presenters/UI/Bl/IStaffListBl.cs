@@ -24,11 +24,18 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         AddressModel GetAddress();
         /// <summary>
+        /// Загружаем модель.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <returns></returns>
+        AddressModel GetAddress(AddressModel model);
+        /// <summary>
         /// Загружаем список районов.
         /// </summary>
         /// <param name="Code">Код записи.</param>
         /// <param name="AddressType">Тип записи.</param>
         /// <returns></returns>
-        IList<KladrDto> GetKladr(string Code, int AddressType);
+        IList<KladrDto> GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
+        KladrWithPostIndex GetKladrNew(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
     }
 }

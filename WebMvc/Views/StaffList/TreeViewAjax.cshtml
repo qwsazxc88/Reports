@@ -89,33 +89,6 @@
                 }
             }
         </div>
-        <br /><br /><br />
-        <table id="tbl" class="grid">
-            <tr>
-                <th>Подразделение</th>
-                <th>Код</th>
-                <th>Путь</th>
-                <th>Уровень</th>
-            </tr>
-            
-            @{ i = 0; }
-            @foreach (var item in Model.Departments)
-            {
-                <tr id="tr-@item.Code.Trim()" accessKey="@item.Path.Trim()">
-                <td>
-                    <span>
-                        <a accessKey="@item.Path.Trim()" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
-                    </span>
-                </td>
-                <td>@item.Code1C</td>
-                <td>@item.Path</td>
-                <td>@item.ItemLevel</td>
-                </tr>
-            }
-            @{ i++; }
-        </table>             
-        <table>
-        </table>
     </div>
 }
 
@@ -136,25 +109,6 @@
     function GetNodes(Id) {
         //чтобы не подгружались данные вторично
         if($("#getnodes-" + Id).hasClass("IsLoading")){
-            //перебираем строковые элементы страницы
-            $("tr").each(function(){
-                if (this.id == "tr-" + Id){
-                    console.log(this);
-                }
-                else{
-                    if (this.accessKey.indexOf(Id + ".") > -1){
-                        if($("#" + this.id).hasClass("IsVisible")){
-                            $("#" + this.id).removeClass("IsVisible");
-                            $("#" + this.id).hide();
-                        }
-                        else{
-                            $("#" + this.id).addClass("IsVisible");
-                            $("#" + this.id).show();
-                        }
-                        //this.hide();
-                    }
-                }
-            });
             return;
         }
         else{$("#getnodes-" + Id).addClass("IsLoading");}
@@ -171,8 +125,6 @@
                 success: function(result){
                     var $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
-                    var tblStr = "";
-                    //console.log("----");
                     for (var i = 0; i < result.length; i++)
                     {   
                         ResultStr = 
@@ -185,30 +137,6 @@
                                 "</li>" +
                             "</ul>";
                         $liParent.append(ResultStr);
-
-
-                        tblStr = "<tr id='tr-" + result[i].Code.trim() + "' accessKey='" + result[i].Path.trim() + "' class='IsVisible'>" +
-                                  "<td>" +
-                                    "<span>";
-                                        var BSCount = (result[i].ItemLevel - 2) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-                                        //console.log(BSCount);
-                                        for (var j = 0; j < BSCount; j++)
-                                        {
-                                            tblStr += "&nbsp;";
-                                        }
-                                        tblStr += "<a accessKey='" + result[i].Path.trim() + "' href='#' id='getnodes-" + result[i].Code.trim() + "' onclick='GetNodes(" + result[i].Code.trim() + ");'>" +
-                                        "<span Id='span-tr'" + result[i].Code.trim() + "' class='collapse collapsible'>&nbsp;</span> " + result[i].Name +" &nbsp;&nbsp;(" + result[i].ItemLevel + ") &nbsp;&nbsp; " + result[i].Code.trim() + "</a>" +
-                                    "</span>" +
-                                    "</td>" + 
-                                    "<td>" + result[i].Code.trim() + "</td>" +
-                                    "<td>" + result[i].Path + "</td>" +
-                                    "<td>" + result[i].ItemLevel + "</td>" +
-                                    "</tr>";
-
-                        //$("#tbl").append(tblStr);
-                        //$(tblStr).appendTo("#tr-9900425");
-                        var ParentRowName = "#tr-" + (i == 0 ? Id : result[i - 1].Code.trim());//определяем Id строки после которой нужно добавить новую строку
-                        $(ParentRowName).after(tblStr);
 
                         $("#span" + result[i].Code.trim()).removeClass("collapse collapsible");
                         $("#getnodes-" + result[i].Code.trim()).removeClass("Acollapsible");
