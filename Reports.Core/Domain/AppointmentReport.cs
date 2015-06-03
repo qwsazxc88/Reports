@@ -14,7 +14,7 @@ namespace Reports.Core.Domain
         public virtual DateTime EditDate { get; set; }
         public virtual int Number { get; set; }
         public virtual int SecondNumber { get; set; }
-
+        public virtual int TestingResult { get; set; }
         public virtual Appointment Appointment { get; set; }
         public virtual string Name { get; set; }
         public virtual string Phone { get; set; }

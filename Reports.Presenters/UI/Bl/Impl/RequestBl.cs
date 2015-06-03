@@ -7891,7 +7891,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var id in DocIds)
                 {
                     var report = MissionReportDao.Load(id);
-                    if (report.Deduction != null || ((!report.SendTo1C.HasValue) && uploadingType != 2)) continue;
+                    if (report.Deduction != null || ((!report.AccountantDateAccept.HasValue) && uploadingType != 2)) continue;
                     var deduction = new Deduction
                     {
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),

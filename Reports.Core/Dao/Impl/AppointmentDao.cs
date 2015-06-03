@@ -710,6 +710,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManagerBank:
                 case UserRole.StaffManager:
+                case UserRole.Trainer:
                 case UserRole.Security:
                     return string.Empty;
                 default:
