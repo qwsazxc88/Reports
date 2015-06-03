@@ -87,17 +87,19 @@
 
             </table>
         </div>
-        if (Model.HigherEducationDiplomaScanFileName != null)
-        {
-            <br /><label>Скан:</label>
-            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
-                    @Model.HigherEducationDiplomaScanFileName</a>
-        }
     }
     else
     {
         <text>-</text>
     }
+    <div style="float:right">
+        @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
+        {
+            <br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                @Model.HigherEducationDiplomaScanFileName</a>
+        }        
+    </div>
 </fieldset>
 
 <br />
@@ -159,17 +161,19 @@
 
             </table>
         </div>
-        if (Model.PostGraduateEducationDiplomaScanFileName != null)
-        {
-            <br /><br /><label>Скан:</label>
-            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
-                    @Model.PostGraduateEducationDiplomaScanFileName</a>
-        }
     }
     else
     {
         <text>-</text>
     }
+    <div style="float:right">
+        @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
+        {
+            <br /><label>Скан:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
+                @Model.PostGraduateEducationDiplomaScanFileName</a>
+        }
+    </div>
 </fieldset>
 
 <br />
@@ -222,17 +226,19 @@
 
                 </table>
             </div>
-            if (Model.CertificationScanFileName != null)
-            {
-                <br /><br /><label>Скан:</label>
-                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
-                        @Model.CertificationScanFileName</a>
-            }
         }
         else
         {
             <text>-</text>
         }
+        <div style="float:right">
+            @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
+            {
+                <br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
+                    @Model.CertificationScanFileName</a>
+            }
+        </div>
     </fieldset>
 
     <fieldset class="bordered nomargin clear">
@@ -292,17 +298,19 @@
 
                 </table>
             </div>
-            if (Model.TrainingScanFileName != null)
-            {
-                <br /><br /><label>Скан:</label>
-                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
-                        @Model.TrainingScanFileName</a>
-            }
         }
         else
         {
             <text>-</text>
         }
+        <div style="float:right">
+            @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
+            {
+                <br /><label>Скан:</label>
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
+                    @Model.TrainingScanFileName</a>
+            }
+        </div>
     </fieldset>
 </fieldset>
 
