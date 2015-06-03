@@ -96,7 +96,7 @@
                            break;
                            case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано @(el.Number>0? " по авансовому отчету №"+ el.Number :"")</a>
                            break;
-                           case 5:<a>Ручная доплата по АО №@el.Number</a>
+                           case 5:<p>Ручная доплата (справочно <a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'>АО № @el.Number</a>)</p>
                            break;
                        }
                    </td>
