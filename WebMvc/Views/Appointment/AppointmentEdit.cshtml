@@ -445,12 +445,13 @@
                  <td>@Html.DropDownListFor(m=>m.Priority,new SelectList(Model.Priorities,"Id","Name"))</td>
                  </tr>
                  }
-             <tr>
+            
+             }
+              <tr>
                  <td>Выбрать принадлежность кандидата</td>
                  <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"))
                  </td>
             </tr>
-             }
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
