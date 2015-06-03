@@ -46,7 +46,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAccountantReject { get; set; }
         public bool IsAccountantApprovedCancel { get; set; }//для отмены согласования бухгалтера
         public bool IsSend1C { get; set; }
-
+        public bool IsSurchargeAvailable { get; set; }
         [Display(Name = "Бухгалтер")]
         public string AccountantFio { get; set; }
        

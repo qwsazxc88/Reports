@@ -32,14 +32,14 @@ namespace Reports.Core.Dao.Impl
 	                                      --when uRep.Id is  null then N''
 	                                      --else uRep.Name end as RepicientName
                                     ,case when v.[SendDate] is null then 1
-                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
-                                                                         when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null and v.[EndWorkDate] is null then 2 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
                                                                          when v.[EndWorkDate] is not null then 4
                                                                         else 0
                                                                     end as StatusNumber
                                     ,case when v.[SendDate] is null then N'Черновик'
-                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null then N'Запрос отправлен' 
-                                                                         when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then  N'Запрос прочитан' 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null and v.[EndWorkDate] is null then N'Запрос отправлен' 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then  N'Запрос прочитан' 
                                                                          when v.[EndWorkDate] is not null then  N'Запрос обработан' 
                                                                         else  N'' 
                                                                     end as Status

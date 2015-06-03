@@ -7891,7 +7891,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var id in DocIds)
                 {
                     var report = MissionReportDao.Load(id);
-                    if (report.Deduction != null || ((!report.SendTo1C.HasValue) && uploadingType != 2)) continue;
+                    if (report.Deduction != null || ((!report.AccountantDateAccept.HasValue) && uploadingType != 2)) continue;
                     var deduction = new Deduction
                     {
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),
@@ -7928,6 +7928,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailToUser(null, el);
             return true;
         }
+        /// <summary>
+        /// deprecated
+        /// </summary>
+        /// <param name="deductionNumber"></param>
+        /// <param name="MissionReportid"></param>
+        /// <returns></returns>
         public string SetDeductionDoc(int deductionNumber, int MissionReportid)
         {
             var list = DeductionDao.LoadAll().Where(x => x.Number == deductionNumber);
@@ -11115,6 +11121,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
             SetFlagsState(model, false);
+            var surchargeDao = Ioc.Resolve<ISurchargeDao>();
+            if (surchargeDao != null)
+                model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
+            else model.IsSurchargeAvailable = true;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;

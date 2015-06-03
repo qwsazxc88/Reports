@@ -237,7 +237,7 @@
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-            @if (Model.IsAccountantApproved && (dto.UserRole & UserRole.Accountant) > 0)
+            @if (Model.IsSurchargeAvailable && Model.IsAccountantApproved && (dto.UserRole & UserRole.Accountant) > 0)
             {
                 @*<input type="button" value="Создать удержание" onclick="" />*@
                 <input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> 

@@ -18,6 +18,7 @@ namespace Reports.Core.Dao
             int sortedBy,
             bool? sortDescending,
             string Number);
-        int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId);
+        int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId, int deductionNumber);
+        bool IsSurchargeAvailable(int missionReportId);
     }
 }
