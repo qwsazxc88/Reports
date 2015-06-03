@@ -80,13 +80,6 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public ActionResult Address(AddressModel model)
-        {
-            model = StaffListBl.GetAddress(model);
-            return View(model);
-        }
-
         [HttpGet]
         public ContentResult GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {

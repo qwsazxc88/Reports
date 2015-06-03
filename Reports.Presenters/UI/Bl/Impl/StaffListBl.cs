@@ -91,34 +91,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
         /// <summary>
-        /// Загружаем модель.
-        /// </summary>
-        /// <param name="model">Модель</param>
-        /// <returns></returns>
-        public AddressModel GetAddress(AddressModel model)
-        {
-            //AddressModel model = new AddressModel();
-            model.Regions = KladrDao.GetKladr(1, null, null, null, null, null);
-            model.Index = !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().Index : "";
-
-            model.Areas = GetKladr(model.Code, 2, model.RegionCode, model.AreaCode, model.CityCode, model.SettlementCode);//KladrDao.GetKladr(2, model.RegionCode, null, null, null, null);
-            model.Index = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().Index : "";
-
-            model.Cityes = GetKladr(model.Code, 3, model.RegionCode, model.AreaCode, model.CityCode, model.SettlementCode);
-            model.Index = !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().Index : "";
-
-            model.Settlements = GetKladr(model.Code, 4, model.RegionCode, model.AreaCode, model.CityCode, model.SettlementCode);
-            model.Index = !string.IsNullOrEmpty(model.SettlementCode) ? model.Settlements.Where(x => x.Code == model.SettlementCode).Single().Index : "";
-
-            model.Streets = GetKladr(model.Code, 5, model.RegionCode, model.AreaCode, model.CityCode, model.SettlementCode);
-            model.Index = !string.IsNullOrEmpty(model.StreetCode) ? model.Streets.Where(x => x.Code == model.StreetCode).Single().Index : "";
-
-            model.HouseTypes = GetAddressDictionary(1);
-            model.BuildTypes = GetAddressDictionary(2);
-            model.FlatTypes = GetAddressDictionary(3);
-            return model;
-        }
-        /// <summary>
         /// Загружаем список объектов частей адресов.
         /// </summary>
         /// <param name="Code">Код записи.</param>
@@ -133,9 +105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 KladrDto row = KladrDao.GetKladrByCode(Code).Single();
                 return KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode, row.Index);
             }
-                
         }
-
         /// <summary>
         /// Загружаем список объектов частей адресов.
         /// </summary>
@@ -144,6 +114,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public KladrWithPostIndex GetKladrNew(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {
+            //по коду объекта адреса достаем запись и уже по даннм из
             KladrWithPostIndex k = new KladrWithPostIndex();
             if (string.IsNullOrEmpty(Code))
                 k.Kladr = KladrDao.GetKladr(AddressType, RegionCode, AreaCode, CityCode, SettlementCode, string.Empty);

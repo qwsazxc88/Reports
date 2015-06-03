@@ -28,7 +28,6 @@
                                 @Html.LabelFor(m => m.RegionCode):
                             </td>
                             <td style="width:400px">
-                                @*@Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) *@
                                 @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) 
                             </td>
                             <td rowspan="5" align="center"><span id="LoadingIndicator2"></span></td>
@@ -38,7 +37,6 @@
                                 @Html.LabelFor(m => m.AreaCode):
                             </td>
                             <td>
-                                @*@Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) *@
                                 @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) 
                             </td>
                         </tr>
@@ -47,7 +45,6 @@
                                 @Html.LabelFor(m => m.CityCode):
                             </td>
                             <td>
-                                @*@Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) *@
                                 @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) 
                             </td>
                         </tr>
@@ -56,7 +53,6 @@
                                 @Html.LabelFor(m => m.SettlementCode):
                             </td>
                             <td>
-                                @*@Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) *@
                                 @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) 
                             </td>
                         </tr>
@@ -65,7 +61,6 @@
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
-                                @*@Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(-1);" }) *@
                                 @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(-1);" }) 
                             </td>
                         </tr>
@@ -74,7 +69,7 @@
                                 <table>
                                     <tr>
                                         <td>@Html.LabelFor(m => m.Index)</td>
-                                        <td>@Html.TextBoxFor(m => m.Index, new { style = "width:50px" })</td>
+                                        <td>@Html.TextBoxFor(m => m.Index, new { style = "width:50px", onchange = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
                                         <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
@@ -90,7 +85,7 @@
                                @Html.LabelFor(m => m.Address) 
                             </td>
                             <td>
-                                @Html.TextAreaFor(m => m.Address, new { @readonly = "read-only", style = "width:95%" })
+                                @Html.TextAreaFor(m => m.Address, new { @readonly = "read-only", style = "width:95%; resize:none;" })
                             </td>
                             <td></td>
                         </tr>
@@ -111,22 +106,6 @@
 
 
     function CodeChange(AddressType) {
-//        if (AddressType == 2)
-//            $("#Code").val($("#RegionCode").val());
-//        if (AddressType == 3)
-//            $("#Code").val($("#AreaCode").val());
-//        if (AddressType == 4)
-//            $("#Code").val($("#CityCode").val());
-//        if (AddressType == 5)
-//            $("#Code").val($("#SettlementCode").val());
-
-
-//        $("#AddressType").val(AddressType);
-//        $("#Address-form").submit();
-//        return;
-
-
-
         //загружаем районы
         if (AddressType == 2){
             if($("#RegionCode").val() == "" || $("#RegionCode").val() == null){
@@ -179,18 +158,12 @@
                 GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
             }
         }
-
+        //узнаем индекс для выбранной улицы
         if (AddressType == 6){
             GetArea(actionUrl, "StreetCode", $("#StreetCode").val(), "GET", AddressType);
-//            if($("#SettlementCode").val() == "" || $("#SettlementCode").val() == null)
-//                    setEmptyToDropdown("SettlementCode");
-//            else{
-//                //улицы
-//                GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
-//            }
         }
 
-        CreateAddress();
+        //CreateAddress();
     }
 
     //создаем адрес
@@ -198,11 +171,11 @@
         var StrAddress = "";
 
         if($("#Index").val() != ""){
-            StrAddress += (StrAddress == "" ? "" :  " ") + $("#Index").val();    
+            StrAddress = $("#Index").val() + ", ";    
         }
 
         if($("#RegionCode").val() != null && $("#RegionCode").val() != ""){
-            StrAddress = $("#RegionCode option:selected").text().trim();
+            StrAddress += $("#RegionCode option:selected").text().trim();
         }
 
         if($("#AreaCode").val() != null && $("#AreaCode").val() != ""){
@@ -239,9 +212,6 @@
             StrAddress += (StrAddress == "" ? "" :  " ") + $("#FlatNumber").val();    
         }
 
-
-        
-        
         $("#Address").val(StrAddress);
     }
 
@@ -300,6 +270,8 @@
         
 
         $("#Index").val(data.PostIndex);
+
+        CreateAddress();
     }
 
     //чистим комбобоксы

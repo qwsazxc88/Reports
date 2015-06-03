@@ -24,12 +24,6 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         AddressModel GetAddress();
         /// <summary>
-        /// Загружаем модель.
-        /// </summary>
-        /// <param name="model">Модель</param>
-        /// <returns></returns>
-        AddressModel GetAddress(AddressModel model);
-        /// <summary>
         /// Загружаем список районов.
         /// </summary>
         /// <param name="Code">Код записи.</param>
