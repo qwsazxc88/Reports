@@ -15,5 +15,6 @@
     <property name="DeleteAfterSendTo1C" not-null="true"/>
     <property name="EmailSendToUserDate" not-null="false"/>
     <many-to-one name="MissionReport" class="MissionReport" column="MissionReportId" foreign-key="FK_Surcharge_MissionReport" not-null="true"/>
+    <many-to-one name="Deduction" class="Deduction" column="DeductionId" foreign-key="FK_Surcharge_Deduction" not-null="false"/>
   </class>
 </hibernate-mapping>

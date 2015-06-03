@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Reports.Core.Domain;
 using Reports.Core.Services;
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class SurchargeDao:DefaultDao<Surcharge>, ISurchargeDao
@@ -91,12 +92,21 @@ namespace Reports.Core.Dao.Impl
             if (sortDescending.HasValue && sortDescending.Value) dto.Reverse();
             return dto;
         }
-        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId)
+        public bool IsSurchargeAvailable(int missionReportId)
         {
+            var el=Session.Query<Surcharge>().Where(x => x.MissionReport.Id == missionReportId);
+            if (el != null && el.Any()) return true;
+            else return false;
+        }
+        public int AddDocument(int userId, decimal sum, int creatorId, DateTime editDate, int missionReportId, int deductionNumber)
+        {
+            if (IsSurchargeAvailable(missionReportId)) return -1;
             var User = UserDao.Load(userId);
             var Editor = UserDao.Load(creatorId);
             var MissionReport = Ioc.Resolve<IMissionReportDao>().Load(missionReportId);
-
+            var deductionDao=Ioc.Resolve<IDeductionDao>();
+            var deduction = deductionDao.GetDeductionByNumber(deductionNumber);
+            
             var document = new Surcharge { 
                 Sum = sum,
                 Editor = Editor,
@@ -104,7 +114,8 @@ namespace Reports.Core.Dao.Impl
                 EditDate = editDate,
                 MissionReport = MissionReport,
                 SurchargeDate = editDate,
-                Number = NextNumberDao.GetNextNumberForType((int)Reports.Core.Enum.RequestTypeEnum.Surcharge)
+                Number = NextNumberDao.GetNextNumberForType((int)Reports.Core.Enum.RequestTypeEnum.Surcharge),
+                Deduction=deduction
             };
             
             SaveAndFlush(document);
