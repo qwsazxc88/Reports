@@ -15,9 +15,9 @@ namespace NoteDocumentCreator
             reader.Close();
             data = data.Replace("{{TO}}", "Председателю Правления ПАО \"Совкомбанк\", Гусеву Д.В.");
             data = data.Replace("{{FROM}}", From);
-            data = data.Replace("{{THEME}}", Theme);
+            data = data.Replace("{{THEME}}", "Внесение изменений в штатное рассписание");
             data = data.Replace("{{DATE}}", Date.ToShortDateString());
-            data = data.Replace("{{REASON}}", Reason);
+            data = data.Replace("{{REASON}}", "Производственной необходимостью");
             data = data.Replace("{{DEPARTMENTS}}", Departments);
             data = data.Replace("{{POSITION}}", Position);
             data = data.Replace("{{POSITIONCOUNT}}", PositionCount.ToString());
