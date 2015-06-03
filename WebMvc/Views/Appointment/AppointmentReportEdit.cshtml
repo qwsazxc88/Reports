@@ -65,6 +65,7 @@
 </div>
 @using (Html.BeginForm("AppointmentReportEdit", "Appointment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+                @Html.HiddenFor(m => m.IsTrainerCanSave)
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
@@ -162,7 +163,8 @@
                     @Html.TextBoxFor(model => model.Name, Model.IsEditable ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
-            @if(Model.ShowStaff){
+            @if (Model.ShowStaff)
+            {
              <tr>
                 <td>
                     @Html.LabelFor(m => m.Phone):
@@ -298,15 +300,26 @@
                     @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerRejectAvailable ? (object)new { maxlength = 100, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
+                    if (Model.TypeId == 1)
+                    {
+         <tr>
+         <td>Результат тестирования специалистом ОПИНП</td>
+         <td>@Html.DropDownListFor(m => m.TestingResult, new SelectList(Model.TestingResults, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : (object)new { disabled = "disabled" })</td>
+         </tr>
+                        if ((dto.UserRole & UserRole.Trainer) > 0)
+                        {
               <tr>
                 <td>
                     @Html.LabelFor(m => m.IsEducationExists):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsManagerEditable || Model.IsStaffSetDateAcceptAvailable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), (dto.UserRole & UserRole.Trainer) > 0 ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
-            </tr>@*
+            </tr>
+                        }
+                    }
+         @*
             <tr>
                 <td>
                     @Html.LabelFor(m => m.DateAccept)
@@ -339,7 +352,7 @@
      }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates!=null && Model.Candidates.Any()))
+                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
                     }

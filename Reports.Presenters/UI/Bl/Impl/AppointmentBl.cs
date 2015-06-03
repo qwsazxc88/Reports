@@ -336,7 +336,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 model.FIO = entity.FIO;
+                model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
+                model.AppointmentEducationType = entity.AppointmentEducationTypeId;
+                if(entity.Recruters!=null && entity.Recruters.Any())
+                {
+                    model.Recruter1id = entity.Recruters[0].Id;
+                    if (entity.Recruters.Count > 1) model.Recruter2id = entity.Recruters[1].Id;
+                    if (entity.Recruters.Count > 2) model.Recruter3id = entity.Recruters[2].Id;
+                }
                 model.Recruter = entity.Recruter;
                 if (entity.Candidates != null && entity.Candidates.Any())
                 {
@@ -624,7 +632,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(AppointmentEditModel model)
         {
+            model.Priorities = new List<IdNameDto>
+            {
+                new IdNameDto{Id=0, Name="-"},
+                new IdNameDto{Id=1, Name="Срочно"},
+                new IdNameDto{Id=2, Name="Очень срочно"}
+            };
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            model.AppointmentEducationTypes=AppointmentEducationTypeDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
+            model.Recruters = UserDao.GetStaffList().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Recruters.Add(new IdNameDto { Id = 0, Name = "-" });
             model.DepartmentRequiredLevel = 7;
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>
@@ -874,7 +891,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = (model.ReasonId != 3 && !String.IsNullOrWhiteSpace(model.ReasonBeginDate)) ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
                 entity.DesirableBeginDate = model.ShowStaff ? DateTime.Parse(model.DesirableBeginDate) : entity.ReasonBeginDate.HasValue ? entity.ReasonBeginDate.Value+TimeSpan.FromDays(14) : DateTime.Now;
-                
+                entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
@@ -975,6 +992,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue)
                     {
@@ -1022,7 +1040,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                  && model.IsStaffApproved)
                             {
                                 entity.StaffDateAccept = DateTime.Now;
+                                var recruters = new List<User>();
+                                if(model.Recruter1id>0) recruters.Add( UserDao.Load(model.Recruter1id));
+                                if(model.Recruter2id>0) recruters.Add( UserDao.Load(model.Recruter2id));
+                                if(model.Recruter3id>0) recruters.Add( UserDao.Load(model.Recruter3id));
+                                entity.Recruters = recruters;
                                 entity.AcceptStaff = currUser;
+                                entity.Priority = model.Priority;
                                 CreateAppointmentReport(entity);
                             }
                         }
@@ -1033,6 +1057,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.StaffDateAccept = DateTime.Now;
                             entity.AcceptStaff = currUser;
+
+                            var recruters = new List<User>();
+                            if (model.Recruter1id > 0) recruters.Add(UserDao.Load(model.Recruter1id));
+                            if (model.Recruter2id > 0) recruters.Add(UserDao.Load(model.Recruter2id));
+                            if (model.Recruter3id > 0) recruters.Add(UserDao.Load(model.Recruter3id));
+                            entity.Recruters = recruters;
+                            entity.Priority = model.Priority;
                             CreateAppointmentReport(entity);
                         }
                     }
@@ -1057,9 +1088,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
                                                    SecondNumber=1,
                                                    Phone = string.Empty,
-                                                   Type = AppointmentEducationTypeDao.Get(1),
+                                                   Type = AppointmentEducationTypeDao.Get(entity.AppointmentEducationTypeId),
                                                    IsColloquyPassed=entity.Recruter==2,
-                                                                                                  };
+                                                                                                };
             if (entity.Recruter == 2) report.StaffDateAccept = DateTime.Now;
                 AppointmentReportDao.Save(report);
                 id = report.Id;
@@ -1489,6 +1520,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsColloquyPassed = 1;
             }
             else model.ShowStaff = true;
+            model.TestingResult = entity.TestingResult;
             model.AppId = entity.Appointment.Id;
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);
@@ -1522,6 +1554,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   new IdNameDto {Id = 0,Name = "Нет"},
                                   new IdNameDto {Id = 1,Name = "Да"},
                               }.OrderBy(x => x.Name).ToList();
+            model.TestingResults = new List<IdNameDto>
+            {
+                new IdNameDto {Id=0, Name="-"},
+                new IdNameDto {Id=1, Name="Тест не пройден(отклонение)"},
+                new IdNameDto {Id=2, Name="худший(отклонение)"},
+                new IdNameDto {Id=3, Name="ниже среднего"},
+                new IdNameDto {Id=4, Name="средний"},
+                new IdNameDto {Id=5, Name="выше среднего"},
+                new IdNameDto {Id=6, Name="лучший"}
+            };
             model.IsColloquyPassedValues = new List<IdNameDto>
                               {
                                   new IdNameDto {Id = -1,Name = string.Empty},
@@ -1655,16 +1697,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Trainer:
+                    model.IsTrainerCanSave = model.IsColloquyPassed == 1;
+                    break;
                 case UserRole.PersonnelManagerBank:
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.Security:
-                    break;
+                
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable 
-                                    || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable;
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable
+                                    || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable | model.IsTrainerCanSave;
         }
         protected void SetHiddenFields(AppointmentReportEditModel model, AppointmentReport entity)
         {
@@ -1767,6 +1812,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.RejectReason = model.RejectReason;
                             }
                             break;
+                        case UserRole.Trainer:
+                            
+                            break;
                         default:
                             throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
                     }
@@ -1834,10 +1882,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
 
                     entity.ResumeComment = model.ResumeComment;
-                    if (model.IsEducationExists >= 0)
-                        entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
-                    else
-                        entity.IsEducationExists = new bool?();
+                   
                     if (model.IsColloquyPassed >= 0)
                         entity.IsColloquyPassed = model.IsColloquyPassed == 1 ? true : false;
                     else
@@ -1850,10 +1895,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (model.IsStaffSetDateAcceptAvailable)
                 {
-                    if (model.IsEducationExists >= 0)
+                    /*if (model.IsEducationExists >= 0)
                         entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
                     else
-                        entity.IsEducationExists = new bool?();
+                        entity.IsEducationExists = new bool?();*/
                     if (!string.IsNullOrEmpty(model.DateAccept) && entity.IsEducationExists.HasValue)
                     {
                         entity.DateAccept = DateTime.Parse(model.DateAccept);
@@ -1873,6 +1918,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         else
                         {*/
+                        entity.TestingResult = model.TestingResult;
                             if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
                             {
                                 entity.StaffDateAccept = DateTime.Now;
@@ -1922,6 +1968,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                             entity.Number));
                     }
                 }
+                break;
+                case UserRole.Trainer:
+                if (model.IsEducationExists >= 0)
+                    entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
+                else
+                    entity.IsEducationExists = new bool?();
                 break;
                 case UserRole.OutsourcingManager:
                 break;
