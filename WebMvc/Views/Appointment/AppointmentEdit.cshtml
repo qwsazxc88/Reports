@@ -441,6 +441,9 @@
                      <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"))
                      </td>
                  </tr>
+                 <tr><td>Срочность</td>
+                 <td>@Html.DropDownListFor(m=>m.Priority,new SelectList(Model.Priorities,"Id","Name"))</td>
+                 </tr>
                  }
              <tr>
                  <td>Выбрать принадлежность кандидата</td>

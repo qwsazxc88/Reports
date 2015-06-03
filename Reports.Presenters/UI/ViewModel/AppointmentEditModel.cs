@@ -22,7 +22,8 @@ namespace Reports.Presenters.UI.ViewModel
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
         public string City { get; set; }
-
+        public int Priority { get; set; }
+        public IList<IdNameDto> Priorities { get; set; }
         [Display(Name = "Должность")]
         public string PositionName { get; set; }
         //public int PositionId { get; set; }
