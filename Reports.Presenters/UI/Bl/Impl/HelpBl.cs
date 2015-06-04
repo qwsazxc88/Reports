@@ -2986,7 +2986,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else 
                 {
-                    //ПЕРЕДЕЛАТЬ
                     //кому направлена тема
                     if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
                     {
