@@ -21,6 +21,6 @@ namespace Reports.Core.Dao
         /// <param name="CityCode">Код города.</param>
         /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
-        IList<KladrDto> GetKladr(int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode, string Index);
+        IList<KladrDto> GetKladr(int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
     }
 }

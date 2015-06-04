@@ -42,7 +42,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="CityCode">Код города.</param>
         /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
-        public IList<KladrDto> GetKladr(int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode, string Index)
+        public IList<KladrDto> GetKladr(int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {
             string View = string.Empty;
             string QueryWhere = string.Empty;
@@ -54,25 +54,25 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 2:
                     //View = "dbo.vwKladrAreas";
-                    QueryWhere = string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null " : " WHERE RegionCode = '" + RegionCode + "' ";
+                    QueryWhere = string.IsNullOrEmpty(RegionCode) ? "" : " RegionCode = '" + RegionCode + "' ";
                     break;
                 case 3:
                     //View = "dbo.vwKladrCityes";
-                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null " : " WHERE RegionCode = '" + RegionCode + "' ") + 
-                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "and AreaCode is null " : " and AreaCode = '" + AreaCode + "' ");
+                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "" : " RegionCode = '" + RegionCode + "' ") + 
+                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "" : " and AreaCode = '" + AreaCode + "' ");
                     break;
                 case 4:
                     //View = "dbo.vwKladrSettlements";
-                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null " : " WHERE RegionCode = '" + RegionCode + "' ") +
-                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "and AreaCode is null " : " and AreaCode = '" + AreaCode + "' ") +
-                        (QueryWhere = string.IsNullOrEmpty(CityCode) ? "and CityCode is null " : " and CityCode = '" + CityCode + "' ");
+                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "" : " RegionCode = '" + RegionCode + "' ") +
+                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "" : " and AreaCode = '" + AreaCode + "' ") +
+                        (QueryWhere = string.IsNullOrEmpty(CityCode) ? "" : " and CityCode = '" + CityCode + "' ");
                     break;
                 case 5:
                     //View = "dbo.vwKladrStreets";
-                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "WHERE RegionCode is null " : " WHERE RegionCode = '" + RegionCode + "' ") +
-                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "and AreaCode is null " : " and AreaCode = '" + AreaCode + "' ") +
-                        (QueryWhere = string.IsNullOrEmpty(CityCode) ? "and CityCode is null " : " and CityCode = '" + CityCode + "' ") +
-                        (QueryWhere = string.IsNullOrEmpty(SettlementCode) ? "and SettlementCode is null " : " and SettlementCode = '" + SettlementCode + "' ");
+                    QueryWhere = (string.IsNullOrEmpty(RegionCode) ? "" : " RegionCode = '" + RegionCode + "' ") +
+                        (QueryWhere = string.IsNullOrEmpty(AreaCode) ? "" : " and AreaCode = '" + AreaCode + "' ") +
+                        (QueryWhere = string.IsNullOrEmpty(CityCode) ? "" : " and CityCode = '" + CityCode + "' ") +
+                        (QueryWhere = string.IsNullOrEmpty(SettlementCode) ? "" : " and SettlementCode = '" + SettlementCode + "' ");
                     break;
             }
 

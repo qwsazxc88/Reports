@@ -81,15 +81,17 @@
                                     <a class="Acollapsible" accessKey="@item.Path.Trim()" href="#" id="getnodes-@item.Code.Trim()" onclick="GetNodes(@item.Code.Trim());"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper() &nbsp;&nbsp;(@item.ItemLevel) &nbsp;&nbsp; @item.Code</a>
                                 </span>
                         </li>   
-                        
-                        
                         @{ i++; }
                     </ul>
-                    
                 }
             }
         </div>
     </div>
+    <br /><br />
+    <a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 0 })' style="cursor:hand">Новый адрес</a>
+    <br /><br />
+    <a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 1 })' style="cursor:hand">Адрес</a>
+
 }
 
 

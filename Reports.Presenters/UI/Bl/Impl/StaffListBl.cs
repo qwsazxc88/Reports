@@ -72,23 +72,120 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
                 return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();
         }
-
         /// <summary>
         /// Загружаем модель для составления Российских адресов.
         /// </summary>
+        /// <param name="Id">Id адреса</param>
         /// <returns></returns>
-        public AddressModel GetAddress()
+        public AddressModel GetAddress(int Id)
         {
             AddressModel model = new AddressModel();
-            model.Regions = KladrDao.GetKladr(1, null, null, null, null, null);
-            model.Areas = KladrDao.GetKladr(2, null, null, null, null, null);
-            model.Cityes = KladrDao.GetKladr(3, null, null, null, null, null);
-            model.Settlements = KladrDao.GetKladr(4, null, null, null, null, null);
-            model.Streets = KladrDao.GetKladr(5, null, null, null, null, null);
-            model.HouseTypes = GetAddressDictionary(1);
-            model.BuildTypes = GetAddressDictionary(2);
-            model.FlatTypes = GetAddressDictionary(3);
+            if (Id == 0)    //загрузка без иденификатора
+            {
+                model.Regions = KladrDao.GetKladr(1, null, null, null, null);
+                model.Areas = KladrDao.GetKladr(2, null, null, null, null);
+                model.Cityes = KladrDao.GetKladr(3, null, null, null, null);
+                model.Settlements = KladrDao.GetKladr(4, null, null, null, null);
+                model.Streets = KladrDao.GetKladr(5, null, null, null, null);
+                model.HouseTypes = GetAddressDictionary(1);
+                model.BuildTypes = GetAddressDictionary(2);
+                model.FlatTypes = GetAddressDictionary(3);
+            }
+            else
+            {
+                //тут по Id записи достаем строку с адресом и строим форму
+                model.Regions = KladrDao.GetKladr(1, null, null, null, null);
+                model.RegionCode = "770000000000000";
+
+                model.Areas = KladrDao.GetKladr(2, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null, null, null, null);
+                model.AreaCode = string.Empty; ;
+
+                model.Cityes = KladrDao.GetKladr(3, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null, null, null);
+                model.CityCode = "770000020000000";
+
+                model.Settlements = KladrDao.GetKladr(4, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
+                    !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null, null);
+                model.SettlementCode = string.Empty;
+
+                model.Streets = KladrDao.GetKladr(5, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
+                    !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null,
+                    !string.IsNullOrEmpty(model.SettlementCode) ? model.Settlements.Where(x => x.Code == model.SettlementCode).Single().SettlementCode : null);
+                model.StreetCode = "770000020004549";
+
+                model.HouseTypes = GetAddressDictionary(1);
+                model.HouseType = 1;
+                model.HouseNumber = string.Empty;
+                model.BuildTypes = GetAddressDictionary(2);
+                model.BuildType = 1;
+                model.BuildNumber = "1133";
+                model.FlatTypes = GetAddressDictionary(3);
+                model.FlatType = 1;
+                model.FlatNumber = "7";
+                model.PostIndex = "124460";
+                model.Address = GetAddressStr(model);
+            }
             return model;
+        }
+        /// <summary>
+        /// По заполненной модели строим строку адреса.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        protected string GetAddressStr(AddressModel model)
+        {
+            string AddressStr = "";
+
+            if (!string.IsNullOrEmpty(model.PostIndex))
+                AddressStr = model.PostIndex + ", ";
+
+            if(!string.IsNullOrEmpty(model.RegionCode))
+            {
+                AddressStr += model.Regions.Where(x => x.Code == model.RegionCode).Single().Name + " " + model.Regions.Where(x => x.Code == model.RegionCode).Single().ShortName;
+            }
+
+            if(!string.IsNullOrEmpty(model.AreaCode))
+            {
+                AddressStr += ", " +  model.Areas.Where(x => x.Code == model.AreaCode).Single().Name + " " + model.Areas.Where(x => x.Code == model.AreaCode).Single().ShortName;
+            }
+
+            if(!string.IsNullOrEmpty(model.CityCode))
+            {
+                AddressStr += ", " +  model.Cityes.Where(x => x.Code == model.CityCode).Single().Name + " " + model.Cityes.Where(x => x.Code == model.CityCode).Single().ShortName;
+            }
+
+            if(!string.IsNullOrEmpty(model.SettlementCode))
+            {
+                AddressStr += ", " +  model.Settlements.Where(x => x.Code == model.SettlementCode).Single().Name + " " + model.Settlements.Where(x => x.Code == model.SettlementCode).Single().ShortName;
+            }
+
+            if(!string.IsNullOrEmpty(model.StreetCode))
+            {
+                AddressStr += ", " +  model.Streets.Where(x => x.Code == model.StreetCode).Single().Name + " " + model.Streets.Where(x => x.Code == model.StreetCode).Single().ShortName;
+            }
+
+            
+            if(!string.IsNullOrEmpty(model.HouseNumber)){
+                AddressStr += (AddressStr == "" ? "" :  ", ") + model.HouseTypes.Where(x => x.Id == model.HouseType).Single().Name;
+                AddressStr += (AddressStr == "" ? "" :  " №") + model.HouseNumber;
+            }
+
+
+            if(!string.IsNullOrEmpty(model.BuildNumber)){
+                AddressStr += (AddressStr == "" ? "" :  ", ") + model.BuildTypes.Where(x => x.Id == model.BuildType).Single().Name;
+                AddressStr += (AddressStr == "" ? "" :  " №") + model.BuildNumber;
+            }
+
+
+            if (!string.IsNullOrEmpty(model.FlatNumber))
+            {
+                AddressStr += (AddressStr == "" ? "" : ", ") + model.FlatTypes.Where(x => x.Id == model.FlatType).Single().Name;
+                AddressStr += (AddressStr == "" ? "" : " №") + model.FlatNumber;
+            }
+
+            return AddressStr;
         }
         /// <summary>
         /// Загружаем список объектов частей адресов.
@@ -105,18 +202,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             //по коду объекта адреса достаем запись и уже по даннм из
             KladrWithPostIndex k = new KladrWithPostIndex();
             if (string.IsNullOrEmpty(Code))
-                k.Kladr = KladrDao.GetKladr(AddressType, RegionCode, AreaCode, CityCode, SettlementCode, string.Empty);
+                k.Kladr = KladrDao.GetKladr(AddressType, RegionCode, AreaCode, CityCode, SettlementCode);
             else
             {
                 //по коду выбранного обекта достаем строку и берем из нее параметры для поиска подчиненных списков объектов
                 KladrDto row = KladrDao.GetKladrByCode(Code).Single();  
                 if (AddressType < 6)
-                    k.Kladr = KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode, row.Index);
+                    k.Kladr = KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode);
                 k.PostIndex = row.Index;    //индекс берем из записи выбранного объекта
             }
             return k;
         }
-
         /// <summary>
         /// Заполняем выпадающие списки.
         /// </summary>

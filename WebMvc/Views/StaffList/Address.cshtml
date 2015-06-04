@@ -10,6 +10,9 @@
 {
     @Html.HiddenFor(m => m.Code)
     @Html.HiddenFor(m => m.AddressType)
+    
+    @Html.ValidationSummary(false)
+    <div id="Error" style="color:Red;display:none;"></div>
     <table style="width:100%">
         <tr>
             <td colspan="2">
@@ -68,7 +71,7 @@
                                 <table>
                                     <tr>
                                         <td>@Html.LabelFor(m => m.PostIndex)</td>
-                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:50px", onchange = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:50px", onchange = "CreateAddress();" }) </td>
                                         <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
                                         <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
@@ -90,7 +93,7 @@
                         </tr>
                         <tr>
                             <td colspan="2" style="text-align:right;">
-                                <button id="btnSave" type="button" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
+                                <button id="btnSave" type="submit" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
                             </td>
                         </tr>
                     </table>
@@ -208,12 +211,10 @@
     }
 
     function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
-        //$("#LoadingIndicator2").addClass("loading2");                
         ShowFlash(true);
-        //$("#LoadingIndicator2").text("Идет загрузка данных...");
         $("#Code").val(code);
         $("#AddressType").val(AddressType);
-        var url = actionUrl;// + '?Code='+ code + '&AddressType=' + AddressType;
+        var url = actionUrl;
 
         var dataToSend = $("#Address-form").serialize();
         
@@ -224,19 +225,16 @@
                 data: dataToSend,
                 success: function(result){
                     setValuesToDropdown(controlName, result, AddressType);
-                    //$("#LoadingIndicator2").removeClass("loading2");
-                    //$("#LoadingIndicator2").text("");
                     ShowFlash(false);
                 },
                 error: function(){
-                    alert("При загрузке данных произошла ошибка.");
-                    //$("#LoadingIndicator2").removeClass("loading2");
-                    //$("#LoadingIndicator2").text("При загрузке данных произошла ошибка.");
-                    console.log(result.Error);
                     ShowFlash(false);
+                    alert("При загрузке данных произошла ошибка.");
+                    console.log(result.Error);
                 }
             });
     }
+
 
     //заполняем данными комбобокс
     function setValuesToDropdown(controlName,data, AddressType)
@@ -303,4 +301,5 @@
             $(".ui-dialog-titlebar-close").hide();
         }
     }
+
 </script>

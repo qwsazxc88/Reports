@@ -31,7 +31,10 @@ namespace WebMvc.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// Рекурсивное построение дерева.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult TreeView()
@@ -39,7 +42,10 @@ namespace WebMvc.Controllers
             TreeViewModel model = StaffListBl.GetDepartmentList();
             return View(model);
         }
-
+        /// <summary>
+        /// Загрузка второго уровня подразделений из структуры банка для построения дерева.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult TreeViewAjax()
         {
@@ -47,7 +53,11 @@ namespace WebMvc.Controllers
             model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
             return View(model);
         }
-
+        /// <summary>
+        /// Загрузка списка подразделений/должностей (для 7 уровня подразделений) по заданному коду родительского подразделения.
+        /// </summary>
+        /// <param name="DepId">Код подразделения</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult TreeViewAjax(string DepId)
         {
@@ -55,14 +65,21 @@ namespace WebMvc.Controllers
             model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
             return Json(model.Departments);
         }
-
+        /// <summary>
+        /// Загрузка второго уровня подразделений из структуры банка для построения дерева в таблице.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult TreeGridAjax()
         {
             TreeGridAjaxModel model = StaffListBl.GetDepartmentStructure("9900424");
             return View(model);
         }
-
+        /// <summary>
+        /// Загрузка списка подразделений/должностей (для 7 уровня подразделений) по заданному коду родительского подразделения.
+        /// </summary>
+        /// <param name="DepId">Код подразделения</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult TreeGridAjax(string DepId)
         {
@@ -72,19 +89,42 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
-
+        /// <summary>
+        /// Начальная загрузка формы для построения адресов.
+        /// </summary>
+        /// <param name="Id">Id адреса</param>
+        /// <returns></returns>
         [HttpGet]
-        public ActionResult Address()
+        public ActionResult Address(int Id)
         {
-            AddressModel model = StaffListBl.GetAddress();
+            AddressModel model = StaffListBl.GetAddress(Id);
             return View(model);
         }
-
+        /// <summary>
+        /// Сохраняем составленный адрес.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Address(AddressModel model)
+        {
+            model = StaffListBl.GetAddress(1);
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Code"></param>
+        /// <param name="AddressType"></param>
+        /// <param name="RegionCode"></param>
+        /// <param name="AreaCode"></param>
+        /// <param name="CityCode"></param>
+        /// <param name="SettlementCode"></param>
+        /// <returns></returns>
         [HttpGet]
-        public ContentResult GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
+        public ContentResult GetKladr(string Code, int AddressType)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, RegionCode, AreaCode, CityCode, SettlementCode));
+            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
     }
