@@ -421,7 +421,7 @@
                             @Html.LabelFor(m => m.IsStaffApproved):
                         </td>
                         <td>
-                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable && dto.Id == Model.StaffBossId ? null : (object)new { disabled = "disabled" }) 
                             Принял в работу
                             @*@Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
                             Уведомлен об отклонении заявки*@
@@ -433,25 +433,25 @@
                     </tr>
                  <tr>
                      <td>Рекрутер 1:</td>
-                     <td>@Html.DropDownListFor(x => x.Recruter1id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled="disabled"})
+                     <td>@Html.DropDownListFor(x => x.Recruter1id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id==Model.StaffBossId ? null : new { disabled="disabled"})
                      </td>
                  </tr>
                  <tr>
                      <td>Рекрутер 2:</td>
-                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })
+                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
                      </td>
                  </tr>
                  <tr>
                      <td>Рекрутер 3:</td>
-                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })
+                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
                      </td>
                  </tr>
                  <tr><td>Срочность</td>
-                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })</td>
+                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })</td>
                  </tr>
                  }
             
-             }
+             
               
         <tr>
                 <td>

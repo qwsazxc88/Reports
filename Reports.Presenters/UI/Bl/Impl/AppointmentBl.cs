@@ -467,6 +467,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User current,UserRole  currRole, Appointment entity, AppointmentEditModel model)
         {
             SetFlagsState(model, false);
+            model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
                 if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
@@ -531,7 +532,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && current.Id==ConfigurationService.StaffBossId)
+                    if (!entity.DeleteDate.HasValue && current.Id==ConfigurationService.StaffBossId.Value)
                     {
                         if(entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                             model.IsStaffApproveAvailable = true;
