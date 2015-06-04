@@ -98,8 +98,8 @@
     </td>
     </tr>
      <tr>
-        <td colspan="2"> <div class="action-wrap">
-        <input type="submit" value="Печать" onclick="$('#ForPrint').val(1);"/>
+        <td colspan="2"> <div class="action-wrap" style="min-height:20px" >
+        
         @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
         {                               
             <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
@@ -107,6 +107,9 @@
             <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
             
         }
+        
+        <input type="submit" value="Печать" style="float: right; margin-right:10px;" onclick="$('#ForPrint').val(1);"/>
+        
         </div>
         </td>
     </tr>   
