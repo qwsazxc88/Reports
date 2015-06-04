@@ -802,6 +802,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
                         EditDate = DateTime.Now,
+                        AppointmentEducationTypeId=model.AppointmentEducationType
                     };
                     ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
