@@ -531,7 +531,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue)
+                    if (!entity.DeleteDate.HasValue && current.Id==ConfigurationService.StaffBossId)
                     {
                         if(entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                             model.IsStaffApproveAvailable = true;
@@ -1632,7 +1632,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && current.Id == entity.Appointment.AcceptStaff.Id)
+                    if (!entity.DeleteDate.HasValue && (current.Id == entity.Appointment.AcceptStaff.Id || (entity.Appointment.Recruters!=null?entity.Appointment.Recruters.Any(x=>x.Id==current.Id):false)))
                     {
                         if (entity.AcceptManager != null && entity.AcceptManager.Id == current.Id && 
                                 !string.IsNullOrEmpty(entity.TempLogin))
