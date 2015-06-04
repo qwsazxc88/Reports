@@ -411,6 +411,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator =  managerId.HasValue? UserDao.Load(managerId.Value) : currUser;
                 model.ShowStaff = true;
                 model.Recruter = 1;
+                model.AppointmentEducationType = 2;
                 model.IsVacationExists = 1;
                 SetCreatorDepartment(creator, model);
                 model.UserId = creator.Id;//currUser.Id;
