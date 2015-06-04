@@ -17,6 +17,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         public int DepartmentRequiredLevel { get; set; }
         public int Recruter { get; set; }
+        public int StaffBossId { get; set; }
         public string FiredFIO { get; set; }
         [Display(Name = "Место работы (город)")]
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
