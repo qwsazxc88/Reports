@@ -954,7 +954,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
-                            entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             EmailDto dto = SendEmailForBankAccountant(entity.Creator, entity); //dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
@@ -1050,7 +1050,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 if(model.Recruter2id>0) recruters.Add( UserDao.Load(model.Recruter2id));
                                 if(model.Recruter3id>0) recruters.Add( UserDao.Load(model.Recruter3id));
                                 entity.Recruters = recruters;
-                                entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                                //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                                 entity.AcceptStaff = currUser;
                                 entity.Priority = model.Priority;
                                 CreateAppointmentReport(entity);
@@ -1063,7 +1063,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.StaffDateAccept = DateTime.Now;
                             entity.AcceptStaff = currUser;
-                            entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             var recruters = new List<User>();
                             if (model.Recruter1id > 0) recruters.Add(UserDao.Load(model.Recruter1id));
                             if (model.Recruter2id > 0) recruters.Add(UserDao.Load(model.Recruter2id));
