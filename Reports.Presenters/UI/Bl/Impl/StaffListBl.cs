@@ -93,26 +93,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <summary>
         /// Загружаем список объектов частей адресов.
         /// </summary>
-        /// <param name="Code">Код записи.</param>
-        /// <param name="AddressType">Тип записи.</param>
+        /// <param name="Code">Код объекта.</param>
+        /// <param name="AddressType">Тип объекта.</param>
+        /// <param name="RegionCode">Код региона.</param>
+        /// <param name="AreaCode">Код района.</param>
+        /// <param name="CityCode">Код города.</param>
+        /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
-        public IList<KladrDto> GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
-        {
-            if (string.IsNullOrEmpty(Code))
-                return KladrDao.GetKladr(AddressType, RegionCode, AreaCode, CityCode, SettlementCode, string.Empty);
-            else
-            {
-                KladrDto row = KladrDao.GetKladrByCode(Code).Single();
-                return KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode, row.Index);
-            }
-        }
-        /// <summary>
-        /// Загружаем список объектов частей адресов.
-        /// </summary>
-        /// <param name="Code">Код записи.</param>
-        /// <param name="AddressType">Тип записи.</param>
-        /// <returns></returns>
-        public KladrWithPostIndex GetKladrNew(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
+        public KladrWithPostIndex GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {
             //по коду объекта адреса достаем запись и уже по даннм из
             KladrWithPostIndex k = new KladrWithPostIndex();
@@ -120,10 +108,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 k.Kladr = KladrDao.GetKladr(AddressType, RegionCode, AreaCode, CityCode, SettlementCode, string.Empty);
             else
             {
-                KladrDto row = KladrDao.GetKladrByCode(Code).Single();
+                //по коду выбранного обекта достаем строку и берем из нее параметры для поиска подчиненных списков объектов
+                KladrDto row = KladrDao.GetKladrByCode(Code).Single();  
                 if (AddressType < 6)
                     k.Kladr = KladrDao.GetKladr(AddressType, row.RegionCode, row.AreaCode, row.CityCode, row.SettlementCode, row.Index);
-                k.PostIndex = row.Index;
+                k.PostIndex = row.Index;    //индекс берем из записи выбранного объекта
             }
             return k;
         }

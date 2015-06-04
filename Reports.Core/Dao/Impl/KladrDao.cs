@@ -24,9 +24,9 @@ namespace Reports.Core.Dao.Impl
             string QueryString = string.Empty;
             if (string.IsNullOrEmpty(Code))
                 QueryString = @"SELECT     NULL AS Name, NULL AS ShortName, NULL AS [Index], NULL AS AltName, NULL AS AddressType, NULL AS RegionCode, NULL AS AreaCode, NULL AS CityCode, NULL
-                                AS SettlementCode, NULL AS StreetCode, NULL AS Code, NULL as SelectedIndex";
+                                AS SettlementCode, NULL AS StreetCode, NULL AS Code";
             else
-                QueryString = @"SELECT top 1 Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code, [Index] as SelectedIndex FROM dbo.Kladr WHERE Code = '" + Code + "' ";
+                QueryString = @"SELECT top 1 Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM dbo.Kladr WHERE Code = '" + Code + "' ";
 
             IQuery query = CreateKladrQuery(QueryString);
 
@@ -78,8 +78,7 @@ namespace Reports.Core.Dao.Impl
 
 
 
-            IQuery query = CreateKladrQuery(string.Format(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code, 
-                                                                   '" + (string.IsNullOrEmpty(Index) ? "" : Index) + "' as SelectedIndex FROM {0} {1} ORDER BY Name", View, QueryWhere));
+            IQuery query = CreateKladrQuery(string.Format(@"SELECT Name, ShortName, [Index], AltName, AddressType, RegionCode, AreaCode, CityCode, SettlementCode, StreetCode, Code FROM {0} {1} ORDER BY Name", View, QueryWhere));
 
             return query.SetResultTransformer(Transformers.AliasToBean<KladrDto>()).List<KladrDto>();
         }
@@ -98,7 +97,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SettlementCode", NHibernateUtil.String)
                 .AddScalar("StreetCode", NHibernateUtil.String)
                 .AddScalar("Code", NHibernateUtil.String)
-                .AddScalar("SelectedIndex", NHibernateUtil.String)
                 ;
             return query;
         }

@@ -84,7 +84,7 @@ namespace WebMvc.Controllers
         public ContentResult GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladrNew(Code, AddressType, RegionCode, AreaCode, CityCode, SettlementCode));
+            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, RegionCode, AreaCode, CityCode, SettlementCode));
             return Content(jsonString);
         }
     }

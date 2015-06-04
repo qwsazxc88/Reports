@@ -56,7 +56,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string FlatNumber { get; set; }
 
         [Display(Name = "Почтовый индекс")]
-        public string Index { get; set; }
+        public string PostIndex { get; set; }
 
         //для сообщений
         public string errorMessage { get; set; }

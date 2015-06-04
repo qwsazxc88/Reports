@@ -19,7 +19,7 @@
                 <div class="doc-wrap">
                     <table >
                         <tr>
-                            <td colspan="3">
+                            <td colspan="2">
                                 <b>Российский адрес</b>
                             </td>
                         </tr>
@@ -30,7 +30,6 @@
                             <td style="width:400px">
                                 @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) 
                             </td>
-                            <td rowspan="5" align="center"><span id="LoadingIndicator2"></span></td>
                         </tr>
                         <tr>
                             <td>
@@ -61,15 +60,15 @@
                                 @Html.LabelFor(m => m.StreetCode):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(-1);" }) 
+                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(6);" }) 
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="3">
+                            <td colspan="2">
                                 <table>
                                     <tr>
-                                        <td>@Html.LabelFor(m => m.Index)</td>
-                                        <td>@Html.TextBoxFor(m => m.Index, new { style = "width:50px", onchange = "CreateAddress();" })</td>
+                                        <td>@Html.LabelFor(m => m.PostIndex)</td>
+                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:50px", onchange = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
                                         <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
@@ -89,12 +88,24 @@
                             </td>
                             <td></td>
                         </tr>
+                        <tr>
+                            <td colspan="2" style="text-align:right;">
+                                <button id="btnSave" type="button" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </td>
         </tr>
     </table>
-    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <script type="text/javascript">
@@ -102,61 +113,42 @@
 
     $(document).ready(function () {
         setActiveMenuItem("moAddress");
+        $("#btnSave").button();
     });
 
 
     function CodeChange(AddressType) {
         //загружаем районы
         if (AddressType == 2){
-            if($("#RegionCode").val() == "" || $("#RegionCode").val() == null){
-                    setEmptyToDropdown("AreaCode");
-                    setEmptyToDropdown("CityCode");
-                    setEmptyToDropdown("SettlementCode");
-                    setEmptyToDropdown("StreetCode");
-                }
-            else{
-                //районы
-                GetArea(actionUrl, "AreaCode", $("#RegionCode").val(), "GET", AddressType);
-                //города
-                GetArea(actionUrl, "CityCode", $("#RegionCode").val(), "GET", AddressType + 1);
-                //населенные пункты
-                GetArea(actionUrl, "SettlementCode", $("#RegionCode").val(), "GET", AddressType + 2);
-                //улицы
-                GetArea(actionUrl, "StreetCode", $("#RegionCode").val(), "GET", AddressType + 3);
-            }
+            //районы
+            GetArea(actionUrl, "AreaCode", $("#RegionCode").val(), "GET", AddressType);
+            //города
+            GetArea(actionUrl, "CityCode", $("#RegionCode").val(), "GET", AddressType + 1);
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#RegionCode").val(), "GET", AddressType + 2);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#RegionCode").val(), "GET", AddressType + 3);
         }
         //загружаем города
         if (AddressType == 3){
-            if($("#AreaCode").val() == "" || $("#AreaCode").val() == null)
-                    setEmptyToDropdown("AreaCode");
-            else{
-                //города
-                GetArea(actionUrl, "CityCode", $("#AreaCode").val(), "GET", AddressType);
-                //населенные пункты
-                GetArea(actionUrl, "SettlementCode", $("#AreaCode").val(), "GET", AddressType + 1);
-                //улицы
-                GetArea(actionUrl, "StreetCode", $("#AreaCode").val(), "GET", AddressType + 2);
-            }
+            //города
+            GetArea(actionUrl, "CityCode", $("#AreaCode").val(), "GET", AddressType);
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#AreaCode").val(), "GET", AddressType + 1);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#AreaCode").val(), "GET", AddressType + 2);
         }
         //загружаем населенные пункты
         if (AddressType == 4){
-            if($("#CityCode").val() == "" || $("#CityCode").val() == null)
-                    setEmptyToDropdown("CityCode");
-            else{
-                //населенные пункты
-                GetArea(actionUrl, "SettlementCode", $("#CityCode").val(), "GET", AddressType);
-                //улицы
-                GetArea(actionUrl, "StreetCode", $("#CityCode").val(), "GET", AddressType + 1);
-            }
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#CityCode").val(), "GET", AddressType);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#CityCode").val(), "GET", AddressType + 1);
         }
         //загружаем улицы
         if (AddressType == 5){
-            if($("#SettlementCode").val() == "" || $("#SettlementCode").val() == null)
-                    setEmptyToDropdown("SettlementCode");
-            else{
-                //улицы
-                GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
-            }
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
         }
         //узнаем индекс для выбранной улицы
         if (AddressType == 6){
@@ -170,8 +162,8 @@
     function CreateAddress(){
         var StrAddress = "";
 
-        if($("#Index").val() != ""){
-            StrAddress = $("#Index").val() + ", ";    
+        if($("#PostIndex").val() != ""){
+            StrAddress = $("#PostIndex").val() + ", ";    
         }
 
         if($("#RegionCode").val() != null && $("#RegionCode").val() != ""){
@@ -216,7 +208,8 @@
     }
 
     function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
-        $("#LoadingIndicator2").addClass("loading2");                
+        //$("#LoadingIndicator2").addClass("loading2");                
+        ShowFlash(true);
         //$("#LoadingIndicator2").text("Идет загрузка данных...");
         $("#Code").val(code);
         $("#AddressType").val(AddressType);
@@ -231,14 +224,16 @@
                 data: dataToSend,
                 success: function(result){
                     setValuesToDropdown(controlName, result, AddressType);
-                    $("#LoadingIndicator2").removeClass("loading2");
+                    //$("#LoadingIndicator2").removeClass("loading2");
                     //$("#LoadingIndicator2").text("");
+                    ShowFlash(false);
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");
-                    $("#LoadingIndicator2").removeClass("loading2");
+                    //$("#LoadingIndicator2").removeClass("loading2");
                     //$("#LoadingIndicator2").text("При загрузке данных произошла ошибка.");
                     console.log(result.Error);
+                    ShowFlash(false);
                 }
             });
     }
@@ -246,8 +241,6 @@
     //заполняем данными комбобокс
     function setValuesToDropdown(controlName,data, AddressType)
     {
-        //var options = $('#' + controlName);
-        //options.attr("disabled", "disabled");
         if (data.Kladr != null)
         {
             var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
@@ -258,18 +251,13 @@
                 optionsValues += '<option value="' + data.Kladr[i].Code + '">' + data.Kladr[i].Name + '</option>';
             }
 
-    //        $.each(data, function (item, data) {
-    //            optionsValues += '<option value="' + data.Code + '">' + data.Name + '</option>';
-    //        })
             optionsValues += '</select>';
 
             var options = $("#" + controlName );
             options.replaceWith(optionsValues);
         }
         
-        
-
-        $("#Index").val(data.PostIndex);
+        $("#PostIndex").val(data.PostIndex);
 
         CreateAddress();
     }
@@ -281,5 +269,38 @@
         optionsValues += '</select>';
         var options = $('#' + controlName);
         options.replaceWith(optionsValues);
+    }
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow)
+        {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else
+        {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                //title: title,
+                // fix IE6  
+                bgiframe: true, 
+                draggable: false,
+                resizable: false,
+                width: 300,
+	            height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
     }
 </script>
