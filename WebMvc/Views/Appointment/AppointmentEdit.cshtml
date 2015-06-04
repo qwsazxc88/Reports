@@ -300,8 +300,13 @@
                     } 
                 </td>
             </tr>
+                
             }
-             
+            <tr>
+                 <td>Выбрать принадлежность кандидата</td>
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.Id == 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.StaffManager) > 0) ? null : new { disabled = "disabled" })
+                 </td>
+            </tr> 
         </table>
         </fieldset>
         <table style="width:100%">
@@ -378,8 +383,8 @@
                 </td>
             </tr>*@
              
-             @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
-             {
+            @* @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
+             {*@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
@@ -428,30 +433,26 @@
                     </tr>
                  <tr>
                      <td>Рекрутер 1:</td>
-                     <td>@Html.DropDownListFor(x=>x.Recruter1id,new SelectList(Model.Recruters,"Id","Name"))
+                     <td>@Html.DropDownListFor(x => x.Recruter1id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled="disabled"})
                      </td>
                  </tr>
                  <tr>
                      <td>Рекрутер 2:</td>
-                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"))
+                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })
                      </td>
                  </tr>
                  <tr>
                      <td>Рекрутер 3:</td>
-                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"))
+                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })
                      </td>
                  </tr>
                  <tr><td>Срочность</td>
-                 <td>@Html.DropDownListFor(m=>m.Priority,new SelectList(Model.Priorities,"Id","Name"))</td>
+                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })</td>
                  </tr>
                  }
             
              }
-              <tr>
-                 <td>Выбрать принадлежность кандидата</td>
-                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"))
-                 </td>
-            </tr>
+              
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)

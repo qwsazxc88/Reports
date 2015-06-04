@@ -215,12 +215,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            //new IdNameDto(5, "Отменена"),
-                                                           new IdNameDto(6, "Нет подходящих вакансий"),
+                                                           new IdNameDto(6, "Нет вакансий"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(6, "Не одобрен бухгалтером"),
-                                                           new IdNameDto(7, "Отправленно на согласование в кадровую службу"),
+                                                           new IdNameDto(7, "Отправлена на согласование Специалисту УКДиУ"),
                                                            new IdNameDto(8, "Специалистом УКДиУ приостановленно согласование"),
-                                                           new IdNameDto(9, "Не хватает вакансий. Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(9, "Не хватает свободных вакансий. Отправлена на согласование вышестоящему руководителю"),
                                                            new IdNameDto(10, "Согласована вышестоящим руководителем. Поиск сотрудника не требуется.")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
@@ -531,7 +531,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue)
+                    if (!entity.DeleteDate.HasValue && current.Id==ConfigurationService.StaffBossId)
                     {
                         if(entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                             model.IsStaffApproveAvailable = true;
@@ -714,7 +714,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Chiefs = chiefsBuilder.ToString();
 
             #endregion
-
+            model.DocumentNumber = appointment.Number.ToString();
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
@@ -1632,7 +1632,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && current.Id == entity.Appointment.AcceptStaff.Id)
+                    if (!entity.DeleteDate.HasValue && (current.Id == entity.Appointment.AcceptStaff.Id || (entity.Appointment.Recruters!=null?entity.Appointment.Recruters.Any(x=>x.Id==current.Id):false)))
                     {
                         if (entity.AcceptManager != null && entity.AcceptManager.Id == current.Id && 
                                 !string.IsNullOrEmpty(entity.TempLogin))
