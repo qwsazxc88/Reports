@@ -692,7 +692,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             // + руководители по ручным привязкам
-            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesEmployment);
             foreach (var manualRoleManager in manualRoleManagers)
             {
                 if (!chiefs.Contains(manualRoleManager))
@@ -802,6 +802,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
                         EditDate = DateTime.Now,
+                        AppointmentEducationTypeId=model.AppointmentEducationType
                     };
                     ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
@@ -894,7 +895,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = (model.ReasonId != 3 && !String.IsNullOrWhiteSpace(model.ReasonBeginDate)) ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
                 entity.DesirableBeginDate = model.ShowStaff ? DateTime.Parse(model.DesirableBeginDate) : entity.ReasonBeginDate.HasValue ? entity.ReasonBeginDate.Value+TimeSpan.FromDays(14) : DateTime.Now;
-                entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
@@ -953,6 +954,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             EmailDto dto = SendEmailForBankAccountant(entity.Creator, entity); //dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
@@ -1048,6 +1050,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 if(model.Recruter2id>0) recruters.Add( UserDao.Load(model.Recruter2id));
                                 if(model.Recruter3id>0) recruters.Add( UserDao.Load(model.Recruter3id));
                                 entity.Recruters = recruters;
+                                //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                                 entity.AcceptStaff = currUser;
                                 entity.Priority = model.Priority;
                                 CreateAppointmentReport(entity);
@@ -1060,7 +1063,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.StaffDateAccept = DateTime.Now;
                             entity.AcceptStaff = currUser;
-
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             var recruters = new List<User>();
                             if (model.Recruter1id > 0) recruters.Add(UserDao.Load(model.Recruter1id));
                             if (model.Recruter2id > 0) recruters.Add(UserDao.Load(model.Recruter2id));

@@ -304,7 +304,7 @@
             }
             <tr>
                  <td>Выбрать принадлежность кандидата</td>
-                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.Id == 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.StaffManager) > 0) ? null : new { disabled = "disabled" })
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.Id == 0 ) ? null : new { disabled = "disabled" })
                  </td>
             </tr> 
         </table>
