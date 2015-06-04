@@ -692,7 +692,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             // + руководители по ручным привязкам
-            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesEmployment);
             foreach (var manualRoleManager in manualRoleManagers)
             {
                 if (!chiefs.Contains(manualRoleManager))
