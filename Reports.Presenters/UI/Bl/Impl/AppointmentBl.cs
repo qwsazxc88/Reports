@@ -714,6 +714,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Chiefs = chiefsBuilder.ToString();
 
             #endregion
+            if(appointment!=null)
             model.DocumentNumber = appointment.Number.ToString();
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
