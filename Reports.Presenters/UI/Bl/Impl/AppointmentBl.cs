@@ -673,7 +673,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             // + руководители по ручным привязкам
-            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesEmployment);
             foreach (var manualRoleManager in manualRoleManagers)
             {
                 if (!chiefs.Contains(manualRoleManager))
@@ -724,6 +724,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
             List<DepartmentDto> departments;
+            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
             switch (currUser.Level)
             {
                 case 2:
