@@ -146,7 +146,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
             // Для руководителей-замов ближайшие руководители находится на том же уровне
-            if (managerAccount != null && !managerAccount.IsMainManager && false)//Отключено
+            if (managerAccount != null && !managerAccount.IsMainManager )//Отключено
             {
                 mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
                     .Where<User>(manager => manager.IsMainManager)
