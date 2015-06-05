@@ -1,25 +1,20 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.AddressModel
 @{
-    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    @*Layout = "~/Views/Shared/_LayoutStaffList.cshtml";*@
     ViewBag.Title = "Address";
 }
 
-<b>Адрес AJAX</b>
+@*<b>Адрес AJAX</b>*@
 
 @using (Html.BeginForm("Address", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Address-form" }))
 {
     @Html.HiddenFor(m => m.Code)
     @Html.HiddenFor(m => m.AddressType)
     
-    @Html.ValidationSummary(false)
-    <div id="Error" style="color:Red;display:none;"></div>
     <table style="width:100%">
         <tr>
             <td colspan="2">
-                <h5 >
-                    @Html.ValidationMessageFor(model => model.errorMessage)
-                </h5>
-                <div class="doc-wrap">
+                <div style="background-color:#FAFAFA;">
                     <table >
                         <tr>
                             <td colspan="2">
@@ -71,13 +66,13 @@
                                 <table>
                                     <tr>
                                         <td>@Html.LabelFor(m => m.PostIndex)</td>
-                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:50px", onchange = "CreateAddress();" }) </td>
+                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:60px", maxlength = 6, onkeyup = "CreateAddress();" }) </td>
                                         <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
-                                        <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:50px", maxlength = 10, onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
-                                        <td>@Html.TextBoxFor(m => m.BuildNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.BuildNumber, new { style = "width:50px", maxlength = 10, onkeyup = "CreateAddress();" })</td>
                                         <td>@Html.DropDownListFor(model => model.FlatType, new SelectList(Model.FlatTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
-                                        <td>@Html.TextBoxFor(m => m.FlatNumber, new { style = "width:40px", onkeyup = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.FlatNumber, new { style = "width:40px", maxlength = 5, onkeyup = "CreateAddress();" })</td>
                                     </tr>
                                 </table>
                             </td>
@@ -91,11 +86,13 @@
                             </td>
                             <td></td>
                         </tr>
+                        @*
                         <tr>
                             <td colspan="2" style="text-align:right;">
-                                <button id="btnSave" type="submit" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
+                                <button id="btnSave" type="button" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
                             </td>
                         </tr>
+                        *@
                     </table>
                 </div>
             </td>
@@ -115,8 +112,8 @@
     var actionUrl = "@Url.Action("GetKladr", "StaffList")";    
 
     $(document).ready(function () {
-        setActiveMenuItem("moAddress");
-        $("#btnSave").button();
+        //setActiveMenuItem("moAddress");
+        //$("#btnSave").button();
     });
 
 
@@ -165,7 +162,16 @@
     function CreateAddress(){
         var StrAddress = "";
 
+        $("#Address").val(StrAddress);
+
         if($("#PostIndex").val() != ""){
+            //проверим, чтобы были одни цифры
+            if (!Number($("#PostIndex").val()))
+            {
+                alert("Почтовый индекс должен содержать цифры!");
+                $("#PostIndex").focus();
+                return;
+            }
             StrAddress = $("#PostIndex").val() + ", ";    
         }
 
@@ -173,19 +179,21 @@
             StrAddress += $("#RegionCode option:selected").text().trim();
         }
 
-        if($("#AreaCode").val() != null && $("#AreaCode").val() != ""){
+        
+        if($("#AreaCode").val() != null && $("#AreaCode").val() != "null"){
             StrAddress += ", " + $("#AreaCode option:selected").text().trim();
         }
 
-        if($("#CityCode").val() != null && $("#CityCode").val() != ""){
+        if($("#CityCode").val() != null && $("#CityCode").val() != "null"){
             StrAddress += ", " + $("#CityCode option:selected").text().trim();
         }
 
-        if($("#SettlementCode").val() != null && $("#SettlementCode").val() != ""){
+        if($("#SettlementCode").val() != null && $("#SettlementCode").val() != "null"){
             StrAddress += ", " + $("#SettlementCode option:selected").text().trim();
         }
 
-        if($("#StreetCode").val() != null && $("#StreetCode").val() != ""){
+
+        if($("#StreetCode").val() != null && $("#StreetCode").val() != "null"){
             StrAddress += ", " + $("#StreetCode option:selected").text().trim();
         }
 
@@ -198,7 +206,7 @@
 
         if($("#BuildNumber").val() != ""){
             StrAddress += (StrAddress == "" ? "" :  ", ") + $("#BuildType option:selected").text().trim();
-            StrAddress += (StrAddress == "" ? "" :  " №") + $("#BuildNumber").val();
+            StrAddress += (StrAddress == "" ? "" :  " ") + $("#BuildNumber").val();
         }        
 
 
@@ -242,7 +250,7 @@
         if (data.Kladr != null)
         {
             var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
-            optionsValues += '<option value=""></option>';
+            //optionsValues += '<option value=""></option>';
 
             for (var i = 0; i < data.Kladr.length; i++)
             {
@@ -271,6 +279,7 @@
 
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
+    //return;
         if (!IsShow)
         {
             $("#LoadingIndicator2").removeClass("loading2");
@@ -302,4 +311,54 @@
         }
     }
 
+
+//    function CreateAddressDialog() {
+//        var elem = document.createElement('div');
+//        elem.id = "divDetailDialog";
+//        var newDiv = $(elem);
+
+//        var actionDetailDialogUrl = "@Url.Action("Address", "StaffList", new { id = 1 })";
+
+//        var title = "Адрес";
+//        
+
+//        $(newDiv).text('Подождите, идет загрузка данных ...');
+//        $.ajaxSetup({ cache: false });
+//        $(newDiv).load(actionDetailDialogUrl
+//            , function (response, status, xhr) {
+//                if (status == "error") {
+//                    var msg = "Произошла ошибка: ";
+//                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+//                }
+//            }
+//        );
+//        $(newDiv).dialog(
+//        { // initialize dialog box
+//            autoOpen: false,
+//            modal: true,
+//            title: title,
+//            // fix IE6  
+//            bgiframe: true,
+//            draggable: false,
+//            resizable: false,
+//            width: 700,
+//            height: 480,
+//            close: function (event, ui) {
+//                $(this).dialog("destroy").remove();
+//            },
+//            buttons:
+//            {
+//                "OK": function () {
+//                    $(this).dialog("close");
+//                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+//            }
+//        });
+
+//        $(newDiv).dialog("open");
+
+//    }
 </script>

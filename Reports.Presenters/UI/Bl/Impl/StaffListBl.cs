@@ -143,27 +143,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if(!string.IsNullOrEmpty(model.RegionCode))
             {
-                AddressStr += model.Regions.Where(x => x.Code == model.RegionCode).Single().Name + " " + model.Regions.Where(x => x.Code == model.RegionCode).Single().ShortName;
+                AddressStr += model.Regions.Where(x => x.Code == model.RegionCode).Single().Name;
             }
 
             if(!string.IsNullOrEmpty(model.AreaCode))
             {
-                AddressStr += ", " +  model.Areas.Where(x => x.Code == model.AreaCode).Single().Name + " " + model.Areas.Where(x => x.Code == model.AreaCode).Single().ShortName;
+                AddressStr += ", " +  model.Areas.Where(x => x.Code == model.AreaCode).Single().Name;
             }
 
             if(!string.IsNullOrEmpty(model.CityCode))
             {
-                AddressStr += ", " +  model.Cityes.Where(x => x.Code == model.CityCode).Single().Name + " " + model.Cityes.Where(x => x.Code == model.CityCode).Single().ShortName;
+                AddressStr += ", " +  model.Cityes.Where(x => x.Code == model.CityCode).Single().Name;
             }
 
             if(!string.IsNullOrEmpty(model.SettlementCode))
             {
-                AddressStr += ", " +  model.Settlements.Where(x => x.Code == model.SettlementCode).Single().Name + " " + model.Settlements.Where(x => x.Code == model.SettlementCode).Single().ShortName;
+                AddressStr += ", " +  model.Settlements.Where(x => x.Code == model.SettlementCode).Single().Name;
             }
 
             if(!string.IsNullOrEmpty(model.StreetCode))
             {
-                AddressStr += ", " +  model.Streets.Where(x => x.Code == model.StreetCode).Single().Name + " " + model.Streets.Where(x => x.Code == model.StreetCode).Single().ShortName;
+                AddressStr += ", " +  model.Streets.Where(x => x.Code == model.StreetCode).Single().Name;
             }
 
             
@@ -175,14 +175,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if(!string.IsNullOrEmpty(model.BuildNumber)){
                 AddressStr += (AddressStr == "" ? "" :  ", ") + model.BuildTypes.Where(x => x.Id == model.BuildType).Single().Name;
-                AddressStr += (AddressStr == "" ? "" :  " №") + model.BuildNumber;
+                AddressStr += (AddressStr == "" ? "" :  " ") + model.BuildNumber;
             }
 
 
             if (!string.IsNullOrEmpty(model.FlatNumber))
             {
                 AddressStr += (AddressStr == "" ? "" : ", ") + model.FlatTypes.Where(x => x.Id == model.FlatType).Single().Name;
-                AddressStr += (AddressStr == "" ? "" : " №") + model.FlatNumber;
+                AddressStr += (AddressStr == "" ? "" : " ") + model.FlatNumber;
             }
 
             return AddressStr;

@@ -95,10 +95,10 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id адреса</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult Address(int Id)
+        public ActionResult Address(int? Id)
         {
-            AddressModel model = StaffListBl.GetAddress(Id);
-            return View(model);
+            AddressModel model = StaffListBl.GetAddress(Id.HasValue ? Id.Value : 0);
+            return PartialView(model);
         }
         /// <summary>
         /// Сохраняем составленный адрес.

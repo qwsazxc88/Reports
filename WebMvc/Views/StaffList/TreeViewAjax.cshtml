@@ -87,15 +87,26 @@
             }
         </div>
     </div>
+    <h2>Построение адреса</h2>
     <br /><br />
-    <a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 0 })' style="cursor:hand">Новый адрес</a>
+    @*<a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 0 })' style="cursor:hand">Новый адрес</a>*@
+    <a class="ui-notify-close" href='#' onclick="CreateAddressDialog(0);" style="cursor:hand">Новый адрес</a>
     <br /><br />
-    <a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 1 })' style="cursor:hand">Адрес</a>
+    @*<a class="ui-notify-close" href='@Url.Action("Address", "StaffList", new { id = 1 })' style="cursor:hand">Адрес</a>*@
+    <a class="ui-notify-close" href='#' onclick="CreateAddressDialog(1);" style="cursor:hand">Адрес</a>
+    <br /><br />
+    <button onclick="CreateAddressDialog();" type="button">Адрес</button>
+    
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        @Html.HiddenFor(m => m.FactAddress)
+        <label id="FactAddressLabel">@Model.FactAddress</label>
+    </div>
 
 }
 
 
 <script type="text/javascript">
+    var OldAddressId = -1;
     $(document).ready(function () {
         setActiveMenuItem("moTreeViewAjax");
         $(".treeview li>ul").css('display', 'none'); //скрываем все 2 уровня
@@ -161,6 +172,84 @@
                     alert("При загрузке данных произошла ошибка.");
                 }
             });
+    }
+
+
+    function CreateAddressDialog(Id) {
+        if (Id == null) return;
+        var title = "Адрес";
+        //если уже вызывалось модальное окно, то не создаем его, а открываем уже существующее
+        if (OldAddressId == Id)
+        {
+            if($("#divDetailDialog").length){
+                //$("#divDetailDialog").dialog({title: title});
+                $("#divDetailDialog").dialog("open");
+                return;
+            }
+        }
+        else  //если окно вызывается из другого места и уже существует готовый экземпляр, то убиваем его
+        {
+            if($("#divDetailDialog").length){
+                $("#divDetailDialog").dialog("destroy").remove();
+            }
+        }
+        
+        OldAddressId = Id;
+
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+
+        var actionDetailDialogUrl = "@Url.Action("Address", "StaffList")";
+        actionDetailDialogUrl +="?Id=" + Id;
+
+       
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            //title: title,     
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 440,//480,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    $("#FactAddress").val($("#Address").val());
+                    $("#FactAddressLabel").text($("#Address").val());
+                    $(this).dialog("close");
+                }
+                ,
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        //убрал заголовок окна, потому что он пропадает, если после вызова модального окна использовать поверх еще одно модальное окно в качестве индикатора загрузки данных
+        $(".ui-dialog-titlebar").hide();
+        $(".ui-dialog-titlebar-close").hide();
+
+        $(newDiv).dialog("open");
+
     }
 
 </script>
