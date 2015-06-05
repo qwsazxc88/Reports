@@ -2725,7 +2725,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
                     {
                         model.IsWorkBeginAvailable = true;
-                        model.IsSaveAvailable = true;
+                        //model.IsSaveAvailable = true;
                         model.IsAnswerEditable = true;
                     }
 
@@ -2978,11 +2978,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SendDate = DateTime.Now;
                     }
 
-                    if (model.Operation == 3) entity.EndWorkDate = DateTime.Now;
+                    if (model.Operation == 3)
+                    {
+                        entity.EndWorkDate = DateTime.Now;
+                        entity.BeginWorkDate = entity.BeginWorkDate.HasValue ? entity.BeginWorkDate.Value : DateTime.Now;
+                    }
                 }
                 else 
                 {
-                    //ПЕРЕДЕЛАТЬ
                     //кому направлена тема
                     if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
                     {
@@ -2991,10 +2994,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate = DateTime.Now;
                         }
 
-                        //консультант и автор может закрыть тему созданную другими
-                        if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing || entity.Creator.Id == AuthenticationService.CurrentUser.Id)
+                        //консультант может закрыть тему созданную другими
+                        if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                         {
-                            if (model.Operation == 3) entity.EndWorkDate = DateTime.Now;
+                            if (model.Operation == 3)
+                            {
+                                entity.EndWorkDate = DateTime.Now;
+                                entity.BeginWorkDate = entity.BeginWorkDate.HasValue ? entity.BeginWorkDate.Value : DateTime.Now;
+                            }
                         }
                     }
 
