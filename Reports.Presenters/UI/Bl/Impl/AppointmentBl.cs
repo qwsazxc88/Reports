@@ -471,7 +471,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && currRole!= UserRole.StaffManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
