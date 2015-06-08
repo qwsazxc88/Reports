@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.IO; 
 using System.IO.Packaging;
+
 namespace NoteDocumentCreator
 {
     public class NoteCreator
     {
-        public static byte[] CreateNote(string WebPath,string To, string From, string Theme, DateTime Date, string Reason, string Departments, string Position, int PositionCount, decimal Salary, decimal Premium)
+        public static byte[] CreateNote(string WebPath,string To, string From, string Theme, DateTime DateFrom, DateTime Date, string Reason, string Departments, string Position, int PositionCount, decimal Salary, decimal Premium)
         {
+            string[] month=new string[12]{"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
             StreamReader reader = new StreamReader(Path.Combine(WebPath,@"Template\word\document.xml"));
             string data = reader.ReadToEnd();
             reader.Close();
@@ -17,13 +19,16 @@ namespace NoteDocumentCreator
             data = data.Replace("{{FROM}}", From);
             data = data.Replace("{{THEME}}", "Внесение изменений в штатное рассписание");
             data = data.Replace("{{DATE}}", Date.ToShortDateString());
+            data = data.Replace("{{DATEFROM}}", DateFrom.Day.ToString()+" "+month[DateFrom.Month-1]+" "+ DateFrom.Year +" года.");
             data = data.Replace("{{REASON}}", "Производственной необходимостью");
             data = data.Replace("{{DEPARTMENTS}}", Departments);
             data = data.Replace("{{POSITION}}", Position);
             data = data.Replace("{{POSITIONCOUNT}}", PositionCount.ToString());
             data = data.Replace("{{SALARY}}", Salary.ToString("0.00"));
+            data = data.Replace("{{ALLSUM}}", Salary.ToString("0.00"));
             data = data.Replace("{{PREMIUM}}", Premium.ToString("0.00"));
             data = data.Replace("{{TOTALSUM}}", (Salary + Premium).ToString("0.00"));
+            data = data.Replace("{{ALLTOTALSUM}}", (Salary + Premium).ToString("0.00"));
             StreamWriter writer = new StreamWriter(Path.Combine(WebPath,@"doc\word\document.xml"));
             writer.WriteLine(data);
             writer.Flush(); writer.Close();
