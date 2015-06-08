@@ -1871,7 +1871,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
                     //model.UserId = entity.Creator.Id;
-                    entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
+                    //entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
                     entity.Name = model.Name;
                     entity.Phone = model.Phone;
                     entity.Email = model.Email;
