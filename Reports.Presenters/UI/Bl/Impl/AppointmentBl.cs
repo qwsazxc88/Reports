@@ -308,6 +308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var result = new NoteModel 
             { 
                 Date=DateTime.Now,
+                DateFrom=appointment.CreateDate,
                 To="",
                 From=appointment.AcceptManager.Name,
                 Theme="Согласование кандидата на приём",

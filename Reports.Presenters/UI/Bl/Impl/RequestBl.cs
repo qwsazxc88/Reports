@@ -7499,12 +7499,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 while (!reader.EndOfStream)
                 {
                     string data = reader.ReadLine();
-                    Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
+                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;,:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:,;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:,;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;,:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:,;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
                     if (!m.Success) { Errors.Add("Неправильный формат данных.>" + data); continue; }
                     var el = new Deduction();
                     try
                     {
-                        el.Sum = decimal.Parse(m.Groups["Sum"].Value, System.Globalization.CultureInfo.InvariantCulture);
+                        el.Sum = decimal.Parse(m.Groups["Sum"].Value.Replace(',','.'), System.Globalization.CultureInfo.InvariantCulture);
                         el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
                         el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
                         el.EditDate = DateTime.Now;
@@ -7525,7 +7525,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0).ToList();
 
-                        el.User = foundedUsers.First(x => !x.ContractType.HasValue);
+                        el.User = foundedUsers.Any(x => !x.ContractType.HasValue)? foundedUsers.First(x => !x.ContractType.HasValue):null;
                         if (el.User == null)
                         {
                             Errors.Add("Пользователь по совместительству.>" + data); continue;

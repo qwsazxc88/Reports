@@ -10,6 +10,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string To { get; set; }
         public string From { get; set; }
         public string Theme { get; set; }
+        public DateTime DateFrom { get; set; }
         public DateTime Date { get; set; }
         public string Reason { get; set; }
         public IList<string> Departments { get; set; }
