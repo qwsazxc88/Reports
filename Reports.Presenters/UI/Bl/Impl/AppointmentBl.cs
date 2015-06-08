@@ -1917,14 +1917,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.StaffManager:
                 {
-                    if (!entity.DeleteDate.HasValue && entity.Appointment.AcceptStaff.Id == current.Id)
+                    if (!entity.DeleteDate.HasValue && (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id)))
                     {
-                        /*if (model.ApproveForAll)
-                        {
-
-                        }
-                        else
-                        {*/
                         entity.TestingResult = model.TestingResult;
                             if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
                             {

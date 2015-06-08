@@ -198,7 +198,7 @@
                     @Html.LabelFor(m => m.TypeId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
