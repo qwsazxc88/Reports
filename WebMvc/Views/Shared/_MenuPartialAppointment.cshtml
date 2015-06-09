@@ -42,8 +42,8 @@
                 {
                 <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                 </div> 
-                <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                </div>  
+                @*<div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)</div>  *@
+                <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "TreeViewAjax", "StaffList")</div>
                 }
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0 
