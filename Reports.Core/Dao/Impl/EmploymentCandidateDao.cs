@@ -311,11 +311,14 @@ namespace Reports.Core.Dao.Impl
         {
             if (beginDate.HasValue)
             {
-                whereString = string.Format(@"{0} candidate.QuestionnaireDate >= :beginDate",
+                whereString = string.Format(@"{0} cast(candidate.QuestionnaireDate as date) >= :beginDate",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
-            whereString = string.Format(@"{0} candidate.QuestionnaireDate <= :endDate",
-                (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            if (endDate.HasValue)
+            {
+                whereString = string.Format(@"{0} cast(candidate.QuestionnaireDate as date) <= :endDate",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
 
 
             if (CompleteDate.HasValue)
@@ -522,7 +525,10 @@ namespace Reports.Core.Dao.Impl
             {
                 query.SetDateTime("beginDate", beginDate.Value);
             }
-            query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+            if (endDate.HasValue)
+            {
+                query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+            }
 
             if (CompleteDate.HasValue)
                 query.SetDateTime("CompleteDate", CompleteDate.Value);
