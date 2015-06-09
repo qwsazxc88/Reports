@@ -109,7 +109,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
-    <Compile Include="Controllers\StaffListController.cs" />
     <Compile Include="Controllers\SurchargeController.cs" />
     <Compile Include="Controllers\SurchargeNoteController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
@@ -815,12 +814,8 @@
     <Content Include="Views\Employment\PrintObligationTradeSecret.cshtml" />
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
-    <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
-    <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />
@@ -828,13 +823,11 @@
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
     <Content Include="Views\Appointment\Instruction.cshtml" />
     <Content Include="Views\Info\News.cshtml" />
-    <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteEdit.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteList.cshtml" />
     <Content Include="Views\Shared\_LayoutSurchargeNote.cshtml" />
     <Content Include="Views\Shared\_MenuPartialSurchargeNote.cshtml" />
     <Content Include="Views\Info\Comments.cshtml" />
-    <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

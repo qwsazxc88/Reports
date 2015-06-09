@@ -744,7 +744,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
             List<DepartmentDto> departments;
-            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
             switch (currUser.Level)
             {
                 case 2:

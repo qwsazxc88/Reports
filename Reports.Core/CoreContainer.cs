@@ -599,9 +599,6 @@ namespace Reports.Core
             Register(Component.For<INewsDao>()
                 .ImplementedBy<NewsDao>()
                 .LifeStyle.Is(type));
-            Register(Component.For<IKladrDao>()
-                .ImplementedBy<KladrDao>()
-                .LifeStyle.Is(type));
             Register(Component.For<ISurchargeNoteDao>()
                 .ImplementedBy<SurchargeNoteDao>()
                 .LifeStyle.Is(type));
