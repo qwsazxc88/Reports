@@ -692,7 +692,7 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
                                     where uC.Id = {0}
-                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel <= crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         default:
