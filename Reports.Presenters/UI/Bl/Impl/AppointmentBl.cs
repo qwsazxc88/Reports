@@ -308,6 +308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var result = new NoteModel 
             { 
                 Date=DateTime.Now,
+                DateFrom=appointment.CreateDate,
                 To="",
                 From=appointment.AcceptManager.Name,
                 Theme="Согласование кандидата на приём",
@@ -470,7 +471,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && currRole!= UserRole.StaffManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -1870,7 +1871,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
                     //model.UserId = entity.Creator.Id;
-                    entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
+                    //entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
                     entity.Name = model.Name;
                     entity.Phone = model.Phone;
                     entity.Email = model.Email;
@@ -1916,14 +1917,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.StaffManager:
                 {
-                    if (!entity.DeleteDate.HasValue && entity.Appointment.AcceptStaff.Id == current.Id)
+                    if (!entity.DeleteDate.HasValue && (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id)))
                     {
-                        /*if (model.ApproveForAll)
-                        {
-
-                        }
-                        else
-                        {*/
                         entity.TestingResult = model.TestingResult;
                             if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
                             {
