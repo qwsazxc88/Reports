@@ -211,7 +211,6 @@
                 </td>
             </tr>
             <tr>
-
             <td>@Html.LabelFor(model => model.Attachment):</td>
                 <td>
                     @if (!string.IsNullOrEmpty(Model.Attachment))
@@ -300,14 +299,13 @@
                     @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerRejectAvailable ? (object)new { maxlength = 100, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
-                    if (Model.TypeId == 1)
-                    {
+        if (Model.TypeId == 1)
+        {
          <tr>
          <td>Результат тестирования специалистом ОПИНП</td>
          <td>@Html.DropDownListFor(m => m.TestingResult, new SelectList(Model.TestingResults, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : (object)new { disabled = "disabled" })</td>
-         </tr>
-                        if ((dto.UserRole & UserRole.Trainer) > 0)
-                        {
+         </tr>              
+                        
               <tr>
                 <td>
                     @Html.LabelFor(m => m.IsEducationExists):
@@ -317,8 +315,7 @@
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
             </tr>
-                        }
-                    }
+         }
          @*
             <tr>
                 <td>
