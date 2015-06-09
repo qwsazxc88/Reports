@@ -563,6 +563,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
+
+            if (entity.Creator.Id == current.Id && !entity.ManagerDateAccept.HasValue)
+            {
+                model.IsEditable = true;
+                model.IsManagerApproveAvailable = true;
+            }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
                 || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManagerBank && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
         }
@@ -1002,7 +1008,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue)
                     {
-                        if (model.StaffCreatorId == current.Id)
+                        if (model.StaffCreatorId == current.Id || entity.Creator.Id == current.Id)
                         {
                             if (model.ApproveForAll)
                             {
