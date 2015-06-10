@@ -1193,7 +1193,9 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml" />
+    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />

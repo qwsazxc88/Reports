@@ -23,7 +23,7 @@
 	<property name="IsEducationExists" not-null="false"/>
   <property name="IsColloquyPassed" not-null="false"/>
 	<property name="DateAccept" not-null="false"/>
-	  
+    <property name="TestingResult" not-null="false"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_AppointmentReport_CreatorUser" index="IX_AppointmentReport_CreatorUser_Id"  not-null="true"/>
 	<property name="StaffDateAccept" not-null="false"/>
 	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_AppointmentReport_StaffUser" index="IX_AppointmentReport_StaffUser"  not-null="false"/>

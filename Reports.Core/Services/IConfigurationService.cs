@@ -10,7 +10,7 @@ namespace Reports.Core.Services
         int TimesheetPageSize { get; }
         string DefaultDeductionEmail { get; }
         int? SuperPersonnelId { get; }
-
+        int? StaffBossId { get; }
         string AppointmentPersonnelManagerEmail { get; }
         string AppointmentStaffManagerEmail { get; }
 

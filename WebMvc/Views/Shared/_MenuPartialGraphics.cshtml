@@ -108,12 +108,13 @@
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
-                     || (dto.UserRole & UserRole.PersonnelManagerBank) > 0
+                     || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
                      || (dto.UserRole & UserRole.Security) > 0
+                     || (dto.UserRole & UserRole.Trainer) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Index", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Instruction", "Appointment")
                     </div> 
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
