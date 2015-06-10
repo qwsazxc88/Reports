@@ -205,16 +205,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantOutsourcing);
             if ((user.UserRole & UserRole.ConsultantPersonnel) > 0 && !roles.Contains(UserRole.ConsultantPersonnel))
                 roles.Add(UserRole.ConsultantPersonnel);
-            if ((user.UserRole & UserRole.ConsultantAccountant) > 0 && !roles.Contains(UserRole.ConsultantAccountant))
-                roles.Add(UserRole.ConsultantAccountant);
+            if ((user.UserRole & UserRole.Accountant) > 0 && !roles.Contains(UserRole.Accountant))
+                roles.Add(UserRole.Accountant);
             if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
                 roles.Add(UserRole.ConsultantOutsorsingManager);
             if ((user.UserRole & UserRole.DismissedEmployee) > 0 && !roles.Contains(UserRole.DismissedEmployee))
                 roles.Add(UserRole.DismissedEmployee);
             if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))
                 roles.Add(UserRole.Estimator);
-            if ((user.UserRole & UserRole.PersonnelManagerBank) > 0 && !roles.Contains(UserRole.PersonnelManagerBank))
-                roles.Add(UserRole.PersonnelManagerBank);
+            /*if ((user.UserRole & UserRole.PersonnelManagerBank) > 0 && !roles.Contains(UserRole.PersonnelManagerBank))
+                roles.Add(UserRole.PersonnelManagerBank);*/
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

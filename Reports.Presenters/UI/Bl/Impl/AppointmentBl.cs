@@ -416,8 +416,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, currUser,current.UserRole, entity, model);
             SetHiddenFields(model);
             if ((current.UserRole & UserRole.Manager) != UserRole.Manager 
-                && model.StaffCreatorId != current.Id 
-                &&current.UserRole != UserRole.PersonnelManagerBank
+                && model.StaffCreatorId != current.Id
+                && current.UserRole != UserRole.ConsultantPersonnel
                 &&current.UserRole != UserRole.StaffManager
                 )
             { model.IsEditable = false; model.IsSaveAvailable = false; }
@@ -460,7 +460,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole != UserRole.ConsultantPersonnel && currRole != UserRole.OutsourcingManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -545,15 +545,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                 case UserRole.Security:
                 case UserRole.PersonnelManager:    
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManagerBank && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable
+                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole == UserRole.ConsultantPersonnel && (model.IsVacationExists != 1 || model.BankAccountantAccept != true || model.BankAccountantAcceptCount < int.Parse(model.VacationCount)));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
@@ -881,7 +881,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = (String.IsNullOrWhiteSpace(model.Schedule))?"-":model.Schedule;
                 entity.Type = model.TypeId == 1?true:false;
-                if (current.UserRole == UserRole.PersonnelManagerBank)
+                if (current.UserRole == UserRole.ConsultantPersonnel)
                 {
                     entity.BankAccountant = UserDao.Load(current.Id);
                     entity.IsVacationExists = model.IsVacationExists == 1 ? true : false;
@@ -895,7 +895,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (current.UserRole)
             {
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                     if (entity.BankAccountantAccept.HasValue && entity.IsVacationExists)
                     {
                         EmailDto dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
@@ -1656,7 +1656,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.Security:

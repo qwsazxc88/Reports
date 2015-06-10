@@ -111,7 +111,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (Model.IsEditable || (dto.UserRole== UserRole.PersonnelManagerBank))
+                    @if (Model.IsEditable || (dto.UserRole == UserRole.ConsultantPersonnel))
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -336,7 +336,7 @@
                     }
                 </td>
             </tr>
-        @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+        @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
         {
          <tr>
                 <td>
@@ -352,10 +352,11 @@
                 
         }   
         <tr>
-                    <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
+                    <td>@if (dto.UserRole != UserRole.ConsultantPersonnel)
+                        { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
-                    @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.ConsultantPersonnel && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
+                    @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
                     { 
                       <input type="button" value="Отправить Email руководителю" id="SendEmailButton" onclick="SendEmailForManager();"/>                    
                     }

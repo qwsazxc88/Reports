@@ -708,7 +708,7 @@ namespace Reports.Core.Dao.Impl
                 //    return sqlQueryPart;
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                 case UserRole.StaffManager:
                 case UserRole.Security:
                     return string.Empty;

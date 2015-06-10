@@ -11949,7 +11949,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
                     entity.PayDay = model.PayDay;
                 }
-                if (CurrentUser.UserRole == UserRole.PersonnelManagerBank)
+                if (CurrentUser.UserRole == UserRole.ConsultantPersonnel)
                 {
                     if (model.PersonnelManagerBankAccept)
                     {
