@@ -111,7 +111,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (Model.IsEditable || (dto.UserRole== UserRole.PersonnelManagerBank))
+                    @if (Model.IsEditable || (dto.UserRole == UserRole.ConsultantPersonnel))
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -300,8 +300,13 @@
                     } 
                 </td>
             </tr>
+                
             }
-             
+            <tr>
+                 <td>Выбрать принадлежность кандидата</td>
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.Id == 0 ) ? null : new { disabled = "disabled" })
+                 </td>
+            </tr> 
         </table>
         </fieldset>
         <table style="width:100%">
@@ -336,7 +341,7 @@
                     }
                 </td>
             </tr>
-        @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+        @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
         {
          <tr>
                 <td>
@@ -352,10 +357,11 @@
                 
         }   
         <tr>
-                    <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
+                    <td>@if (dto.UserRole != UserRole.ConsultantPersonnel)
+                        { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
-                    @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.ConsultantPersonnel && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
+                    @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
                     { 
                       <input type="button" value="Отправить Email руководителю" id="SendEmailButton" onclick="SendEmailForManager();"/>                    
                     }
@@ -378,8 +384,8 @@
                 </td>
             </tr>*@
              
-             @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
-             {
+            @* @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
+             {*@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
@@ -395,6 +401,7 @@
                      <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
                 </td>
             </tr>
+            
             @* <tr>
                 <td>
                     @Html.LabelFor(m => m.IsPersonnelApproved):
@@ -408,14 +415,14 @@
                      <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
                 </td>
             </tr>*@
-                 if (Model.ShowStaff)
+                 @if (Model.ShowStaff)
                  {
                      <tr>
                         <td>
                             @Html.LabelFor(m => m.IsStaffApproved):
                         </td>
                         <td>
-                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable && dto.Id == Model.StaffBossId ? null : (object)new { disabled = "disabled" }) 
                             Принял в работу
                             @*@Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
                             Уведомлен об отклонении заявки*@
@@ -425,22 +432,43 @@
                             <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
                         </td>
                     </tr>
+                 <tr>
+                     <td>Рекрутер 1:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter1id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id==Model.StaffBossId ? null : new { disabled="disabled"})
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 2:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 3:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
+                     </td>
+                 </tr>
+                 <tr><td>Срочность</td>
+                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })</td>
+                 </tr>
                  }
-             }
+            
+             
+              
         <tr>
                 <td>
-                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
                   @* @Html.ActionLink("Создать отчёт","CreateReportForOldAppointment",new {id=Model.Id},null) *@                  
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
                   @* @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }*@
-                   @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
-                    {
+                   @if (Model.ManagerId == dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists == 0 || !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
+                   {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
                        <input type="button" value="Создать служебную записку (.docx)"  onClick="javascript:window.location.href='/Appointment/NoteDocX/@Model.Id'" />
-                    }
+                   }
                    <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
@@ -452,8 +480,8 @@
             </tr>
         </table>
     </div> 
-    if(Model.Candidates!=null && Model.Candidates.Any())
-    {
+                                                                                      if (Model.Candidates != null && Model.Candidates.Any())
+                                                                                      {
     <div class="doc-wrap">
     Принятые сотрудники(@Model.Candidates.Count):
     <br />
@@ -471,7 +499,7 @@
     </tbody>
     </table>
     </div>  
-    }
+                                                                                      }
     <br />
     <div class="comment-wrap">
         <table style="width:100%">

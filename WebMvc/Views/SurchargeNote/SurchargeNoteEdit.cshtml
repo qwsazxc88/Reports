@@ -108,7 +108,7 @@
         Сотрудник УКДиУ:
         </td>
         <td>
-        @if (dto.UserRole == UserRole.PersonnelManagerBank )
+        @if (dto.UserRole == UserRole.ConsultantPersonnel)
         {     @Html.CheckBoxFor(m => m.PersonnelManagerBankAccept)      } 
         &nbsp;@Model.PersonnelManagerBankDateAccept &nbsp; @Model.PersonnelManagerBankName
         </td>
@@ -135,8 +135,8 @@
         </tr>
     }
     <tr>
-    @if (!Model.IsDelete && 
-        (dto.UserRole == UserRole.PersonnelManagerBank 
+    @if (!Model.IsDelete &&
+        (dto.UserRole == UserRole.ConsultantPersonnel 
         || (dto.UserRole == UserRole.PersonnelManager && Model.PersonnelsApproved.Any(x => x.Id == dto.Id)) 
         || dto.Id == 10 
         || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue)))
