@@ -1339,7 +1339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.ConsultantPersonnel:
-                case UserRole.ConsultantAccountant:
+                case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManager:
                 case UserRole.ConsultantOutsorsingManager:
@@ -1580,10 +1580,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //        }
                 //    }
                 //    break;
-                case UserRole.ConsultantAccountant:
+                case UserRole.Accountant:
                     if ((entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
-                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantAccountant))
+                             entity.ConsultantRoleId.Value == (int)UserRole.Accountant))
                     {
                         if (entity.ConsultantAccountant != null && entity.ConsultantAccountant.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
@@ -2068,14 +2068,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.ConsultantAccountant:
+                case UserRole.Accountant:
                     if (entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == currUser.Id))
                     {
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.ConsultantAccountant = currUser;
-                            entity.ConsultantRoleId = (int)UserRole.ConsultantAccountant;
+                            entity.ConsultantRoleId = (int)UserRole.Accountant;
                             HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
                             {
                                 //Answer = entity.Answer,
@@ -2264,14 +2264,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             if ((entity.ConsultantRoleId.HasValue &&
                 entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsourcing &&
                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantPersonnel &&
-               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantAccountant &&
+               entity.ConsultantRoleId.Value != (int)UserRole.Accountant &&
                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsorsingManager) ||//&&
                //entity.ConsultantRoleId.Value != (int)UserRole.PersonnelManager) ||
                !entity.SendDate.HasValue || entity.EndWorkDate.HasValue)
                 throw new ArgumentException("В текущем состоянии перенаправление заявки невозможно");
             if ((CurrentUser.UserRole & UserRole.ConsultantOutsourcing) != UserRole.ConsultantOutsourcing &&
                     (CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel &&
-                    CurrentUser.UserRole != UserRole.ConsultantAccountant &&
+                    CurrentUser.UserRole != UserRole.Accountant &&
                     CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)// &&
                     //CurrentUser.UserRole != UserRole.PersonnelManager)
                 throw new ArgumentException("Перенаправление заявки невозможно - неверная роль пользователя");
@@ -2289,9 +2289,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantPersonnel);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
             }
-            if ((CurrentUser.UserRole & UserRole.ConsultantAccountant) != UserRole.ConsultantAccountant)
+            if ((CurrentUser.UserRole & UserRole.Accountant) != UserRole.Accountant)
             {
-                Role role = GetRoleForId(roles, (int)UserRole.ConsultantAccountant);
+                Role role = GetRoleForId(roles, (int)UserRole.Accountant);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
             }
             if (CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)

@@ -46,8 +46,8 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.ConsultantOutsourcing;
                 if (IsInRole(ReportRoleConstants.ConsultantPersonnel))
                     return UserRole.ConsultantPersonnel;
-                if (IsInRole(ReportRoleConstants.ConsultantAccountant))
-                    return UserRole.ConsultantAccountant;
+                /*if (IsInRole(ReportRoleConstants.ConsultantAccountant))
+                    return UserRole.ConsultantAccountant;*/
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))
@@ -142,7 +142,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
-                   || (dto.UserRole & UserRole.ConsultantAccountant) > 0
+                   || (dto.UserRole & UserRole.Accountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
                    //|| (dto.UserRole & UserRole.PersonnelManager) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
