@@ -65,7 +65,7 @@ namespace Reports.Core.Dao.Impl
             }
             else
             {
-                if (user != null && role != UserRole.PersonnelManagerBank)
+                if (user != null && role != UserRole.ConsultantPersonnel)
                 {
                     if(user.Department!=null)
                     crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));

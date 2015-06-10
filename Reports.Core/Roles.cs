@@ -104,9 +104,9 @@ namespace Reports.Core
          /// </summary>
         Estimator = 4194304,
          /// <summary>
-         /// Кадровик банк
+         /// Кадровик банк DEPRECATED
          /// </summary>
-        PersonnelManagerBank = 8388608
+        //PersonnelManagerBank = 8388608
     }
 
     public enum UserManualRole
@@ -146,7 +146,7 @@ namespace Reports.Core
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
-        public const string PersonnelManagerBank = "8388608";
+        //public const string PersonnelManagerBank = "8388608";
 
         public static Dictionary<UserRole, string> Mapper { get; private set; }
 
@@ -176,7 +176,7 @@ namespace Reports.Core
                              {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},
-                             {UserRole.PersonnelManagerBank, PersonnelManagerBank}
+                             //{UserRole.PersonnelManagerBank, PersonnelManagerBank}
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}
