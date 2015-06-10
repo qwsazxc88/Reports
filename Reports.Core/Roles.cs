@@ -90,7 +90,7 @@ namespace Reports.Core
          /// <summary>
          /// Консультант Бухгалтер Банк
          /// </summary>
-        ConsultantAccountant = 524288,
+        //ConsultantAccountant = 524288,
          /// <summary>
          /// Консультант ОК
          /// </summary>
@@ -172,7 +172,7 @@ namespace Reports.Core
                              {UserRole.Trainer, Trainer},
                              {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
-                             {UserRole.ConsultantAccountant, ConsultantAccountant},
+                             //{UserRole.ConsultantAccountant, ConsultantAccountant},
                              {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},
