@@ -244,10 +244,10 @@ namespace WebMvc
             string lastErrorMessage = lastError.Message;
             string lastErrorStackTrace = lastError.StackTrace;
             var usr=UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-            string txt= string.Format("Произошла ошибка:\r\n {0} \r\n {1} \r\n {2} \r\n {3} {4} {5}",lastErrorTypeName,lastErrorMessage,lastErrorStackTrace, usr.Id ,usr.Name, usr.UserRole);
+            string txt = string.Format("Произошла ошибка:<br/> {0} <br/> {1} <br/> {2} <br/> {3} {4} {5} <br> ", lastErrorTypeName, lastErrorMessage, lastErrorStackTrace, usr.Id, usr.Name, usr.UserRole);
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
             if (requbl==null) return;
-            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка", txt);
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", txt);
             /*if (ex != null)
             {
                 if (ex is HttpUnhandledException)
