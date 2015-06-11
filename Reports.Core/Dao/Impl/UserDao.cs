@@ -35,7 +35,10 @@ namespace Reports.Core.Dao.Impl
         {
             get { return FKExistsViewName; }
         }
-
+        public IList<User> GetStaffList()
+        {
+            return Session.Query<User>().Where(x => (x.RoleId & (int)UserRole.StaffManager) > 0 && x.IsActive).ToList();
+        }
         public virtual User FindByLogin(string login)
         {
             return (User) Session.CreateCriteria(typeof(User))

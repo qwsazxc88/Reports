@@ -12,6 +12,7 @@ namespace Reports.Core.Dao
         IList<User> FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);
         bool IsLoginWithOtherIdExists(string login, int id);
+        IList<User> GetStaffList();
         IList<User> GetUsersWithRole(UserRole role);
         IList<User> LoadUserByCodes(List<string> codes);
         IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole,int departmentId);

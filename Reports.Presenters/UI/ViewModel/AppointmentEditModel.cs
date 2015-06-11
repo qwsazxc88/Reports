@@ -17,12 +17,14 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         public int DepartmentRequiredLevel { get; set; }
         public int Recruter { get; set; }
+        public int StaffBossId { get; set; }
         public string FiredFIO { get; set; }
         [Display(Name = "Место работы (город)")]
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
         public string City { get; set; }
-
+        public int Priority { get; set; }
+        public IList<IdNameDto> Priorities { get; set; }
         [Display(Name = "Должность")]
         public string PositionName { get; set; }
         //public int PositionId { get; set; }
@@ -128,11 +130,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int StaffCreatorId { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
-
+        public IList<IdNameDto> AppointmentTypes { get; set; }
+        public int AppointmentType { get; set; }
         public bool BankAccountantAccept { get; set; }
         public int BankAccountantAcceptCount { get; set; }
         public string BankAccountantName { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
         public IList<CandidateDto> Candidates { get; set; }
+        public IList<IdNameDto> Recruters { get; set; }
+        public int Recruter1id { get; set; }
+        public int Recruter2id { get; set; }
+        public int Recruter3id { get; set; }
+        public IList<IdNameDto> AppointmentEducationTypes { get; set; }
+        public int AppointmentEducationType { get; set; }
     }
 }

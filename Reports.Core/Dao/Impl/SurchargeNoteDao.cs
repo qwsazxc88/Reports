@@ -65,7 +65,7 @@ namespace Reports.Core.Dao.Impl
             }
             else
             {
-                if (user != null && role != UserRole.PersonnelManagerBank)
+                if (user != null && role != UserRole.ConsultantPersonnel)
                 {
                     if(user.Department!=null)
                     crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));
@@ -78,7 +78,7 @@ namespace Reports.Core.Dao.Impl
             }
             if (endDate.HasValue)
             {
-                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value));
+                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value+TimeSpan.FromDays(1)));
             }
             if (!String.IsNullOrWhiteSpace(docNumber))
             {
