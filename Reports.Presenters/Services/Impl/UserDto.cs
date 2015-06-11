@@ -150,7 +150,7 @@ namespace Reports.Presenters.Services.Impl
         }
         public static bool IsHelpPersonnelBillingAvailable(IUser dto)
         {
-            return (dto.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)) > 0 ||
+            return (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.Estimator | UserRole.ConsultantOutsorsingManager | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)) > 0 ||
                 ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10);
         }
         public static bool IsHelpTemplateAvailable(IUser dto)
