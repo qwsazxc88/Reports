@@ -196,6 +196,7 @@ namespace Reports.Presenters.UI.Bl
 
         bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId, int kindId, int uploadingType, bool isFastDissmissal, bool EnableSendEmail);
         bool SendNotifyEmailToUser(int MissionReportId);
+        bool sendEmail(string to, string subj, string body);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);

@@ -8096,6 +8096,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
                 return false;
         }
+        public bool sendEmail(string to, string subj, string body)
+        {
+            EmailDto dto = SendEmail(to, subj, body);
+            if (string.IsNullOrEmpty(dto.Error))
+                return true;
+            else
+                return false;
+        }
         protected void ChangeEntityProperties(Deduction entity, DeductionEditModel model)
         {
             if (model.IsEditable)
