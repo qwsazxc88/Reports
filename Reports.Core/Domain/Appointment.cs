@@ -69,7 +69,11 @@ namespace Reports.Core.Domain
 
         public virtual IList<AppointmentComment> Comments { get; set; }
         public virtual IList<EmploymentCandidate> Candidates { get; set; }
+        public virtual IList<User> Recruters { get; set; }
         public virtual User BankAccountant { get; set; }
+
+        public virtual int AppointmentEducationTypeId { get; set; }
+        public virtual int Priority { get; set; }
         #endregion
 
         #region Properties

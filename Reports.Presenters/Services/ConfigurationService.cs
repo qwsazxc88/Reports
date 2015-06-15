@@ -248,7 +248,19 @@ namespace Reports.Presenters.Services
                 return superPersonnelId;
             }
         }
-
+        public int? StaffBossId
+        {
+            get
+            {
+                int StaffBossId;
+                string strValue = ConfigurationManager.AppSettings["StaffBossId"];
+                if (string.IsNullOrEmpty(strValue))
+                    return null;
+                if (!Int32.TryParse(strValue, out StaffBossId) || (StaffBossId < 0))
+                    throw new ArgumentException("No or incorrect {0} setting on configuration file.", "StaffBossId");
+                return StaffBossId;
+            }
+        }
         public string DefaultDeductionEmail
         {
             get { return ConfigurationManager.AppSettings[keyDefaultDeductionEmail]; }
