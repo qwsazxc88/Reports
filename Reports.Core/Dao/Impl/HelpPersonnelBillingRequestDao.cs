@@ -127,16 +127,18 @@ namespace Reports.Core.Dao.Impl
         {
             switch (role)
             {
+                case UserRole.TaxCollector:
                 case UserRole.ConsultantOutsorsingManager:
                 case UserRole.Estimator:
                 case UserRole.ConsultantPersonnel:
+                case UserRole.Accountant:
                 case UserRole.PersonnelManager:
                     sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT DISTINCT * 
 												                   FROM (SELECT Id AS HelpBillingId, CreatorId as UserId FROM HelpPersonnelBillingRequest
 															             UNION ALL
 															             SELECT HelpBillingId, UserId FROM HelpBillingExecutorTasks) as tbl) as UB ON UB.HelpBillingId = v.id and UB.UserId = " + userId.ToString());
                     return string.Empty;
-                case UserRole.OutsourcingManager:
+                case UserRole.OutsourcingManager:                 
                 case UserRole.ConsultantOutsourcing:
                     return string.Empty;
                 default:

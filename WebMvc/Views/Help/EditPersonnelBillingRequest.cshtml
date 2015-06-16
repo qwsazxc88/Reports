@@ -110,10 +110,10 @@
                                 @*<button id="btnSaveExecutor" type="button">Назначить исполнителей</button><br /><br />*@
                                 <div id="tabs">
                                     <ul>
-                                        <li><a href="#tabs1"  onclick="Switch(0);">Сотрудники</a></li>
+                                        <li><a href="#tabs1"  onclick="Switch(0);">Сотрудники внутренние</a></li>
                                         @if (string.IsNullOrEmpty(Model.DateSended))
                                         {
-                                            <li><a href="#tabs2"  onclick="Switch(0);">Группы</a></li>
+                                            <li><a href="#tabs2"  onclick="Switch(0);">Группы внутренние</a></li>
                                         }
                                         <li><a href="#tabs1"  onclick="Switch(1);">Сотрудники внешние</a></li>
                                         @if (string.IsNullOrEmpty(Model.DateSended))
@@ -306,7 +306,9 @@
                 var ResultStr = "<tbody id='tblEBody'>";
                 for (var i = 0; i < result.RecipientList.length; i++)
                 {
-                    ResultStr += "<tr>"+
+                    var strclass=" class='bank' ";
+                    if((result.RecipientList[i].RoleId & 8 )>0 || (result.RecipientList[i].RoleId & 4194304 )>0) strclass=" class='outsors' "
+                    ResultStr += "<tr "+strclass+" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientList_" + i + "__Id' type='hidden' value='" + result.RecipientList[i].Id + "' name='RecipientList[" + i + "].Id' data-val='true'></input>" +
                                         "<input id='RecipientList_" + i + "__UserId' type='hidden' value='" + result.RecipientList[i].UserId + "' name='RecipientList[" + i + "].UserId' data-val='true'></input>" +
@@ -333,7 +335,10 @@
                 ResultStr = "<tbody id='tblEGBody'>";
                 for (var i = 0; i < result.RecipientGroups.length; i++)
                 {
-                    ResultStr += "<tr>"+
+                    var strclass=" class='bank' ";
+                    if((result.RecipientList[i].RoleId & 8 )>0 || (result.RecipientList[i].RoleId & 4194304 )>0) strclass=" class='outsors' "
+                    
+                    ResultStr += "<tr "+ strclass +" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientGroups_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientGroups[" + i + "].RoleId' data-val='true'></input>" +
                                         "<input id='RecipientGroups_" + i + "__Description' type='hidden' value='" + result.RecipientGroups[i].Description + "' name='RecipientGroups[" + i + "].Description'></input>" +
@@ -351,6 +356,7 @@
                     //console.log(ResultStr);
                 $("#tblEGBody").remove();
                 $("#tblExecutorGroups").append(ResultStr);
+                Switch(switchCurrent);
             },
             error: function(){
                 alert("При загрузке данных произошла ошибка.");
@@ -406,8 +412,10 @@
             $(controlname).val(true);
         }
     }
+    var switchCurrent=0;
     function Switch(val)
     {
+        switchCurrent=val;
         if(val==1)
         {
             $(".bank").hide();
