@@ -2568,7 +2568,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetPersonnelBillingTitles(bool addAll)
         {
-            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            List<int> removedThemes = new List<int>() { 1, 7 };
+            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).Where(x => !removedThemes.Contains(x.Id)).ToList();
             if(addAll)
                 list.Insert(0, new IdNameDto(0, SelectAll));
             return list;
