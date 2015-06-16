@@ -2708,7 +2708,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (AuthenticationService.CurrentUser.Id == 10 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ||
                 AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator||
-                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel)
+                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.Accountant ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
             {
                 if (entity.Creator.Id == current.Id)
                 {
@@ -2971,7 +2973,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (AuthenticationService.CurrentUser.Id == 10 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ||
                 AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator||
-                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
+                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.Accountant ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector
                 )
             {
                 if (entity.Creator.Id == currUser.Id)
