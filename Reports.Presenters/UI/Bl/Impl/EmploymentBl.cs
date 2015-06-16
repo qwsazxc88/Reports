@@ -1684,6 +1684,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (filters == null)
             {                
                 model.Roster = new List<CandidateDto>();
+                model.BeginDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             }
             else
             {
