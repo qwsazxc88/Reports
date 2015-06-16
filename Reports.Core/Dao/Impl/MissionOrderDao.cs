@@ -808,6 +808,7 @@ namespace Reports.Core.Dao.Impl
         {
             const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
                                     where [Id] != :id
+                                    and Not Exists (Select * From MissionOrder where MainOrderId=MO.id)
                                     and [UserId] = :userId
                                     and ([BeginDate] between :beginDate and :endDate
                                     or [EndDate] between :beginDate and :endDate
@@ -815,7 +816,8 @@ namespace Reports.Core.Dao.Impl
                                     or :endDate between [BeginDate] and  [EndDate])
                                     and [DeleteDate] is null
                                     and (([NeedToAcceptByChief] = 1 and [ChiefDateAccept] is not null)
-	                                    or ([NeedToAcceptByChief] = 0 and [ManagerDateAccept] is not null))";
+	                                    or ([NeedToAcceptByChief] = 0 and [ManagerDateAccept] is not null))
+                                    ";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 SetInt32("id", id).
                 SetDateTime("beginDate", beginDate).
@@ -825,14 +827,17 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual bool CheckAnyOtherOrdersExists(int id, int userId, DateTime beginDate, DateTime endDate)
         {
-            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
-                                    where [Id] != :id
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder] MO
+                                    where 
+                                    [Id] != :id
                                     and [UserId] = :userId
                                     and ([BeginDate] between :beginDate and :endDate
                                     or [EndDate] between :beginDate and :endDate
                                     or :beginDate between [BeginDate] and  [EndDate]
                                     or :endDate between [BeginDate] and  [EndDate])
-                                    and [DeleteDate] is null";
+                                    and [DeleteDate] is null
+                                    and Not Exists (Select * From MissionOrder where MainOrderId=MO.id)
+                                    ";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 SetInt32("id", id).
                 SetDateTime("beginDate", beginDate).
