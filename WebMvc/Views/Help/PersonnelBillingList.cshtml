@@ -156,11 +156,16 @@
                         <div id="sort7"  style="min-width:40px"><a href="#"  onclick = "SortChanged(7);">Номер<br/> запроса</a></div>
                     </th>
                     <th>
-                        <div id="sort8"  style="min-width:120px"><a href="#"  onclick = "SortChanged(8);">Отправитель</a></div>
+                        <div id="sort8"  style="min-width:120px"><a href="#"  onclick = "SortChanged(8);">Внутрениий<br />отправитель</a></div>
                     </th>                    
-
                     <th>
-                        Получатель
+                        <div id="sort12"  style="min-width:120px"><a href="#"  onclick = "SortChanged(12);">Внешний<br />отправитель</a></div>
+                    </th> 
+                    <th>
+                       Внутренний<br /> получатель
+                    </th>
+                    <th>
+                        Внешний<br />получатель
                     </th>
                     @*<th>
                         <div id="sort8"  style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
@@ -212,7 +217,9 @@
                                 <a class="ui-notify-close" href='@Url.Action("EditPersonnelBillingRequest", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
                             </td>
                             <td>@doc.CreatorName</td>
+                            <td>@doc.CreatorName_Bank</td>
                             <td>@doc.RepicientName</td>
+                            <td>@doc.RepicientName_Bank</td>
                             <td style="background-color:@color">
                                 @doc.Status
                             </td>
