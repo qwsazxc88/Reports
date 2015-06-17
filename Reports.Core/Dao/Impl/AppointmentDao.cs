@@ -115,6 +115,7 @@ namespace Reports.Core.Dao.Impl
                 v.EditDate as EditDate,
                 -- u.Id as UserId,
                 u.Name as UserName,
+                st.Name as StaffCreator,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
                 mapDep3.Name as ManDep3Name,
@@ -147,10 +148,10 @@ namespace Reports.Core.Dao.Impl
                         v.Recruter,
                         v.FIO as CandidateFIO
                 from dbo.Appointment v
-                
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                 -- inner join dbo.Position aPos on v.PositionId = aPos.Id
                 inner join [dbo].[Users] u on u.Id = v.CreatorId
+                Left join [dbo].[Users] st on v.StaffCreatorId=st.id
                 left join dbo.Position pos on u.PositionId = pos.Id
                 inner join dbo.Department dep on v.DepartmentId = dep.Id
                 inner join dbo.Department crDep on u.DepartmentId = crDep.Id
@@ -189,7 +190,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Recruter",NHibernateUtil.Int32).
                 AddScalar("CandidateFIO",NHibernateUtil.String).
-                AddScalar("ReasonId",NHibernateUtil.Int32);
+                AddScalar("ReasonId",NHibernateUtil.Int32).
+                AddScalar("StaffCreator", NHibernateUtil.String);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -514,6 +516,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 25:
                     orderBy = @" order by BankAccountantAcceptCount";
+                    break;
+                case 26:
+                    orderBy = @" order by StaffCreator";
                     break;
             }
             if (sortDescending.Value)

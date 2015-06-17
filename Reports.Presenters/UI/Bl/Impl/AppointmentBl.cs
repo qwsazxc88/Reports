@@ -812,6 +812,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EditDate = DateTime.Now,
                         AppointmentEducationTypeId=model.AppointmentEducationType
                     };
+                    if ((CurrentUser.UserRole & UserRole.StaffManager) > 0) entity.StaffCreator = UserDao.Load(CurrentUser.Id);
                     ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
