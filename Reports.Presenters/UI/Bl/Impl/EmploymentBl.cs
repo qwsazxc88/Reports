@@ -1684,6 +1684,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (filters == null)
             {                
                 model.Roster = new List<CandidateDto>();
+                model.BeginDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             }
             else
             {
@@ -2465,7 +2466,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
             model.EmployeeName = candidate.User.Name;
-            model.PositionName = candidate.Managers.Position.Name;
+            model.PositionName = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
             //model.DepartmentName = candidate.Managers.Department.Name;
             model.DepartmentName = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
 
