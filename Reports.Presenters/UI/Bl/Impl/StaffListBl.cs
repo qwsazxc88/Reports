@@ -44,9 +44,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         public TreeGridAjaxModel GetDepartmentStructure(string DepId)
         {
             TreeGridAjaxModel model = new TreeGridAjaxModel();
+            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
+            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
+            {
+                //руководство
+                IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
+                //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId);
+            }
             else
             {
                 //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
@@ -58,6 +71,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.UserPositions = ul;
             }
+
+
+            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
+            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
+            //    model.Departments = GetDepartmentListByParent(DepId);
+            //else
+            //{
+            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
+            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
+            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+            //    foreach (var item in Users)
+            //    {
+            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+            //    }
+            //    model.UserPositions = ul;
+            //}
             return model;
         }
         /// <summary>
