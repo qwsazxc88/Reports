@@ -38,6 +38,7 @@ namespace Reports.Core.Dto
                 public string EducationStatus { get; set; }
                 public int Recruter { get; set; }
                 public string CandidateFIO { get; set; }
+                public string StaffCreator { get; set; }
                 public Reports.Core.Enum.EmploymentStatus EmploymentStatus { get; set; }
     }
 }
