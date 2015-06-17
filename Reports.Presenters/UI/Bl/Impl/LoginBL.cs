@@ -213,8 +213,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.DismissedEmployee);
             if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))
                 roles.Add(UserRole.Estimator);
-            /*if ((user.UserRole & UserRole.PersonnelManagerBank) > 0 && !roles.Contains(UserRole.PersonnelManagerBank))
-                roles.Add(UserRole.PersonnelManagerBank); DEPRECATED*/
+            if ((user.UserRole & UserRole.TaxCollector) > 0 && !roles.Contains(UserRole.TaxCollector))
+                roles.Add(UserRole.TaxCollector); 
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
