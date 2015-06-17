@@ -44,13 +44,17 @@ namespace Reports.Presenters.UI.Bl.Impl
         public TreeGridAjaxModel GetDepartmentStructure(string DepId)
         {
             TreeGridAjaxModel model = new TreeGridAjaxModel();
+            int DepartmentId = DepartmentDao.GetByCode(DepId).Id;
             //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
             //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
             {
                 //руководство
-                IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager).ToList();
+                //IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+                    .OrderBy(x => x.Position.Name).OrderBy(x => x.Name).ToList();
                 IList<UsersListItemDto> ul = new List<UsersListItemDto>();
                 foreach (var item in Users)
                 {
@@ -63,7 +67,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-                IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
+                //IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0)
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderBy(x => x.IsMainManager)
+                    .OrderBy(x => x.Position.Name).OrderBy(x => x.Name).ToList();
                 IList<UsersListItemDto> ul = new List<UsersListItemDto>();
                 foreach (var item in Users)
                 {

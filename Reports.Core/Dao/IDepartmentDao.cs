@@ -13,5 +13,11 @@ namespace Reports.Core.Dao
         IList<Department> SearchByParentId(int parentId);
         IList<User> GetDepartmentManagers(int departmentId, bool allLevels = false);
         Department GetParentDepartmentWithLevel(Department dep, int level);
+        /// <summary>
+        /// Достаем подразделение по коду
+        /// </summary>
+        /// <param name="Code">Код</param>
+        /// <returns></returns>
+        Department GetByCode(string Code);
     }
 }

@@ -97,5 +97,15 @@ namespace Reports.Core.Dao.Impl
             }
             return managers;
         }
+        /// <summary>
+        /// Достаем подразделение по коду
+        /// </summary>
+        /// <param name="Code">КодС</param>
+        /// <returns></returns>
+        public Department GetByCode(string Code)
+        {
+            return (Department)Session.CreateCriteria(typeof(Department))
+                   .Add(Restrictions.Eq("Code", Code)).UniqueResult();
+        }
     }
 }
