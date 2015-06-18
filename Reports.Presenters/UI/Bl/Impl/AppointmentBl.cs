@@ -351,6 +351,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers != null) ? x.PersonnelManagers.CompleteDate : null, Status = x.SendTo1C.HasValue ? "Выгружено в 1С" : "Не выгружено в 1С" }).ToList();
                 }
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
+                }
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.ShowStaff = entity.Recruter == 1;
                 if(entity.BankAccountant!=null)
@@ -811,6 +815,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EditDate = DateTime.Now,
                         AppointmentEducationTypeId=model.AppointmentEducationType
                     };
+                    if ((CurrentUser.UserRole & UserRole.StaffManager) > 0) entity.StaffCreator = UserDao.Load(CurrentUser.Id);
                     ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
@@ -836,6 +841,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity.DeleteDate.HasValue)
                     model.IsDeleted = true;
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
@@ -2031,7 +2040,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, otherReportId));
             if(entity.Appointment.DeleteDate.HasValue)
                 throw new ValidationException(string.Format(StrAppointmentWasDeleted));
-            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id)
+            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
                 throw new ValidationException(string.Format(CannotCreateReport));
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
             
