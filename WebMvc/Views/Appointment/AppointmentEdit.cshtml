@@ -227,7 +227,7 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.TypeId):
+                    Форма оформления сотрудника:
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
@@ -322,7 +322,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    @Html.LabelFor(m => m.IsManagerApproved):
+                    Руководитель (заказчик):
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
@@ -419,7 +419,7 @@
                  {
                      <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsStaffApproved):
+                            Начальник ОПИНП:
                         </td>
                         <td>
                             @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable && dto.Id == Model.StaffBossId ? null : (object)new { disabled = "disabled" }) 
@@ -480,6 +480,16 @@
             </tr>
         </table>
     </div> 
+    if (Model.Reports != null && Model.Reports.Any())
+    { 
+       <div class="doc-wrap">
+       Отчёты:
+       @foreach(var el in Model.Reports)
+       {
+           @Html.ActionLink("№"+Model.DocumentNumber + "/" + el.Name+" ", "AppointmentReportEdit", new { id = el.Id }, null); 
+       }
+       </div>
+    }
                                                                                       if (Model.Candidates != null && Model.Candidates.Any())
                                                                                       {
     <div class="doc-wrap">

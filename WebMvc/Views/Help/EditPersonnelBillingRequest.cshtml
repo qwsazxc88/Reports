@@ -132,13 +132,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="tblEBody">
-                                                @{ int i = 1; }
+                                                @{ int i = 1; List<int> outterGroups = new List<int>() { 3, 8, 9 };             }
                                                 @foreach (var item in Model.RecipientList)
                                                 {
-                                                    <tr @if((item.RoleId & 8) > 0 || (item.RoleId & 4194304) > 0) {<text> class="outsors"</text>}
+                                                    <tr @if (outterGroups.Contains(item.RoleId))
+                                                        {<text> class="bank"</text>}
                                                         else
                                                         {
-                                                            <text> class="bank"</text>
+                                                            <text> class="outsors"</text>
                                                         }>
                                                         <td class="centered">
                                                             @Html.HiddenFor(m => m.RecipientList[i - 1].Id)
@@ -173,10 +174,11 @@
                                                     @{ int j = 1; }
                                                     @foreach (var item in Model.RecipientGroups)
                                                     {
-                                                        <tr @if((item.RoleId & 8) > 0 || (item.RoleId & 4194304) > 0) {<text> class="outsors"</text>}
+                                                        <tr @if (outterGroups.Contains(item.RoleId))
+                                                        {<text> class="bank"</text>}
                                                         else
                                                         {
-                                                            <text> class="bank"</text>
+                                                            <text> class="outsors"</text>
                                                         }>
                                                             <td class="centered">
                                                                 @Html.HiddenFor(m => m.RecipientGroups[j - 1].RoleId)
@@ -270,6 +272,7 @@
 }
 
 <script type="text/javascript">
+    var switchCurrent=0;
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
         $(document).ready(function () {
@@ -304,10 +307,11 @@
             success: function(result){
                 //список сотрудников
                 var ResultStr = "<tbody id='tblEBody'>";
+                var outterGroups=[3,8,9];
                 for (var i = 0; i < result.RecipientList.length; i++)
                 {
                     var strclass=" class='bank' ";
-                    if((result.RecipientList[i].RoleId & 8 )>0 || (result.RecipientList[i].RoleId & 4194304 )>0) strclass=" class='outsors' "
+                    if(outterGroups.lastIndexOf(result.RecipientList[i].RoleId)<0) strclass=" class='outsors' "
                     ResultStr += "<tr "+strclass+" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientList_" + i + "__Id' type='hidden' value='" + result.RecipientList[i].Id + "' name='RecipientList[" + i + "].Id' data-val='true'></input>" +
@@ -336,8 +340,9 @@
                 for (var i = 0; i < result.RecipientGroups.length; i++)
                 {
                     var strclass=" class='bank' ";
-                    if((result.RecipientList[i].RoleId & 8 )>0 || (result.RecipientList[i].RoleId & 4194304 )>0) strclass=" class='outsors' "
-                    
+                    if(outterGroups.lastIndexOf(result.RecipientGroups[i].RoleId)<0) strclass=" class='outsors' "
+                    console.log(outterGroups);console.log(outterGroups.lastIndexOf(result.RecipientList[i].RoleId));
+                    console.log(strclass+" " +result.RecipientGroups[i].Description+" "+ result.RecipientGroups[i].RoleId);
                     ResultStr += "<tr "+ strclass +" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientGroups_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientGroups[" + i + "].RoleId' data-val='true'></input>" +
@@ -412,16 +417,16 @@
             $(controlname).val(true);
         }
     }
-    var switchCurrent=0;
+    
     function Switch(val)
     {
         switchCurrent=val;
-        if(val==1)
+        if(val==0)
         {
             $(".bank").hide();
             $(".outsors").show();
         }
-        if(val==0)
+        if(val==1)
         {
             $(".bank").show();
             $(".outsors").hide();
