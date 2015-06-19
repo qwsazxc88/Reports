@@ -31,6 +31,36 @@ namespace WebMvc.Controllers
         {
             return View();
         }
+
+        #region Штатные единицы
+        /// <summary>
+        /// Загрузка структуры подразделений в соответствии с правами текущего пользователя.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequest()
+        {
+            StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
+            model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
+            return View(model);
+        }
+        /// <summary>
+        /// Загрузка структуры подразделений в соответствии с правами текущего пользователя.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequest(string DepId)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            StaffEstablishedPostRequestModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        #endregion
+
+        #region Для тестов
         /// <summary>
         /// Рекурсивное построение дерева.
         /// </summary>
@@ -61,7 +91,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult TreeViewAjax(string DepId)
         {
-            TreeViewAjaxModel model = new TreeViewAjaxModel(); 
+            TreeViewAjaxModel model = new TreeViewAjaxModel();
             model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
             return Json(model.Departments);
         }
@@ -85,7 +115,7 @@ namespace WebMvc.Controllers
         {
             var jsonSerializer = new JavaScriptSerializer();
             TreeGridAjaxModel model = StaffListBl.GetDepartmentStructure(DepId);
-            
+
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
@@ -127,5 +157,31 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
+        /// <summary>
+        /// Загрузка страницы структуры подразделений с привязкой к точкам Фиграда.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult DepStructureFingradPoints()
+        {
+            DepStructureFingradPointsModel model = StaffListBl.GetDepartmentStructureWithFingradPoins("9900424");
+            return View(model);
+        }
+        /// <summary>
+        /// Загрузка структуры подразделений с привязкой к точкам Фиграда по коду родительского подразделения.
+        /// </summary>
+        /// <param name="DepId">Код подразделения</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DepStructureFingradPoints(string DepId)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            DepStructureFingradPointsModel model = StaffListBl.GetDepartmentStructureWithFingradPoins(DepId);
+
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        #endregion
+        
     }
 }

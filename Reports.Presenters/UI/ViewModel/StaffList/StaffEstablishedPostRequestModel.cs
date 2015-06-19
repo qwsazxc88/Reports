@@ -6,8 +6,9 @@ using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
-    public class TreeGridAjaxModel
+    public class StaffEstablishedPostRequestModel
     {
+        //public IList<DepartmentWithFigradPointsDto> Departments { get; set; }
         public IList<Department> Departments { get; set; }
         public IList<UsersListItemDto> UserPositions { get; set; }
         public string DepId { get; set; }

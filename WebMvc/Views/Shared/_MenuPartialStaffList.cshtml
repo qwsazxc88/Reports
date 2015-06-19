@@ -38,7 +38,7 @@
                 <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
                 </div> 
                 @*<div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)</div>*@
-                <div id="liStaffList" class="mainOn">@Html.ActionLink("Штатное расписание", "TreeViewAjax", "StaffList")</div>  
+                <div id="liStaffList" class="mainOn">@Html.ActionLink("Штатное расписание", "StaffEstablishedPostRequest", "StaffList")</div>  
 
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
@@ -116,6 +116,8 @@
 
         </div>  
         <div class="podmenu">
+            <div class="menuitem" id="moStaffPost">@Html.ActionLink("Штатное расписание", "StaffEstablishedPostRequest", "StaffList")</div>
+            <div class="menuitem" id="moFinDepPoints">@Html.ActionLink("Структура подразделений", "DepStructureFingradPoints", "StaffList")</div>
             <div class="menuitem" id="moTreeViewAjax">@Html.ActionLink("Дерево Ajax", "TreeViewAjax", "StaffList")</div>
             <div class="menuitem" id="moTreeGridAjax">@Html.ActionLink("Структура подразделений Ajax", "TreeGridAjax", "StaffList")</div>
             <div class="menuitem" id="moTreeView">@Html.ActionLink("Дерево", "TreeView", "StaffList")</div>

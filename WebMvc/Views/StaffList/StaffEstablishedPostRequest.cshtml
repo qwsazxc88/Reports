@@ -1,14 +1,8 @@
-﻿@model Reports.Presenters.UI.ViewModel.StaffList.TreeGridAjaxModel
-@using Reports.Presenters.UI.Bl.Impl;
-@using Reports.Core.Domain;
-
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffEstablishedPostRequestModel
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "TreeGridAjax";
+    ViewBag.Title = "Штатные единицы";
 }
-
-<h2>Структура подразделений с подзагрузкой в табличном виде</h2>
-
 
 <style>
     .collapse 
@@ -60,32 +54,72 @@
         text-decoration:none;
         width:auto;
     }
+    
+    .btnAdd
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -13px -132px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    
+    .btnEdit
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -61px -115px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    
+    .btnDelete
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -77px -131px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    
 </style>
-@using (Html.BeginForm("TreeViewAjax", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Tree-Grid-Ajax-form" }))
+
+@using (Html.BeginForm("StaffEstablishedPostRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffEstablishedPostRequestForm" }))
 {
     @Html.HiddenFor(m => m.DepId)
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         
         <table id="tbl" class="grid">
-            <tr>
-                <th>Подразделение</th>
-                <th>Код</th>
-                <th>Путь</th>
-                <th>Уровень</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Структура подразделений</th>
+                    <th colspan="3">Подразделения</th>
+                    <th colspan="3">Должности</th>
+                    <th>Количество<br />штатных<br />единиц</th>
+                    <th>Оклад</th>
+                </tr>    
+            </thead>
             
             @{ int i = 0; }
             @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
             {
                 <tr id="tr-@item.Code1C" accessKey="@item.Path">
-                <td>
-                    <span>
-                        <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
-                    </span>
-                </td>
-                <td>@item.Code1C</td>
-                <td>@item.Path</td>
-                <td>@item.ItemLevel</td>
+                    <td>
+                        <span>
+                            <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
+                        </span>
+                    </td>
+                    <td style="width:30px; text-align:center;"><button type="button" class="btnAdd" title="Создать заявку на создание нового подразделения"></button></td>
+                    <td style="width:30px; text-align:center;"></td>
+                    <td style="width:30px; text-align:center;"></td>
+                    <td style="width:30px; text-align:center;"><button type="button" class="btnAdd" title="Создать заявку на создание новой штатной единицы"></button></td>
+                    <td style="width:30px; text-align:center;"></td>
+                    <td style="width:30px; text-align:center;"></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             }
             @{ i++; }
@@ -102,22 +136,24 @@
     </div>
 }
 
-
 <script type="text/javascript">
     $(document).ready(function () {
-        setActiveMenuItem("moTreeGridAjax");
-        //$("#DivIndicator").hide();
+        setActiveMenuItem("moStaffPost");
+
+         $(document).tooltip({track: true});
+
         ShowFlash(true);
         ShowFlash(false);
+        $(":button").button();
         //для эффекта раскрытой ветки
         $(".Acollapsible").click(function (e) {
             e.preventDefault();
             $(this).children('span').toggleClass("collapse expand");
-            //$(this).closest('li').children('ul').slideToggle();
         })
-        
     });
 
+
+    //подгружаем уровни структуры и штатные единицы
     function GetNodes(Id) {
         //чтобы не подгружались данные вторично
         if($("#getnodes-" + Id).hasClass("IsLoading")){
@@ -170,9 +206,9 @@
         }
         else{$("#getnodes-" + Id).addClass("IsLoading");}
 
-        var actionUrl="@Url.Action("TreeGridAjax", "StaffList")";
+        var actionUrl="@Url.Action("StaffEstablishedPostRequest", "StaffList")";
             $("#DepId").val(Id);
-            var dataToSend = $("#Tree-Grid-Ajax-form").serialize();
+            var dataToSend = $("#StaffEstablishedPostRequestForm").serialize();
             ShowFlash(true);
 
             jQuery.ajax({
@@ -181,7 +217,7 @@
                 dataType: 'json',
                 data: dataToSend,
                 success: function(result){
-                    //var $liParent = $("#li-" + Id.toString());
+                    // $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
                     var tblStr = "";
 
@@ -202,9 +238,14 @@
                                             "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                         "</td>" + 
-                                        "<td>" + result.Departments[i].Code1C + "</td>" +
-                                        "<td>" + result.Departments[i].Path + "</td>" +
-                                        "<td>" + result.Departments[i].ItemLevel + "</td>" +
+                                        "<td><button type='button' class='btnAdd' title='Создать заявку на создание нового подразделения'></td>" +
+                                        "<td><button type='button' class='btnEdit' title='Создать заявку на изменение данного подразделения'></button></td>" +
+                                        "<td><button type='button' class='btnDelete' title='Создать заявку на закрытие данного подразделения'></button></td>" +
+                                        "<td><button type='button' class='btnAdd' title='Создать заявку на создание новой штатной единицы'></button></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
                                         "</tr>";
 
                             var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -229,10 +270,10 @@
                         }
                     }
                     
-
+                    
                     for (var i = 0; i < result.UserPositions.length; i++)//сотрудники, для уровней выше 7 руководство
                     {   
-                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible'>" +
+                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
                                     "<td>" +
                                     "<span>";
                                         var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 2) : 6) * 4;; //отступ от левого края каждого вложения на 4 пробела больше родительского
@@ -240,112 +281,25 @@
                                         {
                                             tblStr += "&nbsp;";
                                         }
-                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick=''>" +
+                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:red;'>" +
                                         "<span Id='span-tr'" + result.UserPositions[i].Id + "' >&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
                                     "</span>" +
                                     "</td>" + 
-                                    "<td>" + result.UserPositions[i].Id + "</td>" +
-                                    "<td>" + result.UserPositions[i].FullName + "</td>" +
-                                    "<td>" + (result.Departments != null ? (result.Departments[0].ItemLevel - 2) : 8) + "</td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td><button type='button' class='btnEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
+                                    "<td><button type='button' class='btnDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                         $(ParentRowName).after(tblStr);//вставляем новую строку
                     }
-
-
-
-
-//                    if(result.Departments != null)//подразделения
-//                    {
-//                        for (var i = 0; i < result.Departments.length; i++)
-//                        {   
-//                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible'>" +
-//                                      "<td>" +
-//                                        "<span>";
-//                                            var BSCount = (result.Departments[i].ItemLevel - 2) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-//                                            for (var j = 0; j < BSCount; j++)
-//                                            {
-//                                                tblStr += "&nbsp;";
-//                                            }
-//                                            tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
-//                                            "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
-//                                        "</span>" +
-//                                        "</td>" + 
-//                                        "<td>" + result.Departments[i].Code1C + "</td>" +
-//                                        "<td>" + result.Departments[i].Path + "</td>" +
-//                                        "<td>" + result.Departments[i].ItemLevel + "</td>" +
-//                                        "</tr>";
-
-//                            var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
-//                            $(ParentRowName).after(tblStr);//вставляем новую строку
-//                            //var aa = $(ParentRowName);
-//                            //console.log(aa);
-//                            $("#span" + result.Departments[i].Code1C).removeClass("collapse collapsible");
-//                            $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
-
-//                            //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
-//                            if (result.Departments[i].ItemLevel <= 7){
-//                                $("#span" + result.Departments[i].Code1C).addClass("collapse collapsible");
-//                                $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
-//                                //console.log(ResultStr);
-//                                //назначаем обработчик для раскрытия веток дерева
-//                                $("#getnodes-" + result.Departments[i].Code1C).click(function (e) {
-//                                    e.preventDefault();
-//                                    $(this).children('span').toggleClass("collapse expand");
-//                                    $(this).closest('li').children('ul').slideToggle();
-//                                });
-//                            }
-//                        }
-
-//                        for (var i = 0; i < result.UserPositions.length; i++)//руководство
-//                        {   
-//                            tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible'>" +
-//                                      "<td>" +
-//                                        "<span>";
-//                                            var BSCount = (result.Departments[0].ItemLevel - 2) * 4;; //отступ от левого края каждого вложения на 4 пробела больше родительского
-//                                            for (var j = 0; j < BSCount; j++)
-//                                            {
-//                                                tblStr += "&nbsp;";
-//                                            }
-//                                            tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick=''>" +
-//                                            "<span Id='span-tr'" + result.UserPositions[i].Id + "' class='collapse collapsible'>&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
-//                                        "</span>" +
-//                                        "</td>" + 
-//                                        "<td>" + result.UserPositions[i].Id + "</td>" +
-//                                        "<td>" + result.UserPositions[i].FullName + "</td>" +
-//                                        "<td>8</td>" +
-//                                        "</tr>";
-
-//                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-//                            $(ParentRowName).after(tblStr);//вставляем новую строку
-//                        }
-//                    }
-//                    else//сотрудники
-//                    {
-//                        for (var i = 0; i < result.UserPositions.length; i++)
-//                        {   
-//                            tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible'>" +
-//                                      "<td>" +
-//                                        "<span>";
-//                                            var BSCount = 6 * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-//                                            for (var j = 0; j < BSCount; j++)
-//                                            {
-//                                                tblStr += "&nbsp;";
-//                                            }
-//                                            tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick=''>" +
-//                                            "<span Id='span-tr'" + result.UserPositions[i].Id + "' class='collapse collapsible'>&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
-//                                        "</span>" +
-//                                        "</td>" + 
-//                                        "<td>" + result.UserPositions[i].Id + "</td>" +
-//                                        "<td>" + result.UserPositions[i].FullName + "</td>" +
-//                                        "<td>8</td>" +
-//                                        "</tr>";
-
-//                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-//                            $(ParentRowName).after(tblStr);//вставляем новую строку
-//                        }
-//                    }
+                    
+                    $(":button").button();
 
                     ShowFlash(false);
                 },
@@ -356,29 +310,27 @@
             });
     }
 
+
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
-        if (!IsShow)
-        {
+        if (!IsShow) {
             $("#LoadingIndicator2").removeClass("loading2");
             $("#DivIndicator").dialog("close");
             $("#DivIndicator").hide();
         }
-        else
-        {
+        else {
             $("#LoadingIndicator2").addClass("loading2");
             $("#DivIndicator").show();
             $("#DivIndicator").dialog(
             { // initialize dialog box
                 autoOpen: true,
                 modal: true,
-                //title: title,
                 // fix IE6  
-                bgiframe: true, 
+                bgiframe: true,
                 draggable: false,
                 resizable: false,
                 width: 300,
-	            height: 60,
+                height: 60,
                 closeOnEscape: false,
                 close: function (event, ui) {
                     //$(this).dialog("destroy").remove();
@@ -388,5 +340,5 @@
             $(".ui-dialog-titlebar-close").hide();
         }
     }
-
 </script>
+

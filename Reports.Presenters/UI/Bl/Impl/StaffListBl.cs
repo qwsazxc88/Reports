@@ -21,6 +21,53 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { kladrDao = value; }
         }
         #endregion
+        #region Штатные единицы
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения и штатные единицы
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        public StaffEstablishedPostRequestModel GetDepartmentStructureWithStaffPost(string DepId)
+        {
+            StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
+            Department dep = DepartmentDao.GetByCode(DepId);
+            int DepartmentId = dep.Id;
+            int itemLevel = dep.ItemLevel.Value;
+            //достаем уровень подразделений и штатных единиц к ним
+            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+            if (itemLevel != 7)
+            {
+                //руководство
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
+                //уровень подразделений
+                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
+            }
+            else
+            {
+                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    if (UserDao.FindByLogin(item.Login + "R") == null)
+                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
+            }
+
+            return model;
+        }
+        #endregion
+
+
+        #region Для тестов
         /// <summary>
         /// собираем полное дерево
         /// </summary>
@@ -44,17 +91,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         public TreeGridAjaxModel GetDepartmentStructure(string DepId)
         {
             TreeGridAjaxModel model = new TreeGridAjaxModel();
-            int DepartmentId = DepartmentDao.GetByCode(DepId).Id;
+            Department dep =DepartmentDao.GetByCode(DepId);
+            int DepartmentId = dep.Id;
+            int itemLevel = dep.ItemLevel.Value;
             //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
             //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
+            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
+            if (itemLevel != 7)
             {
                 //руководство
-                //IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-
                 IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .OrderBy(x => x.Position.Name).OrderBy(x => x.Name).ToList();
+                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
                 IList<UsersListItemDto> ul = new List<UsersListItemDto>();
                 foreach (var item in Users)
                 {
@@ -62,18 +110,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.UserPositions = ul;
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId);
+                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-                //IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0)
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderBy(x => x.IsMainManager)
-                    .OrderBy(x => x.Position.Name).OrderBy(x => x.Name).ToList();
+                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
                 IList<UsersListItemDto> ul = new List<UsersListItemDto>();
                 foreach (var item in Users)
                 {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                    if (UserDao.FindByLogin(item.Login + "R") == null)
+                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
                 }
                 model.UserPositions = ul;
             }
@@ -280,5 +327,66 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return ht;
         }
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        public DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId)
+        {
+            DepStructureFingradPointsModel model = new DepStructureFingradPointsModel();
+            Department dep = DepartmentDao.GetByCode(DepId);
+            int DepartmentId = dep.Id;
+            int itemLevel = dep.ItemLevel.Value;
+            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
+            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
+            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
+            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+            if (itemLevel != 7)
+            {
+                //руководство
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
+                //уровень подразделений
+                model.Departments = DepartmentDao.GetDepartmentWithFingradPoint(DepId).OrderBy(x => x.Priority).ToList();
+            }
+            else
+            {
+                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
+                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                foreach (var item in Users)
+                {
+                    if (UserDao.FindByLogin(item.Login + "R") == null)
+                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                }
+                model.UserPositions = ul;
+            }
+
+
+            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
+            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
+            //    model.Departments = GetDepartmentListByParent(DepId);
+            //else
+            //{
+            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
+            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
+            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+            //    foreach (var item in Users)
+            //    {
+            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+            //    }
+            //    model.UserPositions = ul;
+            //}
+            return model;
+        }
+        #endregion
     }
 }

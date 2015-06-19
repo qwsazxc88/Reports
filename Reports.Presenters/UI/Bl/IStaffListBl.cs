@@ -10,6 +10,16 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IStaffListBl : IBaseBl
     {
+        #region Штатные единицы
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения и штатные единицы
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        StaffEstablishedPostRequestModel GetDepartmentStructureWithStaffPost(string DepId);
+        #endregion
+
+        #region Для теста
         TreeViewModel GetDepartmentList();
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения
@@ -35,5 +45,12 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
         KladrWithPostIndex GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId);
+        #endregion
     }
 }

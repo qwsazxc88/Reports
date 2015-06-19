@@ -1211,6 +1211,9 @@
     <EmbeddedResource Include="Domain\HelpBillingUrgency.hbm.xml" />
     <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\StaffList\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
