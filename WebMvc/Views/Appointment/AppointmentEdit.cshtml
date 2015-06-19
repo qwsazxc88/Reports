@@ -79,7 +79,7 @@
                     </div>
                 </td>
             </tr>
-            @if (!String.IsNullOrWhiteSpace(Model.StaffCreatorName))
+            @*@if (!String.IsNullOrWhiteSpace(Model.StaffCreatorName))
             {
             <tr>
                 <td>
@@ -89,7 +89,7 @@
                 Model.StaffCreatorName @Html.HiddenFor(m => m.StaffCreatorName)
                 </td>
             </tr>
-            }
+            }*@
             <tr>
                 <td colspan="2">
                     @Html.Partial("ManagerInfoView", Model)
@@ -333,7 +333,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    Руководитель (заказчик):
+                    Руководитель (автор):
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 

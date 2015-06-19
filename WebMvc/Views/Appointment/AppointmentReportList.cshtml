@@ -261,7 +261,7 @@
                             <td>@doc.EducationStatus</td>
                             <td>@{if (doc.EmploymentStatus != null)
                                   {
-                                      var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());
+                                      var es = Model.EmploymentStatuses.Where(x => x.Value == ((int)doc.EmploymentStatus).ToString());
                                       if (es != null && es.Any())
                                       {
                                     <text>@es.First().Text</text>;
