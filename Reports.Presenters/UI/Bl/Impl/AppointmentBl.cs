@@ -336,6 +336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
+                model.StaffCreatorName = entity.StaffCreator == null ? "" : entity.StaffCreator.Name;
                 model.FIO = entity.FIO;
                 model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
@@ -532,7 +533,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                             if (!isApprovedReportExists)
                                 model.IsManagerRejectAvailable = true;
-                            if (!entity.ChiefDateAccept.HasValue)
+                            if (!entity.ChiefDateAccept.HasValue && entity.BankAccountantAccept.HasValue && entity.IsVacationExists && entity.BankAccountantAcceptCount>0)
                                 model.IsChiefApproveAvailable = true;
                     }
                     break;
