@@ -79,6 +79,17 @@
                     </div>
                 </td>
             </tr>
+            @*@if (!String.IsNullOrWhiteSpace(Model.StaffCreatorName))
+            {
+            <tr>
+                <td>
+                Автор заявки:
+                </td>
+                <td>
+                Model.StaffCreatorName @Html.HiddenFor(m => m.StaffCreatorName)
+                </td>
+            </tr>
+            }*@
             <tr>
                 <td colspan="2">
                     @Html.Partial("ManagerInfoView", Model)
@@ -322,7 +333,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    Руководитель (заказчик):
+                    Руководитель (заказчик) - Автор:
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
@@ -384,8 +395,8 @@
                 </td>
             </tr>*@
              
-            @* @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
-             {*@
+            @*@if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
+            {*@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
