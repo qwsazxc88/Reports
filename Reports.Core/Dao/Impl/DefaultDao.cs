@@ -341,6 +341,7 @@ namespace Reports.Core.Dao.Impl
                                 @"select v.Id as Id,
                                 u.Id as UserId,
                                 '{3}' as Name,
+                                v.CreateDate as CreateDate,
                                 {2} as Date,  
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
@@ -582,7 +583,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or 
                         (
-                            (u.RoleId & 2) > 0
+                            ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0)
                             and
                             u.DepartmentId in
                             (

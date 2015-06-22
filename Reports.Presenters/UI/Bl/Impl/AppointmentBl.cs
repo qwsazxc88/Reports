@@ -336,6 +336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
+                model.StaffCreatorName = entity.StaffCreator == null ? "" : entity.StaffCreator.Name;
                 model.FIO = entity.FIO;
                 model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
@@ -350,6 +351,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.Candidates != null && entity.Candidates.Any())
                 {
                     model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers != null) ? x.PersonnelManagers.CompleteDate : null, Status = x.SendTo1C.HasValue ? "Выгружено в 1С" : "Не выгружено в 1С" }).ToList();
+                }
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
                 }
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.ShowStaff = entity.Recruter == 1;
@@ -528,7 +533,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                             if (!isApprovedReportExists)
                                 model.IsManagerRejectAvailable = true;
-                            if (!entity.ChiefDateAccept.HasValue)
+                            if (!entity.ChiefDateAccept.HasValue && entity.BankAccountantAccept.HasValue && entity.IsVacationExists && entity.BankAccountantAcceptCount>0)
                                 model.IsChiefApproveAvailable = true;
                     }
                     break;
@@ -838,6 +843,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity.DeleteDate.HasValue)
                     model.IsDeleted = true;
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
@@ -2033,7 +2042,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, otherReportId));
             if(entity.Appointment.DeleteDate.HasValue)
                 throw new ValidationException(string.Format(StrAppointmentWasDeleted));
-            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id)
+            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
                 throw new ValidationException(string.Format(CannotCreateReport));
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
             

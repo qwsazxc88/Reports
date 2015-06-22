@@ -71,7 +71,7 @@
                         </tr>
                         <tr>
                                 <td>
-                                    @Html.LabelFor(m => m.UserName):
+                                    ФИО заказчика:
                                 </td>
                                 <td>
                                     @Html.TextBoxFor(model => model.UserName)
@@ -137,7 +137,7 @@
                        <div id="sort22" ><a href="#" onclick = "SortChanged(22);"> Дата<br />создания</a></div>
                     </th>
                     <th>
-                        <div id="sort26" ><a href="#" onclick = "SortChanged(26);">Автор</a></div>
+                        <div id="sort26" ><a href="#" onclick = "SortChanged(26);">Автор<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
@@ -182,7 +182,7 @@
                         <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
                     </th>
                     <th>
-                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус<br />заявки</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
