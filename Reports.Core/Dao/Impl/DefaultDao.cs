@@ -467,9 +467,9 @@ namespace Reports.Core.Dao.Impl
                     return string.Empty;
                 #endregion
 
-                #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                #region ConsultantOutsorsingManager CHANGED TO PERSONNEL MANAGER!!! DEPRECATED
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 default:
@@ -641,9 +641,9 @@ namespace Reports.Core.Dao.Impl
                     return string.Empty;
                 #endregion
 
-                #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                #region ConsultantOutsorsingManager DEPRECATED
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 #region -Deleted (Directors, Accountants, Secretary, Findep)
