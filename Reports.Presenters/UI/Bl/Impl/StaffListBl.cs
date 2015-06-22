@@ -190,12 +190,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (string.IsNullOrEmpty(DepId))
             {
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager)
+                {
                     DepId = "9900424";
+                    //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
+                }
                 else
                 {
                     User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
-                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.ParentId.ToString());
+                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
                 }
+
+                return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
             }
 
             return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();

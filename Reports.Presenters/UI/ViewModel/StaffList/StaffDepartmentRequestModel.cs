@@ -7,6 +7,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 {
     public class StaffDepartmentRequestModel
     {
+        #region Общие реквизиты
         [Display(Name = "Дата заявки")]
         public DateTime? DateRequest { get; set; }
 
@@ -17,7 +18,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int RequestType { get; set; }
         public IList<IdNameDto> RequestTypes { get; set; }
 
-
+        [Display(Name = "Id подразделения")]
         public int? DepartmentId { get; set; }
+        #endregion
+        
     }
 }

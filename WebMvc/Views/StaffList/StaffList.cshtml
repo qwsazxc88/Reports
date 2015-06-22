@@ -139,7 +139,7 @@
                 <tr>
                     <th class="tdBtn">Создать</th>
                     <th class="tdBtn">Изменить</th>
-                    <th class="tdBtn">Удалить</th>
+                    <th class="tdBtn">Закрыть</th>
                     <th class="tdBtn">Создать</th>
                     <th class="tdBtn">Изменить</th>
                     <th class="tdBtn">Удалить</th>
@@ -180,6 +180,7 @@
 }
 
 <script type="text/javascript">
+
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
 
@@ -319,7 +320,7 @@
                         tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
                                     "<td>" +
                                     "<span>";
-                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 2) : 6) * 4;; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 2) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
                                         for (var j = 0; j < BSCount; j++)
                                         {
                                             tblStr += "&nbsp;";
