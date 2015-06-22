@@ -1498,14 +1498,14 @@ namespace WebMvc.Controllers
          #region AccessGroupsList
 
          [HttpGet]
-         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager)]
+         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.PersonnelManager)] //ConsultantOutsorsingManager changed to PersonnelManager
          public ActionResult AccessGroupsList()
          {
              AccessGroupsListModel model = RequestBl.GetAccessGroupsListModel();
              return View(model);
          }
          [HttpPost]
-         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager)]
+         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.PersonnelManager)] //ConsultantOutsorsingManager changed to PersonnelManager
          public ActionResult AccessGroupsList(AccessGroupsListModel model)
          {
              model = RequestBl.SetAccessGroupsListModel(model);
