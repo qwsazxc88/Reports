@@ -32,32 +32,67 @@ namespace WebMvc.Controllers
             return View();
         }
 
-        #region Штатные единицы
+        #region Штатные расписание.
         /// <summary>
-        /// Загрузка структуры подразделений в соответствии с правами текущего пользователя.
+        /// Штатное расписание, первичная загрузка страницы.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffEstablishedPostRequest()
+        public ActionResult StaffList()
         {
-            StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
+            StaffListModel model = new StaffListModel();
+            model.Departments = StaffListBl.GetDepartmentListByParent(null);
             return View(model);
         }
         /// <summary>
-        /// Загрузка структуры подразделений в соответствии с правами текущего пользователя.
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffEstablishedPostRequest(string DepId)
+        public ActionResult StaffList(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffEstablishedPostRequestModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
+            StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+        #endregion
+
+        #region Заявки для подразделений
+        /// <summary>
+        /// Загрузка заявки для подразделения на создание/изменение/удаление.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId)
+        {
+            StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
+            ViewBag.Title = RequestType == 1 ? "Заявка на создание нового подразделения" : (RequestType == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
+            model.RequestType = RequestType;
+            model.DepartmentId = DepartmentId.Value;
+            model = StaffListBl.GetDepartmentReques(model);
+            return View(model);
+        }
+        /// <summary>
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
+        {
+            //var jsonSerializer = new JavaScriptSerializer();
+            //StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
+            //string jsonString = jsonSerializer.Serialize(model);
+            //return Content(jsonString);
+            return View(model);
+        }
+        #endregion
+
+        #region Заявки для штатных единиц
         #endregion
 
         #region Для тестов

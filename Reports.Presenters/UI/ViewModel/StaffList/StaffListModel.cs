@@ -6,7 +6,7 @@ using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
-    public class StaffEstablishedPostRequestModel
+    public class StaffListModel
     {
         //public IList<DepartmentWithFigradPointsDto> Departments { get; set; }
         public IList<Department> Departments { get; set; }

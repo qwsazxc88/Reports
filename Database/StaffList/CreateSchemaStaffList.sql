@@ -357,6 +357,7 @@ CREATE TABLE [dbo].[StaffEstablishedPostArchive](
 	--[StaffExtraChargeId] [int] NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
+	[Priority] [int] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
  CONSTRAINT [PK_StaffEstablishedPostArchive] PRIMARY KEY CLUSTERED 
@@ -381,6 +382,7 @@ CREATE TABLE [dbo].[StaffEstablishedPost](
 	--[StaffExtraChargeId] [int] NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
+	[Priority] [int] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorID] [int] NULL,
@@ -1046,6 +1048,12 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'Priority'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'Priority'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 

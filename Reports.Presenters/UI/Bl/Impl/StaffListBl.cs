@@ -21,18 +21,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { kladrDao = value; }
         }
         #endregion
-        #region Штатные единицы
+        #region Штатные расписание.
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
         /// <returns></returns>
-        public StaffEstablishedPostRequestModel GetDepartmentStructureWithStaffPost(string DepId)
+        public StaffListModel GetDepartmentStructureWithStaffPost(string DepId)
         {
-            StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
+            StaffListModel model = new StaffListModel();
+
+            //если не определены права ничего не грузим
+            if (string.IsNullOrEmpty(DepId)) return model;
+
             Department dep = DepartmentDao.GetByCode(DepId);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
+            
+            
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
@@ -56,7 +62,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IList<UsersListItemDto> ul = new List<UsersListItemDto>();
                 foreach (var item in Users)
                 {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)
+                    if (UserDao.FindByLogin(item.Login + "R") == null)//непоказываем начальников, потому что они видны уровнем выше
                         ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
                 }
                 model.UserPositions = ul;
@@ -64,7 +70,37 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return model;
         }
+
+
+        #region Заявки для подразделений
+        /// <summary>
+        /// Заполняем модель заявки на создание/изменение/удаление подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <returns></returns>
+        public StaffDepartmentRequestModel GetDepartmentReques(StaffDepartmentRequestModel model)
+        {
+            model.DateRequest = DateTime.Now;
+            model.Id = model.RequestType == 1 ? 0 : 1;
+            model.RequestTypes = GetDepRequestTypes();
+            return model;
+        }
         #endregion
+
+        #endregion
+
+        #region Загрузка словарей и справочников.
+        protected IList<IdNameDto> GetDepRequestTypes()
+        {
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 1, Name = "Открытие СП" });
+            dto.Add(new IdNameDto { Id = 2, Name = "Изменение параметров СП" });
+            dto.Add(new IdNameDto { Id = 3, Name = "Закрытие СП" });
+
+            return dto;
+        }
+        #endregion
+        
 
 
         #region Для тестов
@@ -150,10 +186,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public IList<Department> GetDepartmentListByParent(string DepId)
         {
+            //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
-                return DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
-            else
-                return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();
+            {
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager)
+                    DepId = "9900424";
+                else
+                {
+                    User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.ParentId.ToString());
+                }
+            }
+
+            return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();
         }
         /// <summary>
         /// Загружаем модель для составления Российских адресов.

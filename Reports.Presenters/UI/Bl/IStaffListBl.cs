@@ -10,13 +10,23 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IStaffListBl : IBaseBl
     {
-        #region Штатные единицы
+        #region Штатные расписание.
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
         /// <returns></returns>
-        StaffEstablishedPostRequestModel GetDepartmentStructureWithStaffPost(string DepId);
+        StaffListModel GetDepartmentStructureWithStaffPost(string DepId);
+
+        #region Заявки для подразделений
+        /// <summary>
+        /// Заполняем модель заявки на создание/изменение/удаление подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <returns></returns>
+        StaffDepartmentRequestModel GetDepartmentReques(StaffDepartmentRequestModel model);
+        #endregion
+        
         #endregion
 
         #region Для теста

@@ -11,7 +11,7 @@ namespace Reports.Core.Dto
 
     public class DepartmentWithFigradPointsDto : Department
     {
-        public string CodeSKD { get; set; }
+        //public string CodeSKD { get; set; }
         public string AvailableEmployees { get; set; }
         public string FinDepNameShort { get; set; }
         public string FinDepPointCode { get; set; }

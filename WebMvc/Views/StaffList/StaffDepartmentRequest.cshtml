@@ -1,0 +1,83 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentRequestModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+}
+
+@using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
+{
+    <legend style="text-align:left;font-size:medium;">Заявка</legend>
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv1">
+            <h3>Общие реквизиты</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DateRequest)
+                        </td>
+                        <td>
+                            @Model.DateRequest.Value.ToShortDateString()
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Id)</td>
+                        <td>@Model.Id.ToString()</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestType)</td>
+                        <td>@Model.RequestTypes.Where(x => x.Id == Model.RequestType).Single().Name</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="MainDiv2">
+            <h3>Налоговые реквизиты</h3>
+            <div></div>
+        </div>
+        <div id="MainDiv3">
+            <h3>ЦБ реквизиты</h3>
+            <div></div>
+        </div>
+        <div id="MainDiv4">
+            <h3>Управленческие реквизиты</h3>
+            <div></div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moStaffPost");
+
+        $(document).tooltip({ track: false });
+
+        $("#MainDiv1").accordion({
+            header: "h3",
+            collapsible: true,
+            autoHeight: false
+        });
+        $("#MainDiv2").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false
+        });
+        $("#MainDiv3").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false
+        });
+        $("#MainDiv4").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false
+        });
+
+        //ShowFlash(true);
+        //ShowFlash(false);
+        //$(":button").button();
+    });
+</script>
+

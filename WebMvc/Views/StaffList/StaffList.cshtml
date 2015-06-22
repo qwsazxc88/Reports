@@ -1,4 +1,4 @@
-﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffEstablishedPostRequestModel
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffListModel
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
     ViewBag.Title = "Штатные единицы";
@@ -55,7 +55,7 @@
         width:auto;
     }
     
-    .btnAdd
+    .btnDepAdd
     {
         width:25px;
         background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
@@ -65,7 +65,7 @@
         cursor:pointer;   
     }
     
-    .btnEdit
+    .btnDepEdit
     {
         width:25px;
         background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
@@ -75,7 +75,7 @@
         cursor:pointer;   
     }
     
-    .btnDelete
+    .btnDepDelete
     {
         width:25px;
         background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');
@@ -84,10 +84,45 @@
         display:inline-block;
         cursor:pointer;   
     }
+
+    .btnPosAdd
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_cd0a0a_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -13px -132px;
+        display:inline-block;
+        cursor:pointer;   
+    }
     
+    .btnPosEdit
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_cd0a0a_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -61px -115px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    
+    .btnPosDelete
+    {
+        width:25px;
+        background-image: url('../../Content/themes/base/ui-icons_cd0a0a_256x240.png');
+        background-repeat:no-repeat;
+        background-position: -77px -131px;
+        display:inline-block;
+        cursor:pointer;   
+    }
+    
+    .tdBtn
+    {
+        width:30px; 
+        text-align:center;
+    }
 </style>
 
-@using (Html.BeginForm("StaffEstablishedPostRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffEstablishedPostRequestForm" }))
+@using (Html.BeginForm("StaffList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListForm" }))
 {
     @Html.HiddenFor(m => m.DepId)
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
@@ -95,12 +130,20 @@
         <table id="tbl" class="grid">
             <thead>
                 <tr>
-                    <th>Структура подразделений</th>
+                    <th rowspan="2">Структура подразделений</th>
                     <th colspan="3">Подразделения</th>
                     <th colspan="3">Должности</th>
-                    <th>Количество<br />штатных<br />единиц</th>
-                    <th>Оклад</th>
+                    <th rowspan="2">Количество<br />штатных<br />единиц</th>
+                    <th rowspan="2">Оклад</th>
                 </tr>    
+                <tr>
+                    <th class="tdBtn">Создать</th>
+                    <th class="tdBtn">Изменить</th>
+                    <th class="tdBtn">Удалить</th>
+                    <th class="tdBtn">Создать</th>
+                    <th class="tdBtn">Изменить</th>
+                    <th class="tdBtn">Удалить</th>
+                </tr>
             </thead>
             
             @{ int i = 0; }
@@ -112,12 +155,12 @@
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
                     </td>
-                    <td style="width:30px; text-align:center;"><button type="button" class="btnAdd" title="Создать заявку на создание нового подразделения"></button></td>
-                    <td style="width:30px; text-align:center;"></td>
-                    <td style="width:30px; text-align:center;"></td>
-                    <td style="width:30px; text-align:center;"><button type="button" class="btnAdd" title="Создать заявку на создание новой штатной единицы"></button></td>
-                    <td style="width:30px; text-align:center;"></td>
-                    <td style="width:30px; text-align:center;"></td>
+                    <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);"></button></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы"></button></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"></td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -140,7 +183,7 @@
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
 
-         $(document).tooltip({track: true});
+         $(document).tooltip({track: false});
 
         ShowFlash(true);
         ShowFlash(false);
@@ -206,9 +249,9 @@
         }
         else{$("#getnodes-" + Id).addClass("IsLoading");}
 
-        var actionUrl="@Url.Action("StaffEstablishedPostRequest", "StaffList")";
+        var actionUrl="@Url.Action("StaffList", "StaffList")";
             $("#DepId").val(Id);
-            var dataToSend = $("#StaffEstablishedPostRequestForm").serialize();
+            var dataToSend = $("#StaffListForm").serialize();
             ShowFlash(true);
 
             jQuery.ajax({
@@ -238,10 +281,10 @@
                                             "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                         "</td>" + 
-                                        "<td><button type='button' class='btnAdd' title='Создать заявку на создание нового подразделения'></td>" +
-                                        "<td><button type='button' class='btnEdit' title='Создать заявку на изменение данного подразделения'></button></td>" +
-                                        "<td><button type='button' class='btnDelete' title='Создать заявку на закрытие данного подразделения'></button></td>" +
-                                        "<td><button type='button' class='btnAdd' title='Создать заявку на создание новой штатной единицы'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");'></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы'></button></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
@@ -289,8 +332,8 @@
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
-                                    "<td><button type='button' class='btnEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
-                                    "<td><button type='button' class='btnDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
                                     "</tr>";
@@ -339,6 +382,14 @@
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
         }
+    }
+
+    //переходим в заявку для подразделения
+    function GetDepartmentRequest(RequestType, DepartmentId)
+    {
+        var actionUrl="@Url.Action("StaffDepartmentRequest", "StaffList")";
+        actionUrl += "?RequestType=" + RequestType + "&DepartmentId=" + DepartmentId;
+        location.href = actionUrl;
     }
 </script>
 

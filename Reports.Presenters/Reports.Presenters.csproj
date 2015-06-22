@@ -276,7 +276,8 @@
     <Compile Include="UI\ViewModel\SortableModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\AddressModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepStructureFingradPointsModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\TreeGridAjaxModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\TreeViewAjaxModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteEditModel.cs" />
