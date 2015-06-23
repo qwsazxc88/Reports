@@ -136,7 +136,7 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = sqlSelectForHsList;
 
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.ConsultantOutsorsingManager)
+            if (role == UserRole.PersonnelManager)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId.ToString() + " {0}";
@@ -359,7 +359,7 @@ namespace Reports.Core.Dao.Impl
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart;
                 //return sqlQueryPart;
-                case UserRole.PersonnelManager://кадровик
+                /*case UserRole.PersonnelManager://кадровик
                     if (userId == 10)//расчетчики
                     {
                         sqlQuery = string.Format(sqlQuery, string.Empty);
@@ -369,8 +369,8 @@ namespace Reports.Core.Dao.Impl
                     {
                         sqlQuery = string.Format(sqlQuery, string.Empty);
                         return string.Empty;
-                    }
-                case UserRole.ConsultantOutsorsingManager://кадровики ОК
+                    }*/
+                case UserRole.PersonnelManager://кадровики ОК
                     //4, 2, 5, 7, 10, 11, 21, 26, 27 - эти услуги только для просмотра, не могут принять в работу и посмотреть прикрепленный расчетчиками скан
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27) ";
