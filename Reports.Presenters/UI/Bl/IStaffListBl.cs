@@ -20,11 +20,11 @@ namespace Reports.Presenters.UI.Bl
 
         #region Заявки для подразделений
         /// <summary>
-        /// Заполняем модель заявки на создание/изменение/удаление подразделения.
+        /// Заполняем модель заявки на создание подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
-        StaffDepartmentRequestModel GetDepartmentReques(StaffDepartmentRequestModel model);
+        StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model);
         #endregion
         
         #endregion

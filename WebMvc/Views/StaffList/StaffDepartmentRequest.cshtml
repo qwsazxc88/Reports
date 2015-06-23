@@ -7,16 +7,23 @@
 {
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv">
+            <h3>Реквизиты инициатора</h3>
+            <div>
+                @Html.Partial("DepRequestInfoView", Model.DepRequestInfo)
+            </div>
+        </div>
+
         <div id="MainDiv1">
             <h3>Общие реквизиты</h3>
             <div>
                 <table>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.DateRequest)
+                            @Html.LabelFor(m => m.DateState)
                         </td>
                         <td>
-                            @Model.DateRequest.Value.ToShortDateString()
+                            @(Model.DateState.HasValue ? Model.DateState.Value.ToShortDateString() : string.Empty)
                         </td>
                     </tr>
                     <tr>
@@ -27,17 +34,48 @@
                         <td>@Html.LabelFor(m => m.RequestType)</td>
                         <td>@Model.RequestTypes.Where(x => x.Id == Model.RequestType).Single().Name</td>
                     </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ItemLevel)</td>
+                        <td>@Model.ItemLevel.ToString()</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Name)</td>
+                        <td>@Html.TextBoxFor(m => m.Name, (object)new { maxlength = "128", style = "width:600px;" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsBack)
+                        </td>
+                        <td>
+                            <div id="IsBackContainer">
+                                @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblBTrue" for="IsBackTrue" @if (Model.IsBack)
+                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                        else
+                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblBFalse" for="IsBackFalse" @if (!Model.IsBack)
+                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                    else
+                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
+
+
         <div id="MainDiv2">
             <h3>Налоговые реквизиты</h3>
             <div></div>
         </div>
+
+
         <div id="MainDiv3">
             <h3>ЦБ реквизиты</h3>
             <div></div>
         </div>
+
+
         <div id="MainDiv4">
             <h3>Управленческие реквизиты</h3>
             <div></div>
@@ -51,6 +89,11 @@
 
         $(document).tooltip({ track: false });
 
+        $("#MainDiv").accordion({
+            header: "h3",
+            collapsible: true,
+            autoHeight: false
+        });
         $("#MainDiv1").accordion({
             header: "h3",
             collapsible: true,
@@ -75,6 +118,11 @@
             autoHeight: false
         });
 
+        $('#IsBackContainer').buttonset();
+        $("#IsBackTrue").click(function () {
+            $("#lblBTrue").css("border-color", "red");
+            $("#lblBFalse").css("border-color", "silver");
+        });
         //ShowFlash(true);
         //ShowFlash(false);
         //$(":button").button();

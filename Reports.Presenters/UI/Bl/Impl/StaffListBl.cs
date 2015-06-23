@@ -21,6 +21,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { kladrDao = value; }
         }
         #endregion
+
         #region Штатные расписание.
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
@@ -74,15 +75,34 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Заявки для подразделений
         /// <summary>
-        /// Заполняем модель заявки на создание/изменение/удаление подразделения.
+        /// Заполняем модель заявки на создание подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
-        public StaffDepartmentRequestModel GetDepartmentReques(StaffDepartmentRequestModel model)
+        public StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model)
         {
-            model.DateRequest = DateTime.Now;
+            model.DepRequestInfo = GetDepRequestInfo();
+            
+
             model.Id = model.RequestType == 1 ? 0 : 1;
             model.RequestTypes = GetDepRequestTypes();
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реквизитов инициатора к заявкам для подразделений
+        /// </summary>
+        /// <returns></returns>
+        protected DepRequestInfoModel GetDepRequestInfo()
+        {
+            DepRequestInfoModel model = new DepRequestInfoModel();
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
+            model.RequestInitiator = curUser.Name + " - " + (curUser.Position != null ? curUser.Position.Name : string.Empty);
+            model.DepManager5 = GetManagers(curUser, 5);
+            model.DepManager4 = GetManagers(curUser, 4);
+            model.DepManager3 = GetManagers(curUser, 3);
+            model.DepManager2 = GetManagers(curUser, 2);
+            
             return model;
         }
         #endregion
@@ -90,6 +110,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Загрузка словарей и справочников.
+        /// <summary>
+        /// Загрузка видов заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
         protected IList<IdNameDto> GetDepRequestTypes()
         {
             IList<IdNameDto> dto = new List<IdNameDto>();
@@ -98,6 +122,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 3, Name = "Закрытие СП" });
 
             return dto;
+        }
+        /// <summary>
+        /// В строке показываем список руководителей для инициатора текущей заявки.
+        /// </summary>
+        /// <param name="curUser">Инициатор.</param>
+        /// <param name="ManagerLevel">Урвоень руководителей, список которых нужно показать.</param>
+        /// <returns></returns>
+        protected string GetManagers(User curUser, int ManagerLevel)
+        {
+            string ManagersStr = string.Empty;
+            if (curUser.Level > ManagerLevel)
+            {
+                IList<User> managers = DepartmentDao.GetDepartmentManagers(curUser.Department.Id, true)
+                            .Where<User>(x => x.Level == ManagerLevel && x.RoleId == (int)UserRole.Manager)
+                            .OrderBy(x => x.IsMainManager)
+                            .ThenBy(x => x.Name)
+                            .ToList<User>();
+                //список руководителей
+                foreach (var item in managers)
+                {
+                    ManagersStr += (string.IsNullOrEmpty(ManagersStr) ? "" : ", ") + item.Name + "(" + item.Position.Name + ")";
+                }
+            }
+            return ManagersStr;
         }
         #endregion
         
@@ -189,7 +237,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
             {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager)
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2)
                 {
                     DepId = "9900424";
                     //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
