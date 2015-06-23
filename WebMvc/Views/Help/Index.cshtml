@@ -115,7 +115,7 @@
                                 @if (Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
-                                    if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.PersonnelManager)
+                                    if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantOutsorsingManager)
                                     {
                                         <input type="button" value="Создать новую заявку на услугу за уволенного сотрудника" onclick="location.href='@Url.Action("CreateServiceRequestForFired", "Help")'"/>
                                     }
