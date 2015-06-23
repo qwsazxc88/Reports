@@ -54,8 +54,8 @@ namespace Reports.Presenters.Services.Impl
                 //    return SafetyZoneRoles.RegisterAdminHosp;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterDoctor))
                 //    return SafetyZoneRoles.RegisterDoctor;
-                /*if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
-                    return UserRole.ConsultantOutsorsingManager;*/
+                if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
+                    return UserRole.ConsultantOutsorsingManager;
                 if (IsInRole(ReportRoleConstants.DismissedEmployee))
                     return UserRole.DismissedEmployee;
                 if (IsInRole(ReportRoleConstants.Estimator))
@@ -132,7 +132,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
                    || ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10)//для инфоуслуг от роли кадровики нужны только наши расчетчики
-                   || (dto.UserRole & UserRole.PersonnelManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpQuestionAvailable(IUser dto)
@@ -145,12 +145,12 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Accountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
                    //|| (dto.UserRole & UserRole.PersonnelManager) > 0
-                   || (dto.UserRole & UserRole.PersonnelManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpPersonnelBillingAvailable(IUser dto)
         {
-            return (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.TaxCollector |UserRole.Estimator | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Accountant | UserRole.ConsultantOutsourcing)) > 0 ||
+            return (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.TaxCollector |UserRole.Estimator | UserRole.ConsultantOutsorsingManager | UserRole.OutsourcingManager | UserRole.Accountant | UserRole.ConsultantOutsourcing)) > 0 ||
                 ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10);
         }
         public static bool IsHelpTemplateAvailable(IUser dto)

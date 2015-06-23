@@ -1093,8 +1093,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles += GetRoleName(allRoles, UserRole.ConsultantPersonnel) + " ";
             /*if ((role & (int)UserRole.ConsultantAccountant) > 0)
                 roles += GetRoleName(allRoles, UserRole.ConsultantAccountant) + " ";*/
-            /*if ((role & (int)UserRole.ConsultantOutsorsingManager) > 0)
-                roles += GetRoleName(allRoles, UserRole.ConsultantOutsorsingManager) + " ";*/
+            if ((role & (int)UserRole.ConsultantOutsorsingManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.ConsultantOutsorsingManager) + " ";
 
             return roles; 
             /*switch (role)
