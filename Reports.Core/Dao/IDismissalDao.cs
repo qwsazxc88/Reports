@@ -16,8 +16,6 @@ namespace Reports.Core.Dao
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,
-            DateTime? beginCreateDate,
-            DateTime? endCreateDate,
             string userName, 
             int sortedBy,
             bool? sortDescending,

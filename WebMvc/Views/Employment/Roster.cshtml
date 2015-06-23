@@ -234,9 +234,6 @@
         <th>
             <div id="sort20"><a href="#" onclick = "SortColumnChanged(20);">Номер<br />заявки<br />из подбора<br />персонала</a></div>
         </th>
-        <th>
-            <div id="sort21"><a href="#" onclick="SortColumnChanged(21);">Дата<br />увольнения</a></div>
-        </th>
         @*
         <th>
             Анкета
@@ -373,9 +370,7 @@
                         @*<text>Из оформления без службы по найму</text>*@
                     }
                 </td>
-                <td>
-                    @if(candidate.DismissalDate.HasValue) {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
-                </td>
+                
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                     <span class="buttonLink">Разделы</span>

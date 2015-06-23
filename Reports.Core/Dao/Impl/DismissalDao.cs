@@ -26,8 +26,6 @@ namespace Reports.Core.Dao.Impl
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,
-            DateTime? beginCreateDate,
-            DateTime? endCreateDate,
             string userName, 
             int sortedBy,
             bool? sortDescending,
@@ -46,7 +44,7 @@ namespace Reports.Core.Dao.Impl
 
             return GetDismissalDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, beginCreateDate, endCreateDate, userName, 
+                statusId, beginDate, endDate,userName, 
                 sqlQuery,sortedBy,sortDescending, Number);
 
             #region Deleted
@@ -164,8 +162,6 @@ namespace Reports.Core.Dao.Impl
                                 int statusId,
                                 DateTime? beginDate,
                                 DateTime? endDate,
-                                DateTime? beginCreateDate,
-                                DateTime? endCreateDate,
                                 string userName,
                                 string sqlQuery,
                                 int sortedBy,
@@ -176,7 +172,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
-            whereString = GetDissmissalDatesWhere(whereString, beginDate, endDate, beginCreateDate,endCreateDate);
+            whereString = GetDissmissalDatesWhere(whereString, beginDate, endDate);
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -189,8 +185,7 @@ namespace Reports.Core.Dao.Impl
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
         public virtual string GetDissmissalDatesWhere(string whereString, DateTime? beginDate,
-            DateTime? endDate, DateTime? beginCreateDate,
-            DateTime? endCreateDate)
+            DateTime? endDate)
         {
             if (beginDate.HasValue)
             {
@@ -203,18 +198,6 @@ namespace Reports.Core.Dao.Impl
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString += @"v.[EndDate] < :endDate ";
-            }
-            if (beginCreateDate.HasValue)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += String.Format(@"v.[CreateDate] >= '{0}' ",beginCreateDate);
-            }
-            if (endCreateDate.HasValue)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += String.Format(@"v.[CreateDate] < '{0}' ",endCreateDate);
             }
             return whereString;
         }

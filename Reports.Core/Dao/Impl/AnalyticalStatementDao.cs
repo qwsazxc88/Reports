@@ -79,7 +79,7 @@ namespace Reports.Core.Dao
             if (beginDate == null) beginDate = new DateTime(1753, 1, 2);
            
             string AddToWhere= string.Empty;
-            if (role == UserRole.PersonnelManager)
+            if (role == UserRole.ConsultantOutsorsingManager)
             {
                 query = string.Format(query, string.Empty);
                 query += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId + " {0}";
@@ -254,7 +254,7 @@ namespace Reports.Core.Dao
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     return sqlQueryPart;
                 case UserRole.PersonnelManager:
-                //case UserRole.ConsultantOutsorsingManager:
+                case UserRole.ConsultantOutsorsingManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Accountant:
