@@ -63,7 +63,7 @@ namespace WebMvc.Controllers
         #region Service Requests
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
+            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator | UserRole.DismissedEmployee)]
         public ActionResult Index()
         {
             //UserRole.PersonnelManager

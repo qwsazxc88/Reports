@@ -94,7 +94,7 @@ namespace Reports.Core
          /// <summary>
          /// Консультант ОК
          /// </summary>
-        ConsultantOutsorsingManager = 1048576,
+        //ConsultantOutsorsingManager = 1048576,
          /// <summary>
          /// Уволеный сотрудник
          /// </summary>
@@ -173,7 +173,7 @@ namespace Reports.Core
                              {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
                              //{UserRole.ConsultantAccountant, ConsultantAccountant},
-                             {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
+                             //{UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager}, DEPRECATED
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},
                              {UserRole.TaxCollector, TaxCollector}
