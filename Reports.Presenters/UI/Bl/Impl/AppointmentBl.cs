@@ -1560,6 +1560,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RejectReason = entity.RejectReason;
             model.DateAccept = FormatDate(entity.DateAccept);
             model.ResumeComment = entity.ResumeComment;
+            model.ResumeCommentByOPINP = entity.ResumeCommentByOPINP;
             SetManagerInfoModel(entity.Appointment.Creator, model,null,entity);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.AppointmentReport);
             LoadDictionaries(model);
@@ -1936,6 +1937,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.DeleteDate.HasValue && (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id)))
                     {
                         entity.TestingResult = model.TestingResult;
+                        entity.ResumeCommentByOPINP = model.ResumeCommentByOPINP;
                             if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
                             {
                                 entity.StaffDateAccept = DateTime.Now;
