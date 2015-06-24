@@ -227,7 +227,10 @@
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
-            
+            <tr>
+                <td>Комментарий к резюме от ОПиНП:</td>
+                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
+            </tr>
             }
         </table>
      </fieldset>
@@ -280,8 +283,8 @@
                 </td>
             </tr>
             <tr>
-                <td>Комментарий к резюме</td>
-                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" })</td>
+                <td>Комментарий к резюме от руководителя:</td>
+                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { } : (object)new { @readonly = "read-only" })</td>
             </tr>
              <tr>
                 <td>
