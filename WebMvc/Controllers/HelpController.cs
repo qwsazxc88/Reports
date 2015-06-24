@@ -103,7 +103,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsorsingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager)]
         public ActionResult CreateServiceRequest(int? isForQuestion)
         {
             CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();
@@ -142,7 +142,7 @@ namespace WebMvc.Controllers
         }
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
+         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator| UserRole.DismissedEmployee)]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);
@@ -700,14 +700,14 @@ namespace WebMvc.Controllers
         #endregion
         #region Personnel Billing
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult PersonnelBillingList()
         {
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -716,7 +716,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult EditPersonnelBillingRequest(int id)
         {
             EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
