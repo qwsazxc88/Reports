@@ -59,6 +59,38 @@
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OrderNumber)</td>
+                        <td>@Html.TextBoxFor(m => m.OrderNumber, (object)new { maxlength = "50", style = "width:400px;" })</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OrderDate)</td>
+                        <td>@Html.TextBoxFor(m => m.OrderDate)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.LegalAddressId)
+                            @Html.HiddenFor(m => m.LegalPostIndex)
+                            @Html.HiddenFor(m => m.LegalRegionCode)
+                            @Html.HiddenFor(m => m.LegalAreaCode)
+                            @Html.HiddenFor(m => m.LegalCityCode)
+                            @Html.HiddenFor(m => m.LegalSettlementCode)
+                            @Html.HiddenFor(m => m.LegalStreetCode)
+                            @Html.HiddenFor(m => m.LegalHouseType)
+                            @Html.HiddenFor(m => m.LegalHouseNumber)
+                            @Html.HiddenFor(m => m.LegalBuildType)
+                            @Html.HiddenFor(m => m.LegalBuildNumber)
+                            @Html.HiddenFor(m => m.LegalFlatType)
+                            @Html.HiddenFor(m => m.LegalFlatNumber)
+
+
+                            @Html.LabelFor(m => m.LegalAddressId)<br />
+                            <button type="button" onclick="CreateAddressDialog(1);">Выбрать</button>
+                        </td>
+                        <td>
+                            <label id="LegalAddressLabel">@Model.LegalAddress</label>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -78,16 +110,45 @@
 
         <div id="MainDiv4">
             <h3>Управленческие реквизиты</h3>
-            <div></div>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.FactAddressId)
+                            @Html.HiddenFor(m => m.FactPostIndex)
+                            @Html.HiddenFor(m => m.FactRegionCode)
+                            @Html.HiddenFor(m => m.FactAreaCode)
+                            @Html.HiddenFor(m => m.FactCityCode)
+                            @Html.HiddenFor(m => m.FactSettlementCode)
+                            @Html.HiddenFor(m => m.FactStreetCode)
+                            @Html.HiddenFor(m => m.FactHouseType)
+                            @Html.HiddenFor(m => m.FactHouseNumber)
+                            @Html.HiddenFor(m => m.FactBuildType)
+                            @Html.HiddenFor(m => m.FactBuildNumber)
+                            @Html.HiddenFor(m => m.FactFlatType)
+                            @Html.HiddenFor(m => m.FactFlatNumber)
+
+
+                            @Html.LabelFor(m => m.FactAddressId)<br />
+                            <button type="button" onclick="CreateAddressDialog(2);">Выбрать</button>
+                        </td>
+                        <td>
+                            <label id="FactAddressLabel">@Model.FactAddress</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 }
 
 <script type="text/javascript">
+    var OldAddressType = -1;
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
 
         $(document).tooltip({ track: false });
+        $(":button").button();
 
         $("#MainDiv").accordion({
             header: "h3",
@@ -118,14 +179,188 @@
             autoHeight: false
         });
 
+        $("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
+        $(".hasDatepicker").width("85px");
+
         $('#IsBackContainer').buttonset();
         $("#IsBackTrue").click(function () {
             $("#lblBTrue").css("border-color", "red");
             $("#lblBFalse").css("border-color", "silver");
         });
+
+
+        //$("#btnLA").click(CreateAddressDialog(1));
+
         //ShowFlash(true);
         //ShowFlash(false);
-        //$(":button").button();
     });
+
+    //строим строку параметров для вызова кладра
+    function GetParamStr(Type)
+    {
+        var ParamStr = "";
+        if (Type == 1)
+        {
+            ParamStr = "?Id=" + $("#LegalAddressId").val();
+            ParamStr += "&PostIndex=" + $("#LegalPostIndex").val();
+            ParamStr += "&RegionCode=" + $("#LegalRegionCode").val();
+            ParamStr += "&AreaCode=" + $("#LegalAreaCode").val();
+            ParamStr += "&CityCode=" + $("#LegalCityCode").val();
+            ParamStr += "&SettlementCode=" + $("#LegalSettlementCode").val();
+            ParamStr += "&StreetCode=" + $("#LegalStreetCode").val();
+            ParamStr += "&HouseType=" + $("#LegalHouseType").val();
+            ParamStr += "&HouseNumber=" + $("#LegalHouseNumber").val();
+            ParamStr += "&BuildType=" + $("#LegalBuildType").val();
+            ParamStr += "&BuildNumber=" + $("#LegalBuildNumber").val();
+            ParamStr += "&FlatType=" + $("#LegalFlatType").val();
+            ParamStr += "&FlatNumber=" + $("#LegalFlatNumber").val();
+        }
+
+        if (Type == 2)
+        {
+            ParamStr = "?Id=" + $("#FactAddressId").val();
+            ParamStr += "&PostIndex=" + $("#FactPostIndex").val();
+            ParamStr += "&RegionCode=" + $("#FactRegionCode").val();
+            ParamStr += "&AreaCode=" + $("#FactAreaCode").val();
+            ParamStr += "&CityCode=" + $("#FactCityCode").val();
+            ParamStr += "&SettlementCode=" + $("#FactSettlementCode").val();
+            ParamStr += "&StreetCode=" + $("#FactStreetCode").val();
+            ParamStr += "&HouseType=" + $("#FactHouseType").val();
+            ParamStr += "&HouseNumber=" + $("#FactHouseNumber").val();
+            ParamStr += "&BuildType=" + $("#FactBuildType").val();
+            ParamStr += "&BuildNumber=" + $("#FactBuildNumber").val();
+            ParamStr += "&FlatType=" + $("#FactFlatType").val();
+            ParamStr += "&FlatNumber=" + $("#FactFlatNumber").val();
+        }
+        return ParamStr;
+    }
+
+    //сохраняем полученные параметры адреса
+    function SaveKladrParam(Type)
+    {
+        if(Type == 1)
+        {
+            $("#LegalPostIndex").val($("#PostIndex").val());
+            $("#LegalRegionCode").val($("#RegionCode").val());
+            $("#LegalAreaCode").val($("#AreaCode").val());
+            $("#LegalCityCode").val($("#CityCode").val());
+            $("#LegalSettlementCode").val($("#SettlementCode").val());
+            $("#LegalStreetCode").val($("#StreetCode").val());
+            $("#LegalHouseType").val($("#HouseType").val());
+            $("#LegalHouseNumber").val($("#HouseNumber").val());
+            $("#LegalBuildType").val($("#BuildType").val());                            
+            $("#LegalBuildNumber").val($("#BuildNumber").val()); 
+            $("#LegalFlatType").val($("#FlatType").val()); 
+            $("#LegalFlatNumber").val($("#FlatNumber").val()); 
+
+            $("#LegalAddress").val($("#Address").val());
+            $("#LegalAddressLabel").text($("#Address").val());                
+        }
+
+        if(Type == 2)
+        {
+            $("#FactPostIndex").val($("#PostIndex").val());
+            $("#FactRegionCode").val($("#RegionCode").val());
+            $("#FactAreaCode").val($("#AreaCode").val());
+            $("#FactCityCode").val($("#CityCode").val());
+            $("#FactSettlementCode").val($("#SettlementCode").val());
+            $("#FactStreetCode").val($("#StreetCode").val());
+            $("#FactHouseType").val($("#HouseType").val());
+            $("#FactHouseNumber").val($("#HouseNumber").val());
+            $("#FactBuildType").val($("#BuildType").val());                            
+            $("#FactBuildNumber").val($("#BuildNumber").val()); 
+            $("#FactFlatType").val($("#FlatType").val()); 
+            $("#FactFlatNumber").val($("#FlatNumber").val()); 
+
+            $("#FactAddress").val($("#Address").val());
+            $("#FactAddressLabel").text($("#Address").val());                
+        }
+    }
+
+    function CreateAddressDialog(Type) {
+        if (Type == null) return;
+        var title = "Адрес";
+//        //если уже вызывалось модальное окно, то не создаем его, а открываем уже существующее
+//        if (OldAddressType == Type)
+//        {
+//            if($("#divDetailDialog").length){
+//                $("#divDetailDialog").dialog("open");
+//                return;
+//            }
+//        }
+//        else  //если окно вызывается из другого места и уже существует готовый экземпляр, то убиваем его
+//        {
+//            if($("#divDetailDialog").length){
+//                $("#divDetailDialog").dialog("destroy").remove();
+//            }
+//        }
+//        
+//        OldAddressType = Type;
+
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+
+        var actionDetailDialogUrl = "@Url.Action("Address", "StaffList")";
+
+        actionDetailDialogUrl += GetParamStr(Type);
+      
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            //title: title,     
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 450,
+            closeOnEscape: false,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    SaveKladrParam(Type);
+//                    if(Type == 1)
+//                    {
+//                        $("#LegalAddress").val($("#Address").val());
+//                        $("#LegalAddressLabel").text($("#Address").val());
+//                    }
+//                    if(Type == 2)
+//                    {
+//                        $("#FactAddress").val($("#Address").val());
+//                        $("#FactAddressLabel").text($("#Address").val());
+//                    }
+                    $(this).dialog("close");
+                }
+                ,
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        //убрал заголовок окна, потому что он пропадает, если после вызова модального окна использовать поверх еще одно модальное окно в качестве индикатора загрузки данных
+        $(".ui-dialog-titlebar").hide();
+        $(".ui-dialog-titlebar-close").hide();
+
+        $(newDiv).dialog("open");
+
+    }
 </script>
 

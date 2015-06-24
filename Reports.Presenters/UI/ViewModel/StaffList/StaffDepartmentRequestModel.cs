@@ -46,6 +46,21 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Юридический адрес")]
         public int? LegalAddressId { get; set; }
         public string LegalAddress { get; set; }
+        //огород для кладра
+        //при сохранении адреса в базе мы сохраняем не только строку адреса, но и коды его объектов, для заполнения кладра при вызове модальной формы
+        //так как на странице происходит выбор двух разных адресов, а документ и адрес могут быть еще не сохранены в базе, то при повторном вызове модальной формы нужно построить кладр по параметрам
+        public string LegalPostIndex { get; set; }
+        public string LegalRegionCode { get; set; }
+        public string LegalAreaCode { get; set; }
+        public string LegalCityCode { get; set; }
+        public string LegalSettlementCode { get; set; }
+        public string LegalStreetCode { get; set; }
+        public int LegalHouseType { get; set; }
+        public string LegalHouseNumber { get; set; }
+        public int LegalBuildType { get; set; }
+        public string LegalBuildNumber { get; set; }
+        public int LegalFlatType { get; set; }
+        public string LegalFlatNumber { get; set; }
 
         [Display(Name = "Признак постановки на учет в ИФНС")]
         public bool IsTaxAdminAccount { get; set; }
@@ -114,6 +129,19 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Фактический адрес")]
         public int? FactAddressId { get; set; }
         public string FactAddress { get; set; }
+        //огород для кладра
+        public string FactPostIndex { get; set; }
+        public string FactRegionCode { get; set; }
+        public string FactAreaCode { get; set; }
+        public string FactCityCode { get; set; }
+        public string FactSettlementCode { get; set; }
+        public string FactStreetCode { get; set; }
+        public int FactHouseType { get; set; }
+        public string FactHouseNumber { get; set; }
+        public int FactBuildType { get; set; }
+        public string FactBuildNumber { get; set; }
+        public int FactFlatType { get; set; }
+        public string FactFlatNumber { get; set; }
 
         [Display(Name = "Статус подразделения")]
         public string DepStatus { get; set; }

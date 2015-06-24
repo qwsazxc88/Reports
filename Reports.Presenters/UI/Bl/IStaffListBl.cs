@@ -41,9 +41,9 @@ namespace Reports.Presenters.UI.Bl
         /// <summary>
         /// Загружаем модель для составления Российских адресов.
         /// </summary>
-        /// <param name="Id">Id адреса</param>
+        /// <param name="model">Модель формы</param>
         /// <returns></returns>
-        AddressModel GetAddress(int Id);
+        AddressModel GetAddress(AddressModel model);
         /// <summary>
         /// Загружаем список объектов частей адресов.
         /// </summary>

@@ -227,11 +227,16 @@ CREATE TABLE [dbo].[RefAddresses](
 	[Version] [int] NOT NULL,
 	[Address] [nvarchar](400) NULL,
 	[PostIndex] [nvarchar](6) NULL,
-	[RegionCode] [nvarchar](50) NULL,
-	[AreaCode] [nvarchar](50) NULL,
-	[CityCode] [nvarchar](50) NULL,
-	[SettlementCode] [nvarchar](50) NULL,
-	[StreetCode] [nvarchar](50) NULL,
+	[RegionCode] [nvarchar](30) NULL,
+	[RegionName] [nvarchar](50) NULL,
+	[AreaCode] [nvarchar](30) NULL,
+	[AreaName] [nvarchar](50) NULL,
+	[CityCode] [nvarchar](30) NULL,
+	[CityName] [nvarchar](50) NULL,
+	[SettlementCode] [nvarchar](30) NULL,
+	[SettlementName] [nvarchar](50) NULL,
+	[StreetCode] [nvarchar](30) NULL,
+	[StreetName] [nvarchar](50) NULL,
 	[HouseType] [int] NULL,
 	[HouseNumber] [nvarchar](10) NULL,
 	[BuildType] [int] NULL,
@@ -1677,16 +1682,31 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код региона' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'RegionCode'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название региона' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'RegionName'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код района' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'AreaCode'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название района' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'AreaName'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код города' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'CityCode'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название города' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'CityName'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код населенного пункта' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'SettlementCode'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название населенного пункта' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'SettlementName'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код улицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'StreetCode'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название улицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'StreetName'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип дом/владение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'HouseType'
