@@ -175,6 +175,10 @@ namespace Reports.Core.Domain
         public virtual bool? ExperienceIn1C { get; set; }
         public virtual bool? IsFixedTermContract { get; set; }
         public virtual string AccessGroupCode { get; set; }
+        /// <summary>
+        /// Надбавки
+        /// </summary>
+        public virtual IList<StaffPostChargeLinks> StaffPostCharges { get; set; }
         #endregion
 
         #region Constructors

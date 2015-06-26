@@ -110,7 +110,7 @@ namespace WebMvc.Controllers
             model.Id = Id;
             model.PostIndex = PostIndex == "" ? string.Empty : PostIndex;
             model.RegionCode = RegionCode == "" ? string.Empty : RegionCode;
-            model.AreaCode = AreaCode == "" ? string.Empty : AreaCode;
+            model.AreaCode =  AreaCode == null ? string.Empty : AreaCode;
             model.CityCode = CityCode == "" ? string.Empty : CityCode;
             model.SettlementCode = SettlementCode == "" ? string.Empty : SettlementCode;
             model.StreetCode = StreetCode == "" ? string.Empty : StreetCode;

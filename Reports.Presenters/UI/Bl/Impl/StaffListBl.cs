@@ -101,6 +101,45 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Id = model.RequestType == 1 ? 0 : 1;
             model.RequestTypes = GetDepRequestTypes();
+
+            //временные заглушки для списков на время построения формы
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 1, Name = "test 1" });
+            dto.Add(new IdNameDto { Id = 2, Name = "test 2" });
+            model.DepTypes = dto;
+
+            IList<ProgramCodeDto> tbl = new List<ProgramCodeDto>();
+            tbl.Add(new ProgramCodeDto { Id = 1, ProgramId = 1, ProgramName = "СВКредит", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 2, ProgramId = 2, ProgramName = "РБС", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 3, ProgramId = 3, ProgramName = "Инверсия", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 4, ProgramId = 4, ProgramName = "ХД", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 5, ProgramId = 5, ProgramName = "Террасофт", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 6, ProgramId = 6, ProgramName = "ФЕС", Code = "" });
+            tbl.Add(new ProgramCodeDto { Id = 7, ProgramId = 7, ProgramName = "СКБ/GE", Code = "" });
+            model.ProgramCodes = tbl;
+
+            IList<DepOperationDto> tbl2 = new List<DepOperationDto>();
+            tbl2.Add(new DepOperationDto { Id = 1, OperationId = 1, OperationName = "Операция 1", IsUsed = false});
+            tbl2.Add(new DepOperationDto { Id = 2, OperationId = 2, OperationName = "Операция 2", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 3, OperationId = 3, OperationName = "Операция 3", IsUsed = true });
+            tbl2.Add(new DepOperationDto { Id = 4, OperationId = 4, OperationName = "Операция 4", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 5, OperationId = 5, OperationName = "Операция 5", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 6, OperationId = 6, OperationName = "Операция 6", IsUsed = true });
+            tbl2.Add(new DepOperationDto { Id = 7, OperationId = 7, OperationName = "Операция 7", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 8, OperationId = 8, OperationName = "Операция 8", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 9, OperationId = 9, OperationName = "Операция 9", IsUsed = false });
+            tbl2.Add(new DepOperationDto { Id = 10, OperationId = 10, OperationName = "Операция 10", IsUsed = false });
+            model.Operations = tbl2;
+
+            IList<DepLandmarkDto> tbl3 = new List<DepLandmarkDto>();
+            tbl3.Add(new DepLandmarkDto { Id = 1, LandmarkId = 1, LandmarkName = "Станция метро", Description = "" });
+            tbl3.Add(new DepLandmarkDto { Id = 2, LandmarkId = 2, LandmarkName = "Остановка транспорта", Description = "Последний тупик коммунизма" });
+            tbl3.Add(new DepLandmarkDto { Id = 3, LandmarkId = 3, LandmarkName = "Значимые объекты", Description = "Заброшенный сортир" });
+            tbl3.Add(new DepLandmarkDto { Id = 4, LandmarkId = 4, LandmarkName = "Торговые центры", Description = "" });
+            tbl3.Add(new DepLandmarkDto { Id = 5, LandmarkId = 5, LandmarkName = "Район города", Description = "Городская свалка" });
+            model.DepLandmarks = tbl3;
+
+            
             return model;
         }
         /// <summary>
@@ -213,13 +252,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.StreetCode = "770000020004549";
 
                 model.HouseTypes = GetAddressDictionary(1);
-                model.HouseType = 1;
+                //model.HouseType = 1;
                 //model.HouseNumber = string.Empty;
                 model.BuildTypes = GetAddressDictionary(2);
-                model.BuildType = 1;
+                //model.BuildType = 1;
                 //model.BuildNumber = "1133";
                 model.FlatTypes = GetAddressDictionary(3);
-                model.FlatType = 1;
+                //model.FlatType = 1;
                 //model.FlatNumber = "7";
                 //model.PostIndex = "124460";
                 model.Address = GetAddressStr(model);

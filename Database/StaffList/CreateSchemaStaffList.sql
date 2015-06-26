@@ -28,7 +28,7 @@ IF OBJECT_ID ('FK_StaffProgramCodes_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffProgramCodes] DROP CONSTRAINT [FK_StaffProgramCodes_CreatorUser]
 GO
 
-IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPost', 'F') IS NOT NULL
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPost', 'F') IS NOT NULL	
 	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPost]
 GO
 
@@ -54,6 +54,18 @@ GO
 
 IF OBJECT_ID ('FK_StaffEstablishedPostArchive_StaffEstablishedPost', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffEstablishedPostArchive] DROP CONSTRAINT [FK_StaffEstablishedPostArchive_StaffEstablishedPost]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostArchive_Position', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostArchive] DROP CONSTRAINT [FK_StaffEstablishedPostArchive_Position]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostArchive_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostArchive] DROP CONSTRAINT [FK_StaffEstablishedPostArchive_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostArchive_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostArchive] DROP CONSTRAINT [FK_StaffEstablishedPostArchive_CreatorUser]
 GO
 
 IF OBJECT_ID ('FK_StaffEstablishedPost_Position', 'F') IS NOT NULL
@@ -245,9 +257,9 @@ CREATE TABLE [dbo].[RefAddresses](
 	[FlatNumber] [nvarchar](5) NULL,
 	[IsUsed] [bit] NULL,
 	[CreatorId] [int] NOT NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_RefAddresses] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -264,7 +276,7 @@ GO
 CREATE TABLE [dbo].[StaffProgramReference](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](50) NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
  CONSTRAINT [PK_StaffProgramReference] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -285,9 +297,9 @@ CREATE TABLE [dbo].[StaffProgramCodes](
 	[ProgramId] [int] NULL,
 	[Code] [nvarchar](20) NULL,
 	[CreatorId] [int] NOT NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffProgramCodes] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -303,7 +315,7 @@ GO
 CREATE TABLE [dbo].[StaffLandmarkTypes](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](50) NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
  CONSTRAINT [PK_StaffLandmarkTypes] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -337,7 +349,6 @@ CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[Version] [int] NOT NULL,
 	[RequestType] [int] NOT NULL,
 	[SEPId] [int] NULL,
-	[Number] [int] NULL,
 	[PositionId] [int] NULL,
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
@@ -371,7 +382,7 @@ CREATE TABLE [dbo].[StaffEstablishedPostArchive](
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
-	--[StaffExtraChargeId] [int] NULL,
+	[StaffECSalary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[Priority] [int] NULL,
@@ -396,7 +407,7 @@ CREATE TABLE [dbo].[StaffEstablishedPost](
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
-	--[StaffExtraChargeId] [int] NULL,
+	[StaffECSalary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[Priority] [int] NULL,
@@ -519,7 +530,7 @@ CREATE TABLE [dbo].[StaffDepartmentOperationLinks](
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentOperationLinks] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -536,10 +547,10 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
 	[DepRequestId] [int] NULL,
-	[DepCode] [nvarchar](20) NULL,
+	[DepCode] [nvarchar](15) NULL,
 	[NameShort] [nvarchar](50) NULL,
 	[ReferenceReason] [nvarchar](100) NULL,
-	[PrevDepCode] [nvarchar](12) NULL,
+	[PrevDepCode] [nvarchar](15) NULL,
 	[FactAddressId] [int] NULL,
 	[DepStatus] [nvarchar](50) NULL,
 	[DepTypeId] [int] NULL,
@@ -559,9 +570,9 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[PlanSalaryFund] [numeric](18, 2) NULL,
 	[Note] [nvarchar](250) NULL,
 	[CreatorId] [int] NOT NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentManagerDetails] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -581,9 +592,9 @@ CREATE TABLE [dbo].[StaffDepartmentLandmarks](
 	[LandmarkId] [int] NULL,
 	[Description] [nvarchar](100) NULL,
 	[CreatorId] [int] NOT NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentLandmarks] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -603,14 +614,14 @@ CREATE TABLE [dbo].[StaffDepartmentCBDetails](
 	[ATMCountTotal] [int] NULL,
 	[ATMCashInCount] [int] NULL,
 	[ATMCount] [int] NULL,
-	[DepCachintId] [int] NULL,
+	[DepCachinId] [int] NULL,
 	[DepATMId] [int] NULL,
 	[CashInStartedDate] [datetime] NULL,
 	[ATMStartedDate] [datetime] NULL,
 	[CreatorId] [int] NOT NULL,
-	[DateCreate] [datetime] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
-	[DateEdit] [datetime] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentCBDetails] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -726,7 +737,7 @@ GO
 ALTER TABLE [dbo].[DepartmentArchive] CHECK CONSTRAINT [FK_DepartmentArchive_Department]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentCBDetails] ADD  CONSTRAINT [DF_StaffDepartmentCBDetails_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffDepartmentCBDetails] ADD  CONSTRAINT [DF_StaffDepartmentCBDetails_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentCBDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentCBDetails_CreatorUser] FOREIGN KEY([CreatorId])
@@ -757,14 +768,14 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentCBDetails] CHECK CONSTRAINT [FK_StaffDepartmentCBDetails_DepATM]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentCBDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentCBDetails_DepCashin] FOREIGN KEY([DepCachintId])
+ALTER TABLE [dbo].[StaffDepartmentCBDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentCBDetails_DepCashin] FOREIGN KEY([DepCachinId])
 REFERENCES [dbo].[Department] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentCBDetails] CHECK CONSTRAINT [FK_StaffDepartmentCBDetails_DepCashin]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentLandmarks] ADD  CONSTRAINT [DF_StaffDepartmentLandmarks_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffDepartmentLandmarks] ADD  CONSTRAINT [DF_StaffDepartmentLandmarks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentLandmarks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentLandmarks_CreatorUser] FOREIGN KEY([CreatorId])
@@ -801,7 +812,7 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_PlanSalaryFund]  DEFAULT ((0)) FOR [PlanSalaryFund]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_CreatorUser] FOREIGN KEY([CreatorId])
@@ -961,13 +972,40 @@ GO
 ALTER TABLE [dbo].[StaffEstablishedPost] CHECK CONSTRAINT [FK_StaffEstablishedPost_Position]
 GO
 
+ALTER TABLE [dbo].[StaffEstablishedPost] ADD  CONSTRAINT [DF_StaffEstablishedPost_StaffECSalary]  DEFAULT ((0)) FOR [StaffECSalary]
+GO
+
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_Quantity]  DEFAULT ((1)) FOR [Quantity]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_Salary]  DEFAULT ((0)) FOR [Salary]
 GO
 
+ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_StaffECSalary]  DEFAULT ((0)) FOR [StaffECSalary]
+GO
+
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostArchive_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive] CHECK CONSTRAINT [FK_StaffEstablishedPostArchive_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostArchive_Department] FOREIGN KEY([DepartmentId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive] CHECK CONSTRAINT [FK_StaffEstablishedPostArchive_Department]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostArchive_Position] FOREIGN KEY([PositionId])
+REFERENCES [dbo].[Position] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostArchive] CHECK CONSTRAINT [FK_StaffEstablishedPostArchive_Position]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostArchive]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostArchive_StaffEstablishedPost] FOREIGN KEY([SEPId])
@@ -1031,10 +1069,10 @@ GO
 ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPost]
 GO
 
-ALTER TABLE [dbo].[StaffLandmarkTypes] ADD  CONSTRAINT [DF_StaffLandmarkTypes_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffLandmarkTypes] ADD  CONSTRAINT [DF_StaffLandmarkTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
-ALTER TABLE [dbo].[StaffProgramCodes] ADD  CONSTRAINT [DF_StaffProgramCodes_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffProgramCodes] ADD  CONSTRAINT [DF_StaffProgramCodes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[StaffProgramCodes]  WITH CHECK ADD  CONSTRAINT [FK_StaffProgramCodes_CreatorUser] FOREIGN KEY([CreatorId])
@@ -1065,7 +1103,7 @@ GO
 ALTER TABLE [dbo].[StaffProgramCodes] CHECK CONSTRAINT [FK_StaffProgramCodes_StaffProgramReference]
 GO
 
-ALTER TABLE [dbo].[StaffProgramReference] ADD  CONSTRAINT [DF_StaffProgramReference_DateCreate]  DEFAULT (getdate()) FOR [DateCreate]
+ALTER TABLE [dbo].[StaffProgramReference] ADD  CONSTRAINT [DF_StaffProgramReference_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[RefAddresses] ADD  CONSTRAINT [DF_RefAddresses_IsUsed]  DEFAULT ((0)) FOR [IsUsed]
@@ -1092,9 +1130,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата утвержден
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id родительского подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'ParentId'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'Priority'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'Priority'
@@ -1163,7 +1198,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество банкоматов с функцией ресайклинг' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'ATMCount'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения инкассирующее кэшины' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DepCachintId'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения инкассирующее кэшины' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DepCachinId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения инкассирующее банкоматы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DepATMId'
@@ -1178,13 +1213,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'CreatorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ЦБ реквизиты подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails'
@@ -1208,13 +1243,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'CreatorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ориентиры подразделений' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentLandmarks'
@@ -1298,13 +1333,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'CreatorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Управленческие реквизиты' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails'
@@ -1331,7 +1366,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Операции проводимые подразделением' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks'
@@ -1397,7 +1432,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак плановой операции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsPlan'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использоания' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак черновика' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsDraft'
@@ -1505,6 +1540,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка (территориальная)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник штатных единиц' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost'
 GO
 
@@ -1526,10 +1564,16 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Оклад' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'Salary'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка территориальная' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала учета в системе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'BeginAccountDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'Priority'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя/редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'CreatorID'
@@ -1553,9 +1597,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id штатной единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'SEPId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Number'
-GO
-
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id должности' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'PositionId'
 GO
 
@@ -1571,7 +1612,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка (территориальная)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использоания' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак черновика' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'IsDraft'
@@ -1619,7 +1660,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLandmarkTypes', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLandmarkTypes', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLandmarkTypes', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов ориентиров' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLandmarkTypes'
@@ -1643,13 +1684,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'CreatorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник кодов совместимых программ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramCodes'
@@ -1661,7 +1702,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название программы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramReference', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramReference', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramReference', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник совместимых программ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffProgramReference'
@@ -1733,13 +1774,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'CreatorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'DateCreate'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'EditorId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'DateEdit'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник адресов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefAddresses'

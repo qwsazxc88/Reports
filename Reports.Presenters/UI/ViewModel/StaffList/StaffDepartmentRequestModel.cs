@@ -69,7 +69,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsEmployeAvailable { get; set; }
 
         [Display(Name = "Соседнее подразделение с налоговыми реквизитами")]
-        public int? DepNextId { get; set; }
+        public int DepNextId { get; set; }
         public string DepNextName { get; set; }
         #endregion
 
@@ -107,10 +107,12 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int ATMCount { get; set; }
 
         [Display(Name = "Подразделения инкассирующее кэшины")]
-        public int DepCachintId { get; set; }
+        public int DepCachinId { get; set; }
+        public string DepCachinName { get; set; }
 
         [Display(Name = "Подразделения инкассирующее банкоматы")]
         public int DepATMId { get; set; }
+        public string DepATMName { get; set; }
 
         [Display(Name = "Дата запуска кэшина (первая)")]
         public DateTime? CashInStartedDate { get; set; }
@@ -175,7 +177,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string Phone { get; set; }
 
         [Display(Name = "Коды совместимости программ")]
-        IList<ProgramCodeDto> ProgramCodes { get; set; }
+        public IList<ProgramCodeDto> ProgramCodes { get; set; }
 
         [Display(Name = "Признак блокировки подразделения")]
         public bool IsBlocked { get; set; }
@@ -193,7 +195,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsLegalEntity { get; set; }
 
         [Display(Name = "Ориентиры")]
-        IList<DepLandmarkDto> DepLandmarks { get; set; }
+        public IList<DepLandmarkDto> DepLandmarks { get; set; }
 
         [Display(Name = "Планируемое количество штатных единиц")]
         public int PlanEPCount { get; set; }
