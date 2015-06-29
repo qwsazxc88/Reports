@@ -20,6 +20,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(kladrDao); }
             set { kladrDao = value; }
         }
+
+        protected IStaffDepartmentTypesDao staffdepartmenttypesDao;
+        public IStaffDepartmentTypesDao StaffDepartmentTypesDao
+        {
+            get { return Validate.Dependency(staffdepartmenttypesDao); }
+            set { staffdepartmenttypesDao = value; }
+        }
+
+        protected IStaffProgramCodesDao staffprogramcodesDao;
+        public IStaffProgramCodesDao StaffProgramCodesDao
+        {
+            get { return Validate.Dependency(staffprogramcodesDao); }
+            set { staffprogramcodesDao = value; }
+        }
+
+        protected IStaffDepartmentLandmarksDao staffdepartmentlandmarksDao;
+        public IStaffDepartmentLandmarksDao StaffDepartmentLandmarksDao
+        {
+            get { return Validate.Dependency(staffdepartmentlandmarksDao); }
+            set { staffdepartmentlandmarksDao = value; }
+        }
         #endregion
 
         #region Штатные расписание.
@@ -81,43 +102,75 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model)
         {
+            //перечисляю все поля, чтобы не забыть потом, хотя многие поля не нужно заполнять при созддании новой заявки на открытие подразделения
+            //реквизиты инициатора
             model.DepRequestInfo = GetDepRequestInfo();
             
-            //фактический адрес
-            //model.LegalAddressId = 0;
-            //model.LegalAddress = string.Empty;
-            //model.LegalPostIndex = "124460";
-            //model.LegalRegionCode = "770000000000000";
-            //model.LegalAreaCode = string.Empty;
-            //model.LegalCityCode = "770000020000000";
-            //model.LegalSettlementCode = string.Empty;
-            //model.LegalStreetCode = "770000020004549";
-            //model.LegalHouseType = 1;
-            //model.LegalHouseNumber = string.Empty;
-            //model.LegalBuildType = 1;
-            //model.LegalBuildNumber = "1133";
-            //model.LegalFlatType = 1;
-            //model.LegalFlatNumber = "7";
-
-            model.Id = model.RequestType == 1 ? 0 : 1;
+            //Общие реквизиты
+            model.Id = 0;
+            //model.Id = model.RequestType == 1 ? 0 : 1;
             model.RequestTypes = GetDepRequestTypes();
+            //model.DepRequestInfo.DateRequest = DateTime.Now;
+            //model.DepRequestInfo.Id = 0;
+            model.DateState = null;
+            model.DepartmentId = 0;
+            model.ItemLevel = DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1;
+            model.Name = string.Empty;
+            model.IsBack = false;
+            model.OrderNumber = string.Empty;
+            model.OrderDate = null;
+            model.LegalAddressId = 0;
+            model.LegalAddress = string.Empty;
+            model.IsTaxAdminAccount = false;
+            model.IsEmployeAvailable = false;
+            model.DepNextId = 0;
+            model.IsPlan = false;
 
+            //налоговые реквизиты
+            model.KPP = string.Empty;
+            model.OKTMO = string.Empty;
+            model.OKATO = string.Empty;
+            model.RegionCode = string.Empty;
+            model.TaxAdminCode = string.Empty;
+            model.TaxAdminName = string.Empty;
+            model.PostAddress = string.Empty;
+
+            //ЦБ реквизиты
+            model.ATMCountTotal = 0;
+            model.ATMCashInCount = 0;
+            model.ATMCount = 0;
+            model.DepCachinId = 0;
+            model.DepATMId = 0;
+            model.CashInStartedDate = null;
+            model.ATMStartedDate = null;
+
+            //Управленческие реквизиты
+            model.NameShort = string.Empty;
+            model.ReferenceReason = string.Empty;
+            model.FactAddressId = 0;
+            model.DepStatus = string.Empty;
+            model.DepTypeId = 0;
+            model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
+            model.OpenDate = null;
+            model.CloseDate = null;
+            model.Reason = string.Empty;
+            model.OperationMode = string.Empty;
+            model.BeginIdleDate = null;
+            model.EndIdleDate = null;
+            model.IsRentPlace = false;
+            model.Phone = string.Empty;
+            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(0);
+            model.IsBlocked = false;
+            model.IsNetShop = false;
+            model.IsAvailableCash = false;
+            //model.Operations = tbl2;
+            model.IsLegalEntity = false;
+            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(0);
+            model.PlanEPCount = 0;
+            model.PlanSalaryFund = 0; model.Note = string.Empty;
             //временные заглушки для списков на время построения формы
-            IList<IdNameDto> dto = new List<IdNameDto>();
-            dto.Add(new IdNameDto { Id = 1, Name = "test 1" });
-            dto.Add(new IdNameDto { Id = 2, Name = "test 2" });
-            model.DepTypes = dto;
 
-            IList<ProgramCodeDto> tbl = new List<ProgramCodeDto>();
-            tbl.Add(new ProgramCodeDto { Id = 1, ProgramId = 1, ProgramName = "СВКредит", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 2, ProgramId = 2, ProgramName = "РБС", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 3, ProgramId = 3, ProgramName = "Инверсия", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 4, ProgramId = 4, ProgramName = "ХД", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 5, ProgramId = 5, ProgramName = "Террасофт", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 6, ProgramId = 6, ProgramName = "ФЕС", Code = "" });
-            tbl.Add(new ProgramCodeDto { Id = 7, ProgramId = 7, ProgramName = "СКБ/GE", Code = "" });
-            model.ProgramCodes = tbl;
-
+            
             IList<DepOperationDto> tbl2 = new List<DepOperationDto>();
             tbl2.Add(new DepOperationDto { Id = 1, OperationId = 1, OperationName = "Операция 1", IsUsed = false});
             tbl2.Add(new DepOperationDto { Id = 2, OperationId = 2, OperationName = "Операция 2", IsUsed = false });
@@ -131,13 +184,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             tbl2.Add(new DepOperationDto { Id = 10, OperationId = 10, OperationName = "Операция 10", IsUsed = false });
             model.Operations = tbl2;
 
-            IList<DepLandmarkDto> tbl3 = new List<DepLandmarkDto>();
-            tbl3.Add(new DepLandmarkDto { Id = 1, LandmarkId = 1, LandmarkName = "Станция метро", Description = "" });
-            tbl3.Add(new DepLandmarkDto { Id = 2, LandmarkId = 2, LandmarkName = "Остановка транспорта", Description = "Последний тупик коммунизма" });
-            tbl3.Add(new DepLandmarkDto { Id = 3, LandmarkId = 3, LandmarkName = "Значимые объекты", Description = "Заброшенный сортир" });
-            tbl3.Add(new DepLandmarkDto { Id = 4, LandmarkId = 4, LandmarkName = "Торговые центры", Description = "" });
-            tbl3.Add(new DepLandmarkDto { Id = 5, LandmarkId = 5, LandmarkName = "Район города", Description = "Городская свалка" });
-            model.DepLandmarks = tbl3;
+            //IList<DepLandmarkDto> tbl3 = new List<DepLandmarkDto>();
+            //tbl3.Add(new DepLandmarkDto { Id = 1, LandmarkId = 1, LandmarkName = "Станция метро", Description = "" });
+            //tbl3.Add(new DepLandmarkDto { Id = 2, LandmarkId = 2, LandmarkName = "Остановка транспорта", Description = "Последний тупик коммунизма" });
+            //tbl3.Add(new DepLandmarkDto { Id = 3, LandmarkId = 3, LandmarkName = "Значимые объекты", Description = "Заброшенный сортир" });
+            //tbl3.Add(new DepLandmarkDto { Id = 4, LandmarkId = 4, LandmarkName = "Торговые центры", Description = "" });
+            //tbl3.Add(new DepLandmarkDto { Id = 5, LandmarkId = 5, LandmarkName = "Район города", Description = "Городская свалка" });
+            //model.DepLandmarks = tbl3;
 
             
             return model;
@@ -211,58 +264,59 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public AddressModel GetAddress(AddressModel model)
         {
-            //AddressModel model = new AddressModel();
-            if (model.Id == 0)    //загрузка без иденификатора
-            {
-                model.Regions = KladrDao.GetKladr(1, null, null, null, null);
-                model.Areas = KladrDao.GetKladr(2, null, null, null, null);
-                model.Cityes = KladrDao.GetKladr(3, null, null, null, null);
-                model.Settlements = KladrDao.GetKladr(4, null, null, null, null);
-                model.Streets = KladrDao.GetKladr(5, null, null, null, null);
-                model.HouseTypes = GetAddressDictionary(1);
-                model.BuildTypes = GetAddressDictionary(2);
-                model.FlatTypes = GetAddressDictionary(3);
-            }
-            else
-            {
-                //тут по Id записи достаем строку с адресом и строим форму
-                model.Regions = KladrDao.GetKladr(1, null, null, null, null);
-                //model.RegionCode = "770000000000000";
+            ////AddressModel model = new AddressModel();
+            //if (model.Id == 0)    //загрузка без иденификатора
+            //{
+            //    model.Regions = KladrDao.GetKladr(1, null, null, null, null);
+            //    model.Areas = KladrDao.GetKladr(2, null, null, null, null);
+            //    model.Cityes = KladrDao.GetKladr(3, null, null, null, null);
+            //    model.Settlements = KladrDao.GetKladr(4, null, null, null, null);
+            //    model.Streets = KladrDao.GetKladr(5, null, null, null, null);
+            //    model.HouseTypes = GetAddressDictionary(1);
+            //    model.BuildTypes = GetAddressDictionary(2);
+            //    model.FlatTypes = GetAddressDictionary(3);
+            //}
+            //else
+            //{
+                
+            //}
+            //тут по Id записи достаем строку с адресом и строим форму
+            model.Regions = KladrDao.GetKladr(1, null, null, null, null);
+            //model.RegionCode = "770000000000000";
 
-                model.Areas = KladrDao.GetKladr(2, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null, null, null, null);
-                //model.AreaCode = string.Empty; ;
-                string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
-                model.Cityes = KladrDao.GetKladr(3, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
-                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null, null, null);
-                //model.CityCode = "770000020000000";
+            model.Areas = KladrDao.GetKladr(2, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null, null, null, null);
+            //model.AreaCode = string.Empty; ;
+            string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
+            model.Cityes = KladrDao.GetKladr(3, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null, null, null);
+            //model.CityCode = "770000020000000";
 
-                //string a1 = !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : "";
-                //string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
-                //string a3 = !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null;
+            //string a1 = !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : "";
+            //string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
+            //string a3 = !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null;
 
-                model.Settlements = KladrDao.GetKladr(4, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
-                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
-                    !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null, null);
-                //model.SettlementCode = string.Empty;
+            model.Settlements = KladrDao.GetKladr(4, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
+                !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null, null);
+            //model.SettlementCode = string.Empty;
 
-                model.Streets = KladrDao.GetKladr(5, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
-                    !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
-                    !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null,
-                    !string.IsNullOrEmpty(model.SettlementCode) ? model.Settlements.Where(x => x.Code == model.SettlementCode).Single().SettlementCode : null);
-                //model.StreetCode = "770000020004549";
+            model.Streets = KladrDao.GetKladr(5, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
+                !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null,
+                !string.IsNullOrEmpty(model.CityCode) ? model.Cityes.Where(x => x.Code == model.CityCode).Single().CityCode : null,
+                !string.IsNullOrEmpty(model.SettlementCode) ? model.Settlements.Where(x => x.Code == model.SettlementCode).Single().SettlementCode : null);
+            //model.StreetCode = "770000020004549";
 
-                model.HouseTypes = GetAddressDictionary(1);
-                //model.HouseType = 1;
-                //model.HouseNumber = string.Empty;
-                model.BuildTypes = GetAddressDictionary(2);
-                //model.BuildType = 1;
-                //model.BuildNumber = "1133";
-                model.FlatTypes = GetAddressDictionary(3);
-                //model.FlatType = 1;
-                //model.FlatNumber = "7";
-                //model.PostIndex = "124460";
-                model.Address = GetAddressStr(model);
-            }
+            model.HouseTypes = GetAddressDictionary(1);
+            //model.HouseType = 1;
+            //model.HouseNumber = string.Empty;
+            model.BuildTypes = GetAddressDictionary(2);
+            //model.BuildType = 1;
+            //model.BuildNumber = "1133";
+            model.FlatTypes = GetAddressDictionary(3);
+            //model.FlatType = 1;
+            //model.FlatNumber = "7";
+            //model.PostIndex = "124460";
+            model.Address = GetAddressStr(model);
             return model;
         }
         /// <summary>

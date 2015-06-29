@@ -8,6 +8,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class StaffDepartmentRequestModel
     {
         #region Реквизиты инициатора
+        /// <summary>
+        /// Реквизиты инициатора.
+        /// </summary>
         public DepRequestInfoModel DepRequestInfo { get; set; }
         #endregion
 
@@ -71,6 +74,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Соседнее подразделение с налоговыми реквизитами")]
         public int DepNextId { get; set; }
         public string DepNextName { get; set; }
+
+        [Display(Name = "Признак плановой операции")]
+        public bool IsPlan { get; set; }
         #endregion
 
         #region Налоговые реквизиты
@@ -122,6 +128,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Управленческие реквизиты
+        //поля с кодами для Финграда есть в таблице, но сюда их пока не вносил
         [Display(Name = "Краткое название подразделения")]
         public string NameShort { get; set; }
 

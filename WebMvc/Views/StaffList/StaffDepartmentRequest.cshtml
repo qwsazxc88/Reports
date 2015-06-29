@@ -181,6 +181,23 @@
                             @Html.ValidationMessageFor(model => model.DepNextId)
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsPlan)
+                        </td>
+                        <td>
+                            <div id="IsPlanContainer">
+                                @Html.RadioButtonFor(m => m.IsPlan, true, new { @id = "IsPlanTrue" })<label id="lblIsPlanTrue" for="IsPlanTrue" @if (Model.IsPlan)
+                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                        else
+                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsPlan, false, new { @id = "IsPlanFalse" })<label id="lblIsPlanFalse" for="IsPlanFalse" @if (!Model.IsPlan)
+                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                    else
+                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -681,6 +698,7 @@
         $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
+        $('#IsPlanContainer').buttonset();
         $('#IsRentPlaceContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
         $('#IsNetShopContainer').buttonset();
@@ -715,6 +733,16 @@
         $("#IsEmployeAvailableFalse").click(function () {
             $("#lblIsEmployeAvailableFalse").css("border-color", "red");
             $("#lblIsEmployeAvailableTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsPlanTrue").click(function () {
+            $("#lblIsPlanTrue").css("border-color", "red");
+            $("#lblIsPlanFalse").css("border-color", "silver");
+        });
+        $("#IsPlanFalse").click(function () {
+            $("#lblIsPlanFalse").css("border-color", "red");
+            $("#lblIsPlanTrue").css("border-color", "silver");
         });
 
 
