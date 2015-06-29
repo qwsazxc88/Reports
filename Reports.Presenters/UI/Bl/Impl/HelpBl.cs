@@ -563,9 +563,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
                     //чтобы видно было, но в работу не принималось и скан не выкачивался
-                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 /*|| entity.Type.Id == 27*/)
                     {
-                        model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
+                        model.IsNotScanView = entity.Type.Id == 26 /*|| entity.Type.Id == 27*/ ? false : true;
                         model.IsBeginWorkAvailable = false;
                     }
                     else
@@ -2281,7 +2281,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
                 model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
             }
-
+            if ((CurrentUser.UserRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
+            {
+                Role role = GetRoleForId(roles, (int)UserRole.PersonnelManager);
+                model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
+            }
             if (CurrentUser.UserRole == UserRole.PersonnelManager) return model;//для консультантов КО разрешаем перенаправление вопроса консультанту аутсора
 
             if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel)
