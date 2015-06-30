@@ -75,6 +75,7 @@ namespace WebMvc.Controllers
             if (RequestType == 1)
             {
                 model.ParentId = DepartmentId.Value;
+                model.Id = 0;
                 model = StaffListBl.GetNewDepartmentRequest(model);
             }
             else
@@ -91,10 +92,17 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
-            //var jsonSerializer = new JavaScriptSerializer();
-            //StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
-            //string jsonString = jsonSerializer.Serialize(model);
-            //return Content(jsonString);
+            string error = string.Empty;
+            if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
+            {
+                StaffListBl.LoadDictionaries(model);
+                ModelState.AddModelError("Message", error);
+                return View(model);
+            }
+
+            StaffListBl.LoadDictionaries(model);
+            ModelState.AddModelError("Message", "Данные сохранены!");
+            
             return View(model);
         }
 

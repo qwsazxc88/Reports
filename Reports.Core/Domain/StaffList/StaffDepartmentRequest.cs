@@ -32,7 +32,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? CreateDate { get; set; } 
         public virtual User Editor { get; set; } 
         public virtual DateTime? EditDate { get; set; }
-        public virtual StaffDepartmentCBDetails DepartmentCBDetails { get; set; }
-        public virtual StaffDepartmentManagerDetails DepartmentManagerDetails { get; set; }
+        public virtual IList<StaffDepartmentCBDetails> DepartmentCBDetails { get; set; }
+        public virtual IList<StaffDepartmentManagerDetails> DepartmentManagerDetails { get; set; }
     }
 }

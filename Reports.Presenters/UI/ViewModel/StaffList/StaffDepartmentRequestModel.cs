@@ -15,11 +15,14 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Общие реквизиты
+        [Display(Name = "Дата заявки")]
+        public DateTime? DateRequest { get; set; }
+
         [Display(Name = "Дата утверждения заявки")]
         public DateTime? DateState { get; set; }
 
         [Display(Name = "Номер заявки")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [Display(Name = "Вид заявки")]
         public int RequestType { get; set; }
@@ -212,6 +215,13 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Примечание")]
         public string Note { get; set; }
+        #endregion
+
+        #region Служебные поля
+        [Display(Name = "Признак черновика.")]
+        public bool IsDraft { get; set; }
+        [Display(Name = "Для сообщений")]
+        public string Message { get; set; }
         #endregion
     }
 }

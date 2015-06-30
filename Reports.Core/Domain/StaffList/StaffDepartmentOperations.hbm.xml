@@ -6,7 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <property name="Name" length="50" not-null="false"/>
+    <property name="Name" length="400" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
   </class>
 </hibernate-mapping>

@@ -25,6 +25,18 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
         StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model);
+        /// <summary>
+        /// Процедура сохранения заявки на создание нового подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool SaveNewDepartmentRequest(StaffDepartmentRequestModel model, out string error);
+        /// <summary>
+        /// Загрузка справочников модели для заявок к подразделениям.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        void LoadDictionaries(StaffDepartmentRequestModel model);
         #endregion
         
         #endregion

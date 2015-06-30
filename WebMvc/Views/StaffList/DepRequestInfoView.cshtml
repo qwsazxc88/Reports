@@ -15,7 +15,7 @@
             @Html.LabelFor(m => m.Id):
         </td>
         <td>
-            @Html.DisplayFor(m => m.Id)
+            @(Model.Id != 0 ? Model.Id.ToString() : "") 
         </td>
     </tr>
     <tr>

@@ -39,6 +39,9 @@
 
 @using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
 {
+    @Html.HiddenFor(m => m.IsDraft)
+    @Html.HiddenFor(m => m.ParentId)
+    <h3>@Html.ValidationMessageFor(m => m.Message)</h3>
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <div id="MainDiv">
@@ -58,6 +61,7 @@
                             @Html.LabelFor(m => m.DateState)
                         </td>
                         <td>
+                            @Html.HiddenFor(m => m.DateState)
                             @(Model.DateState.HasValue ? Model.DateState.Value.ToShortDateString() : string.Empty)
                         </td>
                     </tr>
@@ -65,15 +69,22 @@
                         <td>@Html.LabelFor(m => m.Id)</td>
                         <td>
                             @(Model.Id != 0 ? Model.Id.ToString() : "")
+                            @Html.HiddenFor(m => m.Id)
                         </td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestType)</td>
-                        <td>@Model.RequestTypes.Where(x => x.Id == Model.RequestType).Single().Name</td>
+                        <td>
+                            @Html.HiddenFor(m => m.RequestType)
+                            @Model.RequestTypes.Where(x => x.Id == Model.RequestType).Single().Name
+                        </td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.ItemLevel)</td>
-                        <td>@Model.ItemLevel.ToString()</td>
+                        <td>
+                            @Model.ItemLevel.ToString()
+                            @Html.HiddenFor(m => m.ItemLevel)
+                        </td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.Name)</td>
@@ -89,13 +100,13 @@
                         <td>
                             <div id="IsBackContainer">
                                 @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -112,6 +123,7 @@
                     </tr>
                     <tr>
                         <td>
+                            @Html.HiddenFor(m => m.LegalAddress)
                             @Html.HiddenFor(m => m.LegalAddressId)
                             @Html.HiddenFor(m => m.LegalPostIndex)
                             @Html.HiddenFor(m => m.LegalRegionCode)
@@ -142,13 +154,13 @@
                         <td>
                             <div id="IsTaxAdminAccountContainer">
                                 @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                            else
+                                                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -159,13 +171,13 @@
                         <td>
                             <div id="IsEmployeAvailableContainer">
                                 @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -188,13 +200,13 @@
                         <td>
                             <div id="IsPlanContainer">
                                 @Html.RadioButtonFor(m => m.IsPlan, true, new { @id = "IsPlanTrue" })<label id="lblIsPlanTrue" for="IsPlanTrue" @if (Model.IsPlan)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsPlan, false, new { @id = "IsPlanFalse" })<label id="lblIsPlanFalse" for="IsPlanFalse" @if (!Model.IsPlan)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -315,7 +327,7 @@
         <div id="MainDiv4">
             <h3>Управленческие реквизиты</h3>
             <div>
-                <table>
+                <table width="50%">
                     <tr>
                         <td>@Html.LabelFor(m => m.NameShort)</td>
                         <td>
@@ -332,6 +344,7 @@
                     </tr>
                     <tr>
                         <td>
+                            @Html.HiddenFor(m => m.FactAddress)
                             @Html.HiddenFor(m => m.FactAddressId)
                             @Html.HiddenFor(m => m.FactPostIndex)
                             @Html.HiddenFor(m => m.FactRegionCode)
@@ -419,13 +432,13 @@
                         <td>
                             <div id="IsRentPlaceContainer">
                                 @Html.RadioButtonFor(m => m.IsRentPlace, true, new { @id = "IsRentPlaceTrue" })<label id="lblIsRentPlaceTrue" for="IsRentPlaceTrue" @if (Model.IsRentPlace)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsRentPlace, false, new { @id = "IsRentPlaceFalse" })<label id="lblIsRentPlaceFalse" for="IsRentPlaceFalse" @if (!Model.IsRentPlace)
                                                                                                                                                                     {<text>style="border-color:red;"</text>}
                                                                                                                                                                     else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsRentPlace, false, new { @id = "IsRentPlaceFalse" })<label id="lblIsRentPlaceFalse" for="IsRentPlaceFalse" @if (!Model.IsRentPlace)
+                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                        else
+                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -455,11 +468,12 @@
                                                 <td>
                                                     @Html.HiddenFor(m => m.ProgramCodes[i - 1].Id)
                                                     @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramId)
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramName)
                                                     @item.ProgramName
                                                 </td>
                                                 <td>@Html.TextBoxFor(m => m.ProgramCodes[i - 1].Code)</td>
                                             </tr>
-                                            {i++;}
+                                            { i++; }
                                         }
                                     </table>
                                 </div>
@@ -473,13 +487,13 @@
                         <td>
                             <div id="IsBlockedContainer">
                                 @Html.RadioButtonFor(m => m.IsBlocked, true, new { @id = "IsBlockedTrue" })<label id="lblIsBlockedTrue" for="IsBlockedTrue" @if (Model.IsBlocked)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                            else
+                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsBlocked, false, new { @id = "IsBlockedFalse" })<label id="lblIsBlockedFalse" for="IsBlockedFalse" @if (!Model.IsBlocked)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                else
+                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -490,13 +504,13 @@
                         <td>
                             <div id="IsNetShopContainer">
                                 @Html.RadioButtonFor(m => m.IsNetShop, true, new { @id = "IsNetShopTrue" })<label id="lblIsNetShopTrue" for="IsNetShopTrue" @if (Model.IsNetShop)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                            else
+                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsNetShop, false, new { @id = "IsNetShopFalse" })<label id="lblIsNetShopFalse" for="IsNetShopFalse" @if (!Model.IsNetShop)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                else
+                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -507,13 +521,13 @@
                         <td>
                             <div id="IsAvailableCashContainer">
                                 @Html.RadioButtonFor(m => m.IsAvailableCash, true, new { @id = "IsAvailableCashTrue" })<label id="lblIsAvailableCashTrue" for="IsAvailableCashTrue" @if (Model.IsAvailableCash)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                    else
+                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsAvailableCash, false, new { @id = "IsAvailableCashFalse" })<label id="lblIsAvailableCashFalse" for="IsAvailableCashFalse" @if (!Model.IsAvailableCash)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                        else
+                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -536,11 +550,12 @@
                                                 <td>
                                                     @Html.HiddenFor(m => m.Operations[i - 1].Id)
                                                     @Html.HiddenFor(m => m.Operations[i - 1].OperationId)
+                                                    @Html.HiddenFor(m => m.Operations[i - 1].OperationName)
                                                     @item.OperationName
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.Operations[i - 1].IsUsed)</td>
                                             </tr>
-                                            {i++;}
+                                            { i++; }
                                         }
                                     </table>
                                 </div>
@@ -554,13 +569,13 @@
                         <td>
                             <div id="IsLegalEntityContainer">
                                 @Html.RadioButtonFor(m => m.IsLegalEntity, true, new { @id = "IsLegalEntityTrue" })<label id="lblIsLegalEntityTrue" for="IsLegalEntityTrue" @if (Model.IsLegalEntity)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                                            else
+                                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
                                 @Html.RadioButtonFor(m => m.IsLegalEntity, false, new { @id = "IsLegalEntityFalse" })<label id="lblIsLegalEntityFalse" for="IsLegalEntityFalse" @if (!Model.IsLegalEntity)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                else
+                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
                             </div>
                         </td>
                     </tr>
@@ -583,11 +598,12 @@
                                                 <td>
                                                     @Html.HiddenFor(m => m.DepLandmarks[i - 1].Id)
                                                     @Html.HiddenFor(m => m.DepLandmarks[i - 1].LandmarkId)
+                                                    @Html.HiddenFor(m => m.DepLandmarks[i - 1].LandmarkName)
                                                     @item.LandmarkName
                                                 </td>
                                                 <td>@Html.TextBoxFor(m => m.DepLandmarks[i - 1].Description, new { style = "width:99%;" })</td>
                                             </tr>
-                                            {i++;}
+                                            { i++; }
                                         }
                                     </table>
                                 </div>
@@ -618,6 +634,10 @@
                 </table>
             </div>
         </div>
+
+        <br />
+        <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование">Согласовать</button>
     </div>
 }
 
@@ -632,6 +652,8 @@
         $(document).tooltip({ track: true });
         $(":button").button();
 
+        $("#btnSave").click(function(){ $("#IsDraft").val(true); $("#StaffDepartmentRequestForm").submit();});
+        $("#btnAgree").click(function(){ $("#IsDraft").val(false); $("#StaffDepartmentRequestForm").submit();});
 
 
         $("#MainDiv").accordion({
@@ -806,12 +828,12 @@
         if (Type == 1)
         {
             ParamStr = "?Id=" + $("#LegalAddressId").val();
-            ParamStr += "&PostIndex=" + ($("#LegalPostIndex").val() == "null" ? "" : $("#LegalPostIndex").val());
-            ParamStr += "&RegionCode=" + ($("#LegalRegionCode").val() == "null" ? "" : $("#LegalRegionCode").val());
-            ParamStr += "&AreaCode=" + ($("#LegalAreaCode").val() == "null" ? "" : $("#LegalAreaCode").val());
-            ParamStr += "&CityCode=" + ($("#LegalCityCode").val() == "null" ? "" : $("#LegalCityCode").val());
-            ParamStr += "&SettlementCode=" + ($("#LegalSettlementCode").val() == "null" ? "" : $("#LegalSettlementCode").val());
-            ParamStr += "&StreetCode=" + ($("#LegalStreetCode").val() == "null" ? "" : $("#LegalStreetCode").val());
+            ParamStr += "&PostIndex=" + ($("#LegalPostIndex").val() == "null" ? null : $("#LegalPostIndex").val());
+            ParamStr += "&RegionCode=" + ($("#LegalRegionCode").val() == "null" ? null : $("#LegalRegionCode").val());
+            ParamStr += "&AreaCode=" + ($("#LegalAreaCode").val() == "null" ? null : $("#LegalAreaCode").val());
+            ParamStr += "&CityCode=" + ($("#LegalCityCode").val() == "null" ? null : $("#LegalCityCode").val());
+            ParamStr += "&SettlementCode=" + ($("#LegalSettlementCode").val() == "null" ? null : $("#LegalSettlementCode").val());
+            ParamStr += "&StreetCode=" + ($("#LegalStreetCode").val() == "null" ? null : $("#LegalStreetCode").val());
             ParamStr += "&HouseType=" + $("#LegalHouseType").val();
             ParamStr += "&HouseNumber=" + $("#LegalHouseNumber").val();
             ParamStr += "&BuildType=" + $("#LegalBuildType").val();
@@ -844,12 +866,12 @@
     {
         if(Type == 1)
         {
-            $("#LegalPostIndex").val($("#PostIndex").val());
-            $("#LegalRegionCode").val($("#RegionCode").val());
-            $("#LegalAreaCode").val($("#AreaCode").val());
-            $("#LegalCityCode").val($("#CityCode").val());
-            $("#LegalSettlementCode").val($("#SettlementCode").val());
-            $("#LegalStreetCode").val($("#StreetCode").val());
+            $("#LegalPostIndex").val(($("#PostIndex").val() == "null" ? null : $("#PostIndex").val()));
+            $("#LegalRegionCode").val(($("#RegionCode").val() == "null" ? null : $("#RegionCode").val()));
+            $("#LegalAreaCode").val(($("#AreaCode").val() == "null" ? null : $("#AreaCode").val()));
+            $("#LegalCityCode").val(($("#CityCode").val() == "null" ?  null : $("#CityCode").val()));
+            $("#LegalSettlementCode").val(($("#SettlementCode").val() == "null" ? null : $("#SettlementCode").val()));
+            $("#LegalStreetCode").val(($("#StreetCode").val() == "null" ? null : $("#StreetCode").val()));
             $("#LegalHouseType").val($("#HouseType").val());
             $("#LegalHouseNumber").val($("#HouseNumber").val());
             $("#LegalBuildType").val($("#BuildType").val());                            
@@ -863,12 +885,12 @@
 
         if(Type == 2)
         {
-            $("#FactPostIndex").val($("#PostIndex").val());
-            $("#FactRegionCode").val($("#RegionCode").val());
-            $("#FactAreaCode").val($("#AreaCode").val());
-            $("#FactCityCode").val($("#CityCode").val());
-            $("#FactSettlementCode").val($("#SettlementCode").val());
-            $("#FactStreetCode").val($("#StreetCode").val());
+            $("#FactPostIndex").val(($("#PostIndex").val() == "null" ? null : $("#PostIndex").val()));
+            $("#FactRegionCode").val(($("#RegionCode").val() == "null" ? null : $("#RegionCode").val()));
+            $("#FactAreaCode").val(($("#AreaCode").val() == "null" ? null : $("#AreaCode").val()));
+            $("#FactCityCode").val(($("#CityCode").val() == "null" ?  null : $("#CityCode").val()));
+            $("#FactSettlementCode").val(($("#SettlementCode").val() == "null" ? null : $("#SettlementCode").val()));
+            $("#FactStreetCode").val(($("#StreetCode").val() == "null" ? null : $("#StreetCode").val()));
             $("#FactHouseType").val($("#HouseType").val());
             $("#FactHouseNumber").val($("#HouseNumber").val());
             $("#FactBuildType").val($("#BuildType").val());                            
@@ -901,27 +923,27 @@
         
         OldAddressType = Type;
 
-        var elem = document.createElement('div');
-        elem.id = "divDetailDialog";
-        var newDiv = $(elem);
+        var newElement = document.createElement('div');
+        newElement.id = "divDetailDialog";
+        var AdressDiv = $(newElement);
 
         var actionDetailDialogUrl = "@Url.Action("Address", "StaffList")";
 
         actionDetailDialogUrl += GetParamStr(Type);
       
 
-        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $(AdressDiv).text('Подождите, идет загрузка данных ...');
         $.ajaxSetup({ cache: false });
-        $(newDiv).load(actionDetailDialogUrl
+        $(AdressDiv).load(actionDetailDialogUrl
             , function (response, status, xhr) {
                 if (status == "error") {
                     var msg = "Произошла ошибка: ";
-                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                    $(AdressDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
                 }
             }
         );
 
-        $(newDiv).dialog(
+        $(AdressDiv).dialog(
         { // initialize dialog box
             autoOpen: false,
             modal: true,
@@ -953,7 +975,7 @@
         $(".ui-dialog-titlebar").hide();
         $(".ui-dialog-titlebar-close").hide();
 
-        $(newDiv).dialog("open");
+        $(AdressDiv).dialog("open");
 
     }
 </script>

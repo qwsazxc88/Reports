@@ -508,7 +508,7 @@ GO
 CREATE TABLE [dbo].[StaffDepartmentOperations](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[Name] [nvarchar](50) NULL,
+	[Name] [nvarchar](400) NULL,
 	[CreateDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentOperations] PRIMARY KEY CLUSTERED 
 (
@@ -1107,6 +1107,9 @@ ALTER TABLE [dbo].[StaffProgramReference] ADD  CONSTRAINT [DF_StaffProgramRefere
 GO
 
 ALTER TABLE [dbo].[RefAddresses] ADD  CONSTRAINT [DF_RefAddresses_IsUsed]  DEFAULT ((0)) FOR [IsUsed]
+GO
+
+ALTER TABLE [dbo].[RefAddresses] ADD  CONSTRAINT [DF_RefAddresses_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
 ALTER TABLE [dbo].[RefAddresses]  WITH CHECK ADD  CONSTRAINT [FK_RefAddresses_Creators] FOREIGN KEY([CreatorId])

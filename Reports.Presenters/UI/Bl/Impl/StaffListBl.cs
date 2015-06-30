@@ -21,6 +21,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { kladrDao = value; }
         }
 
+        protected IStaffDepartmentRequestDao staffdepartmentrequestDao;
+        public IStaffDepartmentRequestDao StaffDepartmentRequestDao
+        {
+            get { return Validate.Dependency(staffdepartmentrequestDao); }
+            set { staffdepartmentrequestDao = value; }
+        }
+
         protected IStaffDepartmentTypesDao staffdepartmenttypesDao;
         public IStaffDepartmentTypesDao StaffDepartmentTypesDao
         {
@@ -41,6 +48,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentlandmarksDao); }
             set { staffdepartmentlandmarksDao = value; }
         }
+
+        protected IStaffDepartmentOperationLinksDao staffdepartmentoperationlinksDao;
+        public IStaffDepartmentOperationLinksDao StaffDepartmentOperationLinksDao
+        {
+            get { return Validate.Dependency(staffdepartmentoperationlinksDao); }
+            set { staffdepartmentoperationlinksDao = value; }
+        }
+
+        protected IRefAddressesDao refaddressesDao;
+        public IRefAddressesDao RefAddressesDao
+        {
+            get { return Validate.Dependency(refaddressesDao); }
+            set { refaddressesDao = value; }
+        }
+
+        protected IStaffDepartmentOperationsDao staffdepartmentoperationsDao;
+        public IStaffDepartmentOperationsDao StaffDepartmentOperationsDao
+        {
+            get { return Validate.Dependency(staffdepartmentoperationsDao); }
+            set { staffdepartmentoperationsDao = value; }
+        }
+
+        protected IStaffProgramReferenceDao staffprogramreferenceDao;
+        public IStaffProgramReferenceDao StaffProgramReferenceDao
+        {
+            get { return Validate.Dependency(staffprogramreferenceDao); }
+            set { staffprogramreferenceDao = value; }
+        }
+
+        protected IStaffLandmarkTypesDao stafflandmarktypesDao;
+        public IStaffLandmarkTypesDao StaffLandmarkTypesDao
+        {
+            get { return Validate.Dependency(stafflandmarktypesDao); }
+            set { stafflandmarktypesDao = value; }
+        }
+        //
         #endregion
 
         #region Штатные расписание.
@@ -103,13 +146,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model)
         {
             //перечисляю все поля, чтобы не забыть потом, хотя многие поля не нужно заполнять при созддании новой заявки на открытие подразделения
-            //реквизиты инициатора
-            model.DepRequestInfo = GetDepRequestInfo();
             
             //Общие реквизиты
             model.Id = 0;
             //model.Id = model.RequestType == 1 ? 0 : 1;
-            model.RequestTypes = GetDepRequestTypes();
+            
             //model.DepRequestInfo.DateRequest = DateTime.Now;
             //model.DepRequestInfo.Id = 0;
             model.DateState = null;
@@ -150,7 +191,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.FactAddressId = 0;
             model.DepStatus = string.Empty;
             model.DepTypeId = 0;
-            model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
+            
             model.OpenDate = null;
             model.CloseDate = null;
             model.Reason = string.Empty;
@@ -159,30 +200,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EndIdleDate = null;
             model.IsRentPlace = false;
             model.Phone = string.Empty;
-            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(0);
+            
             model.IsBlocked = false;
             model.IsNetShop = false;
             model.IsAvailableCash = false;
-            //model.Operations = tbl2;
+            
             model.IsLegalEntity = false;
-            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(0);
+            
             model.PlanEPCount = 0;
             model.PlanSalaryFund = 0; model.Note = string.Empty;
             //временные заглушки для списков на время построения формы
 
             
-            IList<DepOperationDto> tbl2 = new List<DepOperationDto>();
-            tbl2.Add(new DepOperationDto { Id = 1, OperationId = 1, OperationName = "Операция 1", IsUsed = false});
-            tbl2.Add(new DepOperationDto { Id = 2, OperationId = 2, OperationName = "Операция 2", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 3, OperationId = 3, OperationName = "Операция 3", IsUsed = true });
-            tbl2.Add(new DepOperationDto { Id = 4, OperationId = 4, OperationName = "Операция 4", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 5, OperationId = 5, OperationName = "Операция 5", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 6, OperationId = 6, OperationName = "Операция 6", IsUsed = true });
-            tbl2.Add(new DepOperationDto { Id = 7, OperationId = 7, OperationName = "Операция 7", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 8, OperationId = 8, OperationName = "Операция 8", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 9, OperationId = 9, OperationName = "Операция 9", IsUsed = false });
-            tbl2.Add(new DepOperationDto { Id = 10, OperationId = 10, OperationName = "Операция 10", IsUsed = false });
-            model.Operations = tbl2;
+            //IList<DepOperationDto> tbl2 = new List<DepOperationDto>();
+            //tbl2.Add(new DepOperationDto { Id = 1, OperationId = 1, OperationName = "Операция 1", IsUsed = false});
+            //tbl2.Add(new DepOperationDto { Id = 2, OperationId = 2, OperationName = "Операция 2", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 3, OperationId = 3, OperationName = "Операция 3", IsUsed = true });
+            //tbl2.Add(new DepOperationDto { Id = 4, OperationId = 4, OperationName = "Операция 4", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 5, OperationId = 5, OperationName = "Операция 5", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 6, OperationId = 6, OperationName = "Операция 6", IsUsed = true });
+            //tbl2.Add(new DepOperationDto { Id = 7, OperationId = 7, OperationName = "Операция 7", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 8, OperationId = 8, OperationName = "Операция 8", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 9, OperationId = 9, OperationName = "Операция 9", IsUsed = false });
+            //tbl2.Add(new DepOperationDto { Id = 10, OperationId = 10, OperationName = "Операция 10", IsUsed = false });
+            //model.Operations = tbl2;
 
             //IList<DepLandmarkDto> tbl3 = new List<DepLandmarkDto>();
             //tbl3.Add(new DepLandmarkDto { Id = 1, LandmarkId = 1, LandmarkName = "Станция метро", Description = "" });
@@ -192,17 +233,250 @@ namespace Reports.Presenters.UI.Bl.Impl
             //tbl3.Add(new DepLandmarkDto { Id = 5, LandmarkId = 5, LandmarkName = "Район города", Description = "Городская свалка" });
             //model.DepLandmarks = tbl3;
 
+            LoadDictionaries(model);
             
             return model;
         }
         /// <summary>
+        /// Процедура сохранения заявки на создание нового подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveNewDepartmentRequest(StaffDepartmentRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffDepartmentRequest entity;// = StaffDepartmentRequestDao.Load(model.Id.HasValue ? model.Id.Value : 0);
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (model.Id == 0)
+            {
+                //поля общих реквизитов
+                entity = new StaffDepartmentRequest
+                {
+                    RequestType = model.RequestType,
+                    ItemLevel = model.ItemLevel.Value,
+                    Name = model.Name,
+                    IsBack = model.IsBack,
+                    OrderNumber = model.OrderNumber,
+                    OrderDate = model.OrderDate,
+                    IsTaxAdminAccount = model.IsTaxAdminAccount,
+                    IsEmployeAvailable = model.IsEmployeAvailable,
+                    IsPlan = model.IsPlan,
+                    IsUsed = false,
+                    IsDraft = true,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+                StaffDepartmentRequestDao.SaveAndFlush(entity);
+
+                //юридический адрес
+                if (!string.IsNullOrEmpty(model.LegalAddress))
+                {
+                    RefAddresses la = new RefAddresses();
+                    la.Address = model.LegalAddress;
+                    la.PostIndex = model.LegalPostIndex;
+                    la.RegionCode = model.LegalRegionCode;
+                    if (!string.IsNullOrEmpty(model.LegalRegionCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.LegalRegionCode).Single();
+                        la.RegionName = kd.Name + " " + kd.ShortName;
+                    }
+                    la.AreaCode = model.LegalAreaCode;
+                    if (!string.IsNullOrEmpty(model.LegalAreaCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.LegalAreaCode).Single();
+                        la.AreaName = kd.Name + " " + kd.ShortName;
+                    }
+                    la.CityCode = model.LegalCityCode;
+                    if (!string.IsNullOrEmpty(model.LegalCityCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.LegalCityCode).Single();
+                        la.CityName = kd.Name + " " + kd.ShortName;
+                    }
+                    la.SettlementCode = model.LegalSettlementCode;
+                    if (!string.IsNullOrEmpty(model.LegalSettlementCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.LegalSettlementCode).Single();
+                        la.SettlementName = kd.Name + " " + kd.ShortName;
+                    }
+                    la.StreetCode = model.LegalStreetCode;
+                    if (!string.IsNullOrEmpty(model.LegalStreetCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.LegalStreetCode).Single();
+                        la.StreetName = kd.Name + " " + kd.ShortName;
+                    }
+                    la.HouseType = model.LegalHouseType;
+                    la.HouseNumber = model.LegalHouseNumber;
+                    la.BuildType = model.LegalBuildType;
+                    la.BuildNumber = model.LegalBuildNumber;
+                    la.FlatType = model.LegalFlatType;
+                    la.FlatNumber = model.LegalFlatNumber;
+                    la.IsUsed = true;
+                    la.Creator = curUser;
+                    la.CreateDate = DateTime.Now;
+
+                    RefAddressesDao.SaveAndFlush(la);
+
+                    entity.LegalAddress = la;
+                }
+
+
+                entity.ParentDepartment = DepartmentDao.Load(model.ParentId.Value);
+                entity.DepNext = DepartmentDao.Load(model.DepNextId);                
+                
+
+                //поля ЦБ реквизитов
+                entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+                entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
+                {
+                    DepRequest = entity,
+                    ATMCountTotal = model.ATMCountTotal,
+                    ATMCashInCount = model.ATMCashInCount,
+                    ATMCount = model.ATMCount,
+                    DepCashin = DepartmentDao.Load(model.DepCachinId),
+                    DepATM = DepartmentDao.Load(model.DepATMId),
+                    CashInStartedDate = model.CashInStartedDate,
+                    ATMStartedDate = model.ATMStartedDate,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                });
+
+                //поля управленческих реквизитов
+                entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+                StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
+                dmd.DepRequest = entity;
+                dmd.NameShort = model.NameShort;
+                dmd.ReferenceReason = model.ReferenceReason;
+
+                //фактический адрес
+                if (!string.IsNullOrEmpty(model.FactAddress))
+                {
+                    RefAddresses fa = new RefAddresses();
+                    fa.Address = model.FactAddress;
+                    fa.PostIndex = model.FactPostIndex;
+                    fa.RegionCode = model.FactRegionCode;
+                    if (!string.IsNullOrEmpty(model.FactRegionCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactRegionCode).Single();
+                        fa.RegionName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.AreaCode = model.FactAreaCode;
+                    if (!string.IsNullOrEmpty(model.FactAreaCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactAreaCode).Single();
+                        fa.AreaName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.CityCode = model.FactCityCode;
+                    if (!string.IsNullOrEmpty(model.FactCityCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactCityCode).Single();
+                        fa.CityName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.SettlementCode = model.FactSettlementCode;
+                    if (!string.IsNullOrEmpty(model.FactSettlementCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactSettlementCode).Single();
+                        fa.SettlementName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.StreetCode = model.FactStreetCode;
+                    if (!string.IsNullOrEmpty(model.FactStreetCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactStreetCode).Single();
+                        fa.StreetName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.HouseType = model.FactHouseType;
+                    fa.HouseNumber = model.FactHouseNumber;
+                    fa.BuildType = model.FactBuildType;
+                    fa.BuildNumber = model.FactBuildNumber;
+                    fa.FlatType = model.FactFlatType;
+                    fa.FlatNumber = model.FactFlatNumber;
+                    fa.IsUsed = true;
+                    fa.Creator = curUser;
+                    fa.CreateDate = DateTime.Now;
+
+                    RefAddressesDao.SaveAndFlush(fa);
+
+                    dmd.FactAddress = fa;
+                }
+
+                dmd.DepStatus = model.DepStatus;
+                dmd.DepartmentType = StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.OpenDate = model.OpenDate;
+                dmd.CloseDate = model.CloseDate;
+                dmd.Reason = model.Reason;
+                dmd.OperationMode = model.OperationMode;
+                dmd.BeginIdleDate = model.BeginIdleDate;
+                dmd.EndIdleDate = model.EndIdleDate;
+                dmd.IsRentPlace = model.IsRentPlace;
+                dmd.Phone = model.Phone;
+                dmd.IsBlocked = model.IsBlocked;
+                dmd.IsNetShop = model.IsNetShop;
+                dmd.IsAvailableCash = model.IsAvailableCash;
+                dmd.IsLegalEntity = model.IsLegalEntity;
+                dmd.PlanEPCount = model.PlanEPCount;
+                dmd.PlanSalaryFund = model.PlanSalaryFund;
+                dmd.Note = model.Note;
+                dmd.Creator = curUser;
+                dmd.CreateDate = DateTime.Now;
+
+                //операции
+                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
+                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                {
+                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { DepartmentManagerDetail = dmd, DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), Creator = curUser, CreateDate = DateTime.Now });
+                }
+
+                //коды программ
+                dmd.ProgramCodes = new List<StaffProgramCodes>();
+                foreach (var item in model.ProgramCodes)
+                {
+                    dmd.ProgramCodes.Add(new StaffProgramCodes { DepartmentManagerDetail = dmd, Program = StaffProgramReferenceDao.Load(item.ProgramId), Code = item.Code, Creator = curUser, CreateDate = DateTime.Now });
+                }
+
+                //ориентиры
+                dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+                foreach (var item in model.DepLandmarks)
+                {
+                    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks { DepartmentManagerDetail = dmd, LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId), Description = item.Description, Creator = curUser, CreateDate = DateTime.Now });
+                }
+
+                entity.DepartmentManagerDetails.Add(dmd);
+
+                try
+                {
+                    StaffDepartmentRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentRequestDao.RollbackTran();
+                    RefAddressesDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+                
+                return true;
+
+            }
+            else
+            {
+            }
+            return true;
+        }
+        /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
         /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <param name="DateRequest">Дата составления заявки.</param>
         /// <returns></returns>
-        protected DepRequestInfoModel GetDepRequestInfo()
+        protected DepRequestInfoModel GetDepRequestInfo(int Id, DateTime? DateRequest)
         {
             DepRequestInfoModel model = new DepRequestInfoModel();
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            model.DateRequest = DateRequest;
+            model.Id = Id;
             model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
             model.RequestInitiator = curUser.Name + " - " + (curUser.Position != null ? curUser.Position.Name : string.Empty);
             model.DepManager5 = GetManagers(curUser, 5);
@@ -217,6 +491,20 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Загрузка словарей и справочников.
+        /// <summary>
+        /// Загрузка справочников модели для заявок к подразделениям.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffDepartmentRequestModel model)
+        {
+            //реквизиты инициатора
+            model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest);
+            model.RequestTypes = GetDepRequestTypes();
+            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.Id);
+            model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
+            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.Id);
+            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.Id);
+        }
         /// <summary>
         /// Загрузка видов заявок для подразделений.
         /// </summary>
@@ -286,7 +574,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Areas = KladrDao.GetKladr(2, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null, null, null, null);
             //model.AreaCode = string.Empty; ;
-            string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
+            //string a2 = !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null;
             model.Cityes = KladrDao.GetKladr(3, !string.IsNullOrEmpty(model.RegionCode) ? model.Regions.Where(x => x.Code == model.RegionCode).Single().RegionCode : null,
                 !string.IsNullOrEmpty(model.AreaCode) ? model.Areas.Where(x => x.Code == model.AreaCode).Single().AreaCode : null, null, null);
             //model.CityCode = "770000020000000";

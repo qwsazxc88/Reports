@@ -29,6 +29,7 @@
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentRequest_EditorUser" index="StaffDepartmentRequest_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
 
+    
     <bag name="DepartmentCBDetails" lazy="true" cascade="all-delete-orphan">
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentCBDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentCBDetails"/>
@@ -38,6 +39,6 @@
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentManagerDetails"/>
     </bag>    
-
+    
   </class>
 </hibernate-mapping>

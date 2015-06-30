@@ -41,6 +41,8 @@ UPDATE #TMP1 SET Operation = replace(Operation, ';;;', '') WHERE Operation  like
 UPDATE #TMP1 SET Operation = replace(Operation, '.;', ';') WHERE Operation  like '%.;%'
 UPDATE #TMP1 SET Operation = replace(Operation, ';;', ';') WHERE Operation  like '%;;%'
 UPDATE #TMP1 SET Operation = replace(Operation, '-О', 'О') WHERE Operation  like '%-О%'
+UPDATE #TMP1 SET Operation = replace(Operation, 'ООО ИКБ "Совкомбанк"', '++"') WHERE Operation  like '%ООО ИКБ "Совкомбанк"%'
+
 
 
 --select len('осуществление покупки, продажи, учета, хранения и иных операций с ценными бумагами, выполняющими функции платежного документа, с ценными бумагами, подтверждающими привлечение денежных средств во вклады и на банковские счета, с иными ценными бумагами, осуществление операций с которыми не требует получения специальной лицензии в соответствии с федеральными законами,')
@@ -130,13 +132,17 @@ END
 DELETE FROM #TMP WHERE [Description] = ''
 
 
+UPDATE #TMP SET [Description] = replace([Description], '++', 'ПАО "Совкомбанк"') WHERE [Description]  like '%++%'
+
 --SELECT @bb
 --SELECT SUBSTRING(@aa, 1, char(ascii('П')))
 
 --SELECT ascii('В'), ascii('П'), ascii('О')
 
---INSERT INTO StaffDepartmentOperations(Version, Name)
+INSERT INTO StaffDepartmentOperations(Version, Name)
 SELECT 1, [Description] FROM #TMP
+
+--SELECT * FROM #TMP
 
 
 drop table #TMP
