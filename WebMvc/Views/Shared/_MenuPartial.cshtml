@@ -161,8 +161,9 @@
                         {
                             <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
                         }*@
-                    if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
-                        || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    if ((dto.UserRole & UserRole.PersonnelManager) > 0
+                        || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                        || (dto.UserRole & UserRole.Estimator) > 0)
                     {
                             <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Группы доступа", "AccessGroupsList", "UserRequest")</div>
                     }

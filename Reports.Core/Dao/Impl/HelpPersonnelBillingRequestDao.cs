@@ -128,7 +128,7 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.TaxCollector:
-                case UserRole.ConsultantOutsorsingManager:
+                //case UserRole.ConsultantOutsorsingManager: DEPRECATED
                 case UserRole.Estimator:
                 case UserRole.ConsultantPersonnel:
                 case UserRole.Accountant:

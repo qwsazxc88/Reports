@@ -95,8 +95,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 if (user.IsFirstTimeLogin &&
                                     ((user.UserRole & UserRole.Employee) > 0 ||
                                      (user.UserRole & UserRole.Manager) > 0 ||
-                                     (user.UserRole & UserRole.PersonnelManager) > 0 ||
-                                     (user.UserRole & UserRole.ConsultantOutsorsingManager) > 0))
+                                     (user.UserRole & UserRole.PersonnelManager) > 0 /*||
+                                     (user.UserRole & UserRole.ConsultantOutsorsingManager) > 0*/)) //DEPRECATED Убрал роль консультант ОК
                                 {
                                     model.IsFirstTimeLogin = user.IsFirstTimeLogin;
                                     model.UserId = user.Id;
@@ -207,8 +207,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantPersonnel);
             if ((user.UserRole & UserRole.Accountant) > 0 && !roles.Contains(UserRole.Accountant))
                 roles.Add(UserRole.Accountant);
-            if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
-                roles.Add(UserRole.ConsultantOutsorsingManager);
+            /*if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
+                roles.Add(UserRole.ConsultantOutsorsingManager); DEPRECATED*/
             if ((user.UserRole & UserRole.DismissedEmployee) > 0 && !roles.Contains(UserRole.DismissedEmployee))
                 roles.Add(UserRole.DismissedEmployee);
             if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))

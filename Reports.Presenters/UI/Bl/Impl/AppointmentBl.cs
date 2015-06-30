@@ -971,6 +971,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && model.IsManagerApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
+                            entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             entity.AcceptManager = currUser;
                             //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             EmailDto dto = SendEmailForBankAccountant(entity.Creator, entity); //dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
