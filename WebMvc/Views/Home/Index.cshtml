@@ -49,7 +49,7 @@
                         }
                     </div>  
                   }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)) == 0)
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.Estimator| UserRole.PersonnelManager | UserRole.DismissedEmployee)) == 0)
                 {
                     
                     <div @if (Model.menuId == 1)

@@ -94,7 +94,7 @@ namespace Reports.Core
          /// <summary>
          /// Консультант ОК
          /// </summary>
-        ConsultantOutsorsingManager = 1048576,
+        //ConsultantOutsorsingManager = 1048576,
          /// <summary>
          /// Уволеный сотрудник
          /// </summary>
@@ -140,7 +140,7 @@ namespace Reports.Core
         public const string ConsultantOutsourcing = "131072";
         public const string ConsultantPersonnel = "262144";
         public const string ConsultantAccountant = "524288";
-        public const string ConsultantOutsorsingManager = "1048576";
+        //public const string ConsultantOutsorsingManager = "1048576";
         public const string DismissedEmployee = "2097152";
         public const string Estimator = "4194304";
         //public const string RegisterDoctor = "4";
@@ -173,7 +173,7 @@ namespace Reports.Core
                              {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
                              //{UserRole.ConsultantAccountant, ConsultantAccountant},
-                             {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
+                             //{UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager}, DEPRECATED
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},
                              {UserRole.TaxCollector, TaxCollector}

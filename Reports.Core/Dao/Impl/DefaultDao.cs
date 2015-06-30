@@ -468,8 +468,8 @@ namespace Reports.Core.Dao.Impl
                 #endregion
 
                 #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 default:
@@ -642,8 +642,8 @@ namespace Reports.Core.Dao.Impl
                 #endregion
 
                 #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 #region -Deleted (Directors, Accountants, Secretary, Findep)
