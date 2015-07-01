@@ -166,6 +166,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpBillingExecutorTaskDao); }
             set { helpBillingExecutorTaskDao = value; }
         }
+
+        protected IRequestPrintFormDao requestPrintFormDao;
+        public IRequestPrintFormDao RequestPrintFormDao
+        {
+            get { return Validate.Dependency(requestPrintFormDao); }
+            set { requestPrintFormDao = value; }
+        }
         #endregion
 
         #region Service Requests List
@@ -424,6 +431,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ServiceAttachment = serviceAttach.FileName;
                     model.DocumentsCount = serviceAttach.DocumentsCount;
                 }
+                
+                RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.ServiceRequest);
+                model.IsPrintFormAvailable = form != null;
+
                 if (entity.Consultant != null)
                     model.Worker = entity.Consultant.FullName;
                 if (entity.EndWorkDate.HasValue)
@@ -562,14 +573,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
-                    //чтобы видно было, но в работу не принималось и скан не выкачивался
-                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+
+                    //чтобы видно было кадровикам, но в работу не принималось и скан не выкачивался
+                    if (AuthenticationService.CurrentUser.Id != 10)
                     {
-                        model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
-                        model.IsBeginWorkAvailable = false;
+                        if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+                        {
+                            model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
+                            model.IsBeginWorkAvailable = false;
+                        }
+                        else
+                            model.IsNotScanView = false;
                     }
-                    else
-                        model.IsNotScanView = false;
 
                     //консультант составляет за сотрудника
                     if (entity.Creator.Id == current.Id)

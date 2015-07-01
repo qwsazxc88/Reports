@@ -907,6 +907,20 @@ namespace WebMvc.Controllers
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
         }
+        [HttpGet]
+        public FileContentResult GetPrintForm(int id, int typeId)
+        {
+            try
+            {
+                AttachmentModel model = RequestBl.GetPrintFormFileContext(id, (RequestPrintFormTypeEnum)typeId);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on GetPrintForm:", ex);
+                throw;
+            }
+        }
         #endregion
     }
 }
