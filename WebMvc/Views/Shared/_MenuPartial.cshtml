@@ -109,7 +109,7 @@
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
-                 @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 @if ((dto.UserRole & UserRole.Manager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
                  }

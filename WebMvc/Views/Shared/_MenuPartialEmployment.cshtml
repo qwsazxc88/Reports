@@ -46,7 +46,7 @@
                 <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
 
                 <div id="liDeduction" class="mainMenuItem">
-                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                @if ((dto.UserRole & UserRole.Accountant) > 0
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     @Html.ActionLink("Удержания", "Index", "Deduction")
@@ -63,16 +63,16 @@
                      || (dto.UserRole & UserRole.Archivist) > 0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id.ToString() == ConfigurationManager.AppSettings["SuperPersonnelId"]
                       )
-                {
-                    if ((dto.UserRole & UserRole.Archivist) > 0)
-                    {
+                  {
+                      if ((dto.UserRole & UserRole.Archivist) > 0)
+                      {
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
-                    }
-                    else
-                    {
+                      }
+                      else
+                      {
                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
-                    }
-                }
+                      }
+                  }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -130,10 +130,10 @@
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
-                  @if ((dto.UserRole & UserRole.Manager) > 0 )
-                 {
+                  @if ((dto.UserRole & UserRole.Manager) > 0)
+                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
-                 }
+                  }
         </div>  
         <div class="podmenu">
             <div class="menuitem" id="empInstruction">@Html.ActionLink("Инструкция", "Instruction", "Employment")</div>
