@@ -21,7 +21,7 @@ namespace WebMvc.Controllers
 {
     [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | 
-        UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+        UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.DismissedEmployee)]
     public class UserRequestController : BaseController
     {
@@ -42,7 +42,7 @@ namespace WebMvc.Controllers
          #region CreateRequest
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult CreateRequest()
          {
@@ -139,7 +139,7 @@ namespace WebMvc.Controllers
          }
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AllRequestList()
          {
@@ -157,7 +157,7 @@ namespace WebMvc.Controllers
          #region Employment
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult EmploymentList()
          {
@@ -172,7 +172,7 @@ namespace WebMvc.Controllers
          }
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult EmploymentEdit(int id, int userId)
          {
@@ -341,7 +341,7 @@ namespace WebMvc.Controllers
          #region Timesheet Correction
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult TimesheetCorrectionList()
          {
@@ -356,7 +356,7 @@ namespace WebMvc.Controllers
          }
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult TimesheetCorrectionEdit(int id, int userId)
          {
@@ -892,7 +892,7 @@ namespace WebMvc.Controllers
                      UserRole role = AuthenticationService.CurrentUser.UserRole;
                      if ((role == UserRole.Employee && model.IsApprovedByUser) ||
                          (role == UserRole.Manager && model.IsApprovedByManager) ||
-                         ((role == UserRole.PersonnelManager || role == UserRole.OutsourcingManager) && model.IsApprovedByPersonnelManager))
+                         ((role == UserRole.PersonnelManager || role == UserRole.OutsourcingManager || role == UserRole.Estimator) && model.IsApprovedByPersonnelManager))
                      {
 
                          ModelState.AddModelError(string.Empty,
@@ -966,7 +966,7 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SicklistNumber", "Номер больничного листа должен содержать 12 цифр");
              }
 
-             if (model.IsPersonnelFieldsEditable && AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
+             if (model.IsPersonnelFieldsEditable && AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager && AuthenticationService.CurrentUser.UserRole != UserRole.Estimator)
              {
                  if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears) && !(model.ExperienceIn1C == true))
                     ModelState.AddModelError("ExperienceYears", "Необходимо заполнить хотя бы одно из полей стажа.");
@@ -1036,7 +1036,7 @@ namespace WebMvc.Controllers
          #region Absence
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AbsenceList()
          {
@@ -1060,7 +1060,7 @@ namespace WebMvc.Controllers
          }
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AbsenceEdit(int id, int userId)
          {
@@ -1125,7 +1125,7 @@ namespace WebMvc.Controllers
          #region Vacation
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator|
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult VacationList()
          {
@@ -1151,7 +1151,7 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult VacationEdit(int id,int userId)
          {
@@ -1303,7 +1303,7 @@ namespace WebMvc.Controllers
          #region Child Vacation
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult ChildVacationList()
          {
@@ -1334,7 +1334,7 @@ namespace WebMvc.Controllers
 
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
-          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult ChildVacationEdit(int id, int userId)
          {
@@ -1498,7 +1498,7 @@ namespace WebMvc.Controllers
          #region AccessGroupsList
 
          [HttpGet]
-         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.PersonnelManager)]
+         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.PersonnelManager )]
          public ActionResult AccessGroupsList()
          {
              AccessGroupsListModel model = RequestBl.GetAccessGroupsListModel();

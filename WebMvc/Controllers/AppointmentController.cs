@@ -18,7 +18,7 @@ using WebMvc.Helpers;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
-    [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
+    [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
     public class AppointmentController : BaseController
     {
         //public const int MaxFileSize = 2 * 1024 * 1024;
@@ -45,14 +45,14 @@ namespace WebMvc.Controllers
         }
         #region Appointment
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
         public ActionResult Index()
         {
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
         public ActionResult AppointmentReportList()
         {
             var model = AppointmentBl.GetAppointmentReportListModel();
@@ -60,7 +60,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security)]
         public ActionResult Index(AppointmentListModel model)
         {
             if(model.ForPrint>0)
@@ -90,14 +90,14 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult CreateReportForOldAppointment(int id)
         {
             int rid= AppointmentBl.CreateReportForOldAppointment(id);
             return RedirectToAction("AppointmentReportEdit", new { id = rid });
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
         public ActionResult AppointmentReportList(AppointmentListModel model)
         {
             if (model.ForPrint > 0)
@@ -115,7 +115,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager)]
         public ActionResult AppointmentWithoutStaffEdit(int id, int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
             return View("AppointmentEdit",model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security)]
         public ActionResult AppointmentEdit(int id,int? managerId)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
@@ -133,7 +133,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
         {
 
@@ -347,7 +347,7 @@ namespace WebMvc.Controllers
          
         #region AppointmentReport
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
         public ActionResult AppointmentReportEdit(int id)
         {
             AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
@@ -361,7 +361,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AppointmentReportEdit", new RouteValueDictionary { { "id", newReportId } });
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.Trainer)]
         public ActionResult AppointmentReportEdit(AppointmentReportEditModel model)
         {
             CorrectCheckboxes(model);
@@ -472,7 +472,7 @@ namespace WebMvc.Controllers
         }*/
         #endregion
         #region Attachment
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager)]
         public FileContentResult ViewAttachment(int id)
         {
             try
