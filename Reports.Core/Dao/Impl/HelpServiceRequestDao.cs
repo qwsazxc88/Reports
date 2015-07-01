@@ -364,6 +364,11 @@ namespace Reports.Core.Dao.Impl
                         return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27) ";
                     
                 case UserRole.PersonnelManager://кадровики ОК
+                        if (userId == 10)
+                        {
+                            sqlQuery = string.Format(sqlQuery, string.Empty);
+                            return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27) ";
+                        }
                     //4, 2, 5, 7, 10, 11, 21, 26, 27 - эти услуги только для просмотра, не могут принять в работу и посмотреть прикрепленный расчетчиками скан
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27) ";
