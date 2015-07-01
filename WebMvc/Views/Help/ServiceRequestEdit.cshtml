@@ -137,6 +137,12 @@
                         if (Model.IsConsultantOutsourcingEditable)
                         {<text>&nbsp; &nbsp; &nbsp;<a class="ui-notify-close" id="DeleteServiceAttachmentId"  onclick="return deleteServiceAttachment(@Model.ServiceAttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                     }
+                    
+                    <a class="ui-notify-close" href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 7 })' @if (!Model.IsPrintFormAvailable)
+                                                                {<text>style="display:none"</text>} else {<text>style="cursor:hand"</text>}>Документ</a>
+
+                    
+                                                                
                 </td>
             </tr>
             <tr>

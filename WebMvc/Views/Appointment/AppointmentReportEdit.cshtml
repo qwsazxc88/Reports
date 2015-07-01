@@ -228,8 +228,8 @@
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
             <tr>
-                <td>Комментарий к резюме</td>
-                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" })</td>
+                <td>Комментарий к резюме от ОПиНП:</td>
+                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
             </tr>
             }
         </table>
@@ -282,6 +282,10 @@
                     } 
                 </td>
             </tr>
+            <tr>
+                <td>Комментарий к резюме от руководителя:</td>
+                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { } : (object)new { @readonly = "read-only" })</td>
+            </tr>
              <tr>
                 <td>
                     @Html.LabelFor(m => m.IsColloquyPassed):
@@ -299,8 +303,8 @@
                     @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerRejectAvailable ? (object)new { maxlength = 100, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
-        if (Model.TypeId == 1)
-        {
+                    if (Model.TypeId == 1)
+                    {
          <tr>
          <td>Результат тестирования специалистом ОПИНП</td>
          <td>@Html.DropDownListFor(m => m.TestingResult, new SelectList(Model.TestingResults, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : (object)new { disabled = "disabled" })</td>
@@ -315,7 +319,7 @@
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
             </tr>
-         }
+                    }
          @*
             <tr>
                 <td>
