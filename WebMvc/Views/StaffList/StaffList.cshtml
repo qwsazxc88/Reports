@@ -1,0 +1,282 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffListModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Штатные единицы";
+}
+
+
+@using (Html.BeginForm("StaffList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListForm" }))
+{
+    @Html.HiddenFor(m => m.DepId)
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        
+        <table id="tbl" class="grid">
+            <thead>
+                <tr>
+                    <th rowspan="2">Структура подразделений</th>
+                    <th rowspan="2">Уровень<br />подразделений</th>
+                    <th colspan="3">Подразделения</th>
+                    <th colspan="3">Должности</th>
+                    <th rowspan="2">Количество<br />штатных<br />единиц</th>
+                    <th rowspan="2">Оклад</th>
+                </tr>    
+                <tr>
+                    <th class="tdBtn">Создать</th>
+                    <th class="tdBtn">Изменить</th>
+                    <th class="tdBtn">Закрыть</th>
+                    <th class="tdBtn">Создать</th>
+                    <th class="tdBtn">Изменить</th>
+                    <th class="tdBtn">Удалить</th>
+                </tr>
+            </thead>
+            
+            @{ int i = 0; }
+            @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
+            {
+                <tr id="tr-@item.Code1C" accessKey="@item.Path">
+                    <td>
+                        <span>
+                            <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
+                        </span>
+                    </td>
+                    <td class="tdBtn">@item.ItemLevel</td>
+                    <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы"></button></td>
+                    <td class="tdBtn"></td>
+                    <td class="tdBtn"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            @{ i++; }
+        </table>             
+
+    </div>
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        setActiveMenuItem("moStaffPost");
+
+         $(document).tooltip({track: false});
+
+        ShowFlash(true);
+        ShowFlash(false);
+        $(":button").button();
+        //для эффекта раскрытой ветки
+        $(".Acollapsible").click(function (e) {
+            e.preventDefault();
+            $(this).children('span').toggleClass("collapse expand");
+        })
+    });
+
+
+    //подгружаем уровни структуры и штатные единицы
+    function GetNodes(Id) {
+        //чтобы не подгружались данные вторично
+        if($("#getnodes-" + Id).hasClass("IsLoading")){
+            var IsCollapse = false;
+            var akParent = "";
+            akParent = $("#tr-" + Id)[0].accessKey;
+            //перебираем загруженные строковые элементы страницы, чтобы скрывать/раскрывать загруженные ветки
+            $("tr").each(function(){
+                if (this.id == "tr-" + Id){
+                }
+                else{
+                    //по пути определяем нужные строки и по наличию класса показываем/скрываем их
+                    if (akParent.length != 0)
+                    {
+                        if (this.accessKey.indexOf(akParent) > -1){
+                            if (this.accessKey.substring(akParent.length) == this.id.substring(3) + "." || this.accessKey == akParent)//дочерние следующего уровня
+                            {
+                                if($("#" + this.id).hasClass("IsVisible")){ IsCollapse = true; }    //определяем что происходит в данный момент, скрытие/расркытие дочерних строк
+
+                                if (IsCollapse)
+                                {
+                                    $("#" + this.id).removeClass("IsVisible");
+                                    $("#" + this.id).hide();
+                                }
+                                else
+                                {
+                                    $("#" + this.id).addClass("IsVisible");
+                                    $("#" + this.id).show();
+                                }
+                            }
+
+                            if(IsCollapse)
+                            {
+                                $("#" + this.id).hide();
+                                $("#" + this.id).addClass("IsHide");
+                            }
+                            else
+                            {
+                                if ($("#" + this.id).hasClass("IsVisible") && $("#" + this.id).hasClass("IsHide"))
+                                {
+                                    $("#" + this.id).show();
+                                    $("#" + this.id).removeClass("IsHide");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        else{$("#getnodes-" + Id).addClass("IsLoading");}
+
+        var actionUrl="@Url.Action("StaffList", "StaffList")";
+            $("#DepId").val(Id);
+            var dataToSend = $("#StaffListForm").serialize();
+            ShowFlash(true);
+
+            jQuery.ajax({
+                url: actionUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: dataToSend,
+                success: function(result){
+                    // $liParent = $("#li-" + Id.toString());
+                    var ResultStr = "";
+                    var tblStr = "";
+
+
+                    if (result.Departments != null)
+                    {
+                        for (var i = 0; i < result.Departments.length; i++)
+                        {   
+                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible'>" +
+                                        "<td>" +
+                                        "<span>";
+                                            var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                            for (var j = 0; j < BSCount; j++)
+                                            {
+                                                tblStr += "&nbsp;";
+                                            }
+                                            tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
+                                            "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы'></button></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "</tr>";
+
+                            var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
+                            //var aa = $(ParentRowName);
+                            //console.log(aa);
+                            $("#span" + result.Departments[i].Code1C).removeClass("collapse collapsible");
+                            $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
+
+                            //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
+                            if (result.Departments[i].ItemLevel <= 7){
+                                $("#span" + result.Departments[i].Code1C).addClass("collapse collapsible");
+                                $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
+                                //console.log(ResultStr);
+                                //назначаем обработчик для раскрытия веток дерева
+                                $("#getnodes-" + result.Departments[i].Code1C).click(function (e) {
+                                    e.preventDefault();
+                                    $(this).children('span').toggleClass("collapse expand");
+                                    $(this).closest('li').children('ul').slideToggle();
+                                });
+                            }
+                        }
+                    }
+                    
+                    
+                    for (var i = 0; i < result.UserPositions.length; i++)//сотрудники, для уровней выше 7 руководство
+                    {   
+                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
+                                    "<td>" +
+                                    "<span>";
+                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                        for (var j = 0; j < BSCount; j++)
+                                        {
+                                            tblStr += "&nbsp;";
+                                        }
+                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                        "<span Id='span-tr'" + result.UserPositions[i].Id + "' >&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
+                                    "</span>" +
+                                    "</td>" + 
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "</tr>";
+
+                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                    }
+                    
+                    $(":button").button();
+
+                    ShowFlash(false);
+                },
+                error: function(){
+                    alert("При загрузке данных произошла ошибка.");
+                    ShowFlash(false);
+                }
+            });
+    }
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+
+    //переходим в заявку для подразделения
+    function GetDepartmentRequest(RequestType, DepartmentId)
+    {
+        var actionUrl="@Url.Action("StaffDepartmentRequest", "StaffList")";
+        actionUrl += "?RequestType=" + RequestType + "&DepartmentId=" + DepartmentId;
+        location.href = actionUrl;
+    }
+</script>
+

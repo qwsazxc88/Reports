@@ -285,6 +285,42 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IDepartmentArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\DepartmentArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\RefAddressesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentCBDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentLandmarksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentManagerDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRequestDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTaxDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostRequestDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffExtraChargesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffLandmarkTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffPostChargeLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramCodesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramReferenceDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IRefAddressesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentCBDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentLandmarksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentManagerDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRequestDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTaxDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostRequestDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffExtraChargesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffLandmarkTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffPostChargeLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffProgramCodesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffProgramReferenceDao.cs" />
     <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
@@ -533,6 +569,24 @@
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
+    <Compile Include="Domain\StaffList\RefAddresses.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentCBDetails.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentLandmarks.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentManagerDetails.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentOperations.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentRequest.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentTaxDetails.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentTypes.cs" />
+    <Compile Include="Domain\StaffList\StaffEstablishedPost.cs" />
+    <Compile Include="Domain\StaffList\StaffEstablishedPostArchive.cs" />
+    <Compile Include="Domain\StaffList\StaffEstablishedPostRequest.cs" />
+    <Compile Include="Domain\StaffList\StaffExtraCharges.cs" />
+    <Compile Include="Domain\StaffList\StaffLandmarkTypes.cs" />
+    <Compile Include="Domain\StaffList\StaffPostChargeLinks.cs" />
+    <Compile Include="Domain\StaffList\StaffProgramCodes.cs" />
+    <Compile Include="Domain\StaffList\StaffProgramReference.cs" />
     <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\SurchargeNote.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
@@ -628,6 +682,9 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
+    <Compile Include="Dto\StaffList\DepOperationDto.cs" />
+    <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
@@ -1190,6 +1247,24 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\DepartmentArchive.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\RefAddresses.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentCBDetails.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentLandmarks.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentManagerDetails.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationLinks.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperations.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRequest.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentTaxDetails.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPost.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostArchive.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostRequest.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffExtraCharges.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffLandmarkTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffPostChargeLinks.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffProgramCodes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffProgramReference.hbm.xml" />
     <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -1208,6 +1283,7 @@
     <EmbeddedResource Include="Domain\HelpBillingUrgency.hbm.xml" />
     <EmbeddedResource Include="Domain\Surcharge.hbm.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
