@@ -115,6 +115,7 @@ namespace Reports.Core.Dao.Impl
                 v.EditDate as EditDate,
                 -- u.Id as UserId,
                 u.Name as UserName,
+                st.Name as StaffCreator,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
                 mapDep3.Name as ManDep3Name,
@@ -130,11 +131,11 @@ namespace Reports.Core.Dao.Impl
                 ar.Name as Reason,
                 case
                         when v.ManagerDateAccept is null then N'Черновик'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование в кадровую службу'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование Специалисту УКДиУ'
                         when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
                         
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет подходящих вакансий'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не хватает вакансий. Отправлена на согласование вышестоящему руководителю.'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 then N'Нет вакансий'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount then N'Не хватает свободных вакансий. Отправлена на согласование вышестоящему руководителю.'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount>=v.VacationCount then N'Отправлена на согласование вышестоящему руководителю'
                         when v.ChiefDateAccept is not null and v.Recruter!=1 then N'Согласована вышестоящим руководителем. Поиск сотрудника не требуется.'
                         when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
@@ -147,10 +148,10 @@ namespace Reports.Core.Dao.Impl
                         v.Recruter,
                         v.FIO as CandidateFIO
                 from dbo.Appointment v
-                
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                 -- inner join dbo.Position aPos on v.PositionId = aPos.Id
                 inner join [dbo].[Users] u on u.Id = v.CreatorId
+                Left join [dbo].[Users] st on v.StaffCreatorId=st.id
                 left join dbo.Position pos on u.PositionId = pos.Id
                 inner join dbo.Department dep on v.DepartmentId = dep.Id
                 inner join dbo.Department crDep on u.DepartmentId = crDep.Id
@@ -189,7 +190,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Recruter",NHibernateUtil.Int32).
                 AddScalar("CandidateFIO",NHibernateUtil.String).
-                AddScalar("ReasonId",NHibernateUtil.Int32);
+                AddScalar("ReasonId",NHibernateUtil.Int32).
+                AddScalar("StaffCreator", NHibernateUtil.String);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -515,6 +517,9 @@ namespace Reports.Core.Dao.Impl
                 case 25:
                     orderBy = @" order by BankAccountantAcceptCount";
                     break;
+                case 26:
+                    orderBy = @" order by StaffCreator";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -692,7 +697,7 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
                                     where uC.Id = {0}
-                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel <= crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         default:
@@ -708,8 +713,9 @@ namespace Reports.Core.Dao.Impl
                 //    return sqlQueryPart;
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                 case UserRole.StaffManager:
+                case UserRole.Trainer:
                 case UserRole.Security:
                     return string.Empty;
                 default:

@@ -90,11 +90,11 @@ namespace Reports.Core
          /// <summary>
          /// Консультант Бухгалтер Банк
          /// </summary>
-        ConsultantAccountant = 524288,
+        //ConsultantAccountant = 524288,
          /// <summary>
          /// Консультант ОК
          /// </summary>
-        ConsultantOutsorsingManager = 1048576,
+        //ConsultantOutsorsingManager = 1048576,
          /// <summary>
          /// Уволеный сотрудник
          /// </summary>
@@ -104,9 +104,9 @@ namespace Reports.Core
          /// </summary>
         Estimator = 4194304,
          /// <summary>
-         /// Кадровик банк
+         /// Налоговик
          /// </summary>
-        PersonnelManagerBank = 8388608
+        TaxCollector = 8388608
     }
 
     public enum UserManualRole
@@ -140,13 +140,13 @@ namespace Reports.Core
         public const string ConsultantOutsourcing = "131072";
         public const string ConsultantPersonnel = "262144";
         public const string ConsultantAccountant = "524288";
-        public const string ConsultantOutsorsingManager = "1048576";
+        //public const string ConsultantOutsorsingManager = "1048576";
         public const string DismissedEmployee = "2097152";
         public const string Estimator = "4194304";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
-        public const string PersonnelManagerBank = "8388608";
+        public const string TaxCollector = "8388608";
 
         public static Dictionary<UserRole, string> Mapper { get; private set; }
 
@@ -172,11 +172,11 @@ namespace Reports.Core
                              {UserRole.Trainer, Trainer},
                              {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
-                             {UserRole.ConsultantAccountant, ConsultantAccountant},
-                             {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager},
+                             //{UserRole.ConsultantAccountant, ConsultantAccountant},
+                             //{UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager}, DEPRECATED
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},
-                             {UserRole.PersonnelManagerBank, PersonnelManagerBank}
+                             {UserRole.TaxCollector, TaxCollector}
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}

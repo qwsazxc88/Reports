@@ -14,7 +14,7 @@ namespace Reports.Core.Domain
         public virtual DateTime EditDate { get; set; }
         public virtual int Number { get; set; }
         public virtual int SecondNumber { get; set; }
-
+        public virtual int TestingResult { get; set; }
         public virtual Appointment Appointment { get; set; }
         public virtual string Name { get; set; }
         public virtual string Phone { get; set; }
@@ -31,6 +31,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? DateAccept { get; set; }
 
         public virtual string ResumeComment { get; set; }
+        public virtual string ResumeCommentByOPINP { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? StaffDateAccept { get; set; }
         public virtual User AcceptStaff { get; set; }

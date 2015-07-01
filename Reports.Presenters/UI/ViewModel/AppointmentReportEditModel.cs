@@ -57,6 +57,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
+        public bool IsTrainerCanSave { get; set; }
         public string ManagerFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
@@ -99,11 +100,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
         public string ResumeComment { get; set; }
+        public string ResumeCommentByOPINP { get; set; }
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
         public IList<CandidateDto> Candidates { get; set; }
-
+        public IList<IdNameDto> TestingResults { get; set; }
+        public int TestingResult { get; set; }
         /*public bool ApproveForAllAvailable { get; set; }
         public bool ApproveForAll { get; set; }*/
     }

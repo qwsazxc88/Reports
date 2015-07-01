@@ -8,8 +8,8 @@
 	<property name="EditDate" not-null="true"/>
     <property name="Number"  not-null="true"/>
     <property name="IsStoped"  not-null="false"/>
-	  
-	
+    <property name="AppointmentEducationTypeId" not-null="false"/>
+    <property name="Priority" not-null="true"/>
 	<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Appointment_Department" index="Appointment_Department"  not-null="true"/>
 	<property name="City" length="64" not-null="true"/>
     <property name="Recruter" not-null="true"/>
@@ -66,6 +66,14 @@
     <bag name="Candidates" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="AppointmentId" foreign-key="FK_EmploymentCandidate_Appointment"/>
       <one-to-many class="EmploymentCandidate"/>
+    </bag>
+    <bag name="Recruters" lazy="true" table="AppointmentRecruter" cascade="all">
+      <key column="AppointmentId" foreign-key="FK_AppointmentRecruter_Appointment"/>
+      <many-to-many class="User" column="RecruterId" foreign-key="FK_AppointmentRecruter_Recruter"/>
+    </bag>
+    <bag name="Reports" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="AppointmentId" foreign-key="FK_AppointmentReport_Appointment"/>
+      <one-to-many class="AppointmentReport"/>
     </bag>
 	</class>
 </hibernate-mapping>

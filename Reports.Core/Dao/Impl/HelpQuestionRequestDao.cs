@@ -143,7 +143,7 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForHqList;
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.ConsultantOutsorsingManager)
+            if (role == UserRole.PersonnelManager)// DEPRECATED Был консультант ОК, стал кадровик
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as L ON L.[UserID] = v.[UserID] and L.[PersonnelId] = " + userId.ToString() + " {0}";
@@ -363,17 +363,17 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart;
-                case UserRole.ConsultantOutsorsingManager:
+                /*case UserRole.ConsultantOutsorsingManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     //показываем вопросы руководителей, которые перенаправлены на эту роль
-                    return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then (case when v.ConsultantRoleId = " + (int)UserRole.ConsultantOutsorsingManager + " then 0 else 1 end) else 0 end) = 0 and r.id = " + Convert.ToString((int)UserRole.ConsultantOutsorsingManager) + " ";
+                    return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then (case when v.ConsultantRoleId = " + (int)UserRole.ConsultantOutsorsingManager + " then 0 else 1 end) else 0 end) = 0 and r.id = " + Convert.ToString((int)UserRole.ConsultantOutsorsingManager) + " "; DEPRECATED УБИРАЕМ РОЛЬ Консультант ОК*/
                 //return sqlQueryPart;
                 case UserRole.ConsultantPersonnel:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @" r.[Id] = " + (int)UserRole.ConsultantPersonnel + " ";
-                case UserRole.ConsultantAccountant:
+                case UserRole.Accountant:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @" r.[Id] = " + (int)UserRole.ConsultantAccountant + " ";
+                    return @" r.[Id] = " + (int)UserRole.Accountant + " ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.PersonnelManager:

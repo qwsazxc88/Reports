@@ -26,7 +26,12 @@ namespace Reports.Core.Dao.Impl
                                     ,dep3.Name as Dep3Name
                                     --,dep7.Name as Dep7Name
                                     ,v.Number as RequestNumber
-                                    ,u.Name as CreatorName
+                                    ,case 
+                                    when (u.RoleId & 8 >0 OR u.RoleId & 4194304 >0) then u.Name
+                                    else '' end as CreatorName
+                                    ,case 
+                                    when (u.RoleId & 8 =0 AND u.RoleId & 4194304 =0) then u.Name
+                                    else '' end as CreatorName_Bank
                                     --,case when RecipientId = -1 then N'Все расчетчики'
 	                                      --when RecipientId = -2 then N'Все консультанты ОК'
 	                                      --when uRep.Id is  null then N''
@@ -44,6 +49,7 @@ namespace Reports.Core.Dao.Impl
                                                                         else  N'' 
                                                                     end as Status
                                     ,dbo.fnGetBillingTaskExecutorNames(v.Id) as RepicientName
+                                    ,dbo.fnGetBillingTaskExecutorNames_Bank(v.Id) as RepicientName_Bank
                                     from [dbo].[HelpPersonnelBillingRequest] v
                                     inner join [dbo].[HelpBillingTitle] t on t.Id = v.TitleId
                                     inner join [dbo].[HelpBillingUrgency] un on un.Id = v.UrgencyId
@@ -70,10 +76,12 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.Int32).
                 AddScalar("CreatorName", NHibernateUtil.String).
+                AddScalar("CreatorName_Bank", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("RepicientName", NHibernateUtil.String);
+                AddScalar("RepicientName", NHibernateUtil.String).
+                AddScalar("RepicientName_Bank", NHibernateUtil.String);
         }
         public List<HelpPersonnelBillingRequestDto> GetDocuments(int userId,
                UserRole role,
@@ -119,15 +127,18 @@ namespace Reports.Core.Dao.Impl
         {
             switch (role)
             {
-                case UserRole.ConsultantOutsorsingManager:
+                case UserRole.TaxCollector:
+                //case UserRole.ConsultantOutsorsingManager: DEPRECATED
                 case UserRole.Estimator:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.Accountant:
                 case UserRole.PersonnelManager:
-                    sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT * 
+                    sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT DISTINCT * 
 												                   FROM (SELECT Id AS HelpBillingId, CreatorId as UserId FROM HelpPersonnelBillingRequest
 															             UNION ALL
 															             SELECT HelpBillingId, UserId FROM HelpBillingExecutorTasks) as tbl) as UB ON UB.HelpBillingId = v.id and UB.UserId = " + userId.ToString());
                     return string.Empty;
-                case UserRole.OutsourcingManager:
+                case UserRole.OutsourcingManager:                 
                 case UserRole.ConsultantOutsourcing:
                     return string.Empty;
                 default:
@@ -181,6 +192,12 @@ namespace Reports.Core.Dao.Impl
                 case 10:
                     orderBy = @" order by Status";
                     break;
+                case 11:
+                    orderBy = @" order by RepicientName_Bank";
+                    break;
+                case 12:
+                    orderBy = @" order by CreatorName_Bank";
+                    break; 
                 //case 11:
                 //    orderBy = @" order by Dep3Name";
                 //    break;

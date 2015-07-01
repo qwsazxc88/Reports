@@ -7,7 +7,7 @@ using System.Linq;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class EmploymentCandidateDao : DefaultDao<EmploymentCandidate>, IEmploymentCandidateDao
@@ -51,6 +51,7 @@ namespace Reports.Core.Dao.Impl
                 , managers.ProbationaryPeriod ProbationaryPeriod
                 , schedule.Name Schedule
                 , generalInfo.DateOfBirth DateOfBirth
+                , dis.EndDate as DismissalDate
 				, case when generalInfo.DisabilityCertificateNumber is null then N''
 					else N'Справка '
 						+ generalInfo.DisabilityCertificateSeries
@@ -107,13 +108,20 @@ namespace Reports.Core.Dao.Impl
                 ,personnelManagers.CompleteDate as CompleteDate
                 ,case when K.cnt is null or (isnull(K.cnt, 0) <> 0)  then N'' else N'Документы подписаны' end as DocStatus
                 ,candidate.AppointmentReportId
-                ,cast(L.Number as nvarchar(10)) + N'/' + cast(M.Number as nvarchar(10)) + N'_' + cast(M.SecondNumber as nvarchar(10)) as AppointmentReportNumber
-                ,candidate.AppointmentId
-                ,L.Number as AppointmentNumber
+                ,cast(L2.Number as nvarchar(10)) + N'/'  + cast(M.SecondNumber as nvarchar(10)) as AppointmentReportNumber
+                ,case
+					 when candidate.AppointmentId is null then L2.Id
+					 else candidate.AppointmentId 
+				 end as AppointmentId
+                ,case
+					 when L.Number is null then L2.Number
+					 else L.Number
+				end as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
+                left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
                 left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
@@ -137,6 +145,7 @@ namespace Reports.Core.Dao.Impl
 										GROUP BY B.CandidateId) as B ON B.CandidateId = A.CandidateId) as K ON K.CandidateId = candidate.Id
                 LEFT JOIN Appointment as L ON L.Id = candidate.AppointmentId
                 LEFT JOIN AppointmentReport as M ON M.Id = candidate.AppointmentReportId
+                LEFT JOIN Appointment as L2 ON M.AppointmentId=L2.Id
                 LEFT JOIN (SELECT B.AppointmentId, C.BankAccountantAcceptCount, count(B.AppointmentId) as CandidateCount,
 								sum(case when A.Status = 8 then 1 else 0 end) as CandidateComplete,
 								sum(case when A.Status = 9 then 1 else 0 end) as CandidateReject,
@@ -149,7 +158,10 @@ namespace Reports.Core.Dao.Impl
             ";
 
         #endregion
-
+        public IList<EmploymentCandidate> GetSomeCandidate()
+        {
+            return Session.Query<EmploymentCandidate>().Where(x => x.Appointment.Creator.Name.Contains("Поляк")).ToList();
+        }
         public IList<CandidateDto> GetCandidates(int currentId,
                 UserRole role,
                 int departmentId,
@@ -311,11 +323,14 @@ namespace Reports.Core.Dao.Impl
         {
             if (beginDate.HasValue)
             {
-                whereString = string.Format(@"{0} candidate.QuestionnaireDate >= :beginDate",
+                whereString = string.Format(@"{0} cast(candidate.QuestionnaireDate as date) >= :beginDate",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
-            whereString = string.Format(@"{0} candidate.QuestionnaireDate <= :endDate",
-                (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            if (endDate.HasValue)
+            {
+                whereString = string.Format(@"{0} cast(candidate.QuestionnaireDate as date) <= :endDate",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
 
 
             if (CompleteDate.HasValue)
@@ -451,6 +466,9 @@ namespace Reports.Core.Dao.Impl
                 case 20:
                     orderBy = "AppointmentNumber";
                     break;
+                case 21:
+                    orderBy = "DismissalDate";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -510,6 +528,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AppointmentNumber", NHibernateUtil.Int32)
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 .AddScalar("IsBlocked", NHibernateUtil.Boolean)
+                .AddScalar("DismissalDate", NHibernateUtil.DateTime)
                 ;
 
             return query;
@@ -522,7 +541,10 @@ namespace Reports.Core.Dao.Impl
             {
                 query.SetDateTime("beginDate", beginDate.Value);
             }
-            query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+            if (endDate.HasValue)
+            {
+                query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+            }
 
             if (CompleteDate.HasValue)
                 query.SetDateTime("CompleteDate", CompleteDate.Value);
