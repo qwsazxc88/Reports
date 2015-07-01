@@ -280,10 +280,14 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\TreeGridAjaxModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\TreeViewAjaxModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\TreeViewAjaxModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\ViewModel\StaffList\TreeViewModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UI\ViewModel\SurchargeNoteEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteListModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\TreeViewModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeViewModel.cs" />
     <Compile Include="UI\ViewModel\TemplatesListModel.cs" />
     <Compile Include="UI\ViewModel\TerraGraphicsSetShortNameModel.cs" />
