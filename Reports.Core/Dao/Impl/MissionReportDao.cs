@@ -261,6 +261,7 @@ namespace Reports.Core.Dao.Impl
 
                 case UserRole.Accountant:
                     return string.Empty;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 case UserRole.Findep:

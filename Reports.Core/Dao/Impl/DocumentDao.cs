@@ -77,6 +77,7 @@ namespace Reports.Core.Dao.Impl
                     }
 
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     approvedString = @" case when OutsourcingManagerDateAccept is null then 0 else 1 end as IsApproved ";
                     whereString += @" BudgetManagerDateAccept is not null ";

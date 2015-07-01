@@ -559,6 +559,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 case UserRole.ConsultantPersonnel:
@@ -1092,6 +1093,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
@@ -1727,6 +1729,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantPersonnel:
                 case UserRole.PersonnelManager:
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Security:
                     break;
@@ -1995,6 +1998,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     entity.IsEducationExists = new bool?();
                 break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 break;
                 default:

@@ -144,6 +144,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                    || (dto.UserRole & UserRole.Accountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                   || (dto.UserRole & UserRole.Estimator) > 0
                    || (dto.UserRole & UserRole.PersonnelManager) > 0 
                    //|| (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0 //DEPRECATED Убрали роль консультант ОК, пустили кадровиков
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;

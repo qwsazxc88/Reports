@@ -167,7 +167,7 @@
                     <th>
                         <div id="sort12"  style="min-width:110px"><a href="#"  onclick = "SortChanged(12);">Перенаправлено<br/> роли</a></div>
                     </th>
-                    @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                    @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole> { UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager, UserRole.Estimator }))
                     {
                     <th>
                         <div id="sort15" ><a href="#" onclick="SortChanged(15);">База</a></div>
@@ -231,7 +231,7 @@
                                     <td>@if(doc.IsManagerQuestion){<text>Да</text>}</td>
                                 }
                                 <td>@doc.RedirectRole</td>
-                                @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                                @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole> { UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager, UserRole.Estimator }))
                                 {
                                 <td>
                                     @Html.CheckBox("Base", doc.Base, new { disabled = "disabled" })

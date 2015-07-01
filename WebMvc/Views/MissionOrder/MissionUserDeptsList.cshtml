@@ -138,7 +138,7 @@
                     <th>
                         <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Сумма - расходы <br/>фактические</a></div>
                     </th>
-                    @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                    @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager || userdto.UserRole == UserRole.Estimator)
                     {
                     <th>
                         <div id="sort7" style="min-width:30px"><a href="#"  onclick = "SortChanged(7);">Состояние<br />выгрузки<br />авансового<br />отчета</a></div>
@@ -167,7 +167,7 @@
                             <td>@RequestBl.FormatSum(doc.DiffSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
-                            @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                            @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager || userdto.UserRole == UserRole.Estimator)
                             {
                             <td>@doc.Status</td>
                             }
