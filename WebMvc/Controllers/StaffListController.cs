@@ -186,7 +186,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult TreeViewAjax(string DepId)
         {
-            TreeViewAjaxModel model = new TreeViewAjaxModel(); 
+            TreeViewAjaxModel model = new TreeViewAjaxModel();
             model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
             return Json(model.Departments);
         }
@@ -210,46 +210,32 @@ namespace WebMvc.Controllers
         {
             var jsonSerializer = new JavaScriptSerializer();
             TreeGridAjaxModel model = StaffListBl.GetDepartmentStructure(DepId);
-            
+
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
         /// <summary>
-        /// Начальная загрузка формы для построения адресов.
+        /// Загрузка страницы структуры подразделений с привязкой к точкам Фиграда.
         /// </summary>
-        /// <param name="Id">Id адреса</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult Address(int? Id)
+        public ActionResult DepStructureFingradPoints()
         {
-            AddressModel model = StaffListBl.GetAddress(Id.HasValue ? Id.Value : 0);
-            return PartialView(model);
-        }
-        /// <summary>
-        /// Сохраняем составленный адрес.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult Address(AddressModel model)
-        {
-            model = StaffListBl.GetAddress(1);
+            DepStructureFingradPointsModel model = StaffListBl.GetDepartmentStructureWithFingradPoins("9900424");
             return View(model);
         }
         /// <summary>
-        /// 
+        /// Загрузка структуры подразделений с привязкой к точкам Фиграда по коду родительского подразделения.
         /// </summary>
-        /// <param name="Code"></param>
-        /// <param name="AddressType"></param>
-        /// <param name="RegionCode"></param>
-        /// <param name="AreaCode"></param>
-        /// <param name="CityCode"></param>
-        /// <param name="SettlementCode"></param>
+        /// <param name="DepId">Код подразделения</param>
         /// <returns></returns>
-        [HttpGet]
-        public ContentResult GetKladr(string Code, int AddressType)
+        [HttpPost]
+        public ActionResult DepStructureFingradPoints(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
+            DepStructureFingradPointsModel model = StaffListBl.GetDepartmentStructureWithFingradPoins(DepId);
+
+            string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
         #endregion
