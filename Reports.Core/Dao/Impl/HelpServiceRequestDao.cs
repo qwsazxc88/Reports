@@ -364,7 +364,7 @@ namespace Reports.Core.Dao.Impl
                         return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27) ";
                     
                 case UserRole.PersonnelManager://кадровики ОК
-                        if (currentUser.Id == 10)
+                        if (userId == 10)
                         {
                             sqlQuery = string.Format(sqlQuery, string.Empty);
                             return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27) ";
