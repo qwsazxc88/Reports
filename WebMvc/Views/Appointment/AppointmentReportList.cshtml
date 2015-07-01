@@ -4,7 +4,7 @@
 @model Reports.Presenters.UI.ViewModel.AppointmentListModel
 @{
     Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
-    ViewBag.Title = "Реестр заявок";
+    ViewBag.Title = "Реестр отчётов";
 }
 @using (Html.BeginForm())
 {
@@ -204,10 +204,10 @@
                         <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
                     </th>
                     <th>
-                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус<br />отчёта</a></div>
                     </th>
                     <th>
-                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения</a></div>
+                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения<br />в приёме</a></div>
                     </th>
                     <th>
                         <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
@@ -261,7 +261,7 @@
                             <td>@doc.EducationStatus</td>
                             <td>@{if (doc.EmploymentStatus != null)
                                   {
-                                      var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());
+                                      var es = Model.EmploymentStatuses.Where(x => x.Value == ((int)doc.EmploymentStatus).ToString());
                                       if (es != null && es.Any())
                                       {
                                     <text>@es.First().Text</text>;

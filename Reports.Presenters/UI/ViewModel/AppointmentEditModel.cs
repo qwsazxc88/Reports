@@ -61,7 +61,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
-
+        public IList<IdNameDto> Reports { get; set; }
         [Display(Name = "Доп. Предложения/компенсации")]
         public string Compensation { get; set; }
 
@@ -128,6 +128,7 @@ namespace Reports.Presenters.UI.ViewModel
         public CommentsModel CommentsModel { get; set; }
 
         public int StaffCreatorId { get; set; }
+        public string StaffCreatorName { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
         public IList<IdNameDto> AppointmentTypes { get; set; }

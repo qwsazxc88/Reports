@@ -22,7 +22,7 @@ LEFT JOIN dbo.Department as dep4 ON C.[Path] like dep4.[Path] + N'%' and dep4.It
 LEFT JOIN (SELECT Id, Manager FROM dbo.fnGetManagerFromDepartment(6)) as User6 ON User6.Id = dep6.Id
 LEFT JOIN (SELECT Id, Manager FROM dbo.fnGetManagerFromDepartment(5)) as User5 ON User5.Id = dep5.Id
 LEFT JOIN (SELECT Id, Manager FROM dbo.fnGetManagerFromDepartment(4)) as User4 ON User4.Id = dep4.Id
-WHERE (A.RoleId = 2 or EXISTS(SELECT Id FROM dbo.fnGetRolesFromBiteCode(A.RoleId) WHERE Id = 2)) and A.IsActive = 1 
+WHERE (A.RoleId = 2 or EXISTS(SELECT Id FROM dbo.fnGetRolesFromBiteCode(A.RoleId) WHERE Id = 4)) and A.IsActive = 1 
 
 
 GO

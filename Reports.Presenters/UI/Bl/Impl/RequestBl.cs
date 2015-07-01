@@ -570,7 +570,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
                            //new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
-                           new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
+                           //new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
                            //new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля")
                           // new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
@@ -828,8 +828,9 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               0,
               model.StatusId,
+              null, null,
               model.BeginDate,
-              model.EndDate,
+              model.EndDate,              
               model.UserName,
               model.SortBy, model.SortDescending, model.Number).ToList().ConvertAll(x => new AllRequestDto
               {
@@ -1880,6 +1881,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //0,
                 model.BeginDate,
                 model.EndDate,
+                model.BeginCreateDate,
+                model.EndCreateDate,
                 model.UserName,
                 model.SortBy,
                 model.SortDescending,

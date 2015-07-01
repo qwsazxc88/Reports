@@ -71,7 +71,7 @@
                         </tr>
                         <tr>
                                 <td>
-                                    @Html.LabelFor(m => m.UserName):
+                                    ФИО заказчика:
                                 </td>
                                 <td>
                                     @Html.TextBoxFor(model => model.UserName)
@@ -100,12 +100,17 @@
      <tr>
         <td colspan="2"> <div class="action-wrap" style="min-height:20px" >
         
-        @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
+        @if (Model.IsAddAvailable )
         {                               
             <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
             <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
             <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
             
+        }
+        @if (Model.IsAddForStaffAvailable)
+        {
+            <input type="button" value="Создать заявку на поиск кандидата" onclick="return createAppointmentForStaff();"/>  
+            <input type="button" value="Согласование кандидата от Руководителя" onclick="return createAppointmentWithoutStaffForStaff();" />
         }
         
         <input type="submit" value="Печать" style="float: right; margin-right:10px;" onclick="$('#ForPrint').val(1);"/>
@@ -130,6 +135,9 @@
                     </th>
                     <th>
                        <div id="sort22" ><a href="#" onclick = "SortChanged(22);"> Дата<br />создания</a></div>
+                    </th>
+                    <th>
+                        <div id="sort26" ><a href="#" onclick = "SortChanged(26);">Автор<br />заявки</a></div>
                     </th>
                     <th>
                         <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
@@ -174,7 +182,7 @@
                         <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
                     </th>
                     <th>
-                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус<br />заявки</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -192,6 +200,7 @@
                             </td>
                             <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
+                            <td>@doc.StaffCreator</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
                             <td>@doc.ManDep3Name</td>
@@ -269,7 +278,10 @@
     function createAppointmentForStaff() {
             createSelectManagerDialog(actionSelectManagerDialogUrl);
     }
-    function createSelectManagerDialog(url/*,params*/) {
+    function createAppointmentWithoutStaffForStaff() {
+            createSelectManagerDialog(actionSelectManagerDialogUrl,1);
+    }
+    function createSelectManagerDialog(url/*,params*/,type) {
             var elem = document.createElement('div');
             elem.id = "divSelectManagerDialog";
             var newDiv = $(elem);
@@ -307,6 +319,11 @@
                     "Создать заявку": function () {
                         var managerId = $("#ManagerId").val();
                         $(this).dialog("close");
+                        if(type==1)
+                        {
+                            window.location.href = '@Url.Action("AppointmentWithoutStaffEdit", "Appointment")?id=0&managerId=' + managerId;
+                        }
+                        else
                         window.location.href = '@Url.Action("AppointmentEdit", "Appointment")?id=0&managerId=' + managerId;
                     },
                     "Отмена": function () {
