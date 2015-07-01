@@ -197,6 +197,7 @@
         MissionOrder = 4,
         MissionCertificate = 5,
         ChildVacation = 6,
+        ServiceRequest = 7  //инфоуслуги
     }
     public enum DeductionTypeEnum
     {
