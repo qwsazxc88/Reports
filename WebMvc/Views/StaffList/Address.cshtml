@@ -98,7 +98,7 @@
             </td>
         </tr>
     </table>
-    <div id="DivIndicator" style="display:none;">
+    <div id="KladrDivIndicator" style="display:none;">
         <table>
             <tr>
                 <td><span id="LoadingIndicator2"></span></td>
@@ -176,50 +176,51 @@
         }
 
         if($("#RegionCode").val() != null && $("#RegionCode").val() != ""){
-            StrAddress += $("#RegionCode option:selected").text().trim();
+            StrAddress += $("#RegionCode option:selected").text();
         }
 
         
         if($("#AreaCode").val() != null && $("#AreaCode").val() != "null"){
-            StrAddress += ", " + $("#AreaCode option:selected").text().trim();
+            StrAddress += ", " + $("#AreaCode option:selected").text();
         }
 
         if($("#CityCode").val() != null && $("#CityCode").val() != "null"){
-            StrAddress += ", " + $("#CityCode option:selected").text().trim();
+            StrAddress += ", " + $("#CityCode option:selected").text();
         }
 
         if($("#SettlementCode").val() != null && $("#SettlementCode").val() != "null"){
-            StrAddress += ", " + $("#SettlementCode option:selected").text().trim();
+            StrAddress += ", " + $("#SettlementCode option:selected").text();
         }
 
 
         if($("#StreetCode").val() != null && $("#StreetCode").val() != "null"){
-            StrAddress += ", " + $("#StreetCode option:selected").text().trim();
+            StrAddress += ", " + $("#StreetCode option:selected").text();
         }
 
             
         if($("#HouseNumber").val() != ""){
-            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#HouseType option:selected").text().trim();
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#HouseType option:selected").text();
             StrAddress += (StrAddress == "" ? "" :  " №") + $("#HouseNumber").val();
         }
 
 
         if($("#BuildNumber").val() != ""){
-            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#BuildType option:selected").text().trim();
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#BuildType option:selected").text();
             StrAddress += (StrAddress == "" ? "" :  " ") + $("#BuildNumber").val();
         }        
 
 
         if($("#FlatNumber").val() != ""){
-            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#FlatType option:selected").text().trim();
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#FlatType option:selected").text();
             StrAddress += (StrAddress == "" ? "" :  " ") + $("#FlatNumber").val();    
         }
 
         $("#Address").val(StrAddress);
+
     }
 
     function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
-        ShowFlash(true);
+        //ShowKladrFlash(true);
         $("#Code").val(code);
         $("#AddressType").val(AddressType);
         var url = actionUrl;
@@ -233,10 +234,10 @@
                 data: dataToSend,
                 success: function(result){
                     setValuesToDropdown(controlName, result, AddressType);
-                    ShowFlash(false);
+                    //ShowKladrFlash(false);
                 },
                 error: function(){
-                    ShowFlash(false);
+                    //ShowKladrFlash(false);
                     alert("При загрузке данных произошла ошибка.");
                     console.log(result.Error);
                 }
@@ -268,29 +269,21 @@
         CreateAddress();
     }
 
-    //чистим комбобоксы
-    function setEmptyToDropdown(controlName, AddressType) {
-        var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
-        optionsValues += '<option value=""></option>';
-        optionsValues += '</select>';
-        var options = $('#' + controlName);
-        options.replaceWith(optionsValues);
-    }
 
-    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    function ShowKladrFlash(IsShow)  //показываем индикатор загрузки
     {
-    //return;
+        //пока отключил, так как запросы отрабатываются с разной скоростью и заставка не всегда корректно закрывается
         if (!IsShow)
         {
             $("#LoadingIndicator2").removeClass("loading2");
-            $("#DivIndicator").dialog("close");
-            $("#DivIndicator").hide();
+            $("#KladrDivIndicator").hide();
+            $("#KladrDivIndicator").dialog("close");
         }
         else
         {
             $("#LoadingIndicator2").addClass("loading2");
-            $("#DivIndicator").show();
-            $("#DivIndicator").dialog(
+            $("#KladrDivIndicator").show();
+            $("#KladrDivIndicator").dialog(
             { // initialize dialog box
                 autoOpen: true,
                 modal: true,
@@ -311,54 +304,4 @@
         }
     }
 
-
-//    function CreateAddressDialog() {
-//        var elem = document.createElement('div');
-//        elem.id = "divDetailDialog";
-//        var newDiv = $(elem);
-
-//        var actionDetailDialogUrl = "@Url.Action("Address", "StaffList", new { id = 1 })";
-
-//        var title = "Адрес";
-//        
-
-//        $(newDiv).text('Подождите, идет загрузка данных ...');
-//        $.ajaxSetup({ cache: false });
-//        $(newDiv).load(actionDetailDialogUrl
-//            , function (response, status, xhr) {
-//                if (status == "error") {
-//                    var msg = "Произошла ошибка: ";
-//                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
-//                }
-//            }
-//        );
-//        $(newDiv).dialog(
-//        { // initialize dialog box
-//            autoOpen: false,
-//            modal: true,
-//            title: title,
-//            // fix IE6  
-//            bgiframe: true,
-//            draggable: false,
-//            resizable: false,
-//            width: 700,
-//            height: 480,
-//            close: function (event, ui) {
-//                $(this).dialog("destroy").remove();
-//            },
-//            buttons:
-//            {
-//                "OK": function () {
-//                    $(this).dialog("close");
-//                }
-//                ,
-//                "Отмена": function () {
-//                    $(this).dialog("close");
-//                }
-//            }
-//        });
-
-//        $(newDiv).dialog("open");
-
-//    }
 </script>

@@ -10,6 +10,38 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IStaffListBl : IBaseBl
     {
+        #region Штатные расписание.
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения и штатные единицы
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        StaffListModel GetDepartmentStructureWithStaffPost(string DepId);
+
+        #region Заявки для подразделений
+        /// <summary>
+        /// Заполняем модель заявки на создание подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <returns></returns>
+        StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model);
+        /// <summary>
+        /// Процедура сохранения заявки на создание нового подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool SaveNewDepartmentRequest(StaffDepartmentRequestModel model, out string error);
+        /// <summary>
+        /// Загрузка справочников модели для заявок к подразделениям.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        void LoadDictionaries(StaffDepartmentRequestModel model);
+        #endregion
+        
+        #endregion
+
+        #region Для теста
         TreeViewModel GetDepartmentList();
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения
@@ -21,9 +53,9 @@ namespace Reports.Presenters.UI.Bl
         /// <summary>
         /// Загружаем модель для составления Российских адресов.
         /// </summary>
-        /// <param name="Id">Id адреса</param>
+        /// <param name="model">Модель формы</param>
         /// <returns></returns>
-        AddressModel GetAddress(int Id);
+        AddressModel GetAddress(AddressModel model);
         /// <summary>
         /// Загружаем список объектов частей адресов.
         /// </summary>
@@ -35,5 +67,12 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
         KladrWithPostIndex GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId);
+        #endregion
     }
 }

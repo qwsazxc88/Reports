@@ -9,6 +9,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 {
     public class AddressModel
     {
+        [Display(Name = "Id адреса")]
+        public int? Id { get; set; }
+
         [Display(Name = "Регион")]
         public string RegionCode { get; set; }
         public IList<KladrDto> Regions { get; set; }
