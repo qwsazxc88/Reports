@@ -28,6 +28,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { staffdepartmentrequestDao = value; }
         }
 
+        protected IStaffDepartmentCBDetailsDao staffdepartmentCBdetailsDao;
+        public IStaffDepartmentCBDetailsDao StaffDepartmentCBDetailsDao
+        {
+            get { return Validate.Dependency(staffdepartmentCBdetailsDao); }
+            set { staffdepartmentCBdetailsDao = value; }
+        }
+        
         protected IStaffDepartmentTypesDao staffdepartmenttypesDao;
         public IStaffDepartmentTypesDao StaffDepartmentTypesDao
         {
@@ -268,7 +275,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
-                StaffDepartmentRequestDao.SaveAndFlush(entity);
+                //StaffDepartmentRequestDao.SaveAndFlush(entity);
 
                 //юридический адрес
                 if (!string.IsNullOrEmpty(model.LegalAddress))
@@ -322,11 +329,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
 
-                entity.ParentDepartment = DepartmentDao.Load(model.ParentId.Value);
-                entity.DepNext = DepartmentDao.Load(model.DepNextId);                
+                entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
+                entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);                
                 
 
                 //поля ЦБ реквизитов
+                //StaffDepartmentCBDetails cbd = new StaffDepartmentCBDetails
+                //{
+                //    DepRequest = entity,
+                //    ATMCountTotal = model.ATMCountTotal,
+                //    ATMCashInCount = model.ATMCashInCount,
+                //    ATMCount = model.ATMCount,
+                //    DepCashin = DepartmentDao.Load(model.DepCachinId),
+                //    DepATM = DepartmentDao.Load(model.DepATMId),
+                //    CashInStartedDate = model.CashInStartedDate,
+                //    ATMStartedDate = model.ATMStartedDate,
+                //    Creator = curUser,
+                //    CreateDate = DateTime.Now
+                //};
+                //StaffDepartmentCBDetailsDao.SaveAndFlush(cbd);
+
                 entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
@@ -334,13 +356,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ATMCountTotal = model.ATMCountTotal,
                     ATMCashInCount = model.ATMCashInCount,
                     ATMCount = model.ATMCount,
-                    DepCashin = DepartmentDao.Load(model.DepCachinId),
-                    DepATM = DepartmentDao.Load(model.DepATMId),
+                    DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId),
+                    DepATM = model.DepATMId == 0 ? null : DepartmentDao.Load(model.DepATMId),
                     CashInStartedDate = model.CashInStartedDate,
                     ATMStartedDate = model.ATMStartedDate,
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 });
+                
 
                 //поля управленческих реквизитов
                 entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
@@ -401,7 +424,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 dmd.DepStatus = model.DepStatus;
-                dmd.DepartmentType = StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.Reason = model.Reason;
@@ -424,21 +447,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
                 foreach (var item in model.Operations.Where(x => x.IsUsed == true))
                 {
-                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { DepartmentManagerDetail = dmd, DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), Creator = curUser, CreateDate = DateTime.Now });
+                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { 
+                        DepartmentManagerDetail = dmd, 
+                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), 
+                        Creator = curUser, 
+                        CreateDate = DateTime.Now 
+                    });
                 }
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
-                foreach (var item in model.ProgramCodes)
+                foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
                 {
-                    dmd.ProgramCodes.Add(new StaffProgramCodes { DepartmentManagerDetail = dmd, Program = StaffProgramReferenceDao.Load(item.ProgramId), Code = item.Code, Creator = curUser, CreateDate = DateTime.Now });
+                    dmd.ProgramCodes.Add(new StaffProgramCodes { 
+                        DepartmentManagerDetail = dmd, 
+                        Program = StaffProgramReferenceDao.Load(item.ProgramId), 
+                        Code = item.Code, 
+                        Creator = curUser, 
+                        CreateDate = DateTime.Now 
+                    });
                 }
 
                 //ориентиры
                 dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
-                foreach (var item in model.DepLandmarks)
+                foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
                 {
-                    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks { DepartmentManagerDetail = dmd, LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId), Description = item.Description, Creator = curUser, CreateDate = DateTime.Now });
+                    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks { 
+                        DepartmentManagerDetail = dmd, 
+                        LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId), 
+                        Description = item.Description, 
+                        Creator = curUser, 
+                        CreateDate = DateTime.Now 
+                    });
                 }
 
                 entity.DepartmentManagerDetails.Add(dmd);
