@@ -375,6 +375,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @" r.[Id] = " + (int)UserRole.Accountant + " ";
                 case UserRole.OutsourcingManager:
+                case UserRole.Estimator:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.PersonnelManager:
                     //sqlQuery = string.Format(sqlQuery, string.Empty);

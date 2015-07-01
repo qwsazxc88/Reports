@@ -21,7 +21,7 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
     {
@@ -58,7 +58,7 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
             UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.PersonnelManager)]
         public ActionResult Index()
         {
@@ -195,7 +195,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
            UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.PersonnelManager)]
         public ActionResult MissionOrderEdit(int id,int? userId)
         {
@@ -544,7 +544,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Findep | UserRole.Archivist)]
         public ActionResult MissionReportsList()
         {
             var model = RequestBl.GetMissionReportsListModel();
@@ -609,7 +609,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Findep | UserRole.Archivist)]
         [HttpGet]
         public ActionResult MissionReportEdit(int id/*, int? userId*/)
         {
@@ -720,7 +720,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AdditionalMissionOrderEdit", new RouteValueDictionary { { "id", additionalOrderId } });
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
           UserRole.Director | UserRole.Findep)]
         public ActionResult AdditionalMissionOrderEdit(int id)
         {
@@ -760,15 +760,15 @@ namespace WebMvc.Controllers
 
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director )]
         public ActionResult AnalyticalStatement(AnalyticalStatementModel model)
         {
             var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
             return PartialView("AnalyticalStatementsPartial", Docs);
         }
-        [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [HttpGet] 
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director)]
         public ActionResult AnalyticalStatementDetails(int id)
         {
@@ -776,7 +776,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director)]
         public ActionResult AnalyticalStatement()
         {
@@ -1113,7 +1113,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
@@ -1199,7 +1199,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GetMissionUserDeptsListPrintForm(int departmentId, int statusId, DateTime? beginDate,
             DateTime? endDate, string userName, int sortBy, bool? sortDescending)
         {
@@ -1282,7 +1282,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Manager | UserRole.Employee)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.Employee)]
         public ActionResult MissionUserCredsList()
         {
             var userid = Request.QueryString["UserId"];
@@ -1320,7 +1320,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GetMissionUserCredsListPrintForm(int departmentId, int statusId, DateTime? beginDate,
             DateTime? endDate, string userName, int sortBy, bool? sortDescending)
         {
@@ -1337,7 +1337,7 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Findep)]
         public ActionResult MissionPurchaseBookRecordsList()
         {
             var model = RequestBl.GetMissionPurchaseBookRecordsListModel();
@@ -1380,7 +1380,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Findep)]
         public ActionResult MissionPurchaseBookDocList()
         {
             var model = RequestBl.GetMissionPurchaseBookDocsListModel();
@@ -1425,7 +1425,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Findep)]
         public ActionResult EditMissionPbDocument(int id)
         {
             var model = RequestBl.GetEditMissionPbDocumentModel(id);

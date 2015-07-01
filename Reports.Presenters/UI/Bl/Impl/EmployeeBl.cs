@@ -264,6 +264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsApprovedByPersonnelManagerEnable = !model.IsApprovedByPersonnelManager;
                     model.IsSaveAvailable = !model.IsApprovedByPersonnelManager;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     //if (owner.OutsourcingManager.Id != CurrentUser.Id)
                     //    throw new ArgumentException("Доступ к документу запрещен.");
@@ -382,7 +383,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         doc = DocumentDao.MergeAndFlush(doc);
                     }
                 }
-                else if ((user.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                else if ((user.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (user.UserRole & UserRole.Estimator) == UserRole.Estimator)
                 {
                     //if (user.Id != owner.OutsourcingManager.Id)
                     //    throw new ArgumentException("Доступ к документу запрещен.");
@@ -573,8 +574,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                IUser user = AuthenticationService.CurrentUser;           
-                if((user.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+                IUser user = AuthenticationService.CurrentUser;
+                if ((user.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager || (user.UserRole & UserRole.Estimator) != UserRole.Estimator)
                 {
                     model.Error = "Действие недоступно для данной роли.";
                     return false;
@@ -624,7 +625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                if ((managerRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                if ((managerRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (managerRole & UserRole.Estimator) == UserRole.Estimator)
                     model.IsUserNameVisible = true;
                 model.Roles = new List<IdNameDto>();
             }
@@ -1349,7 +1350,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetGraphicsInfo(model);
             UserRole role = CurrentUser.UserRole;
             model.IsSetShortNamesAvailable = ((role & UserRole.Manager) > 0) ||
-                                             ((role & UserRole.OutsourcingManager) > 0);
+                                             (role & UserRole.OutsourcingManager) > 0 ||
+                                             (role & UserRole.Estimator) >0  ;
             model.IsShortNamesEditable = ((role & UserRole.Manager) > 0);
         }
         public void SetGraphicsInfo(GraphicsListModel model)

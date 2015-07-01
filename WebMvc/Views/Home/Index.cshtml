@@ -39,7 +39,8 @@
                         else if ((dto.UserRole & UserRole.Manager) > 0
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
-                              || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                              || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                              || (dto.UserRole & UserRole.Estimator)>0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
@@ -67,7 +68,8 @@
                     </div>
                 }
                 @if ((dto.UserRole & UserRole.Accountant) > 0 
-                || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                    || (dto.UserRole & UserRole.Estimator)>0 )
                 {
                     <div @if (Model.menuId == 4)
                      {<text>class="mainOn"</text>}
@@ -84,6 +86,7 @@
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                     || (dto.UserRole & UserRole.Estimator) >0
                      || (dto.UserRole & UserRole.Secretary) > 0
                      || (dto.UserRole & UserRole.Findep) > 0
                      || (dto.UserRole & UserRole.Archivist) > 0
@@ -106,7 +109,8 @@
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
-                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                     || (dto.UserRole & UserRole.Estimator)>0 )
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
@@ -121,7 +125,7 @@
                 </div>
                 }*@
 
-                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
+                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 || (dto.UserRole & UserRole.Estimator) > 0 ||
                     (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0 || (dto.UserRole & UserRole.StaffManager) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
@@ -152,6 +156,7 @@
                 @if ((dto.UserRole & UserRole.Manager) > 0
                     //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                     || (dto.UserRole & UserRole.Estimator) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
                     || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                     || (dto.UserRole & UserRole.PersonnelManager) > 0
@@ -162,7 +167,7 @@
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Добавление кандидата в Приём", "Instruction", "Appointment")
                     </div> 
                 }
-                @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Estimator) > 0)
                 {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                 }

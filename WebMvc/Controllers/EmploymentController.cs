@@ -52,7 +52,7 @@ namespace WebMvc.Controllers
 
         #region Instruction
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Instruction()
         {
             return View(new InstructionModel());
@@ -62,7 +62,7 @@ namespace WebMvc.Controllers
         #region Index
         [HttpGet]
         [ActionName("Index")]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate | UserRole.StaffManager)]
         public ActionResult Index()
         {
             return RedirectToAction(EmploymentBl.GetStartView());
@@ -114,7 +114,7 @@ namespace WebMvc.Controllers
 
         #region General Info
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
@@ -122,7 +122,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult GeneralInfoReadOnly(int? id)
         {
             GeneralInfoModel model = null;
@@ -258,7 +258,7 @@ namespace WebMvc.Controllers
 
         #region Passport
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Passport(int? id)
         {
             var model = EmploymentBl.GetPassportModel(id);
@@ -266,7 +266,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult PassportReadOnly(int? id)
         {
             PassportModel model = null;
@@ -338,7 +338,7 @@ namespace WebMvc.Controllers
 
         #region Education
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Education(int? id)
         {
             var model = EmploymentBl.GetEducationModel(id);
@@ -346,7 +346,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator |UserRole.Candidate)]
         public ActionResult EducationReadOnly(int? id)
         {
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
@@ -620,7 +620,7 @@ namespace WebMvc.Controllers
 
         #region Family
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Family(int? id)
         {
             var model = EmploymentBl.GetFamilyModel(id);
@@ -628,7 +628,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult FamilyReadOnly(int? id)
         {
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
@@ -799,7 +799,7 @@ namespace WebMvc.Controllers
 
         #region Experience
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Experience(int? id)
         {
             var model = EmploymentBl.GetExperienceModel(id);
@@ -807,7 +807,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult ExperienceReadOnly(int? id)
         {
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
@@ -935,7 +935,7 @@ namespace WebMvc.Controllers
 
         #region Contacts
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult Contacts(int? id)
         {
             var model = EmploymentBl.GetContactsModel(id);
@@ -943,7 +943,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult ContactsReadOnly(int? id)
         {
             ContactsModel model = null;
@@ -1014,7 +1014,7 @@ namespace WebMvc.Controllers
 
         #region Background Check
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult BackgroundCheck(int? id)
         {
             var model = EmploymentBl.GetBackgroundCheckModel(id);
@@ -1022,7 +1022,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult BackgroundCheckReadOnly(int? id)
         {
             BackgroundCheckModel model = null;
@@ -1177,7 +1177,7 @@ namespace WebMvc.Controllers
 
         #region Onsite Training
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult OnsiteTraining(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
@@ -1185,7 +1185,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult OnsiteTrainingReadOnly(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
@@ -1219,7 +1219,7 @@ namespace WebMvc.Controllers
 
         #region Application Letter
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult ApplicationLetter(int? id)
         {
             var model = EmploymentBl.GetApplicationLetterModel(id);
@@ -1227,7 +1227,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate)]
         public ActionResult ApplicationLetterReadOnly(int? id)
         {
             var model = EmploymentBl.GetApplicationLetterModel(id);
@@ -1250,7 +1250,7 @@ namespace WebMvc.Controllers
 
         #region Managers
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult Managers(int? id)
         {
             var model = EmploymentBl.GetManagersModel(id);
@@ -1258,7 +1258,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult ManagersReadOnly(int? id)
         {
             ManagersModel model = null;
@@ -1414,7 +1414,7 @@ namespace WebMvc.Controllers
 
         #region PersonnelManagers
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult PersonnelManagers(int? id)
         {
             var model = EmploymentBl.GetPersonnelManagersModel(id);
@@ -1422,7 +1422,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult PersonnelManagersReadOnly(int? id)
         {
             PersonnelManagersModel model = null;
@@ -1457,7 +1457,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult PersonnelManagers(PersonnelManagersModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -1523,7 +1523,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult PersonnelManagersAddComments(PersonnelManagersModel model)
         {
             string error = String.Empty;
@@ -1555,7 +1555,7 @@ namespace WebMvc.Controllers
 
         #region Roster
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.StaffManager)]
         public ActionResult Roster()
         {
             var model = EmploymentBl.GetRosterModel(null);
@@ -1563,7 +1563,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.StaffManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.StaffManager)]
         public ActionResult Roster(RosterFiltersModel input, RosterModel roster, bool isApproveModified = false)
         {
             RosterModel model = EmploymentBl.GetRosterModel(input);
@@ -1587,7 +1587,7 @@ namespace WebMvc.Controllers
         }
         
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
         {
             PersonnelInfoModel model = new PersonnelInfoModel();
@@ -1636,7 +1636,7 @@ namespace WebMvc.Controllers
 
         #region CandidateDocuments
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate | UserRole.Trainer)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Candidate | UserRole.Trainer)]
         public ActionResult CandidateDocuments(int? id)
         {
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
@@ -1766,7 +1766,7 @@ namespace WebMvc.Controllers
 
         #region Signers
         [HttpGet]
-        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult Signers()
         {
             // Get the current signers list
@@ -2285,7 +2285,7 @@ namespace WebMvc.Controllers
 
         #region Attachments
 
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager| UserRole.Estimator | UserRole.OutsourcingManager | UserRole.Candidate)]
         public FileContentResult ViewAttachment(int id)
         {
             try

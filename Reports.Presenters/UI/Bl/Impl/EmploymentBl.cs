@@ -1658,6 +1658,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsCandidateInfoAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
                 | UserRole.Manager
+                | UserRole.Estimator
                 | UserRole.OutsourcingManager
                 | UserRole.PersonnelManager
                 | UserRole.Security
@@ -1667,17 +1668,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 | UserRole.Director
                 | UserRole.Manager
                 | UserRole.OutsourcingManager
+                | UserRole.Estimator
                 | UserRole.PersonnelManager
                 | UserRole.StaffManager)) > 0;
             model.IsManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
                 | UserRole.Manager
                 | UserRole.PersonnelManager
+                | UserRole.Estimator
                 | UserRole.OutsourcingManager)) > 0;
             model.IsPersonalManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
                 | UserRole.Manager
                 | UserRole.OutsourcingManager
+                | UserRole.Estimator
                 | UserRole.PersonnelManager
                 | UserRole.StaffManager)) > 0;
 
