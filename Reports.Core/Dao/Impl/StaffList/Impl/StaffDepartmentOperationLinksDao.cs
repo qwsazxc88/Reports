@@ -27,8 +27,7 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as OperationId, A.Name as OperationName, cast(case when B.Id is null then 0 else 1 end as bit) as IsUsed
                                                     FROM StaffDepartmentOperations as A
-                                                    LEFT JOIN StaffDepartmentOperationLinks as B ON B.OperationId = A.id" +
-                                                  (DMDetailId == 0 ? "" : " WHERE B.DMDetailId = " + DMDetailId.ToString()))
+                                                    LEFT JOIN StaffDepartmentOperationLinks as B ON B.OperationId = A.id and " + (DMDetailId == 0 ? " B.DMDetailId is null " : " B.DMDetailId = " + DMDetailId.ToString()))
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("OperationId", NHibernateUtil.Int32)
                 .AddScalar("OperationName", NHibernateUtil.String)

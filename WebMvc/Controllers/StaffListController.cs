@@ -92,16 +92,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
-            string error = string.Empty;
-            if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
-            {
-                StaffListBl.LoadDictionaries(model);
-                ModelState.AddModelError("Message", error);
-                return View(model);
-            }
+            //string error = string.Empty;
+            //if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
+            //{
+            //    StaffListBl.LoadDictionaries(model);
+            //    ModelState.AddModelError("Message", error);
+            //    return View(model);
+            //}
 
+            //StaffListBl.LoadDictionaries(model);
+            //ModelState.AddModelError("Message", "Данные сохранены!");
+
+            //заглушка для выкладки на тест для показа прототипов
             StaffListBl.LoadDictionaries(model);
-            ModelState.AddModelError("Message", "Данные сохранены!");
+            ModelState.AddModelError("Message", "В разработке!");
             
             return View(model);
         }

@@ -27,8 +27,7 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as LandmarkId, A.Name as LandmarkName, B.[Description]
                                                     FROM StaffLandmarkTypes as A
-                                                    LEFT JOIN StaffDepartmentLandmarks as B ON B.LandmarkId = A.id" +
-                                                  (DMDetailId == 0 ? "" : " WHERE B.DMDetailId = " + DMDetailId.ToString()))
+                                                    LEFT JOIN StaffDepartmentLandmarks as B ON B.LandmarkId = A.id and " + (DMDetailId == 0 ? " B.DMDetailId is null " : " B.DMDetailId = " + DMDetailId.ToString()))
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("LandmarkId", NHibernateUtil.Int32)
                 .AddScalar("LandmarkName", NHibernateUtil.String)
