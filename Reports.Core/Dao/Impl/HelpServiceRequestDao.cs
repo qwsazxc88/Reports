@@ -136,7 +136,7 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = sqlSelectForHsList;
 
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.PersonnelManager)
+            if (role == UserRole.PersonnelManager && userId != 10)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId.ToString() + " {0}";
