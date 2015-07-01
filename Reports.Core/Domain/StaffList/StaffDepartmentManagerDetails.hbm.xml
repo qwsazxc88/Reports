@@ -1,0 +1,53 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentManagerDetails" dynamic-update="true" table="StaffDepartmentManagerDetails">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="DepRequest" class="StaffDepartmentRequest" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>
+    <property name="DepCode" length="15" not-null="false"/>
+    <property name="NameShort" length="50" not-null="false"/>
+    <property name="ReferenceReason" length="100" not-null="false"/>
+    <property name="PrevDepCode" length="15" not-null="false"/>
+    <many-to-one name="FactAddress" class="RefAddresses" column="FactAddressId" foreign-key="FK_StaffDepartmentManagerDetails_RefAddresses" index="StaffDepartmentManagerDetails_RefAddresses" not-null="false"/>
+    <property name="DepStatus" length="50" not-null="false"/>
+    <many-to-one name="DepartmentType" class="StaffDepartmentTypes" column="DepTypeId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentTypes" index="StaffDepartmentManagerDetails_StaffDepartmentTypes" not-null="false"/>
+    <property name="OpenDate" not-null="false"/>
+    <property name="CloseDate" not-null="false"/>
+    <property name="Reason" length="100" not-null="false"/>
+    <property name="OperationMode" length="100" not-null="false"/>
+    <property name="BeginIdleDate" not-null="false"/>
+    <property name="EndIdleDate" not-null="false"/>
+    <property name="IsRentPlace" not-null="false"/>
+    <property name="Phone" length="20" not-null="false"/>
+    <property name="IsBlocked" not-null="false"/>
+    <property name="IsNetShop" not-null="false"/>
+    <property name="IsAvailableCash" not-null="false"/>
+    <property name="IsLegalEntity" not-null="false"/>
+    <property name="PlanEPCount" not-null="false"/>
+    <property name="PlanSalaryFund" precision="19" scale="2" not-null="false"/>
+    <property name="Note" length="250" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+    <bag name="DepOperations" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffDepartmentOperationLinks"/>
+    </bag>
+
+    <bag name="ProgramCodes" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffProgramCodes_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffProgramCodes"/>
+    </bag>
+    
+    <bag name="DepartmentLandmarks" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffDepartmentLandmarks_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffDepartmentLandmarks"/>
+    </bag>
+    
+  </class>
+</hibernate-mapping>
