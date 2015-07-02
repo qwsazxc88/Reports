@@ -282,6 +282,7 @@ namespace Reports.Core.Dao.Impl
             }
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
+                | UserRole.ConsultantPersonnel
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager
                 | UserRole.StaffManager)) > 0)
