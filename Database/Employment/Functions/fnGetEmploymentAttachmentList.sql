@@ -21,10 +21,10 @@ RETURNS
 )
 AS
 BEGIN
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 201 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 210 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Фото кандидата', 'да' FROM RequestAttachment WHERE RequestType = 201 and RequestId = @CandidateId
+		SELECT 'Фото кандидата', 'да' FROM RequestAttachment WHERE RequestType = 210 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -32,10 +32,10 @@ BEGIN
 		SELECT 'Фото кандидата', 'нет' 
 	END
 
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 202 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 212 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Скан ИНН', 'да' FROM RequestAttachment WHERE RequestType = 202 and RequestId = @CandidateId
+		SELECT 'Скан ИНН', 'да' FROM RequestAttachment WHERE RequestType = 212 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -43,10 +43,10 @@ BEGIN
 		SELECT 'Скан ИНН', 'нет' 
 	END
 	
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 203 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 213 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Скан СНИЛС', 'да' FROM RequestAttachment WHERE RequestType = 203 and RequestId = @CandidateId
+		SELECT 'Скан СНИЛС', 'да' FROM RequestAttachment WHERE RequestType = 213 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -54,10 +54,10 @@ BEGIN
 		SELECT 'Скан СНИЛС', 'нет' 
 	END
 	
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 204 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 214 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Скан справки об инвалидности', 'да' FROM RequestAttachment WHERE RequestType = 204 and RequestId = @CandidateId
+		SELECT 'Скан справки об инвалидности', 'да' FROM RequestAttachment WHERE RequestType = 214 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -165,10 +165,10 @@ BEGIN
 		SELECT 'Скан мобилизационного талона', 'нет' 
 	END
 	
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 251 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 215 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Скан трудовой книжки', 'да' FROM RequestAttachment WHERE RequestType = 251 and RequestId = @CandidateId
+		SELECT 'Скан трудовой книжки', 'да' FROM RequestAttachment WHERE RequestType = 215 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -176,10 +176,10 @@ BEGIN
 		SELECT 'Скан трудовой книжки', 'нет' 
 	END
 	
-	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 252 and RequestId = @CandidateId)
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 216 and RequestId = @CandidateId)
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
-		SELECT 'Скан вкладыша в трудовую книжку', 'да' FROM RequestAttachment WHERE RequestType = 252 and RequestId = @CandidateId
+		SELECT 'Скан вкладыша в трудовую книжку', 'да' FROM RequestAttachment WHERE RequestType = 216 and RequestId = @CandidateId
 	END
 	ELSE
 	BEGIN
@@ -374,6 +374,28 @@ BEGIN
 	BEGIN
 		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
 		SELECT 'Скан обязательства о неразглашении коммерческой и служебной тайны', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 286 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки 182-Н от предыдущего работодателя', 'да' FROM RequestAttachment WHERE RequestType = 286 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки 182-Н от предыдущего работодателя', 'нет' 
+	END
+
+	IF EXISTS (SELECT * FROM RequestAttachment WHERE RequestType = 287 and RequestId = @CandidateId)
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки 2-НДФЛ от предыдущего работодателя', 'да' FROM RequestAttachment WHERE RequestType = 287 and RequestId = @CandidateId
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @ReturnTable(AttachmentTypeName, AtachmentAvalable)
+		SELECT 'Скан справки 2-НДФЛ от предыдущего работодателя', 'нет' 
 	END
 	
 --select * from dbo.fnGetEmploymentAttachmentList(36) order by AttachmentTypeName
