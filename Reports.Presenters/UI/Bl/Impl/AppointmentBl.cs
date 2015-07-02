@@ -569,7 +569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
 
-            if (entity.Creator.Id == current.Id && !entity.ManagerDateAccept.HasValue)
+            if ((entity.Creator.Id == current.Id || (entity.StaffCreator!=null && entity.StaffCreator.Id==current.Id)) && !entity.ManagerDateAccept.HasValue)
             {
                 model.IsEditable = true;
                 model.IsManagerApproveAvailable = true;
@@ -1554,7 +1554,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsColloquyPassed = !entity.IsColloquyPassed.HasValue ? -1 : (entity.IsColloquyPassed.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
-            model.DocumentNumber = entity.Appointment.Id+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
+            model.DocumentNumber = entity.Appointment.Number+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
             model.Phone = entity.Phone;
             model.Email = entity.Email;
             model.ColloquyDate = FormatDate(entity.ColloquyDate);
@@ -1733,7 +1733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
-            }
+            }             
             model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable
                                     || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable | model.IsTrainerCanSave;
         }
