@@ -10,7 +10,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
 
-@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ManagerForm" }))
 {
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftM)
@@ -134,7 +134,7 @@
         @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
-                <button id="btnManagerDraft">Черновик</button>
+                <button id="btnManagerDraft" type="button">Черновик</button>
             </div>
         }
         
@@ -234,6 +234,11 @@
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();
         $('#IsLiableContainer').buttonset();
+
+        $("#btnManagerDraft").click(function(){
+            $("#IsDraftM").val(true);
+            $("#ManagerForm").submit();
+        });
 
         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
         else {$('#isExternalWorkContainer').hide();}
