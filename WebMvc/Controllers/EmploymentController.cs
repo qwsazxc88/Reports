@@ -1321,6 +1321,7 @@ namespace WebMvc.Controllers
             }
             else
             {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                //EmploymentBl.LoadDictionaries(model);
                 model = EmploymentBl.GetManagersModel(model);
                 if (Session["ManagersM" + SPPath] != null)
                     Session.Remove("ManagersM" + SPPath);

@@ -21,7 +21,8 @@
                 
                 <tr>
                     <th>
-                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)
+                        @*@Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)*@
+                        Наименование <br /> образовательного <br /> учреждения
                     </th>
                     <th>
                         @Html.LabelFor(m => m.HigherEducationDiplomas[0].Series)
@@ -92,7 +93,7 @@
     {
         <text>-</text>
     }
-    <div style="float:right">
+    <div>
         @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
         {
             <br /><label>Скан:</label>
@@ -113,7 +114,8 @@
                 
                 <tr>
                     <th>
-                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)
+                        @*@Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)*@
+                        Наименование <br /> образовательного <br /> учреждения
                     </th>
                     <th>
                         @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Series)
@@ -166,7 +168,7 @@
     {
         <text>-</text>
     }
-    <div style="float:right">
+    <div>
         @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
         {
             <br /><label>Скан:</label>
@@ -231,7 +233,7 @@
         {
             <text>-</text>
         }
-        <div style="float:right">
+        <div>
             @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
             {
                 <br /><label>Скан:</label>
@@ -250,7 +252,8 @@
                 
                     <tr>
                         <th>
-                            @Html.LabelFor(m => m.Training[0].CertificateIssuedBy)
+                            @*@Html.LabelFor(m => m.Training[0].CertificateIssuedBy)*@
+                            Наименование <br /> образовательного <br /> учреждения
                         </th>
                         <th>
                             @Html.LabelFor(m => m.Training[0].Series)
@@ -303,7 +306,7 @@
         {
             <text>-</text>
         }
-        <div style="float:right">
+        <div>
             @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
             {
                 <br /><label>Скан:</label>
