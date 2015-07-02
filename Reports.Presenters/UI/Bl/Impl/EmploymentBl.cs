@@ -1238,7 +1238,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerApprovalDate = entity.ManagerApprovalDate;
                 model.ManagerRejectionReason = entity.ManagerRejectionReason;
 
-                model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
+                model.ManagerApprovalStatus = !entity.ManagerApprovalStatus.HasValue ? false : entity.ManagerApprovalStatus.Value;
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
@@ -1640,6 +1640,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.EmploymentContractFileNeeded = true;
                     model.OrderOnReceptionFileNeeded = true;
                 }
+
+                //если нет списка, то не показаываем кнопки к документам 2, 3, 4, 5 позиций
+                model.IsDocListAvailable = EmploymentCandidateDocNeededDao.GetCandidateDocNeeded(entity.Candidate.Id).Count() == 0 ? false : true;
             }
 
             //состояние кандидата
@@ -3256,13 +3259,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
                 }
             }
+            else
+            {
+                if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                {
+                    error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                    return;
+                }
+            }
             DocNeeded.Add(new AttachmentNeedListDto { DocTypeId = (int)RequestAttachmentTypeEnum.ApplicationLetterScan, IsNeeded = model.ApplicationLetterScanFileNeeded });
 
-            if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
-            {
-                error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
-                return;
-            }
+            
 
             if (model.EmploymentContractFile != null)
             {

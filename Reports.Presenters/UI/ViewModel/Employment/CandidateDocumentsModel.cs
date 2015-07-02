@@ -122,5 +122,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int DeleteAttachmentId { get; set; }
         //для сохранение выбранного перечня документов
         public bool IsSave { get; set; }
+        //признак наличия сформированного списка документов для кандидата
+        public bool IsDocListAvailable { get; set; }
     }
 }
