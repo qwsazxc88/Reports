@@ -98,7 +98,7 @@
                                 {
                                     <input type="button" value="Печать" onclick="return Print();"/>
                                 } 
-                                @if (Model.UserId==10)
+                                @if ((userdto.UserRole & UserRole.Accountant)>0)
                                 {
                                     <span id="LoadingIndicator" style="float:right"></span>
                                     <input type="button" style="float:right;" value="Выгрузить в удержания" onclick="UploadToDeduction(1,3,1,'false');"/>
