@@ -1238,7 +1238,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerApprovalDate = entity.ManagerApprovalDate;
                 model.ManagerRejectionReason = entity.ManagerRejectionReason;
 
-                model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
+                model.ManagerApprovalStatus = !entity.ManagerApprovalStatus.HasValue ? false : entity.ManagerApprovalStatus.Value;
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
