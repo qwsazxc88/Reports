@@ -1640,6 +1640,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.EmploymentContractFileNeeded = true;
                     model.OrderOnReceptionFileNeeded = true;
                 }
+
+                //если нет списка, то не показаываем кнопки к документам 2, 3, 4, 5 позиций
+                model.IsDocListAvailable = EmploymentCandidateDocNeededDao.GetCandidateDocNeeded(entity.Candidate.Id).Count() == 0 ? false : true;
             }
 
             //состояние кандидата
