@@ -70,29 +70,37 @@
             {<text> style = "display:none;" </text>} >
         <td>Печать трудового договора</td>
             <td style="width:5%">
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />
-                @if (string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                @if (Model.IsDocListAvailable)
                 {
-                    <div class="formfield clear">
-                        Выбрать для загрузки скан трудового договора<br /><input type="file" name="EmploymentContractFile" id="EmploymentContractFile"/>
-                    </div>
+                    <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />
+                    if (string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                    {
+                        <div class="formfield clear">
+                            Выбрать для загрузки скан трудового договора<br /><input type="file" name="EmploymentContractFile" id="EmploymentContractFile"/>
+                        </div>
+                    }
+
+                    if (!string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                    {
+                        <div class="formfield">
+                            <br />Скан:
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentContractFileId })' style="cursor:hand" target="_blank">
+                                @Model.EmploymentContractFileName
+                            </a>
+                        </div>
+                        <div class="formfield">
+                            <br /><input type="button" id="btnDelete1" value="Удалить скан" />
+                        </div>
+                    }
                 }
-                @if (!string.IsNullOrEmpty(Model.EmploymentContractFileName))
-                {
-                    <div class="formfield">
-                        <br />Скан:
-                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentContractFileId })' style="cursor:hand" target="_blank">
-                            @Model.EmploymentContractFileName
-                        </a>
-                    </div>
-                    <div class="formfield">
-                        <br /><input type="button" id="btnDelete1" value="Удалить скан" />
-                    </div>
-                }
+                
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
             {
@@ -105,19 +113,24 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать приказа о приеме</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />
-                @if (string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />
+                    if (string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан приказа о приеме<br /><input type="file" name="OrderOnReceptionFile" id="OrderOnReceptionFile" />
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderOnReceptionFileId })' style="cursor:hand" target="_blank">
@@ -127,6 +140,7 @@
                     <div class="formfield">
                         <br /><input type="button" id="btnDelete2" value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
@@ -167,19 +181,24 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать договора Мат. ответственность</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="ContractMatResponsibleFileId" name="ContractMatResponsibleFileId" value="@Model.ContractMatResponsibleFileId" />
-                @if (string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="ContractMatResponsibleFileId" name="ContractMatResponsibleFileId" value="@Model.ContractMatResponsibleFileId" />
+                    if (string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан договора Мат. ответственность<br /><input type="file" name="ContractMatResponsibleFile" id="ContractMatResponsibleFile"/>
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ContractMatResponsibleFileId })' style="cursor:hand" target="_blank">
@@ -189,6 +208,7 @@
                     <div class="formfield">
                         <br /><input type="button" id="btnDelete4" value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
@@ -202,19 +222,24 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать ДС Персональные данные</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="PersonalDataFileId" name="PersonalDataFileId" value="@Model.PersonalDataFileId" />
-                @if (string.IsNullOrEmpty(Model.PersonalDataFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="PersonalDataFileId" name="PersonalDataFileId" value="@Model.PersonalDataFileId" />
+                    if (string.IsNullOrEmpty(Model.PersonalDataFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан ДС Персональные данные<br /><input type="file" name="PersonalDataFile" id="PersonalDataFile" />
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.PersonalDataFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.PersonalDataFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataFileId })' style="cursor:hand" target="_blank">
@@ -224,6 +249,7 @@
                     <div class="formfield">
                         <br /><input type="button" id="btnDelete5" value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
