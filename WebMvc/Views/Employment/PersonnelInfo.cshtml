@@ -8,7 +8,7 @@
 }
 
 
-@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Get, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Get, new { enctype = "multipart/form-data", Id = "PersonnelInfoForm" }))
 {
     <input type="hidden" id="CandidateID" name="CandidateID" value="@Model.CandidateID" />
     <input type="hidden" id="IsCandidateInfoAvailable" name="IsCandidateInfoAvailable" value="@Model.IsCandidateInfoAvailable" />
@@ -246,10 +246,13 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
+        $.ajaxSetup({cache:false});
         //создаем вкладки, с обработчиком переключения вкладок
-        $('#tabs').tabs({ selected: -1,
-            spinner: "Загрузка...",
+        $('#tabs').tabs({ 
+            cache: false,
             ajaxOption: {cache: false},
+            selected: -1,
+            spinner: "Загрузка...",
             select: function (e, ui) {
                 //первая вкладка
                 if (ui.panel.id == "tabs1") {
@@ -1030,6 +1033,7 @@
                 //одиннадцатая
                 if (ui.panel.id == "tabs11") {
                     $("#tabs11").text('Подождите, идет загрузка данных ...');
+                    //$("#TabIndex").val(10);
                     AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs11").ajaxStop(function () {
                         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
@@ -1376,10 +1380,11 @@
         var ti = $("#TabIndex").val();
         $('#tabs').tabs("select", Number(ti));
 
+
     });
 
     //функция отправки и получения ajax-запроса
-    function AjaxFormRequest(result_id,form_id,url,TypePost) {
+    function AjaxFormRequest(result_id, form_id, url, TypePost) {
         jQuery.ajax({
             url:     url, //Адрес подгружаемой страницы
             type: TypePost, //Тип запроса

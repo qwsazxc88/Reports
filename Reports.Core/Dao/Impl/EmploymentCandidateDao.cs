@@ -275,6 +275,7 @@ namespace Reports.Core.Dao.Impl
                             )
                         )
                         ", currentUser.Id);
+                sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
             }
             else if ((role & UserRole.PersonnelManager) > 0)//для кадровиков
             {
