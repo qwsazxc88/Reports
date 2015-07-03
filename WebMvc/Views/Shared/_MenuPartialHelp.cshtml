@@ -79,7 +79,7 @@
                          <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                     else
-                        if (dto.Id == 10)
+                        if (dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0)
                         { 
                             <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
                         }

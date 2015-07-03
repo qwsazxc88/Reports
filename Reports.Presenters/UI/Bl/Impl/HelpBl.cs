@@ -212,6 +212,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<UserRole> RolesToEdit = new List<UserRole>{
                 
                 UserRole.PersonnelManager,
+                UserRole.Estimator
                 // UserRole.ConsultantOutsorsingManager Deprecated
             };
             model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole) || CurrentUser.Id==10;
@@ -2638,7 +2639,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpPersonnelBillingRequest entity = null;
             if (id == 0)
             {
-                if (CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole != UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
+                if (CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole == UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
                     userId = current.Id;
                 else
                     throw new ValidationException(StrCannotCreatePersonnelBilling);
