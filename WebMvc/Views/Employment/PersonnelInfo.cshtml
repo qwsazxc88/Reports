@@ -1039,8 +1039,12 @@
                         $('#IsLiableContainer').buttonset();
                         $('#btnChangeDep').click(function(){DepartmentTree.changeDepartment();});
 
+                        if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
+                        else {$('#isExternalWorkContainer').hide();}
+
                         $("#btnManagerDraft").click(function(){
                             $("#IsDraftM").val(true);
+                            $("#ManagerForm").submit();
                         });
 
                         //подкрашиваем вид занятости
