@@ -551,11 +551,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsEditable = true;
                                 model.IsManagerApproveAvailable = true;
-                            }
-                            if(entity.ManagerDateAccept.HasValue 
-                                && model.StaffCreatorId == current.Id /*|| IsManagerChiefForCreator(current, entity.Creator)*/
-                                && !entity.ChiefDateAccept.HasValue)
-                                    model.IsChiefApproveAvailable = true;
+                            }                            
                         }
                     }
                     break;
@@ -1554,7 +1550,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsColloquyPassed = !entity.IsColloquyPassed.HasValue ? -1 : (entity.IsColloquyPassed.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
-            model.DocumentNumber = entity.Appointment.Number+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
+            model.DocumentNumber = entity.Appointment.Number+"/"+entity.SecondNumber;
             model.Phone = entity.Phone;
             model.Email = entity.Email;
             model.ColloquyDate = FormatDate(entity.ColloquyDate);
