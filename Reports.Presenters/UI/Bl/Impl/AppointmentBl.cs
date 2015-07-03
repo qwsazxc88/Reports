@@ -551,11 +551,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsEditable = true;
                                 model.IsManagerApproveAvailable = true;
-                            }
-                            if(entity.ManagerDateAccept.HasValue 
-                                && model.StaffCreatorId == current.Id /*|| IsManagerChiefForCreator(current, entity.Creator)*/
-                                && !entity.ChiefDateAccept.HasValue)
-                                    model.IsChiefApproveAvailable = true;
+                            }                            
                         }
                     }
                     break;
