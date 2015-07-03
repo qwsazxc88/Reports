@@ -632,7 +632,7 @@ namespace Reports.Core.Dao.Impl
                 #endregion
                 #region Estimator
                     case UserRole.Estimator:
-                    sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    //sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
                 #endregion
                 #region OutsourcingManagers

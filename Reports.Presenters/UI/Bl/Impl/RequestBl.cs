@@ -4282,8 +4282,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.Estimator:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsTypeEditable = true;
+                        break;
                     case UserRole.OutsourcingManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
+                        break;
+                    case UserRole.ConsultantPersonnel:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsExperienceEditable = true;
+                        model.IsTypeEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
@@ -4343,6 +4355,42 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Estimator:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            
+                            if (entity.ManagerDateAccept.HasValue)
+                            {
+                                model.IsApprovedEnable = true;
+                            }
+                            else
+                            {
+                                model.IsApprovedForAllEnable = true;
+                            }
+                                
+                            // и кадровики, и расчетчики могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (entity.UserDateAccept != null && entity.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }
+                        }                        
+
+                        // разрешить редактирование документа кадровиками, если он еще не выгружен в 1С
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                            model.IsDatesEditable = true;
+                        }
+                    }
+                    // Разрешить удаление, если согласовано всеми и выгружено в 1С
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue && isSuperPersonnelManager)
+                        model.IsDeleteAvailable = true;
+                    else if (entity.PersonnelManagerDateAccept.HasValue && entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue) //в состоянии 'Согласованно кадровиком' показываем кнопку 'отклонить заявку'
+                        model.IsDeleteAvailable = true;
+                    break;
                 case UserRole.OutsourcingManager:
                     // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
                     /*if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
@@ -4486,6 +4534,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             int currentUserId, UserRole currentUserRole)
         {
             // Не выдавать ошибки конфликта дат для расчетчиков аутсорсинга
+            if ((CurrentUser.UserRole & UserRole.Estimator) > 0) return true;
             if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;
@@ -5507,6 +5556,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
+                case UserRole.Estimator:
+                    return true;
                 case UserRole.PersonnelManager:
                     int? superPersonnelId = ConfigurationService.SuperPersonnelId;
                     if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
@@ -5613,12 +5664,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.Estimator:
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
-                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager || (currentUserRole & UserRole.Manager) == UserRole.Manager)
+                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager|| (CurrentUser.UserRole & UserRole.Estimator)>0 || (currentUserRole & UserRole.Manager) == UserRole.Manager)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -5708,6 +5760,31 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
                 case UserRole.Estimator:
+                    model.IsUnsignedConfirmationAllowed = true;
+                    if (!vacation.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;                            
+                            // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (vacation.UserDateAccept != null && vacation.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }                            
+                        }
+                        if (!vacation.SendTo1C.HasValue)
+                        {
+                            model.IsVacationTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                        model.IsDaysLeftEditable = true;
+                    }
+                    else if (!vacation.SendTo1C.HasValue &&
+                             !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+
+                    break;
                 case UserRole.OutsourcingManager:
                     if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -6345,8 +6422,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             #region Согласование кадровиком
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
-                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+            if ((current.UserRole & UserRole.Estimator) == UserRole.Estimator ||
+                (current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||                    
                     (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
@@ -8632,7 +8710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsCorrectionsOnlyModeAvailable = true;
             }
-            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
+            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 model.IsRecalculationAvailable = true;
             }
@@ -8770,7 +8848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SaveIsRecalculated(MissionOrderListModel model, List<int> idsToSetIsRecalculated, List<int> idsToResetIsRecalculated)
         {
             List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsToSetIsRecalculated).ToList();
-            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId)
+            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 foreach (MissionOrder order in orders)
                 {
@@ -12001,7 +12079,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PersonnelsId = entity.Personnel.Id;
                     }
                 }
-                if (CurrentUser.Id == 10)
+                if (CurrentUser.Id == 10 || (CurrentUser.UserRole & UserRole.Estimator)>0)
                 {
                     if (model.CountantAccept)
                     {
