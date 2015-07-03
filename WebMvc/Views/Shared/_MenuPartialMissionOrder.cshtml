@@ -71,7 +71,7 @@
                          <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                     else
-                        if (dto.Id == 10)
+                        if (dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0)
                         { 
                             <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionUserDeptsList", "MissionOrder")</div>
                         }
@@ -151,7 +151,7 @@
             {
                 <div class="menuitem" id="moInstructions">@Html.ActionLink("Памятка отбывающего в командировку", "Instructions", "MissionOrder")</div>
             }
-                @if ((dto.UserRole & UserRole.Archivist) == 0 || dto.Id == 10)
+                @if ((dto.UserRole & UserRole.Archivist) == 0 || dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0)
                 {
                     <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
                 }
