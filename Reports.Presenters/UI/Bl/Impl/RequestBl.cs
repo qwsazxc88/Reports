@@ -5195,8 +5195,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = vacation.Creator.Name;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
-                model.PrincipalVacationDaysLeft = vacation.PrincipalVacationDaysLeft ?? 0;
-                model.AdditionalVacationDaysLeft = vacation.AdditionalVacationDaysLeft ?? 0;
+                if (vacation.User != null && vacation.User.VacationSaldo != null && vacation.User.VacationSaldo.Any())
+                {
+                    var saldos = vacation.User.VacationSaldo.Where(x => x.Date < vacation.CreateDate);
+                    if (saldos != null && saldos.Any())
+                    {
+                        saldos = saldos.OrderBy(x => x.Date);
+                        var saldo = saldos.First();
+                        model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
+                        model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
+                    }
+                }
+                else
+                {
+                    model.PrincipalVacationDaysLeft = 0;
+                    model.AdditionalVacationDaysLeft = 0;
+                }
                 if (vacation.DeleteDate.HasValue)
                     model.IsDeleted = true;
             }
