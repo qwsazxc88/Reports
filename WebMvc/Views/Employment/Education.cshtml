@@ -38,7 +38,8 @@
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].EducationTypeId)
                         </th>
                         <th>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)
+                            @*@Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)*@
+                            Наименование <br /> образовательного <br /> учреждения
                         </th>
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Series)
@@ -65,7 +66,8 @@
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
                         </th>
                         <th>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].LocationEI)
+                            @*@Html.LabelFor(m => m.HigherEducationDiplomas[0].LocationEI)*@
+                            Место нахождения <br /> учебного заведения
                         </th>
                         <th></th>
                     </tr>
@@ -116,7 +118,9 @@
                 </table>
             </div>
         }
-        <div style="float:right">
+        <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
+        <br />
+        <div >
             @if (@Model.HigherEducationDiplomaScanId == 0 && !Model.IsValidate)
             {
                 <div class="formfield">
@@ -136,7 +140,7 @@
                 }
             }        
          </div>
-        <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
+        
     </fieldset>
     
     <br />
@@ -150,7 +154,8 @@
                     
                     <tr>
                         <th>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)
+                            @*@Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)*@
+                            Наименование <br /> образовательного <br /> учреждения
                         </th>
                         <th>
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Series)
@@ -168,7 +173,8 @@
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
                         </th>
                         <th>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].LocationEI)
+                            @*@Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].LocationEI)*@
+                            Место нахождения <br /> учебного заведения
                         </th>
                         <th></th>
                     </tr>
@@ -206,7 +212,9 @@
                 </table>
             </div>
         }
-        <div style="float:right">
+        <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
+        <br />
+        <div>
             @if (@Model.PostGraduateEducationDiplomaScanId == 0 && !Model.IsValidate)
             {
                 <div class="formfield">
@@ -226,7 +234,7 @@
             }
         </div>
 
-        <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
+        
     </fieldset>
     
     <br />
@@ -255,7 +263,8 @@
                                 @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
                             </th>
                             <th>
-                                @Html.LabelFor(m => m.Certifications[0].LocationEI)
+                                @*@Html.LabelFor(m => m.Certifications[0].LocationEI)*@
+                                Место нахождения <br /> учебного заведения
                             </th>
                             <th></th>
                         </tr>
@@ -293,7 +302,10 @@
                     </table>
                 </div>
             }
-            <div style="float:right">
+            
+            <a href="" id="add-certification">Добавить новую запись</a>
+            <br />
+            <div>
                 @if (@Model.CertificationScanId == 0 && !Model.IsValidate)
                 {
                     <div class="formfield">
@@ -312,7 +324,7 @@
                     }
                 }
             </div>
-            <a href="" id="add-certification">Добавить новую запись</a>
+            
         </fieldset>
 
         <fieldset class="bordered nomargin clear">
@@ -324,7 +336,8 @@
                     
                         <tr>
                             <th>
-                                @Html.LabelFor(m => m.Training[0].CertificateIssuedBy)
+                                @*@Html.LabelFor(m => m.Training[0].CertificateIssuedBy)*@
+                                Наименование <br /> образовательного <br /> учреждения
                             </th>
                             <th>
                                 @Html.LabelFor(m => m.Training[0].Series)
@@ -342,7 +355,8 @@
                                 @Html.LabelFor(m => m.Training[0].Speciality)
                             </th>
                             <th>
-                                @Html.LabelFor(m => m.Training[0].LocationEI)
+                                @*@Html.LabelFor(m => m.Training[0].LocationEI)*@
+                                Место нахождения <br /> учебного заведения
                             </th>
                             <th></th>
                         </tr>
@@ -360,10 +374,16 @@
                                     @Model.Training[i].Number
                                 </td>
                                 <td>
-                                    @Model.Training[i].BeginningDate
+                                    @if (Model.Training[i].BeginningDate.HasValue)
+                                    {
+                                        @Model.Training[i].BeginningDate.Value.ToShortDateString()
+                                    }
                                 </td>
                                 <td>
-                                    @Model.Training[i].EndDate
+                                    @if (Model.Training[0].EndDate.HasValue)
+                                    {
+                                        @Model.Training[i].EndDate.Value.ToShortDateString()
+                                    }
                                 </td>
                                 <td>
                                     @Model.Training[i].Speciality
@@ -380,7 +400,10 @@
                     </table>
                 </div>
             }
-            <div style="float:right">
+            
+            <a href="" id="add-training">Добавить новую запись</a>
+            <br />
+            <div>
                 @if (@Model.TrainingScanId == 0 && !Model.IsValidate)
                 {
                     <div class="formfield">
@@ -400,7 +423,7 @@
                 }
             </div>
 
-            <a href="" id="add-training">Добавить новую запись</a>
+            
         </fieldset>
     </fieldset>
 
