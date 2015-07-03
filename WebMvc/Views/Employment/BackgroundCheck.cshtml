@@ -206,6 +206,16 @@
             @Html.TextBoxFor(m => m.Smoking, new { @class = "doublewidth" })
         </div>
 
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.OwnerOfShares)&nbsp;@Html.ValidationMessageFor(m => m.OwnerOfShares)<br />
+            @Html.TextBoxFor(m => m.OwnerOfShares, new { @class = "doublewidth" })
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionInGoverningBodies)&nbsp;@Html.ValidationMessageFor(m => m.PositionInGoverningBodies)<br />
+            @Html.TextBoxFor(m => m.PositionInGoverningBodies, new { @class = "doublewidth" })
+        </div>
+
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
