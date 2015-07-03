@@ -548,6 +548,7 @@
     <Compile Include="Domain\UserLogin.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
+    <Compile Include="Domain\VacationSaldo.cs" />
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Domain\WorkingCalendar.cs" />
     <Compile Include="Domain\WorkingGraphic.cs" />
@@ -1190,6 +1191,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationSaldo.hbm.xml" />
     <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
