@@ -1,0 +1,13 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="VacationSaldo">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <property name="SaldoPrimary" not-null="false"/>
+    <property name="SaldoAdditional" not-null="false"/>
+    <property name="Date" not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_VacationSaldo_User" not-null="true"/>
+    
+  </class>
+</hibernate-mapping>
