@@ -1874,9 +1874,12 @@ namespace WebMvc.Controllers
             {
                 GeneralInfoModel mt = EmploymentBl.GetGeneralInfoModel(model.UserId);
                 //должен быть скан инн и снилс
-                if (model.INNScanFile == null && string.IsNullOrEmpty(mt.INNScanAttachmentFilename))
+                if (!string.IsNullOrEmpty(model.INN))
                 {
-                    ModelState.AddModelError("INNScanFile", "Не выбран файл скана ИНН для загрузки!");
+                    if (model.INNScanFile == null && string.IsNullOrEmpty(mt.INNScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("INNScanFile", "Не выбран файл скана ИНН для загрузки!");
+                    }
                 }
                 if (model.SNILSScanFile == null && string.IsNullOrEmpty(mt.SNILSScanAttachmentFilename))
                 {

@@ -1025,6 +1025,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PreviousDismissalReason = entity.PreviousDismissalReason;
                 model.PreviousSuperior = entity.PreviousSuperior;
                 model.PsychiatricAndAddictionTreatment = entity.PsychiatricAndAddictionTreatment;
+                model.OwnerOfShares = entity.OwnerOfShares;
+                model.PositionInGoverningBodies = entity.PositionInGoverningBodies;
                 foreach (var item in entity.References)
                 {
                     model.References.Add(new ReferenceDto
@@ -2207,6 +2209,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PsychiatricAndAddictionTreatment = candidate.BackgroundCheck.PsychiatricAndAddictionTreatment;
                 model.Drinking = candidate.BackgroundCheck.Drinking;
                 model.Smoking = candidate.BackgroundCheck.Smoking;
+                model.OwnerOfShares = candidate.BackgroundCheck.OwnerOfShares;
+                model.PositionInGoverningBodies = candidate.BackgroundCheck.PositionInGoverningBodies;
                 
                 if (candidate.BackgroundCheck.References != null)
                 {
@@ -4180,6 +4184,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PreviousDismissalReason = viewModel.PreviousDismissalReason;
             entity.PreviousSuperior = viewModel.PreviousSuperior;
             entity.PsychiatricAndAddictionTreatment = viewModel.PsychiatricAndAddictionTreatment;
+            entity.OwnerOfShares = viewModel.OwnerOfShares;
+            entity.PositionInGoverningBodies = viewModel.PositionInGoverningBodies;
             //entity.References = 
             if (entity.References == null)
             {
