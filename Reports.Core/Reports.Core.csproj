@@ -579,6 +579,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperations.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentRequest.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentRequestTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentTaxDetails.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentTypes.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPost.cs" />
@@ -604,6 +605,7 @@
     <Compile Include="Domain\UserLogin.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
+    <Compile Include="Domain\VacationSaldo.cs" />
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Domain\WorkingCalendar.cs" />
     <Compile Include="Domain\WorkingGraphic.cs" />
@@ -643,6 +645,7 @@
     <Compile Include="Dto\Employment2\EmploymentCandidateCommentDto.cs" />
     <Compile Include="Dto\Employment2\EmploymentCandidateDocNeededDto.cs" />
     <Compile Include="Dto\Employment2\FamilyStatusDto.cs" />
+    <Compile Include="Dto\KladrDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRanksDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryRelationAccountDto.cs" />
     <Compile Include="Dto\Employment2\MilitaryValidityCategoryDto.cs" />
@@ -672,7 +675,6 @@
     <Compile Include="Dto\ImportDto.cs" />
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
-    <Compile Include="Dto\KladrDto.cs" />
     <Compile Include="Dto\MessagesDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionHotelsDto.cs" />
@@ -1250,6 +1252,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationSaldo.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\DepartmentArchive.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\RefAddresses.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentCBDetails.hbm.xml" />
