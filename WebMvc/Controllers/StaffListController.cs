@@ -62,6 +62,30 @@ namespace WebMvc.Controllers
 
         #region Заявки для подразделений
         /// <summary>
+        /// Реестр заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequestList()
+        {
+            StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
+            model = StaffListBl.GetStaffDepartmentRequestList();
+            
+            return View(model);
+        }
+        /// <summary>
+        /// Реестр заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
+        {
+            model = StaffListBl.SetStaffDepartmentRequestList(model);
+            return View(model);
+        }
+        /// <summary>
         /// Загрузка заявки для подразделения на создание/изменение/удаление.
         /// </summary>
         /// <returns></returns>

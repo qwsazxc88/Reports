@@ -146,6 +146,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Заявки для подразделений
         /// <summary>
+        /// Загрузка запросной формы реестра заявок подразделений.
+        /// </summary>
+        /// <returns></returns>
+        public StaffDepartmentRequestListModel GetStaffDepartmentRequestList()
+        {
+            StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реестра заявок подразделений.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public StaffDepartmentRequestListModel SetStaffDepartmentRequestList(StaffDepartmentRequestListModel model)
+        {
+            return model;
+        }
+        /// <summary>
         /// Заполняем модель заявки на создание подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
@@ -158,7 +179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = 0;
             //model.Id = model.RequestType == 1 ? 0 : 1;
             
-            //model.DepRequestInfo.DateRequest = DateTime.Now;
+            //model.DepRequestInfo.DateRequest = DateTime.Now;//после сохранения дата создания, а после отправки на согласование ставить текущую дату
             //model.DepRequestInfo.Id = 0;
             model.DateState = null;
             model.DepartmentId = 0;
@@ -262,6 +283,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = new StaffDepartmentRequest
                 {
                     RequestType = model.RequestType,
+                    DateRequest = DateTime.Now,
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
                     IsBack = model.IsBack,
@@ -275,7 +297,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
-                //StaffDepartmentRequestDao.SaveAndFlush(entity);
 
                 //юридический адрес
                 if (!string.IsNullOrEmpty(model.LegalAddress))

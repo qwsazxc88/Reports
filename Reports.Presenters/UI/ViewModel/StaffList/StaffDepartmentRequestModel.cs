@@ -25,7 +25,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int Id { get; set; }
 
         [Display(Name = "Вид заявки")]
-        public int RequestType { get; set; }
+        public int RequestTypeId { get; set; }
         public IList<IdNameDto> RequestTypes { get; set; }
 
         [Display(Name = "Id подразделения")]
