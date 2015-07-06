@@ -4937,6 +4937,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.Approver = UserDao.Get(current.Id);
                     entity.CompleteDate = DateTime.Now;
                     entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                    entity.Candidate.Personnels = UserDao.Load(CurrentUser.Id);
                     if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
                     {
                         error = "Ошибка сохранения.";
@@ -5012,6 +5013,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     entity.Candidate.Status = EmploymentStatus.REJECTED;
                     entity.Candidate.User.IsActive = false;
+                    entity.Candidate.Personnels = UserDao.Load(CurrentUser.Id);
                     entity.RejectDate = DateTime.Now;
                     entity.RejectUser = curUser;
                     if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
