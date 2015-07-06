@@ -211,6 +211,7 @@
             else
             {
                 @Html.DisplayFor(m => m.PrincipalVacationDaysLeft)
+                @Html.HiddenFor(x=>x.PrincipalVacationDaysLeft)
             }
         </td>
     </tr>
@@ -226,6 +227,7 @@
             else
             {
                 @Html.DisplayFor(m => m.AdditionalVacationDaysLeft)
+                @Html.HiddenFor(x=>x.AdditionalVacationDaysLeft)
             }
         </td>
     </tr>

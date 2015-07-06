@@ -355,7 +355,10 @@
                 <td colspan="2">
                     @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()))
                     {
-                    <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                        if (!Model.ShowStaff || Model.TypeId != 1 || (Model.TypeId == 1 && Model.TestingResult > 0 && Model.ShowStaff))
+                        {
+                        <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                        }
                     }
                     @if (!Model.IsClosed)
                     {

@@ -551,11 +551,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsEditable = true;
                                 model.IsManagerApproveAvailable = true;
-                            }
-                            if(entity.ManagerDateAccept.HasValue 
-                                && model.StaffCreatorId == current.Id /*|| IsManagerChiefForCreator(current, entity.Creator)*/
-                                && !entity.ChiefDateAccept.HasValue)
-                                    model.IsChiefApproveAvailable = true;
+                            }                            
                         }
                     }
                     break;
@@ -569,7 +565,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
 
-            if (entity.Creator.Id == current.Id && !entity.ManagerDateAccept.HasValue)
+            if ((entity.Creator.Id == current.Id || (entity.StaffCreator!=null && entity.StaffCreator.Id==current.Id)) && !entity.ManagerDateAccept.HasValue)
             {
                 model.IsEditable = true;
                 model.IsManagerApproveAvailable = true;
@@ -750,7 +746,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(CurrentUser.Id);
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
@@ -845,7 +841,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDeleted = true;
                 if (entity.Reports != null && entity.Reports.Any())
                 {
-                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
                 }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
@@ -1554,7 +1550,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsColloquyPassed = !entity.IsColloquyPassed.HasValue ? -1 : (entity.IsColloquyPassed.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
-            model.DocumentNumber = entity.Appointment.Id+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
+            model.DocumentNumber = entity.Appointment.Number+"/"+entity.SecondNumber;
             model.Phone = entity.Phone;
             model.Email = entity.Email;
             model.ColloquyDate = FormatDate(entity.ColloquyDate);
@@ -1733,7 +1729,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
-            }
+            }             
             model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable
                                     || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable | model.IsTrainerCanSave;
         }
