@@ -1,4 +1,5 @@
 --СКРИПТ СОЗДАЕТ СТРУКТУРУ БАЗЫ ДАННЫХ ДЛЯ РАЗДЕЛА ШТАТНОГО РАСПИСАНИЯ, СОЗДАЕТ ОБЪЕКТЫ БАЗЫ И ЗАПОЛНЯЕТ НОВЫЕ СПРАВОЧНИКИ НАЧАЛЬНЫМИ ДАННЫМИ
+--СКРИПТ НЕ МЕНЯЕТ СТРУКТУРУ УЖЕ СУЩЕСТВУЮЩИХ СПРАВОЧНИКОВ, ТОЛЬКО ПЕРЕСОЗДАЕТ НОВЫЕ ТАБЛИЦЫ НЕОБХОДИМЫЕ ДЛЯ ШТАТНОГО РАСПИСАНИЯ
 --RETURN
 use WebAppTest
 go
@@ -84,8 +85,12 @@ IF OBJECT_ID ('FK_StaffEstablishedPost_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffEstablishedPost] DROP CONSTRAINT [FK_StaffEstablishedPost_CreatorUser]
 GO
 
-IF OBJECT_ID ('FK_StaffDepartmentTaxDetails_Department', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentTaxDetails] DROP CONSTRAINT [FK_StaffDepartmentTaxDetails_Department]
+IF OBJECT_ID ('FK_StaffDepartmentRequest_StaffDepartmentRequestTypes', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentTaxDetails] DROP CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_RefAddresses]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
@@ -471,7 +476,7 @@ CREATE TABLE [dbo].[StaffDepartmentRequest](
 	[Version] [int] NOT NULL,
 	[DateRequest] [datetime] NULL,
 	--[Number] [int] NULL,
-	[RequestType] [int] NOT NULL,
+	[RequestTypeId] [int] NOT NULL,
 	[DepartmentId] [int] NULL,
 	[ItemLevel] [int] NULL,
 	[ParentId] [int] NULL,
@@ -675,7 +680,25 @@ CREATE TABLE [dbo].[StaffPostChargeLinks](
 
 GO
 
+
+CREATE TABLE [dbo].[StaffDepartmentRequestTypes](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentRequestTypes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentRequestTypes] ADD  CONSTRAINT [DF_StaffDepartmentRequestTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRequest_DepartmentParent] FOREIGN KEY([ParentId])
 REFERENCES [dbo].[Department] ([Id])
 GO
@@ -925,6 +948,13 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_RefAddresses]
 GO
 
+ALTER TABLE [dbo].[StaffDepartmentRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes] FOREIGN KEY([RequestTypeId])
+REFERENCES [dbo].[StaffDepartmentRequestTypes] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentTaxDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentTaxDetails_Department] FOREIGN KEY([DepartmentId])
 REFERENCES [dbo].[Department] ([Id])
 GO
@@ -1129,6 +1159,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов заявок для подразделений' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата утверждения заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DateState'
 GO
 
@@ -1399,7 +1444,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DateRequest'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'RequestType'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'RequestTypeId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DepartmentId'
@@ -1924,3 +1969,8 @@ INSERT INTO StaffProgramReference(Name) VALUES(N'ХД')
 INSERT INTO StaffProgramReference(Name) VALUES(N'Террасофт')
 INSERT INTO StaffProgramReference(Name) VALUES(N'ФЕС')
 INSERT INTO StaffProgramReference(Name) VALUES(N'СКБ/GE')
+
+--StaffDepartmentRequestTypes
+INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')
+INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Изменение параметров СП')
+INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Закрытие СП')

@@ -10,7 +10,7 @@ namespace Reports.Core.Domain
     public class StaffDepartmentRequest : AbstractEntityWithVersion
     {
         public virtual DateTime? DateRequest { get; set; }
-        public virtual int RequestType { get; set; }
+        public virtual StaffDepartmentRequestTypes RequestType { get; set; }
         public virtual Department Department { get; set; }
         public virtual int ItemLevel { get; set; }
         public virtual Department ParentDepartment { get; set; }

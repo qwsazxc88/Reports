@@ -11,6 +11,9 @@
 <div id="ErrorDialog" title="Ошибка" style="display:none;">
   <p>Произошла ошибка.</p>
 </div>
+<div id="NotifyDialog" title="Внимание!" style="display:none;">
+    <p>Автовыгрузка  удержаний  за месяц  производятся  в  последние  дни  месяца. удержания не попавшие  в  обрабатываемый  месяц ( созданные  после  выгрузки)  попадут  в следующий  месяц.</p>
+</div>
 @using (Html.BeginForm())
 {
      <table style="width:100%">
@@ -206,7 +209,11 @@
             autoOpen: false,
             close: function( event, ui ) {document.forms[0].submit();}
         });
+        $( "#NotifyDialog" ).dialog({
+            autoOpen: false
+        });
         $("#InfoDialog").dialog({autoOpen: false});
+        @if((userdto.UserRole & UserRole.Accountant)>0){<text>$("#NotifyDialog").dialog("open");</text>}
     });
     function resetFilter() {
         $("#BeginDate").val('');

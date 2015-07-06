@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
+using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
@@ -25,8 +26,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int Id { get; set; }
 
         [Display(Name = "Вид заявки")]
-        public int RequestType { get; set; }
-        public IList<IdNameDto> RequestTypes { get; set; }
+        public int RequestTypeId { get; set; }
+        public IList<StaffDepartmentRequestTypes> RequestTypes { get; set; }
 
         [Display(Name = "Id подразделения")]
         public int? DepartmentId { get; set; }

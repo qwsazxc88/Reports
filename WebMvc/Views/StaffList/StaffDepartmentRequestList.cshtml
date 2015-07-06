@@ -1,0 +1,161 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentRequestListModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Реестр заявок";
+}
+
+@using (Html.BeginForm("StaffDepartmentRequestList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestListForm" }))
+{
+    @Html.HiddenFor(m => m.SortBy)
+    @Html.HiddenFor(m => m.SortDescending)
+    <div class="filter-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    <b>Заявки</b>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:220px">
+                    @Html.LabelFor(m => m.DepartmentId):
+                </td>
+                <td>
+                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Id)</td>
+                <td>@Html.TextBoxFor(m => m.Id, new { style = "width:75px;" })</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Creator)</td>
+                <td>@Html.TextBoxFor(m => m.Creator)</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.LabelFor(m => m.DateBegin):
+                    @Html.EditorFor(model => model.DateBegin) 
+                    @Html.LabelFor(m => m.DateEnd):
+                    @Html.EditorFor(model => model.DateEnd) 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" id="btnFind" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
+                    <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+                </td>
+            </tr>
+        </table>
+    </div><br />
+    
+    <div class="filter-wrap">
+        <table id="tblDepRequestList" style="width:100%">
+            <tr>
+                <th></th>
+            </tr>
+            <tbody id="DepRequestListBody">
+                <tr><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
+    $(document).ready(function () {
+        setActiveMenuItem("moDepRequest");
+        $(document).tooltip({ track: true });
+        $(":button").button();
+
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $("#btnFind").click(function(){
+            GetFindRows();
+        });
+
+        $("#DateBegin").datepicker({changeYear: true, changeMonth: true});
+        $("#DateEnd").datepicker({changeYear: true, changeMonth: true});
+        $(".hasDatepicker").width("75px");
+    });
+
+    function resetFilter() {
+        $("#DateBegin").val('');
+        $("#DateEnd").val('');
+        $("#DepartmentName").val('');
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#Creator").val('');
+        $("#Id").val('');
+    }
+
+    function GetFindRows()
+    {
+        ShowFlash(true);
+        $("#DepRequestListBody").remove();
+        $("#StaffDepartmentRequestListForm").submit();
+    }
+
+    function SortChanged(sortedBy)
+    {
+        if($("#SortBy").val() != sortedBy)
+            $("#SortDescending").val(''); 
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+
+        GetFindRows();
+    }
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+</script>

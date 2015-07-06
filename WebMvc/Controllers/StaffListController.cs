@@ -62,6 +62,30 @@ namespace WebMvc.Controllers
 
         #region Заявки для подразделений
         /// <summary>
+        /// Реестр заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequestList()
+        {
+            StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
+            model = StaffListBl.GetStaffDepartmentRequestList();
+            
+            return View(model);
+        }
+        /// <summary>
+        /// Реестр заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
+        {
+            model = StaffListBl.SetStaffDepartmentRequestList(model);
+            return View(model);
+        }
+        /// <summary>
         /// Загрузка заявки для подразделения на создание/изменение/удаление.
         /// </summary>
         /// <returns></returns>
@@ -71,7 +95,7 @@ namespace WebMvc.Controllers
         {
             StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание нового подразделения" : (RequestType == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
-            model.RequestType = RequestType;
+            model.RequestTypeId = RequestType;
             if (RequestType == 1)
             {
                 model.ParentId = DepartmentId.Value;
@@ -92,20 +116,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
-            //string error = string.Empty;
-            //if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
-            //{
-            //    StaffListBl.LoadDictionaries(model);
-            //    ModelState.AddModelError("Message", error);
-            //    return View(model);
-            //}
+            string error = string.Empty;
+            if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
+            {
+                StaffListBl.LoadDictionaries(model);
+                ModelState.AddModelError("Message", error);
+                return View(model);
+            }
 
-            //StaffListBl.LoadDictionaries(model);
-            //ModelState.AddModelError("Message", "Данные сохранены!");
+            StaffListBl.LoadDictionaries(model);
+            ModelState.AddModelError("Message", "Данные сохранены!");
 
             //заглушка для выкладки на тест для показа прототипов
-            StaffListBl.LoadDictionaries(model);
-            ModelState.AddModelError("Message", "В разработке!");
+            //StaffListBl.LoadDictionaries(model);
+            //ModelState.AddModelError("Message", "В разработке!");
 
             return View(model);
         }
