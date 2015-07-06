@@ -37,7 +37,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Заявление о приеме</td>
             <td style="width:5%">
-                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
             </td>
             <td>
                 <input type="hidden" id="ApplicationLetterScanAttachmentId" name="ApplicationLetterScanAttachmentId" value="@Model.ApplicationLetterScanAttachmentId" />
@@ -56,7 +56,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete15" value="Удалить скан" />
+                        <br /><input type="button" id="btnDelete15" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан" />
                     </div>
                 }
             </td>
@@ -72,7 +72,7 @@
             <td style="width:5%">
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                     @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -96,7 +96,7 @@
                             </a>
                         </div>
                         <div class="formfield">
-                            <br /><input type="button" id="btnDelete1" value="Удалить скан" />
+                            <br /><input type="button" id="btnDelete1" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан" />
                         </div>
                     }
                 }
@@ -115,7 +115,7 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                     @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -138,7 +138,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete2" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete2" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -183,7 +183,7 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                     @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -206,7 +206,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete4" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete4" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -224,7 +224,7 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                     @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -247,7 +247,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete5" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete5" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -263,7 +263,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать Обязательство конфиденциальность</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -283,7 +283,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete6" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete6" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -298,7 +298,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать личного листка по учету кадров</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -318,7 +318,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete7" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete7" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -333,7 +333,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать реестра личного дела</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -353,7 +353,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete8" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete8" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -368,7 +368,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -388,7 +388,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete9" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete9" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -403,7 +403,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -423,7 +423,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete10" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete10" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -438,7 +438,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -458,7 +458,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete11" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete11" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -473,7 +473,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -493,7 +493,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete12" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete12" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -508,7 +508,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -528,7 +528,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete13" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete13" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -543,7 +543,7 @@
             {<text> style = "display:none;" </text>} >
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -563,7 +563,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete14" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete14" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -595,7 +595,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete16" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete16" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -627,7 +627,7 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete17" value="Удалить скан"/>
+                        <br /><input type="button" id="btnDelete17" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -640,7 +640,7 @@
         <tr>
             <td>Заявление на получение банковской карты</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
             </td>
             <td>
                 Вам необходимо обратиться с паспортом к ответственному сотруднику за зарплатные счета<br />

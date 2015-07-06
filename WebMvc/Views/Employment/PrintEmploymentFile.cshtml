@@ -381,4 +381,13 @@ else
 {
     <P align=left>5. Ваше отношение к алкоголю:________________________________________________________<BR>____________________________________________________________________________________</P>
 }
+
+
+
+
+<P align=center><STRONG>ДОПОЛНИТЕЛЬНЫЙ ЛИСТ ВОПРОСОВ</STRONG></P>
+<P align=left>1. Являетесь ли Вы или Ваши родственники акционерами (владельцами долей) предприятий и организаций<BR>@(!string.IsNullOrEmpty(Model.OwnerOfShares) ? Model.OwnerOfShares : "____________________________________________________________________________________")<BR>____________________________________________________________________________________</P>
+<P align=left>2. Занимаете ли Вы или Ваши родственники должности в органах управления иных юридических лиц<BR>@(!string.IsNullOrEmpty(Model.PositionInGoverningBodies) ? Model.PositionInGoverningBodies : "____________________________________________________________________________________")<BR>____________________________________________________________________________________</P>
+<br /><P align=left>Подтверждаю, что сведения о третьих лицах предоставлены с их согласия.<BR></P>
+<P align=left><br /><FONT face=Arial><BR>___________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"___"&nbsp; __________ 20__&nbsp;г.<BR>&nbsp;&nbsp;<FONT size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (подпись)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></FONT></P>
 </BODY></HTML>

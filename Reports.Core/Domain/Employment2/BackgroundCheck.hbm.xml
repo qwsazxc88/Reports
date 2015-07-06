@@ -35,6 +35,8 @@
     <property name="Smoking" length="250" not-null="false"/>
     <property name="Drinking" length="250" not-null="false"/>
     <property name="PyrusRef" length="150" not-null="false"/>
+    <property name="OwnerOfShares" length="250" not-null="false"/>
+    <property name="PositionInGoverningBodies" length="250" not-null="false"/>
 
     <property name="IsApprovalSkipped" not-null="true"/>
     <property name="ApprovalStatus" not-null="false"/>
