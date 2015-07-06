@@ -665,6 +665,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentOperationLinksDao>()
                 .ImplementedBy<StaffDepartmentOperationLinksDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRequestTypesDao>()
+                .ImplementedBy<StaffDepartmentRequestTypesDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 
