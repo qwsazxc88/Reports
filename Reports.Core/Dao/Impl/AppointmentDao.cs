@@ -75,7 +75,7 @@ namespace Reports.Core.Dao.Impl
                         v.BankAccountantAccept as BankAccountantAccept,
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount,
                 case
-                    when EC.Status is null then -1
+                    when EC.Status is null then -2
                     else                    
                     EC.Status 
                 end as EmploymentStatus ,
