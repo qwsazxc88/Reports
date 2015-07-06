@@ -1645,6 +1645,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //если нет списка, то не показаываем кнопки к документам 2, 3, 4, 5 позиций
                 model.IsDocListAvailable = EmploymentCandidateDocNeededDao.GetCandidateDocNeeded(entity.Candidate.Id).Count() == 0 ? false : true;
+                //признак видимости для кнопок печати (показа шаблона документов)
+                //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
+                model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate ? false : true) : true;
+                //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
+                model.IsDeleteScanButtonAvailable = model.SendTo1C.HasValue ? (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? true : false) : true;
             }
 
             //состояние кандидата
