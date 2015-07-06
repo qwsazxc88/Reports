@@ -93,7 +93,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //
         #endregion
 
-        #region Штатные расписание.
+        #region Штатное расписание.
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>

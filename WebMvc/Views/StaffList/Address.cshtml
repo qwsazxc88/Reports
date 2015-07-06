@@ -113,6 +113,7 @@
 
     $(document).ready(function () {
         //setActiveMenuItem("moAddress");
+        $.ajaxSetup({cache: false});
         //$("#btnSave").button();
     });
 
@@ -164,7 +165,8 @@
 
         $("#Address").val(StrAddress);
 
-        if($("#PostIndex").val() != ""){
+
+        if($("#PostIndex").val() != null || $("#PostIndex").val() != ""){
             //проверим, чтобы были одни цифры
             if (!Number($("#PostIndex").val()))
             {
@@ -232,21 +234,21 @@
                 type: RequestType,
                 dataType: 'json',
                 data: dataToSend,
-                success: function(result){
-                    setValuesToDropdown(controlName, result, AddressType);
+                success: function(KladrResult){
+                    setKladrValuesToDropdown(controlName, KladrResult, AddressType);
                     //ShowKladrFlash(false);
                 },
                 error: function(){
                     //ShowKladrFlash(false);
                     alert("При загрузке данных произошла ошибка.");
-                    console.log(result.Error);
+                    console.log(KladrResult.Error);
                 }
             });
     }
 
 
     //заполняем данными комбобокс
-    function setValuesToDropdown(controlName,data, AddressType)
+    function setKladrValuesToDropdown(controlName,data, AddressType)
     {
         if (data.Kladr != null)
         {
