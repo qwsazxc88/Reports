@@ -179,6 +179,7 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.Accountant:
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     return string.Empty;
                 default:

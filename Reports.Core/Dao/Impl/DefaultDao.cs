@@ -454,7 +454,10 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
                 
                 #endregion
-
+                #region Estimator
+                case UserRole.Estimator:
+                    return String.Empty;
+                #endregion
                 #region OutsourcingManagers
 
                 case UserRole.OutsourcingManager:
@@ -627,7 +630,11 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
 
                 #endregion
-
+                #region Estimator
+                    case UserRole.Estimator:
+                    //sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Empty;
+                #endregion
                 #region OutsourcingManagers
 
                 case UserRole.OutsourcingManager:
