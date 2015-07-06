@@ -2132,6 +2132,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                     {
@@ -2391,7 +2392,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.WorkbookRequestScanAttachment = string.Empty;
                         #endregion
 
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
                         dismissal.DeleteDate = DateTime.Now;
@@ -2661,9 +2662,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 );
             }
-            model.IsBottomEnabled = (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager ? true : false;
+            model.IsBottomEnabled = (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator ? true : false;
             model.RegistryNumber = clearanceChecklist.RegistryNumber;
-            if (IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            if (IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (currentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
             }
@@ -2743,7 +2744,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Regex oKTMORegEx = new Regex(@"^\d{8}$|^$");
             error = String.Empty;
 
-            if ((current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+            if ((current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (current.UserRole & UserRole.Estimator) != UserRole.Estimator)
             {
                 throw new ArgumentException("Доступ запрещен.");
             }
@@ -3074,6 +3075,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -3190,7 +3192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             mission.DeleteAfterSendTo1C = true;
                         // ----------------------------
                         if (model.OrderScanAttachmentId > 0)
@@ -4021,7 +4023,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             sicklist.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
@@ -4139,7 +4141,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Для расчетчика, кадровика или аутсорсинга
             if (((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
                 || (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
-                || (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager))
+                || (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager
+                || (current.UserRole & UserRole.Estimator) == UserRole.Estimator))
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -4278,8 +4281,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.Estimator:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsTypeEditable = true;
+                        break;
                     case UserRole.OutsourcingManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
+                        break;
+                    case UserRole.ConsultantPersonnel:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsExperienceEditable = true;
+                        model.IsTypeEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
@@ -4295,7 +4311,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
                     || (currentUserRole & UserRole.Manager) == UserRole.Manager
-                    || (currentUserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                    || (currentUserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager
+                    || (currentUserRole & UserRole.Estimator) == UserRole.Estimator)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -4336,6 +4353,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //model.IsTimesheetStatusEditable = true;
                         }
                     }
+                    break;
+                case UserRole.Estimator:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            
+                            if (entity.ManagerDateAccept.HasValue)
+                            {
+                                model.IsApprovedEnable = true;
+                            }
+                            else
+                            {
+                                model.IsApprovedForAllEnable = true;
+                            }
+                                
+                            // и кадровики, и расчетчики могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (entity.UserDateAccept != null && entity.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }
+                        }                        
+
+                        // разрешить редактирование документа кадровиками, если он еще не выгружен в 1С
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                            model.IsDatesEditable = true;
+                        }
+                    }
+                    // Разрешить удаление, если согласовано всеми и выгружено в 1С
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue && isSuperPersonnelManager)
+                        model.IsDeleteAvailable = true;
+                    else if (entity.PersonnelManagerDateAccept.HasValue && entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue) //в состоянии 'Согласованно кадровиком' показываем кнопку 'отклонить заявку'
+                        model.IsDeleteAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
                     // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
@@ -4480,6 +4534,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             int currentUserId, UserRole currentUserRole)
         {
             // Не выдавать ошибки конфликта дат для расчетчиков аутсорсинга
+            if ((CurrentUser.UserRole & UserRole.Estimator) > 0) return true;
             if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;
@@ -4722,6 +4777,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -4885,7 +4941,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             absence.DeleteAfterSendTo1C = true;
                         absence.CreateDate = DateTime.Now;
                         absence.DeleteDate = DateTime.Now;
@@ -5123,6 +5179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                        }.OrderBy(x => x.Name).ToList();
             switch (adaptForRole)
             {
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Manager:
                     requestStatusesList.Insert(0, new IdNameDto(11, "Требует моего одобрения"));
@@ -5354,7 +5411,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = string.Empty;
                         model.UnsignedOrderScanAttachmentId = 0;
                         model.UnsignedOrderScanAttachment = string.Empty;
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             vacation.DeleteAfterSendTo1C = true;
                         vacation.CreateDate = DateTime.Now;
                         vacation.DeleteDate = DateTime.Now;
@@ -5477,7 +5534,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool CheckUserRightsForEntity(User user, IUser current, ICheckForEntity model)
         {
-            if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 if (model.IsDeleteAvailable && model.IsDelete)
                     return true;
@@ -5513,6 +5570,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
+                case UserRole.Estimator:
+                    return true;
                 case UserRole.PersonnelManager:
                     int? superPersonnelId = ConfigurationService.SuperPersonnelId;
                     if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
@@ -5619,12 +5678,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.Estimator:
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
-                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager || (currentUserRole & UserRole.Manager) == UserRole.Manager)
+                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager|| (CurrentUser.UserRole & UserRole.Estimator)>0 || (currentUserRole & UserRole.Manager) == UserRole.Manager)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -5700,6 +5760,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     model.IsErrorNotificationAvailable = true;
                                 }
                             }
+                        }
+                        if (!vacation.SendTo1C.HasValue)
+                        {
+                            model.IsVacationTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                        model.IsDaysLeftEditable = true;
+                    }
+                    else if (!vacation.SendTo1C.HasValue &&
+                             !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+
+                    break;
+                case UserRole.Estimator:
+                    model.IsUnsignedConfirmationAllowed = true;
+                    if (!vacation.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;                            
+                            // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (vacation.UserDateAccept != null && vacation.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }                            
                         }
                         if (!vacation.SendTo1C.HasValue)
                         {
@@ -6129,6 +6215,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
 
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -6255,7 +6342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             childVacation.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
@@ -6349,8 +6436,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             #region Согласование кадровиком
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
-                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+            if ((current.UserRole & UserRole.Estimator) == UserRole.Estimator ||
+                (current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||                    
                     (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
@@ -7778,6 +7866,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currentUserRole)
             {
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (deduction.SendTo1C.HasValue && !deduction.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -7893,6 +7982,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool CheckDeductionUserRights(IUser current)
         {
             if ((current.UserRole & UserRole.Accountant) > 0 ||
+                (current.UserRole & UserRole.Estimator)>0||
                (current.UserRole & UserRole.OutsourcingManager) > 0)
                 return true;
             return false;
@@ -8026,7 +8116,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(deduction, model);
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             deduction.DeleteAfterSendTo1C = true;
                         //deduction.EditDate = DateTime.Now;
                         deduction.DeleteDate = DateTime.Now;
@@ -8629,11 +8719,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if ((superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
                 || ((CurrentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                || ((CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
                 || (CurrentUser.UserRole == UserRole.Accountant))
             {
                 model.IsCorrectionsOnlyModeAvailable = true;
             }
-            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
+            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 model.IsRecalculationAvailable = true;
             }
@@ -8771,7 +8862,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SaveIsRecalculated(MissionOrderListModel model, List<int> idsToSetIsRecalculated, List<int> idsToResetIsRecalculated)
         {
             List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsToSetIsRecalculated).ToList();
-            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId)
+            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 foreach (MissionOrder order in orders)
                 {
@@ -9125,7 +9216,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             missionOrder.DeleteAfterSendTo1C = true;
                         missionOrder.DeleteDate = DateTime.Now;
                         //missionOrder.CreateDate = DateTime.Now;
@@ -9747,6 +9838,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -9879,6 +9971,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Log.ErrorFormat("CheckUserRights  PersonnelManager user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
                     }
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
                     return true;
@@ -10535,6 +10628,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return true;
                     Log.ErrorFormat("CheckUserAmoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     //case UserRole.Secretary:
                     return true;
@@ -10597,6 +10691,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsManagerApproveAvailable = true;
 
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     /*if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;*/
@@ -11330,6 +11425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     Log.ErrorFormat("CheckUserMrRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 //    return true;
@@ -11997,7 +12093,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PersonnelsId = entity.Personnel.Id;
                     }
                 }
-                if (CurrentUser.Id == 10)
+                if (CurrentUser.Id == 10 || (CurrentUser.UserRole & UserRole.Estimator)>0)
                 {
                     if (model.CountantAccept)
                     {
@@ -12220,7 +12316,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public EditMissionPbDocumentModel GetEditMissionPbDocumentModel(int id)
         {
             IUser current = AuthenticationService.CurrentUser;
-            if ((current.UserRole & UserRole.Accountant) != UserRole.Accountant && (current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager
+            if ((current.UserRole & UserRole.Accountant) != UserRole.Accountant && (current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (current.UserRole & UserRole.Estimator) != UserRole.Estimator
                 && (current.UserRole & UserRole.Findep) != UserRole.Findep)
                 throw new ArgumentException("Доступ запрещен.");
             EditMissionPbDocumentModel model = new EditMissionPbDocumentModel { UserId = current.Id, Id = id };

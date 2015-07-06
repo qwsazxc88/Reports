@@ -27,13 +27,13 @@
             <th>Название документа</th>
             <th>Образец</th>
             <th>Скан</th>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <th>Для<br />приема<br />требуется</th>
             }
         </tr>
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ApplicationLetterScanFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ApplicationLetterScanFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Заявление о приеме</td>
             <td style="width:5%">
@@ -60,13 +60,13 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ApplicationLetterScanFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
         
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentContractFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.EmploymentContractFileNeeded)
             {<text> style = "display:none;" </text>} >
         <td>Печать трудового договора</td>
             <td style="width:5%">
@@ -102,14 +102,14 @@
                 }
                 
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.EmploymentContractFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.OrderOnReceptionFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.OrderOnReceptionFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать приказа о приеме</td>
             <td>
@@ -143,7 +143,7 @@
                     }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.OrderOnReceptionFileNeeded, new { disabled = "disabled" })</td>
             }
@@ -177,7 +177,7 @@
             </td>
         </tr>
     *@
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ContractMatResponsibleFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ContractMatResponsibleFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать договора Мат. ответственность</td>
             <td>
@@ -211,14 +211,14 @@
                     }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ContractMatResponsibleFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.PersonalDataFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.PersonalDataFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать ДС Персональные данные</td>
             <td>
@@ -252,14 +252,14 @@
                     }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.PersonalDataFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.DataObligationFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.DataObligationFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать Обязательство конфиденциальность</td>
             <td>
@@ -287,14 +287,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.DataObligationFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.EmploymentFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать личного листка по учету кадров</td>
             <td>
@@ -322,14 +322,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.EmploymentFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.RegisterPersonalRecordFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && dto.UserRole != UserRole.Estimator && !Model.RegisterPersonalRecordFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать реестра личного дела</td>
             <td>
@@ -357,14 +357,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.RegisterPersonalRecordFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.InstructionOfSecretFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.InstructionOfSecretFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
             <td>
@@ -392,14 +392,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.InstructionOfSecretFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.InstructionEnsuringSafetyFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.InstructionEnsuringSafetyFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
             <td>
@@ -427,14 +427,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.InstructionEnsuringSafetyFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.AgreePersonForCheckingFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.AgreePersonForCheckingFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
             <td>
@@ -462,14 +462,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.AgreePersonForCheckingFileNeeded)</td>
             }
         </tr>
 
         
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.CashWorkAddition1FileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.CashWorkAddition1FileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
             <td>
@@ -497,14 +497,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.CashWorkAddition1FileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.CashWorkAddition2FileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.CashWorkAddition2FileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
             <td>
@@ -532,14 +532,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.CashWorkAddition2FileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ObligationTradeSecretFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ObligationTradeSecretFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
@@ -567,14 +567,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ObligationTradeSecretFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate182HFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.Certificate182HFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Справка 182-Н от предыдущего работодателя</td>
             <td></td>
@@ -599,14 +599,14 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate182HFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate2NDFLFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.Certificate2NDFLFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Справка 2-НДФЛ от предыдущего работодателя</td>
             <td></td>
@@ -631,7 +631,7 @@
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate2NDFLFileNeeded)</td>
             }
@@ -653,7 +653,7 @@
                 на Корпоративном портале.
 
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;"></td>
             }
