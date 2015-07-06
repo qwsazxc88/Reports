@@ -747,7 +747,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(CurrentUser.Id);
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
@@ -841,7 +841,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDeleted = true;
                 if (entity.Reports != null && entity.Reports.Any())
                 {
-                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
                 }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;

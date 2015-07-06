@@ -108,7 +108,7 @@ namespace Reports.Core.Domain
             get { return _password; }
             set {SetPassword(value);}
         }
-
+        public virtual IList<VacationSaldo> VacationSaldo { get; set; }
         public virtual DateTime? DateAccept { get; set; }
         //{
         //    get { return _dateCreated; }
