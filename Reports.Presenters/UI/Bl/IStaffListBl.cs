@@ -20,6 +20,17 @@ namespace Reports.Presenters.UI.Bl
 
         #region Заявки для подразделений
         /// <summary>
+        /// Загрузка запросной формы реестра заявок подразделений.
+        /// </summary>
+        /// <returns></returns>
+        StaffDepartmentRequestListModel GetStaffDepartmentRequestList();
+        /// <summary>
+        /// Загрузка реестра заявок подразделений.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        StaffDepartmentRequestListModel SetStaffDepartmentRequestList(StaffDepartmentRequestListModel model);
+        /// <summary>
         /// Заполняем модель заявки на создание подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>

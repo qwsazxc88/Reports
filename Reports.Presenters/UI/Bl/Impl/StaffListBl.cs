@@ -90,10 +90,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(stafflandmarktypesDao); }
             set { stafflandmarktypesDao = value; }
         }
+
+        protected IStaffDepartmentRequestTypesDao staffdepartmentrequestTypesDao;
+        public IStaffDepartmentRequestTypesDao StaffDepartmentRequestTypesDao
+        {
+            get { return Validate.Dependency(staffdepartmentrequestTypesDao); }
+            set { staffdepartmentrequestTypesDao = value; }
+        }
         //
         #endregion
 
-        #region Штатные расписание.
+        #region Штатное расписание.
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
@@ -146,6 +153,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Заявки для подразделений
         /// <summary>
+        /// Загрузка запросной формы реестра заявок подразделений.
+        /// </summary>
+        /// <returns></returns>
+        public StaffDepartmentRequestListModel GetStaffDepartmentRequestList()
+        {
+            StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реестра заявок подразделений.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public StaffDepartmentRequestListModel SetStaffDepartmentRequestList(StaffDepartmentRequestListModel model)
+        {
+            return model;
+        }
+        /// <summary>
         /// Заполняем модель заявки на создание подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
@@ -158,7 +186,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = 0;
             //model.Id = model.RequestType == 1 ? 0 : 1;
             
-            //model.DepRequestInfo.DateRequest = DateTime.Now;
+            //model.DepRequestInfo.DateRequest = DateTime.Now;//после сохранения дата создания, а после отправки на согласование ставить текущую дату
             //model.DepRequestInfo.Id = 0;
             model.DateState = null;
             model.DepartmentId = 0;
@@ -261,7 +289,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //поля общих реквизитов
                 entity = new StaffDepartmentRequest
                 {
-                    RequestType = model.RequestType,
+                    RequestType = StaffDepartmentRequestTypesDao.Load(model.RequestTypeId),
+                    DateRequest = DateTime.Now,
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
                     IsBack = model.IsBack,
@@ -275,7 +304,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
-                //StaffDepartmentRequestDao.SaveAndFlush(entity);
 
                 //юридический адрес
                 if (!string.IsNullOrEmpty(model.LegalAddress))
@@ -539,7 +567,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //реквизиты инициатора
             model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest);
-            model.RequestTypes = GetDepRequestTypes();
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();//GetDepRequestTypes();
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.Id);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.Id);

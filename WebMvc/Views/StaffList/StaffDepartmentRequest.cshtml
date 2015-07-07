@@ -73,10 +73,10 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@Html.LabelFor(m => m.RequestType)</td>
+                        <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.RequestType)
-                            @Model.RequestTypes.Where(x => x.Id == Model.RequestType).Single().Name
+                            @Html.HiddenFor(m => m.RequestTypeId)
+                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
                         </td>
                     </tr>
                     <tr>
