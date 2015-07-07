@@ -11973,6 +11973,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PersonnelsApproved = personnels.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
                 }
             }
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="1-й месяц"}, new IdNameDto{ Id=2, Name="2-й месяц"} };
         }
         public void GetDictionaries(SurchargeNoteListModel model)
         {
@@ -11983,6 +11999,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
             model.Statuses.Add(new IdNameDto { Id = 4, Name = "Заявка отклонена" });
             model.Statuses.Add(new IdNameDto { Id = 5, Name = "Заявка отработана УКДиУ" });
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto { Id = 1, Name = "1-й месяц" }, new IdNameDto { Id = 2, Name = "2-й месяц" } };
         }
         public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
         {
@@ -12021,6 +12053,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Dep3Name = entity.DocDep3.Name;
                 model.DepartmentName = entity.DocDep7.Name;
                 model.DepartmentId = entity.DocDep7.Id;
+                model.MonthId = entity.MonthId;
+                model.PayType = entity.PayType;
+                model.PayDayEnd = entity.PayDayEnd;
+                model.DismissalDate = entity.DismissalDate;
             }
             GetDictionaries(model);
             if (model.IsDelete) model.IsEditable = false;
@@ -12044,9 +12080,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = creator,
                     CreateDate = DateTime.Now,
                     NoteType = model.NoteType,
-                    PayDay = model.PayDay,
+                    PayDay = model.NoteType!=3?model.PayDay:DateTime.Now,
+                    PayDayEnd = model.PayDayEnd,
+                    DismissalDate = model.DismissalDate,
+                    PayType = model.PayType,
+                    MonthId = model.MonthId,
                     DocDep7 = DepartmentDao.Load(model.DepartmentId),
-                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : RequestTypeEnum.SurchargeNote1))
+                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : 
+                                                                             (model.NoteType == 1) ? RequestTypeEnum.SurchargeNote1 :
+                                                                             (model.NoteType == 2) ? RequestTypeEnum.SurchargeNote2 :
+                                                                             (model.NoteType == 3) ? RequestTypeEnum.SurchargeNote3 :
+                                                                             (model.NoteType == 4) ? RequestTypeEnum.SurchargeNote4 :
+                                                                             (model.NoteType == 5) ? RequestTypeEnum.SurchargeNote5 :
+                                                                             RequestTypeEnum.SurchargeNote6
+                                                                             ))
                 };
                 entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
                 SurchargeNoteDao.SaveAndFlush(entity);
@@ -12065,6 +12112,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.DocumentDepartment = model.DepartmentId;
                     entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
                     entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
+                    entity.MonthId = model.MonthId;
+                    entity.PayDayEnd = model.PayDayEnd;
+                    entity.PayType = model.PayType;
+                    entity.DismissalDate = model.DismissalDate;
                     entity.PayDay = model.PayDay;
                 }
                 if (CurrentUser.UserRole == UserRole.ConsultantPersonnel)

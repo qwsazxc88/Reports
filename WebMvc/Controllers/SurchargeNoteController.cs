@@ -83,7 +83,7 @@ namespace WebMvc.Controllers
             {
                 if(!RequestBl.CheckDepartmentLevel(model.DepartmentId, 7)) ModelState.AddModelError("DepartmentId","Нужно выбрать департамен 7 уровня");
             }
-            if (model.PayDay < DateTime.Parse("01.01.1970"))
+            if (model.PayDay < DateTime.Parse("01.01.1970") && model.NoteType!=3)
                 ModelState.AddModelError("PayDay", "Нужно выбрать дату");
             return ModelState.IsValid;
         }
