@@ -84,9 +84,9 @@ namespace WebMvc.Controllers
             int result=AppointmentBl.SendEmailForAppointmentManager(AppointmentId);
             switch(result)
             {
-                case 0: return Json(new {status="Сообщение отправлено."});break;
-                case 1: return Json(new {status="Не найден email руководителя."});break;
-                default: return Json(new {status="При отправке сообщения произошла ошибка."}); break;
+                case 0: return Json(new {status="Сообщение отправлено."});
+                case 1: return Json(new {status="Не найден email руководителя."});
+                default: return Json(new {status="При отправке сообщения произошла ошибка."}); 
             }
         }
         [HttpGet]
