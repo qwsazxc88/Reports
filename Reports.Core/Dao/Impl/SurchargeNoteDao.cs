@@ -100,6 +100,10 @@ namespace Reports.Core.Dao.Impl
                 Number=x.Number.ToString(),
                 NoteType=x.NoteType,
                 PayDay=x.PayDay,
+                PayDayEnd = x.PayDayEnd,
+                PayType = x.PayType,
+                DismissalDate = x.DismissalDate,
+                MonthId = x.MonthId,
                 PersonnelDateAccept=x.PersonnelDateAccept,
                 PersonnelName=x.Personnel!=null?x.Personnel.Name:"",
                 PersonnelsId=x.Personnel!=null?x.Personnel.Id:0,
@@ -149,6 +153,21 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 11:
                     res = res.OrderBy(x => x.PersonnelManagerBankDateAccept);
+                    break;
+                case 12:
+                    res = res.OrderBy(x => x.PayDayEnd);
+                    break;
+                case 13:
+                    res = res.OrderBy(x => x.PayType);
+                    break;
+                case 14:
+                    res = res.OrderBy(x => x.PayDay);
+                    break;
+                case 15:
+                    res = res.OrderBy(x => x.DismissalDate);
+                    break;
+                case 16:
+                    res = res.OrderBy(x => x.MonthId);
                     break;
             }
             if (sortDescending.HasValue && sortDescending.Value)
