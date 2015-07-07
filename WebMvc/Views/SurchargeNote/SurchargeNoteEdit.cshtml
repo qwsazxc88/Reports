@@ -128,7 +128,7 @@
         Сотрудник расчетного отдела:
         </td>
         <td>
-        @if (dto.Id == 10 && Model.PersonnelAccept)
+        @if ((dto.Id == 10 || (dto.UserRole & UserRole.Estimator)>0 )&& Model.PersonnelAccept)
         {      @Html.CheckBoxFor(m => m.CountantAccept) } 
         &nbsp;  @Model.CountantDateAccept &nbsp; @Model.CountantName
         </td>
@@ -139,11 +139,12 @@
         (dto.UserRole == UserRole.ConsultantPersonnel 
         || (dto.UserRole == UserRole.PersonnelManager &&( Model.PersonnelsApproved!=null && Model.PersonnelsApproved.Any(x => x.Id == dto.Id ))) 
         || dto.Id == 10 
+        || (dto.UserRole & UserRole.Estimator)>0
         || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue)))
     {<td><button >Сохранить</button></td>}
     </tr>
     <tr>
-    <td>@if (!Model.IsDelete && (dto.UserRole == UserRole.PersonnelManager || dto.Id == 10))
+    <td>@if (!Model.IsDelete && (dto.UserRole == UserRole.PersonnelManager || dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0))
         {
             <input type="submit" onclick="$('#IsDelete').val('true');" value="Отклонить заявку" />
         }

@@ -64,6 +64,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string PsychiatricAndAddictionTreatment { get; set; }
         public string Drinking { get; set; }
         public string Smoking { get; set; }
+        public string OwnerOfShares { get; set; }
+        public string PositionInGoverningBodies { get; set; }
 
         public PrintEmploymentFileModel()
         {

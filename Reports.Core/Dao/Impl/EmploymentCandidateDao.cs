@@ -277,6 +277,7 @@ namespace Reports.Core.Dao.Impl
                             )
                         )
                         ", currentUser.Id);
+                sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
             }
             else if ((role & UserRole.PersonnelManager) > 0)//для кадровиков
             {
@@ -284,6 +285,7 @@ namespace Reports.Core.Dao.Impl
             }
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
+                | UserRole.ConsultantPersonnel
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager
                 | UserRole.StaffManager)) > 0)
