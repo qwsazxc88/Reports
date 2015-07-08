@@ -10,7 +10,6 @@
     ViewBag.Title = "Прием - Департамент безопасности";
 }
 
-
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
@@ -204,7 +203,7 @@
                 </div>
             }
 
-            <div class="letter clear">
+            <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
                 <p class="content">
                     Я, _______________ даю свое согласие ПАО &laquo;Совкомбанк&raquo; на обработку как с использованием средств автоматизации,
                     так и без использования таких средств, моих персональных данных, т.е. совершение в том числе следующих действий:
@@ -240,7 +239,7 @@
                 </div>
             }
 
-            <div class="letter clear">                
+            <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">                
                 <p class="content">
                     Я, _______________ заверяю, что мои ответы на вопросы анкеты являются полными, достоверными.
                     В дальнейшем обязуюсь сообщать обо всех изменениях в своем положении в отдел персонала для их внесения
@@ -310,6 +309,11 @@
             {
                 <!--<button>Применить</button>-->
                 <input type="button" value="Применить" onclick="AjaxFormRequest('tabs8', 'CheckApproveForm', '/Employment/BackgroundCheckReadOnly', 'POST')" />
+            }
+            @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+            @if (Model.IsCancelApproveAvailale)
+            {
+                <input type="button" value="Отменить согласование" onclick="AjaxFormRequest('tabs8', 'CheckApproveForm', '/Employment/BackgroundCheckReadOnly', 'POST')"/>
             }
         </div>
     </form>

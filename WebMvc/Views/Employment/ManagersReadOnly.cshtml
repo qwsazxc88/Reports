@@ -159,6 +159,12 @@
         {
             <button>Применить</button>
         }
+        
+        @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+        @if (Model.IsCancelApproveAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
+        }
         <br /><br />
     </div>
     
@@ -184,6 +190,11 @@
         @if (Model.IsApproveByHigherManagerAvailable)
         {
             <button>Применить</button>
+        }
+        @Html.HiddenFor(m => m.IsCancelApproveHigherAvailale)
+        @if (Model.IsCancelApproveHigherAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
         }
     </div>
 }
