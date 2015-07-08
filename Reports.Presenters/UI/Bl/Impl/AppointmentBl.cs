@@ -747,7 +747,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(CurrentUser.Id);
+            User currUser = UserDao.Load(model.UserId);// если еще раз тут будешь, вспомни, что Улькина может создавать за сотрудника
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
