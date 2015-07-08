@@ -1070,6 +1070,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.BackgroundCheck);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0 ||
                     (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
+
+                //для консультантов даем возможность отменить отклонение
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && entity.ApprovalStatus.HasValue && !entity.ApprovalStatus.Value)
+                        model.IsCancelApproveAvailale = true;
+                }
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1125,6 +1132,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ApprovalDate = entity.ApprovalDate;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
+
+                //для консультантов даем возможность отменить отклонение
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && entity.ApprovalStatus.HasValue && !entity.ApprovalStatus.Value)
+                        model.IsCancelApproveAvailale = true;
+                }
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1249,6 +1263,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
                     (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
+
+                //для консультантов даем возможность отменить отклонение
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.ManagerApprovalStatus.HasValue && !entity.ManagerApprovalStatus.Value) && entity.ApprovingManager != null)
+                        model.IsCancelApproveAvailale = true;
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.HigherManagerApprovalStatus.HasValue && !entity.HigherManagerApprovalStatus.Value) && entity.ApprovingHigherManager != null)
+                        model.IsCancelApproveHigherAvailale = true;
+                }
             }
 
             EmploymentCandidate candidate = GetCandidate(userId.Value);
@@ -1325,7 +1348,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity != null)
             {
-                
+                //для консультантов даем возможность отменить отклонение
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.ManagerApprovalStatus.HasValue && !entity.ManagerApprovalStatus.Value) && entity.ApprovingManager != null)
+                        model.IsCancelApproveAvailale = true;
+                    if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.HigherManagerApprovalStatus.HasValue && !entity.HigherManagerApprovalStatus.Value) && entity.ApprovingHigherManager != null)
+                        model.IsCancelApproveHigherAvailale = true;
+                }
             }
 
             EmploymentCandidate candidate = GetCandidate(model.UserId);
@@ -4511,13 +4541,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Approve
 
-        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, out string error)
+        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancel, out string error)
         {
             error = string.Empty;
 
             IUser current = AuthenticationService.CurrentUser;
             User CurUser = UserDao.Load(current.Id);
-            if ((current.UserRole & UserRole.Security) == UserRole.Security)
+            if ((current.UserRole & UserRole.Security) == UserRole.Security || (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
             {
                 BackgroundCheck entity = null;
                 int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId);
@@ -4533,8 +4563,35 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
+                    if (IsCancel)//отмена отклонения
+                    {
+                        entity.ApprovalStatus = null;
+                        entity.Approver = null;
+                        //entity.PyrusRef = PyrusRef;
+                        entity.IsApprovalSkipped = false;
+                        entity.ApprovalDate = null;
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                        entity.Candidate.PersonnelManagers.RejectDate = null;
+                        entity.Candidate.PersonnelManagers.RejectUser = null;
+                        entity.Candidate.User.IsActive = true;
+                        entity.CancelRejectUser = CurUser;
+                        entity.CancelRejectDate = DateTime.Now;
+
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка согласования.";
+                            return false;
+                        }
+                        else
+                        {
+                            error = "Отклонение кандидата отменено!";
+                            return true;
+                        }
+                    }
+
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !IsApprovalSkipped)
-                    {                            
+                    {
+
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
                         entity.PyrusRef = PyrusRef;
@@ -4551,6 +4608,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Candidate.PersonnelManagers.RejectUser = CurUser;
                             entity.Candidate.User.IsActive = false;
                         }
+
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка согласования.";
@@ -4589,7 +4647,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Документ может согласовать только сотрудник ДБ.";
+                if (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
+                    error = "Отменить отклонение может только консультант аутсорсинга.";
+                else
+                    error = "Документ может согласовать только сотрудник ДБ.";
+
             }
 
             return false;
@@ -4661,7 +4723,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             IUser current = AuthenticationService.CurrentUser;
             User CurUser = UserDao.Load(current.Id);
-            if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
+            if ((current.UserRole & UserRole.Manager) == UserRole.Manager || (viewModel.IsCancelApproveAvailale && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
             {
                 Managers entity = null;
                 int? id = EmploymentCommonDao.GetDocumentId<Managers>(viewModel.UserId);
@@ -4680,6 +4742,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
                         return false;
+                    }
+
+                    //отмена отклонения
+                    if (viewModel.IsCancelApproveAvailale && AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                    {
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
+                        entity.ManagerApprovalStatus = null;
+                        entity.Candidate.PersonnelManagers.RejectDate = null;
+                        entity.Candidate.PersonnelManagers.RejectUser = null;
+                        entity.Candidate.User.IsActive = true;
+                        entity.ApprovingManager = null;
+                        entity.ManagerApprovalDate = null;
+                        entity.CancelRejectUser = CurUser;
+                        entity.CancelRejectDate = DateTime.Now;
+
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        else
+                        {
+                            error = "Отклонение кандидата отменено!";
+                            return true;
+                        }
                     }
 
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
@@ -4753,18 +4840,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Кандидата может согласовать только руководитель.";
+                if (viewModel.IsCancelApproveAvailale && (current.UserRole & UserRole.Manager) == UserRole.Manager)
+                    error = "Отменить отклонение кандидата может только консультант аутсорсинга!";
+                else
+                    error = "Кандидата может согласовать только руководитель.";
             }
 
             return false;
         }
 
-        public bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error)
+        public bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, bool IsCancel, out string error)
         {
             error = string.Empty;
 
             User current = UserDao.Get(AuthenticationService.CurrentUser.Id);
-            if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
+            if ((current.UserRole & UserRole.Manager) == UserRole.Manager || (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
             {
                 Managers entity = null;
                 int? id = EmploymentCommonDao.GetDocumentId<Managers>(userId);
@@ -4779,6 +4869,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                         error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
                         return false;
                     }
+
+
+                    if (IsCancel)//отмена отклонения
+                    {
+                        entity.ApprovingHigherManager = null;
+                        entity.HigherManagerApprovalDate = null;
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                        entity.HigherManagerApprovalStatus = null;
+                        entity.Candidate.PersonnelManagers.RejectDate = null;
+                        entity.Candidate.PersonnelManagers.RejectUser = null;
+                        entity.Candidate.User.IsActive = true;
+                        entity.CancelRejectHigherUser = current;
+                        entity.CancelRejectHigherDate = DateTime.Now;
+
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        else
+                        {
+                            error = "Отклонение кандидата отменено!";
+                            return false;
+                        }
+                    }
+
 
                     if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {
@@ -4822,7 +4938,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Кандидата может согласовать только руководитель.";
+                if (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
+                    error = "Отменить отклонение кандидата может только консультант аутсорсинга!";
+                else
+                    error = "Кандидата может согласовать только руководитель.";
             }
 
             return false;

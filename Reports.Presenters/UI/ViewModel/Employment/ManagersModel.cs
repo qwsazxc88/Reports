@@ -104,6 +104,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsAddCommentAvailable { get; set; }
         //public CommentsModel CommentsModel { get; set; }//комментарии
         public DateTime? SendTo1C { get; set; }
+
+        public bool IsCancelApproveAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
+        public bool IsCancelApproveHigherAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
         
         public ManagersModel()
         {
