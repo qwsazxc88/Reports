@@ -71,10 +71,66 @@
                     }            
                 </td>
             </tr>
-   <tr>
-       <td>Оплачиваемый день:</td>
-       <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
-   </tr>
+   @switch(Model.NoteType)
+   {
+       case 0:
+       case 1:
+           <tr>
+               <td>Оплачиваемый день:</td>
+               <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+        case 2:
+             <tr>
+               <td>Дата начала больничного листа:</td>
+               <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+            <tr>
+               <td>Дата начала сохранения заработка:</td>
+               <td>@Html.EditorFor(m => m.PayDayEnd, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+        case 3:
+            <tr>
+               <td>Вид дохода:</td>
+               <td>@Html.DropDownListFor(m => m.PayType, new SelectList(Model.PayTypes,"Id","Name"),(Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+        case 4:
+            <tr>
+               <td>Оплачиваемый период с:</td>
+               <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+            <tr>
+               <td>по:</td>
+               <td>@Html.EditorFor(m => m.PayDayEnd, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+        case 5:
+           <tr>
+               <td>Дата увольнения:</td>
+               <td>@Html.EditorFor(m => m.DismissalDate, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+            <tr>
+               <td>Месяц начисления:</td>
+               <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+            <tr>
+               <td>Месяц по счёту:</td>
+               <td>@Html.DropDownListFor(m => m.MonthId, new SelectList(Model.MonthTypes, "Id", "Name"), (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+        case 6:
+            <tr>
+               <td>Дата начала:</td>
+               <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+            <tr>
+               <td>Дата окончания:</td>
+               <td>@Html.EditorFor(m => m.PayDayEnd, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
+           </tr>
+              break;
+   }
    
     <tr>
          <td>
@@ -128,7 +184,7 @@
         Сотрудник расчетного отдела:
         </td>
         <td>
-        @if ((dto.Id == 10 || (dto.UserRole & UserRole.Estimator)>0 )&& Model.PersonnelAccept)
+        @if ((dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0) && Model.PersonnelAccept)
         {      @Html.CheckBoxFor(m => m.CountantAccept) } 
         &nbsp;  @Model.CountantDateAccept &nbsp; @Model.CountantName
         </td>
@@ -136,10 +192,10 @@
     }
     <tr>
     @if (!Model.IsDelete &&
-        (dto.UserRole == UserRole.ConsultantPersonnel 
-        || (dto.UserRole == UserRole.PersonnelManager &&( Model.PersonnelsApproved!=null && Model.PersonnelsApproved.Any(x => x.Id == dto.Id ))) 
-        || dto.Id == 10 
-        || (dto.UserRole & UserRole.Estimator)>0
+        (dto.UserRole == UserRole.ConsultantPersonnel
+        || (dto.UserRole == UserRole.PersonnelManager && (Model.PersonnelsApproved != null && Model.PersonnelsApproved.Any(x => x.Id == dto.Id)))
+        || dto.Id == 10
+        || (dto.UserRole & UserRole.Estimator) > 0
         || (dto.Id == Model.CreatorId && !Model.PersonnelDateAccept.HasValue && !Model.CountantDateAccept.HasValue)))
     {<td><button >Сохранить</button></td>}
     </tr>
