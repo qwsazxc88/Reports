@@ -576,6 +576,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsBeginWorkAvailable = true;
 
                     //чтобы видно было кадровикам, но в работу не принималось и скан не выкачивался
+                    List<int> EstimatorList = new List<int> { };
+                    List<int> PersonnelList = new List<int> { };
                     if (AuthenticationService.CurrentUser.Id != 10)
                     {
                         if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
