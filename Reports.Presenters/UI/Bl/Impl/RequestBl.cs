@@ -5257,7 +5257,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     var saldos = vacation.User.VacationSaldo.Where(x => x.Date < vacation.CreateDate);
                     if (saldos != null && saldos.Any())
                     {
-                        saldos = saldos.OrderBy(x => x.Date);
+                        saldos = saldos.OrderByDescending(x => x.Date);
                         var saldo = saldos.First();
                         model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
                         model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
