@@ -470,6 +470,7 @@ namespace Reports.Core.Dao.Impl
 
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.Estimator:
                 case UserRole.Secretary:
                 case UserRole.PersonnelManager:
                 case UserRole.Findep:

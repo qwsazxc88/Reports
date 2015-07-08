@@ -212,6 +212,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<UserRole> RolesToEdit = new List<UserRole>{
                 
                 UserRole.PersonnelManager,
+                UserRole.Estimator
                 // UserRole.ConsultantOutsorsingManager Deprecated
             };
             model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole) || CurrentUser.Id==10;
@@ -1356,6 +1357,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.Estimator:
                 case UserRole.PersonnelManager:
                 //case UserRole.ConsultantOutsorsingManager:
                 case UserRole.Admin:
@@ -2596,7 +2598,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetIsAvailable(HelpPersonnelBillingListModel model)
         {
             //могут создавать задачи все кто имеет доступ к пункту меню, кроме просмотровой учетки
-            model.IsAddAvailable = CurrentUser.UserRole != UserRole.OutsourcingManager || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10);
+            model.IsAddAvailable = CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole != UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10);
         }
 
         public void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError)
@@ -2637,7 +2639,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpPersonnelBillingRequest entity = null;
             if (id == 0)
             {
-                if (CurrentUser.UserRole != UserRole.OutsourcingManager || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
+                if (CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole == UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
                     userId = current.Id;
                 else
                     throw new ValidationException(StrCannotCreatePersonnelBilling);
@@ -2788,7 +2790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //открыто для создающего и отвечающих, кроме просмотровой роли
             bool isAddAvailable = (!entity.SendDate.HasValue && (entity.Creator.Id == CurrentUser.Id)) ||
-                ((entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)));
+                ((entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager) && (AuthenticationService.CurrentUser.UserRole != UserRole.Estimator)));
 
             List<RequestAttachment> list = RequestAttachmentDao.FindManyByRequestIdAndTypeId(entity.Id, typeId).ToList();
             RequestAttachmentsModel model = new RequestAttachmentsModel
@@ -3016,7 +3018,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else 
                 {
                     //кому направлена тема
-                    if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
+                    if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager && AuthenticationService.CurrentUser.UserRole != UserRole.Estimator)
                     {
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && entity.Creator.Id != AuthenticationService.CurrentUser.Id)
                         {

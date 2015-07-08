@@ -555,6 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 case UserRole.ConsultantPersonnel:
@@ -746,7 +747,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(CurrentUser.Id);
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
@@ -841,7 +842,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDeleted = true;
                 if (entity.Reports != null && entity.Reports.Any())
                 {
-                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
                 }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
@@ -1089,6 +1090,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
@@ -1724,6 +1726,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantPersonnel:
                 case UserRole.PersonnelManager:
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Security:
                     break;
@@ -1992,6 +1995,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     entity.IsEducationExists = new bool?();
                 break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 break;
                 default:

@@ -197,7 +197,7 @@
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
-                    @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
+                    @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager || ((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Estimator)
                     {
                         <th><div id="sort8"><a href="#"  onclick = "SortChanged(8);">Есть<br />изменение<br/> приказа</a></div></th>
                         <th><div id="sort9"><a href="#"  onclick = "SortChanged(9);">Пересчет</a></div></th>
@@ -227,7 +227,7 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
-                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
+                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager || ((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
                             {
                                 <td>@doc.IsAdditionalOrderExists</td>
                                 <td style="text-align:center">
