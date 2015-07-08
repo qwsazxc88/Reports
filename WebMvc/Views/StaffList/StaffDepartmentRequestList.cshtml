@@ -31,12 +31,23 @@
                 </td>
             </tr>
             <tr>
+                <td style="width:220px">
+                    @Html.LabelFor(m => m.StatusId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Id", "Name")) 
+                </td>
+            </tr>
+            <tr>
                 <td>@Html.LabelFor(m => m.Id)</td>
-                <td>@Html.TextBoxFor(m => m.Id, new { style = "width:75px;" })</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Id, new { style = "width:75px;" })
+                    @Html.ValidationMessageFor(m => m.Id)
+                </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.Creator)</td>
-                <td>@Html.TextBoxFor(m => m.Creator)</td>
+                <td>@Html.TextBoxFor(m => m.Creator, new { placeholder = "ФИО" })</td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -56,12 +67,53 @@
     </div><br />
     
     <div class="filter-wrap">
-        <table id="tblDepRequestList" style="width:100%">
+        <table class="grid" id="tblDepRequestList" style="width:100%">
             <tr>
-                <th></th>
+                <th>№ п/п</th>
+                <th><div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br /> заявки</a></div></th>
+                <th><div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">Дата создания<br /> заявки</a></div></th>
+                <th><div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Вид заявки</a></div></th>
+                <th><div id="sort4" style="min-width:30px"><a href="#" onclick = "SortChanged(4);">Подразделение <br />2 уровня</a></div></th>
+                <th><div id="sort5" style="min-width:30px"><a href="#" onclick = "SortChanged(5);">Подразделение <br />3 уровня</a></div></th>
+                <th><div id="sort6" style="min-width:30px"><a href="#" onclick = "SortChanged(6);">Подразделение <br />4 уровня</a></div></th>
+                <th><div id="sort7" style="min-width:30px"><a href="#" onclick = "SortChanged(7);">Подразделение <br />5 уровня</a></div></th>
+                <th><div id="sort8" style="min-width:30px"><a href="#" onclick = "SortChanged(8);">Подразделение <br />6 уровня</a></div></th>
+                <th><div id="sort9" style="min-width:30px"><a href="#" onclick = "SortChanged(9);">Подразделение <br />7 уровня</a></div></th>
+                <th><div id="sort10" style="min-width:30px"><a href="#" onclick = "SortChanged(10);">Номер<br /> приказа</a></div></th>
+                <th><div id="sort11" style="min-width:30px"><a href="#" onclick = "SortChanged(11);">Дата<br /> приказа</a></div></th>
+                <th><div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">ФИО<br /> инициатора</a></div></th>
+                <th><div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">Должность</a></div></th>
+                <th><div id="sort14" style="min-width:30px"><a href="#" onclick = "SortChanged(14);">Статус<br /> заявки</a></div></th>
             </tr>
             <tbody id="DepRequestListBody">
-                <tr><td></td></tr>
+                @{int i = 1;}
+                @if(Model.DepRequestList != null && Model.DepRequestList.Count != 0)
+                {
+                    foreach (var item in Model.DepRequestList)
+                    {
+                        <tr>
+                            <td style="text-align:center;">@i.ToString()</td>
+                            <td style="text-align:center;"><a class="ui-notify-close" href='@Url.Action("StaffDepartmentRequest", "StaffList", new { RequestType = @item.RequestTypeId, DepartmentId = @item.ParentId, id = @item.Id })' style="cursor:hand">@item.Id</a></td>
+                            <td>@item.DateRequest.ToShortDateString()</td>
+                            <td>@item.RequestTypeName</td>
+                            <td>@item.Dep2Name</td>
+                            <td>@item.Dep3Name</td>
+                            <td>@item.Dep4Name</td>
+                            <td>@item.Dep5Name</td>
+                            <td>@item.Dep6Name</td>
+                            <td>@item.Dep7Name</td>
+                            <td>@item.OrderNumber</td>
+                            <td>@(item.OrderDate.HasValue ? item.OrderDate.Value.ToShortDateString() : "")</td>
+                            <td>@item.Surname</td>
+                            <td>@item.PositionName</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    
+                        i++;
+                    }
+                }
+                
+                
             </tbody>
         </table>
     </div>
@@ -95,6 +147,15 @@
         $("#DateBegin").datepicker({changeYear: true, changeMonth: true});
         $("#DateEnd").datepicker({changeYear: true, changeMonth: true});
         $(".hasDatepicker").width("75px");
+
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+
     });
 
     function resetFilter() {
@@ -105,6 +166,7 @@
         $("#DepartmentNameLabel").text('');
         $("#Creator").val('');
         $("#Id").val('');
+        $("#StatusId").val('0');
     }
 
     function GetFindRows()

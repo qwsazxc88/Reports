@@ -81,6 +81,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Признак плановой операции")]
         public bool IsPlan { get; set; }
+
+        [Display(Name = "Инициатор")]
+        public int UserId { get; set; }
         #endregion
 
         #region Налоговые реквизиты

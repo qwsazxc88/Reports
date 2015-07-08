@@ -689,6 +689,7 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
     <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
