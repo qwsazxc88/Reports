@@ -41,7 +41,7 @@
                     }
                 </div> 
                 }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager| UserRole.Estimator | UserRole.DismissedEmployee)) == 0)
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer  | UserRole.DismissedEmployee)) == 0)
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                     </div> 
