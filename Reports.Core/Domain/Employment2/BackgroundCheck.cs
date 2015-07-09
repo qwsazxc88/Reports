@@ -46,6 +46,9 @@ namespace Reports.Core.Domain
         public virtual User Approver { get; set; }
         public virtual DateTime? ApprovalDate { get; set; } //ok
 
+        public virtual User CancelRejectUser { get; set; }
+        public virtual DateTime? CancelRejectDate { get; set; } //ok
+
         public virtual bool IsFinal { get; set; }
         public virtual bool IsValidate { get; set; }
         #endregion
