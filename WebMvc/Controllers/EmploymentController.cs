@@ -1801,8 +1801,10 @@ namespace WebMvc.Controllers
         #region Model Validation
 
         [NonAction]
-        protected void ValidateFileLength(HttpPostedFileBase postedFile, string inputName)
+        protected void ValidateFileLength(HttpPostedFileBase postedFile, string inputName, double MaxFileSize)
         {
+            //пришлось для каждого скана сделать индивидуальную проверку на допустимый размер
+            MaxFileSize = MaxFileSize * (1024 * 1024);
             if (postedFile != null)
             {
                 if (postedFile.ContentLength > MaxFileSize)
@@ -1870,10 +1872,10 @@ namespace WebMvc.Controllers
             }
 
             
-            ValidateFileLength(model.PhotoFile, "PhotoFile");
-            ValidateFileLength(model.INNScanFile, "INNScanFile");
-            ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
-            ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile");
+            ValidateFileLength(model.PhotoFile, "PhotoFile", 2);
+            ValidateFileLength(model.INNScanFile, "INNScanFile", 2);
+            ValidateFileLength(model.SNILSScanFile, "SNILSScanFile", 2);
+            ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile", 2);
 
             if (!model.IsGIDraft)
             {
@@ -1913,13 +1915,16 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(PassportModel model)
         {
+            
+            ValidateFileLength(model.InternalPassportScanFile, "InternalPassportScanFile", 20);
             if (!model.IsPassportDraft)
             {
-                PassportModel mt = EmploymentBl.GetPassportModel(model.UserId);
+                PassportModel mt = EmploymentBl.GetPassportModel(model.UserId);    
                 if (model.InternalPassportScanFile == null && string.IsNullOrEmpty(mt.InternalPassportScanAttachmentFilename))
                 {
                     ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 }
+                   
 
                 if (!model.IsValidate)
                 {
@@ -1933,6 +1938,10 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(EducationModel model)
         {
             ModelState.Clear();
+            ValidateFileLength(model.HigherEducationDiplomaScanFile, "HigherEducationDiplomaScanFile", 5);
+            ValidateFileLength(model.PostGraduateEducationDiplomaScanFile, "PostGraduateEducationDiplomaScanFile", 2);
+            ValidateFileLength(model.CertificationScanFile, "CertificationScanFile", 2);
+            ValidateFileLength(model.TrainingScanFile, "TrainingScanFile", 2);
             if (!model.IsEducationDraft)
             {
                 EducationModel mt = EmploymentBl.GetEducationModel(model.UserId);
@@ -1968,6 +1977,9 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(FamilyModel model)
         {
+            ValidateFileLength(model.MarriageCertificateScanFile, "MarriageCertificateScanFile", 2);
+            ValidateFileLength(model.ChildBirthCertificateScanFile, "ChildBirthCertificateScanFile", 2);
+
             if (!model.IsFDraft)
             {
                 FamilyModel mt = EmploymentBl.GetFamilyModel(model.UserId);
@@ -1998,6 +2010,9 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(MilitaryServiceModel model)
         {
+            ValidateFileLength(model.MilitaryCardScanFile, "MilitaryCardScanFile", 20);
+            ValidateFileLength(model.MobilizationTicketScanFile, "MobilizationTicketScanFile", 2);
+
             if (!model.IsMSDraft)
             {
                 MilitaryServiceModel mt = EmploymentBl.GetMilitaryServiceModel(model.UserId);
@@ -2025,6 +2040,9 @@ namespace WebMvc.Controllers
             ModelState.Remove("Company");
             ModelState.Remove("Position");
             ModelState.Remove("CompanyContacts");
+
+            ValidateFileLength(model.WorkBookScanFile, "WorkBookScanFile", 20);
+            ValidateFileLength(model.WorkBookSupplementScanFile, "WorkBookSupplementScanFile", 20);
             
             if (!model.IsExpDraft)
             {
@@ -2069,6 +2087,9 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(BackgroundCheckModel model)
         {
+            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
+            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
+
             if (!model.IsBGDraft)
             {
                 BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
@@ -2081,6 +2102,11 @@ namespace WebMvc.Controllers
                 if (model.InfoValidityScanFile == null && string.IsNullOrEmpty(mt.InfoValidityScanAttachmentFilename))
                 {
                     ModelState.AddModelError("InfoValidityScanFile", "Не выбран файл скана для загрузки!");
+                }
+
+                if (model.PersonalDataProcessingScanFile != null)
+                {
+                    //model.PersonalDataProcessingScanFile.ContentLength
                 }
 
                 if (!model.IsValidate)
@@ -2101,7 +2127,7 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(ApplicationLetterModel model)
         {
-            ValidateFileLength(model.ApplicationLetterScanFile, "ApplicationLetterScanFile");
+            ValidateFileLength(model.ApplicationLetterScanFile, "ApplicationLetterScanFile", 2);
             return ModelState.IsValid;
         }
 
