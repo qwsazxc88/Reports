@@ -12004,8 +12004,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 5, Name = "Заявка отработана УКДиУ" });
             model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
                                                 new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
-                                                new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
-                                                new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
                                                 new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
                                                 new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
                                                 new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
@@ -12170,6 +12170,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CreateDate = entity.CreateDate;
             model.CreatorName = entity.Creator.Name;
             model.CreatorDepartment = entity.Creator.Department.Name;
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.Creator.Department, 3);
+            model.CreatorDepartment3 = dep3 != null ? dep3.Name : "";
             model.CreatorId = entity.Creator.Id;
             model.PayDay = entity.PayDay;
             model.DepartmentId = entity.DocDep7.Id;
@@ -12209,6 +12211,38 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var dep = DepartmentDao.Load(id);
             return dep.ItemLevel == level;
+        }
+        public bool CheckDepartment(SurchargeNoteEditModel model, out int level)
+        {
+            level = 0;
+            int departmentId = model.DepartmentId;
+            
+            Department dep = DepartmentDao.Load(departmentId);
+            if (dep == null)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            if (!dep.ItemLevel.HasValue)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            level = dep.ItemLevel.Value;
+
+            User currUser = UserDao.Load(model.UserId);
+
+            if (currUser == null)
+                throw new ArgumentException(string.Format(" Пользователь не найден {0}", model.UserId));
+            List<DepartmentDto> departments;
+            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
+            switch (currUser.Level)
+            {
+                case 2:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 2, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                case 3:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 3, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                default:
+                    if (currUser.Department == null)
+                        throw new ValidationException(string.Format("Не найдено подразделение для пользователя {0}", currUser.Id));
+                    return dep.Path.StartsWith(currUser.Department.Path);
+            }
         }
         #endregion
 

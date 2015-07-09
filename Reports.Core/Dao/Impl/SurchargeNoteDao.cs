@@ -92,7 +92,7 @@ namespace Reports.Core.Dao.Impl
                 Id=x.Id,
                 CountantDateAccept=x.CountantDateAccept,
                 CountantId = x.Countant!=null?x.Countant.Id:0,
-                CountantName =x.Countant!=null?x.Countant.Name:"",
+                CountantName =x.Countant!=null?x.Countant.Name:"",                
                 CreateDate=x.CreateDate,
                 CreatorId=x.Creator.Id,
                 CreatorName=x.Creator.Name,

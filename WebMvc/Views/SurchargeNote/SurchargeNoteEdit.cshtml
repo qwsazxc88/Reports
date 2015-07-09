@@ -41,6 +41,10 @@
        <td>@Html.DisplayFor(m => m.Position)</td>
    </tr>
    <tr>
+       <td>Дирекция 3 уровень:</td>
+       <td>@Html.DisplayFor(m => m.CreatorDepartment3)</td>
+   </tr>
+   <tr>
        <td>Подразделение:</td>
        <td>@Html.DisplayFor(m => m.CreatorDepartment)</td>
    </tr>
@@ -242,7 +246,10 @@
                         <text>
                         
                         $("#PayDay").datepicker({changeMonth: true, changeYear: true, dateFormat: 'MM.yy', constrainInput: true});
+                        $("#PayDay").datepicker( "setDate", '@Model.PayDay.ToString("MM.yy")' );
                         $("#PayDayEnd").datepicker({changeMonth: true, changeYear: true, dateFormat: 'MM.yy', constrainInput: true});
+                        $("#PayDayEnd").datepicker( "setDate", '@(Model.PayDayEnd.HasValue?Model.PayDayEnd.Value.ToString("MM.yy"):DateTime.Now.ToString("MM.yy"))');
+                       
                        </text>
                           break;
                     case 5:
