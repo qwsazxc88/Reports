@@ -152,6 +152,7 @@
             <div class="menuitem" id="empInstruction">@Html.ActionLink("Инструкция", "Instruction", "Employment")</div>
             @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
             {                
+                <div class="menuitem" id="empScanOriginalDocuments">@Html.ActionLink("Сканы оригиналов документов", "ScanOriginalDocuments", "Employment")</div>
                 <div class="menuitem" id="empGeneralInfo">@Html.ActionLink("Общая информация", "GeneralInfo", "Employment")</div>
                 <div class="menuitem" id="empPassport">@Html.ActionLink("Паспортные данные", "Passport", "Employment")</div>
                 <div class="menuitem" id="empEducation">@Html.ActionLink("Образование", "Education", "Employment")</div>

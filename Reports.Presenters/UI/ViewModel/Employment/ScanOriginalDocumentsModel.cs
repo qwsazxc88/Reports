@@ -1,0 +1,99 @@
+﻿using System;
+using System.Web.Mvc;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto.Employment2;
+using System.Web;
+
+namespace Reports.Presenters.UI.ViewModel.Employment2
+{
+    public class ScanOriginalDocumentsModel : AbstractEmploymentModel
+    {
+        //состояние кандидата
+        //public IList<CandidateStateDto> CandidateState { get; set; }
+        public CandidateStateModel CandidateStateModel { get; set; }
+
+        public string ErrorMessage { get; set; }
+
+        //сканы общей информации
+        [Display(Name = "Скан СНИЛС")]
+        public HttpPostedFileBase SNILSScanFile { get; set; }
+        public string SNILSScanAttachmentFilename { get; set; }
+        public int SNILSScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан ИНН")]
+        public HttpPostedFileBase INNScanFile { get; set; }
+        public string INNScanAttachmentFilename { get; set; }
+        public int INNScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан справки об инвалидности")]
+        public HttpPostedFileBase DisabilityCertificateScanFile { get; set; }
+        public string DisabilityCertificateScanAttachmentFilename { get; set; }
+        public int DisabilityCertificateScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан паспорта")]
+        public HttpPostedFileBase InternalPassportScanFile { get; set; }
+        public string InternalPassportScanAttachmentFilename { get; set; }
+        public int InternalPassportScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан документа об образовании")]
+        public HttpPostedFileBase HigherEducationDiplomaScanFile { get; set; }
+        public string HigherEducationDiplomaScanFileName { get; set; }
+        public int HigherEducationDiplomaScanId { get; set; }
+
+        [Display(Name = "Скан документа о послевузовском образовании")]
+        public HttpPostedFileBase PostGraduateEducationDiplomaScanFile { get; set; }
+        public string PostGraduateEducationDiplomaScanFileName { get; set; }
+        public int PostGraduateEducationDiplomaScanId { get; set; }
+
+        [Display(Name = "Скан документа о дополнительном образовании")]
+        public HttpPostedFileBase CertificationScanFile { get; set; }
+        public string CertificationScanFileName { get; set; }
+        public int CertificationScanId { get; set; }
+
+        [Display(Name = "Скан документа о повышении квалификации")]
+        public HttpPostedFileBase TrainingScanFile { get; set; }
+        public string TrainingScanFileName { get; set; }
+        public int TrainingScanId { get; set; }
+
+        [Display(Name = "Скан свидетельства о браке")]
+        public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
+        public string MarriageCertificateScanAttachmentFilename { get; set; }
+        public int MarriageCertificateScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан свидетельств о рождении детей")]
+        public HttpPostedFileBase ChildBirthCertificateScanFile { get; set; }
+        public string ChildBirthCertificateScanAttachmentFilename { get; set; }
+        public int ChildBirthCertificateScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан военного билета")]
+        public HttpPostedFileBase MilitaryCardScanFile { get; set; }
+        public string MilitaryCardScanAttachmentFilename { get; set; }
+        public int MilitaryCardScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан мобилизационного талона")]
+        public HttpPostedFileBase MobilizationTicketScanFile { get; set; }
+        public string MobilizationTicketScanAttachmentFilename { get; set; }
+        public int MobilizationTicketScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан трудовой книжки")]
+        public HttpPostedFileBase WorkBookScanFile { get; set; }
+        public string WorkBookScanAttachmentFilename { get; set; }
+        public int WorkBookScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан вкладыша в трудовую книжку")]
+        public HttpPostedFileBase WorkBookSupplementScanFile { get; set; }
+        public string WorkBookSupplementScanAttachmentFilename { get; set; }
+        public int WorkBookSupplementScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан рукописного текста согласия на обработку персональных данных")]
+        public HttpPostedFileBase PersonalDataProcessingScanFile { get; set; }
+        public string PersonalDataProcessingScanAttachmentFilename { get; set; }
+        public int PersonalDataProcessingScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан рукописного текста о достоверности сведений")]
+        public HttpPostedFileBase InfoValidityScanFile { get; set; }
+        public string InfoValidityScanAttachmentFilename { get; set; }
+        public int InfoValidityScanAttachmentId { get; set; }
+    }
+}

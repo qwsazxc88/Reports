@@ -4,9 +4,10 @@
 }
 
 <b>Индикатор состояния заполнения и согласования анкеты</b>
+
     <table class="state">
         <tr>
-            <td colspan="9" style="background-color:Silver">Состояние заполнения анкетных данных</td>
+            <td colspan="10" style="background-color:Silver">Состояние заполнения анкетных данных</td>
             <td @if (Model.CandidateState[0].BackgroundApproval.HasValue && Model.CandidateState[0].BackgroundApproval.Value)
                 {<text>style="background-color:Lime"</text>}>Департамент безопасности</td>
             <td @if (Model.CandidateState[0].TrainingApproval.HasValue && Model.CandidateState[0].TrainingApproval.Value)
@@ -17,6 +18,8 @@
                 {<text>style="background-color:Lime"</text>}>Кадры</td>
         </tr>
         <tr>
+            <td @if (Model.CandidateState[0].ScanFinal)
+                {<text>style="background-color:Lime"</text>}>Сканы оригиналов документов</td>
             <td @if (Model.CandidateState[0].GeneralFinal)
                 {<text>style="background-color:Lime"</text>}>Общая информация</td>
             <td @if (Model.CandidateState[0].PassportFinal)

@@ -28,6 +28,7 @@
     <property name="IsTrainingNeeded" not-null="false"/>
     <property name="IsBeforEmployment" not-null="false"/>
     <property name="IsTechDissmiss" not-null="false"/>
+    <property name="IsScanFinal" not-null="false"/>
     <property name="SendTo1C" not-null="false"/>
 
     <property name="IsCandidateToBackgroundSendEmail" not-null="false"/>

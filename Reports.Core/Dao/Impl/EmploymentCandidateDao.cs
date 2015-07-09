@@ -585,6 +585,7 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("ScanFinal", NHibernateUtil.Boolean)
                 .AddScalar("GeneralFinal", NHibernateUtil.Boolean)
                 .AddScalar("PassportFinal", NHibernateUtil.Boolean)
                 .AddScalar("EducationFinal", NHibernateUtil.Boolean)

@@ -125,6 +125,7 @@ namespace Reports.Core.Dto.Employment2
     public class CandidateStateDto
     {
         public int Id { get; set; }
+        public bool ScanFinal { get; set; }
         public bool GeneralFinal { get; set; }
         public bool PassportFinal { get; set; }
         public bool EducationFinal { get; set; }
