@@ -41,6 +41,10 @@
        <td>@Html.DisplayFor(m => m.Position)</td>
    </tr>
    <tr>
+       <td>Дирекция 3 уровень:</td>
+       <td>@Html.DisplayFor(m => m.CreatorDepartment3)</td>
+   </tr>
+   <tr>
        <td>Подразделение:</td>
        <td>@Html.DisplayFor(m => m.CreatorDepartment)</td>
    </tr>
@@ -54,7 +58,7 @@
    </tr>
    <tr>
                 <td>
-                    Подразделение 7 уровня:
+                   Выбрать подразделение 7 уровня:
                 </td>
                 <td>
                     <label id="DepartmentNameLabel">@Model.DepartmentName</label>
@@ -102,7 +106,7 @@
                <td>@Html.EditorFor(m => m.PayDay, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
            </tr>
             <tr>
-               <td>по:</td>
+               <td>Оплачиваемый период по:</td>
                <td>@Html.EditorFor(m => m.PayDayEnd, (Model.CreatorId == dto.Id && Model.IsEditable) ? null : new { disabled = "disabled" })</td>
            </tr>
               break;
@@ -200,7 +204,7 @@
     {<td><button >Сохранить</button></td>}
     </tr>
     <tr>
-    <td>@if (!Model.IsDelete && (dto.UserRole == UserRole.PersonnelManager || dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0))
+    <td>@if (!Model.IsDelete && (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.ConsultantPersonnel || Model.CreatorId==dto.Id || dto.Id == 10 || (dto.UserRole & UserRole.Estimator) > 0))
         {
             <input type="submit" onclick="$('#IsDelete').val('true');" value="Отклонить заявку" />
         }
@@ -217,9 +221,56 @@
    
         $(document).ready(function () {
         var menuitem="moSurchargeNoteList"+"@Model.NoteType";
-            $('#PayDay').mask('99.99.9999');
             setActiveMenuItem(menuitem);
-            $("#PayDay").datepicker({changeMonth: true, changeYear: true});
+            @switch(Model.NoteType)
+               {
+                   case 0:
+                   case 1:
+                       <text>
+                        $('#PayDay').mask('99.99.9999');
+                        $("#PayDay").datepicker({changeMonth: true, changeYear: true});
+                       </text>
+                          break;
+                    case 2:
+                        <text>
+                        $('#PayDay').mask('99.99.9999');
+                        $('#PayDayEnd').mask('99.99.9999');
+                        $("#PayDay").datepicker({changeMonth: true, changeYear: true});
+                        $("#PayDayEnd").datepicker({changeMonth: true, changeYear: true});
+                       </text>
+                          break;
+                    case 3:
+                        
+                          break;
+                    case 4:
+                        <text>
+                        
+                        $("#PayDay").datepicker({changeMonth: true, changeYear: true, dateFormat: 'MM.yy', constrainInput: true});
+                        $("#PayDay").datepicker( "setDate", '@Model.PayDay.ToString("MM.yy")' );
+                        $("#PayDayEnd").datepicker({changeMonth: true, changeYear: true, dateFormat: 'MM.yy', constrainInput: true});
+                        $("#PayDayEnd").datepicker( "setDate", '@(Model.PayDayEnd.HasValue?Model.PayDayEnd.Value.ToString("MM.yy"):DateTime.Now.ToString("MM.yy"))');
+                       
+                       </text>
+                          break;
+                    case 5:
+                       <text>
+                        
+                        $("#PayDay").datepicker({changeMonth: true, changeYear: true, dateFormat: 'mm.yy'});
+                        $("#PayDay").datepicker( "setDate", '@Model.PayDay.ToString("MM.yy")' );
+                        $("#DismissalDate").datepicker({changeMonth: true, changeYear: true, dateFormat: 'mm.yy'});
+                        $("#DismissalDate").datepicker( "setDate", '@(Model.DismissalDate.HasValue?Model.DismissalDate.Value.ToString("MM.yy"):DateTime.Now.ToString("MM.yy"))');
+                       </text>
+                          break;
+                    case 6:
+                       <text>
+                        $('#PayDay').mask('99.99.9999');
+                        $('#PayDayEnd').mask('99.99.9999');
+                        $("#PayDay").datepicker({changeMonth: true, changeYear: true});
+                        $("#PayDayEnd").datepicker({changeMonth: true, changeYear: true});
+                       </text>
+                          break;
+               }
+        
         });
     </script>
 
