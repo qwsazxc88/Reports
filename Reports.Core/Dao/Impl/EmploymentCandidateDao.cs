@@ -623,7 +623,7 @@ namespace Reports.Core.Dao.Impl
             return query;
         }
         /// <summary>
-        /// Список сканов.
+        /// Список сканов документов по приему.
         /// </summary>
         /// <param name="CandidateID">Id кандидата</param>
         /// <returns></returns>
@@ -644,7 +644,22 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
-        
+        /// <summary>
+        /// Достаем список сканов из анкеты.
+        /// </summary>
+        /// <param name="CandidateID">Id заявки кандидата.</param>
+        /// <returns></returns>
+        public IList<EmploymentAttachmentDto> GetCandidateQuestAttachmentList(int CandidateID)
+        {
+            IQuery query = Session.CreateSQLQuery("SELECT * FROM dbo.vwEmploymentScanInfo WHERE CandidateID = " + CandidateID.ToString())
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("CandidateId", NHibernateUtil.Int32)
+                .AddScalar("RequestType", NHibernateUtil.Int32)
+                .AddScalar("FileName", NHibernateUtil.String)
+                .AddScalar("DateCreated", NHibernateUtil.DateTime)
+                .AddScalar("Surname", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean<EmploymentAttachmentDto>()).List<EmploymentAttachmentDto>();
+        }
 
     }
 }

@@ -252,9 +252,18 @@
             </tr>
             <tr>
                 <td colspan="7">
+                    @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
+                    @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)<br />
+                    @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+                    <br />
+                    @Html.EditorFor(m => m.IsScanFinal)
+                    @Html.LabelFor(m => m.IsScanFinal)<br />
+                    @Html.ValidationMessageFor(m => m.IsScanFinal)
                 </td>
             </tr>
         </table>
+        <br />
+        <button type="submit">Отправить на согласование</button>
     </fieldset>
     
     
@@ -268,6 +277,23 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empScanOriginalDocuments");
+
+        $("#SNILSScanFile").change(function () { this.form.submit(); });
+        $("#INNScanFile").change(function () { this.form.submit(); });
+        $("#DisabilityCertificateScanFile").change(function () { this.form.submit(); });
+        $("#InternalPassportScanFile").change(function () { this.form.submit(); });
+        $("#HigherEducationDiplomaScanFile").change(function () { this.form.submit(); });
+        $("#PostGraduateEducationDiplomaScanFile").change(function () { this.form.submit(); });
+        $("#CertificationScanFile").change(function () { this.form.submit(); });
+        $("#TrainingScanFile").change(function () { this.form.submit(); });
+        $("#MarriageCertificateScanFile").change(function () { this.form.submit(); });
+        $("#ChildBirthCertificateScanFile").change(function () { this.form.submit(); });
+        $("#MilitaryCardScanFile").change(function () { this.form.submit(); });
+        $("#MobilizationTicketScanFile").change(function () { this.form.submit(); });
+        $("#WorkBookScanFile").change(function () { this.form.submit(); });
+        $("#WorkBookSupplementScanFile").change(function () { this.form.submit(); });
+        $("#PersonalDataProcessingScanFile").change(function () { this.form.submit(); });
+        $("#InfoValidityScanFile").change(function () { this.form.submit(); });
 
         //$(":button").button();
     });

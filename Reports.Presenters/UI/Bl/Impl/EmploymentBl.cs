@@ -408,6 +408,32 @@ namespace Reports.Presenters.UI.Bl.Impl
             attachmentId = attach.Id;
             attachmentFilename = attach.FileName;
         }
+        /// <summary>
+        /// Достаем информацию по скану документа с информацией по операции добавления скана.
+        /// </summary>
+        /// <param name="attachmentId">Id скана</param>
+        /// <param name="attachmentFilename">Имя файла</param>
+        /// <param name="candidateId">Id документа</param>
+        /// <param name="type">Вид документа</param>
+        /// <param name="Surname">ФИО пользователя, который добавил файл</param>
+        /// <param name="OperationDate">Дата добавления скана.</param>
+        protected void GetAttachmentDataWithOperationInfo(ref int attachmentId, ref string attachmentFilename, int candidateId, RequestAttachmentTypeEnum type, ref string Surname, ref DateTime? OperationDate)
+        {
+            if (candidateId == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(candidateId, type);
+            if (attach == null)
+            {
+                attachmentId = 0;
+                attachmentFilename = null;
+                return;
+            }
+            attachmentId = attach.Id;
+            attachmentFilename = attach.FileName;
+            if (attach.Creator != null)
+                Surname = UserDao.Get(attach.Creator.Id).Name;
+            OperationDate = attach.DateCreated;
+        }
 
         public PassportModel GetPassportModel(int? userId = null)
         {
@@ -1694,153 +1720,121 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ScanOriginalDocumentsModel model = new ScanOriginalDocumentsModel { UserId = userId.Value };
+            EmploymentCandidate entity = GetCandidate(model.UserId);
 
+            if (entity != null)
+            {
+                IList<EmploymentAttachmentDto> attach = EmploymentCandidateDao.GetCandidateQuestAttachmentList(entity.Id);
 
-            GeneralInfo entity = null;
-            //int? id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(userId.Value);
-            //if (id.HasValue)
-            //{
-            //    entity = EmploymentGeneralInfoDao.Get(id.Value);
-            //}
+                if (attach != null && attach.Count != 0)
+                {
+                    model.AttachmentList = attach;
 
+                    foreach (EmploymentAttachmentDto item in attach)
+                    {
+                        if (item.RequestType == 213)//снилс
+                        {
+                            model.SNILSScanAttachmentId = item.Id;
+                            model.SNILSScanAttachmentFilename = item.FileName;
+                        }
 
-            //if (entity != null)
-            //{
-            //    int attachmentId = 0;
-            //    string attachmentFilename = string.Empty;
+                        if (item.RequestType == 212)//инн
+                        {
+                            model.INNScanAttachmentId = item.Id;
+                            model.INNScanAttachmentFilename = item.FileName;
+                        }
 
-            //    model.SendTo1C = entity.Candidate.SendTo1C;
+                        if (item.RequestType == 214)//инвалидность
+                        {
+                            model.DisabilityCertificateScanAttachmentId = item.Id;
+                            model.DisabilityCertificateScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //заявление о приеме
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
-            //    model.ApplicationLetterScanAttachmentId = attachmentId;
-            //    model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
-            //    //model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
+                        if (item.RequestType == 211)//паспорт
+                        {
+                            model.InternalPassportScanAttachmentId = item.Id;
+                            model.InternalPassportScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //трудовой договор
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentContractScan);
-            //    model.EmploymentContractFileId = attachmentId;
-            //    model.EmploymentContractFileName = attachmentFilename;
+                        if (item.RequestType == 221)//образование
+                        {
+                            model.HigherEducationDiplomaScanId = item.Id;
+                            model.HigherEducationDiplomaScanFileName = item.FileName;
+                        }
 
-            //    //приказ о приеме
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.OrderOnReceptionScan);
-            //    model.OrderOnReceptionFileId = attachmentId;
-            //    model.OrderOnReceptionFileName = attachmentFilename;
+                        if (item.RequestType == 222)//послевузовское образование
+                        {
+                            model.PostGraduateEducationDiplomaScanId = item.Id;
+                            model.PostGraduateEducationDiplomaScanFileName = item.FileName;
+                        }
 
-            //    //Т2
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CandidateT2Scan);
-            //    model.T2FileId = attachmentId;
-            //    model.T2FileName = attachmentFilename;
+                        if (item.RequestType == 223)//дополнительное образование
+                        {
+                            model.CertificationScanId = item.Id;
+                            model.CertificationScanFileName = item.FileName;
+                        }
 
-            //    //договор о мат. ответственности
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ContractMatResponsibleScan);
-            //    model.ContractMatResponsibleFileId = attachmentId;
-            //    model.ContractMatResponsibleFileName = attachmentFilename;
+                        if (item.RequestType == 224)//повышение квалификации
+                        {
+                            model.TrainingScanId = item.Id;
+                            model.TrainingScanFileName = item.FileName;
+                        }
 
-            //    //ДС персональные данные
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.PersonalDataScan);
-            //    model.PersonalDataFileId = attachmentId;
-            //    model.PersonalDataFileName = attachmentFilename;
+                        if (item.RequestType == 231)//брак
+                        {
+                            model.MarriageCertificateScanAttachmentId = item.Id;
+                            model.MarriageCertificateScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //обязательство конфиденциальность
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.DataObligationScan);
-            //    model.DataObligationFileId = attachmentId;
-            //    model.DataObligationFileName = attachmentFilename;
+                        if (item.RequestType == 232)//дети
+                        {
+                            model.ChildBirthCertificateScanAttachmentId = item.Id;
+                            model.ChildBirthCertificateScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //личный листок по учету кадров
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
-            //    model.EmploymentFileId = attachmentId;
-            //    model.EmploymentFileName = attachmentFilename;
+                        if (item.RequestType == 241)//военник
+                        {
+                            model.MilitaryCardScanAttachmentId = item.Id;
+                            model.MilitaryCardScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //реестр личного дела
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.RegisterPersonalRecordScan);
-            //    model.RegisterPersonalRecordFileId = attachmentId;
-            //    model.RegisterPersonalRecordFileName = attachmentFilename;
+                        if (item.RequestType == 242)//моб. талон
+                        {
+                            model.MobilizationTicketScanAttachmentId = item.Id;
+                            model.MobilizationTicketScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //памятка сотруднику о сохранении коммерческой, банковской и служебной тайны
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InstructionOfSecretScan);
-            //    model.InstructionOfSecretFileId = attachmentId;
-            //    model.InstructionOfSecretFileName = attachmentFilename;
+                        if (item.RequestType == 215)//трудовая книжка
+                        {
+                            model.WorkBookScanAttachmentId = item.Id;
+                            model.WorkBookScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan);
-            //    model.InstructionEnsuringSafetyFileId = attachmentId;
-            //    model.InstructionEnsuringSafetyFileName = attachmentFilename;
+                        if (item.RequestType == 216)//вкладыш в трудовую книжку
+                        {
+                            model.WorkBookSupplementScanAttachmentId = item.Id;
+                            model.WorkBookSupplementScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //Согласие физического лица на проверку персональных данных (Приложение №3)
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.AgreePersonForCheckingScan);
-            //    model.AgreePersonForCheckingFileId = attachmentId;
-            //    model.AgreePersonForCheckingFileName = attachmentFilename;
+                        if (item.RequestType == 261)//Скан согласия на обработку персональных данных
+                        {
+                            model.PersonalDataProcessingScanAttachmentId = item.Id;
+                            model.PersonalDataProcessingScanAttachmentFilename = item.FileName;
+                        }
 
-            //    //Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CashWorkAddition1Scan);
-            //    model.CashWorkAddition1FileId = attachmentId;
-            //    model.CashWorkAddition1FileName = attachmentFilename;
+                        if (item.RequestType == 262)//Скан текста о достоверности сведений
+                        {
+                            model.InfoValidityScanAttachmentId = item.Id;
+                            model.InfoValidityScanAttachmentFilename = item.FileName;
+                        }
+                    }
+                }
+            }
 
-            //    //Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.CashWorkAddition2Scan);
-            //    model.CashWorkAddition2FileId = attachmentId;
-            //    model.CashWorkAddition2FileName = attachmentFilename;
-
-            //    //Обязательство о неразглашении коммерческой и служебной тайны
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ObligationTradeSecretScan);
-            //    model.ObligationTradeSecretFileId = attachmentId;
-            //    model.ObligationTradeSecretFileName = attachmentFilename;
-
-            //    //Справка 182-Н от предыдущего работодателя
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate182HScan);
-            //    model.Certificate182HFileId = attachmentId;
-            //    model.Certificate182HFileName = attachmentFilename;
-
-            //    //Справка 2-НДФЛ от предыдущего работодателя
-            //    GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.Certificate2NDFLScan);
-            //    model.Certificate2NDFLFileId = attachmentId;
-            //    model.Certificate2NDFLFileName = attachmentFilename;
-
-            //    //достаем метки для документов
-            //    IList<AttachmentNeedListDto> adl = EmploymentCandidateDocNeededDao.GetCandidateDocListNeeded(entity.Candidate.Id);
-            //    if (adl != null && adl.Count != 0)
-            //    {
-            //        model.ApplicationLetterScanFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ApplicationLetterScan).Single().IsNeeded;
-            //        model.EmploymentContractFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentContractScan).Single().IsNeeded;
-            //        model.OrderOnReceptionFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.OrderOnReceptionScan).Single().IsNeeded;
-            //        model.T2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CandidateT2Scan).Single().IsNeeded;
-            //        model.ContractMatResponsibleFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ContractMatResponsibleScan).Single().IsNeeded;
-            //        model.PersonalDataFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.PersonalDataScan).Single().IsNeeded;
-            //        model.DataObligationFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.DataObligationScan).Single().IsNeeded;
-            //        model.EmploymentFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.EmploymentFileScan).Single().IsNeeded;
-            //        model.RegisterPersonalRecordFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.RegisterPersonalRecordScan).Single().IsNeeded;
-            //        model.InstructionOfSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.InstructionOfSecretScan).Single().IsNeeded;
-            //        model.InstructionEnsuringSafetyFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.InstructionEnsuringSafetyScan).Single().IsNeeded;
-            //        model.AgreePersonForCheckingFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.AgreePersonForCheckingScan).Single().IsNeeded;
-            //        model.CashWorkAddition1FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition1Scan).Single().IsNeeded;
-            //        model.CashWorkAddition2FileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.CashWorkAddition2Scan).Single().IsNeeded;
-            //        model.ObligationTradeSecretFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.ObligationTradeSecretScan).Single().IsNeeded;
-            //        //для уже существующего списка
-            //        if (model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Count() != 0)
-            //            model.Certificate182HFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate182HScan).Single().IsNeeded;
-            //        if (model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Count() != 0)
-            //            model.Certificate2NDFLFileNeeded = adl.Where(x => x.DocTypeId == (int)RequestAttachmentTypeEnum.Certificate2NDFLScan).Single().IsNeeded;
-            //    }
-            //    else
-            //    {
-            //        model.ApplicationLetterScanFileNeeded = true;
-            //        model.EmploymentContractFileNeeded = true;
-            //        model.OrderOnReceptionFileNeeded = true;
-            //    }
-
-            //    //если нет списка, то не показаываем кнопки к документам 2, 3, 4, 5 позиций
-            //    model.IsDocListAvailable = EmploymentCandidateDocNeededDao.GetCandidateDocNeeded(entity.Candidate.Id).Count() == 0 ? false : true;
-            //    //признак видимости для кнопок печати (показа шаблона документов)
-            //    //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
-            //    model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate ? false : true) : true;
-            //    //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
-            //    model.IsDeleteScanButtonAvailable = model.SendTo1C.HasValue ? (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? true : false) : true;
-            //}
-
+           
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
-            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
 
 
             return model;
@@ -3666,6 +3660,76 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return;
                 }
             }
+
+        }
+
+        public void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error)
+        {
+            error = string.Empty;
+
+            EmploymentCandidate candidate = GetCandidate(model.UserId);
+            int candidateId = candidate.Id;
+
+
+            //if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+            //{
+            //    error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+            //    return;
+            //}
+
+            GeneralInfoModel gim = new GeneralInfoModel();
+            gim.SNILSScanFile = model.SNILSScanFile;
+            gim.INNScanFile = model.INNScanFile;
+            gim.DisabilityCertificateScanFile = model.DisabilityCertificateScanFile;
+            SaveGeneralInfoAttachments(gim, candidateId);
+            //не стал на выходе получать параметры, так как из базы все равно надо достать фио и дату операции
+            //model.SNILSScanAttachmentFilename = gim.SNILSScanAttachmentFilename;
+            //model.SNILSScanAttachmentId = gim.SNILSScanAttachmentId;
+            PassportModel pm = new PassportModel();
+            pm.InternalPassportScanFile = model.InternalPassportScanFile;
+            SavePassportAttachments(pm, candidateId);
+
+            EducationModel em = new EducationModel();
+            em.HigherEducationDiplomaScanFile = model.HigherEducationDiplomaScanFile;
+            em.PostGraduateEducationDiplomaScanFile = model.PostGraduateEducationDiplomaScanFile;
+            em.CertificationScanFile = model.CertificationScanFile;
+            em.TrainingScanFile = model.TrainingScanFile;
+            SaveEducationAttachments(em, candidateId);
+
+            FamilyModel fm = new FamilyModel();
+            fm.MarriageCertificateScanFile = model.MarriageCertificateScanFile;
+            fm.ChildBirthCertificateScanFile = model.ChildBirthCertificateScanFile;
+            SaveFamilyAttachments(fm, candidateId);
+
+            MilitaryServiceModel msm = new MilitaryServiceModel();
+            msm.MilitaryCardScanFile = model.MilitaryCardScanFile;
+            msm.MobilizationTicketScanFile = model.MobilizationTicketScanFile;
+            SaveMilitaryServiceAttachments(msm, candidateId);
+
+            ExperienceModel exm = new ExperienceModel();
+            exm.WorkBookScanFile = model.WorkBookScanFile;
+            exm.WorkBookSupplementScanFile = model.WorkBookSupplementScanFile;
+            SaveExperienceAttachments(exm, candidateId);
+
+            BackgroundCheckModel bcm = new BackgroundCheckModel();
+            bcm.PersonalDataProcessingScanFile = model.PersonalDataProcessingScanFile;
+            bcm.InfoValidityScanFile = model.InfoValidityScanFile;
+            SaveBackgroundCheckAttachments(bcm, candidateId);
+
+
+            candidate.GeneralInfo.AgreedToPersonalDataProcessing = model.AgreedToPersonalDataProcessing;
+            candidate.IsScanFinal = model.IsScanFinal;
+
+            try
+            {
+                EmploymentCandidateDao.SaveAndFlush(candidate);
+            }
+            catch
+            {
+                error = "Произошла ошибка при сохранении данных!";
+                EmploymentCandidateDao.RollbackTran();
+            }
+
 
         }
 

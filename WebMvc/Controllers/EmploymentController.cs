@@ -152,37 +152,37 @@ namespace WebMvc.Controllers
         public ActionResult ScanOriginalDocuments(ScanOriginalDocumentsModel model)
         {
             string error = String.Empty;
-            //string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
-            //if (ValidateModel(model))
-            //{
-            //    model.IsDraft = model.IsGIDraft;
-            //    EmploymentBl.ProcessSaving<ScanOriginalDocumentsModel, ScanOriginalDocuments>(model, out error);
-            //    //ViewBag.Error = error;
-            //    model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
-            //    ModelState.AddModelError("AgreedToPersonalDataProcessing", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-            //}
-            //else
-            //{   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-            //    model = EmploymentBl.GetScanOriginalDocumentsModel(model);
-            //    if (Session["ScanOriginalDocumentsM" + SPPath] != null)
-            //        Session.Remove("ScanOriginalDocumentsM" + SPPath);
-            //    if (Session["ScanOriginalDocumentsM" + SPPath] == null)
-            //        Session.Add("ScanOriginalDocumentsM" + SPPath, model);
-            //}
+            if (ValidateModel(model))
+            {
 
-            //if (Session["ScanOriginalDocumentsMS" + SPPath] != null)
-            //    Session.Remove("ScanOriginalDocumentsMS" + SPPath);
-            //if (Session["ScanOriginalDocumentsMS" + SPPath] == null)
-            //{
-            //    ModelStateDictionary mst = ModelState;
-            //    Session.Add("ScanOriginalDocumentsMS" + SPPath, mst);
-            //}
+                EmploymentBl.SaveScanOriginalDocumentsModelAttachments(model, out error);
+                //ViewBag.Error = error;
+                model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+            }
+            else
+            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                if (Session["ScanOriginalDocumentsM" + SPPath] != null)
+                    Session.Remove("ScanOriginalDocumentsM" + SPPath);
+                if (Session["ScanOriginalDocumentsM" + SPPath] == null)
+                    Session.Add("ScanOriginalDocumentsM" + SPPath, model);
+            }
+
+            if (Session["ScanOriginalDocumentsMS" + SPPath] != null)
+                Session.Remove("ScanOriginalDocumentsMS" + SPPath);
+            if (Session["ScanOriginalDocumentsMS" + SPPath] == null)
+            {
+                ModelStateDictionary mst = ModelState;
+                Session.Add("ScanOriginalDocumentsMS" + SPPath, mst);
+            }
 
             //для кадровиков при обновлении встаем на нужную вкладку
             //такая же схема применяется для всех страниц анкеты
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=1");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ScanOriginalDocumentsReadOnly", model) : View(model);
         }
@@ -2392,6 +2392,34 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
+        [NonAction]
+        protected bool ValidateModel(ScanOriginalDocumentsModel model)
+        {
+            ValidateFileLength(model.INNScanFile, "INNScanFile", 2);
+            ValidateFileLength(model.SNILSScanFile, "SNILSScanFile", 2);
+            ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile", 2);
+            ValidateFileLength(model.InternalPassportScanFile, "InternalPassportScanFile", 20);
+            ValidateFileLength(model.HigherEducationDiplomaScanFile, "HigherEducationDiplomaScanFile", 5);
+            ValidateFileLength(model.PostGraduateEducationDiplomaScanFile, "PostGraduateEducationDiplomaScanFile", 2);
+            ValidateFileLength(model.CertificationScanFile, "CertificationScanFile", 2);
+            ValidateFileLength(model.TrainingScanFile, "TrainingScanFile", 2);
+            ValidateFileLength(model.MarriageCertificateScanFile, "MarriageCertificateScanFile", 2);
+            ValidateFileLength(model.ChildBirthCertificateScanFile, "ChildBirthCertificateScanFile", 2);
+            ValidateFileLength(model.MilitaryCardScanFile, "MilitaryCardScanFile", 20);
+            ValidateFileLength(model.MobilizationTicketScanFile, "MobilizationTicketScanFile", 2);
+            ValidateFileLength(model.WorkBookScanFile, "WorkBookScanFile", 20);
+            ValidateFileLength(model.WorkBookSupplementScanFile, "WorkBookSupplementScanFile", 20);
+            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
+            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
+
+            if (!model.IsScanFinal)
+            {
+                ModelState.AddModelError("IsScanFinal", "Подтвердите достоверность всех приложенных сканов документов! Подтвердив данный пункт, Вы не сможете больше вносить изменения в данную часть анкеты!");
+            }
+
+
+            return ModelState.IsValid;
+        }
         #endregion
 
         #region Attachments

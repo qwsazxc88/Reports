@@ -140,6 +140,7 @@ namespace Reports.Presenters.UI.Bl
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
         void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
+        void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error);
 
         /// <summary>
         /// сохраняем признак технического увольнения из реестра

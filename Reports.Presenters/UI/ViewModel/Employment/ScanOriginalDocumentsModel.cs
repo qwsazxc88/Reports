@@ -15,6 +15,15 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public string ErrorMessage { get; set; }
 
+        [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
+        public bool AgreedToPersonalDataProcessing { get; set; } //ok
+
+        [Display(Name = "Подтверждаю что приложены все сканы имеющихся документов. Достоверность выложенных сканов документов подтверждаю.")]
+        public bool IsScanFinal { get; set; } //ok
+
+        //список сканов анкеты
+        public IList<EmploymentAttachmentDto> AttachmentList { get; set; }
+
         //сканы общей информации
         [Display(Name = "Скан СНИЛС")]
         public HttpPostedFileBase SNILSScanFile { get; set; }
