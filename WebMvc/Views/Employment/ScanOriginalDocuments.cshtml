@@ -16,6 +16,10 @@
 @using (Html.BeginForm("ScanOriginalDocuments", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "ScanOriginalDocumentsForm" }))
 {
     @Html.HiddenFor(m => m.UserId)    
+    @Html.HiddenFor(m => m.IsAgree)
+    @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.DeleteAttachmentId)
+    
     
     <fieldset class="bordered doc-wrap panel">
         <table class="buttonTable">
@@ -23,19 +27,27 @@
                 <td rowspan="3">Общая информация</td>
                 <td>
                     @Html.LabelFor(m => m.SNILSScanFile)
-                    @*<br /><br />
-                    <label>Медведев Дмитрий Анатольевич  @DateTime.Now.ToShortDateString()</label>*@
                 </td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" id="SNILSScanFile" @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+                                                                                                              {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.SNILSScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId);" @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
-
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.SNILSScanAttachmentId);" @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+                                                                                                                                       {<text>style="display:none"</text>}/>
+                    }
+                    
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 213).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 213).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 213).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
                 <td rowspan="8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
@@ -43,259 +55,499 @@
                 <td rowspan="2">Состав семьи</td>
                 <td>@Html.LabelFor(m => m.MarriageCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="MarriageCertificateScanFile" id="MarriageCertificateScanFile" @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+                                                                                                                                          {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MarriageCertificateScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MarriageCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MarriageCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+                                                                                                                                                     {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 231).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 231).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 231).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.INNScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" id="INNScanFile" @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+                                                                                                          {<text>style="display:none;"</text>}/> @Html.ValidationMessageFor(m => m.INNScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.INNScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.INNScanAttachmentId);" @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+                                                                                                                                     {<text>style="display:none"</text>}/>
+                    }
+                    
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 212).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 212).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 212).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
 
                 <td>@Html.LabelFor(m => m.ChildBirthCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="ChildBirthCertificateScanFile" /> @Html.ValidationMessageFor(m => m.ChildBirthCertificateScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="ChildBirthCertificateScanFile" id="ChildBirthCertificateScanFile" @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+                                                                                                                                              {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.ChildBirthCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ChildBirthCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.ChildBirthCertificateScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.ChildBirthCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.ChildBirthCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+                                                                                                                                                       {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 232).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 232).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 232).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.DisabilityCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" id="DisabilityCertificateScanFile" @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+                                                                                                                                              {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.DisabilityCertificateScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.DisabilityCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+                                                                                                                                                       {<text>style="display:none"</text>}/>
+                    }
+                    
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 214).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 214).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 214).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
 
                 <td rowspan="2">Воинский учет</td>
                 <td>@Html.LabelFor(m => m.MilitaryCardScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" id="MilitaryCardScanFile" @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+                                                                                                                            {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MilitaryCardScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MilitaryCardScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+                                                                                                                                              {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 241).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 241).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 241).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>Паспортные данные</td>
                 <td>@Html.LabelFor(m => m.InternalPassportScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" id="InternalPassportScanFile" @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+                                                                                                                                    {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.InternalPassportScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InternalPassportScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.InternalPassportScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+                                                                                                                                                  {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 211).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 211).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 211).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
 
                 <td>@Html.LabelFor(m => m.MobilizationTicketScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" id="MobilizationTicketScanFile" @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+                                                                                                                                        {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.MobilizationTicketScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MobilizationTicketScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+                                                                                                                                                    {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 242).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 242).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 242).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td rowspan="4">Образование</td>
                 <td>@Html.LabelFor(m => m.HigherEducationDiplomaScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" /> @Html.ValidationMessageFor(m => m.HigherEducationDiplomaScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" id="HigherEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
+                                                                                                                                                {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.HigherEducationDiplomaScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
                     @Model.HigherEducationDiplomaScanFileName
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.HigherEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.HigherEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
+                                                                                                                                              {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 221).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 221).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 221).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
 
                 <td rowspan="2">Трудовая деятельность</td>
                 <td>@Html.LabelFor(m => m.WorkBookScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" id="WorkBookScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+                                                                                                                    {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.WorkBookScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.WorkBookScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+                                                                                                                                          {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 215).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 215).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 215).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.PostGraduateEducationDiplomaScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" /> @Html.ValidationMessageFor(m => m.PostGraduateEducationDiplomaScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" id="PostGraduateEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
+                                                                                                                                                            {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.PostGraduateEducationDiplomaScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
                     @Model.PostGraduateEducationDiplomaScanFileName
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PostGraduateEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.PostGraduateEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
+                                                                                                                                                    {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 222).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 222).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 222).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
                 <td>@Html.LabelFor(m => m.WorkBookSupplementScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" id="WorkBookSupplementScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+                                                                                                                                        {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.WorkBookSupplementScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.WorkBookSupplementScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+                                                                                                                                                    {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 216).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 216).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 216).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.CertificationScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" /> @Html.ValidationMessageFor(m => m.CertificationScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" id="CertificationScanFile" @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
+                                                                                                                              {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.CertificationScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
                     @Model.CertificationScanFileName
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.CertificationScanId);" @if (string.IsNullOrEmpty(Model.CertificationScanFileName))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.CertificationScanId);" @if (string.IsNullOrEmpty(Model.CertificationScanFileName))
+                                                                                                                                     {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 223).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 223).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 223).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
                 <td rowspan="2">Департамент безопасности</td>
                 <td>@Html.LabelFor(m => m.PersonalDataProcessingScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" id="PersonalDataProcessingScanFile" @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+                                                                                                                                                {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.PersonalDataProcessingScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.PersonalDataProcessingScanAttachmentId);" @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+                                                                                                                                                        {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 261).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 261).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 261).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.TrainingScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" /> @Html.ValidationMessageFor(m => m.TrainingScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" id="TrainingScanFile" @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
+                                                                                                                    {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.TrainingScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
                     @Model.TrainingScanFileName
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.TrainingScanId);" @if (string.IsNullOrEmpty(Model.TrainingScanFileName))
-                                                                                        {<text>style="display:none"</text>}/>
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.TrainingScanId);" @if (string.IsNullOrEmpty(Model.TrainingScanFileName))
+                                                                                                                                {<text>style="display:none"</text>}/>
+                    }
 
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 224).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 224).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 224).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
 
                 <td>@Html.LabelFor(m => m.InfoValidityScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
+                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" id="InfoValidityScanFile" @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+                                                                                                                            {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.InfoValidityScanAttachmentFilename
                     </a>
 
-                    <input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
-                                                                                        {<text>style="display:none"</text>}/>
 
+                    @if (!Model.IsScanFinal)
+                    {
+                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.InfoValidityScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+                                                                                                                                              {<text>style="display:none"</text>}/>
+                    }
+
+                    @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 262).Count() != 0)
+                    {
+                        <br /><br />
+                        <label>Файл выложил:  @Model.AttachmentList.Where(x => x.RequestType == 262).Single().Surname</label><br />
+                        <label>Дата операции: @Model.AttachmentList.Where(x => x.RequestType == 262).Single().DateCreated.ToShortDateString()</label>
+                    }
                 </td>
             </tr>
             <tr>
                 <td colspan="7">
-                    @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
+                    @Html.CheckBoxFor(m => m.AgreedToPersonalDataProcessing)
                     @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)<br />
                     @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
                     <br />
-                    @Html.EditorFor(m => m.IsScanFinal)
+                    @Html.CheckBoxFor(m => m.IsScanFinal, !Model.IsScanFinal ? null : new { disabled = "disabled" })
                     @Html.LabelFor(m => m.IsScanFinal)<br />
                     @Html.ValidationMessageFor(m => m.IsScanFinal)
                 </td>
             </tr>
         </table>
         <br />
-        <button type="submit">Отправить на согласование</button>
+        <button id="btnScanODSave" type="button" @if (Model.IsScanFinal)
+                                                 {<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </fieldset>
     
-    
-    
-                
-    
-                
-    
+                                                 if ((dto.UserRole & UserRole.Candidate) > 0)
+                                                 {
+        <div id="DivIndicator" style="display:none;">
+            <table>
+                <tr>
+                    <td><span id="LoadingIndicator2"></span></td>
+                    <td><label>Идет загрузка данных...</label></td>
+                </tr>
+            </table>
+        </div>
+                                                 }
 }
+
+    @if ((dto.UserRole & UserRole.Candidate) == 0)
+    {
+        <form id="PrevCheckApproveForm" action="/Employment/BackgroundCheckReadOnly" target="tabs14" method="post">
+            @Html.HiddenFor(m => m.UserId)
+            <div class="clear">
+                <span style="font-size:large;">@Html.ValidationMessageFor(m => m.ErrorMessage)</span><br /><br />
+                @if (Model.IsScanFinal && Model.AgreedToPersonalDataProcessing)
+                {
+                    @Html.LabelFor(m => m.PrevApprovalStatus)<br />
+                
+                    <br />            
+                    @Html.DropDownListFor(m => m.PrevApprovalStatus, Model.PrevApprovalStatuses, string.Empty, Model.IsPrevApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
+                }
+                @if (Model.PrevApprovalStatus != null)
+                {
+                    <span class="fakeFormField">@Model.PrevApproverName</span>
+                    if (Model.PrevApprovalDate.HasValue)
+                    {
+                        <span class="fakeFormField">@Model.PrevApprovalDate.Value.ToShortDateString()</span>
+                    }
+                }
+                @if (Model.IsPrevApproveBySecurityAvailable)
+                {
+                    <!--<button>Применить</button>-->
+                    <input type="button" value="Применить" onclick="AjaxFormRequest('tabs14', 'PrevCheckApproveForm', '/Employment/BackgroundPrevCheck', 'POST')" />
+                }
+            </div>
+        </form>
+    }
+    
 
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empScanOriginalDocuments");
 
-        $("#SNILSScanFile").change(function () { this.form.submit(); });
-        $("#INNScanFile").change(function () { this.form.submit(); });
-        $("#DisabilityCertificateScanFile").change(function () { this.form.submit(); });
-        $("#InternalPassportScanFile").change(function () { this.form.submit(); });
-        $("#HigherEducationDiplomaScanFile").change(function () { this.form.submit(); });
-        $("#PostGraduateEducationDiplomaScanFile").change(function () { this.form.submit(); });
-        $("#CertificationScanFile").change(function () { this.form.submit(); });
-        $("#TrainingScanFile").change(function () { this.form.submit(); });
-        $("#MarriageCertificateScanFile").change(function () { this.form.submit(); });
-        $("#ChildBirthCertificateScanFile").change(function () { this.form.submit(); });
-        $("#MilitaryCardScanFile").change(function () { this.form.submit(); });
-        $("#MobilizationTicketScanFile").change(function () { this.form.submit(); });
-        $("#WorkBookScanFile").change(function () { this.form.submit(); });
-        $("#WorkBookSupplementScanFile").change(function () { this.form.submit(); });
-        $("#PersonalDataProcessingScanFile").change(function () { this.form.submit(); });
-        $("#InfoValidityScanFile").change(function () { this.form.submit(); });
+        $("#IsAgree").val(false);
+        $("#DeleteAttachmentId").val(0);
+
+        $("#btnScanODSave").click(function () {
+            ShowFlash(true);
+            $("#IsAgree").val(true);
+            $("#ScanOriginalDocumentsForm").submit();
+        });
+        
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $("#SNILSScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#INNScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#DisabilityCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#InternalPassportScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#HigherEducationDiplomaScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#PostGraduateEducationDiplomaScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#CertificationScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#TrainingScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#MarriageCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#ChildBirthCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#MilitaryCardScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#MobilizationTicketScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#WorkBookScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#WorkBookSupplementScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#PersonalDataProcessingScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+        $("#InfoValidityScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
 
         //$(":button").button();
     });
+
+
+    function DeleteScanOriginalDocuments(id){
+        ShowFlash(true);
+        $("#DeleteAttachmentId").val(id);
+        $("#ScanOriginalDocumentsForm").submit();
+    }
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
 </script>
 

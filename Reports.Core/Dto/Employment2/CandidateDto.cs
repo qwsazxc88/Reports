@@ -137,6 +137,7 @@ namespace Reports.Core.Dto.Employment2
         public bool CandidateApp { get; set; }
         public bool CandidateReady { get; set; }
         public bool? BackgroundApproval { get; set; }
+        public bool? PrevBackgroundApproval { get; set; }
         public bool? TrainingApproval { get; set; }
         public bool? ManagerApproval { get; set; }
         public bool? PersonnelManagerApproval { get; set; }

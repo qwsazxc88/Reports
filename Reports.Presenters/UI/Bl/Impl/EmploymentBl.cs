@@ -1726,6 +1726,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 IList<EmploymentAttachmentDto> attach = EmploymentCandidateDao.GetCandidateQuestAttachmentList(entity.Id);
 
+                model.AgreedToPersonalDataProcessing = entity.GeneralInfo.AgreedToPersonalDataProcessing;
+                model.IsScanFinal = entity.SendTo1C.HasValue ? true : entity.IsScanFinal;
+                model.SendTo1C = entity.SendTo1C;
+                model.PrevApproverName = entity.BackgroundCheck.PrevApprover == null ? string.Empty : entity.BackgroundCheck.PrevApprover.Name;
+                model.PrevApprovalStatus = entity.BackgroundCheck.PrevApprovalStatus;
+                model.PrevApprovalDate = entity.BackgroundCheck.PrevApprovalDate;
+                model.PrevApprovalStatuses = GetApprovalStatuses();
+                model.IsPrevApproveBySecurityAvailable = entity.IsScanFinal && AuthenticationService.CurrentUser.UserRole == UserRole.Security && !entity.BackgroundCheck.PrevApprovalStatus.HasValue ? true : false;
+
                 if (attach != null && attach.Count != 0)
                 {
                     model.AttachmentList = attach;
@@ -3190,7 +3199,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 
                 EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
-                SaveAttachments<TVM>(model);
+
+                EmploymentCandidate candidate = GetCandidate(model.UserId);
+
+                if (candidate.IsScanFinal)
+                {
+                    error = "Документ был отправлен на предварительное согласование, добавление/удаление файлов невозможно!";
+                }
+                else
+                    SaveAttachments<TVM>(model);
+                
                 //сообщение в ДП
                 //если идет сохранение черновика руководителя или кадров, то не делать рассылку
                 if (model.GetType().Name != "ManagersModel" && model.GetType().Name != "PersonnelManagersModel")
@@ -3286,6 +3304,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
             }
+
             if (model.INNScanFile != null)
             {
                 UploadFileDto fileDto = GetFileContext(model.INNScanFile);
@@ -3670,21 +3689,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
-
-            //if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
-            //{
-            //    error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
-            //    return;
-            //}
+            //ТУТ ДЕЛАЕМ ЗАПРЕТ НА ДОБАВЛЕНИЕ/УДАЛЕНИЕ СКАНОВ ПОСЛЕ СОГЛАСОВАНИЯ И ОТПРАВКИ НА СОГЛАСОВАНИЕ
+            if (candidate.IsScanFinal)
+            {
+                error = "Документ был отправлен на предварительное согласование, добавление/удаление файлов невозможно!";
+                return;
+            }
 
             GeneralInfoModel gim = new GeneralInfoModel();
             gim.SNILSScanFile = model.SNILSScanFile;
             gim.INNScanFile = model.INNScanFile;
             gim.DisabilityCertificateScanFile = model.DisabilityCertificateScanFile;
             SaveGeneralInfoAttachments(gim, candidateId);
-            //не стал на выходе получать параметры, так как из базы все равно надо достать фио и дату операции
-            //model.SNILSScanAttachmentFilename = gim.SNILSScanAttachmentFilename;
-            //model.SNILSScanAttachmentId = gim.SNILSScanAttachmentId;
+
             PassportModel pm = new PassportModel();
             pm.InternalPassportScanFile = model.InternalPassportScanFile;
             SavePassportAttachments(pm, candidateId);
@@ -4760,6 +4777,80 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Approve
+        /// <summary>
+        /// Предварительное согласование кандидата
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="PrevApprovalStatus"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            User CurUser = UserDao.Load(current.Id);
+            if ((current.UserRole & UserRole.Security) == UserRole.Security)
+            {
+                BackgroundCheck entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentBackgroundCheckDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (CheckCandidateIsBlocked(entity.Candidate.User.Id))
+                    {
+                        error = "Данный кандидат временно заблокирован! Согласование невозможно!.";
+                        return false;
+                    }
+
+                    if (entity.Candidate.Status == 0 && entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                    {
+
+                        entity.PrevApprovalStatus = PrevApprovalStatus;
+                        entity.PrevApprover = UserDao.Get(current.Id);
+                        entity.PrevApprovalDate = DateTime.Now;
+                        if (PrevApprovalStatus == true)
+                        {
+                            //entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                        }
+
+                        if (PrevApprovalStatus == false)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.Candidate.PersonnelManagers.RejectDate = DateTime.Now;
+                            entity.Candidate.PersonnelManagers.RejectUser = CurUser;
+                            entity.Candidate.User.IsActive = false;
+                        }
+
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка согласования.";
+                            return false;
+                        }
+                        //сообщение руководителю из ДП
+                        EmploymentSendEmail(entity.Candidate.User.Id, 4, false);
+                        return true;
+                    }
+                    else
+                    {
+                        error = "Невозможно согласовать документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ для согласования не найден.";
+                }
+            }
+            else
+            {
+                error = "Документ может согласовать только сотрудник ДБ.";
+            }
+
+            return false;
+        }
 
         public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancel, out string error)
         {
@@ -5603,7 +5694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="IsChangeDocList">Наличие изменений в списке кадровых документов на подпись кандидату.</param>
         protected void EmploymentSendEmail(int UserId, int EmailType, bool IsChangeDocList)
         {
-            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству, 6 - руководителю и замам о готовности документов на прием
+            //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству, 6 - руководителю и замам о готовности документов на прием,
+            //7 - тренеру при предварительном согласовании ДБ
             EmploymentCandidate entity = GetCandidate(UserId);
 
             User user = UserDao.Load(entity.AppointmentCreator.Id);

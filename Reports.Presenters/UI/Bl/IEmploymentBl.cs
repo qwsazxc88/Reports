@@ -108,6 +108,7 @@ namespace Reports.Presenters.UI.Bl
             where TVM : AbstractEmploymentModel;
 
         bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancel, out string error);
+        bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, bool IsCancel, out string error);

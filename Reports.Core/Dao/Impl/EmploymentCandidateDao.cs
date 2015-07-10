@@ -61,7 +61,7 @@ namespace Reports.Core.Dao.Impl
 						+ N', срок действия справки: ' + convert(varchar, generalInfo.DisabilityCertificateExpirationDate, 104)
 					end Disabilities
                 , candidateUser.Grade Grade
-				, case
+				, case 
 					when candidate.Status = 1 then N'Ожидает согласование ДБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'
@@ -597,6 +597,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("CandidateApp", NHibernateUtil.Boolean)
                 .AddScalar("CandidateReady", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
+                .AddScalar("PrevBackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
                 .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)

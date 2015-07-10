@@ -14,12 +14,26 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public CandidateStateModel CandidateStateModel { get; set; }
 
         public string ErrorMessage { get; set; }
+        [Display(Name = "Отправить на согласование")]
+        public bool IsAgree { get; set; }
+
+        public int DeleteAttachmentId { get; set; }//Id удаляемого скана
+        public DateTime? SendTo1C { get; set; }//дата выгрузки в 1С
 
         [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         [Display(Name = "Подтверждаю что приложены все сканы имеющихся документов. Достоверность выложенных сканов документов подтверждаю.")]
         public bool IsScanFinal { get; set; } //ok
+
+        public bool IsPrevApproveBySecurityAvailable { get; set; }
+
+        [Display(Name = "Согласование")]
+        public bool? PrevApprovalStatus { get; set; }
+        public IEnumerable<SelectListItem> PrevApprovalStatuses { get; set; }
+        public string PrevApproverName { get; set; }
+        [Display(Name = "Дата согласования")]
+        public DateTime? PrevApprovalDate { get; set; }
 
         //список сканов анкеты
         public IList<EmploymentAttachmentDto> AttachmentList { get; set; }

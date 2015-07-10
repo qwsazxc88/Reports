@@ -141,6 +141,7 @@ namespace WebMvc.Controllers
                 Session.Remove("ScanOriginalDocumentsMS" + SPPath);
             }
 
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return PartialView("ScanOriginalDocuments", model);
             else
@@ -154,22 +155,59 @@ namespace WebMvc.Controllers
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
-            if (ValidateModel(model))
+            if (model.DeleteAttachmentId != 0)
             {
-
-                EmploymentBl.SaveScanOriginalDocumentsModelAttachments(model, out error);
-                //ViewBag.Error = error;
-                model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
-                ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                {
+                    ModelState.AddModelError("ErrorMessage", "У вас нет прав для редактирования данных!");
+                    model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                }
+                else
+                {
+                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    EmploymentBl.DeleteAttachment(modelDel);
+                    model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                    ModelState.AddModelError("ErrorMessage", "Файл удален!");
+                }
             }
             else
-            {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+            {
+                ModelState.Clear();
+                //кадровик не может менять список документов после выгрузки кандидата в 1С
+                if (model.SendTo1C.HasValue)
+                {
+                    //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                    ModelState.AddModelError("ErrorMessage", "Кандидат выгружен в 1С! Любые изменения на данной страницы не возможны!");
+                }
+                else
+                {
+                    if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                    {
+                        //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                        ModelState.AddModelError("ErrorMessage", "У вас нет прав для редактирования данных!");
+                    }
+                    else
+                    {
+                        if (ValidateModel(model))
+                        {
+                            string str = model.IsAgree ? "Данные сохранены" : "Файл загружен!";
+                            EmploymentBl.SaveScanOriginalDocumentsModelAttachments(model, out error);
+                            //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                            ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? str : error);
+                        }
+                        else
+                        {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                            //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
+                        }
+                    }
+                }
                 model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
-                if (Session["ScanOriginalDocumentsM" + SPPath] != null)
-                    Session.Remove("ScanOriginalDocumentsM" + SPPath);
-                if (Session["ScanOriginalDocumentsM" + SPPath] == null)
-                    Session.Add("ScanOriginalDocumentsM" + SPPath, model);
             }
+
+            if (Session["ScanOriginalDocumentsM" + SPPath] != null)
+                Session.Remove("ScanOriginalDocumentsM" + SPPath);
+            if (Session["ScanOriginalDocumentsM" + SPPath] == null)
+                Session.Add("ScanOriginalDocumentsM" + SPPath, model);
 
             if (Session["ScanOriginalDocumentsMS" + SPPath] != null)
                 Session.Remove("ScanOriginalDocumentsMS" + SPPath);
@@ -179,8 +217,7 @@ namespace WebMvc.Controllers
                 Session.Add("ScanOriginalDocumentsMS" + SPPath, mst);
             }
 
-            //для кадровиков при обновлении встаем на нужную вкладку
-            //такая же схема применяется для всех страниц анкеты
+
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
                 return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=0");
             else
@@ -1219,6 +1256,32 @@ namespace WebMvc.Controllers
             ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Кандидат утвержден!" : error);
 
             return PartialView("BackgroundCheckReadOnly", model);
+
+        }
+        /// <summary>
+        /// Предварительное согласование.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="PrevApprovalStatus"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Security)]
+        public ActionResult BackgroundPrevCheck(int userId, bool? PrevApprovalStatus)
+        {
+            string error = String.Empty;
+            string SPPath = AuthenticationService.CurrentUser.Id.ToString();
+            ScanOriginalDocumentsModel model = null;
+
+            if (PrevApprovalStatus.HasValue)
+                EmploymentBl.PrevApproveBackgroundCheck(userId, PrevApprovalStatus, out error);
+            else
+                error = "Выберите вид операции!";
+
+
+            model = EmploymentBl.GetScanOriginalDocumentsModel(userId);
+            ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? "Кандидат прошел предварительное согласование ДБ!" : error);
+
+            return PartialView("ScanOriginalDocuments", model);
 
         }
 
@@ -2412,7 +2475,10 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
             ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
 
-            if (!model.IsScanFinal)
+            if (!model.AgreedToPersonalDataProcessing)
+                ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
+
+            if (!model.IsScanFinal && model.IsAgree)
             {
                 ModelState.AddModelError("IsScanFinal", "Подтвердите достоверность всех приложенных сканов документов! Подтвердив данный пункт, Вы не сможете больше вносить изменения в данную часть анкеты!");
             }
@@ -2449,7 +2515,6 @@ namespace WebMvc.Controllers
                 DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
                 saveResult = EmploymentBl.DeleteAttachment(model);
                 error = model.Error;
-
             }
             catch (Exception ex)
             {
