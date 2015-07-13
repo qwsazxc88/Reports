@@ -120,6 +120,7 @@ namespace Reports.Core.Dao.Impl
 				end as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
+                ,managers.MentorName
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -472,6 +473,9 @@ namespace Reports.Core.Dao.Impl
                 case 21:
                     orderBy = "DismissalDate";
                     break;
+                case 22:
+                    orderBy = "MentorName";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -532,6 +536,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 .AddScalar("IsBlocked", NHibernateUtil.Boolean)
                 .AddScalar("DismissalDate", NHibernateUtil.DateTime)
+                .AddScalar("MentorName", NHibernateUtil.String)
                 ;
 
             return query;

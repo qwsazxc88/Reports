@@ -1294,6 +1294,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
                 model.SendTo1C = entity.Candidate.SendTo1C;
+                model.MentorName = entity.MentorName;
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
@@ -4666,6 +4667,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             entity.WorkCity = viewModel.WorkCity;
+            entity.MentorName = viewModel.MentorName;
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
                 entity.RegistrationDate = viewModel.RegistrationDate;
@@ -5239,6 +5241,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.WorkCity = viewModel.WorkCity;
+                        entity.MentorName = viewModel.MentorName;
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
                             entity.RegistrationDate = viewModel.RegistrationDate;

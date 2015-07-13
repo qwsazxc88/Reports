@@ -94,6 +94,8 @@ namespace Reports.Core.Dto.Employment2
         public bool IsTechDissmiss { get; set; }
         public bool IsBlocked { get; set; }
 
+        public string MentorName { get; set; }
+
         /*
         [Display(Name = "Паспортные данные"),
             StringLength(500, ErrorMessage = "Не более 500 знаков."),
