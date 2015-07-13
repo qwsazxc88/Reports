@@ -93,7 +93,7 @@ namespace Reports.Core.Dto.Employment2
         public int? AppointmentNumber { get; set; }
         public bool IsTechDissmiss { get; set; }
         public bool IsBlocked { get; set; }
-
+        public DateTime? DismissalDate { get; set; }
         public string MentorName { get; set; }
 
         /*
