@@ -12224,7 +12224,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
             level = dep.ItemLevel.Value;
 
-            User currUser = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(CurrentUser.Id);
 
             if (currUser == null)
                 throw new ArgumentException(string.Format(" Пользователь не найден {0}", model.UserId));
