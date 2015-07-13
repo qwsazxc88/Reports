@@ -16,6 +16,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ErrorMessage { get; set; }
         [Display(Name = "Отправить на согласование")]
         public bool IsAgree { get; set; }
+        public bool IsScanODDraft { get; set; }
+        public bool IsCancelApproveAvailale { get; set; }
 
         public int DeleteAttachmentId { get; set; }//Id удаляемого скана
         public DateTime? SendTo1C { get; set; }//дата выгрузки в 1С

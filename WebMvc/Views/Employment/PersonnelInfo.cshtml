@@ -1443,6 +1443,12 @@
                         $("#IsAgree").val(false);
                         $("#DeleteAttachmentId").val(0);
 
+                        $("#btnScanODDraft").click(function () {
+                            ShowFlash(true);
+                            $("#IsScanODDraft").val(true);
+                            $("#ScanOriginalDocumentsForm").submit();
+                        });
+
                         $("#btnScanODSave").click(function () {
                             ShowFlash(true);
                             $("#IsAgree").val(true);

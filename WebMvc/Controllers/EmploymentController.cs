@@ -149,7 +149,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate | UserRole.ConsultantPersonnel | UserRole.PersonnelManager)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Manager)]
         public ActionResult ScanOriginalDocuments(ScanOriginalDocumentsModel model)
         {
             string error = String.Empty;
@@ -157,7 +157,7 @@ namespace WebMvc.Controllers
 
             if (model.DeleteAttachmentId != 0)
             {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                if (((AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager) && !EmploymentBl.IsUnlimitedEditAvailable()) || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
                     ModelState.AddModelError("ErrorMessage", "У вас нет прав для редактирования данных!");
                     model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
@@ -1041,7 +1041,7 @@ namespace WebMvc.Controllers
 
 
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=6");
             else
                 return View("Experience", model);
             //return Json(model.ExperienceItems);
@@ -1121,7 +1121,7 @@ namespace WebMvc.Controllers
             }
 
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && EmploymentBl.IsUnlimitedEditAvailable())
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=8");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=7");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
@@ -1209,7 +1209,7 @@ namespace WebMvc.Controllers
             }
 
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0)
-                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=9");
+                return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=8");
             else
                 return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
@@ -1230,32 +1230,39 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security | UserRole.ConsultantOutsourcing)]
-        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancelApproveAvailale)
+        //public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancelApproveAvailale, IEnumerable<HttpPostedFileBase> files)
+        public ActionResult BackgroundCheckReadOnly(BackgroundCheckModel model)
         {
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
-            BackgroundCheckModel model = null;
+            //BackgroundCheckModel model = null;
+            //if (model.IsCancelApproveAvailale && AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)//для консультантов
+            //    EmploymentBl.ApproveBackgroundCheck(model, out error);
+            //else
+            //    EmploymentBl.ApproveBackgroundCheck(model, out error);
 
-            if (IsCancelApproveAvailale && AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)//для консультантов
-                EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, IsCancelApproveAvailale, out error);
-            else
-                EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, PyrusRef, IsCancelApproveAvailale, out error);
+            EmploymentBl.ApproveBackgroundCheck(model, out error);
 
-            if (!string.IsNullOrEmpty(error))
-            {
-                //ViewBag.Error = error;
-                model = EmploymentBl.GetBackgroundCheckModel(userId);
-                //return PartialView("BackgroundCheckReadOnly", model);
-               
-            }
-            else
-            {
-                model = EmploymentBl.GetBackgroundCheckModel(userId);
-            }
+            model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+            
 
             ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Кандидат утвержден!" : error);
 
-            return PartialView("BackgroundCheckReadOnly", model);
+            if (Session["BackgroundCheckM" + SPPath] != null)
+                Session.Remove("BackgroundCheckM" + SPPath);
+            if (Session["BackgroundCheckM" + SPPath] == null)
+                Session.Add("BackgroundCheckM" + SPPath, model);
+
+            if (Session["BackgroundCheckMS" + SPPath] != null)
+                Session.Remove("BackgroundCheckMS" + SPPath);
+            if (Session["BackgroundCheckMS" + SPPath] == null)
+            {
+                ModelStateDictionary mst = ModelState;
+                Session.Add("BackgroundCheckMS" + SPPath, mst);
+            }
+
+            //return PartialView("BackgroundCheckReadOnly", model);
+            return Redirect("PersonnelInfo?id=" + model.UserId + "&IsCandidateInfoAvailable=true&IsBackgroundCheckAvailable=true&IsManagersAvailable=true&IsPersonalManagersAvailable=true&TabIndex=8");
 
         }
         /// <summary>
@@ -1265,21 +1272,26 @@ namespace WebMvc.Controllers
         /// <param name="PrevApprovalStatus"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundPrevCheck(int userId, bool? PrevApprovalStatus)
+        [ReportAuthorize(UserRole.Security | UserRole.ConsultantOutsourcing)]
+        public ActionResult BackgroundPrevCheck(int userId, bool? PrevApprovalStatus, bool IsCancelApproveAvailale)
         {
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
             ScanOriginalDocumentsModel model = null;
 
-            if (PrevApprovalStatus.HasValue)
-                EmploymentBl.PrevApproveBackgroundCheck(userId, PrevApprovalStatus, out error);
+            if (IsCancelApproveAvailale)
+                EmploymentBl.PrevApproveBackgroundCheck(userId, PrevApprovalStatus, IsCancelApproveAvailale, out error);
             else
-                error = "Выберите вид операции!";
+            {
+                if (PrevApprovalStatus.HasValue)
+                    EmploymentBl.PrevApproveBackgroundCheck(userId, PrevApprovalStatus, IsCancelApproveAvailale, out error);
+                else
+                    error = "Выберите вид операции!";
+            }
 
 
             model = EmploymentBl.GetScanOriginalDocumentsModel(userId);
-            ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? "Кандидат прошел предварительное согласование ДБ!" : error);
+            ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? "Операция выполнена!" : error);
 
             return PartialView("ScanOriginalDocuments", model);
 

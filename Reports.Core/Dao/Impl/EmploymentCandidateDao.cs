@@ -62,6 +62,7 @@ namespace Reports.Core.Dao.Impl
 					end Disabilities
                 , candidateUser.Grade Grade
 				, case 
+                    when candidate.Status = 10 then N'Ожидает предварительного согласования ДБ'
 					when candidate.Status = 1 then N'Ожидает согласование ДБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'

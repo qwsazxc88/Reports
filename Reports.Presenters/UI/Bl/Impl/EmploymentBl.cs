@@ -1097,6 +1097,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0 ||
                     (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
 
+                model.SendTo1C = entity.Candidate.SendTo1C;
+                //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
+                model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? false : true;
+                //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
+                model.IsDeleteScanButtonAvailable = entity.ApprovalDate.HasValue ? false : true;
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
+                model.EmploymentFileId = attachmentId;
+                model.EmploymentFileName = attachmentFilename;
+
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
@@ -1734,6 +1743,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PrevApprovalDate = entity.BackgroundCheck.PrevApprovalDate;
                 model.PrevApprovalStatuses = GetApprovalStatuses();
                 model.IsPrevApproveBySecurityAvailable = entity.IsScanFinal && AuthenticationService.CurrentUser.UserRole == UserRole.Security && !entity.BackgroundCheck.PrevApprovalStatus.HasValue ? true : false;
+                //для консультантов даем возможность отменить отклонение
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                {
+                    if (entity.Status == EmploymentStatus.REJECTED && entity.BackgroundCheck.PrevApprovalStatus.HasValue && !entity.BackgroundCheck.PrevApprovalStatus.Value)
+                        model.IsCancelApproveAvailale = true;
+                }
+
 
                 if (attach != null && attach.Count != 0)
                 {
@@ -2976,6 +2992,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new List<SelectListItem>
             {
                 new SelectListItem {Text = "Анкета в стадии заполнения", Value = "0"},
+                new SelectListItem {Text = "Ожидает предварительного согласования ДБ", Value = "10"},
                 new SelectListItem {Text = "Ожидает согласование ДБ", Value = "1"},
                 new SelectListItem {Text = "Обучение", Value = "2"},
                 new SelectListItem {Text = "Ожидается заявление о приеме", Value = "3"},
@@ -3168,7 +3185,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             //сообщение тренеру
-            EmploymentSendEmail(candidate.User.Id, 4, false);
+            //EmploymentSendEmail(candidate.User.Id, 4, false);
 
             return candidate.User.Id;
         }
@@ -3198,16 +3215,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 
+
+
                 EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
 
-                EmploymentCandidate candidate = GetCandidate(model.UserId);
-
-                if (candidate.IsScanFinal)
-                {
-                    error = "Документ был отправлен на предварительное согласование, добавление/удаление файлов невозможно!";
-                }
-                else
-                    SaveAttachments<TVM>(model);
+                
+                //сканы добавляются теперь в другом месте, тут можно только прицепить фотографию кандидата
+                SaveAttachments<TVM>(model);
+                    
                 
                 //сообщение в ДП
                 //если идет сохранение черновика руководителя или кадров, то не делать рассылку
@@ -3427,6 +3442,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UploadFileDto fileDto = GetFileContext(model.InfoValidityScanFile);
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.InfoValidityScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InfoValidityScan, out fileName);
+            }
+
+            if (model.EmploymentFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.EmploymentFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.EmploymentFileId, fileDto, RequestAttachmentTypeEnum.EmploymentFileScan, out fileName);
             }
         }
 
@@ -3689,11 +3711,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
-            //ТУТ ДЕЛАЕМ ЗАПРЕТ НА ДОБАВЛЕНИЕ/УДАЛЕНИЕ СКАНОВ ПОСЛЕ СОГЛАСОВАНИЯ И ОТПРАВКИ НА СОГЛАСОВАНИЕ
-            if (candidate.IsScanFinal)
+            if (candidate.SendTo1C.HasValue && AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
             {
-                error = "Документ был отправлен на предварительное согласование, добавление/удаление файлов невозможно!";
+                error = "Данный документ выгружен в 1С! Выполнение операции невозможно!";
                 return;
+            }
+
+            //ТУТ ДЕЛАЕМ ЗАПРЕТ НА ДОБАВЛЕНИЕ/УДАЛЕНИЕ СКАНОВ ПОСЛЕ СОГЛАСОВАНИЯ И ОТПРАВКИ НА СОГЛАСОВАНИЕ
+            if (!model.IsScanODDraft)
+            {
+                if (candidate.IsScanFinal)
+                {
+                    error = "Документ был отправлен на предварительное согласование, добавление/удаление файлов невозможно!";
+                    return;
+                }
             }
 
             GeneralInfoModel gim = new GeneralInfoModel();
@@ -3735,11 +3766,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             candidate.GeneralInfo.AgreedToPersonalDataProcessing = model.AgreedToPersonalDataProcessing;
-            candidate.IsScanFinal = model.IsScanFinal;
+            if (model.IsAgree)
+            {
+                candidate.IsScanFinal = model.IsScanFinal;
+                if(!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
+                    candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
+            }
+            else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
+            {
+                candidate.IsScanFinal = false;
+                //статус не меняем, потому что эту операцию делает только кадровик и может это делать на любом этапе оформления кандидата
+                //candidate.Status = 0;
+            }
+
 
             try
             {
                 EmploymentCandidateDao.SaveAndFlush(candidate);
+                //сообщение тренеру
+                EmploymentSendEmail(candidate.User.Id, 4, false);
+                //сообщение в ДБ для предварительного согласования
+                EmploymentSendEmail(candidate.User.Id, 7, false);
             }
             catch
             {
@@ -3951,10 +3998,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SNILS = viewModel.SNILS;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
             }
             #endregion
 
@@ -3997,10 +4052,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ZipCode = viewModel.ZipCode;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
             }
             #endregion
 
@@ -4103,11 +4166,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.IsFinal && entity.Candidate.Family.IsFinal
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
             }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
+            }
+            
             #endregion
 
             return true;
@@ -4237,10 +4309,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.IsFinal
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
             }
             #endregion
 
@@ -4302,10 +4382,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                        && entity.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
             }
             #endregion
 
@@ -4352,10 +4440,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+            if (entity.Candidate.IsScanFinal)
             {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                        && entity.Candidate.MilitaryService.IsFinal && entity.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
             }
             #endregion
 
@@ -4411,7 +4507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+            if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
                     && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
@@ -4480,13 +4576,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
-            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
-            if (entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
-            {
-                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
-            }
             entity.IsValidate = viewModel.IsValidate;
+            // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
+            if (entity.Candidate.IsScanFinal)
+            {
+                if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                {
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                }
+            }
+            else
+            {
+                error = "Данные сохранены, но не отправлены на согласование! Данную часть анкеты можно отправить на согласование, только после отправки на согласование сканов для анкеты!";
+                //return false;
+            }
+            
             #endregion
 
             return true;
@@ -4782,15 +4887,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="PrevApprovalStatus"></param>
+        /// <param name="IsCancelApproveAvailale"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, out string error)
+        public bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, bool IsCancelApproveAvailale, out string error)
         {
             error = string.Empty;
 
             IUser current = AuthenticationService.CurrentUser;
             User CurUser = UserDao.Load(current.Id);
-            if ((current.UserRole & UserRole.Security) == UserRole.Security)
+            if ((current.UserRole & UserRole.Security) == UserRole.Security || (IsCancelApproveAvailale && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
             {
                 BackgroundCheck entity = null;
                 int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId);
@@ -4806,7 +4912,35 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    if (entity.Candidate.Status == 0 && entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+
+                    if (IsCancelApproveAvailale)//отмена отклонения
+                    {
+                        entity.PrevApprovalStatus = null;
+                        entity.PrevApprover = null;
+                        //entity.PyrusRef = PyrusRef;
+                        //entity.IsApprovalSkipped = false;
+                        entity.PrevApprovalDate = null;
+                        entity.Candidate.Status = 0;// EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                        entity.Candidate.PersonnelManagers.RejectDate = null;
+                        entity.Candidate.PersonnelManagers.RejectUser = null;
+                        entity.Candidate.User.IsActive = true;
+                        entity.CancelRejectUser = CurUser;
+                        entity.CancelRejectDate = DateTime.Now;
+
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка согласования.";
+                            return false;
+                        }
+                        else
+                        {
+                            error = "Отклонение кандидата отменено!";
+                            return true;
+                        }
+                    }
+
+
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY && entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
                     {
 
                         entity.PrevApprovalStatus = PrevApprovalStatus;
@@ -4815,6 +4949,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (PrevApprovalStatus == true)
                         {
                             //entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                            entity.Candidate.Status = 0;
                         }
 
                         if (PrevApprovalStatus == false)
@@ -4824,6 +4959,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Candidate.PersonnelManagers.RejectUser = CurUser;
                             entity.Candidate.User.IsActive = false;
                         }
+
+                        error = PrevApprovalStatus == false ? "Кандидат отклонен." : "Кандидат прошел предварительное согласование ДБ!";
 
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
@@ -4846,22 +4983,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Документ может согласовать только сотрудник ДБ.";
+                if (IsCancelApproveAvailale && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
+                    error = "Отменить отклонение может только консультант аутсорсинга.";
+                else
+                    error = "Документ может согласовать только сотрудник ДБ.";
             }
 
             return false;
         }
 
-        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancel, out string error)
+        public bool ApproveBackgroundCheck(BackgroundCheckModel model, out string error)
         {
             error = string.Empty;
 
             IUser current = AuthenticationService.CurrentUser;
             User CurUser = UserDao.Load(current.Id);
-            if ((current.UserRole & UserRole.Security) == UserRole.Security || (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
+            if ((current.UserRole & UserRole.Security) == UserRole.Security || (model.IsCancelApproveAvailale && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing))
             {
                 BackgroundCheck entity = null;
-                int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId);
+                int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(model.UserId);
                 if (id.HasValue)
                 {
                     entity = EmploymentBackgroundCheckDao.Get(id.Value);
@@ -4874,7 +5014,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    if (IsCancel)//отмена отклонения
+                    if (model.IsCancelApproveAvailale)//отмена отклонения
                     {
                         entity.ApprovalStatus = null;
                         entity.Approver = null;
@@ -4900,24 +5040,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
-                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !IsApprovalSkipped)
-                    {
+                    //сохраняем файл личного дела
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
+                        SaveBackgroundCheckAttachments(model, entity.Candidate.Id);
 
-                        entity.ApprovalStatus = approvalStatus;
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !model.IsApprovalSkipped)
+                    {
+                        entity.ApprovalStatus = model.ApprovalStatus;
                         entity.Approver = UserDao.Get(current.Id);
-                        entity.PyrusRef = PyrusRef;
-                        entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.PyrusRef = model.PyrusRef;
+                        entity.IsApprovalSkipped = model.IsApprovalSkipped;
                         entity.ApprovalDate = DateTime.Now;
-                        if (approvalStatus == true)
+                        if (model.ApprovalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         }
-                        else if (approvalStatus == false)
+                        else if (model.ApprovalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
                             entity.Candidate.PersonnelManagers.RejectDate = DateTime.Now;
                             entity.Candidate.PersonnelManagers.RejectUser = CurUser;
                             entity.Candidate.User.IsActive = false;
+                            error = "Кандидат отклонен!";
                         }
 
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
@@ -4929,13 +5073,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EmploymentSendEmail(entity.Candidate.User.Id, 2, false);
                         return true;
                     }
-                    else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
+                    else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && model.IsApprovalSkipped)
                     {
                         entity.ApprovalStatus = true;
                         entity.Approver = UserDao.Get(current.Id);
-                        entity.PyrusRef = PyrusRef;
+                        entity.PyrusRef = model.PyrusRef;
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
-                        entity.IsApprovalSkipped = IsApprovalSkipped;
+                        entity.IsApprovalSkipped = model.IsApprovalSkipped;
                         entity.ApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
@@ -4958,7 +5102,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                if (IsCancel && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
+                if (model.IsCancelApproveAvailale && (current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
                     error = "Отменить отклонение может только консультант аутсорсинга.";
                 else
                     error = "Документ может согласовать только сотрудник ДБ.";
@@ -5695,7 +5839,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void EmploymentSendEmail(int UserId, int EmailType, bool IsChangeDocList)
         {
             //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству, 6 - руководителю и замам о готовности документов на прием,
-            //7 - тренеру при предварительном согласовании ДБ
+            //7 - при отправки сканов на предварительное согласование ДБ
             EmploymentCandidate entity = GetCandidate(UserId);
 
             User user = UserDao.Load(entity.AppointmentCreator.Id);
@@ -5723,15 +5867,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             string body = null;
             string Subject = null;
 
+            //для проверки на необходимость отправки сообщения
+            IList<CandidateStateDto> CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
+
+            string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
+
             switch (EmailType)
             {
                 case 1: //в ДБ
                     if (entity.IsCandidateToBackgroundSendEmail && entity.CandidateToBackgroundSendEmailDate.HasValue) return;  //сообщение было послано ранее
                     //проверка на необходимость отправки сообщения
-                    IList<CandidateStateDto> CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Id);
                     if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
-                    string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
-                    //DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3).Name
                     defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
                     Emailaddress = "list-priem-bezopas@sovcombank.ru";
                     //Emailaddress = "loseva@ruscount.ru";
@@ -5771,6 +5917,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.CandidateToManagerSendEmailDate = DateTime.Now;
                     break;
                 case 4: //тренеру
+                    if (!entity.IsTrainingNeeded) return;//обучение не требуется
                     if (entity.IsManagerToTrainingSendEmail && entity.ManagerToTrainingSendEmailDate.HasValue) return;  //сообщение было послано ранее
                     defaultEmail = ConfigurationService.EmploymentManagerToTrainingEmail;
                     Emailaddress = "list-priem-obuch@sovcombank.ru";
@@ -5779,11 +5926,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Subject = "Оформлена заявка на прием кандидата. Требуется обучение";
                     if (entity.IsTrainingNeeded && entity.IsBeforEmployment)
                     {
-                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Требуется обучение тренера до приема кандидата.";
+                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Кандидат проходит предварительную проверку департаментом безопасности. Требуется обучение тренера до приема кандидата.";
                     }
                     else
                     {
-                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Требуется обучение тренера после приема кандидата.";
+                        body = @"Оформлена заявка на прием кандидата " + entity.User.Name + ". Кандидат проходит предварительную проверку департаментом безопасности. Требуется обучение тренера после приема кандидата.";
                     }
                     entity.IsManagerToTrainingSendEmail = true;
                     entity.ManagerToTrainingSendEmailDate = DateTime.Now;
@@ -5901,6 +6048,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     entity.IsPersonnelManagerToManagerSendEmail = true;
                     entity.PersonnelManagerToManagerSendEmailDate = DateTime.Now;
+                    break;
+                case 7: //в ДБ
+                    if (entity.IsCandidateToBackgroundPrevSendEmail && entity.CandidateToBackgroundPrevSendEmailDate.HasValue) return;  //сообщение было послано ранее
+                    //проверка на необходимость отправки сообщения
+                    if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
+                    //string Dep3Name = DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3) != null ? " - " + DepartmentDao.GetParentDepartmentWithLevel(entity.Managers.Department, 3).Name : "";
+                    //DepartmentDao.GetParentDepartmentWithLevel(entity.Department, 3).Name
+                    defaultEmail = ConfigurationService.EmploymentCandidateToBackgroundCheckEmail;
+                    Emailaddress = "list-priem-bezopas@sovcombank.ru";
+                    //Emailaddress = "loseva@ruscount.ru";
+                    //Emailaddress = "zagryazkin@ruscount.ru";
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    Subject = "Оформлена заявка на прием (предварительное согласование)" + Dep3Name;
+                    body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо предварительное согласование согласование сотрудника Департамента безопасности.";
+                    entity.IsCandidateToBackgroundPrevSendEmail = true;
+                    entity.CandidateToBackgroundPrevSendEmailDate = DateTime.Now;
                     break;
             }
 

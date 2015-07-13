@@ -107,8 +107,8 @@ namespace Reports.Presenters.UI.Bl
         void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel;
 
-        bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, string PyrusRef, bool IsCancel, out string error);
-        bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, out string error);
+        bool ApproveBackgroundCheck(BackgroundCheckModel model, out string error);
+        bool PrevApproveBackgroundCheck(int userId, bool? PrevApprovalStatus, bool IsCancelApproveAvailale, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, bool IsCancel, out string error);

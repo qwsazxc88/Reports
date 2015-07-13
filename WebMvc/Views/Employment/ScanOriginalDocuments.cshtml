@@ -17,6 +17,7 @@
 {
     @Html.HiddenFor(m => m.UserId)    
     @Html.HiddenFor(m => m.IsAgree)
+    @Html.HiddenFor(m => m.IsScanODDraft)
     @Html.HiddenFor(m => m.SendTo1C)
     @Html.HiddenFor(m => m.DeleteAttachmentId)
     
@@ -29,7 +30,7 @@
                     @Html.LabelFor(m => m.SNILSScanFile)
                 </td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" id="SNILSScanFile" @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" id="SNILSScanFile" @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                               {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -55,7 +56,7 @@
                 <td rowspan="2">Состав семьи</td>
                 <td>@Html.LabelFor(m => m.MarriageCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MarriageCertificateScanFile" id="MarriageCertificateScanFile" @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="MarriageCertificateScanFile" id="MarriageCertificateScanFile" @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                           {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -79,7 +80,7 @@
             <tr>
                 <td>@Html.LabelFor(m => m.INNScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" id="INNScanFile" @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" id="INNScanFile" @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                           {<text>style="display:none;"</text>}/> @Html.ValidationMessageFor(m => m.INNScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -103,7 +104,7 @@
 
                 <td>@Html.LabelFor(m => m.ChildBirthCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="ChildBirthCertificateScanFile" id="ChildBirthCertificateScanFile" @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="ChildBirthCertificateScanFile" id="ChildBirthCertificateScanFile" @if (!string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                               {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.ChildBirthCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ChildBirthCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -127,7 +128,7 @@
             <tr>
                 <td>@Html.LabelFor(m => m.DisabilityCertificateScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" id="DisabilityCertificateScanFile" @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" id="DisabilityCertificateScanFile" @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                               {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -152,7 +153,7 @@
                 <td rowspan="2">Воинский учет</td>
                 <td>@Html.LabelFor(m => m.MilitaryCardScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" id="MilitaryCardScanFile" @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" id="MilitaryCardScanFile" @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                             {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -177,7 +178,7 @@
                 <td>Паспортные данные</td>
                 <td>@Html.LabelFor(m => m.InternalPassportScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" id="InternalPassportScanFile" @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" id="InternalPassportScanFile" @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                     {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -201,7 +202,7 @@
 
                 <td>@Html.LabelFor(m => m.MobilizationTicketScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" id="MobilizationTicketScanFile" @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" id="MobilizationTicketScanFile" @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                         {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -226,7 +227,7 @@
                 <td rowspan="4">Образование</td>
                 <td>@Html.LabelFor(m => m.HigherEducationDiplomaScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" id="HigherEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
+                    Выбрать скан для загрузки<br /><input type="file" name="HigherEducationDiplomaScanFile" id="HigherEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName) || Model.IsScanFinal)
                                                                                                                                                 {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.HigherEducationDiplomaScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
@@ -251,7 +252,11 @@
                 <td rowspan="2">Трудовая деятельность</td>
                 <td>@Html.LabelFor(m => m.WorkBookScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" id="WorkBookScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+                    Выбрать скан для загрузки <br />
+                    (Если вы принимаетесь на работу <br /> 
+                     впервые, вам необходимо прикрепить <br />
+                    скан заявления на выдачу трудовой книжки)
+                    <br /><input type="file" name="WorkBookScanFile" id="WorkBookScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                     {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -275,7 +280,7 @@
             <tr>
                 <td>@Html.LabelFor(m => m.PostGraduateEducationDiplomaScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" id="PostGraduateEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
+                    Выбрать скан для загрузки<br /><input type="file" name="PostGraduateEducationDiplomaScanFile" id="PostGraduateEducationDiplomaScanFile" @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName) || Model.IsScanFinal)
                                                                                                                                                             {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.PostGraduateEducationDiplomaScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
@@ -298,7 +303,7 @@
 
                 <td>@Html.LabelFor(m => m.WorkBookSupplementScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" id="WorkBookSupplementScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" id="WorkBookSupplementScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                         {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -322,7 +327,7 @@
             <tr>
                 <td>@Html.LabelFor(m => m.CertificationScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" id="CertificationScanFile" @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
+                    Выбрать скан для загрузки<br /><input type="file" name="CertificationScanFile" id="CertificationScanFile" @if (!string.IsNullOrEmpty(Model.CertificationScanFileName) || Model.IsScanFinal)
                                                                                                                               {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.CertificationScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
@@ -346,7 +351,7 @@
                 <td rowspan="2">Департамент безопасности</td>
                 <td>@Html.LabelFor(m => m.PersonalDataProcessingScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" id="PersonalDataProcessingScanFile" @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" id="PersonalDataProcessingScanFile" @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                                                 {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -370,7 +375,7 @@
             <tr>
                 <td>@Html.LabelFor(m => m.TrainingScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" id="TrainingScanFile" @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
+                    Выбрать скан для загрузки<br /><input type="file" name="TrainingScanFile" id="TrainingScanFile" @if (!string.IsNullOrEmpty(Model.TrainingScanFileName) || Model.IsScanFinal)
                                                                                                                     {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.TrainingScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
@@ -393,7 +398,7 @@
 
                 <td>@Html.LabelFor(m => m.InfoValidityScanFile)</td>
                 <td>
-                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" id="InfoValidityScanFile" @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+                    Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" id="InfoValidityScanFile" @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                             {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
 
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
@@ -428,8 +433,15 @@
             </tr>
         </table>
         <br />
-        <button id="btnScanODSave" type="button" @if (Model.IsScanFinal)
+        @if (dto.UserRole == UserRole.PersonnelManager)
+        {
+            <button id="btnScanODDraft" type="button">Черновик</button>
+        }
+        @if (dto.UserRole == UserRole.Candidate || dto.UserRole == UserRole.PersonnelManager)
+        {
+            <button id="btnScanODSave" type="button" @if (Model.IsScanFinal)
                                                  {<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        }
     </fieldset>
     
                                                  if ((dto.UserRole & UserRole.Candidate) > 0)
@@ -471,6 +483,12 @@
                     <!--<button>Применить</button>-->
                     <input type="button" value="Применить" onclick="AjaxFormRequest('tabs14', 'PrevCheckApproveForm', '/Employment/BackgroundPrevCheck', 'POST')" />
                 }
+                @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+                @if (Model.IsCancelApproveAvailale)
+                {
+                    @*<input type="button" value="Отменить согласование" onclick="AjaxFormRequest('tabs8', 'BackgroundCheckReadOnly', '/Employment/BackgroundCheckReadOnly', 'POST')"/>*@
+                    <input type="button" value="Отменить согласование" onclick="AjaxFormRequest('tabs14', 'PrevCheckApproveForm', '/Employment/BackgroundPrevCheck', 'POST')"/>
+                }
             </div>
         </form>
     }
@@ -482,6 +500,13 @@
 
         $("#IsAgree").val(false);
         $("#DeleteAttachmentId").val(0);
+
+
+        $("#btnScanODDraft").click(function () {
+            ShowFlash(true);
+            $("#IsScanODDraft").val(true);
+            $("#ScanOriginalDocumentsForm").submit();
+        });
 
         $("#btnScanODSave").click(function () {
             ShowFlash(true);
