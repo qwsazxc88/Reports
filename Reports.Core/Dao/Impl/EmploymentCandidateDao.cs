@@ -51,6 +51,7 @@ namespace Reports.Core.Dao.Impl
                 , managers.ProbationaryPeriod ProbationaryPeriod
                 , schedule.Name Schedule
                 , generalInfo.DateOfBirth DateOfBirth
+                , dis.EndDate as DismissalDate
 				, case when generalInfo.DisabilityCertificateNumber is null then N''
 					else N'Справка '
 						+ generalInfo.DisabilityCertificateSeries
@@ -119,8 +120,10 @@ namespace Reports.Core.Dao.Impl
 				end as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
+                ,managers.MentorName
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
+                left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
                 left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
@@ -467,6 +470,12 @@ namespace Reports.Core.Dao.Impl
                 case 20:
                     orderBy = "AppointmentNumber";
                     break;
+                case 21:
+                    orderBy = "DismissalDate";
+                    break;
+                case 22:
+                    orderBy = "MentorName";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -526,6 +535,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AppointmentNumber", NHibernateUtil.Int32)
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 .AddScalar("IsBlocked", NHibernateUtil.Boolean)
+                .AddScalar("DismissalDate", NHibernateUtil.DateTime)
+                .AddScalar("MentorName", NHibernateUtil.String)
                 ;
 
             return query;
