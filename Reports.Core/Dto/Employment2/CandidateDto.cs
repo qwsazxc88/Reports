@@ -125,6 +125,7 @@ namespace Reports.Core.Dto.Employment2
     public class CandidateStateDto
     {
         public int Id { get; set; }
+        public bool ScanFinal { get; set; }
         public bool GeneralFinal { get; set; }
         public bool PassportFinal { get; set; }
         public bool EducationFinal { get; set; }
@@ -136,6 +137,7 @@ namespace Reports.Core.Dto.Employment2
         public bool CandidateApp { get; set; }
         public bool CandidateReady { get; set; }
         public bool? BackgroundApproval { get; set; }
+        public bool? PrevBackgroundApproval { get; set; }
         public bool? TrainingApproval { get; set; }
         public bool? ManagerApproval { get; set; }
         public bool? PersonnelManagerApproval { get; set; }

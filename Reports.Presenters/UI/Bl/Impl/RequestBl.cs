@@ -1164,6 +1164,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             attach.ContextType = dto.ContextType;
             attach.FileName = dto.FileName;
             attach.CreatorRole = RoleDao.Load((int)CurrentUser.UserRole);
+            attach.Creator = UserDao.Load(CurrentUser.Id);
             RequestAttachmentDao.SaveAndFlush(attach);
             attachment = attach.FileName;
             return attach.Id;

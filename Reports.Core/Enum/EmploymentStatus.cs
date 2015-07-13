@@ -37,6 +37,10 @@
         /// <summary>
         /// Отклонен
         /// </summary>
-        REJECTED = 9 //Отклонен
+        REJECTED = 9, //Отклонен
+        /// <summary>
+        /// Ожидает предварительное согласование ДБ
+        /// </summary>
+        PENDING_PREV_APPROVAL_BY_SECURITY = 10
     }
 }

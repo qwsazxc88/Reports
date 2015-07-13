@@ -43,6 +43,10 @@
     <many-to-one name="Approver" class="User" column="ApproverId" foreign-key="FK_BackgroundCheck_Approver" index="BackgroundCheck_Approver" not-null="false"/>
     <property name="ApprovalDate" not-null="false"/>
 
+    <property name="PrevApprovalStatus" not-null="false"/>
+    <many-to-one name="PrevApprover" class="User" column="PrevApproverId" foreign-key="FK_BackgroundCheck_PrevApprover" index="BackgroundCheck_PrevApprover" not-null="false"/>
+    <property name="PrevApprovalDate" not-null="false"/>
+
     <many-to-one name="CancelRejectUser" class="User" column="CancelRejectUserId" foreign-key="FK_BackgroundCheck_CancelReject" index="BackgroundCheck_CancelReject" not-null="false"/>
     <property name="CancelRejectDate" not-null="false"/>
 
