@@ -25,6 +25,13 @@
     <fieldset class="bordered doc-wrap panel">
         <table class="buttonTable">
             <tr>
+                <td colspan="7">
+                    @Html.CheckBoxFor(m => m.AgreedToPersonalDataProcessing)
+                    @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)<br />
+                    @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+                </td>
+            </tr>
+            <tr>
                 <td rowspan="3">Общая информация</td>
                 <td>
                     @Html.LabelFor(m => m.SNILSScanFile)
@@ -422,10 +429,6 @@
             </tr>
             <tr>
                 <td colspan="7">
-                    @Html.CheckBoxFor(m => m.AgreedToPersonalDataProcessing)
-                    @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)<br />
-                    @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
-                    <br />
                     @Html.CheckBoxFor(m => m.IsScanFinal, !Model.IsScanFinal ? null : new { disabled = "disabled" })
                     @Html.LabelFor(m => m.IsScanFinal)<br />
                     @Html.ValidationMessageFor(m => m.IsScanFinal)
@@ -437,7 +440,7 @@
         {
             <button id="btnScanODDraft" type="button">Черновик</button>
         }
-        @if (dto.UserRole == UserRole.Candidate || dto.UserRole == UserRole.PersonnelManager)
+        @if (dto.UserRole == UserRole.Candidate || dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
         {
             <button id="btnScanODSave" type="button" @if (Model.IsScanFinal)
                                                  {<text> disabled="disabled"</text>}>Отправить на согласование</button>
