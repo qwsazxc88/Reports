@@ -2495,7 +2495,8 @@ namespace WebMvc.Controllers
             {
                 ModelState.AddModelError("IsScanFinal", "Подтвердите достоверность всех приложенных сканов документов! Подтвердив данный пункт, Вы не сможете больше вносить изменения в данную часть анкеты!");
             }
-            else
+
+            if (model.IsScanFinal && model.IsAgree)
             {
                 ScanOriginalDocumentsModel mt = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
 
@@ -2529,7 +2530,6 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("InfoValidityScanFile", "Не выбран файл скана для загрузки!");
                 }
             }
-            
 
 
             return ModelState.IsValid;
