@@ -40,7 +40,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int ReasonId { get; set; }
         public int ReasonIdHidden { get; set; }
         public IList<IdNameDto> Reasons;
-
+        public IList<IdNameDto> UsersList { get; set; }
+        public int ReasonPositionId { get; set; }
         //[Display(Name = "Должность")]
         public string ReasonPosition { get; set; }
         //[Display(Name = "С даты")]
