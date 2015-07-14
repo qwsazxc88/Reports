@@ -129,7 +129,7 @@ namespace WebMvc.Controllers
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
             if(id==0) model.Recruter = 1;
-            if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
+            //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
         [HttpPost]
