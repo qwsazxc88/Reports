@@ -11,6 +11,10 @@ namespace Reports.Core.Domain
         public virtual DateTime? PersonnelDateAccept { get; set; }
         public virtual DateTime? CountantDateAccept { get; set; }
         public virtual DateTime PayDay { get; set; }
+        public virtual DateTime? PayDayEnd { get; set; }
+        public virtual DateTime? DismissalDate { get; set; }
+        public virtual int PayType { get; set; }
+        public virtual int MonthId { get; set; }
         public virtual int Number { get; set; }
         public virtual int NoteType { get; set; }
         public virtual User User { get; set; }

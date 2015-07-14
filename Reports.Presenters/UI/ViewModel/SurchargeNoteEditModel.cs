@@ -11,6 +11,8 @@ namespace Reports.Presenters.UI.ViewModel
         public HttpPostedFileBase File { get; set; }
         public IList<IdNameDto> Users { get; set; }
         public IList<IdNameDto> PersonnelsApproved { get; set; }
+        public IList<IdNameDto> PayTypes { get; set; }
+        public IList<IdNameDto> MonthTypes { get; set; }
         public bool IsEditable { get; set; }
         public bool IsDelete { get; set; }
         public bool CountantAccept { get; set; }

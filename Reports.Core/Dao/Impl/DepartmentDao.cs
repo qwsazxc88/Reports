@@ -41,6 +41,24 @@ namespace Reports.Core.Dao.Impl
             return (Department)Session.CreateCriteria(typeof(Department))
                    .Add(Restrictions.IsNull("ParentId")).UniqueResult();
         }
+        public virtual IList<Reports.Core.Dto.DepartmentDto> GetDepartmentsForManager23(int managerId, int level, bool dep3only)
+        {
+            string sqlQuery = string.Format(@" select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[AppointmentManager23ToDepartment3] mtod
+                                        inner join [dbo].[Department] d on d.Id = mtod.[DepartmentId]
+                                        where mtod.managerId = {0}", managerId);
+            if (level == 2 && !dep3only)
+                sqlQuery += string.Format(@" union
+                            select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[AppointmentCreateManager2ToDepartment2] mctod
+                                        inner join [dbo].[Department] d on d.Id = mctod.[DepartmentId]
+                                        where mctod.managerId = {0}", managerId);
+
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Path", NHibernateUtil.String).
+                AddScalar("ItemLevel", NHibernateUtil.Int32);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(Reports.Core.Dto.DepartmentDto))).List<Reports.Core.Dto.DepartmentDto>();
+        }
         public IList<Department> GetDepartmentsTree(int departmentId)
         {
             const string sqlQuery = (@";with Parents as

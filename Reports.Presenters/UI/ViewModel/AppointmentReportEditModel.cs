@@ -58,6 +58,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerRejectAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
         public bool IsTrainerCanSave { get; set; }
+        public bool IsBankAccountantAccept { get; set; }
         public string ManagerFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
