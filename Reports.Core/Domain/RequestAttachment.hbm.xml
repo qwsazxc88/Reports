@@ -13,7 +13,7 @@
     <property name="DateCreated" not-null="true"/>
     <property name="DocumentsCount" not-null="true"/>
     <property name="Description" length="256" not-null="false"/>
-	<many-to-one name="CreatorRole" class="Role" column="CreatorRoleId" foreign-key="FK_ATTACHMENT_USER_ROLE" index="IX_ATTACHMENT_USER_ROLE_ID"  not-null="true"/>
+	<many-to-one name="CreatorRole" class="Role" column="CreatorRoleId" foreign-key="FK_ATTACHMENT_USER_ROLE" index="IX_ATTACHMENT_USER_ROLE_ID"  not-null="false"/>
 	  <property name="FilePath" length="1024" not-null="false"/>
     <!--<property name="Number" length="50" not-null="true"/>-->
 	<!--<many-to-one name="Document" class="Document" column="DocumentId" foreign-key="FK_Attachment_Document" index="IX_Attachment_Document_Id"  not-null="true"/>-->

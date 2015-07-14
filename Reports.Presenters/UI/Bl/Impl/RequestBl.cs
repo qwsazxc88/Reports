@@ -11966,6 +11966,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
             }
+            var creator = UserDao.Load(model.CreatorId);
+            if (creator != null && creator.Department != null)
+            {
+                var dep3 = DepartmentDao.GetParentDepartmentWithLevel(creator.Department, 3);
+                if (dep3 != null)
+                    model.CreatorDepartment3 = dep3.Name;
+
+            }
             model.Chiefs = chiefsBuilder.ToString();
             if (user != null)
             {
@@ -11976,6 +11984,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PersonnelsApproved = personnels.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
                 }
             }
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="1-й месяц"}, new IdNameDto{ Id=2, Name="2-й месяц"} };
         }
         public void GetDictionaries(SurchargeNoteListModel model)
         {
@@ -11986,6 +12010,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
             model.Statuses.Add(new IdNameDto { Id = 4, Name = "Заявка отклонена" });
             model.Statuses.Add(new IdNameDto { Id = 5, Name = "Заявка отработана УКДиУ" });
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto { Id = 1, Name = "1-й месяц" }, new IdNameDto { Id = 2, Name = "2-й месяц" } };
         }
         public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
         {
@@ -12024,6 +12064,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Dep3Name = entity.DocDep3.Name;
                 model.DepartmentName = entity.DocDep7.Name;
                 model.DepartmentId = entity.DocDep7.Id;
+                model.MonthId = entity.MonthId;
+                model.PayType = entity.PayType;
+                model.PayDayEnd = entity.PayDayEnd;
+                model.DismissalDate = entity.DismissalDate;
             }
             GetDictionaries(model);
             if (model.IsDelete) model.IsEditable = false;
@@ -12047,9 +12091,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = creator,
                     CreateDate = DateTime.Now,
                     NoteType = model.NoteType,
-                    PayDay = model.PayDay,
+                    PayDay = model.NoteType!=3?model.PayDay:DateTime.Now,
+                    PayDayEnd = model.PayDayEnd,
+                    DismissalDate = model.DismissalDate,
+                    PayType = model.PayType,
+                    MonthId = model.MonthId,
                     DocDep7 = DepartmentDao.Load(model.DepartmentId),
-                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : RequestTypeEnum.SurchargeNote1))
+                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : 
+                                                                             (model.NoteType == 1) ? RequestTypeEnum.SurchargeNote1 :
+                                                                             (model.NoteType == 2) ? RequestTypeEnum.SurchargeNote2 :
+                                                                             (model.NoteType == 3) ? RequestTypeEnum.SurchargeNote3 :
+                                                                             (model.NoteType == 4) ? RequestTypeEnum.SurchargeNote4 :
+                                                                             (model.NoteType == 5) ? RequestTypeEnum.SurchargeNote5 :
+                                                                             RequestTypeEnum.SurchargeNote6
+                                                                             ))
                 };
                 entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
                 SurchargeNoteDao.SaveAndFlush(entity);
@@ -12068,6 +12123,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.DocumentDepartment = model.DepartmentId;
                     entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
                     entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
+                    entity.MonthId = model.MonthId;
+                    entity.PayDayEnd = model.PayDayEnd;
+                    entity.PayType = model.PayType;
+                    entity.DismissalDate = model.DismissalDate;
                     entity.PayDay = model.PayDay;
                 }
                 if (CurrentUser.UserRole == UserRole.ConsultantPersonnel)
@@ -12119,6 +12178,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CreateDate = entity.CreateDate;
             model.CreatorName = entity.Creator.Name;
             model.CreatorDepartment = entity.Creator.Department.Name;
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.Creator.Department, 3);
+            model.CreatorDepartment3 = dep3 != null ? dep3.Name : "";
             model.CreatorId = entity.Creator.Id;
             model.PayDay = entity.PayDay;
             model.DepartmentId = entity.DocDep7.Id;
@@ -12158,6 +12219,38 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var dep = DepartmentDao.Load(id);
             return dep.ItemLevel == level;
+        }
+        public bool CheckDepartment(SurchargeNoteEditModel model, out int level)
+        {
+            level = 0;
+            int departmentId = model.DepartmentId;
+            
+            Department dep = DepartmentDao.Load(departmentId);
+            if (dep == null)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            if (!dep.ItemLevel.HasValue)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            level = dep.ItemLevel.Value;
+
+            User currUser = UserDao.Load(model.CreatorId);
+
+            if (currUser == null)
+                throw new ArgumentException(string.Format(" Пользователь не найден {0}", model.UserId));
+            List<DepartmentDto> departments;
+            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
+            switch (currUser.Level)
+            {
+                case 2:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 2, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                case 3:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 3, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                default:
+                    if (currUser.Department == null)
+                        throw new ValidationException(string.Format("Не найдено подразделение для пользователя {0}", currUser.Id));
+                    return dep.Path.StartsWith(currUser.Department.Path);
+            }
         }
         #endregion
 

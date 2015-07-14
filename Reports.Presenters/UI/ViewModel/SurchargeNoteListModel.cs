@@ -18,7 +18,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
-
+        public IList<IdNameDto> MonthTypes{get;set;}
+        public IList<IdNameDto> PayTypes { get; set; }
         [Display(Name = "Номер заявки")]
         public string Number { get; set; }
         [Display(Name = "ФИО сотрудника")]
