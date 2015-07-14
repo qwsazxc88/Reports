@@ -1626,6 +1626,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             model.AppId = entity.Appointment.Id;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
+            model.IsBankAccountantAccept = entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAcceptCount > 0;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
