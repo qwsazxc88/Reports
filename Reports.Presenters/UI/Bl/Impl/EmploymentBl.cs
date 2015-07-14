@@ -4969,7 +4969,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             error = "Ошибка согласования.";
                             return false;
                         }
-                        //сообщение руководителю из ДП
+                        //сообщение тренеру из ДП
                         EmploymentSendEmail(entity.Candidate.User.Id, 4, false);
                         return true;
                     }
@@ -5233,7 +5233,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (entity.Candidate.AppointmentReport.TestingResult < 3 || entity.Candidate.AppointmentReport.IsEducationExists == false)
                             {
-                                error = "Обучение кандидата в отчете по подбору не не пройдено!";
+                                error = "Обучение кандидата в отчете по подбору не пройдено!";
                                 return false;
                             }
                         }
@@ -5862,6 +5862,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //User user = UserDao.Load(18458);    //для теста учетка Жени
             IList<User> managers = null;
             int CurrentLevel = 0;
+
+            //если кандидат отклонен
+            if (entity.Status == EmploymentStatus.REJECTED) return;
 
             //все вкладки анкеты кандидата должны быть посланы на утверждение
             //даже если будет последующая редакция кадровиком посланных на утверждение анкет кандидата, почта уйдет 1 раз
