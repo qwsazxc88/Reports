@@ -11966,6 +11966,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
             }
+            var creator = UserDao.Load(model.CreatorId);
+            if (creator != null && creator.Department != null)
+            {
+                var dep3 = DepartmentDao.GetParentDepartmentWithLevel(creator.Department, 3);
+                if (dep3 != null)
+                    model.CreatorDepartment3 = dep3.Name;
+
+            }
             model.Chiefs = chiefsBuilder.ToString();
             if (user != null)
             {
@@ -11978,8 +11986,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
                                                 new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
-                                                new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
-                                                new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
                                                 new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
                                                 new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
                                                 new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
@@ -12224,7 +12232,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
             level = dep.ItemLevel.Value;
 
-            User currUser = UserDao.Load(CurrentUser.Id);
+            User currUser = UserDao.Load(model.CreatorId);
 
             if (currUser == null)
                 throw new ArgumentException(string.Format(" Пользователь не найден {0}", model.UserId));

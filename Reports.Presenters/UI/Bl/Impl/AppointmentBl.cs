@@ -522,8 +522,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                             else
                             {
-                               if(entity.BankAccountantAccept.HasValue)
-                                   model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                                if (entity.BankAccountantAccept.HasValue)
+                                {
+                                    model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                                    
+                                }
+                                else
+                                { if (entity.Reason.Id == 3 || entity.Reason.Id == 6)  model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator); }
                             }
                     }
                     else if (!entity.DeleteDate.HasValue 
@@ -535,6 +540,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerRejectAvailable = true;
                             if (!entity.ChiefDateAccept.HasValue && entity.BankAccountantAccept.HasValue && entity.IsVacationExists && entity.BankAccountantAcceptCount>0)
                                 model.IsChiefApproveAvailable = true;
+                            else if (!entity.ChiefDateAccept.HasValue)
+                            {
+                                if (entity.Reason.Id == 3 || entity.Reason.Id == 6) model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator);
+                            }
                     }
                     break;
                 case UserRole.StaffManager:
