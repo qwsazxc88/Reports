@@ -84,9 +84,9 @@ namespace WebMvc.Controllers
             int result=AppointmentBl.SendEmailForAppointmentManager(AppointmentId);
             switch(result)
             {
-                case 0: return Json(new {status="Сообщение отправлено."});break;
-                case 1: return Json(new {status="Не найден email руководителя."});break;
-                default: return Json(new {status="При отправке сообщения произошла ошибка."}); break;
+                case 0: return Json(new {status="Сообщение отправлено."});
+                case 1: return Json(new {status="Не найден email руководителя."});
+                default: return Json(new {status="При отправке сообщения произошла ошибка."}); 
             }
         }
         [HttpGet]
@@ -129,7 +129,7 @@ namespace WebMvc.Controllers
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
             if(id==0) model.Recruter = 1;
-            if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
+            //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
         [HttpPost]

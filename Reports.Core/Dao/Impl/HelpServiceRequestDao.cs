@@ -78,7 +78,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 inner join [dbo].[Users] crUser on crUser.Id = v.CreatorId
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
-                                inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT join dbo.Department dep on u.DepartmentId = dep.Id
                                 inner join dbo.Users currentUser on currentUser.Id = :userId
                                 LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
@@ -139,7 +139,7 @@ namespace Reports.Core.Dao.Impl
             if (role == UserRole.PersonnelManager && userId != 10)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
-                sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId.ToString() + " {0}";
+                sqlQuery += "LEFT JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and (N.[PersonnelId] = " + userId.ToString() + " or v.[UserID]=" + userId.ToString() + "){0}";
             }
 
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -372,6 +372,8 @@ namespace Reports.Core.Dao.Impl
                     //4, 2, 5, 7, 10, 11, 21, 26, 27 - эти услуги только для просмотра, не могут принять в работу и посмотреть прикрепленный расчетчиками скан
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27) ";*/
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return userId != 10 ? @" v.UserId=:userId or N.PersonnelId=:userId " : String.Empty;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
