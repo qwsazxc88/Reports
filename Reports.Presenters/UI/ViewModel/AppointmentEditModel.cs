@@ -23,6 +23,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
         public string City { get; set; }
+
         public int Priority { get; set; }
         public IList<IdNameDto> Priorities { get; set; }
         [Display(Name = "Должность")]
@@ -40,7 +41,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int ReasonId { get; set; }
         public int ReasonIdHidden { get; set; }
         public IList<IdNameDto> Reasons;
-
+        public IList<IdNameDto> UsersList { get; set; }
+        public int ReasonPositionId { get; set; }
         //[Display(Name = "Должность")]
         public string ReasonPosition { get; set; }
         //[Display(Name = "С даты")]
