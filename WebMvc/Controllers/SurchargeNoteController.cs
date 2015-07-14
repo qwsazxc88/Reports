@@ -101,7 +101,7 @@ namespace WebMvc.Controllers
                          if (!model.PayDayEnd.HasValue || ( model.PayDayEnd.Value < DateTime.Parse("01.01.1970") ))
                             ModelState.AddModelError("PayDayEnd", "Нужно выбрать дату");
                           
-                         if(model.PayDayEnd.HasValue && model.PayDayEnd<=model.PayDay)
+                         if(model.PayDayEnd.HasValue && model.PayDayEnd>model.PayDay)
                              ModelState.AddModelError("PayDayEnd","Дата начала сохранения заработка должна быть больше даты больничного листа");
                      break;
                     case 3:
