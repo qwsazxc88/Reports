@@ -45,6 +45,10 @@ namespace Reports.Core.Domain
         public virtual bool? ApprovalStatus { get; set; }
         public virtual User Approver { get; set; }
         public virtual DateTime? ApprovalDate { get; set; } //ok
+        //предварительное согласование
+        public virtual bool? PrevApprovalStatus { get; set; }
+        public virtual User PrevApprover { get; set; }
+        public virtual DateTime? PrevApprovalDate { get; set; } //ok
 
         public virtual User CancelRejectUser { get; set; }
         public virtual DateTime? CancelRejectDate { get; set; } //ok

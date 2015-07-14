@@ -36,9 +36,10 @@
     <property name="CancelRejectDate" not-null="false" />
     <many-to-one name="CancelRejectHigherUser" class="User" column="CancelRejectHigherUserId" foreign-key="FK_Managers_CancelRejectHigherUser" index="Managers_CancelRejectHigherUser" not-null="false"/>
     <property name="CancelRejectHigherDate" not-null="false" />
-    
+        
     <many-to-one name="RejectingChief" class="User" column="RejectingChiefId" foreign-key="FK_Managers_RejectingChief" index="Managers_RejectingChief" not-null="false"/>
     <property name="ChiefRejectionReason" length="50" not-null="false"/>
+    <property name="MentorName" length="100" not-null="false"/>
 
   </class>
 </hibernate-mapping>
