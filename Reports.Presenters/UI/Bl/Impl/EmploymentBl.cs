@@ -1289,7 +1289,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerApprovalDate = entity.ManagerApprovalDate;
                 model.ManagerRejectionReason = entity.ManagerRejectionReason;
 
-                model.ManagerApprovalStatus = !entity.ManagerApprovalStatus.HasValue ? false : entity.ManagerApprovalStatus.Value;
+                model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
@@ -5223,6 +5223,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             error = "Отклонение кандидата отменено!";
                             return true;
+                        }
+                    }
+
+                    //проверки по обучению в найме
+                    if (entity.Candidate.AppointmentReport != null)
+                    {
+                        if (entity.Candidate.AppointmentReport.Type.Id == 1)
+                        {
+                            if (entity.Candidate.AppointmentReport.TestingResult < 3 || entity.Candidate.AppointmentReport.IsEducationExists == false)
+                            {
+                                error = "Обучение кандидата в отчете по подбору не не пройдено!";
+                                return false;
+                            }
                         }
                     }
 
