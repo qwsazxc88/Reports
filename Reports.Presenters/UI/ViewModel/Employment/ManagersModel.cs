@@ -87,6 +87,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Причина отказа")]
         public string HigherManagerRejectionReason { get; set; }
 
+        [Display(Name = "ФИО наставника")]
+        public string MentorName { get; set; }
+
         public bool IsApproveByManagerAvailable { get; set; }
         public bool IsApproveByHigherManagerAvailable { get; set; }
 

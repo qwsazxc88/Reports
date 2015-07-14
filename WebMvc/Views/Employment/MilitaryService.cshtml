@@ -36,14 +36,14 @@
             @Html.LabelFor(m => m.MilitaryCardDate)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardDate)<br />
             @Html.EditorFor(m => m.MilitaryCardDate)
         </div>
-        
+        @*
         @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename) && !Model.IsValidate)
         {
             <div class="formfield">
                 Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
             </div>
         }
-
+        *@
         @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
         {
             <div class="formfield">
@@ -52,13 +52,14 @@
                     @Model.MilitaryCardScanAttachmentFilename
                 </a>
             </div>
+            @*
             if (!Model.IsValidate)
             {
                 <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" />
                 </div>
             }
+            *@
         }
 
         <div class="formfield clear">
@@ -105,14 +106,14 @@
             @Html.LabelFor(m => m.MobilizationTicketNumber)&nbsp;@Html.ValidationMessageFor(m => m.MobilizationTicketNumber)<br />
             @Html.EditorFor(m => m.MobilizationTicketNumber)
         </div>
-        
+        @*
         @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename) && !Model.IsValidate)
         {
             <div class="formfield">
                 Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
             </div>
         }
-
+        *@
         @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
         {
             <div class="formfield">
@@ -121,13 +122,14 @@
                     @Model.MobilizationTicketScanAttachmentFilename
                 </a>
             </div>
+            @*
             if (!Model.IsValidate)
             {
                 <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                               {<text>style="display:none"</text>}*@/>
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" />
                 </div>
             }
+            *@
         }
 
         <div class="formfield clear">

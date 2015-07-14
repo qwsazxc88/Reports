@@ -16,12 +16,15 @@
     <input type="hidden" id="IsManagersAvailable" name="IsManagersAvailable" value="@Model.IsManagersAvailable" />
     <input type="hidden" id="IsPersonalManagersAvailable" name="IsPersonalManagersAvailable" value="@Model.IsPersonalManagersAvailable" />
     <input type="hidden" id="TabIndex" name="TabIndex" value="@Model.TabIndex" />
+    
+    
 }   
     <div id="tabs">
         <ul>
             @if (Model.IsCandidateInfoAvailable)
             {
-                <li><a href="#tabs1"><!--<span id="LoadingIndicator2" style="display:none;"></span>-->Общая информация</a></li>
+                <li><a href="#tabs14">Сканы оригиналов документов</a></li>
+                <li><a href="#tabs1">Общая информация</a></li>
                 <li><a href="#tabs2">Паспортные данные</a></li>
                 <li><a href="#tabs3">Образование</a></li>
                 <li><a href="#tabs4">Состав семьи</a></li>
@@ -55,31 +58,15 @@
         </ul>
 
         
-        <div id="tabs1">
-            
-        </div>
-        
-        <div id="tabs2">
-            
-        </div>
-        <div id="tabs3">
-            
-        </div>
-        <div id="tabs4">
-            
-        </div>
-        <div id="tabs5">
-            
-        </div>
-        <div id="tabs6">
-            
-        </div>
-        <div id="tabs7">
-            
-        </div>
-        <div id="tabs8">
-            
-        </div>
+        <div id="tabs14"></div>
+        <div id="tabs1"></div>
+        <div id="tabs2"></div>
+        <div id="tabs3"></div>
+        <div id="tabs4"></div>
+        <div id="tabs5"></div>
+        <div id="tabs6"></div>
+        <div id="tabs7"></div>
+        <div id="tabs8"></div>
         <div id="tabs9"></div>
         @*<div id="tabs10"></div>*@
         <div id="tabs13"></div>
@@ -89,12 +76,28 @@
         
     </div>
 
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+
 
 <script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
+    //удаляем сканы на новой вкладке
+    function DeleteScanOriginalDocuments(id){
+        ShowFlash(true);
+        $("#DeleteAttachmentId").val(id);
+        $("#ScanOriginalDocumentsForm").submit();
+    }
 
     //удаляем сканы
     function deleteAttachment(id){
@@ -244,9 +247,47 @@
         }
     }
 
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+
+
+
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
+
         $.ajaxSetup({cache:false});
+
+        ShowFlash(true);
+        ShowFlash(false);
+
         //создаем вкладки, с обработчиком переключения вкладок
         $('#tabs').tabs({ 
             cache: false,
@@ -1369,6 +1410,49 @@
                             var Id = $("#Certificate2NDFLFileId").val();
                             $("#DeleteAttachmentId").val(Id);
                             this.form.submit();
+                        });
+                    });
+                }
+
+
+                //документы анкеты
+                if (ui.panel.id == "tabs14") {
+                    $("#tabs14").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs14", "ScanOriginalDocuments", "/Employment/ScanOriginalDocuments?Id=@Model.CandidateID", "GET");
+                    //после окончания выполнения запроса цепляем календари и обработчики
+                    $("#tabs14").ajaxStop(function () {
+                        $("#SNILSScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#INNScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#DisabilityCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#InternalPassportScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#HigherEducationDiplomaScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#PostGraduateEducationDiplomaScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#CertificationScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#TrainingScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#MarriageCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#ChildBirthCertificateScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#MilitaryCardScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#MobilizationTicketScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#WorkBookScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#WorkBookSupplementScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#PersonalDataProcessingScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+                        $("#InfoValidityScanFile").change(function () { ShowFlash(true); $("#ScanOriginalDocumentsForm").submit(); });
+
+                        //ShowFlash(true);
+                        //ShowFlash(false);
+                        $("#IsAgree").val(false);
+                        $("#DeleteAttachmentId").val(0);
+
+                        $("#btnScanODDraft").click(function () {
+                            ShowFlash(true);
+                            $("#IsScanODDraft").val(true);
+                            $("#ScanOriginalDocumentsForm").submit();
+                        });
+
+                        $("#btnScanODSave").click(function () {
+                            ShowFlash(true);
+                            $("#IsAgree").val(true);
+                            $("#ScanOriginalDocumentsForm").submit();
                         });
                     });
                 }
