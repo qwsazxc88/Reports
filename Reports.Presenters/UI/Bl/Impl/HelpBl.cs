@@ -478,7 +478,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -486,6 +486,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currentRole)
             {
+                case UserRole.ConsultantPersonnel:
                     case UserRole.Employee:
                     if (entity.Creator.Id == current.Id)
                     {
@@ -941,6 +942,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currRole)
             {
+                case UserRole.ConsultantPersonnel:
                 case UserRole.Employee:
                     if (entity.Creator.Id == currUser.Id)
                     {
@@ -1540,6 +1542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //могут отвечать на любые открытые вопросы, не важно кому направленные
                     //вытащил кусок из закомментаренного условия
+
                     if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
@@ -1559,6 +1562,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else  model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
                              entity.ConsultantRoleId.Value == (int)UserRole.ConsultantPersonnel))
@@ -2048,6 +2064,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                     if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == currUser.Id))
                     {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
+                            entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
