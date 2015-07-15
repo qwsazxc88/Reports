@@ -442,7 +442,7 @@
         }
         @if (dto.UserRole == UserRole.Candidate || dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
         {
-            <button id="btnScanODSave" type="button" @if (Model.IsScanFinal)
+            <button id="btnScanODSave" type="button" @if (Model.IsScanFinal || !Model.IsAgreeAvailable)
                                                  {<text> disabled="disabled"</text>}>Отправить на согласование</button>
         }
     </fieldset>

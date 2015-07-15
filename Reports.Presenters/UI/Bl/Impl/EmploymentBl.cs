@@ -1744,6 +1744,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PrevApprovalDate = entity.BackgroundCheck.PrevApprovalDate;
                 model.PrevApprovalStatuses = GetApprovalStatuses();
                 model.IsPrevApproveBySecurityAvailable = entity.IsScanFinal && AuthenticationService.CurrentUser.UserRole == UserRole.Security && !entity.BackgroundCheck.PrevApprovalStatus.HasValue ? true : false;
+                model.IsAgreeAvailable = entity.Status == 0 ? true : false;
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
@@ -3770,8 +3771,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsAgree)
             {
                 candidate.IsScanFinal = model.IsScanFinal;
-                if(!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
-                    candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
+                if (candidate.Status == 0)//статус меняем только стадии заполнения анкеты
+                {
+                    if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
+                        candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
+                }
             }
             else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
             {
@@ -3784,10 +3788,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 EmploymentCandidateDao.SaveAndFlush(candidate);
-                //сообщение тренеру
-                EmploymentSendEmail(candidate.User.Id, 4, false);
-                //сообщение в ДБ для предварительного согласования
-                EmploymentSendEmail(candidate.User.Id, 7, false);
+                //если в данный момент времени был проставлен необходимый статус, то делаем рассылку
+                if (candidate.Status == EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY)
+                {
+                    //сообщение тренеру
+                    EmploymentSendEmail(candidate.User.Id, 4, false);
+                    //сообщение в ДБ для предварительного согласования
+                    EmploymentSendEmail(candidate.User.Id, 7, false);
+                }
             }
             catch
             {
@@ -5227,9 +5235,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     //проверки по обучению в найме
-                    if (entity.Candidate.AppointmentReport != null)
+                    if (entity.Candidate.AppointmentReport != null && entity.Candidate.Appointment != null)
                     {
-                        if (entity.Candidate.AppointmentReport.Type.Id == 1)
+                        if (entity.Candidate.AppointmentReport.Type.Id == 1 && entity.Candidate.Appointment.Recruter != 2)
                         {
                             if (entity.Candidate.AppointmentReport.TestingResult < 3 || entity.Candidate.AppointmentReport.IsEducationExists == false)
                             {
