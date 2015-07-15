@@ -1744,6 +1744,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PrevApprovalDate = entity.BackgroundCheck.PrevApprovalDate;
                 model.PrevApprovalStatuses = GetApprovalStatuses();
                 model.IsPrevApproveBySecurityAvailable = entity.IsScanFinal && AuthenticationService.CurrentUser.UserRole == UserRole.Security && !entity.BackgroundCheck.PrevApprovalStatus.HasValue ? true : false;
+                model.IsAgreeAvailable = entity.Status == 0 ? true : false;
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
