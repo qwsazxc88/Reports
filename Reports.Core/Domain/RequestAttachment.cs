@@ -53,6 +53,7 @@ namespace Reports.Core.Domain
             return Context = context;
         }
         public virtual int DocumentsCount { get; set; }
+        public virtual User Creator { get; set; }
         #endregion
 
         #region Constructors

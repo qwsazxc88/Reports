@@ -13,6 +13,8 @@ namespace Reports.Presenters.UI.Bl
         CreateRequestModel GetCreateRequestModel(int? userId);
         DepartmentChildrenDto GetUsersForDepartment(int departmentId);
 
+        bool CheckDepartment(SurchargeNoteEditModel model, out int level);
+
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model, bool hasError);
 

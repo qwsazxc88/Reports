@@ -17,7 +17,7 @@
     @Html.HiddenFor(m => m.SendTo1C)
     
     <fieldset class="bordered doc-wrap panel">
-    <legend>Руководители</legend>
+    <legend>Руководители aaa</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
             <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
@@ -127,6 +127,11 @@
         </div>
 
         <div class="formfield clear">
+            @Html.LabelFor(m => m.MentorName)&nbsp;@Html.ValidationMessageFor(m => m.MentorName)<br />
+            @Html.EditorFor(m => m.MentorName)
+        </div>
+
+        <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
@@ -159,6 +164,12 @@
         {
             <button>Применить</button>
         }
+        
+        @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+        @if (Model.IsCancelApproveAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
+        }
         <br /><br />
     </div>
     
@@ -184,6 +195,11 @@
         @if (Model.IsApproveByHigherManagerAvailable)
         {
             <button>Применить</button>
+        }
+        @Html.HiddenFor(m => m.IsCancelApproveHigherAvailale)
+        @if (Model.IsCancelApproveHigherAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
         }
     </div>
 }

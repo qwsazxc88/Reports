@@ -26,5 +26,11 @@ namespace Reports.Core.Dao
         IList<CandidateStateDto> GetCandidateState(int CandidateID);
         IList<CandidatePersonnelDto> GetPersonnels();
         IList<AttachmentListDto> GetCandidateAttachmentList(int CandidateID);
+        /// <summary>
+        /// Достаем список сканов из анкеты.
+        /// </summary>
+        /// <param name="CandidateID">Id заявки кандидата.</param>
+        /// <returns></returns>
+        IList<EmploymentAttachmentDto> GetCandidateQuestAttachmentList(int CandidateID);
     }
 }

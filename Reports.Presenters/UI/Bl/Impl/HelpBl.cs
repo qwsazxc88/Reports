@@ -555,6 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
                     break;*/ //DEPRECATED MAY BE PROBLEM
+                case UserRole.Estimator:
                 case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
                     {
@@ -576,7 +577,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsBeginWorkAvailable = true;
 
                     //чтобы видно было кадровикам, но в работу не принималось и скан не выкачивался
-                    if (AuthenticationService.CurrentUser.Id != 10)
+                    List<int> EstimatorList = new List<int> { 2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27 };
+                    List<int> PersonnelList = new List<int> { 1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27 };
+                    if (AuthenticationService.CurrentUser.Id != 10 && (CurrentUser.UserRole & UserRole.Estimator) == 0)
                     {
                         if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
                         {
@@ -586,7 +589,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else
                             model.IsNotScanView = false;
                     }
-
+                    else
+                    {
+                        if (!EstimatorList.Contains(entity.Type.Id))
+                        {
+                            model.IsBeginWorkAvailable = false;
+                            model.IsNotScanView = false;
+                        }
+                    }
                     //консультант составляет за сотрудника
                     if (entity.Creator.Id == current.Id)
                     {
