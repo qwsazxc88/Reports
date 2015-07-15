@@ -219,12 +219,14 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
+            @*
             @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename) && !Model.IsValidate)
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
                 </div>
             }
+            *@
 
             @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
             {
@@ -234,13 +236,14 @@
                         @Model.PersonalDataProcessingScanAttachmentFilename
                     </a>
                 </div>
+                @*
                 if (!Model.IsValidate)
                 {
                     <div class="formfield">
-                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                                   {<text>style="display:none"</text>}*@/>
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" />
                     </div>
                 }
+                *@
             }
 
             <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
@@ -268,12 +271,14 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст о достоверности сведений</legend>
+            @*
             @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename) && !Model.IsValidate)
             {
                 <div class="formfield">
                     Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
                 </div>
             }
+            *@
 
             @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
             {
@@ -283,13 +288,14 @@
                         @Model.InfoValidityScanAttachmentFilename
                     </a>
                 </div>
+                @*
                 if (!Model.IsValidate)
                 {
                     <div class="formfield">
-                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
-                                                                                                   {<text>style="display:none"</text>}*@/>
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" />
                     </div>
                 }
+                *@
             }
 
             <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
