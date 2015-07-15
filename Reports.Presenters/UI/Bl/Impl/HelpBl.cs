@@ -350,7 +350,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<IdNameDto> list = null;
             if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
             {
-                var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.Contains(Name)).ToList();
+                var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).ToList();
                 return users;
             }
             else
