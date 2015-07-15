@@ -31,7 +31,10 @@ namespace Reports.Core.Domain
         public virtual AppointmentReport AppointmentReport { get; set; }
         public virtual Appointment Appointment { get; set; }
         public virtual bool IsTechDissmiss { get; set; }
+        public virtual bool IsScanFinal { get; set; }
         //для фиксирования рассылки
+        public virtual bool IsCandidateToBackgroundPrevSendEmail { get; set; }
+        public virtual DateTime? CandidateToBackgroundPrevSendEmailDate { get; set; }
         public virtual bool IsCandidateToBackgroundSendEmail { get; set; }
         public virtual DateTime? CandidateToBackgroundSendEmailDate { get; set; }
         public virtual bool IsCandidateToManagerSendEmail { get; set; }

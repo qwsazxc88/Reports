@@ -20,6 +20,7 @@ namespace Reports.Core.Dao
         IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
                            DateTime beginDate, DateTime endDate, int departmentId, string userName);
         IList<User> GetUsersForPersonnel(int persId);
+        IList<IdNameDto> GetUsersForConsultantBank();
         IList<User> GetUserWithEmailAndRole(UserRole role, string email, string departmentPath, List<int> levelList);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);

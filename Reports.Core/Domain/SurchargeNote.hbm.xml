@@ -7,6 +7,10 @@
     <property name="CreateDate" not-null="true"/>
     <property name="Number" not-null="true"/>
     <property name="PayDay" not-null="true"/>
+    <property name="PayDayEnd" not-null="false"/>
+    <property name="DismissalDate" not-null="false"/>
+    <property name="PayType" not-null="false"/>
+    <property name="MonthId" not-null="false"/>
     <property name="PersonnelDateAccept" not-null="false"/>
     <property name="CountantDateAccept" not-null="false"/>
     <property name="NoteType" not-null="true"/>

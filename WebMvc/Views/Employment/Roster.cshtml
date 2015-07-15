@@ -19,6 +19,19 @@
                         <tr>
                             <td colspan="2">
                                 <span style="font-size:large;color:Red;">Уважаемые  коллеги! <br />Обращаем  ваше  внимание, если у  вас  возникли  сложности при оформлении  Приема  кандидата  через  ВЕБ - пишите  об этом   сразу  кадровику  Дирекции на электронную  почту.</span>
+                                <br />
+                                <div style="width:70%;">
+                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;Обращаем Ваше внимание! Внесены изменения в программу "Прием". Прикрепить сканированные документы кандидата можно на первой странице 
+                                          "Сканы оригиналов документов" Анкеты по приему в программе  "Прием". После прикрепления, документы отразятся на каждой странице Анкеты по приему. 
+                                          Электронно заполненную Анкету по приему теперь можно распечатать на странице Анкеты по приему "Департамент безопасности". На этой же странице можно 
+                                          прикрепить подписанный скан оригинала данной Анкеты. 
+                                          <br />
+                                          &nbsp;&nbsp;&nbsp;&nbsp;У Департамента безопасности появилась возможность предварительного согласования кандидата после приложенных сканов документов кандидата на странице 
+                                          "Сканы оригиналов документов" Анкеты по приему. Окончательно кандидата Департамент безопасности согласовывает после получения заполненной Анкеты по приему.
+                                          <br />
+                                          &nbsp;&nbsp;&nbsp;&nbsp;Тренер сможет начать работу с кандидатом после предварительного согласования Департаментом безопасности.
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -176,7 +189,7 @@
             <div id="sort16"><a href="#" onclick = "SortColumnChanged(16);">Номер <br />документа<br />из 1С</a></div>
         </th>
         <th>
-            <div id="sort3"><a href="#" onclick = "SortColumnChanged(3);">ФИО</a></div>
+            <div id="sort3"><a href="#" onclick = "SortColumnChanged(3);">ФИО<br />канд.</a></div>
         </th>
         <th>
             <div id="sort4"><a href="#" onclick = "SortColumnChanged(4);">Должность</a></div>
@@ -188,19 +201,13 @@
             <div id="sort6"><a href="#" onclick = "SortColumnChanged(6);">Структурное<br />подразделение<br />7 ур.</a></div>
         </th>
         <th>
-            Техническое<br/>увольнение
+            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Руководитель</a></div>
         </th>
         <th>
             <div id="sort7"><a href="#" onclick = "SortColumnChanged(7);">Город<br />места<br />работы</a></div>
         </th>
         <th>
-            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">Основная\<br />По<br />совместительству</a></div>
-        </th>
-        <th>
-            <div id="sort9"><a href="#" onclick = "SortColumnChanged(9);">Исп.<br />срок</a></div>
-        </th>
-        <th>
-            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">Инвалидность</a></div>
+            <div id="sort17"><a href="#" onclick = "SortColumnChanged(17);">Дата<br />создания<br />кандидата</a></div>
         </th>
         <th>
             <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Обучение</a></div>
@@ -209,20 +216,26 @@
             <div id="sort12"><a href="#" onclick = "SortColumnChanged(12);">Дата<br />приема</a></div>
         </th>
         <th>
-            Дата<br />окончания<br />СТД
+            <div id="sort9"><a href="#" onclick = "SortColumnChanged(9);">Исп.<br />срок</a></div>
         </th>
         <th>
-            <div id="sort17"><a href="#" onclick = "SortColumnChanged(17);">Дата<br />создания<br />кандидата</a></div>
+            <div id="sort8"><a href="#" onclick = "SortColumnChanged(8);">По<br />сов.</a></div>
         </th>
         <th>
-            Сотрудник<br />переведен на<br />бессрочный ТД<br />
+            Тех.<br/>ув.
+        </th>
+        <th>
+            Дата<br />оконч.<br />СТД
+        </th>
+        <th>
+            Сотр.<br />перев. на<br />бесср. ТД<br />
             @if (Model.IsBulkChangeContractToIndefiniteAvailable)
             {
                 <input type="checkbox" id="setAllToChangeContractToIndefinite" />
             }
         </th>
         <th>
-            <div id="sort13"><a href="#" onclick = "SortColumnChanged(13);">Руководитель</a></div>
+            <div id="sort10"><a href="#" onclick = "SortColumnChanged(10);">Инв.</a></div>
         </th>
         <th>
             <div id="sort14"><a href="#" onclick = "SortColumnChanged(14);">Кадровик</a></div>
@@ -241,6 +254,9 @@
         </th>
         <th>
             <div id="sort21"><a href="#" onclick="SortColumnChanged(21);">Дата<br />увольнения</a></div>
+        </th>
+        <th>
+            <div id="sort22"><a href="#" onclick="SortColumnChanged(22);">ФИО<br />Наставника</a></div>
         </th>
         @*
         <th>
@@ -307,21 +323,14 @@
                 <td>
                     &nbsp;@candidate.Department
                 </td>
-                <td class="centered">
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
-
+                <td>
+                    &nbsp;@candidate.AppointmentManager
                 </td>
                 <td>
                     &nbsp;@candidate.WorkCity
                 </td>
-                <td class="centered">
-                     &nbsp;@Html.CheckBoxFor(m => m.Roster[i - 1].IsSecondaryJob, new { disabled = "disabled" })
-                </td>
                 <td>
-                    &nbsp;@candidate.ProbationaryPeriod
-                </td>
-                <td>
-                    &nbsp;@candidate.Disabilities
+                    &nbsp;@(candidate.CompleteDate.HasValue ? candidate.CompleteDate.Value.ToShortDateString() : String.Empty)
                 </td>
                 <td>
                     &nbsp;@candidate.Training
@@ -329,12 +338,19 @@
                 <td>
                     &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
                 </td>
+                <td>
+                    &nbsp;@candidate.ProbationaryPeriod
+                </td>
+                <td class="centered">
+                     &nbsp;@Html.CheckBoxFor(m => m.Roster[i - 1].IsSecondaryJob, new { disabled = "disabled" })
+                </td>
+                <td class="centered">
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTechDissmiss, ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)) ? null : new { disabled = "disabled" }))
+
+                </td>
                 <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
                     {<text>style="background-color:yellow"</text>}>
                     &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
-                </td>
-                <td>
-                    &nbsp;@(candidate.CompleteDate.HasValue ? candidate.CompleteDate.Value.ToShortDateString() : String.Empty)
                 </td>
                 <td class="centered">
                     @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
@@ -347,7 +363,7 @@
                     }
                 </td>
                 <td>
-                    &nbsp;@candidate.AppointmentManager
+                    &nbsp;@candidate.Disabilities
                 </td>
                 <td>
                     &nbsp;@candidate.PersonnelName
@@ -380,6 +396,9 @@
                 </td>
                 <td>
                     @if(candidate.DismissalDate.HasValue) {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
+                </td>
+                <td>
+                    &nbsp;@candidate.MentorName
                 </td>
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">

@@ -61,7 +61,8 @@ namespace Reports.Core.Dao.Impl
 						+ N', срок действия справки: ' + convert(varchar, generalInfo.DisabilityCertificateExpirationDate, 104)
 					end Disabilities
                 , candidateUser.Grade Grade
-				, case
+				, case 
+                    when candidate.Status = 10 then N'Ожидает предварительного согласования ДБ'
 					when candidate.Status = 1 then N'Ожидает согласование ДБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'
@@ -119,6 +120,7 @@ namespace Reports.Core.Dao.Impl
 				end as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
+                ,managers.MentorName
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -471,6 +473,9 @@ namespace Reports.Core.Dao.Impl
                 case 21:
                     orderBy = "DismissalDate";
                     break;
+                case 22:
+                    orderBy = "MentorName";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -531,6 +536,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 .AddScalar("IsBlocked", NHibernateUtil.Boolean)
                 .AddScalar("DismissalDate", NHibernateUtil.DateTime)
+                .AddScalar("MentorName", NHibernateUtil.String)
                 ;
 
             return query;
@@ -585,6 +591,7 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("ScanFinal", NHibernateUtil.Boolean)
                 .AddScalar("GeneralFinal", NHibernateUtil.Boolean)
                 .AddScalar("PassportFinal", NHibernateUtil.Boolean)
                 .AddScalar("EducationFinal", NHibernateUtil.Boolean)
@@ -596,6 +603,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("CandidateApp", NHibernateUtil.Boolean)
                 .AddScalar("CandidateReady", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
+                .AddScalar("PrevBackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
                 .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)
@@ -622,7 +630,7 @@ namespace Reports.Core.Dao.Impl
             return query;
         }
         /// <summary>
-        /// Список сканов.
+        /// Список сканов документов по приему.
         /// </summary>
         /// <param name="CandidateID">Id кандидата</param>
         /// <returns></returns>
@@ -643,7 +651,22 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
-        
+        /// <summary>
+        /// Достаем список сканов из анкеты.
+        /// </summary>
+        /// <param name="CandidateID">Id заявки кандидата.</param>
+        /// <returns></returns>
+        public IList<EmploymentAttachmentDto> GetCandidateQuestAttachmentList(int CandidateID)
+        {
+            IQuery query = Session.CreateSQLQuery("SELECT * FROM dbo.vwEmploymentScanInfo WHERE CandidateID = " + CandidateID.ToString())
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("CandidateId", NHibernateUtil.Int32)
+                .AddScalar("RequestType", NHibernateUtil.Int32)
+                .AddScalar("FileName", NHibernateUtil.String)
+                .AddScalar("DateCreated", NHibernateUtil.DateTime)
+                .AddScalar("Surname", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean<EmploymentAttachmentDto>()).List<EmploymentAttachmentDto>();
+        }
 
     }
 }

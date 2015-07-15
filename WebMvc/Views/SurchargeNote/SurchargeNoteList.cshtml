@@ -127,14 +127,58 @@
                         <div id="sort4" ><a href="#" onclick = "SortChanged(4);">Должность</a></div>
                     </th>
                     <th>
-                        <div id="sort5" ><a href="#" onclick = "SortChanged(5);">Подразделение<br />3 уровня</a></div>
+                        <div id="sort5" ><a href="#" onclick = "SortChanged(5);">Дирекция<br />3 уровня</a></div>
                     </th>
                     <th>
                         <div id="sort6" ><a href="#" onclick = "SortChanged(6);">Подразделение<br />7 уровня</a></div>
                     </th>
-                    <th>
-                        <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Оплачиваемый<br />день</a></div>
-                    </th>
+                    @switch (Model.NoteType)
+                    {
+                        case 0:
+                        case 1:
+                            <th>
+                                <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Оплачиваемый<br />день</a></div>
+                            </th>
+                            break;
+                        case 2:
+                            <th>
+                                <div id="sort12" ><a href="#" onclick = "SortChanged(12);">Дата начала<br />сохранения заработка</a></div>
+                            </th>
+                            <th>
+                                <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Дата начала<br />больничного листа</a></div>
+                            </th>
+                            break;
+                       case 3:
+                            <th>
+                                <div id="sort13" ><a href="#" onclick = "SortChanged(13);">Вид<br />дохода</a></div>
+                            </th>
+                            break;
+                       case 4:
+                            <th>
+                                <div id="sort14" ><a href="#" onclick = "SortChanged(14);">Оплачиваемый<br />период</a></div>
+                            </th>
+                            break;
+                       case 5:
+                            <th>
+                                <div id="sort15" ><a href="#" onclick = "SortChanged(12);">Дата<br />увольнения</a></div>
+                            </th>
+                            <th>
+                                <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Месяц начисления<br />по счёту</a></div>
+                            </th>
+                            <th>
+                                <div id="sort16" ><a href="#" onclick = "SortChanged(16);">Месяц<br />по счёту</a></div>
+                            </th>
+                            break;
+                        case 6:
+                            
+                            <th>
+                                <div id="sort7" ><a href="#" onclick = "SortChanged(7);">Дата<br />начала</a></div>
+                            </th>
+                            <th>
+                                <div id="sort12" ><a href="#" onclick = "SortChanged(12);">Дата<br />окончания</a></div>
+                            </th>
+                            break;
+                    }
                     <th>
                         <div id="sort11" ><a href="#" onclick = "SortChanged(11);">Отработано <br />УКДиУ</a></div>
                     </th>
@@ -157,23 +201,50 @@
                         <tr>
                             <td>@i</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
-                            <td>@Html.ActionLink(doc.Number,"SurchargeNoteEdit",new {id=doc.Id},null)</td>
+                            <td>@Html.ActionLink(doc.Number, "SurchargeNoteEdit", new { id = doc.Id }, null)</td>
                             <td>@doc.CreatorName</td>
                             <td>@doc.Position</td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.DepartmentName</td>
+                            @switch (Model.NoteType)
+                    {
+                        case 0:
+                        case 1:
                             <td>@doc.PayDay.ToShortDateString()</td>
-                            <td>@if(doc.PersonnelManagerBankDateAccept.HasValue)
+                           break;
+                        case 2:
+                            <td>@(doc.PayDayEnd.HasValue? doc.PayDayEnd.Value.ToShortDateString():"")</td>
+                            <td>@doc.PayDay.ToShortDateString()</td>
+                           break;
+                        case 3:
+                            <td>@{var t = Model.PayTypes.Where(x => x.Id == doc.PayType); if(t!=null && t.Any()){<text>@(t.First().Name)</text>}}</td>
+                           break;
+                        case 4:
+                            <td>@doc.PayDay.ToString("MM.yyyy") - @(doc.PayDayEnd.HasValue? doc.PayDayEnd.Value.ToString("MM.yyyy"):"")</td>
+                           break;
+                        case 5:
+                            <td>@doc.DismissalDate</td>
+                            <td>@doc.PayDay.ToShortDateString()</td>
+                            <td>@{var m = Model.MonthTypes.Where(x => x.Id == doc.PayType); if (m != null && m.Any()){<text>@(m.First().Name)</text>}}</td>
+                                      break;
+                        case 6:
+                            
+                            <td>@doc.PayDay.ToShortDateString()</td>
+                           <td> @(doc.PayDayEnd.HasValue ? doc.PayDayEnd.Value.ToShortDateString() : "")</td>
+                            break;
+                    }
+                            
+                            <td>@if (doc.PersonnelManagerBankDateAccept.HasValue)
                                 {
                                     @doc.PersonnelManagerBankDateAccept.Value.ToShortDateString()
                                 }
                             </td>
-                            <td>@if(doc.PersonnelDateAccept.HasValue)
+                            <td>@if (doc.PersonnelDateAccept.HasValue)
                                 {
                                     @doc.PersonnelDateAccept.Value.ToShortDateString()
                                 }
                             </td>
-                            <td>@if(doc.CountantDateAccept.HasValue)
+                            <td>@if (doc.CountantDateAccept.HasValue)
                                 {
                                     @doc.CountantDateAccept.Value.ToShortDateString()
                                 }

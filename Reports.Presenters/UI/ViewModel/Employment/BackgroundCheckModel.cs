@@ -130,6 +130,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Ссылка на задачу в системе Pyrus")]
         public string PyrusRef { get; set; } //ok
 
+        public bool IsCancelApproveAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
+
+        public DateTime? SendTo1C { get; set; }
+        public bool IsPrintButtonAvailable { get; set; }
+        public bool IsDeleteScanButtonAvailable { get; set; }
+
+        //личный листок по учету кадров
+        public HttpPostedFileBase EmploymentFile { get; set; }
+        public string EmploymentFileName { get; set; }
+        public int EmploymentFileId { get; set; }
+        
+
         public BackgroundCheckModel()
         {
             this.Version = 0;

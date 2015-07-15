@@ -121,6 +121,7 @@
         <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
         <br />
         <div >
+            @*
             @if (@Model.HigherEducationDiplomaScanId == 0 && !Model.IsValidate)
             {
                 <div class="formfield">
@@ -128,16 +129,18 @@
                     @Html.ValidationMessageFor(m => m.HigherEducationDiplomaScanFile)
                 </div>
             }
-            
+            *@
             @if (!string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
             {
                 <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.HigherEducationDiplomaScanId })' style="cursor:hand" target="_blank">
                     @Model.HigherEducationDiplomaScanFileName</a>
+                @*
                 if (!Model.IsValidate)
                 {
                     <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.HigherEducationDiplomaScanId);" />
                 }
+                *@
             }        
          </div>
         
@@ -215,6 +218,7 @@
         <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
         <br />
         <div>
+            @*
             @if (@Model.PostGraduateEducationDiplomaScanId == 0 && !Model.IsValidate)
             {
                 <div class="formfield">
@@ -222,15 +226,18 @@
                     @Html.ValidationMessageFor(m => m.PostGraduateEducationDiplomaScanFile)
                 </div>
             }
+            *@
             @if (!string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
             {
                 <br /><label>Скан:</label>
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PostGraduateEducationDiplomaScanId })' style="cursor:hand" target="_blank">
                     @Model.PostGraduateEducationDiplomaScanFileName</a>
+                @*
                 if (!Model.IsValidate)
                 {
                     <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PostGraduateEducationDiplomaScanId);" />
                 }
+                *@
             }
         </div>
 
@@ -306,6 +313,7 @@
             <a href="" id="add-certification">Добавить новую запись</a>
             <br />
             <div>
+                @*
                 @if (@Model.CertificationScanId == 0 && !Model.IsValidate)
                 {
                     <div class="formfield">
@@ -313,15 +321,18 @@
                         @Html.ValidationMessageFor(m => m.CertificationScanFile)
                     </div>
                 }
+                *@
                 @if (!string.IsNullOrEmpty(Model.CertificationScanFileName))
                 {
                     <br /><label>Скан:</label>
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.CertificationScanId })' style="cursor:hand" target="_blank">
                         @Model.CertificationScanFileName</a>
+                    @*
                     if (!Model.IsValidate)
                     {
                         <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.CertificationScanId);" />
                     }
+                    *@
                 }
             </div>
             
@@ -404,6 +415,7 @@
             <a href="" id="add-training">Добавить новую запись</a>
             <br />
             <div>
+                @*
                 @if (@Model.TrainingScanId == 0 && !Model.IsValidate)
                 {
                     <div class="formfield">
@@ -411,15 +423,18 @@
                         @Html.ValidationMessageFor(m => m.TrainingScanFile)
                     </div>
                 }
+                *@
                 @if (!string.IsNullOrEmpty(Model.TrainingScanFileName))
                 {
                     <br /><label>Скан:</label>
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.TrainingScanId })' style="cursor:hand" target="_blank">
                         @Model.TrainingScanFileName</a>
+                    @*
                     if (!Model.IsValidate)
                     {
                         <br /><br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.TrainingScanId);" />
                     }
+                    *@
                 }
             </div>
 
