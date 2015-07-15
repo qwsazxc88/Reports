@@ -102,7 +102,7 @@ namespace WebMvc.Controllers
                             ModelState.AddModelError("PayDayEnd", "Нужно выбрать дату");
                           
                          if(model.PayDayEnd.HasValue && model.PayDayEnd>model.PayDay)
-                             ModelState.AddModelError("PayDayEnd","Дата начала сохранения заработка должна быть больше даты больничного листа");
+                             ModelState.AddModelError("PayDayEnd","Дата начала сохранения заработка должна быть меньше даты больничного листа");
                      break;
                     case 3:
                           break;

@@ -373,7 +373,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27) ";*/
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                       return @" v.UserId=:userId or N.PersonnelId=:userId ";
+                    return userId != 10 ? @" v.UserId=:userId or N.PersonnelId=:userId " : String.Empty;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
