@@ -375,6 +375,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return userId != 10 ? @" v.UserId=:userId or N.PersonnelId=:userId " : String.Empty;
                 case UserRole.OutsourcingManager:
+                case UserRole.ConsultantPersonnel:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
