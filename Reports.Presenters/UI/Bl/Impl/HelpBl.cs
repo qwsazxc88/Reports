@@ -219,7 +219,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel ||(CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager);
         }
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
@@ -307,6 +307,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank();
+                model.Users = users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -342,6 +348,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list = null;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).ToList();
+                return users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -466,7 +478,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -474,6 +486,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currentRole)
             {
+                case UserRole.ConsultantPersonnel:
                     case UserRole.Employee:
                     if (entity.Creator.Id == current.Id)
                     {
@@ -929,6 +942,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currRole)
             {
+                case UserRole.ConsultantPersonnel:
                 case UserRole.Employee:
                     if (entity.Creator.Id == currUser.Id)
                     {
@@ -1199,7 +1213,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceQuestionsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel);
         }
         public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
         {
@@ -1465,7 +1479,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
@@ -1528,6 +1542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //могут отвечать на любые открытые вопросы, не важно кому направленные
                     //вытащил кусок из закомментаренного условия
+
                     if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
@@ -1547,6 +1562,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else  model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
                              entity.ConsultantRoleId.Value == (int)UserRole.ConsultantPersonnel))
@@ -2036,6 +2064,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                     if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == currUser.Id))
                     {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
+                            entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
