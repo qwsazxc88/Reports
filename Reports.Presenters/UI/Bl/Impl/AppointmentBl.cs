@@ -658,6 +658,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new IdNameDto{Id=1, Name="Срочно"},
                 new IdNameDto{Id=2, Name="Очень срочно"}
             };
+            var creator=UserDao.Load(model.UserId);
+            if (creator != null && creator.Department != null)
+                model.UsersList = UserDao.GetUsersForManager(creator.Id, UserRole.Manager, creator.Department.Id);
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.AppointmentEducationTypes=AppointmentEducationTypeDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
             model.Recruters = UserDao.GetStaffList().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();

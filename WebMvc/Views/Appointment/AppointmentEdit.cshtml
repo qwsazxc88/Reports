@@ -175,6 +175,14 @@
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
+            <tr id="ReasonPositionIdTr">
+                <td>
+                  <span id="ReasonPositionIdLabel">Фио сотрудника:</span>
+                </td>
+                <td>
+                   @Html.DropDownListFor(m=>m.ReasonPositionId,new SelectList(Model.UsersList,"Id","Name")) 
+                </td>
+            </tr>
             @if (!Model.ShowStaff)
             {
             <tr>
