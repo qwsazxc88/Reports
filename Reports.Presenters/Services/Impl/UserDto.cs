@@ -131,6 +131,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                    || ((dto.UserRole & UserRole.PersonnelManager) > 0 )//DEPRECATED пускаем всех кадровиков Раньше:--для инфоуслуг от роли кадровики нужны только наши расчетчики
                    || (dto.UserRole & UserRole.Estimator) > 0// Убрали Консультант ОК теперь тут будут расчётчики
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
