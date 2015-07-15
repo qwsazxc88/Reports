@@ -62,7 +62,7 @@ namespace WebMvc.Controllers
 
         #region Service Requests
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager | UserRole.ConsultantPersonnel
             | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator | UserRole.DismissedEmployee)]
         public ActionResult Index()
         {
@@ -141,7 +141,7 @@ namespace WebMvc.Controllers
             return View("ServiceRequestEdit", model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager | UserRole.ConsultantPersonnel
          | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator| UserRole.DismissedEmployee)]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
