@@ -18,6 +18,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsAgree { get; set; }
         public bool IsScanODDraft { get; set; }
         public bool IsCancelApproveAvailale { get; set; }
+        public bool IsAgreeAvailable { get; set; }//доступность кнопки отправки на согласование
 
         public int DeleteAttachmentId { get; set; }//Id удаляемого скана
         public DateTime? SendTo1C { get; set; }//дата выгрузки в 1С
