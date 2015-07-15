@@ -3770,8 +3770,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsAgree)
             {
                 candidate.IsScanFinal = model.IsScanFinal;
-                if(!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
-                    candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
+                if (candidate.Status == 0)//статус меняем только стадии заполнения анкеты
+                {
+                    if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
+                        candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
+                }
             }
             else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
             {
@@ -3784,10 +3787,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 EmploymentCandidateDao.SaveAndFlush(candidate);
-                //сообщение тренеру
-                EmploymentSendEmail(candidate.User.Id, 4, false);
-                //сообщение в ДБ для предварительного согласования
-                EmploymentSendEmail(candidate.User.Id, 7, false);
+                //если в данный момент времени был проставлен необходимый статус, то делаем рассылку
+                if (candidate.Status == EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY)
+                {
+                    //сообщение тренеру
+                    EmploymentSendEmail(candidate.User.Id, 4, false);
+                    //сообщение в ДБ для предварительного согласования
+                    EmploymentSendEmail(candidate.User.Id, 7, false);
+                }
             }
             catch
             {
