@@ -5227,9 +5227,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     //проверки по обучению в найме
-                    if (entity.Candidate.AppointmentReport != null)
+                    if (entity.Candidate.AppointmentReport != null && entity.Candidate.Appointment != null)
                     {
-                        if (entity.Candidate.AppointmentReport.Type.Id == 1)
+                        if (entity.Candidate.AppointmentReport.Type.Id == 1 && entity.Candidate.Appointment.Recruter != 2)
                         {
                             if (entity.Candidate.AppointmentReport.TestingResult < 3 || entity.Candidate.AppointmentReport.IsEducationExists == false)
                             {
