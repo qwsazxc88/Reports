@@ -307,6 +307,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank();
+                model.Users = users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -342,6 +348,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list = null;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.Contains(Name)).ToList();
+                return users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -1465,7 +1477,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
