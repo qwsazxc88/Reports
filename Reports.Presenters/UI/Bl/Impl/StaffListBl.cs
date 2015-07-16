@@ -965,34 +965,66 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].EditDate = DateTime.Now;
 
                 //операции
-                entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+                if (entity.DepartmentManagerDetails[0].DepOperations == null)
+                    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+
                 foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
                 {
-                    //если была операция, но сняли птицу, то удаляем
-                    entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id && item.IsUsed);
+                    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
 
-                    entity.DepartmentManagerDetails[0].DepOperations.Add(new StaffDepartmentOperationLinks
+                    //если была операция, но сняли птицу, то удаляем
+                    if (item.Id != 0 && !item.IsUsed)
                     {
-                        DepartmentManagerDetail = entity.DepartmentManagerDetails[0],
-                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
-                        Creator = curUser,
-                        CreateDate = DateTime.Now
-                    });
+                        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
+                        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
+                    }
+                    
+                    //если не было и поставили птицу
+                    if (item.Id == 0 && item.IsUsed)
+                    {
+                        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
+                        oper.Creator = curUser;
+                        oper.CreateDate = DateTime.Now;
+                        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
+                    }
                 }
 
-                ////коды программ
-                //dmd.ProgramCodes = new List<StaffProgramCodes>();
-                //foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
-                //{
-                //    dmd.ProgramCodes.Add(new StaffProgramCodes
-                //    {
-                //        DepartmentManagerDetail = dmd,
-                //        Program = StaffProgramReferenceDao.Load(item.ProgramId),
-                //        Code = item.Code,
-                //        Creator = curUser,
-                //        CreateDate = DateTime.Now
-                //    });
-                //}
+                //коды программ
+                if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                    entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+                foreach (var item in model.ProgramCodes)
+                {
+                    StaffProgramCodes pc = new StaffProgramCodes();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Code == null)
+                    {
+                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && item.Code != null).Single();
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Code != null)
+                    {
+                        pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                        pc.Code = item.Code;
+                        pc.Creator = curUser;
+                        pc.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Code != null)
+                    {
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
 
                 ////ориентиры
                 //dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
