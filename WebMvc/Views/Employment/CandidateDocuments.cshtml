@@ -296,7 +296,7 @@
 
         <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.EmploymentFileNeeded)
             {<text> style = "display:none;" </text>} >
-            <td>Печать анкеты</td>
+            <td>Печать анкеты кандидата</td>
             <td>
                 <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
@@ -306,7 +306,7 @@
                 @if (string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан анкеты<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
+                        Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
