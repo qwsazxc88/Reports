@@ -44,7 +44,7 @@ namespace Reports.Core.Domain
         public virtual string PyrusNumber { get; set; }
 
         public virtual User Creator { get; set; }
-
+        public virtual User ReasonPositionUser { get; set; }
         public virtual User StaffCreator { get; set; }
 
         public virtual DateTime? ManagerDateAccept { get; set; }
