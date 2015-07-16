@@ -389,11 +389,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case 4:
                     case 5:
                         model.ReasonPosition = entity.ReasonPosition;
+                        if(entity.ReasonPositionUser!=null)
+                            model.ReasonPositionId = entity.ReasonPositionUser.Id;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
                         break;
                     case 6:
                     case 3:
                         model.ReasonPosition = entity.ReasonPosition;
+                        if (entity.ReasonPositionUser != null)
+                            model.ReasonPositionId = entity.ReasonPositionUser.Id;
                         model.ReasonBeginDate = string.Empty;
                         break;
                     /*case 4:
@@ -924,6 +928,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DesirableBeginDate = model.ShowStaff ? DateTime.Parse(model.DesirableBeginDate) : entity.ReasonBeginDate.HasValue ? entity.ReasonBeginDate.Value+TimeSpan.FromDays(14) : DateTime.Now;
                 //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
+                if (model.ReasonId > 2 && model.ReasonId < 7 && model.ReasonPositionId>0)
+                {
+                    entity.ReasonPositionUser = UserDao.Load(model.ReasonPositionId);
+                }
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = (String.IsNullOrWhiteSpace(model.Schedule))?"-":model.Schedule;
