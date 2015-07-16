@@ -1101,7 +1101,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
                 model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? false : true;
                 //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
-                model.IsDeleteScanButtonAvailable = entity.ApprovalDate.HasValue ? false : true;
+                model.IsDeleteScanButtonAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.OutsourcingManager) > 0 ? true : (entity.ApprovalDate.HasValue ? false : true);
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
                 model.EmploymentFileId = attachmentId;
                 model.EmploymentFileName = attachmentFilename;
