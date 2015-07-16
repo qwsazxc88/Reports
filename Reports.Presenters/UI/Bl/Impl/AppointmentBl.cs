@@ -205,6 +205,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = AppointmentReasonDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Reasons.Add(new IdNameDto{Id=0,Name="Все"});
         }
+        public bool CheckUserDismissal(int userid)
+        {
+            return UserDao.CheckUserDismissal(userid);
+        }
         protected List<IdNameDto> GetAppRequestStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -337,6 +341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 model.StaffCreatorName = entity.StaffCreator == null ? "" : entity.StaffCreator.Name;
+                model.isNeedToNotify = entity.isNotifyNeeded;
                 model.FIO = entity.FIO;
                 model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
@@ -913,6 +918,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
+                entity.isNotifyNeeded=model.isNeedToNotify;
                 entity.Bonus = Decimal.Parse(model.Bonus);
                 entity.PyrusNumber = model.PyrusNumber;
                 entity.City = model.City;

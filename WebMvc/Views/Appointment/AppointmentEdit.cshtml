@@ -181,6 +181,7 @@
                 </td>
                 <td>
                    @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
+                   @Html.HiddenFor(m => m.isNeedToNotify)
                 </td>
             </tr>
             @if (!Model.ShowStaff)
@@ -592,6 +593,30 @@
     function ValidateForm()
     {
         var result = true;
+        @if(!Model.IsManagerApproved)
+        {<text>
+        if($("#ReasonId").val()==5)
+        $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CheckUserDismissal",
+            data: {userId:$('#ReasonPositionId').val()},
+            success: function(result)
+            {
+                if(!result.result)
+                {
+                    var r=confirm("У выбранного сотрудника нет заявления на увольнение, заявка может быть сохранена как черновик, пока сотрудник не заведёт заявление на увольнение. Уведомить Вас о том, что сотрудник написал заяваление?");
+                    $('#IsManagerApproved').attr('checked', false);
+                    $('#IsManagerApproved').attr('value', false);
+                    if(r)
+                        $('#isNeedToNotify').attr('value', true);
+                }
+            },
+            async:false
+        }
+        );
+        </text>
+        }
         clearControlErrors($("#SelectDepartmentBtn"));
         if($("#DepartmentId").val() == 0)
         {
