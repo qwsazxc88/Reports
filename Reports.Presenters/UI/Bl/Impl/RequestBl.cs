@@ -2215,7 +2215,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             var email = el.Creator.Email;
                             if (String.IsNullOrWhiteSpace(email)) continue;
-                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",model.DocumentNumber, model.UserName,el.Number);
+                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",dismissal.Number,dismissal.User.Name,el.Number);
                             var res=SendEmail(email, "Создано заявление на увольнение", body);
                         }                   
                 }
@@ -6509,9 +6509,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = null;
             if (model.DepartmentId != 0)
                 dep = DepartmentDao.Load(model.DepartmentId);
-
+            var user=UserDao.Load(CurrentUser.Id);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
-            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
+            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(user,dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
             return model;
         }
         #endregion
