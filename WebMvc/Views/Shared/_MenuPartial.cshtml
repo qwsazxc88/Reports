@@ -179,7 +179,8 @@
                         }*@
                     if ((dto.UserRole & UserRole.PersonnelManager) > 0
                         || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                        || (dto.UserRole & UserRole.Estimator) > 0)
+                        || (dto.UserRole & UserRole.Estimator) > 0
+                        || (dto.UserRole & UserRole.Manager) > 0)
                     {
                             <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Группы доступа", "AccessGroupsList", "UserRequest")</div>
                     }
