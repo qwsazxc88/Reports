@@ -82,16 +82,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
-            model = StaffListBl.SetStaffDepartmentRequestList(model);
+            if (ValidateModel(model))
+                model = StaffListBl.SetStaffDepartmentRequestList(model);
+            else
+                model.Statuses = StaffListBl.GetDepRequestStatuses();
             return View(model);
         }
+
         /// <summary>
         /// Загрузка заявки для подразделения на создание/изменение/удаление.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId)
+        public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId, int? Id)
         {
             StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание нового подразделения" : (RequestType == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
@@ -99,8 +103,8 @@ namespace WebMvc.Controllers
             if (RequestType == 1)
             {
                 model.ParentId = DepartmentId.Value;
-                model.Id = 0;
-                model = StaffListBl.GetNewDepartmentRequest(model);
+                model.Id = Id.HasValue ? Id.Value : 0;
+                model = StaffListBl.GetDepartmentRequest(model);
             }
             else
             {
@@ -117,16 +121,37 @@ namespace WebMvc.Controllers
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
             string error = string.Empty;
-            if (!StaffListBl.SaveNewDepartmentRequest(model, out error))
+            bool IsComplete = false;
+            if (model.IsDraft)  //сохранение черновика
             {
-                StaffListBl.LoadDictionaries(model);
-                ModelState.AddModelError("Message", error);
-                return View(model);
+                IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                if (!IsComplete)
+                {
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("Message", error);
+                }
+                else
+                {
+                    model = StaffListBl.GetDepartmentRequest(model);
+                    ModelState.AddModelError("Message", "Данные сохранены!");
+                }
             }
-
-            StaffListBl.LoadDictionaries(model);
-            ModelState.AddModelError("Message", "Данные сохранены!");
-
+            else
+            {
+                if (ValidateModel(model))//проверки
+                {
+                    //отправка на согласование НЕ СДЕЛАНО
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("Message", "В разработке!");
+                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    //{
+                    //    StaffListBl.LoadDictionaries(model);
+                    //    ModelState.AddModelError("Message", error);
+                    //    //return View(model);
+                    //}
+                }
+            }
+            
             //заглушка для выкладки на тест для показа прототипов
             //StaffListBl.LoadDictionaries(model);
             //ModelState.AddModelError("Message", "В разработке!");
@@ -173,6 +198,17 @@ namespace WebMvc.Controllers
             var jsonSerializer = new JavaScriptSerializer();
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
+        }
+        #endregion
+
+        #region Валидация
+        protected bool ValidateModel(StaffDepartmentRequestListModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffDepartmentRequestModel model)
+        {
+            return ModelState.IsValid;
         }
         #endregion
 

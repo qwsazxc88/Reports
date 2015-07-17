@@ -97,7 +97,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentrequestTypesDao); }
             set { staffdepartmentrequestTypesDao = value; }
         }
-        //
+
+        protected IStaffDepartmentTaxDetailsDao staffdepartmenttaxDetailsDao;
+        public IStaffDepartmentTaxDetailsDao StaffDepartmentTaxDetailsDao
+        {
+            get { return Validate.Dependency(staffdepartmenttaxDetailsDao); }
+            set { staffdepartmenttaxDetailsDao = value; }
+        }
+
+        protected IStaffDepartmentOperationModesDao staffdepartmentOperationModesDao;
+        public IStaffDepartmentOperationModesDao StaffDepartmentOperationModesDao
+        {
+            get { return Validate.Dependency(staffdepartmentOperationModesDao); }
+            set { staffdepartmentOperationModesDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -162,6 +175,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime today = DateTime.Today;
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
+            model.Statuses = GetDepRequestStatuses();
+
             return model;
         }
         /// <summary>
@@ -171,109 +186,203 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentRequestListModel SetStaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
+            model.DepRequestList = StaffDepartmentRequestDao.GetDepartmentRequestList(userDao.Load(AuthenticationService.CurrentUser.Id), 
+                model.DepartmentId, 
+                model.Id.HasValue ? model.Id.Value : 0, 
+                model.Creator, 
+                model.DateBegin, 
+                model.DateEnd, 
+                model.StatusId,
+                model.SortBy, 
+                model.SortDescending);
+
+            model.Statuses = GetDepRequestStatuses();
+
             return model;
         }
         /// <summary>
-        /// Заполняем модель заявки на создание подразделения.
+        /// Заполняем модель заявки для подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
-        public StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model)
+        public StaffDepartmentRequestModel GetDepartmentRequest(StaffDepartmentRequestModel model)
         {
-            //перечисляю все поля, чтобы не забыть потом, хотя многие поля не нужно заполнять при созддании новой заявки на открытие подразделения
-            
-            //Общие реквизиты
-            model.Id = 0;
-            //model.Id = model.RequestType == 1 ? 0 : 1;
-            
-            //model.DepRequestInfo.DateRequest = DateTime.Now;//после сохранения дата создания, а после отправки на согласование ставить текущую дату
-            //model.DepRequestInfo.Id = 0;
-            model.DateState = null;
-            model.DepartmentId = 0;
-            model.ItemLevel = DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1;
-            model.Name = string.Empty;
-            model.IsBack = false;
-            model.OrderNumber = string.Empty;
-            model.OrderDate = null;
-            model.LegalAddressId = 0;
-            model.LegalAddress = string.Empty;
-            model.IsTaxAdminAccount = false;
-            model.IsEmployeAvailable = false;
-            model.DepNextId = 0;
-            model.IsPlan = false;
+            if (model.Id == 0)
+            {
+                //Общие реквизиты
+                model.DateState = null;
+                model.DepartmentId = 0;
+                model.ItemLevel = DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1;
+                model.Name = string.Empty;
+                model.IsBack = false;
+                model.OrderNumber = string.Empty;
+                model.OrderDate = null;
+                model.LegalAddressId = 0;
+                model.LegalAddress = string.Empty;
+                model.IsTaxAdminAccount = false;
+                model.IsEmployeAvailable = false;
+                model.DepNextId = 0;
+                model.IsPlan = false;
 
-            //налоговые реквизиты
-            model.KPP = string.Empty;
-            model.OKTMO = string.Empty;
-            model.OKATO = string.Empty;
-            model.RegionCode = string.Empty;
-            model.TaxAdminCode = string.Empty;
-            model.TaxAdminName = string.Empty;
-            model.PostAddress = string.Empty;
+                //налоговые реквизиты
+                model.KPP = string.Empty;
+                model.OKTMO = string.Empty;
+                model.OKATO = string.Empty;
+                model.RegionCode = string.Empty;
+                model.TaxAdminCode = string.Empty;
+                model.TaxAdminName = string.Empty;
+                model.PostAddress = string.Empty;
 
-            //ЦБ реквизиты
-            model.ATMCountTotal = 0;
-            model.ATMCashInCount = 0;
-            model.ATMCount = 0;
-            model.DepCachinId = 0;
-            model.DepATMId = 0;
-            model.CashInStartedDate = null;
-            model.ATMStartedDate = null;
+                //ЦБ реквизиты
+                model.ATMCountTotal = 0;
+                model.ATMCashInCount = 0;
+                model.ATMCount = 0;
+                model.DepCachinId = 0;
+                model.DepATMId = 0;
+                model.CashInStartedDate = null;
+                model.ATMStartedDate = null;
 
-            //Управленческие реквизиты
-            model.NameShort = string.Empty;
-            model.ReferenceReason = string.Empty;
-            model.FactAddressId = 0;
-            model.DepStatus = string.Empty;
-            model.DepTypeId = 0;
-            
-            model.OpenDate = null;
-            model.CloseDate = null;
-            model.Reason = string.Empty;
-            model.OperationMode = string.Empty;
-            model.BeginIdleDate = null;
-            model.EndIdleDate = null;
-            model.IsRentPlace = false;
-            model.Phone = string.Empty;
-            
-            model.IsBlocked = false;
-            model.IsNetShop = false;
-            model.IsAvailableCash = false;
-            
-            model.IsLegalEntity = false;
-            
-            model.PlanEPCount = 0;
-            model.PlanSalaryFund = 0; model.Note = string.Empty;
-            //временные заглушки для списков на время построения формы
+                //Управленческие реквизиты
+                model.NameShort = string.Empty;
+                model.ReferenceReason = string.Empty;
+                model.FactAddressId = 0;
+                model.DepStatus = string.Empty;
+                model.DepTypeId = 0;
 
+                model.OpenDate = null;
+                model.CloseDate = null;
+                model.Reason = string.Empty;
+                model.OperationMode = string.Empty;
+                model.BeginIdleDate = null;
+                model.EndIdleDate = null;
+                model.IsRentPlace = false;
+                model.Phone = string.Empty;
+
+                model.IsBlocked = false;
+                model.IsNetShop = false;
+                model.IsAvailableCash = false;
+
+                model.IsLegalEntity = false;
+
+                model.PlanEPCount = 0;
+                model.PlanSalaryFund = 0; model.Note = string.Empty;
+
+                LoadDictionaries(model);
+            }
+            else
+            {
+                StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+                if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание подразделения
+                {
+                    model.Id = 0;
+                    return GetDepartmentRequest(model);
+                }
+                //Общие реквизиты
+                model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
+                model.DateState = entity.DateState;
+                model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.ItemLevel = entity.ItemLevel;
+                model.Name = entity.Name;
+                model.IsBack = entity.IsBack;
+                model.OrderNumber = entity.OrderNumber;
+                model.OrderDate = entity.OrderDate;
+                if (entity.LegalAddress != null)
+                {
+                    model.LegalAddressId = entity.LegalAddress.Id;
+                    model.LegalAddress = entity.LegalAddress.Address;
+                    model.LegalPostIndex = entity.LegalAddress.PostIndex;
+                    model.LegalRegionCode = entity.LegalAddress.RegionCode;
+                    model.LegalAreaCode = entity.LegalAddress.AreaCode;
+                    model.LegalCityCode = entity.LegalAddress.CityCode;
+                    model.LegalSettlementCode = entity.LegalAddress.SettlementCode;
+                    model.LegalStreetCode = entity.LegalAddress.StreetCode;
+                    model.LegalHouseType = entity.LegalAddress.HouseType;
+                    model.LegalHouseNumber = entity.LegalAddress.HouseNumber;
+                    model.LegalBuildType = entity.LegalAddress.BuildType;
+                    model.LegalBuildNumber = entity.LegalAddress.BuildNumber;
+                    model.LegalFlatType = entity.LegalAddress.FlatType;
+                    model.LegalFlatNumber = entity.LegalAddress.FlatNumber;
+                }
+                model.IsTaxAdminAccount = entity.IsTaxAdminAccount;
+                model.IsEmployeAvailable = entity.IsEmployeAvailable;
+                model.DepNextId = entity.DepNext != null ? entity.DepNext.Id : 0;
+                model.DepNextName = entity.DepNext != null ? entity.DepNext.Name : string.Empty;
+                model.IsPlan = entity.IsPlan;
+
+                //налоговые реквизиты
+                if (entity.Department != null)
+                {
+                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
+                    model.KPP = dt != null ? dt.KPP : string.Empty;
+                    model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
+                    model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                    model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
+                    model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
+                    model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
+                    model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+                }
+
+                //ЦБ реквизиты
+                StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
+                model.ATMCountTotal = cbd.ATMCountTotal.HasValue ? cbd.ATMCountTotal.Value : 0;
+                model.ATMCashInCount = cbd.ATMCashInCount.HasValue ? cbd.ATMCashInCount.Value : 0;
+                model.ATMCount = cbd.ATMCount.HasValue ? cbd.ATMCount.Value : 0;
+                model.DepCachinId = cbd.DepCashin != null ? cbd.DepCashin.Id : 0;
+                model.DepATMId = cbd.DepATM != null ? cbd.DepATM.Id : 0;
+                model.DepCachinName = cbd.DepCashin != null ? cbd.DepCashin.Name : string.Empty;
+                model.DepATMName = cbd.DepATM != null ? cbd.DepATM.Name : string.Empty;
+                model.CashInStartedDate = cbd.CashInStartedDate;
+                model.ATMStartedDate = cbd.ATMStartedDate;
+
+                //Управленческие реквизиты
+                StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
+                model.DMDetailId = dmd.Id;
+                model.NameShort = dmd.NameShort;
+                model.ReferenceReason = dmd.ReferenceReason;
+                if (dmd.FactAddress != null)
+                {
+                    model.FactAddressId = dmd.FactAddress.Id;
+                    model.FactAddress = dmd.FactAddress.Address;
+                    model.FactPostIndex = dmd.FactAddress.PostIndex;
+                    model.FactRegionCode = dmd.FactAddress.RegionCode;
+                    model.FactAreaCode = dmd.FactAddress.AreaCode;
+                    model.FactCityCode = dmd.FactAddress.CityCode;
+                    model.FactSettlementCode = dmd.FactAddress.SettlementCode;
+                    model.FactStreetCode = dmd.FactAddress.StreetCode;
+                    model.FactHouseType = dmd.FactAddress.HouseType;
+                    model.FactHouseNumber = dmd.FactAddress.HouseNumber;
+                    model.FactBuildType = dmd.FactAddress.BuildType;
+                    model.FactBuildNumber = dmd.FactAddress.BuildNumber;
+                    model.FactFlatType = dmd.FactAddress.FlatType;
+                    model.FactFlatNumber = dmd.FactAddress.FlatNumber;
+                }
+                
+                model.DepStatus = dmd.DepStatus;
+                model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
+                model.OpenDate = dmd.OpenDate;
+                model.CloseDate = dmd.CloseDate;
+                model.Reason = dmd.Reason;
+                model.OperationMode = dmd.OperationMode;
+                model.BeginIdleDate = dmd.BeginIdleDate;
+                model.EndIdleDate = dmd.EndIdleDate;
+                model.IsRentPlace = dmd.IsRentPlace;
+                model.Phone = dmd.Phone;
+                model.IsBlocked = dmd.IsBlocked;
+                model.IsNetShop = dmd.IsNetShop;
+                model.IsAvailableCash = dmd.IsAvailableCash;
+                model.IsLegalEntity = dmd.IsLegalEntity;
+                model.PlanEPCount = dmd.PlanEPCount;
+                model.PlanSalaryFund = dmd.PlanSalaryFund;
+                model.Note = dmd.Note;
+
+                LoadDictionaries(model);
+            }
             
-            //IList<DepOperationDto> tbl2 = new List<DepOperationDto>();
-            //tbl2.Add(new DepOperationDto { Id = 1, OperationId = 1, OperationName = "Операция 1", IsUsed = false});
-            //tbl2.Add(new DepOperationDto { Id = 2, OperationId = 2, OperationName = "Операция 2", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 3, OperationId = 3, OperationName = "Операция 3", IsUsed = true });
-            //tbl2.Add(new DepOperationDto { Id = 4, OperationId = 4, OperationName = "Операция 4", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 5, OperationId = 5, OperationName = "Операция 5", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 6, OperationId = 6, OperationName = "Операция 6", IsUsed = true });
-            //tbl2.Add(new DepOperationDto { Id = 7, OperationId = 7, OperationName = "Операция 7", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 8, OperationId = 8, OperationName = "Операция 8", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 9, OperationId = 9, OperationName = "Операция 9", IsUsed = false });
-            //tbl2.Add(new DepOperationDto { Id = 10, OperationId = 10, OperationName = "Операция 10", IsUsed = false });
-            //model.Operations = tbl2;
-
-            //IList<DepLandmarkDto> tbl3 = new List<DepLandmarkDto>();
-            //tbl3.Add(new DepLandmarkDto { Id = 1, LandmarkId = 1, LandmarkName = "Станция метро", Description = "" });
-            //tbl3.Add(new DepLandmarkDto { Id = 2, LandmarkId = 2, LandmarkName = "Остановка транспорта", Description = "Последний тупик коммунизма" });
-            //tbl3.Add(new DepLandmarkDto { Id = 3, LandmarkId = 3, LandmarkName = "Значимые объекты", Description = "Заброшенный сортир" });
-            //tbl3.Add(new DepLandmarkDto { Id = 4, LandmarkId = 4, LandmarkName = "Торговые центры", Description = "" });
-            //tbl3.Add(new DepLandmarkDto { Id = 5, LandmarkId = 5, LandmarkName = "Район города", Description = "Городская свалка" });
-            //model.DepLandmarks = tbl3;
-
-            LoadDictionaries(model);
             
             return model;
         }
         /// <summary>
-        /// Процедура сохранения заявки на создание нового подразделения.
+        /// Процедура сохранения новой заявки для подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <param name="error">Сообщенио об ошибке.</param>
@@ -362,22 +471,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
 
                 //поля ЦБ реквизитов
-                //StaffDepartmentCBDetails cbd = new StaffDepartmentCBDetails
-                //{
-                //    DepRequest = entity,
-                //    ATMCountTotal = model.ATMCountTotal,
-                //    ATMCashInCount = model.ATMCashInCount,
-                //    ATMCount = model.ATMCount,
-                //    DepCashin = DepartmentDao.Load(model.DepCachinId),
-                //    DepATM = DepartmentDao.Load(model.DepATMId),
-                //    CashInStartedDate = model.CashInStartedDate,
-                //    ATMStartedDate = model.ATMStartedDate,
-                //    Creator = curUser,
-                //    CreateDate = DateTime.Now
-                //};
-                //StaffDepartmentCBDetailsDao.SaveAndFlush(cbd);
-
                 entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
                     DepRequest = entity,
@@ -471,6 +566,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.Creator = curUser;
                 dmd.CreateDate = DateTime.Now;
 
+                //режим работы
+                dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
+                foreach (var item in model.OperationModes)
+                {
+                    dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                    {
+                        DepartmentManagerDetail = dmd, 
+                        WeekDay = item.WeekDay,
+                        WorkBegin = item.WorkBegin,
+                        WorkEnd = item.WorkEnd,
+                        BreakBegin = item.BreakBegin,
+                        BreakEnd = item.BreakEnd,
+                        IsWorkDay = item.IsWorkDay,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
                 //операции
                 dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
                 foreach (var item in model.Operations.Where(x => x.IsUsed == true))
@@ -515,7 +628,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
-
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -524,25 +637,555 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
                     return false;
                 }
-                
-                return true;
+            }
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
+        /// Процедура сохранения существующей заявки для подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveEditDepartmentRequest(StaffDepartmentRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
+            //поля общих реквизитов
+            entity.Name = model.Name;
+            entity.IsBack = model.IsBack;
+            entity.OrderNumber = model.OrderNumber;
+            entity.OrderDate = model.OrderDate;
+            entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
+            entity.IsEmployeAvailable = model.IsEmployeAvailable;
+            entity.IsPlan = model.IsPlan;
+            entity.IsDraft = true;
+            entity.Editor = curUser;
+            entity.EditDate = DateTime.Now;
+            entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
+            entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
+
+            //юридический адрес
+            RefAddresses la = null;
+            //создаем новую запись или редактируем старую
+            if (!string.IsNullOrEmpty(model.LegalAddress) && entity.LegalAddress == null)
+                la = new RefAddresses();
+            else
+            {
+                if (entity.LegalAddress != null)
+                    la = RefAddressesDao.Get(entity.LegalAddress.Id);
+            }
+
+            if (la != null)
+            {
+                la.Address = model.LegalAddress;
+                la.PostIndex = model.LegalPostIndex;
+                la.RegionCode = model.LegalRegionCode;
+                if (!string.IsNullOrEmpty(model.LegalRegionCode))
+                {
+                    KladrDto kd = KladrDao.GetKladrByCode(model.LegalRegionCode).Single();
+                    la.RegionName = kd.Name + " " + kd.ShortName;
+                }
+                la.AreaCode = model.LegalAreaCode;
+                if (!string.IsNullOrEmpty(model.LegalAreaCode))
+                {
+                    KladrDto kd = KladrDao.GetKladrByCode(model.LegalAreaCode).Single();
+                    la.AreaName = kd.Name + " " + kd.ShortName;
+                }
+                la.CityCode = model.LegalCityCode;
+                if (!string.IsNullOrEmpty(model.LegalCityCode))
+                {
+                    KladrDto kd = KladrDao.GetKladrByCode(model.LegalCityCode).Single();
+                    la.CityName = kd.Name + " " + kd.ShortName;
+                }
+                la.SettlementCode = model.LegalSettlementCode;
+                if (!string.IsNullOrEmpty(model.LegalSettlementCode))
+                {
+                    KladrDto kd = KladrDao.GetKladrByCode(model.LegalSettlementCode).Single();
+                    la.SettlementName = kd.Name + " " + kd.ShortName;
+                }
+                la.StreetCode = model.LegalStreetCode;
+                if (!string.IsNullOrEmpty(model.LegalStreetCode))
+                {
+                    KladrDto kd = KladrDao.GetKladrByCode(model.LegalStreetCode).Single();
+                    la.StreetName = kd.Name + " " + kd.ShortName;
+                }
+                la.HouseType = model.LegalHouseType;
+                la.HouseNumber = model.LegalHouseNumber;
+                la.BuildType = model.LegalBuildType;
+                la.BuildNumber = model.LegalBuildNumber;
+                la.FlatType = model.LegalFlatType;
+                la.FlatNumber = model.LegalFlatNumber;
+                la.IsUsed = true;
+                if (la.Id == 0)
+                {
+                    la.Creator = curUser;
+                    la.CreateDate = DateTime.Now;
+                }
+                else
+                {
+                    la.Editor = curUser;
+                    la.EditDate = DateTime.Now;
+                }
+
+                RefAddressesDao.SaveAndFlush(la);
+
+                entity.LegalAddress = la;
+            }
+            
+
+
+            //поля ЦБ реквизитов
+            if (entity.DepartmentCBDetails.Count == 0)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
+            {
+                entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+
+                entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
+                {
+                    DepRequest = entity,
+                    ATMCountTotal = model.ATMCountTotal,
+                    ATMCashInCount = model.ATMCashInCount,
+                    ATMCount = model.ATMCount,
+                    DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId),
+                    DepATM = model.DepATMId == 0 ? null : DepartmentDao.Load(model.DepATMId),
+                    CashInStartedDate = model.CashInStartedDate,
+                    ATMStartedDate = model.ATMStartedDate,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                });
             }
             else
             {
+                entity.DepartmentCBDetails[0].ATMCountTotal = model.ATMCountTotal;
+                entity.DepartmentCBDetails[0].ATMCashInCount = model.ATMCashInCount;
+                entity.DepartmentCBDetails[0].ATMCount = model.ATMCount;
+                entity.DepartmentCBDetails[0].DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId);
+                entity.DepartmentCBDetails[0].DepATM = model.DepATMId == 0 ? null : DepartmentDao.Load(model.DepATMId);
+                entity.DepartmentCBDetails[0].CashInStartedDate = model.CashInStartedDate;
+                entity.DepartmentCBDetails[0].ATMStartedDate = model.ATMStartedDate;
+                entity.DepartmentCBDetails[0].Editor = curUser;
+                entity.DepartmentCBDetails[0].EditDate = DateTime.Now;
             }
-            return true;
+
+
+
+            //поля управленческих реквизитов
+            if (entity.DepartmentManagerDetails == null) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
+            {
+                entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+                StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
+                dmd.DepRequest = entity;
+                dmd.NameShort = model.NameShort;
+                dmd.ReferenceReason = model.ReferenceReason;
+
+                //фактический адрес
+                if (!string.IsNullOrEmpty(model.FactAddress))
+                {
+                    RefAddresses fa = new RefAddresses();
+                    fa.Address = model.FactAddress;
+                    fa.PostIndex = model.FactPostIndex;
+                    fa.RegionCode = model.FactRegionCode;
+                    if (!string.IsNullOrEmpty(model.FactRegionCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactRegionCode).Single();
+                        fa.RegionName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.AreaCode = model.FactAreaCode;
+                    if (!string.IsNullOrEmpty(model.FactAreaCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactAreaCode).Single();
+                        fa.AreaName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.CityCode = model.FactCityCode;
+                    if (!string.IsNullOrEmpty(model.FactCityCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactCityCode).Single();
+                        fa.CityName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.SettlementCode = model.FactSettlementCode;
+                    if (!string.IsNullOrEmpty(model.FactSettlementCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactSettlementCode).Single();
+                        fa.SettlementName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.StreetCode = model.FactStreetCode;
+                    if (!string.IsNullOrEmpty(model.FactStreetCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactStreetCode).Single();
+                        fa.StreetName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.HouseType = model.FactHouseType;
+                    fa.HouseNumber = model.FactHouseNumber;
+                    fa.BuildType = model.FactBuildType;
+                    fa.BuildNumber = model.FactBuildNumber;
+                    fa.FlatType = model.FactFlatType;
+                    fa.FlatNumber = model.FactFlatNumber;
+                    fa.IsUsed = true;
+                    fa.Creator = curUser;
+                    fa.CreateDate = DateTime.Now;
+
+                    RefAddressesDao.SaveAndFlush(fa);
+
+                    dmd.FactAddress = fa;
+                }
+                
+
+                dmd.DepStatus = model.DepStatus;
+                dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.OpenDate = model.OpenDate;
+                dmd.CloseDate = model.CloseDate;
+                dmd.Reason = model.Reason;
+                dmd.OperationMode = model.OperationMode;
+                dmd.BeginIdleDate = model.BeginIdleDate;
+                dmd.EndIdleDate = model.EndIdleDate;
+                dmd.IsRentPlace = model.IsRentPlace;
+                dmd.Phone = model.Phone;
+                dmd.IsBlocked = model.IsBlocked;
+                dmd.IsNetShop = model.IsNetShop;
+                dmd.IsAvailableCash = model.IsAvailableCash;
+                dmd.IsLegalEntity = model.IsLegalEntity;
+                dmd.PlanEPCount = model.PlanEPCount;
+                dmd.PlanSalaryFund = model.PlanSalaryFund;
+                dmd.Note = model.Note;
+                dmd.Creator = curUser;
+                dmd.CreateDate = DateTime.Now;
+
+                //режим работы
+                dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
+                foreach (var item in model.OperationModes)
+                {
+                    dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                    {
+                        DepartmentManagerDetail = dmd,
+                        WorkBegin = item.WorkBegin,
+                        WorkEnd = item.WorkEnd,
+                        BreakBegin = item.BreakBegin,
+                        BreakEnd = item.BreakEnd,
+                        IsWorkDay = item.IsWorkDay,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                //операции
+                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
+                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                {
+                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
+                    {
+                        DepartmentManagerDetail = dmd,
+                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                //коды программ
+                dmd.ProgramCodes = new List<StaffProgramCodes>();
+                foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                {
+                    dmd.ProgramCodes.Add(new StaffProgramCodes
+                    {
+                        DepartmentManagerDetail = dmd,
+                        Program = StaffProgramReferenceDao.Load(item.ProgramId),
+                        Code = item.Code,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                //ориентиры
+                dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+                foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
+                {
+                    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks
+                    {
+                        DepartmentManagerDetail = dmd,
+                        LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId),
+                        Description = item.Description,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                entity.DepartmentManagerDetails.Add(dmd);
+            }
+            else
+            {
+                entity.DepartmentManagerDetails[0].NameShort = model.NameShort;
+                entity.DepartmentManagerDetails[0].ReferenceReason = model.ReferenceReason;
+
+                //фактический адрес
+                RefAddresses fa = null;
+                //создаем новую запись или рекдактируем старую
+                if (!string.IsNullOrEmpty(model.FactAddress) && entity.DepartmentManagerDetails[0].FactAddress == null)
+                    fa = new RefAddresses();
+                else
+                {
+                    if (entity.DepartmentManagerDetails[0].FactAddress != null)
+                        fa = RefAddressesDao.Get(entity.DepartmentManagerDetails[0].FactAddress.Id);
+                }
+
+                if (fa != null)
+                {
+                    fa.Address = model.FactAddress;
+                    fa.PostIndex = model.FactPostIndex;
+                    fa.RegionCode = model.FactRegionCode;
+                    if (!string.IsNullOrEmpty(model.FactRegionCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactRegionCode).Single();
+                        fa.RegionName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.AreaCode = model.FactAreaCode;
+                    if (!string.IsNullOrEmpty(model.FactAreaCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactAreaCode).Single();
+                        fa.AreaName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.CityCode = model.FactCityCode;
+                    if (!string.IsNullOrEmpty(model.FactCityCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactCityCode).Single();
+                        fa.CityName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.SettlementCode = model.FactSettlementCode;
+                    if (!string.IsNullOrEmpty(model.FactSettlementCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactSettlementCode).Single();
+                        fa.SettlementName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.StreetCode = model.FactStreetCode;
+                    if (!string.IsNullOrEmpty(model.FactStreetCode))
+                    {
+                        KladrDto kd = KladrDao.GetKladrByCode(model.FactStreetCode).Single();
+                        fa.StreetName = kd.Name + " " + kd.ShortName;
+                    }
+                    fa.HouseType = model.FactHouseType;
+                    fa.HouseNumber = model.FactHouseNumber;
+                    fa.BuildType = model.FactBuildType;
+                    fa.BuildNumber = model.FactBuildNumber;
+                    fa.FlatType = model.FactFlatType;
+                    fa.FlatNumber = model.FactFlatNumber;
+                    fa.IsUsed = true;
+                    if (fa.Id == 0)
+                    {
+                        fa.Creator = curUser;
+                        fa.CreateDate = DateTime.Now;
+                    }
+                    else
+                    {
+                        fa.Editor = curUser;
+                        fa.EditDate = DateTime.Now;
+                    }
+
+                    RefAddressesDao.SaveAndFlush(fa);
+
+                    entity.DepartmentManagerDetails[0].FactAddress = fa;
+                }
+
+                entity.DepartmentManagerDetails[0].DepStatus = model.DepStatus;
+                entity.DepartmentManagerDetails[0].DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
+                entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
+                entity.DepartmentManagerDetails[0].Reason = model.Reason;
+                entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
+                entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
+                entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
+                entity.DepartmentManagerDetails[0].IsRentPlace = model.IsRentPlace;
+                entity.DepartmentManagerDetails[0].Phone = model.Phone;
+                entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
+                entity.DepartmentManagerDetails[0].IsNetShop = model.IsNetShop;
+                entity.DepartmentManagerDetails[0].IsAvailableCash = model.IsAvailableCash;
+                entity.DepartmentManagerDetails[0].IsLegalEntity = model.IsLegalEntity;
+                entity.DepartmentManagerDetails[0].PlanEPCount = model.PlanEPCount;
+                entity.DepartmentManagerDetails[0].PlanSalaryFund = model.PlanSalaryFund;
+                entity.DepartmentManagerDetails[0].Note = model.Note;
+                entity.DepartmentManagerDetails[0].Editor = curUser;
+                entity.DepartmentManagerDetails[0].EditDate = DateTime.Now;
+
+
+                //режим работы
+                if (entity.DepartmentManagerDetails[0].DepOperationModes == null)
+                    entity.DepartmentManagerDetails[0].DepOperationModes = new List<StaffDepartmentOperationModes>();
+
+                foreach (var item in model.OperationModes)
+                {
+                    StaffDepartmentOperationModes dom = new StaffDepartmentOperationModes();
+                    //если не было, добавляем
+                    if (item.Id == 0)
+                    {
+                        dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        dom.WeekDay = item.WeekDay;
+                        dom.WorkBegin = item.WorkBegin;
+                        dom.WorkEnd = item.WorkEnd;
+                        dom.BreakBegin = item.BreakBegin;
+                        dom.BreakEnd = item.BreakEnd;
+                        dom.IsWorkDay = item.IsWorkDay;
+                        dom.Creator = curUser;
+                        dom.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Add(dom);
+                    }
+                    else//редактируем
+                    {
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkBegin = item.WorkBegin;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkEnd = item.WorkEnd;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakBegin = item.BreakBegin;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakEnd = item.BreakEnd;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().IsWorkDay = item.IsWorkDay;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
+
+                //операции
+                if (entity.DepartmentManagerDetails[0].DepOperations == null)
+                    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+
+                foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
+                {
+                    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
+
+                    //если была операция, но сняли птицу, то удаляем
+                    if (item.Id != 0 && !item.IsUsed)
+                    {
+                        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
+                        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
+                    }
+                    
+                    //если не было и поставили птицу
+                    if (item.Id == 0 && item.IsUsed)
+                    {
+                        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
+                        oper.Creator = curUser;
+                        oper.CreateDate = DateTime.Now;
+                        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
+                    }
+                }
+
+                //коды программ
+                if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                    entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+                foreach (var item in model.ProgramCodes)
+                {
+                    StaffProgramCodes pc = new StaffProgramCodes();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Code == null)
+                    {
+                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Code != null)
+                    {
+                        pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                        pc.Code = item.Code;
+                        pc.Creator = curUser;
+                        pc.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Code != null)
+                    {
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
+
+
+                //ориентиры
+                if (entity.DepartmentManagerDetails[0].DepartmentLandmarks == null)
+                    entity.DepartmentManagerDetails[0].DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+
+                foreach (var item in model.DepLandmarks)
+                {
+                    StaffDepartmentLandmarks lm = new StaffDepartmentLandmarks();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Description == null)
+                    {
+                        lm = entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id && x.Description != null).Single();
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Remove(lm);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Description != null)
+                    {
+                        lm.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        lm.LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId);
+                        lm.Description = item.Description;
+                        lm.Creator = curUser;
+                        lm.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Add(lm);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Description != null)
+                    {
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Description = item.Description;
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+
+                }
+
+            }
+
+
+
+            if (model.Id != 0)
+            {
+                
+
+                try
+                {
+                    StaffDepartmentRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentRequestDao.RollbackTran();
+                    RefAddressesDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+                return true;
+
+            }
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
         }
         /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
         /// </summary>
         /// <param name="Id">Id заявки.</param>
         /// <param name="DateRequest">Дата составления заявки.</param>
+        /// <param name="UserId">Id инициатора.</param>
         /// <returns></returns>
-        protected DepRequestInfoModel GetDepRequestInfo(int Id, DateTime? DateRequest)
+        protected DepRequestInfoModel GetDepRequestInfo(int Id, DateTime? DateRequest, int UserId)
         {
             DepRequestInfoModel model = new DepRequestInfoModel();
-            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            User curUser = UserDao.Load(UserId != 0 ? UserId : AuthenticationService.CurrentUser.Id);
             model.DateRequest = DateRequest;
             model.Id = Id;
             model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
@@ -566,23 +1209,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(StaffDepartmentRequestModel model)
         {
             //реквизиты инициатора
-            model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest);
-            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();//GetDepRequestTypes();
-            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.Id);
+            model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest, model.UserId);
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
+            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
-            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.Id);
-            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.Id);
+            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
+            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
+            model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
         }
         /// <summary>
-        /// Загрузка видов заявок для подразделений.
+        /// Заполняем список видов заявок для подразделений.
         /// </summary>
         /// <returns></returns>
-        protected IList<IdNameDto> GetDepRequestTypes()
+        public IList<IdNameDto> GetDepRequestStatuses()
         {
             IList<IdNameDto> dto = new List<IdNameDto>();
-            dto.Add(new IdNameDto { Id = 1, Name = "Открытие СП" });
-            dto.Add(new IdNameDto { Id = 2, Name = "Изменение параметров СП" });
-            dto.Add(new IdNameDto { Id = 3, Name = "Закрытие СП" });
+            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
+            dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
+            dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
+            dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
 
             return dto;
         }

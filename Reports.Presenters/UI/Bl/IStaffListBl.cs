@@ -35,21 +35,36 @@ namespace Reports.Presenters.UI.Bl
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
-        StaffDepartmentRequestModel GetNewDepartmentRequest(StaffDepartmentRequestModel model);
+        StaffDepartmentRequestModel GetDepartmentRequest(StaffDepartmentRequestModel model);
         /// <summary>
-        /// Процедура сохранения заявки на создание нового подразделения.
+        /// Процедура сохранения новой заявки для подразделения.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         /// <param name="error">Сообщенио об ошибке.</param>
         /// <returns></returns>
         bool SaveNewDepartmentRequest(StaffDepartmentRequestModel model, out string error);
         /// <summary>
+        /// Процедура сохранения существующей заявки для подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool SaveEditDepartmentRequest(StaffDepartmentRequestModel model, out string error);
+        #endregion
+        
+        #endregion
+
+        #region Загрузка словарей и справочников.
+        /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         void LoadDictionaries(StaffDepartmentRequestModel model);
-        #endregion
-        
+        /// <summary>
+        /// Заполняем список видов заявок для подразделений.
+        /// </summary>
+        /// <returns></returns>
+        IList<IdNameDto> GetDepRequestStatuses();
         #endregion
 
         #region Для теста

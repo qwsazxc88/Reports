@@ -20,7 +20,7 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Достаем список кодов к совместимым программам.
         /// </summary>
-        /// <param name="DMDetailId">Id текущей заявки.</param>
+        /// <param name="DMDetailId">Id управленческих реквизитов текущей заявки.</param>
         /// <returns></returns>
         public IList<ProgramCodeDto> GetProgramCodes(int DMDetailId)
         {

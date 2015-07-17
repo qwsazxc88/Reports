@@ -11,6 +11,7 @@
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffDepartmentRequest_Department" index="StaffDepartmentRequest_Department" not-null="false"/>
     <property name="ItemLevel" not-null="false"/>
     <many-to-one name="ParentDepartment" class="Department" column="ParentId" foreign-key="FK_StaffDepartmentRequest_DepartmentParent" index="StaffDepartmentRequest_DepartmentParent" not-null="false"/>
+    <property name="Name" length="128" not-null="false"/>
     <property name="IsBack" not-null="false"/>
     <property name="OrderNumber" length="50" not-null="false"/>
     <property name="OrderDate" not-null="false"/>
@@ -29,12 +30,11 @@
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentRequest_EditorUser" index="StaffDepartmentRequest_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
 
-    
     <bag name="DepartmentCBDetails" lazy="true" cascade="all-delete-orphan">
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentCBDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentCBDetails"/>
     </bag>
-    
+
     <bag name="DepartmentManagerDetails" lazy="true" cascade="all-delete-orphan">
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentManagerDetails"/>

@@ -7,5 +7,11 @@ namespace Reports.Core.Dao
     /// </summary>
     public interface IStaffDepartmentTaxDetailsDao : IDao<StaffDepartmentTaxDetails>
     {
+        /// <summary>
+        /// Достаем налоговые реквизиты по идентификатору подразделения.
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения.</param>
+        /// <returns></returns>
+        StaffDepartmentTaxDetails GetDetailsByDepartmentId(int DepartmentId);
     }
 }

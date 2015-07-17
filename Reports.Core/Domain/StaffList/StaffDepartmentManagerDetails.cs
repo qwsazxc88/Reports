@@ -36,6 +36,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
+        public virtual IList<StaffDepartmentOperationModes> DepOperationModes { get; set; }
         public virtual IList<StaffDepartmentOperationLinks> DepOperations { get; set; }
         public virtual IList<StaffProgramCodes> ProgramCodes { get; set; }
         public virtual IList<StaffDepartmentLandmarks> DepartmentLandmarks { get; set; }
