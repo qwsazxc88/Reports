@@ -16,7 +16,7 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 
-<div style="float:left">
+<div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none; float:left;">
     <fieldset class="bordered doc-wrap panel"><legend>Департамент безопасности</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AverageSalary)<br />
