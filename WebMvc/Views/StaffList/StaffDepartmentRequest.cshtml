@@ -6,12 +6,13 @@
   
 @using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
 {
+    @Html.HiddenFor(m => m.Id)
+    @*<input type="hidden" name="Id" value="@Model.Id" />*@
     @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.ParentId)
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
-
-    
+   
     
     <h3>@Html.ValidationMessageFor(m => m.Message)</h3>
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
@@ -41,7 +42,6 @@
                         <td>@Html.LabelFor(m => m.Id)</td>
                         <td>
                             @(Model.Id != 0 ? Model.Id.ToString() : "")
-                            @Html.HiddenFor(m => m.Id)
                         </td>
                     </tr>
                     <tr>
@@ -434,7 +434,7 @@
                                                 <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;" })</td>
                                                 <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;" })</td>
                                             </tr>
-                                            { i++; }
+                                                    { i++; }
                                         }
                                         <tr>
                                             <td >@Html.LabelFor(m => m.OperationMode)</td>
