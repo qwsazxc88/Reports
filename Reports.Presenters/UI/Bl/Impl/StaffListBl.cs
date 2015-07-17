@@ -104,6 +104,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmenttaxDetailsDao); }
             set { staffdepartmenttaxDetailsDao = value; }
         }
+
+        protected IStaffDepartmentOperationModesDao staffdepartmentOperationModesDao;
+        public IStaffDepartmentOperationModesDao StaffDepartmentOperationModesDao
+        {
+            get { return Validate.Dependency(staffdepartmentOperationModesDao); }
+            set { staffdepartmentOperationModesDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -279,20 +286,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsBack = entity.IsBack;
                 model.OrderNumber = entity.OrderNumber;
                 model.OrderDate = entity.OrderDate;
-                model.LegalAddressId = entity.LegalAddress.Id;
-                model.LegalAddress = entity.LegalAddress.Address;
-                model.LegalPostIndex = entity.LegalAddress.PostIndex;
-                model.LegalRegionCode = entity.LegalAddress.RegionCode;
-                model.LegalAreaCode = entity.LegalAddress.AreaCode;
-                model.LegalCityCode = entity.LegalAddress.CityCode;
-                model.LegalSettlementCode = entity.LegalAddress.SettlementCode;
-                model.LegalStreetCode = entity.LegalAddress.StreetCode;
-                model.LegalHouseType = entity.LegalAddress.HouseType;
-                model.LegalHouseNumber = entity.LegalAddress.HouseNumber;
-                model.LegalBuildType = entity.LegalAddress.BuildType;
-                model.LegalBuildNumber = entity.LegalAddress.BuildNumber;
-                model.LegalFlatType = entity.LegalAddress.FlatType;
-                model.LegalFlatNumber = entity.LegalAddress.FlatNumber;
+                if (entity.LegalAddress != null)
+                {
+                    model.LegalAddressId = entity.LegalAddress.Id;
+                    model.LegalAddress = entity.LegalAddress.Address;
+                    model.LegalPostIndex = entity.LegalAddress.PostIndex;
+                    model.LegalRegionCode = entity.LegalAddress.RegionCode;
+                    model.LegalAreaCode = entity.LegalAddress.AreaCode;
+                    model.LegalCityCode = entity.LegalAddress.CityCode;
+                    model.LegalSettlementCode = entity.LegalAddress.SettlementCode;
+                    model.LegalStreetCode = entity.LegalAddress.StreetCode;
+                    model.LegalHouseType = entity.LegalAddress.HouseType;
+                    model.LegalHouseNumber = entity.LegalAddress.HouseNumber;
+                    model.LegalBuildType = entity.LegalAddress.BuildType;
+                    model.LegalBuildNumber = entity.LegalAddress.BuildNumber;
+                    model.LegalFlatType = entity.LegalAddress.FlatType;
+                    model.LegalFlatNumber = entity.LegalAddress.FlatNumber;
+                }
                 model.IsTaxAdminAccount = entity.IsTaxAdminAccount;
                 model.IsEmployeAvailable = entity.IsEmployeAvailable;
                 model.DepNextId = entity.DepNext != null ? entity.DepNext.Id : 0;
@@ -326,22 +336,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //Управленческие реквизиты
                 StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
+                model.DMDetailId = dmd.Id;
                 model.NameShort = dmd.NameShort;
                 model.ReferenceReason = dmd.ReferenceReason;
-                model.FactAddressId = dmd.FactAddress.Id;
-                model.FactAddress = dmd.FactAddress.Address;
-                model.FactPostIndex = dmd.FactAddress.PostIndex;
-                model.FactRegionCode = dmd.FactAddress.RegionCode;
-                model.FactAreaCode = dmd.FactAddress.AreaCode;
-                model.FactCityCode = dmd.FactAddress.CityCode;
-                model.FactSettlementCode = dmd.FactAddress.SettlementCode;
-                model.FactStreetCode = dmd.FactAddress.StreetCode;
-                model.FactHouseType = dmd.FactAddress.HouseType;
-                model.FactHouseNumber = dmd.FactAddress.HouseNumber;
-                model.FactBuildType = dmd.FactAddress.BuildType;
-                model.FactBuildNumber = dmd.FactAddress.BuildNumber;
-                model.FactFlatType = dmd.FactAddress.FlatType;
-                model.FactFlatNumber = dmd.FactAddress.FlatNumber;
+                if (dmd.FactAddress != null)
+                {
+                    model.FactAddressId = dmd.FactAddress.Id;
+                    model.FactAddress = dmd.FactAddress.Address;
+                    model.FactPostIndex = dmd.FactAddress.PostIndex;
+                    model.FactRegionCode = dmd.FactAddress.RegionCode;
+                    model.FactAreaCode = dmd.FactAddress.AreaCode;
+                    model.FactCityCode = dmd.FactAddress.CityCode;
+                    model.FactSettlementCode = dmd.FactAddress.SettlementCode;
+                    model.FactStreetCode = dmd.FactAddress.StreetCode;
+                    model.FactHouseType = dmd.FactAddress.HouseType;
+                    model.FactHouseNumber = dmd.FactAddress.HouseNumber;
+                    model.FactBuildType = dmd.FactAddress.BuildType;
+                    model.FactBuildNumber = dmd.FactAddress.BuildNumber;
+                    model.FactFlatType = dmd.FactAddress.FlatType;
+                    model.FactFlatNumber = dmd.FactAddress.FlatNumber;
+                }
+                
                 model.DepStatus = dmd.DepStatus;
                 model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
                 model.OpenDate = dmd.OpenDate;
@@ -550,6 +565,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.Note = model.Note;
                 dmd.Creator = curUser;
                 dmd.CreateDate = DateTime.Now;
+
+                //режим работы
+                dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
+                foreach (var item in model.OperationModes)
+                {
+                    dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                    {
+                        DepartmentManagerDetail = dmd, 
+                        WeekDay = item.WeekDay,
+                        WorkBegin = item.WorkBegin,
+                        WorkEnd = item.WorkEnd,
+                        BreakBegin = item.BreakBegin,
+                        BreakEnd = item.BreakEnd,
+                        IsWorkDay = item.IsWorkDay,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
 
                 //операции
                 dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
@@ -825,6 +858,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.Creator = curUser;
                 dmd.CreateDate = DateTime.Now;
 
+                //режим работы
+                dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
+                foreach (var item in model.OperationModes)
+                {
+                    dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                    {
+                        DepartmentManagerDetail = dmd,
+                        WorkBegin = item.WorkBegin,
+                        WorkEnd = item.WorkEnd,
+                        BreakBegin = item.BreakBegin,
+                        BreakEnd = item.BreakEnd,
+                        IsWorkDay = item.IsWorkDay,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
                 //операции
                 dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
                 foreach (var item in model.Operations.Where(x => x.IsUsed == true))
@@ -870,9 +920,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                //entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
-                //StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
-                //entity.DepartmentManagerDetails[0].DepRequest = entity;
                 entity.DepartmentManagerDetails[0].NameShort = model.NameShort;
                 entity.DepartmentManagerDetails[0].ReferenceReason = model.ReferenceReason;
 
@@ -964,6 +1011,41 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].Editor = curUser;
                 entity.DepartmentManagerDetails[0].EditDate = DateTime.Now;
 
+
+                //режим работы
+                if (entity.DepartmentManagerDetails[0].DepOperationModes == null)
+                    entity.DepartmentManagerDetails[0].DepOperationModes = new List<StaffDepartmentOperationModes>();
+
+                foreach (var item in model.OperationModes)
+                {
+                    StaffDepartmentOperationModes dom = new StaffDepartmentOperationModes();
+                    //если не было, добавляем
+                    if (item.Id == 0)
+                    {
+                        dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        dom.WeekDay = item.WeekDay;
+                        dom.WorkBegin = item.WorkBegin;
+                        dom.WorkEnd = item.WorkEnd;
+                        dom.BreakBegin = item.BreakBegin;
+                        dom.BreakEnd = item.BreakEnd;
+                        dom.IsWorkDay = item.IsWorkDay;
+                        dom.Creator = curUser;
+                        dom.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Add(dom);
+                    }
+                    else//редактируем
+                    {
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkBegin = item.WorkBegin;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkEnd = item.WorkEnd;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakBegin = item.BreakBegin;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakEnd = item.BreakEnd;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().IsWorkDay = item.IsWorkDay;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
+
                 //операции
                 if (entity.DepartmentManagerDetails[0].DepOperations == null)
                     entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
@@ -1001,7 +1083,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //если была запись и убрали значение кода, то удаляем
                     if (item.Id != 0 && item.Code == null)
                     {
-                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && item.Code != null).Single();
+                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
                         entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
                     }
 
@@ -1014,7 +1096,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         pc.Creator = curUser;
                         pc.CreateDate = DateTime.Now;
 
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
                     }
 
                     //запись была и есть код, то предпологаем, что это редактирование
@@ -1026,27 +1108,46 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
 
-                ////ориентиры
-                //dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
-                //foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
-                //{
-                //    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks
-                //    {
-                //        DepartmentManagerDetail = dmd,
-                //        LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId),
-                //        Description = item.Description,
-                //        Creator = curUser,
-                //        CreateDate = DateTime.Now
-                //    });
-                //}
 
-                //entity.DepartmentManagerDetails.Add(dmd);
+                //ориентиры
+                if (entity.DepartmentManagerDetails[0].DepartmentLandmarks == null)
+                    entity.DepartmentManagerDetails[0].DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+
+                foreach (var item in model.DepLandmarks)
+                {
+                    StaffDepartmentLandmarks lm = new StaffDepartmentLandmarks();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Description == null)
+                    {
+                        lm = entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id && x.Description != null).Single();
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Remove(lm);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Description != null)
+                    {
+                        lm.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        lm.LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId);
+                        lm.Description = item.Description;
+                        lm.Creator = curUser;
+                        lm.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Add(lm);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Description != null)
+                    {
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Description = item.Description;
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+
+                }
+
             }
 
-            //RefAddresses la = (entity.DepartmentManagerDetails[0].FactAddress == null ? new RefAddresses() : RefAddressesDao.Get(entity.DepartmentManagerDetails[0].FactAddress.Id));//создаем новую запись или рекдактируем старую
-            
-
-            
 
 
             if (model.Id != 0)
@@ -1057,7 +1158,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
-
                 }
                 catch (Exception ex)
                 {
@@ -1111,10 +1211,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             //реквизиты инициатора
             model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest, model.UserId);
             model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
-            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.Id);
+            model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
-            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.Id);
-            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.Id);
+            model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
+            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
+            model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.

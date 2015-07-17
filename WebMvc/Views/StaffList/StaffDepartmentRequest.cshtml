@@ -3,12 +3,16 @@
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
 }
 
-
+  
 @using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
 {
     @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.ParentId)
     @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.DMDetailId)
+
+    
+    
     <h3>@Html.ValidationMessageFor(m => m.Message)</h3>
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
@@ -373,10 +377,75 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@Html.LabelFor(m => m.OperationMode)</td>
-                        <td>
-                            @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:400px;" })
-                            @Html.ValidationMessageFor(model => model.OperationMode)
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.OperationModes)</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.OperationModes)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].WeekDay)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i - 1].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;" })</td>
+                                            </tr>
+                                            { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationMode)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationMode) 
+                                                @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:99%;" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -429,7 +498,7 @@
                                                 <th style="width:30%;">Код</th>
                                             </tr>
                                         <//thead>
-                                        @{ int i = 1; }
+                                        @{ i = 1; }
                                         @foreach (var item in Model.ProgramCodes)
                                         {
                                             <tr>
@@ -607,6 +676,15 @@
         <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
         <button id="btnAgree" type="button" title="Отправить заявку на согласование">Согласовать</button>
     </div>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <script type="text/javascript">
@@ -615,13 +693,16 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
 
     $(document).ready(function () {
-        setActiveMenuItem("moStaffPost");
+        setActiveMenuItem("moDepRequest");
+
+        ShowFlash(true);
+        ShowFlash(false);
 
         $(document).tooltip({ track: true });
         $(":button").button();
 
-        $("#btnSave").click(function(){ $("#IsDraft").val(true); $("#StaffDepartmentRequestForm").submit();});
-        $("#btnAgree").click(function(){ $("#IsDraft").val(false); $("#StaffDepartmentRequestForm").submit();});
+        $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
+        $("#btnAgree").click(function(){ $("#IsDraft").val(false); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
 
 
         $("#MainDiv").accordion({
@@ -945,6 +1026,37 @@
 
         $(AdressDiv).dialog("open");
 
+    }
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
     }
 </script>
 

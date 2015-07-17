@@ -34,6 +34,11 @@
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
 
+    <bag name="DepOperationModes" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffDepartmentOperationModes"/>
+    </bag>
+    
     <bag name="DepOperations" lazy="true" cascade="all-delete-orphan">
       <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails"/>
       <one-to-many class="StaffDepartmentOperationLinks"/>

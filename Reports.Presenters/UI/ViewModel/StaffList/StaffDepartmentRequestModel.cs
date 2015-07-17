@@ -135,6 +135,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Управленческие реквизиты
+        [Display(Name = "Id управленческих реквизитов")]
+        public int DMDetailId { get; set; }
         //поля с кодами для Финграда есть в таблице, но сюда их пока не вносил
         [Display(Name = "Краткое название подразделения")]
         public string NameShort { get; set; }
@@ -175,8 +177,11 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Причина создания/изменения/удаления СП")]
         public string Reason { get; set; }
 
-        [Display(Name = "Режим работы подразделения")]  //возможно потребуется переделать в справочник
-        public string OperationMode { get; set; }
+        [Display(Name = "Режим работы подразделения")]
+        public IList<DepOperationModeDto> OperationModes { get; set; }
+
+        [Display(Name = "Примечание")]
+        public string OperationMode { get; set; }//к режиму работы подразделения
 
         [Display(Name = "Дата начала простоя")]
         public DateTime? BeginIdleDate { get; set; }

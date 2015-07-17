@@ -21,7 +21,7 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Достаем список вариантов ориентиров и их описаний для данной заявки.
         /// </summary>
-        /// <param name="DMDetailId">Id текущей заявки.</param>
+        /// <param name="DMDetailId">Id управленческих реквизитов текущей заявки.</param>
         /// <returns></returns>
         public IList<DepLandmarkDto> GetDepartmentLandmarks(int DMDetailId)
         {

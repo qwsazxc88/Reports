@@ -86,7 +86,7 @@ IF OBJECT_ID ('FK_StaffEstablishedPost_CreatorUser', 'F') IS NOT NULL
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_StaffDepartmentRequestTypes', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentTaxDetails] DROP CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
+	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
@@ -211,6 +211,18 @@ GO
 
 IF OBJECT_ID ('FK_StaffPostChargeLinks_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationModes] DROP CONSTRAINT [FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperationModes_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationModes] DROP CONSTRAINT [FK_StaffDepartmentOperationModes_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperationModes_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationModes] DROP CONSTRAINT [FK_StaffDepartmentOperationModes_CreatorUser]
 GO
 
 
@@ -681,12 +693,41 @@ CREATE TABLE [dbo].[StaffPostChargeLinks](
 GO
 
 
+if OBJECT_ID (N'StaffDepartmentRequestTypes', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentRequestTypes]
+GO
 CREATE TABLE [dbo].[StaffDepartmentRequestTypes](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
 	[Name] [nvarchar](50) NULL,
 	[CreateDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentRequestTypes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentOperationModes', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentOperationModes]
+GO
+CREATE TABLE [dbo].[StaffDepartmentOperationModes](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[DMDetailId] [int] NULL,
+	[WeekDay] [int] NOT NULL,
+	[WorkBegin] [nvarchar](5) NULL,
+	[WorkEnd] [nvarchar](5) NULL,
+	[BreakBegin] [nvarchar](5) NULL,
+	[BreakEnd] [nvarchar](5) NULL,
+	[IsWorkDay] [bit] NULL,
+	[CreatorId] [int] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentOperationModes] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1154,6 +1195,33 @@ REFERENCES [dbo].[Users] ([Id])
 GO
 
 ALTER TABLE [dbo].[RefAddresses] CHECK CONSTRAINT [FK_RefAddresses_Editors]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes] ADD  CONSTRAINT [DF_StaffDepartmentOperationModes_IsWorkDay]  DEFAULT ((0)) FOR [IsWorkDay]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes] ADD  CONSTRAINT [DF_StaffDepartmentOperationModes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationModes_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes] CHECK CONSTRAINT [FK_StaffDepartmentOperationModes_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationModes_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes] CHECK CONSTRAINT [FK_StaffDepartmentOperationModes_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails] FOREIGN KEY([DMDetailId])
+REFERENCES [dbo].[StaffDepartmentManagerDetails] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationModes] CHECK CONSTRAINT [FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails]
 GO
 
 
@@ -1870,6 +1938,49 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Классификатор адресов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Kladr'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id управленческих реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'DMDetailId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер дня недели' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'WeekDay'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Время начала рабочего дня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'WorkBegin'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Время окончания рабочего дня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'WorkEnd'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Начало обеденного перерыва' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'BreakBegin'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Конец обеденного перерыва' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'BreakEnd'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак рабочего дня недели' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'IsWorkDay'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes'
+GO
+
+
 
 --5. СОЗДАНИЕ ПРЕДСТАВЛЕНИЙ
 IF OBJECT_ID ('vwKladr_1', 'V') IS NOT NULL
@@ -1974,3 +2085,65 @@ INSERT INTO StaffProgramReference(Name) VALUES(N'СКБ/GE')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Изменение параметров СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Закрытие СП')
+
+
+
+
+--7. СОЗДАНИЕ ФУНКЦИЙ
+
+IF OBJECT_ID ('fnGetDepartmentOperationModes', 'TF') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetDepartmentOperationModes]
+GO
+
+--функция достает режим работы для подразделения по Id управленческих реквизитов заявки
+CREATE FUNCTION [dbo].[fnGetDepartmentOperationModes]
+(
+	@DMDetailId int
+)
+RETURNS 
+@ReturnTable TABLE 
+(
+	 Id int 
+	,DMDetailId int
+	,WeekDay int
+	,WorkBegin nvarchar(5)
+	,WorkEnd nvarchar(5)
+	,BreakBegin nvarchar(5)
+	,BreakEnd nvarchar(5)
+	,IsWorkDay bit
+)
+AS
+BEGIN
+
+	INSERT INTO @ReturnTable
+	SELECT Id, DMDetailId, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay 
+	FROM StaffDepartmentOperationModes
+	WHERE DMDetailId = @DMDetailId
+
+	IF NOT EXISTS (SELECT * FROM @ReturnTable)
+	BEGIN
+		INSERT INTO @ReturnTable
+		SELECT Id, DMDetailId, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay FROM StaffDepartmentOperationModes WHERE DMDetailId = -1
+		UNION ALL
+		SELECT null, null, 1, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 5, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 7, null, null, null, null, 0
+	END
+
+
+	RETURN 
+END
+
+GO
+
+

@@ -5,15 +5,15 @@ using Reports.Core.Domain;
 namespace Reports.Core.Dao
 {
     /// <summary>
-    /// Ориентиры подразделений.
+    /// Режим работы подразделения.
     /// </summary>
-    public interface IStaffDepartmentLandmarksDao : IDao<StaffDepartmentLandmarks>
+    public interface IStaffDepartmentOperationModesDao : IDao<StaffDepartmentOperationModes>
     {
         /// <summary>
-        /// Достаем список вариантов ориентиров и их описаний для данной заявки.
+        /// Достаем список операций для подразделения по заявке.
         /// </summary>
         /// <param name="DMDetailId">Id управленческих реквизитов текущей заявки.</param>
         /// <returns></returns>
-        IList<DepLandmarkDto> GetDepartmentLandmarks(int DMDetailId);
+        IList<DepOperationModeDto> GetDepartmentOperationModes(int DMDetailId);
     }
 }

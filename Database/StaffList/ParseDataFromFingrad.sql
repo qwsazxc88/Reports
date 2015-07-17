@@ -1,7 +1,9 @@
+--СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
+
 --select * from Fingrag_csv 
 
 
-
+--приводим данные в порядок
 UPDATE Fingrag_csv SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then null else [Дата_процедуры] end
 											,[Вид_процедуры] = case when len([Вид_процедуры]) = 0 or [Вид_процедуры] = N'-' then null else [Вид_процедуры] end
 											,[Полное_наименование] = case when len([Полное_наименование]) = 0 or [Полное_наименование] = N'-' then null else [Полное_наименование] end
@@ -77,5 +79,4 @@ UPDATE Fingrag_csv SET [Индекс] = REPLACE([Индекс], char(160), '')
 UPDATE Fingrag_csv SET [Индекс] = SUBSTRING([Индекс], 1, isnull(charindex('.', [Индекс]), 1) - 1) --WHERE [Код_подразделения] = '04-07-24-011'
 UPDATE Fingrag_csv SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
 UPDATE Fingrag_csv SET Кол_во_запущенных_банкоматов_с_функцией_кэшин = null where Кол_во_запущенных_банкоматов_с_функцией_кэшин = '06.08.2014'
-
 UPDATE Fingrag_csv SET [Дни_работы_точки] = '1111110' WHERE [Дни_работы_точки] = '111110'
