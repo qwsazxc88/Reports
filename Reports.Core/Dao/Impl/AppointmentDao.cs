@@ -6,7 +6,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class AppointmentDao : DefaultDao<Appointment>, IAppointmentDao
@@ -724,5 +724,12 @@ namespace Reports.Core.Dao.Impl
             }
         }
         #endregion
+
+        public List<Appointment> GetAppointmentForReasonPosition(int userId)
+        {
+            var res=Session.Query<Appointment>().Where(x => x.ReasonPositionUser.Id == userId && x.isNotifyNeeded);
+            if (res != null && res.Any()) return res.ToList();
+            else return null;
+        }
     }
 }

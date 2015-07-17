@@ -11,6 +11,7 @@
         <tr>
             <td>
               <div class="filter-wrap">
+              <p style="color:red;">Программа по расчету сальдо отпусков работает в тестовом режиме, поэтому возможны некорректные расчеты сальдо отпусков. Если появились вопросы просьба обращаться к кадровику Дирекции через Инфоуслуги раздел "Задать вопрос".</p>
                 <table style="width:100%">
                     <tr>
                         <td style="width:220px">
@@ -113,6 +114,7 @@
                     <span id="LoadingIndicator"></span>
                     <label id="CountRows">Количество записей: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Count.ToString())</label>&nbsp;&nbsp;
                     <label id="CountPreg">Из них в декрете: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Where(x => x.EndDate != null).Count().ToString())</label>
+                    <input type="button" value="Печать" onclick="window.print();" align="right"/>
                 </div>
             </td>
          </tr>
@@ -125,6 +127,15 @@
                         <th>№<br />п/п</th>
                         <th>
                             <div id="sort1"><a href="#"  onclick = "SortChanged(1);">Ф.И.О.</a></div>
+                        </th>
+                        <th>
+                            <div id="sort11"><a href="#"  onclick = "SortChanged(11);">Остаток дней<br /> основого отпуска<br />на 1 число тек. мес.</a></div>
+                        </th>
+                        <th>
+                            <div id="sort12"><a href="#"  onclick = "SortChanged(12);">Остаток дней<br /> дополнительного отпуска<br />на 1 число тек. мес.</a></div>
+                        </th>
+                        <th>
+                            <div id="sort7"><a href="#"  onclick = "SortChanged(7);">В декрете<br />(конец отпуска)</a></div>
                         </th>
                         <th>
                             <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Должность</a></div>
@@ -143,10 +154,7 @@
                         </th>
                         <th>
                             <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Руководитель<br />4уровня</a></div>
-                        </th>
-                        <th>
-                            <div id="sort7"><a href="#"  onclick = "SortChanged(7);">В декрете<br />(конец отпуска)</a></div>
-                        </th>
+                        </th>                        
                         <th>
                             <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Группа доступа</a></div>
                         </th>
@@ -165,13 +173,15 @@
                                         @i
                                     </td>
                                     <td>@doc.UserName</td>
+                                    <td>@doc.SaldoPrimary</td>
+                                    <td>@doc.SaldoAdditional</td>
+                                    <td>@(doc.EndDate.HasValue ? doc.EndDate.Value.ToShortDateString() : string.Empty)</td>
                                     <td>@doc.PositionName</td>
                                     <td>@doc.Dep3Name</td>
                                     <td>@doc.Dep7Name</td>
                                     <td>@doc.Manager6</td>
                                     <td>@doc.Manager5</td>
                                     <td>@doc.Manager4</td>
-                                    <td>@(doc.EndDate.HasValue ? doc.EndDate.Value.ToShortDateString() : string.Empty)</td>
                                     <td>@doc.AccessGroupName</td>
                                     <td>@doc.Email</td>
                                 </tr>

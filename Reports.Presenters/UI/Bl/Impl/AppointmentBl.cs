@@ -205,6 +205,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = AppointmentReasonDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Reasons.Add(new IdNameDto{Id=0,Name="Все"});
         }
+        public bool CheckUserDismissal(int userid)
+        {
+            return UserDao.CheckUserDismissal(userid);
+        }
         protected List<IdNameDto> GetAppRequestStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -337,6 +341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
                 model.StaffCreatorName = entity.StaffCreator == null ? "" : entity.StaffCreator.Name;
+                model.isNeedToNotify = entity.isNotifyNeeded;
                 model.FIO = entity.FIO;
                 model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
@@ -763,7 +768,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(model.UserId);// если еще раз тут будешь, вспомни, что Улькина может создавать за сотрудника
+            
+            User currUser;
+            if ((CurrentUser.UserRole & UserRole.Manager) > 0) currUser = UserDao.Load(CurrentUser.Id);
+            else currUser = UserDao.Load(model.UserId);// если еще раз тут будешь, вспомни, что Улькина может создавать за сотрудника
+            
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
@@ -912,6 +921,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
+                entity.isNotifyNeeded=model.isNeedToNotify;
                 entity.Bonus = Decimal.Parse(model.Bonus);
                 entity.PyrusNumber = model.PyrusNumber;
                 entity.City = model.City;

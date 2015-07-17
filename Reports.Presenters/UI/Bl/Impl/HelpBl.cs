@@ -1106,16 +1106,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     HelpServiceRequest request = HelpServiceRequestDao.Load(id);
                     isAddAvailable =  (((CurrentUser.Id == request.Creator.Id) &&
-                                        ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
+                                        ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
                                         (request.Consultant != null && 
                                             CurrentUser.Id == request.Consultant.Id && 
                                             CurrentUser.UserRole == UserRole.ConsultantOutsourcing) ||
                                          (request.Consultant != null &&
                                             CurrentUser.Id == request.Consultant.Id &&
-                                            CurrentUser.UserRole == UserRole.PersonnelManager) /*||
+                                            CurrentUser.UserRole == UserRole.PersonnelManager) ||
                                          (request.Consultant != null &&
                                             CurrentUser.Id == request.Consultant.Id &&
-                                            CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager)*/
+                                            CurrentUser.UserRole == UserRole.ConsultantPersonnel)
                                         );
                 }
             }
