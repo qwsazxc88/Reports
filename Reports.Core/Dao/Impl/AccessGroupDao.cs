@@ -52,6 +52,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="sortDescending">Тип сортировки</param>
         /// <returns></returns>
         public IList<AccessGroupListDto> GetAccessGroupList(
+                User user,
                 Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
@@ -65,6 +66,7 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers ag " : "vwAccessGroupList ag");
             sqlQuery += " LEFT JOIN (	SELECT  userId,SaldoPrimary,SaldoAdditional FROM VacationSaldo vs2	INNER JOIN (SELECT MAX(vs1.Id) as id FROM VacationSaldo vs1 GROUP BY UserID) p ON p.id=vs2.id) vs ON ag.UserId=vs.UserId";
             string whereString = GetDepartmentWhere(depFromFilter);
+            
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetManagersWhere(whereString, Manager6, Manager5, Manager4);
