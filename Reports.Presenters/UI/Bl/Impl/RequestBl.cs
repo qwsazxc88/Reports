@@ -2210,6 +2210,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(current, dismissal, model, user);
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
+                    //Отпарвка почты если кому-то в подборе оно нужно
+                    var appointmentDao=Ioc.Resolve<IAppointmentDao>();
+                    var appointments=appointmentDao.GetAppointmentForReasonPosition(model.UserId);
+                    if (appointments!=null)
+                        foreach (var el in appointments)
+                        {
+                            var email = el.Creator.Email;
+                            if (String.IsNullOrWhiteSpace(email)) continue;
+                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",model.DocumentNumber, model.UserName,el.Number);
+                            var res=SendEmail(email, "Создано заявление на увольнение", body);
+                        }                   
                 }
                 #endregion
                 else
