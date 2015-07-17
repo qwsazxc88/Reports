@@ -19,5 +19,7 @@ namespace Reports.Core.Dto
         public string Manager6 { get; set; }
         public string Manager5 { get; set; }
         public string Manager4 { get; set; }
+        public decimal SaldoPrimary{ get; set; }
+        public decimal SaldoAdditional { get; set; }
     }
 }
