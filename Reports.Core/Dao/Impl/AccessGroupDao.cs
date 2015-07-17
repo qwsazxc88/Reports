@@ -62,7 +62,8 @@ namespace Reports.Core.Dao.Impl
                 int sortBy,
                 bool? sortDescending)
         {
-            string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers" : "vwAccessGroupList");
+            string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers ag " : "vwAccessGroupList ag");
+            sqlQuery += " LEFT JOIN (	SELECT  userId,SaldoPrimary,SaldoAdditional FROM VacationSaldo vs2	INNER JOIN (SELECT MAX(vs1.Id) as id FROM VacationSaldo vs1 GROUP BY UserID) p ON p.id=vs2.id) vs ON ag.UserId=vs.UserId";
             string whereString = GetDepartmentWhere(depFromFilter);
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
@@ -140,6 +141,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Manager6", NHibernateUtil.String)
                 .AddScalar("Manager5", NHibernateUtil.String)
                 .AddScalar("Manager4", NHibernateUtil.String)
+                .AddScalar("SaldoPrimary",NHibernateUtil.Decimal)
+                .AddScalar("SaldoAdditional",NHibernateUtil.Decimal)
                 ;
             return query;
         }
@@ -185,6 +188,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 10:
                     orderBy = "Manager4";
+                    break;
+                case 11:
+                    orderBy = "SaldoPrimary";
+                    break;
+                case 12:
+                    orderBy = "SaldoAdditional";
                     break;
                 default:
                     orderBy = "UserName";
