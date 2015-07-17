@@ -6512,9 +6512,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = null;
             if (model.DepartmentId != 0)
                 dep = DepartmentDao.Load(model.DepartmentId);
-
+            var user=UserDao.Load(CurrentUser.Id);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
-            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
+            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(user,dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
             return model;
         }
         #endregion

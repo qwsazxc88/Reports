@@ -11,6 +11,7 @@
         <tr>
             <td>
               <div class="filter-wrap">
+              <p style="color:red;">Программа по расчету сальдо отпусков работает в тестовом режиме, поэтому возможны некорректные расчеты сальдо отпусков. Если появились вопросы просьба обращаться к кадровику Дирекции через Инфоуслуги раздел "Задать вопрос".</p>
                 <table style="width:100%">
                     <tr>
                         <td style="width:220px">
@@ -113,6 +114,7 @@
                     <span id="LoadingIndicator"></span>
                     <label id="CountRows">Количество записей: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Count.ToString())</label>&nbsp;&nbsp;
                     <label id="CountPreg">Из них в декрете: @(Model.AccessGroupList == null ? "0" : Model.AccessGroupList.Where(x => x.EndDate != null).Count().ToString())</label>
+                    <input type="button" value="Печать" onclick="window.print();" align="right"/>
                 </div>
             </td>
          </tr>
