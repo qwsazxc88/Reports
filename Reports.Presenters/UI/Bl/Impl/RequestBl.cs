@@ -2218,7 +2218,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             var email = el.Creator.Email;
                             if (String.IsNullOrWhiteSpace(email)) continue;
-                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",model.DocumentNumber, model.UserName,el.Number);
+                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",dismissal.Number,dismissal.User.Name,el.Number);
                             var res=SendEmail(email, "Создано заявление на увольнение", body);
                         }                   
                 }
