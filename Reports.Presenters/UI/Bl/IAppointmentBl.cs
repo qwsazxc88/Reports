@@ -7,6 +7,7 @@ namespace Reports.Presenters.UI.Bl
     public interface IAppointmentBl : IBaseBl
     {
         AppointmentListModel GetAppointmentListModel();
+        bool CheckUserDismissal(int userid);
         void SetAppointmentListModel(AppointmentListModel model, bool hasError);
         void SetAppointmentReportsListModel(AppointmentListModel model, bool hasError);
         AppointmentEditModel GetAppointmentEditModel(int id, int? managerId);
