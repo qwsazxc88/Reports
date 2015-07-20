@@ -3776,7 +3776,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 candidate.IsScanFinal = model.IsScanFinal;
                 if (candidate.Status == 0)//статус меняем только стадии заполнения анкеты
                 {
-                    if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue)//если кандидат не проходил предварительную проверку
+                    if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue && !candidate.BackgroundCheck.ApprovalDate.HasValue)//если кандидат не проходил предварительную и обычную проверку
                         candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
                 }
             }
@@ -4013,8 +4013,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4068,8 +4068,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                    entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                    entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4183,8 +4183,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4327,8 +4327,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4401,8 +4401,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4460,8 +4460,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4526,8 +4526,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
             if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.IsFinal && entity.Candidate.BackgroundCheck.IsFinal && 
-                    entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                    entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
             }
@@ -4600,8 +4600,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal && 
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.IsCandidateToBackgroundSendEmail)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -5913,6 +5913,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (EmailType)
             {
                 case 1: //в ДБ
+                    if (entity.Status != EmploymentStatus.PENDING_APPROVAL_BY_SECURITY) return;
                     if (entity.IsCandidateToBackgroundSendEmail && entity.CandidateToBackgroundSendEmailDate.HasValue) return;  //сообщение было послано ранее
                     //проверка на необходимость отправки сообщения
                     if (CandidateState == null || !CandidateState.Single().CandidateReady) return;
