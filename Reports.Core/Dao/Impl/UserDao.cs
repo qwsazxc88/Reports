@@ -30,7 +30,12 @@ namespace Reports.Core.Dao.Impl
         public UserDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }
-
+        public bool CheckUserDismissal(int userid)
+        {
+            var res=Session.Query<Dismissal>().Where(x => x.User.Id == userid);
+            if (res != null && res.Any()) return true;
+            else return false;
+        }
         public string ConstFKExistsViewName
         {
             get { return FKExistsViewName; }

@@ -132,6 +132,11 @@ namespace WebMvc.Controllers
             //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
+        public JsonResult CheckUserDismissal(int userId)
+        {
+            var res=AppointmentBl.CheckUserDismissal(userId);
+            return Json(res ? (object)new { result = true } : (object)new { result = false });
+        }
         [HttpPost]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
