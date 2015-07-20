@@ -22,6 +22,7 @@ namespace Reports.Core.Dao
         /// <param name="sortDescending">Тип сортировки</param>
         /// <returns></returns>
         IList<AccessGroupListDto> GetAccessGroupList(
+                User user,
                 Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
