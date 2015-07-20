@@ -5245,15 +5245,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
-                    //проверки по обучению в найме
+
+                    
+                    
                     if (entity.Candidate.AppointmentReport != null && entity.Candidate.Appointment != null)
                     {
+                        //проверка по обучению в найме
                         if (entity.Candidate.AppointmentReport.Type.Id == 1 && entity.Candidate.Appointment.Recruter != 2)
                         {
                             if (entity.Candidate.AppointmentReport.TestingResult < 3 || entity.Candidate.AppointmentReport.IsEducationExists == false)
                             {
                                 error = "Обучение кандидата в отчете по подбору не пройдено!";
                                 return false;
+                            }
+                        }
+
+                        //проверка на увольнение сотрудника при приеме кандидата на его должность
+                        if (entity.Candidate.Appointment.Reason.Id == 5)
+                        {
+                            if (entity.Candidate.Appointment.ReasonPositionUser != null)
+                            {
+                                User DismissUser = UserDao.Load(entity.Candidate.Appointment.ReasonPositionUser.Id);
+                                IList<Dismissal> dml = DismissalDao.LoadAll().Where(x => x.User == DismissUser && x.SendTo1C.HasValue).ToList();
+                                if (dml.Count == 0)
+                                {
+                                    error = "Данная ставка еще не освобождена! Согласовать кандидата на данный момент невозможно!";
+                                    return false;
+                                }
                             }
                         }
                     }
