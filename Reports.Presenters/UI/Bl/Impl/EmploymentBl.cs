@@ -3004,6 +3004,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "4"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "5"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
+                new SelectListItem {Text = "Документы отправлены на подпись кандидату", Value = "11"},
+                new SelectListItem {Text = "Документы подписаны кандидатом", Value = "12"},
                 new SelectListItem {Text = "Оформлен", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
                 new SelectListItem {Text = "Отклонен", Value = "9"},
@@ -3697,6 +3699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     EmploymentCandidateDocNeededDao.CommitTran();
 
+
                     EmploymentSendEmail(candidate.User.Id, 6, CheckChangesInDocList(dnList, DocNeeded));//сообщение 
                 }
                 catch 
@@ -3705,6 +3708,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Произошла ошибка при сохранении данных!";
                     return;
                 }
+            }
+
+            //после всех телодвижений устанавливаем статус
+            //если прицеплен весь указанный перечень, меняем статус у кандидата
+            if (EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+            {
+                candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
+            }
+            else
+            {
+                candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+            }
+            try
+            {
+                EmploymentCandidateDao.SaveAndFlush(candidate);
+            }
+            catch
+            {
+                EmploymentCandidateDao.RollbackTran();
+                error = "Произошла ошибка при сохранении данных!";
+                return;
             }
 
         }
@@ -5489,8 +5513,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 EmploymentStatus candidateStatus = candidate.Status;
 
-                if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
-                    || candidateStatus == EmploymentStatus.COMPLETE)
+                if (//candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
+                    candidateStatus == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE /* || candidateStatus == EmploymentStatus.COMPLETE*/)
                 {
                     if (!IsUnlimitedEditAvailable())
                     {
@@ -6091,14 +6115,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.IsPersonnelManagerToManagerSendEmail && !entity.PersonnelManagerToManagerSendEmailDate.HasValue)
                     {    //письмо руководству уже было
                         Subject = "Сформирован пакет кадровых документов для подписи кандидатом";
-                        body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                        body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!";
                     }
                     else
                     {
                         if (IsChangeDocList)//если не ошибочное нажатие без изменений
                         {
                             Subject = "Пакет кадровых документов для подписи кандидатом изменен";
-                            body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                            body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!";
                         }
                         else
                             return;
