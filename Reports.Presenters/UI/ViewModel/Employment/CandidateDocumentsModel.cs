@@ -128,5 +128,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsPrintButtonAvailable { get; set; }
         //признак видимости кнопки удаления скана
         public bool IsDeleteScanButtonAvailable { get; set; }
+        //для отправки сообщения руководителю
+        public bool IsSentEmail { get; set; }
+        //статус кандидата
+        public int CandidateStatus { get; set; }
     }
 }
