@@ -1305,6 +1305,12 @@
                         $("#Certificate182HFile").change(function () { this.form.submit(); });
                         $("#Certificate2NDFLFile").change(function () { this.form.submit(); });
 
+                        $("#btnSentEmail").click(function () {
+                            $("#IsSave").val(true);
+                            $("#IsSentEmail").val(true);
+                            this.form.submit();
+                        });
+
                         $("#btnSaveDocNeeded").click(function () {
                             $("#IsSave").val(true);
                             this.form.submit();

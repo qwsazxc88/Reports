@@ -18,6 +18,7 @@
     @Html.HiddenFor(m => m.UserId)    
     @Html.HiddenFor(m => m.IsSave)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsSentEmail)
     
 
     <input type="hidden" id="DeleteAttachmentId" name="DeleteAttachmentId" value="@Model.DeleteAttachmentId" />
@@ -663,7 +664,12 @@
         @if (dto.UserRole == UserRole.PersonnelManager && !Model.SendTo1C.HasValue)
         {
             <tr>
-                <td colspan="3"></td>
+                <td colspan="3">
+                    <button id="btnSentEmail" @if (Model.CandidateStatus == 11)
+                                              {<text>style="float:right;"</text>}
+                                              else 
+                                              {<text>style="display:none;"</text>}>Отправить email рководителю</button>    
+                </td>
                 <td >
                     <button id="btnSaveDocNeeded" type="button">Сохранить</button>
                 </td>
@@ -696,6 +702,13 @@
         $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
         $("#Certificate182HFile").change(function () { this.form.submit(); });
         $("#Certificate2NDFLFile").change(function () { this.form.submit(); });
+
+        $("#btnSentEmail").click(function () {
+            $("#IsSave").val(true);
+            $("#IsSentEmail").val(true);
+            this.form.submit();
+        });
+
         $("#btnSaveDocNeeded").click(function () {
             $("#IsSave").val(true);
             this.form.submit();
