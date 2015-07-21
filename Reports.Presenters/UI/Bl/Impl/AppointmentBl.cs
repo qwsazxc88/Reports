@@ -484,6 +484,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(entity!=null)
             model.NonActual = entity.NonActual;
+            var candidates = entity.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED);
+            if (candidates == null || !candidates.Any())
+            {
+                model.IsNonActualButtonAvailable = true;
+            }
             model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {

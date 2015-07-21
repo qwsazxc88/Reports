@@ -505,7 +505,7 @@
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                       {<text>style="display:none"</text>}/>
                 }
-                    @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0)
+                    @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0 && Model.IsNonActualButtonAvailable)
                     {
                     <input type="submit" value="Заявка не актуальна" onclick="$('#NonActual').val(true);" />
                     }
