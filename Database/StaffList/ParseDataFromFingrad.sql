@@ -399,6 +399,9 @@ BEGIN
 																						,BeginIdleDate
 																						,EndIdleDate
 																						,IsRentPlace
+																						,AgreementDetails
+																						,DivisionArea
+																						,AmountPayment
 																						,Phone
 																						,IsBlocked
 																						,IsNetShop
@@ -423,6 +426,9 @@ BEGIN
 					,A.[Дата_начала_простоя_точки]
 					,A.[Дата_возобновления_работы_точки]
 					,case when A.[Арендованное_помещение] = 'Собственность' then 0 else 1 end
+					,A.[Реквизиты_договора]
+					,A.[Площадь_подразделения]
+					,A.[Сумма_ежемесячного_платежа]
 					,A.[Номер_телефона]
 					,case when A.[Блокировка] = 'Действует' then 0 else 1 end
 					,case when A.[Идентификация_сетевого_магазина] = 'сетевая' then 1 else 0 end
