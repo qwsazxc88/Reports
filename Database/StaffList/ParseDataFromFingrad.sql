@@ -1,6 +1,8 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
 
 --select * from Fingrag_csv 
+DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
+				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
 
 --находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
 SELECT A.Id, A.ParentId, C.* INTO #TMP
@@ -148,6 +150,134 @@ UPDATE #TMP SET [Ориентиры_станция_метро] = case when ltrim(rtrim([Ориентиры_ста
 WHERE  [Ориентиры_станция_метро] is not null and [Ориентиры_станция_метро] <> 'нет'
 
 
+--для операций
+UPDATE #TMP SET [Операции] = replace([Операции], '2) прочие операции:', ';') WHERE [Операции] like '%2) прочие операции:%'
+UPDATE #TMP SET [Операции] = replace([Операции], 'II. прочие операции:', ';') WHERE [Операции] like '%II. прочие операции:%'
+UPDATE #TMP SET [Операции] = replace([Операции], '1) С наличной иностранной валютой и валютой Российской Федерации в операционной кассе:', '') WHERE [Операции] like '1) С наличной иностранной валютой и валютой Российской Федерации в операционной кассе:%'
+UPDATE #TMP SET [Операции] = replace([Операции], 'Ипотека 1) С наличной иностранной валютой и валютой Российской Федерации в операционной кассе:', '') WHERE [Операции] like '%Ипотека%'
+UPDATE #TMP SET [Операции] = replace([Операции], '. -', ';') WHERE [Операции]  like '%. -%'
+UPDATE #TMP SET [Операции] = replace([Операции], '; -', ';') WHERE [Операции]  like '%; -%'
+UPDATE #TMP SET [Операции] = replace([Операции], ';-', ';') WHERE [Операции]  like '%;-%'
+UPDATE #TMP SET [Операции] = replace([Операции], '.;', ';') WHERE [Операции]  like '%.;%'
+UPDATE #TMP SET [Операции] = replace([Операции], '18.', ';') WHERE [Операции]  like '%18.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '17.', ';') WHERE [Операции]  like '%17.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '16.', ';') WHERE [Операции]  like '%16.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '15.', ';') WHERE [Операции]  like '%15.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '14.', ';') WHERE [Операции]  like '%14.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '13.', ';') WHERE [Операции]  like '%13.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '12.', ';') WHERE [Операции]  like '%12.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '11.', ';') WHERE [Операции]  like '%11.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '10.', ';') WHERE [Операции]  like '%10.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '9.', ';') WHERE [Операции]  like '%9.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '8.', ';') WHERE [Операции]  like '%8.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '7.', ';') WHERE [Операции]  like '%7.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '6.', ';') WHERE [Операции]  like '%6.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '5.', ';') WHERE [Операции]  like '%5.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '4.', ';') WHERE [Операции]  like '%4.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '3.', ';') WHERE [Операции]  like '%3.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '2.', ';') WHERE [Операции]  like '%2.%'
+UPDATE #TMP SET [Операции] = replace([Операции], '1.', ';;;') WHERE [Операции]  like '%1.%'
+UPDATE #TMP SET [Операции] = replace([Операции], ';;;', '') WHERE [Операции]  like '%;;;%'
+UPDATE #TMP SET [Операции] = replace([Операции], '.;', ';') WHERE [Операции]  like '%.;%'
+UPDATE #TMP SET [Операции] = replace([Операции], ';;', ';') WHERE [Операции]  like '%;;%'
+UPDATE #TMP SET [Операции] = replace([Операции], '-О', 'О') WHERE [Операции]  like '%-О%'
+UPDATE #TMP SET [Операции] = replace([Операции], 'ООО ИКБ "Совкомбанк"', '++"') WHERE [Операции]  like '%ООО ИКБ "Совкомбанк"%'
+
+SELECT identity (int, 1, 1) as RowId, Operation into #TMP1
+FROM (SELECT distinct [Операции] as Operation FROM #TMP WHERE [Операции] <> '-' and [Операции] <> '') as a
+order by a.Operation
+
+DELETE FROM #TMP1 WHERE Operation  = 'Значимые объекты: Аптека'
+
+CREATE TABLE #TMP2 (id int, [Description] varchar(400))
+
+--SELECT * FROM #TMP1
+--delete FROM #TMP1 where rowid <> 18
+
+WHILE EXISTS(SELECT * FROM #TMP1)
+BEGIN
+	SET @RowId = (SELECT top 1 rowid FROM #TMP1)
+
+	SET @aa = (SELECT Operation FROM #TMP1 WHERE RowId = @RowId)
+	SET @bb = ''
+
+	SELECT @i = 1, @len = len(@aa) + 1
+	--select PATINDEX ('%;%', @aa), @aa
+		--в цикле ходим по символам строки и бьем ее на части
+	WHILE @i < @len
+	BEGIN
+		--обрабатываем строки, где есть разделитель ';'
+		IF (PATINDEX ('%;%', @aa) <> 0)
+		BEGIN
+			IF substring(@aa, @i, 1) = ';'
+			BEGIN
+--				print rtrim(ltrim(@bb))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				BEGIN
+					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
+				END
+				SET @bb = ''
+			END
+			ELSE
+			BEGIN
+				SET @bb = isnull(@bb, '') + substring(@aa, @i, 1)
+			END
+
+			--последняя часть
+			IF @len - @i = 1
+			BEGIN
+--				print rtrim(ltrim(@bb))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				BEGIN
+					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
+				END
+				SET @bb = ''
+			END
+		END
+		
+
+		--где разделителем являются заглавные буквы
+		IF (PATINDEX ('%;%', @aa) = 0)
+		BEGIN
+			IF ascii(substring(@aa, @i, 1)) in (ascii('В'), ascii('П'), ascii('О'), ascii('Т')) and len(isnull(@bb, '')) <> 0
+			BEGIN
+--				print rtrim(ltrim(@bb))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				BEGIN
+					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
+				END
+				SET @bb = ''
+			END
+
+			SET @bb = isnull(@bb, '') + substring(@aa, @i, 1)
+
+			--последняя часть
+			IF @len - @i = 1
+			BEGIN
+--				print rtrim(ltrim(@bb))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				BEGIN
+					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
+				END
+				SET @bb = ''
+			END
+		END
+
+
+		SET @i += 1
+	END
+
+	DELETE FROM #TMP1 WHERE RowId = @RowId
+END
+
+
+DELETE FROM #TMP2 WHERE [Description] = ''
+
+
+UPDATE #TMP2 SET [Description] = replace([Description], '++', 'ПАО "Совкомбанк"') WHERE [Description]  like '%++%'
+
+INSERT INTO StaffDepartmentOperations(Version, Name)
+SELECT distinct 1, [Description] FROM #TMP2
 
 --теперь пытаемся закачать данные в новую структуру
 
@@ -160,12 +290,12 @@ INSERT INTO StaffDepartmentTypes ([Version], Name)
 SELECT distinct 1, [Тип_подразделения] FROM #TMP ORDER BY [Тип_подразделения]
 
 
-DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int
+
 
 --цикл по полученным данным
 WHILE EXISTS(SELECT * FROM #TMP)
 BEGIN
-	SELECT top  @Id = Id FROM #TMP
+	SELECT top 1 @Id = Id FROM #TMP
 
 	--оба адреса делаем одинаковыми
 	--заносим адрес
@@ -206,7 +336,7 @@ BEGIN
 					,case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
 					,@Id
 					,B.ItemLevel
-					,B.ParentId,
+					,B.ParentId
 					,B.Name
 					,case when A.[Front_Back1] = 'Front' then 0 when A.[Front_Back1] = 'Back' then 1 else null end
 					,[Приказы]
@@ -416,20 +546,47 @@ BEGIN
 			FROM #TMP WHERE Id = @Id and [Ориентиры_район_города] is not null
 		END
 
-/*
-1	Станция метро
-2	Остановка транспорта
-3	Значимые объекты
-4	Торговые центры
-5	Район города
-*/
-
-
 
 
 		--режим работы подразделения
+		SELECT @WorkDays = [Дни_работы_точки] FROM #TMP WHERE Id = @Id
+		IF @WorkDays is not null
+		BEGIN
+			SET @i = 1
+			WHILE @i < 8
+			BEGIN
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, [WeekDay], IsWorkDay)
+				VALUES(1, @DMDetailId, @i, cast(SUBSTRING(@WorkDays, @i, 1) as bit))
+				SET @i += 1
+			END	
+		END
+
+
 		--операции
+		SELECT @Oper = [Операции] FROM #TMP WHERE Id = @Id
+		SET @RowId = 1
+
+		IF @Oper is not null
+		BEGIN
+			WHILE EXISTS (SELECT * FROM StaffDepartmentOperations WHERE Id = @RowId)
+			BEGIN
+				SELECT @i = id, @aa = Name FROM StaffDepartmentOperations WHERE Id = @RowId
+
+				IF @Oper like '%' + @aa + '%'
+				BEGIN
+					INSERT INTO StaffDepartmentOperationLinks ([Version], DMDetailId, OperationId)
+					VALUES(1, @DMDetailId, @i)
+				END
+
+				SET @RowId += 1
+			END
+		END
 
 
 	DELETE FROM #TMP WHERE Id = @Id
 END
+
+
+drop table #TMP
+drop table #TMP1
+drop table #TMP2

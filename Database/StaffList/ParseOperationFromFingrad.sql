@@ -140,7 +140,7 @@ UPDATE #TMP SET [Description] = replace([Description], '++', 'ПАО "Совкомбанк"')
 --SELECT ascii('В'), ascii('П'), ascii('О')
 
 INSERT INTO StaffDepartmentOperations(Version, Name)
-SELECT 1, [Description] FROM #TMP
+SELECT distinct 1, [Description] FROM #TMP
 
 --SELECT * FROM #TMP
 

@@ -480,6 +480,29 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            @Html.LabelFor(m => m.AgreementDetails)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.AgreementDetails, (object)new { style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.AgreementDetails)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DivisionArea)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.DivisionArea, (object)new { style = "width:70px;", placeholder = "0.00" })
+                            @Html.ValidationMessageFor(model => model.DivisionArea)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AmountPayment)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.AmountPayment, (object)new { style = "width:70px;", placeholder = "0.00" })
+                            @Html.ValidationMessageFor(model => model.AmountPayment)
+                        </td>
+                    </tr>
+                    <tr>
                         <td>@Html.LabelFor(m => m.Phone)</td>
                         <td>
                             @Html.TextBoxFor(m => m.Phone, (object)new { style = "width:400px;" })
