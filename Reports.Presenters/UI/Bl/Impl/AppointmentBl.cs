@@ -482,6 +482,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User current,UserRole  currRole, Appointment entity, AppointmentEditModel model)
         {
             SetFlagsState(model, false);
+            if(entity!=null)
+            model.NonActual = entity.NonActual;
             model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
@@ -981,6 +983,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id)
                     {
+                        entity.NonActual = model.NonActual;
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                             && model.IsDelete)
                         {
@@ -1047,6 +1050,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue)
                     {
+                        entity.NonActual = model.NonActual;
                         if (model.StaffCreatorId == current.Id || entity.Creator.Id == current.Id)
                         {
                             if (model.ApproveForAll)

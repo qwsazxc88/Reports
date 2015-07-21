@@ -9330,7 +9330,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
             }
-
+            if (model.IsTicketsEditable)
+            {
+                entity.IsResidencePaid = model.IsResidencePaid;
+                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
+                SaveMissionTargets(entity, model.Targets);
+            }
             #endregion
 
             #region Secretary edits
@@ -9833,7 +9839,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     bool canEdit = false;
                     bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit) || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
-                    {
+                    {                        
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
                         {
                             model.IsEditable = true;
@@ -9849,6 +9855,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsManagerApproveAvailable = true;
 
                     }
+                    break;
+                case UserRole.Accountant:
+                    model.IsTicketsEditable = true;
                     break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
@@ -9875,7 +9884,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsChiefApproveAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
+            model.IsSaveAvailable = model.IsEditable || model.IsTicketsEditable || model.IsUserApprovedAvailable
                 || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
@@ -9988,6 +9997,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Secretary:
                     return true;
                 case UserRole.Accountant:
+                    return true;
                 case UserRole.Findep:
                     if (isSave)
                         return false;
