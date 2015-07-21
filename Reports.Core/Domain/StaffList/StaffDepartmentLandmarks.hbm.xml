@@ -8,7 +8,7 @@
 
     <many-to-one name="DepartmentManagerDetail" class="StaffDepartmentManagerDetails" column="DMDetailId" foreign-key="FK_StaffProgramCodes_StaffDepartmentManagerDetails" index="StaffProgramCodes_StaffDepartmentManagerDetails" not-null="false"/>
     <many-to-one name="LandmarkTypes" class="StaffLandmarkTypes" column="LandmarkId" foreign-key="FK_StaffDepartmentLandmarks_StaffLandmarkTypes" index="StaffDepartmentLandmarks_StaffLandmarkTypes" not-null="false"/>
-    <property name="Description" length="100" not-null="false"/>
+    <property name="Description" length="200" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>

@@ -120,6 +120,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
+            ModelState.Clear();
             string error = string.Empty;
             bool IsComplete = false;
             if (model.IsDraft)  //сохранение черновика
