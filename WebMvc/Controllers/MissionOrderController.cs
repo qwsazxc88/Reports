@@ -243,7 +243,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
             /*if (RequestBl.CheckOtherOrdersExists(model))
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);*/
-            if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
+            if (!(RequestBl.CheckOrderBeginDate(model.BeginMissionDate) || model.IsTicketsEditable))
                 ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
             if(!string.IsNullOrEmpty(model.BeginMissionDate) && !string.IsNullOrEmpty(model.EndMissionDate)
                 && model.IsEditable)
