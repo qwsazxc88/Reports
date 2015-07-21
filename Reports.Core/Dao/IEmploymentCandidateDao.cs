@@ -21,7 +21,7 @@ namespace Reports.Core.Dao
                 int AppointmentNumber,
                 int sortBy,
                 bool? sortDescending);
-
+        void CancelCandidatesByAppointmentId(int Id);
         IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
         IList<CandidateStateDto> GetCandidateState(int CandidateID);
         IList<CandidatePersonnelDto> GetPersonnels();

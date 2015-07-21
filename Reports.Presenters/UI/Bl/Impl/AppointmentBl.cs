@@ -982,7 +982,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id)
                     {
-                        entity.NonActual = model.NonActual;
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                             && model.IsDelete)
                         {
@@ -1015,6 +1020,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
                     {
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                            && model.IsDelete)
                         {
@@ -1047,6 +1058,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 
                 case UserRole.StaffManager:
+                    if (model.NonActual)
+                    {
+                        entity.NonActual = model.NonActual;
+                        EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                        RejectReports(entity.Id, currUser, "Заявка отклонена");
+                    }
                     if (!entity.DeleteDate.HasValue)
                     {
                         entity.NonActual = model.NonActual;
