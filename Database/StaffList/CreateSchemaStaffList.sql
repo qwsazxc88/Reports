@@ -578,6 +578,9 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[BeginIdleDate] [datetime] NULL,
 	[EndIdleDate] [datetime] NULL,
 	[IsRentPlace] [bit] NULL,
+	[AgreementDetails] [nvarchar](250) NULL,
+	[DivisionArea] [numeric](18, 2) NULL,
+	[AmountPayment] [numeric](18, 2) NULL,
 	[Phone] [nvarchar](20) NULL,
 	[IsBlocked] [bit] NULL,
 	[IsNetShop] [bit] NULL,
@@ -868,6 +871,12 @@ REFERENCES [dbo].[StaffLandmarkTypes] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentLandmarks] CHECK CONSTRAINT [FK_StaffDepartmentLandmarks_StaffLandmarkTypes]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_DivisionArea]  DEFAULT ((0)) FOR [DivisionArea]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_AmountPayment]  DEFAULT ((0)) FOR [AmountPayment]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails] ADD  CONSTRAINT [DF_StaffDepartmentManagerDetails_IsBlocked]  DEFAULT ((0)) FOR [IsBlocked]
@@ -1420,6 +1429,15 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата конца про
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак арендованного помещения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsRentPlace'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Реквизиты договора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'AgreementDetails'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Площадь подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'DivisionArea'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сумма ежемесячного платежа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'AmountPayment'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер телефона' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'Phone'
