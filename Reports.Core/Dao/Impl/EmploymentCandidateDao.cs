@@ -69,6 +69,8 @@ namespace Reports.Core.Dao.Impl
 					when candidate.Status = 4 then N'Ожидает согласование руководителем'
 					when candidate.Status = 5 then N'Ожидает согласование вышестоящим руководителем'
 					when candidate.Status = 6 then N'Оформление Кадры'
+                    when candidate.Status = 11 then N'Документы отправлены на подпись кандидату'
+                    when candidate.Status = 12 then N'Документы подписаны кандидатом'
 					when candidate.Status = 7 then N'Оформлен'
 					when candidate.Status = 8 then N'Выгружено в 1С'
 					when candidate.Status = 9 then N'Отклонен'
