@@ -15,7 +15,7 @@
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm" }))
+@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm", onselectstart="return false", style="-moz-user-select: none;-khtml-user-select: none;user-select: none;" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
@@ -315,7 +315,7 @@
     </fieldset>
     </div>
     
-    <div class="clear">
+    <div class="clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         @Html.HiddenFor(m => m.IsBGDraft)
@@ -324,9 +324,9 @@
     </div>
 }
 
-<hr />
 
-<div id="add-reference-dialog" title="Добавление рекомендации">
+
+<div id="add-reference-dialog" title="Добавление рекомендации" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
     @using (Html.BeginForm("BackgroundCheckAddReference", "Employment", FormMethod.Post))
     {
         <label for="LastName" style="display:block;">Фамилия</label><input type="text" name="LastName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -342,7 +342,7 @@
     }
 </div>
 
-<div id="add-backgroundcheck-comment-dialog" title="Добавление комментария">
+<div id="add-backgroundcheck-comment-dialog" title="Добавление комментария" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
     @using (Html.BeginForm("BackGroundCheckAddComments", "Employment", FormMethod.Post))
     {
         <label for="Comment" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)

@@ -429,10 +429,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i - 1].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -638,7 +638,7 @@
                                                     @Html.HiddenFor(m => m.DepLandmarks[i - 1].LandmarkName)
                                                     @item.LandmarkName
                                                 </td>
-                                                <td>@Html.TextBoxFor(m => m.DepLandmarks[i - 1].Description, new { style = "width:99%;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.DepLandmarks[i - 1].Description, new { style = "width:99%;")</td>
                                             </tr>
                                             { i++; }
                                         }
