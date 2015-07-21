@@ -130,10 +130,22 @@ UPDATE #TMP SET [Ориентиры_район_города] = case when ltrim(rtrim([Ориентиры_райо
 WHERE [Ориентиры_станция_метро] = 'нет'
 
 
-UPDATE #TMP SET [Ориентиры_значимые_объекты] = REPLACE([Ориентиры_значимые_объекты], '(площадь, памятник, "народное" название района)', '')
-UPDATE #TMP SET [Ориентиры_значимые_объекты] = REPLACE([Ориентиры_значимые_объекты], '(площадь, памятник, "народное" название района и др)', '')
-UPDATE #TMP SET [Ориентиры_значимые_объекты] = REPLACE([Ориентиры_значимые_объекты], '(площадь, памятник, "народное" название района', '')
-UPDATE #TMP SET [Ориентиры_значимые_объекты] = ltrim(rtrim(REPLACE([Ориентиры_значимые_объекты], '3. Значимые объекты', '')))
+UPDATE #TMP SET [Ориентиры_станция_метро] = 
+								REPLACE(
+								REPLACE(
+											REPLACE(
+														REPLACE(
+																		case when [Ориентиры_станция_метро] like '%2.%' 
+																				 then  substring([Ориентиры_станция_метро], 1, (charindex('2', [Ориентиры_станция_метро]) - 1))
+																				 else [Ориентиры_станция_метро]
+																				 end, '1. Cтанции метро - нет', ''), 
+																				 '1. Cтанции метро нет', ''), 
+																				 '1. Cтанции метро', ''),
+																				 '1. -', '')
+WHERE [Ориентиры_станция_метро] is not null and [Ориентиры_станция_метро] <> 'нет'
+
+UPDATE #TMP SET [Ориентиры_станция_метро] = case when ltrim(rtrim([Ориентиры_станция_метро])) like '%нет%' or len(ltrim(rtrim([Ориентиры_станция_метро]))) = 0 then null else ltrim(rtrim([Ориентиры_станция_метро])) end
+WHERE  [Ориентиры_станция_метро] is not null and [Ориентиры_станция_метро] <> 'нет'
 
 
 
@@ -364,6 +376,29 @@ BEGIN
 		--на момент написания null-ы есть во всех полях
 		IF (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) = 'нет'
 		BEGIN
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
+			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта]
+			FROM #TMP WHERE Id = @Id and [Ориентиры_остановка_транспорта] is not null
+
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
+			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты] 
+			FROM #TMP WHERE Id = @Id and [Ориентиры_значимые_объекты] is not null
+
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
+			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры] 
+			FROM #TMP WHERE Id = @Id and [Ориентиры_торговые_центры] is not null
+
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
+			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города] 
+			FROM #TMP WHERE Id = @Id and [Ориентиры_район_города] is not null
+		END
+
+		IF (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) <> 'нет' and (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) is not null
+		BEGIN
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
+			SELECT 1, @DMDetailId, 1, [Ориентиры_станция_метро]
+			FROM #TMP WHERE Id = @Id and [Ориентиры_станция_метро] is not null
+
 			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
 			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта]
 			FROM #TMP WHERE Id = @Id and [Ориентиры_остановка_транспорта] is not null

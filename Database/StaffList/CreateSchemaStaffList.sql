@@ -607,7 +607,7 @@ CREATE TABLE [dbo].[StaffDepartmentLandmarks](
 	[Version] [int] NOT NULL,
 	[DMDetailId] [int] NULL,
 	[LandmarkId] [int] NULL,
-	[Description] [nvarchar](100) NULL,
+	[Description] [nvarchar](250) NULL,
 	[CreatorId] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
