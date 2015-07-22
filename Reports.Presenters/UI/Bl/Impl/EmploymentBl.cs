@@ -3506,6 +3506,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
                     EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+                    error = "Заявление о приеме загружено!";
                     return;
                 }
             }
