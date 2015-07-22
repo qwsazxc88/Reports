@@ -1982,6 +1982,13 @@ namespace WebMvc.Controllers
 
             if (model.Surname == null)
                 ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
+            else
+            {
+                if (model.Surname.Trim().Length == 0)
+                    ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
+            }
+            
+            
 
             if (model.DepartmentId == 0)
                 ModelState.AddModelError("DepartmentId", "Выберите структурное подразделение!");
