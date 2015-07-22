@@ -68,7 +68,18 @@ namespace Reports.Core.Dao.Impl
             sqlQuery += " inner join dbo.Department crDep on u.DepartmentId = crDep.Id ";
             sqlQuery += " LEFT JOIN (	SELECT  userId,SaldoPrimary,SaldoAdditional FROM VacationSaldo vs2	INNER JOIN (SELECT MAX(vs1.Id) as id FROM VacationSaldo vs1 GROUP BY UserID) p ON p.id=vs2.id) vs ON ag.UserId=vs.UserId";
             string whereString = GetDepartmentWhere(depFromFilter);
-            if(user!=null)whereString = GetWhereForUserRole(user.UserRole, user.Id);
+            if (user != null)
+            {
+                string whererole = GetWhereForUserRole(user.UserRole, user.Id);
+                if (whereString.Length > 0)
+                {
+                    if (whererole.Length > 0)
+                    {
+                        whereString += " AND " + whererole;
+                    }
+                }
+                else whereString= whererole;
+            }
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetManagersWhere(whereString, Manager6, Manager5, Manager4);

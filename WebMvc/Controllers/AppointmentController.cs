@@ -199,7 +199,7 @@ namespace WebMvc.Controllers
             //return false;
             //if (RequestBl.CheckOtherOrdersExists(model))
             //    ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
-            if (model.IsDelete)
+            if (model.IsDelete || model.NonActual)
                 return true;
             if (model.Recruter == 2 && String.IsNullOrWhiteSpace(model.FIO))
             {
