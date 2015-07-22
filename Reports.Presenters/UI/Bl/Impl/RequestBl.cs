@@ -9295,7 +9295,55 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        private void ChangeCosts(MissionOrder entity, MissionOrderEditModel model)
+        {
+            var report = MissionReportDao.GetReportForOrder(entity.Id);
+            if (report==null) return;
+            IList<MissionReportCost> list = report.Costs !=null?report.Costs:new List<MissionReportCost>();
+            IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll();
+            if (!entity.IsResidencePaid && model.IsResidencePaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsResidencePaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 2).First(),
+                    Sum = entity.SumResidence,
+                    UserSum = null//entity.IsResidencePaid ? null:entity.UserSumResidence,
+                };
+                list.Add(cost);
+            }
+            if (!entity.IsAirTicketsPaid && model.IsAirTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsAirTicketsPaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 3).First(),
+                    Sum = entity.SumAir,
+                    UserSum = null//entity.IsAirTicketsPaid ? null : entity.UserSumAir,
+                };
+                list.Add(cost);
+            }
 
+            if (!entity.IsTrainTicketsPaid && model.IsTrainTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsTrainTicketsPaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 4).First(),
+                    Sum = entity.SumTrain,
+                    UserSum = null//entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
+                };
+                list.Add(cost);
+            }
+            report.Costs = list;
+            MissionReportDao.SaveAndFlush(report);
+        }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
             bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
@@ -9304,6 +9352,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.IsTicketsEditable)
             {
+                ChangeCosts(entity, model);
                 entity.IsResidencePaid = model.IsResidencePaid;
                 entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
                 entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
