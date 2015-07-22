@@ -1,9 +1,10 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
 
 --select * from Fingrag_csv 
+/*
 DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
 				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
-
+*/
 --находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
 SELECT A.Id, A.ParentId, C.* INTO #TMP
 FROM Department as A
@@ -21,7 +22,7 @@ UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then 
 								,[Улица_дом] = case when len([Улица_дом]) = 0 or [Улица_дом] = N'-' then null else [Улица_дом] end
 								,[Статус_подразделения] = case when len([Статус_подразделения]) = 0 or [Статус_подразделения] = N'-' then null else [Статус_подразделения] end
 								,[Дата_отркытия_офиса] = case when year([Дата_отркытия_офиса]) = 1899 then null else [Дата_отркытия_офиса] end
-								,[Дата_ закрытия_офиса] = case when year([Дата_ закрытия_офиса]) = 1899 then null else [Дата_ закрытия_офиса] end
+								,[Дата_закрытия_офиса] = case when year([Дата_закрытия_офиса]) = 1899 then null else [Дата_закрытия_офиса] end
 								,[Арендованное_помещение] = case when len([Арендованное_помещение]) = 0 or [Арендованное_помещение] = N'-' then null else [Арендованное_помещение] end
 								,[Площадь_подразделения] = case when len([Площадь_подразделения]) = 0 then '0' else REPLACE([Площадь_подразделения], N',', N'.') end	--числовые поля
 								,[Реквизиты_договора] = case when len([Реквизиты_договора]) = 0 or [Реквизиты_договора] = N'-' then null else [Реквизиты_договора] end
@@ -83,9 +84,9 @@ UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then 
 
 
 UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, isnull(charindex('.', [Индекс]), 1) - 1) --WHERE [Код_подразделения] = '04-07-24-011'
+UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
 UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
-UPDATE #TMP SET Кол_во_запущенных_банкоматов_с_функцией_кэшин = null where Кол_во_запущенных_банкоматов_с_функцией_кэшин = '06.08.2014'
+--UPDATE #TMP SET [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = null where [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = '06.08.2014'
 UPDATE #TMP SET [Дни_работы_точки] = '1111110' WHERE [Дни_работы_точки] = '111110'
 
 
@@ -190,6 +191,10 @@ order by a.Operation
 DELETE FROM #TMP1 WHERE Operation  = 'Значимые объекты: Аптека'
 
 CREATE TABLE #TMP2 (id int, [Description] varchar(400))
+
+
+DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
+				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
 
 --SELECT * FROM #TMP1
 --delete FROM #TMP1 where rowid <> 18
