@@ -140,8 +140,8 @@
                            @*@Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                         <td>
-                                @Html.CheckBox("IsResidencePaid", Model.IsResidencePaid, Model.IsEditable || Model.IsTicketsEditable ? (object)new { onchange = "IsResidencePaidChange();" } : (object)new { disabled = "disabled" }) 
-                                @if (!(Model.IsEditable || Model.IsTicketsEditable))
+                                @Html.CheckBox("IsResidencePaid", Model.IsResidencePaid, (Model.IsEditable || Model.IsTicketsEditable) && !Model.IsResidencePaid ? (object)new { onchange = "IsResidencePaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!((Model.IsEditable || Model.IsTicketsEditable) && !Model.IsResidencePaid))
                                 {
                                     <input type="hidden" id="IsResidencePaidHidden" name="IsResidencePaidHidden" value="@Model.IsResidencePaidHidden" />
                                 }
@@ -158,8 +158,8 @@
                            @*@Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                          <td>
-                                @Html.CheckBox("IsAirTicketsPaid", Model.IsAirTicketsPaid, Model.IsEditable || Model.IsTicketsEditable ? (object)new { onchange = "IsAirTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
-                                @if (!(Model.IsEditable|| Model.IsTicketsEditable))
+                                @Html.CheckBox("IsAirTicketsPaid", Model.IsAirTicketsPaid, (Model.IsEditable || Model.IsTicketsEditable) && !Model.IsAirTicketsPaid ? (object)new { onchange = "IsAirTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!((Model.IsEditable || Model.IsTicketsEditable) && !Model.IsAirTicketsPaid))
                                 {
                                     <input type="hidden" id="IsAirTicketsPaidHidden" name="IsAirTicketsPaidHidden" value="@Model.IsAirTicketsPaidHidden" />
                                 }
@@ -176,8 +176,8 @@
                            @*@Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                          <td>
-                                @Html.CheckBox("IsTrainTicketsPaid", Model.IsTrainTicketsPaid, Model.IsEditable || Model.IsTicketsEditable ? (object)new { onchange = "IsTrainTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
-                                @if (!(Model.IsEditable || Model.IsTicketsEditable))
+                                @Html.CheckBox("IsTrainTicketsPaid", Model.IsTrainTicketsPaid, (Model.IsEditable || Model.IsTicketsEditable) && !Model.IsTrainTicketsPaid ? (object)new { onchange = "IsTrainTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!((Model.IsEditable || Model.IsTicketsEditable) && !Model.IsTrainTicketsPaid))
                                 {
                                     <input type="hidden" id="IsTrainTicketsPaidHidden" name="IsTrainTicketsPaidHidden" value="@Model.IsTrainTicketsPaidHidden" />
                                 }
