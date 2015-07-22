@@ -1,9 +1,10 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
-
+SET NOCOUNT ON
 --select * from Fingrag_csv 
+/*
 DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
 				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
-
+*/
 --находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
 SELECT A.Id, A.ParentId, C.* INTO #TMP
 FROM Department as A
@@ -21,7 +22,7 @@ UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then 
 								,[Улица_дом] = case when len([Улица_дом]) = 0 or [Улица_дом] = N'-' then null else [Улица_дом] end
 								,[Статус_подразделения] = case when len([Статус_подразделения]) = 0 or [Статус_подразделения] = N'-' then null else [Статус_подразделения] end
 								,[Дата_отркытия_офиса] = case when year([Дата_отркытия_офиса]) = 1899 then null else [Дата_отркытия_офиса] end
-								,[Дата_ закрытия_офиса] = case when year([Дата_ закрытия_офиса]) = 1899 then null else [Дата_ закрытия_офиса] end
+								,[Дата_закрытия_офиса] = case when year([Дата_закрытия_офиса]) = 1899 then null else [Дата_закрытия_офиса] end
 								,[Арендованное_помещение] = case when len([Арендованное_помещение]) = 0 or [Арендованное_помещение] = N'-' then null else [Арендованное_помещение] end
 								,[Площадь_подразделения] = case when len([Площадь_подразделения]) = 0 then '0' else REPLACE([Площадь_подразделения], N',', N'.') end	--числовые поля
 								,[Реквизиты_договора] = case when len([Реквизиты_договора]) = 0 or [Реквизиты_договора] = N'-' then null else [Реквизиты_договора] end
@@ -83,9 +84,9 @@ UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then 
 
 
 UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, isnull(charindex('.', [Индекс]), 1) - 1) --WHERE [Код_подразделения] = '04-07-24-011'
+UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
 UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
-UPDATE #TMP SET Кол_во_запущенных_банкоматов_с_функцией_кэшин = null where Кол_во_запущенных_банкоматов_с_функцией_кэшин = '06.08.2014'
+--UPDATE #TMP SET [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = null where [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = '06.08.2014'
 UPDATE #TMP SET [Дни_работы_точки] = '1111110' WHERE [Дни_работы_точки] = '111110'
 
 
@@ -150,6 +151,7 @@ UPDATE #TMP SET [Ориентиры_станция_метро] = case when ltrim(rtrim([Ориентиры_ста
 WHERE  [Ориентиры_станция_метро] is not null and [Ориентиры_станция_метро] <> 'нет'
 
 
+
 --для операций
 UPDATE #TMP SET [Операции] = replace([Операции], '2) прочие операции:', ';') WHERE [Операции] like '%2) прочие операции:%'
 UPDATE #TMP SET [Операции] = replace([Операции], 'II. прочие операции:', ';') WHERE [Операции] like '%II. прочие операции:%'
@@ -189,7 +191,66 @@ order by a.Operation
 
 DELETE FROM #TMP1 WHERE Operation  = 'Значимые объекты: Аптека'
 
+--таблица для операций подразделений
 CREATE TABLE #TMP2 (id int, [Description] varchar(400))
+
+--#####################################
+--находим руководителей подразделений на уровень выше на ступень выше
+SELECT A.Id, A.ParentId, A.ItemLevel  INTO #TMP3
+FROM Department as A
+INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
+INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.FinDepPointCode
+
+--список руководителей (исключил беременных)
+SELECT * INTO #TMP4
+FROM Users as A WHERE A.RoleId = 4 and A.IsMainManager = 1 and A.IsActive = 1
+--отключаем беременных
+and not exists (SELECT * FROM ChildVacation WHERE getdate() between BeginDate and EndDate and UserId in (SELECT id FROM Users WHERE RoleId = 2 and IsActive = 1 and Email = A.Email)) 
+
+SELECT Id, UserId
+INTO #TMP5
+FROM(--по дирекциям
+			SELECT A.Id, A.ParentId, A.ItemLevel ,isnull(C.Id, isnull(E.id, isnull(G.id, isnull(I.id, K.Id)))) as UserId
+			FROM #TMP3 as A
+			INNER JOIN Department as B ON B.Code1C = A.ParentId and B.ItemLevel = 6
+			LEFT JOIN #TMP4 as C ON C.DepartmentId = B.id and C.Level = 6
+			INNER JOIN Department as D ON D.Code1C = B.ParentId and D.ItemLevel = 5
+			LEFT JOIN #TMP4 as E ON E.DepartmentId = D.id and E.Level = 5
+			INNER JOIN Department as F ON F.Code1C = D.ParentId and F.ItemLevel = 4
+			LEFT JOIN #TMP4 as G ON G.DepartmentId = F.id and G.Level = 4
+			INNER JOIN Department as H ON H.Code1C = F.ParentId and H.ItemLevel = 3
+			LEFT JOIN #TMP4 as I ON I.DepartmentId = H.id and I.Level = 3
+			INNER JOIN Department as J ON J.Code1C = H.ParentId and J.ItemLevel = 2
+			LEFT JOIN #TMP4 as K ON K.DepartmentId = J.id and K.Level = 2
+			WHERE isnull(C.Id, isnull(E.id, isnull(G.id, isnull(I.id, K.Id)))) is not null
+			UNION ALL
+			--по ручным привязкам
+			SELECT A.Id, A.ParentId, A.ItemLevel 
+							,isnull(B6.UserId, isnull(B5.UserId, isnull(B4.UserId, isnull(B3.UserId, B2.UserId)))) as UserId
+			FROM #TMP3 as A
+			INNER JOIN Department as B ON B.Code1C = A.ParentId and B.ItemLevel = 6
+				LEFT JOIN ManualRoleRecord as B6 ON B6.TargetDepartmentId = B.Id
+			LEFT JOIN #TMP4 as C ON C.DepartmentId = B.id and C.Level = 6
+			INNER JOIN Department as D ON D.Code1C = B.ParentId and D.ItemLevel = 5
+				LEFT JOIN ManualRoleRecord as B5 ON B5.TargetDepartmentId = D.Id
+			LEFT JOIN #TMP4 as E ON E.DepartmentId = D.id and E.Level = 5
+			INNER JOIN Department as F ON F.Code1C = D.ParentId and F.ItemLevel = 4
+				LEFT JOIN ManualRoleRecord as B4 ON B4.TargetDepartmentId = F.Id
+			LEFT JOIN #TMP4 as G ON G.DepartmentId = F.id and G.Level = 4
+			INNER JOIN Department as H ON H.Code1C = F.ParentId and H.ItemLevel = 3
+				LEFT JOIN ManualRoleRecord as B3 ON B3.TargetDepartmentId = H.Id
+			LEFT JOIN #TMP4 as I ON I.DepartmentId = H.id and I.Level = 3
+			INNER JOIN Department as J ON J.Code1C = H.ParentId and J.ItemLevel = 2
+				LEFT JOIN ManualRoleRecord as B2 ON B2.TargetDepartmentId = J.Id
+			LEFT JOIN #TMP4 as K ON K.DepartmentId = J.id and K.Level = 2
+			WHERE isnull(C.Id, isnull(E.id, isnull(G.id, isnull(I.id, K.Id)))) is null) as A
+
+--#####################################
+
+
+
+DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
+				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max), @CreatorId int
 
 --SELECT * FROM #TMP1
 --delete FROM #TMP1 where rowid <> 18
@@ -297,15 +358,24 @@ WHILE EXISTS(SELECT * FROM #TMP)
 BEGIN
 	SELECT top 1 @Id = Id FROM #TMP
 
+	print 'Id обрабатываемого подразделения ' + cast(@Id as varchar)
+
+	--определяем руководителя для подразделения
+	--так как их может быть несколько, то берем по уровню наименьшего
+	SELECT top 1 @CreatorId = UserId FROM #TMP5 as A
+	INNER JOIN Users as B ON B.Id = A.UserId
+	ORDER BY B.Level desc
+
+
 	--оба адреса делаем одинаковыми
 	--заносим адрес
-	INSERT INTO RefAddresses([Version], [Address], PostIndex)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс] FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
 
 	SET @LegalAddressId = @@IDENTITY
 
-	INSERT INTO RefAddresses([Version], [Address], PostIndex)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс] FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
 
 	SET @FactAddressId = @@IDENTITY
 
@@ -330,13 +400,14 @@ BEGIN
 																			,IsDraft
 																			,DateSendToApprove
 																			,BeginAccountDate
-																			,DateState)
+																			,DateState
+																			,CreatorId)
 	SELECT 1
 					,A.[Дата_процедуры]
 					,case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
 					,@Id
 					,B.ItemLevel
-					,B.ParentId
+					,C.Id
 					,B.Name
 					,case when A.[Front_Back1] = 'Front' then 0 when A.[Front_Back1] = 'Back' then 1 else null end
 					,[Приказы]
@@ -351,8 +422,10 @@ BEGIN
 					,null
 					,null
 					,null
+					,@CreatorId
 	FROM #TMP as A
 	INNER JOIN Department as B ON B.Id = A.Id
+	INNER JOIN Department as C ON C.Code1C = B.ParentId
 	WHERE A.Id = @Id
 	
 
@@ -367,7 +440,8 @@ BEGIN
 																				,DepCachinId
 																				,DepATMId
 																				,CashInStartedDate
-																				,ATMStartedDate)
+																				,ATMStartedDate
+																				,CreatorId)
 	SELECT 1
 					,@DepRequestId
 					,A.[Кол_во_запущенных_банкоматов_всего]
@@ -377,6 +451,7 @@ BEGIN
 					,null
 					,A.[Дата_запуска_кэшина_первая]
 					,A.[Дата_запуска_банкомата_первая]
+					,@CreatorId
 	FROM #TMP as A
 	WHERE A.Id = @Id
 
@@ -399,6 +474,9 @@ BEGIN
 																						,BeginIdleDate
 																						,EndIdleDate
 																						,IsRentPlace
+																						,AgreementDetails
+																						,DivisionArea
+																						,AmountPayment
 																						,Phone
 																						,IsBlocked
 																						,IsNetShop
@@ -406,7 +484,8 @@ BEGIN
 																						,IsLegalEntity
 																						,PlanEPCount
 																						,PlanSalaryFund
-																						,Note)
+																						,Note
+																						,CreatorId)
 	SELECT 1
 					,@DepRequestId
 					,A.[Код_подразделения]
@@ -423,6 +502,9 @@ BEGIN
 					,A.[Дата_начала_простоя_точки]
 					,A.[Дата_возобновления_работы_точки]
 					,case when A.[Арендованное_помещение] = 'Собственность' then 0 else 1 end
+					,A.[Реквизиты_договора]
+					,A.[Площадь_подразделения]
+					,A.[Сумма_ежемесячного_платежа]
 					,A.[Номер_телефона]
 					,case when A.[Блокировка] = 'Действует' then 0 else 1 end
 					,case when A.[Идентификация_сетевого_магазина] = 'сетевая' then 1 else 0 end
@@ -431,6 +513,7 @@ BEGIN
 					,0
 					,0
 					,A.[Примечание]
+					,@CreatorId
 	FROM #TMP as A
 	LEFT JOIN StaffDepartmentTypes as B ON B.Name = A.[Тип_подразделения]
 	WHERE A.Id = @Id
@@ -441,44 +524,44 @@ BEGIN
 		--заполняем коды совместимости программ
 		IF (SELECT [Код_СВКредит] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 1, [Код_СВКредит] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 1, [Код_СВКредит], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 
 		IF (SELECT [Код_РБС] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 2, [Код_РБС] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 2, [Код_РБС], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 
 		IF (SELECT [Код_Инверсия] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 3, [Код_Инверсия] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 3, [Код_Инверсия], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 
 		IF (SELECT [Код_ХД] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 4, [Код_ХД] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 4, [Код_ХД], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		IF (SELECT [Код_Террасофт] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 5, [Код_Террасофт] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 5, [Код_Террасофт], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 
 		IF (SELECT [Код_ФЕС] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 6, [Код_ФЕС] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 6, [Код_ФЕС], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		IF (SELECT [СКБ_GE] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code)
-			SELECT 1, @DMDetailId, 7, [СКБ_GE] FROM #TMP WHERE Id = @Id
+			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
+			SELECT 1, @DMDetailId, 7, [СКБ_GE], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		
@@ -486,63 +569,63 @@ BEGIN
 		--на момент написания в данных полях null-ов нет
 		IF (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) is null
 		BEGIN
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_остановка_транспорта] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_значимые_объекты] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_торговые_центры] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_район_города] is not null
 		END
 		
 		--на момент написания null-ы есть во всех полях
 		IF (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) = 'нет'
 		BEGIN
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта]
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта], @CreatorId
 			FROM #TMP WHERE Id = @Id and [Ориентиры_остановка_транспорта] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_значимые_объекты] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_торговые_центры] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_район_города] is not null
 		END
 
 		IF (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) <> 'нет' and (SELECT [Ориентиры_станция_метро] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 1, [Ориентиры_станция_метро]
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 1, [Ориентиры_станция_метро], @CreatorId
 			FROM #TMP WHERE Id = @Id and [Ориентиры_станция_метро] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта]
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 2, [Ориентиры_остановка_транспорта], @CreatorId
 			FROM #TMP WHERE Id = @Id and [Ориентиры_остановка_транспорта] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 3, [Ориентиры_значимые_объекты], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_значимые_объекты] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 4, [Ориентиры_торговые_центры], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_торговые_центры] is not null
 
-			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description])
-			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города] 
+			INSERT INTO StaffDepartmentLandmarks([Version], DMDetailId, LandmarkId, [Description], CreatorId)
+			SELECT 1, @DMDetailId, 5, [Ориентиры_район_города], @CreatorId 
 			FROM #TMP WHERE Id = @Id and [Ориентиры_район_города] is not null
 		END
 
@@ -555,8 +638,8 @@ BEGIN
 			SET @i = 1
 			WHILE @i < 8
 			BEGIN
-				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, [WeekDay], IsWorkDay)
-				VALUES(1, @DMDetailId, @i, cast(SUBSTRING(@WorkDays, @i, 1) as bit))
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, [WeekDay], IsWorkDay, CreatorId)
+				VALUES(1, @DMDetailId, @i, cast(SUBSTRING(@WorkDays, @i, 1) as bit), @CreatorId)
 				SET @i += 1
 			END	
 		END
@@ -574,8 +657,8 @@ BEGIN
 
 				IF @Oper like '%' + @aa + '%'
 				BEGIN
-					INSERT INTO StaffDepartmentOperationLinks ([Version], DMDetailId, OperationId)
-					VALUES(1, @DMDetailId, @i)
+					INSERT INTO StaffDepartmentOperationLinks ([Version], DMDetailId, OperationId, CreatorId)
+					VALUES(1, @DMDetailId, @i, @CreatorId)
 				END
 
 				SET @RowId += 1
@@ -590,3 +673,8 @@ END
 drop table #TMP
 drop table #TMP1
 drop table #TMP2
+drop table #TMP3
+drop table #TMP4
+drop table #TMP5
+
+

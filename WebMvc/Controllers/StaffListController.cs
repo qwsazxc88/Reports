@@ -100,16 +100,21 @@ namespace WebMvc.Controllers
             StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание нового подразделения" : (RequestType == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
             model.RequestTypeId = RequestType;
-            if (RequestType == 1)
-            {
-                model.ParentId = DepartmentId.Value;
-                model.Id = Id.HasValue ? Id.Value : 0;
-                model = StaffListBl.GetDepartmentRequest(model);
-            }
-            else
-            {
-                model.DepartmentId = DepartmentId.Value;
-            }
+
+            model.ParentId = DepartmentId.Value;
+            model.Id = Id.HasValue ? Id.Value : 0;
+            model = StaffListBl.GetDepartmentRequest(model);
+
+            //if (RequestType == 1)
+            //{
+            //    model.ParentId = DepartmentId.Value;
+            //    model.Id = Id.HasValue ? Id.Value : 0;
+            //    model = StaffListBl.GetDepartmentRequest(model);
+            //}
+            //else
+            //{
+            //    model.DepartmentId = DepartmentId.Value;
+            //}
             return View(model);
         }
         /// <summary>
