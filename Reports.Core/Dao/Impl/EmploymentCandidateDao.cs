@@ -166,6 +166,17 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.Query<EmploymentCandidate>().Where(x => x.Appointment.Creator.Name.Contains("Поляк")).ToList();
         }
+        public void CancelCandidatesByAppointmentId(int Id)
+        {
+            if (Id <= 0) return;
+            var candidates = Session.Query<EmploymentCandidate>().Where(x => !x.SendTo1C.HasValue && x.Appointment.Id == Id).ToList();
+            foreach (var el in candidates)
+            {
+                el.Status = Enum.EmploymentStatus.REJECTED;
+                SaveAndFlush(el);
+            }
+
+        }
         public IList<CandidateDto> GetCandidates(int currentId,
                 UserRole role,
                 int departmentId,

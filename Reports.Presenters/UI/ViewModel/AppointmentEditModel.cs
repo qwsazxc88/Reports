@@ -15,6 +15,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "В структурное подразделение")]
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
+        public bool NonActual { get; set; }
+        public bool IsNonActualButtonAvailable { get; set; }
         public bool isNeedToNotify { get; set; }
         public int DepartmentRequiredLevel { get; set; }
         public int Recruter { get; set; }

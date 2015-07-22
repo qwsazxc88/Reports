@@ -4,6 +4,7 @@
       <generator class="native" />
     </id>
     <version name="Version" column= "Version"/>
+    <property name="NonActual" not-null="false"/>
     <property name="isNotifyNeeded" not-null="false"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
