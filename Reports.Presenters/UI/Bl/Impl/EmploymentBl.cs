@@ -3005,7 +3005,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "4"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "5"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
-                new SelectListItem {Text = "Документы отправлены на подпись кандидату", Value = "11"},
+                new SelectListItem {Text = "Контроль руководителя - пакет документов на подпись", Value = "11"},
                 new SelectListItem {Text = "Документы подписаны кандидатом", Value = "12"},
                 new SelectListItem {Text = "Оформлен", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
@@ -3510,9 +3510,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if (candidate.Status != EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE)
                 {
-                    error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                    //error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                    error = "Пакет документов для приема еще не сформирован! Все операции с документами недоступны!";
                     return;
                 }
             }

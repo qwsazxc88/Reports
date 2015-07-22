@@ -24,6 +24,9 @@ namespace Reports.Core.Domain
         public virtual DateTime? BeginIdleDate { get; set; }
         public virtual DateTime? EndIdleDate { get; set; }
         public virtual bool IsRentPlace { get; set; }
+        public virtual string AgreementDetails { get; set; }
+        public virtual decimal? DivisionArea { get; set; }
+        public virtual decimal? AmountPayment { get; set; }
         public virtual string Phone { get; set; }
         public virtual bool IsBlocked { get; set; }
         public virtual bool IsNetShop { get; set; }

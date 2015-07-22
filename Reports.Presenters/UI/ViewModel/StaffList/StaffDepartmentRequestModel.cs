@@ -192,6 +192,15 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Признак арендованного помещения")]
         public bool IsRentPlace { get; set; }
 
+        [Display(Name = "Реквизиты договора")]
+        public string AgreementDetails { get; set; }
+
+        [Display(Name = "Площадь подразделения")]
+        public decimal? DivisionArea { get; set; }
+
+        [Display(Name = "Сумма ежемесячного платежа")]
+        public decimal? AmountPayment { get; set; }
+
         [Display(Name = "Номер телефона")]
         public string Phone { get; set; }
 

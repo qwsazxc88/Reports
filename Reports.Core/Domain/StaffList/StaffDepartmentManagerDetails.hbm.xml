@@ -21,6 +21,9 @@
     <property name="BeginIdleDate" not-null="false"/>
     <property name="EndIdleDate" not-null="false"/>
     <property name="IsRentPlace" not-null="false"/>
+    <property name="AgreementDetails" length="250" not-null="false"/>
+    <property name="DivisionArea" not-null="false"/>
+    <property name="AmountPayment" not-null="false"/>
     <property name="Phone" length="20" not-null="false"/>
     <property name="IsBlocked" not-null="false"/>
     <property name="IsNetShop" not-null="false"/>

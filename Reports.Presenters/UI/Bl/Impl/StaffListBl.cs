@@ -256,6 +256,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginIdleDate = null;
                 model.EndIdleDate = null;
                 model.IsRentPlace = false;
+                model.AgreementDetails = string.Empty;
+                model.DivisionArea = 0;
+                model.AmountPayment = 0;
                 model.Phone = string.Empty;
 
                 model.IsBlocked = false;
@@ -366,6 +369,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginIdleDate = dmd.BeginIdleDate;
                 model.EndIdleDate = dmd.EndIdleDate;
                 model.IsRentPlace = dmd.IsRentPlace;
+                model.AgreementDetails = dmd.AgreementDetails;
+                model.DivisionArea = dmd.DivisionArea;
+                model.AmountPayment = dmd.AmountPayment;
                 model.Phone = dmd.Phone;
                 model.IsBlocked = dmd.IsBlocked;
                 model.IsNetShop = dmd.IsNetShop;
@@ -555,6 +561,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
                 dmd.IsRentPlace = model.IsRentPlace;
+                dmd.AgreementDetails = model.AgreementDetails;
+                dmd.DivisionArea = model.DivisionArea;
+                dmd.AmountPayment = model.AmountPayment;
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
                 dmd.IsNetShop = model.IsNetShop;
@@ -847,6 +856,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
                 dmd.IsRentPlace = model.IsRentPlace;
+                dmd.AgreementDetails = model.AgreementDetails;
+                dmd.DivisionArea = model.DivisionArea;
+                dmd.AmountPayment = model.AmountPayment;
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
                 dmd.IsNetShop = model.IsNetShop;
@@ -1000,6 +1012,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
                 entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
                 entity.DepartmentManagerDetails[0].IsRentPlace = model.IsRentPlace;
+                entity.DepartmentManagerDetails[0].AgreementDetails = model.AgreementDetails;
+                entity.DepartmentManagerDetails[0].DivisionArea = model.DivisionArea;
+                entity.DepartmentManagerDetails[0].AmountPayment = model.AmountPayment;
                 entity.DepartmentManagerDetails[0].Phone = model.Phone;
                 entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
                 entity.DepartmentManagerDetails[0].IsNetShop = model.IsNetShop;
