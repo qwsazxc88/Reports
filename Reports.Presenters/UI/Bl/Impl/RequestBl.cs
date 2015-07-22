@@ -9306,7 +9306,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 MissionReportCost cost = new MissionReportCost
                 {
                     IsCostFromOrder = true,
-                    IsCostFromPurchaseBook = entity.IsResidencePaid,
+                    IsCostFromPurchaseBook = true,
                     Report = report,
                     Type = types.Where(x => x.Id == 2).First(),
                     Sum = entity.SumResidence,
@@ -9319,7 +9319,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 MissionReportCost cost = new MissionReportCost
                 {
                     IsCostFromOrder = true,
-                    IsCostFromPurchaseBook = entity.IsAirTicketsPaid,
+                    IsCostFromPurchaseBook = true,
                     Report = report,
                     Type = types.Where(x => x.Id == 3).First(),
                     Sum = entity.SumAir,
@@ -9333,7 +9333,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 MissionReportCost cost = new MissionReportCost
                 {
                     IsCostFromOrder = true,
-                    IsCostFromPurchaseBook = entity.IsTrainTicketsPaid,
+                    IsCostFromPurchaseBook = true,
                     Report = report,
                     Type = types.Where(x => x.Id == 4).First(),
                     Sum = entity.SumTrain,
