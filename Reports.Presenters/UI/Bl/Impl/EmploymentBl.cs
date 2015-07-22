@@ -3506,11 +3506,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
                     EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+                    error = "Заявление о приеме загружено!";
+                    return;
                 }
             }
             else
             {
-                if (candidate.Status != EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE)
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && (int)candidate.Status < (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                {
+                    error = "Кандидат еще не согласован! Сформировать список документов невозможно!";
+                    return;
+                }
+
+                if (candidate.Status != EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE && AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
                 {
                     //error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
                     error = "Пакет документов для приема еще не сформирован! Все операции с документами недоступны!";
