@@ -9265,7 +9265,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
                         //string org = GetStringForList(orgList);
                         MissionOrderDao.SaveAndFlush(missionOrder);
-                        if (missionOrder.Version != model.Version)
+                        if (missionOrder.Version != model.Version && !model.IsTicketsEditable)
                         {
                             missionOrder.EditDate = DateTime.Now;
                             MissionOrderDao.SaveAndFlush(missionOrder);
@@ -9302,6 +9302,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             #region Common props edits
 
+            if (model.IsTicketsEditable)
+            {
+                entity.IsResidencePaid = model.IsResidencePaid;
+                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
+                SaveMissionTargets(entity, model.Targets);
+                return;
+            }
             if (model.IsEditable)
             {
                 entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
@@ -9328,13 +9336,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
                 entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
-                SaveMissionTargets(entity, model.Targets);
-            }
-            if (model.IsTicketsEditable)
-            {
-                entity.IsResidencePaid = model.IsResidencePaid;
-                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
-                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                 SaveMissionTargets(entity, model.Targets);
             }
             #endregion
