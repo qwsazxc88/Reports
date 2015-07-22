@@ -9,6 +9,7 @@ namespace Reports.Core.Domain
     public class Appointment : AbstractEntityWithVersion
     {
         #region Fields
+        public virtual bool NonActual { get; set; }
         public virtual bool isNotifyNeeded {get;set;}
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }

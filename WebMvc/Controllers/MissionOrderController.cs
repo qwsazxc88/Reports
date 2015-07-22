@@ -236,6 +236,7 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
         {
+            if (model.IsTicketsEditable) return true;
             //return false;
             if (string.IsNullOrEmpty(model.BeginMissionDate) || string.IsNullOrEmpty(model.EndMissionDate))
                 ModelState.AddModelError("BeginMissionDate", StrNoBeginOrEndDate);
@@ -243,7 +244,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
             /*if (RequestBl.CheckOtherOrdersExists(model))
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);*/
-            if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
+            if (!(RequestBl.CheckOrderBeginDate(model.BeginMissionDate) || model.IsTicketsEditable))
                 ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
             if(!string.IsNullOrEmpty(model.BeginMissionDate) && !string.IsNullOrEmpty(model.EndMissionDate)
                 && model.IsEditable)
