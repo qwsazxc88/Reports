@@ -6,7 +6,7 @@ namespace Reports.Core.Dto
     public class DepartmentRequestListDto
     {
         public int Id { get; set; }
-        public DateTime DateRequest { get; set; }
+        public DateTime? DateRequest { get; set; }
         public string RequestTypeName { get; set; }
         public int RequestTypeId { get; set; }
         public int ParentId { get; set; }
