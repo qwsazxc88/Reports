@@ -19,6 +19,7 @@
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.DeleteAttachmentId)
     
     
     <div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;float:left;">
@@ -52,9 +53,13 @@
             @Html.LabelFor(m => m.HasDriversLicense)<br />
             <div class="formfield clear" id="DLContainer">
                 @Html.RadioButtonFor(m => m.HasDriversLicense, true, new { @id = "IsDLTrue" })<label id="lblDTrue" for="IsDLTrue" @if (Model.HasDriversLicense)
-                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                  {<text>style="border-color:red;"</text>}
+                                                                                                                                  else
+                                                                                                                                  {<text> style="border-color:none;"</text>}>Да</label>
                 @Html.RadioButtonFor(m => m.HasDriversLicense, false, new { @id = "IsDLFalse" })<label id="lblDFalse" for="IsDLFalse" @if (!Model.HasDriversLicense)
-                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                      {<text>style="border-color:red;"</text>}
+                                                                                                                                      else
+                                                                                                                                      {<text> style="border-color:none;"</text>}>Нет</label>
             </div>
             @*@Html.EditorFor(m => m.HasDriversLicense)*@
         </div>
@@ -78,9 +83,13 @@
             @Html.LabelFor(m => m.HasAutomobile)<br />
             <div class="formfield clear" id="HasAuto">
                 @Html.RadioButtonFor(m => m.HasAutomobile, true, new { @id = "IsATrue" })<label id="lblATrue" for="IsATrue" @if (Model.HasAutomobile)
-                                                                                                                           {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                            else
+                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
                 @Html.RadioButtonFor(m => m.HasAutomobile, false, new { @id = "IsAFalse" })<label id="lblAFalse" for="IsAFalse" @if (!Model.HasAutomobile)
-                                                                                                                                      {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                else
+                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
             </div>
             @*@Html.EditorFor(m => m.HasAutomobile)*@
         </div>
@@ -95,9 +104,13 @@
         <div class="formfield clear" id="ReadyForBusinessTrips">
             @Html.LabelFor(m => m.IsReadyForBusinessTrips)
             @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, true, new { @id = "IsRTrue" })<label id="lblRTrue" for="IsRTrue" @if (Model.IsReadyForBusinessTrips)
-                                                                                                                        {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                  {<text>style="border-color:red;"</text>}
+                                                                                                                                  else
+                                                                                                                                  {<text> style="border-color:none;"</text>}>Да</label>
             @Html.RadioButtonFor(m => m.IsReadyForBusinessTrips, false, new { @id = "IsRFalse" })<label id="lblRFalse" for="IsRFalse" @if (!Model.IsReadyForBusinessTrips)
-                                                                                                                                    {<text>style="border-color:red;"</text>} else{<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                      {<text>style="border-color:red;"</text>}
+                                                                                                                                      else
+                                                                                                                                      {<text> style="border-color:none;"</text>}>Нет</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Sports)&nbsp;@Html.ValidationMessageFor(m => m.Sports)<br />
@@ -315,12 +328,45 @@
     </fieldset>
     </div>
     
+    
+    <div class="clear">
+            <div class=" clear">
+                Вывести на печать анкету кандидата:
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                            {<text>style="display:none;"</text>}>Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </div>
+            
+
+            <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+            @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
+            {
+                <div class=" clear">
+                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentFileId })' style="cursor:hand" target="_blank">
+                        @Model.EmploymentFileName
+                    </a>
+                </div>
+               
+                <div class="formfield">
+                    <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'BackgroundCheckForm');"  @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                </div>
+            }
+        </div>
+    
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         @Html.HiddenFor(m => m.IsBGDraft)
         <button id="btnBGDraft" type="button">Черновик</button>
-        <button id="btnBG" type="button" @if(!Model.IsDraft){<text> disabled="disabled"</text>}>Отправить на согласование</button>
+        <button id="btnBG" type="button" @if (!Model.IsDraft)
+                                         {<text> disabled="disabled"</text>}>Отправить на согласование</button>
     </div>
 }
 
@@ -355,7 +401,8 @@
         <tr>
             <td>
                 <input id="add-backgroundcheck-comment" type="button" value="Добавить комментарий" @if (!Model.IsAddCommentAvailable)
-                                                                  { <text>style = "display:none"</text>; } />
+                                                                                                   { <text>style = "display:none"</text>;
+                                                                                                   } />
             </td>
         </tr>
         <tr>
@@ -403,6 +450,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");
+        $("#DeleteAttachmentId").val(0);
         UIHelpers.attachDatepickerToInputs($('#DriversLicenseDateOfIssue'), "-20:+0", true);
         $('#DLContainer').buttonset();        
         $('#HasAuto').buttonset();        
@@ -529,4 +577,9 @@
             e.preventDefault();
         });
     });
+
+    function DeleteScanDocuments(id, formname) {
+        $("#DeleteAttachmentId").val(id);
+        $("#" + formname).submit();
+    }
 </script>
