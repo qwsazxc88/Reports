@@ -46,8 +46,8 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.SNILSScanAttachmentId);" @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
-                                                                                                                                       {<text>style="display:none"</text>}/>
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.SNILSScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+                                                                                                                                                            {<text>style="display:none"</text>}/>
                     }
                     
                     @if (Model.AttachmentList != null && Model.AttachmentList.Where(x => x.RequestType == 213).Count() != 0)
@@ -72,7 +72,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MarriageCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.MarriageCertificateScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
                                                                                                                                                      {<text>style="display:none"</text>}/>
                     }
 
@@ -96,7 +96,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.INNScanAttachmentId);" @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.INNScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
                                                                                                                                      {<text>style="display:none"</text>}/>
                     }
                     
@@ -120,7 +120,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.ChildBirthCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.ChildBirthCertificateScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.ChildBirthCertificateScanAttachmentFilename))
                                                                                                                                                        {<text>style="display:none"</text>}/>
                     }
 
@@ -144,7 +144,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.DisabilityCertificateScanAttachmentId);" @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.DisabilityCertificateScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
                                                                                                                                                        {<text>style="display:none"</text>}/>
                     }
                     
@@ -169,7 +169,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MilitaryCardScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.MilitaryCardScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
                                                                                                                                               {<text>style="display:none"</text>}/>
                     }
 
@@ -194,7 +194,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.InternalPassportScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.InternalPassportScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
                                                                                                                                                   {<text>style="display:none"</text>}/>
                     }
 
@@ -218,7 +218,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.MobilizationTicketScanAttachmentId);" @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.MobilizationTicketScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
                                                                                                                                                     {<text>style="display:none"</text>}/>
                     }
 
@@ -243,7 +243,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.HigherEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.HigherEducationDiplomaScanId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.HigherEducationDiplomaScanFileName))
                                                                                                                                               {<text>style="display:none"</text>}/>
                     }
 
@@ -272,7 +272,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.WorkBookScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.WorkBookScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
                                                                                                                                           {<text>style="display:none"</text>}/>
                     }
 
@@ -296,7 +296,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.PostGraduateEducationDiplomaScanId);" @if (string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.PostGraduateEducationDiplomaScanId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.PostGraduateEducationDiplomaScanFileName))
                                                                                                                                                     {<text>style="display:none"</text>}/>
                     }
 
@@ -319,7 +319,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.WorkBookSupplementScanAttachmentId);" @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.WorkBookSupplementScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
                                                                                                                                                     {<text>style="display:none"</text>}/>
                     }
 
@@ -343,7 +343,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.CertificationScanId);" @if (string.IsNullOrEmpty(Model.CertificationScanFileName))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.CertificationScanId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.CertificationScanFileName))
                                                                                                                                      {<text>style="display:none"</text>}/>
                     }
 
@@ -367,7 +367,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.PersonalDataProcessingScanAttachmentId);" @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.PersonalDataProcessingScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
                                                                                                                                                         {<text>style="display:none"</text>}/>
                     }
 
@@ -391,7 +391,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.TrainingScanId);" @if (string.IsNullOrEmpty(Model.TrainingScanFileName))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.TrainingScanId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.TrainingScanFileName))
                                                                                                                                 {<text>style="display:none"</text>}/>
                     }
 
@@ -415,7 +415,7 @@
 
                     @if (!Model.IsScanFinal)
                     {
-                        <input type="button" value="Удалить скан" onclick="DeleteScanOriginalDocuments(@Model.InfoValidityScanAttachmentId);" @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+                        <input type="button" value="Удалить скан" onclick="DeleteScanDocuments(@Model.InfoValidityScanAttachmentId, 'ScanOriginalDocumentsForm');" @if (string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
                                                                                                                                               {<text>style="display:none"</text>}/>
                     }
 
@@ -541,10 +541,11 @@
     });
 
 
-    function DeleteScanOriginalDocuments(id){
+    function DeleteScanDocuments(id, formname) {
         ShowFlash(true);
         $("#DeleteAttachmentId").val(id);
-        $("#ScanOriginalDocumentsForm").submit();
+        //$("#ScanOriginalDocumentsForm").submit();
+        $("#" + formname).submit();
     }
 
 

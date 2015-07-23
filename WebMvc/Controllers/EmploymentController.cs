@@ -1175,23 +1175,54 @@ namespace WebMvc.Controllers
             string error = String.Empty;
             string SPPath = AuthenticationService.CurrentUser.Id.ToString();
 
-            if (model.RowID == 0)
+            if (model.DeleteAttachmentId == 0)
             {
-                if (ValidateModel(model))
+                if (model.RowID == 0)
                 {
-                    model.IsDraft = model.IsBGDraft;
-                    EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
-                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
-                    ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
-                    ViewBag.Error = error;
+                    if (ValidateModel(model))
+                    {
+                        model.IsDraft = model.IsBGDraft;
+                        EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                        model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                        ModelState.AddModelError("IsValidate", string.IsNullOrEmpty(error) ? "Данные сохранены!" : error);
+                        //ViewBag.Error = error;
+                    }
+                    else
+                    {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
+                        model = EmploymentBl.GetBackgroundCheckModel(model);
+                        if (Session["BackgroundCheckM" + SPPath] != null)
+                            Session.Remove("BackgroundCheckM" + SPPath);
+                        if (Session["BackgroundCheckM" + SPPath] == null)
+                            Session.Add("BackgroundCheckM" + SPPath, model);
+                    }
+
+                    if (Session["BackgroundCheckMS" + SPPath] != null)
+                        Session.Remove("BackgroundCheckMS" + SPPath);
+                    if (Session["BackgroundCheckMS" + SPPath] == null)
+                    {
+                        ModelStateDictionary mst = ModelState;
+                        Session.Add("BackgroundCheckMS" + SPPath, mst);
+                    }
                 }
                 else
-                {   //так как при использования вкладок, страницу приходится перезагружать с потерей данных, то передаем модель с библиотекой ошибок через переменную сессии
-                    model = EmploymentBl.GetBackgroundCheckModel(model);
-                    if (Session["BackgroundCheckM" + SPPath] != null)
-                        Session.Remove("BackgroundCheckM" + SPPath);
-                    if (Session["BackgroundCheckM" + SPPath] == null)
-                        Session.Add("BackgroundCheckM" + SPPath, model);
+                {
+                    EmploymentBl.DeleteBackgroundRow(model);
+                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                }
+            }
+            else
+            {
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && !EmploymentBl.IsUnlimitedEditAvailable())
+                {
+                    ModelState.AddModelError("IsValidate", "У вас нет прав для редактирования данных!");
+                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                }
+                else
+                {
+                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    EmploymentBl.DeleteAttachment(modelDel);
+                    model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                    ModelState.AddModelError("IsValidate", "Файл удален!");
                 }
 
                 if (Session["BackgroundCheckMS" + SPPath] != null)
@@ -1201,11 +1232,6 @@ namespace WebMvc.Controllers
                     ModelStateDictionary mst = ModelState;
                     Session.Add("BackgroundCheckMS" + SPPath, mst);
                 }
-            }
-            else
-            {
-                EmploymentBl.DeleteBackgroundRow(model);
-                model = EmploymentBl.GetBackgroundCheckModel(model.UserId);
             }
 
             if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0)
