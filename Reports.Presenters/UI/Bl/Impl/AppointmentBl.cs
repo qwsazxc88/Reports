@@ -485,7 +485,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.NonActual = entity.NonActual;
-                var candidates = entity.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED);
+                var candidates = entity.Candidates!=null?entity.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED):null;
                 if (candidates == null || !candidates.Any())
                 {
                     model.IsNonActualButtonAvailable = true;
