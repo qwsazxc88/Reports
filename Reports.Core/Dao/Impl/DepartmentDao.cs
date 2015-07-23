@@ -162,5 +162,10 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentWithFigradPointsDto))).
                 List<DepartmentWithFigradPointsDto>();
         }
+
+        //public int DepPositionCount(string DepId)
+        //{
+        //    return Session.CreateSQLQuery(@"");
+        //}
     }
 }

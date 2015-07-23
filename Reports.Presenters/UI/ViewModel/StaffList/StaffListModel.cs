@@ -12,5 +12,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<Department> Departments { get; set; }
         public IList<UsersListItemDto> UserPositions { get; set; }
         public string DepId { get; set; }
+        public int PositionCount { get; set; }
     }
 }
