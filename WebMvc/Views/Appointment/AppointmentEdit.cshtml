@@ -721,6 +721,7 @@
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
                 $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
                 $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
@@ -728,12 +729,14 @@
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
                 $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
                 $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
                 $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").hide ();
             break
@@ -741,6 +744,7 @@
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
                 $("#ReasonDateLabel").text('Дата ухода:');
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
@@ -748,12 +752,14 @@
                 $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
                 $("#ReasonDateLabel").text('Дата увольнения:');
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
             case '6':
                 $("#ReasonPositionLabel").text('ФИО сотрудника на замену: ');
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionTr").show();
                 $("#ReasonPositionIdTr").show();
             break
