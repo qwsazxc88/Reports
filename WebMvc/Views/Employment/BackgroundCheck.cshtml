@@ -11,10 +11,10 @@
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
-<br />
+
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
-
+<br />
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm", onselectstart = "return false", style = "-moz-user-select: none;-khtml-user-select: none;user-select: none; float:left;", oncontextmenu = "return false;", onclick = "return true;", oncopy = "return false;" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
@@ -330,35 +330,37 @@
     
     
     	<div class="clear">
-            <div class=" clear">
-                Вывести на печать анкету кандидата:
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
-                                                                                                                                                            {<text>style="display:none;"</text>}>Печать</button>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
-            </div>
+        <div class=" clear">
+            @Html.HiddenFor(m => m.IsPrintButtonAvailable)
+            @Html.HiddenFor(m => m.IsDeleteScanButtonAvailable)
+            Вывести на печать анкету кандидата:
+            <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                        {<text>style="display:none;"</text>}>Печать</button>
+            @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+        </div>
             
 
-            <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
-            @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
-            {
-                <div class=" clear">
-                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
-            {
-                <div class="formfield">
-                    <br />Скан:
-                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentFileId })' style="cursor:hand" target="_blank">
-                        @Model.EmploymentFileName
-                    </a>
-                </div>
+        <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+        @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
+        {
+            <div class=" clear">
+                Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/> @Html.ValidationMessageFor(m => m.EmploymentFile)
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentFileId })' style="cursor:hand" target="_blank">
+                    @Model.EmploymentFileName
+                </a>
+            </div>
                
-                <div class="formfield">
-                    <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'BackgroundCheckForm');"  @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
-                </div>
-            }
-        </div>
+            <div class="formfield">
+                <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'BackgroundCheckForm');"  @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+            </div>
+        }
+    </div>
     
     <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />

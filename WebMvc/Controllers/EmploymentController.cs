@@ -2274,10 +2274,17 @@ namespace WebMvc.Controllers
         {
             ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
             ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
+            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 2);
+            ValidateFileLength(model.EmploymentFile, "IsValidate", 2);
 
             if (!model.IsBGDraft)
             {
-                //BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                if (model.EmploymentFile == null && string.IsNullOrEmpty(mt.EmploymentFileName))
+                {
+                    ModelState.AddModelError("IsValidate", "Не выбран файл скана анкеты для загрузки!");
+                    ModelState.AddModelError("EmploymentFile", "Не выбран файл скана анкеты для загрузки!");
+                }
 
                 //if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))
                 //{
