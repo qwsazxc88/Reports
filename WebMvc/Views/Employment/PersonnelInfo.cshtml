@@ -92,16 +92,18 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
 
-    //удаляем сканы на новой вкладке
-    function DeleteScanOriginalDocuments(id){
+//    //удаляем сканы на новой вкладке
+//    function DeleteScanOriginalDocuments(id){
+//        ShowFlash(true);
+//        $("#DeleteAttachmentId").val(id);
+//        $("#ScanOriginalDocumentsForm").submit();
+//    }
+    //удаляем сканы на вкладке с кадровыми документами
+    function DeleteScanDocuments(id, formname) {
         ShowFlash(true);
         $("#DeleteAttachmentId").val(id);
-        $("#ScanOriginalDocumentsForm").submit();
-    }
-    //удаляем сканы на вкладке с кадровыми документами
-    function DeleteScanDocuments(id) {
-        $("#DeleteAttachmentId").val(id);
-        $("#CandidateDocumentsForm").submit();
+        //$("#CandidateDocumentsForm").submit();
+        $("#" + formname).submit();
     }
 
     //удаляем сканы
