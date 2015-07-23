@@ -1590,6 +1590,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string attachmentFilename = string.Empty;
 
                 model.SendTo1C = entity.Candidate.SendTo1C;
+                model.CandidateStatus = (int)entity.Candidate.Status;
 
                 //заявление о приеме
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
@@ -3004,6 +3005,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "4"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "5"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
+                new SelectListItem {Text = "Контроль руководителя - пакет документов на подпись", Value = "11"},
+                new SelectListItem {Text = "Документы подписаны кандидатом", Value = "12"},
                 new SelectListItem {Text = "Оформлен", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
                 new SelectListItem {Text = "Отклонен", Value = "9"},
@@ -3044,8 +3047,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             IList<IdNameDto> inDto = new List<IdNameDto> { };
 
-            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не пологается северная надбавка" });
-            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутсвтует, начать начисление стажа с даты приема" });
+            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не полагается северная надбавка" });
+            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутствует, начать начисление стажа с даты приема" });
             inDto.Add(new IdNameDto { Id = 3, Name = "Северный стаж у сотрудника имеется, указать количество северного стажа" });
 
             return inDto;
@@ -3477,6 +3480,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
             IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
 
+            //оправка сообщения
+            if (model.IsSentEmail)
+            {
+                EmploymentSendEmail(candidate.User.Id, 8, false);//сообщение 
+                error = "Сообщение руководителю отправлено!";
+                return;
+            }
 
             //сохраняем сканы
             if (model.ApplicationLetterScanFile != null)
@@ -3496,13 +3506,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
                     EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+                    error = "Заявление о приеме загружено!";
+                    return;
                 }
             }
             else
             {
-                if (candidate.Status != EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && (int)candidate.Status < (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
                 {
-                    error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                    error = "Кандидат еще не согласован! Сформировать список документов невозможно!";
+                    return;
+                }
+
+                if (candidate.Status != EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE && AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
+                {
+                    //error = "Кандидат не согласован вышестоящим руководством! Все операции с документами недоступны!";
+                    error = "Пакет документов для приема еще не сформирован! Все операции с документами недоступны!";
                     return;
                 }
             }
@@ -3697,6 +3716,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     EmploymentCandidateDocNeededDao.CommitTran();
 
+
                     EmploymentSendEmail(candidate.User.Id, 6, CheckChangesInDocList(dnList, DocNeeded));//сообщение 
                 }
                 catch 
@@ -3705,6 +3725,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Произошла ошибка при сохранении данных!";
                     return;
                 }
+            }
+
+            //после всех телодвижений устанавливаем статус
+            //если прицеплен весь указанный перечень, меняем статус у кандидата
+            if (EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+            {
+                candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
+            }
+            else
+            {
+                candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+            }
+            try
+            {
+                EmploymentCandidateDao.SaveAndFlush(candidate);
+            }
+            catch
+            {
+                EmploymentCandidateDao.RollbackTran();
+                error = "Произошла ошибка при сохранении данных!";
+                return;
             }
 
         }
@@ -5489,8 +5530,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 EmploymentStatus candidateStatus = candidate.Status;
 
-                if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
-                    || candidateStatus == EmploymentStatus.COMPLETE)
+                if (//candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
+                    candidateStatus == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE /* || candidateStatus == EmploymentStatus.COMPLETE*/)
                 {
                     if (!IsUnlimitedEditAvailable())
                     {
@@ -5892,7 +5933,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void EmploymentSendEmail(int UserId, int EmailType, bool IsChangeDocList)
         {
             //EmailType - 1 - при заполнении анкеты в ДП, 2 - ДБ руководителю, 3 - руководителю о заявлении, 4 - тренеру при создании кандидата, 5 - вышестоящему руководству, 6 - руководителю и замам о готовности документов на прием,
-            //7 - при отправки сканов на предварительное согласование ДБ
+            //7 - при отправки сканов на предварительное согласование ДБ, 8 - руководителю от кадровика (страшилка)
             EmploymentCandidate entity = GetCandidate(UserId);
 
             User user = UserDao.Load(entity.AppointmentCreator.Id);
@@ -6088,17 +6129,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     defaultEmail = ConfigurationService.EmploymentPersonnelManagerToManagerEmail;
                     to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
 
+                    body = @"Документы на прием для подписи Кандидатом " + entity.User.Name + " сформированы в заявке на прием №." + entity.Id.ToString() + @" 
+                             Необходимо распечатать, подписать у кандидата и прикрепить подписанные сканы на страницу 'Документы' в заявку на прием №." + entity.Id.ToString();
+
                     if (!entity.IsPersonnelManagerToManagerSendEmail && !entity.PersonnelManagerToManagerSendEmailDate.HasValue)
                     {    //письмо руководству уже было
                         Subject = "Сформирован пакет кадровых документов для подписи кандидатом";
-                        body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                        //body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!";
                     }
                     else
                     {
                         if (IsChangeDocList)//если не ошибочное нажатие без изменений
                         {
                             Subject = "Пакет кадровых документов для подписи кандидатом изменен";
-                            body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!.";
+                            //body = @"Кадровые документы для подписи кандидатом " + entity.User.Name + " готовы!";
                         }
                         else
                             return;
@@ -6121,6 +6165,50 @@ namespace Reports.Presenters.UI.Bl.Impl
                     body = @"Оформлена заявка на прием " + entity.User.Name + ". Необходимо предварительное согласование согласование сотрудника Департамента безопасности.";
                     entity.IsCandidateToBackgroundPrevSendEmail = true;
                     entity.CandidateToBackgroundPrevSendEmailDate = DateTime.Now;
+                    break;
+                case 8: //руководству и замам от кадровика (страшилка)
+                    Emailaddress = null;//рабочая строка
+                    //Emailaddress = "zagryazkin@ruscount.ru";//для теста
+                    //IList<User> managers = null;
+
+                    //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье текущего уровня, собираем их адреса в строку
+                    CurrentLevel = entity.AppointmentCreator.Level.Value;
+                    managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, false)
+                        .Where<User>(x => x.Level == CurrentLevel && x.RoleId == (int)UserRole.Manager)
+                        .ToList<User>();
+                    foreach (User mu in managers)
+                    {
+                        if (!string.IsNullOrEmpty(mu.Email))
+                        {
+                            //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + "zagryazkin@ruscount.ru";//для теста
+                            Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                        }
+                    }
+
+                    //ручная привязка утверждающего, если нет руководства в автомате и руководитель 3 уровня
+                    if (managers.Count == 0)
+                    {
+                        IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(entity.AppointmentCreator.Id, UserManualRole.ApprovesEmployment)
+                            .Where(x => x.Level == 2)
+                            .ToList<User>();
+                        foreach (User mu in manualRoleManagers)
+                        {
+                            if (!string.IsNullOrEmpty(mu.Email))
+                                //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + Emailaddress;//для теста
+                                Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(Emailaddress)) return;
+
+
+                    defaultEmail = ConfigurationService.EmploymentPersonnelManagerToManagerEmail;
+                    to = string.IsNullOrEmpty(defaultEmail) ? Emailaddress : defaultEmail;
+                    Subject = "Просьба ускорить процесс подписания документов!";
+                    body = @"Дата приема кандидата " + entity.User.Name + " " + entity.Managers.RegistrationDate.Value.ToShortDateString() + @".  
+                             По состоянию на " + DateTime.Now.ToShortDateString() + " нет подписанных сканов документов от кандидата. Просьба ускорить процесс подписания документов!";
+
+                    
                     break;
             }
 
