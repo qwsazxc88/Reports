@@ -294,7 +294,7 @@
             @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
             {
                 <div class=" clear">
-                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
+                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/> @Html.ValidationMessageFor(m => m.EmploymentFile)
                 </div>
             }
             @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
