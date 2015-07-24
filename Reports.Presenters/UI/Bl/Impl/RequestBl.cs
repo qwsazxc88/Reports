@@ -9904,7 +9904,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Accountant:
-                    model.IsTicketsEditable = true;
+                    var rep = MissionReportDao.GetReportForOrder(entity.Id);
+                    if (rep == null)
+                        model.IsTicketsEditable = true;
+                    else
+                    {
+                        model.IsTicketsEditable = !rep.SendTo1C.HasValue;
+                    }
                     break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
