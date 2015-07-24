@@ -482,6 +482,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User current,UserRole  currRole, Appointment entity, AppointmentEditModel model)
         {
             SetFlagsState(model, false);
+            if (entity != null)
+            {
+                model.NonActual = entity.NonActual;
+                var candidates = entity.Candidates!=null?entity.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED):null;
+                if (candidates == null || !candidates.Any())
+                {
+                    model.IsNonActualButtonAvailable = true;
+                }
+            }
             model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
@@ -981,6 +990,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id)
                     {
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                             && model.IsDelete)
                         {
@@ -1013,6 +1028,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
                     {
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                            && model.IsDelete)
                         {
@@ -1045,8 +1066,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 
                 case UserRole.StaffManager:
+                    if (model.NonActual)
+                    {
+                        entity.NonActual = model.NonActual;
+                        EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                        RejectReports(entity.Id, currUser, "Заявка отклонена");
+                    }
                     if (!entity.DeleteDate.HasValue)
                     {
+                        entity.NonActual = model.NonActual;
                         if (model.StaffCreatorId == current.Id || entity.Creator.Id == current.Id)
                         {
                             if (model.ApproveForAll)
