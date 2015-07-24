@@ -20,5 +20,11 @@ namespace Reports.Core.Dao
         /// <param name="CandidateID">Id кандидата</param>
         /// <returns></returns>
         IList<AttachmentNeedListDto> GetCandidateDocListNeeded(int CandidateID);
+        /// <summary>
+        /// Проверка на наличие полного списка подписанных документов кандидатом.
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата</param>
+        /// <returns></returns>
+        bool CheckCandidateSignDocExists(int CandidateId);
     }
 }

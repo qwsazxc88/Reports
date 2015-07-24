@@ -6,7 +6,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class AppointmentDao : DefaultDao<Appointment>, IAppointmentDao
@@ -130,6 +130,7 @@ namespace Reports.Core.Dao.Impl
                 ar.Id as ReasonId,
                 ar.Name as Reason,
                 case
+                        when v.NonActual =1 then N'Заявка не актуальна'
                         when v.ManagerDateAccept is null then N'Черновик'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование Специалисту УКДиУ'
                         when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
@@ -724,5 +725,12 @@ namespace Reports.Core.Dao.Impl
             }
         }
         #endregion
+
+        public List<Appointment> GetAppointmentForReasonPosition(int userId)
+        {
+            var res=Session.Query<Appointment>().Where(x => x.ReasonPositionUser.Id == userId && x.isNotifyNeeded);
+            if (res != null && res.Any()) return res.ToList();
+            else return null;
+        }
     }
 }

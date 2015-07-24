@@ -370,7 +370,7 @@ namespace Reports.Core.Dao.Impl
                 //return sqlQueryPart;
                 case UserRole.ConsultantPersonnel:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @" r.[Id] = " + (int)UserRole.ConsultantPersonnel + " or v.CreatorId=:userId ";
+                    return @" (r.[Id] = " + (int)UserRole.ConsultantPersonnel + " or v.CreatorId=:userId) ";
                 case UserRole.Accountant:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @" r.[Id] = " + (int)UserRole.Accountant + " ";
@@ -378,7 +378,7 @@ namespace Reports.Core.Dao.Impl
                     //sqlQuery = string.Format(sqlQuery, string.Empty);
                     //return " v.[TypeId] = 2 ";
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @" r.[Id] = " + (int)UserRole.PersonnelManager + " or v.CreatorId=:userId ";
+                    return @" (r.[Id] = " + (int)UserRole.PersonnelManager + " or v.CreatorId=:userId) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.Estimator:
                 case UserRole.ConsultantOutsourcing:

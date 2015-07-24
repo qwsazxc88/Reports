@@ -4,6 +4,8 @@
       <generator class="native" />
     </id>
     <version name="Version" column= "Version"/>
+    <property name="NonActual" not-null="false"/>
+    <property name="isNotifyNeeded" not-null="false"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
     <property name="Number"  not-null="true"/>
@@ -50,6 +52,7 @@
 	<many-to-one name="AcceptPersonnel" class="User" column="AcceptPersonnelId" foreign-key="FK_Appointment_PersonnelUser" index="IX_Appointment_PersonnelUser"  not-null="false"/>-->
 	<property name="StaffDateAccept" not-null="false"/>
 	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_Appointment_StaffUser" index="IX_Appointment_StaffUser"  not-null="false"/>
+  <many-to-one name="ReasonPositionUser" class="User" column="ReasonPositionId" foreign-key="FK_Appointment_ReasonPosition" not-null="false"/>
 	<property name="DeleteDate" not-null="false"/>
 	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_Appointment_DeleteUser" index="IX_Appointment_DeleteUser"  not-null="false"/>
     <many-to-one name="BankAccountant" class="User" column="BankAccountantId" foreign-key="FK_Appointment_BankAccountant"/>

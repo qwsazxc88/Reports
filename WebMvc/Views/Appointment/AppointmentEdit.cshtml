@@ -64,6 +64,7 @@
 </div>
 @using (Html.BeginForm("AppointmentEdit","Appointment"))
 {
+    @Html.HiddenFor(m => m.NonActual)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -172,7 +173,16 @@
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
-                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
+                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable && Model.ReasonId<3 && Model.ReasonId>6 ? null : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr id="ReasonPositionIdTr">
+                <td>
+                  <span id="ReasonPositionIdLabel"></span>
+                </td>
+                <td>
+                   @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
+                   @Html.HiddenFor(m => m.isNeedToNotify)
                 </td>
             </tr>
             @if (!Model.ShowStaff)
@@ -464,7 +474,8 @@
                  }
             
              
-              
+         @if(!Model.NonActual)
+         {    
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
@@ -484,11 +495,32 @@
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
                 <td style="text-align:right">
+                @if (
+                         ((dto.UserRole & UserRole.Manager) > 0 && Model.IsManagerApproveAvailable) ||
+                         ((dto.UserRole & UserRole.ConsultantPersonnel) > 0 && !Model.BankAccountantAccept) ||
+                         ((dto.UserRole & UserRole.Manager) > 0 & Model.IsChiefApproveAvailable) ||
+                         ((dto.UserRole & UserRole.StaffManager) > 0 & Model.IsStaffApproveAvailable)
+                        )
+                {
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                       {<text>style="display:none"</text>}/>
+                }
+                    @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0 && Model.IsNonActualButtonAvailable)
+                    {
+                    <input type="submit" value="Заявка не актуальна" onclick="$('#NonActual').val(true);" />
+                    }
                 </td>
                 
+        </tr>
+        }
+        else
+        {
+            <tr>
+            <td style="color:Red">
+            Заявка не актуальна.
+            </td>
             </tr>
+        }
         </table>
     </div> 
     if (Model.Reports != null && Model.Reports.Any())
@@ -545,7 +577,9 @@
              $('#PassportData').mask('9999 999999');
         }); 
     $("#AddEmployment").dialog({autoOpen: false});
-    
+    $('#ReasonPositionId').change(function(){
+        $('#ReasonPosition').val($("#ReasonPositionId option:selected").text());
+    });
     $("#IsVacationExists").change(function()
     {
         $("#IsVacationExistsHidden").val($("#IsVacationExists").val());
@@ -582,6 +616,30 @@
     function ValidateForm()
     {
         var result = true;
+        @if(!Model.IsManagerApproved)
+        {<text>
+        if($("#ReasonId").val()==5)
+        $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CheckUserDismissal",
+            data: {userId:$('#ReasonPositionId').val()},
+            success: function(result)
+            {
+                if(!result.result)
+                {
+                    var r=confirm("У выбранного сотрудника нет заявления на увольнение, заявка может быть сохранена как черновик, пока сотрудник не заведёт заявление на увольнение. Уведомить Вас о том, что сотрудник написал заяваление?");
+                    $('#IsManagerApproved').attr('checked', false);
+                    $('#IsManagerApproved').attr('value', false);
+                    if(r)
+                        $('#isNeedToNotify').attr('value', true);
+                }
+            },
+            async:false
+        }
+        );
+        </text>
+        }
         clearControlErrors($("#SelectDepartmentBtn"));
         if($("#DepartmentId").val() == 0)
         {
@@ -662,30 +720,48 @@
             case '1':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
             case '2':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").hide ();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
                 $("#ReasonDateLabel").text('Дата ухода:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
             case '5':
                 $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
                 $("#ReasonDateLabel").text('Дата увольнения:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
             case '6':
                 $("#ReasonPositionLabel").text('ФИО сотрудника на замену: ');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionTr").show();
+                $("#ReasonPositionIdTr").show();
             break
         }
         if(reasonId == 3)

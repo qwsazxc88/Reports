@@ -2210,6 +2210,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(current, dismissal, model, user);
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
+                    //Отпарвка почты если кому-то в подборе оно нужно
+                    var appointmentDao=Ioc.Resolve<IAppointmentDao>();
+                    var appointments=appointmentDao.GetAppointmentForReasonPosition(model.UserId);
+                    if (appointments!=null)
+                        foreach (var el in appointments)
+                        {
+                            var email = el.Creator.Email;
+                            if (String.IsNullOrWhiteSpace(email)) continue;
+                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",dismissal.Number,dismissal.User.Name,el.Number);
+                            var res=SendEmail(email, "Создано заявление на увольнение", body);
+                        }                   
                 }
                 #endregion
                 else
@@ -9254,7 +9265,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
                         //string org = GetStringForList(orgList);
                         MissionOrderDao.SaveAndFlush(missionOrder);
-                        if (missionOrder.Version != model.Version)
+                        if (missionOrder.Version != model.Version && !model.IsTicketsEditable)
                         {
                             missionOrder.EditDate = DateTime.Now;
                             MissionOrderDao.SaveAndFlush(missionOrder);
@@ -9284,13 +9295,70 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        private void ChangeCosts(MissionOrder entity, MissionOrderEditModel model)
+        {
+            var report = MissionReportDao.GetReportForOrder(entity.Id);
+            if (report==null) return;
+            IList<MissionReportCost> list = report.Costs !=null?report.Costs:new List<MissionReportCost>();
+            IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll();
+            if (!entity.IsResidencePaid && model.IsResidencePaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 2).First(),
+                    Sum = entity.SumResidence,
+                    UserSum = null//entity.IsResidencePaid ? null:entity.UserSumResidence,
+                };
+                list.Add(cost);
+            }
+            if (!entity.IsAirTicketsPaid && model.IsAirTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 3).First(),
+                    Sum = entity.SumAir,
+                    UserSum = null//entity.IsAirTicketsPaid ? null : entity.UserSumAir,
+                };
+                list.Add(cost);
+            }
 
+            if (!entity.IsTrainTicketsPaid && model.IsTrainTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 4).First(),
+                    Sum = entity.SumTrain,
+                    UserSum = null//entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
+                };
+                list.Add(cost);
+            }
+            report.Costs = list;
+            MissionReportDao.SaveAndFlush(report);
+        }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
             bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
 
             #region Common props edits
 
+            if (model.IsTicketsEditable)
+            {
+                ChangeCosts(entity, model);
+                entity.IsResidencePaid = model.IsResidencePaid;
+                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
+                SaveMissionTargets(entity, model.Targets);
+                return;
+            }
             if (model.IsEditable)
             {
                 entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
@@ -9319,7 +9387,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
             }
-
             #endregion
 
             #region Secretary edits
@@ -9822,7 +9889,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     bool canEdit = false;
                     bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit) || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
-                    {
+                    {                        
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
                         {
                             model.IsEditable = true;
@@ -9837,6 +9904,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.UserDateAccept.HasValue && isUserManager && canEdit)
                             model.IsManagerApproveAvailable = true;
 
+                    }
+                    break;
+                case UserRole.Accountant:
+                    var rep = MissionReportDao.GetReportForOrder(entity.Id);
+                    if (rep == null)
+                        model.IsTicketsEditable = true;
+                    else
+                    {
+                        model.IsTicketsEditable = !rep.SendTo1C.HasValue;
                     }
                     break;
                 case UserRole.Estimator:
@@ -9864,7 +9940,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsChiefApproveAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
+            model.IsSaveAvailable = model.IsEditable || model.IsTicketsEditable || model.IsUserApprovedAvailable
                 || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
@@ -9977,6 +10053,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Secretary:
                     return true;
                 case UserRole.Accountant:
+                    return true;
                 case UserRole.Findep:
                     if (isSave)
                         return false;

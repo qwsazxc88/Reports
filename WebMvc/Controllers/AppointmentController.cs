@@ -132,6 +132,11 @@ namespace WebMvc.Controllers
             //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
+        public JsonResult CheckUserDismissal(int userId)
+        {
+            var res=AppointmentBl.CheckUserDismissal(userId);
+            return Json(res ? (object)new { result = true } : (object)new { result = false });
+        }
         [HttpPost]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
@@ -194,7 +199,7 @@ namespace WebMvc.Controllers
             //return false;
             //if (RequestBl.CheckOtherOrdersExists(model))
             //    ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
-            if (model.IsDelete)
+            if (model.IsDelete || model.NonActual)
                 return true;
             if (model.Recruter == 2 && String.IsNullOrWhiteSpace(model.FIO))
             {

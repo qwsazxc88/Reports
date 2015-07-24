@@ -41,6 +41,15 @@
         /// <summary>
         /// Ожидает предварительное согласование ДБ
         /// </summary>
-        PENDING_PREV_APPROVAL_BY_SECURITY = 10
+        PENDING_PREV_APPROVAL_BY_SECURITY = 10,
+        /// <summary>
+        /// Документы отправлены на подпись кандидату.
+        /// </summary>
+        DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE = 11,
+        /// <summary>
+        /// Документы подписаны кандидатом.
+        /// </summary>
+        DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE = 12
+        
     }
 }

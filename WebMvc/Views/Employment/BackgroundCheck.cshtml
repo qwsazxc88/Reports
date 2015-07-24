@@ -11,17 +11,17 @@
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
-
+<br />
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 
-@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm" }))
+@using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "BackgroundCheckForm", onselectstart = "return false", style = "-moz-user-select: none;-khtml-user-select: none;user-select: none; float:left;", oncontextmenu = "return false;", onclick = "return true;", oncopy = "return false;" }))
 {
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
     
     
-    <div style="float:left">
+    <div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;float:left;">
     <fieldset class="bordered doc-wrap panel">
     <legend>Департамент безопасности</legend>
         <div class="formfield clear">
