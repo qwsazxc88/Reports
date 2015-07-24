@@ -69,7 +69,8 @@
     </tr>
      <tr>
         <td colspan="4">
-        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
+        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+            ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantPersonnel )
         {
             if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
             {@Html.ActionLink("Создать новую заявку", "HolidayWorkEdit", new { id = 0, userId = Model.UserId })}

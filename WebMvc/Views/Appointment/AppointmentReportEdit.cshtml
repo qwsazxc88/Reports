@@ -353,9 +353,11 @@
      }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()))
+                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
                     {
-                    <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                        
+                        <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                        
                     }
                     @if (!Model.IsClosed)
                     {

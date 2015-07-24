@@ -38,5 +38,6 @@ namespace Reports.Core.Dao
                                            string CandidateFio,
                                            int sortBy,
                                            bool? sortDescending);
+        List<Appointment> GetAppointmentForReasonPosition(int userId);
     }
 }

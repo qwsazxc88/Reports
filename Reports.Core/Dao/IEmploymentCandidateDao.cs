@@ -21,10 +21,16 @@ namespace Reports.Core.Dao
                 int AppointmentNumber,
                 int sortBy,
                 bool? sortDescending);
-
+        void CancelCandidatesByAppointmentId(int Id);
         IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
         IList<CandidateStateDto> GetCandidateState(int CandidateID);
         IList<CandidatePersonnelDto> GetPersonnels();
         IList<AttachmentListDto> GetCandidateAttachmentList(int CandidateID);
+        /// <summary>
+        /// Достаем список сканов из анкеты.
+        /// </summary>
+        /// <param name="CandidateID">Id заявки кандидата.</param>
+        /// <returns></returns>
+        IList<EmploymentAttachmentDto> GetCandidateQuestAttachmentList(int CandidateID);
     }
 }

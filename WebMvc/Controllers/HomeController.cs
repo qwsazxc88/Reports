@@ -107,7 +107,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult SetShortNameDialog()
         {
             try
@@ -125,7 +125,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ContentResult GetTerraPointChildren(int parentId, int level)
         {
             TerraPointChildrenDto model;
@@ -148,7 +148,7 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ContentResult GetTerraPointShortName(int pointId)
         {
             TerraPointShortNameDto model;

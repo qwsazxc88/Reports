@@ -81,10 +81,51 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("DepartmentId", "Не выбран департамент");
             else
             {
+                int level=0;
                 if(!RequestBl.CheckDepartmentLevel(model.DepartmentId, 7)) ModelState.AddModelError("DepartmentId","Нужно выбрать департамен 7 уровня");
+                if (!RequestBl.CheckDepartment(model, out level)) ModelState.AddModelError("DepartmentId", "Не достаточно прав для создания заявки в данном подразделении.");
             }
-            if (model.PayDay < DateTime.Parse("01.01.1970"))
-                ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+            /*if (model.PayDay < DateTime.Parse("01.01.1970") && model.NoteType!=3)
+                ModelState.AddModelError("PayDay", "Нужно выбрать дату");*/
+            if (model.Id == 0)
+             switch(model.NoteType)
+               {
+                   case 0:
+                   case 1:
+                       if (model.PayDay < DateTime.Parse("01.01.1970"))
+                            ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+                          break;
+                    case 2:
+                         if (model.PayDay < DateTime.Parse("01.01.1970"))
+                            ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+                         if (!model.PayDayEnd.HasValue || ( model.PayDayEnd.Value < DateTime.Parse("01.01.1970") ))
+                            ModelState.AddModelError("PayDayEnd", "Нужно выбрать дату");
+                          
+                         if(model.PayDayEnd.HasValue && model.PayDayEnd>model.PayDay)
+                             ModelState.AddModelError("PayDayEnd","Дата начала сохранения заработка должна быть меньше даты больничного листа");
+                     break;
+                    case 3:
+                          break;
+                    case 4:
+                        if (model.PayDay < DateTime.Parse("01.01.1970"))
+                            ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+                         if (!model.PayDayEnd.HasValue || ( model.PayDayEnd.Value < DateTime.Parse("01.01.1970") ))
+                            ModelState.AddModelError("PayDayEnd", "Нужно выбрать дату");
+                          break;
+                    case 5:
+                       if (model.PayDay < DateTime.Parse("01.01.1970"))
+                            ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+                         if (!model.DismissalDate.HasValue || ( model.DismissalDate.Value < DateTime.Parse("01.01.1970") ))
+                            ModelState.AddModelError("DismissalDate", "Нужно выбрать дату");
+                          break;
+                    case 6:
+                        if (model.PayDay < DateTime.Parse("01.01.1970"))
+                            ModelState.AddModelError("PayDay", "Нужно выбрать дату");
+                         if (!model.PayDayEnd.HasValue || ( model.PayDayEnd.Value < DateTime.Parse("01.01.1970") ))
+                            ModelState.AddModelError("PayDayEnd", "Нужно выбрать дату");
+                          break;
+               }
+            
             return ModelState.IsValid;
         }
         public FileContentResult ViewAttachment(int id/*,int type*/)

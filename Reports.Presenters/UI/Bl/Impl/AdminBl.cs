@@ -1091,6 +1091,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles += GetRoleName(allRoles, UserRole.ConsultantOutsourcing) + " ";
             if ((role & (int)UserRole.ConsultantPersonnel) > 0)
                 roles += GetRoleName(allRoles, UserRole.ConsultantPersonnel) + " ";
+            if ((role & (int)UserRole.Estimator) > 0)
+                roles += GetRoleName(allRoles, UserRole.Estimator) + " ";
             /*if ((role & (int)UserRole.ConsultantAccountant) > 0)
                 roles += GetRoleName(allRoles, UserRole.ConsultantAccountant) + " ";*/
             /*if ((role & (int)UserRole.ConsultantOutsorsingManager) > 0)

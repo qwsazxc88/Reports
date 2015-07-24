@@ -30,7 +30,12 @@ namespace Reports.Core.Dao.Impl
         public UserDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }
-
+        public bool CheckUserDismissal(int userid)
+        {
+            var res=Session.Query<Dismissal>().Where(x => x.User.Id == userid);
+            if (res != null && res.Any()) return true;
+            else return false;
+        }
         public string ConstFKExistsViewName
         {
             get { return FKExistsViewName; }
@@ -74,6 +79,10 @@ namespace Reports.Core.Dao.Impl
 //                  .Add(Restrictions.Eq("IsActive", true))
                   .Add(Restrictions.IsNull("DateRelease"))
                   .List<User>();
+        }
+        public virtual IList<IdNameDto> GetUsersForConsultantBank()
+        {
+            return GetUsersWithRole(UserRole.Employee, true);
         }
         public virtual IList<IdNameDto> GetUsersWithRole(UserRole role,bool? isActive)
         {
@@ -420,6 +429,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Chief:
                     sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     sqlWhere = sqlWhere.Substring(0, sqlWhere.Length - 5);
                     break;
@@ -439,7 +449,7 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (managerRole & UserRole.Estimator) != UserRole.Estimator)
                 query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
@@ -497,6 +507,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Chief:
                     sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;*/
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     sqlWhere = sqlWhere.Substring(0, sqlWhere.Length - 5);
                     break;
@@ -516,7 +527,7 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (managerRole & UserRole.Estimator) != UserRole.Estimator)
                 query.SetInt32("userId", managerId);
             if (!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%" + userName + "%");
@@ -911,6 +922,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.BudgetManager:
                     criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
                     break;
@@ -1050,6 +1062,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += " inner join UserToPersonnel up on u.Id = up.UserId ";
                     sqlWhere += " and up.PersonnelId = :userId ";
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
@@ -1061,7 +1074,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("DateAccept", NHibernateUtil.DateTime);
-            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (managerRole & UserRole.Estimator) != UserRole.Estimator)
                 query.SetInt32("userId", userId);
             query.SetDateTime("beginDate", beginDate);
             query.SetDateTime("endDate", endDate);

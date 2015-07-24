@@ -21,7 +21,7 @@ using System.Linq;
 namespace WebMvc.Controllers
 {
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
     public class DeductionController : BaseController
     {
         protected IRequestBl requestBl;
@@ -53,7 +53,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult ChangeNotUseInAnalyticalStatement(int[] ids, bool[] notuse)
         {
             if (RequestBl.ChangeNotUseInAnalyticalStatement(ids, notuse)) return Json(new { Status = "Ok" });

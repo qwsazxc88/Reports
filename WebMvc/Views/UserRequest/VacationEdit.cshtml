@@ -201,7 +201,7 @@
     
     <tr>
         <td>
-            @Html.LabelFor(m => m.PrincipalVacationDaysLeft)
+            @Html.LabelFor(m => m.PrincipalVacationDaysLeft) на 1 число текущего месяца
         </td>
         <td>
             @if (Model.IsDaysLeftEditable)
@@ -211,12 +211,13 @@
             else
             {
                 @Html.DisplayFor(m => m.PrincipalVacationDaysLeft)
+                @Html.HiddenFor(x=>x.PrincipalVacationDaysLeft)
             }
         </td>
     </tr>
     <tr>
         <td>
-            @Html.LabelFor(m => m.AdditionalVacationDaysLeft)
+            @Html.LabelFor(m => m.AdditionalVacationDaysLeft) на 1 число текущего месяца
         </td>
         <td>
             @if (Model.IsDaysLeftEditable)
@@ -226,6 +227,7 @@
             else
             {
                 @Html.DisplayFor(m => m.AdditionalVacationDaysLeft)
+                @Html.HiddenFor(x=>x.AdditionalVacationDaysLeft)
             }
         </td>
     </tr>

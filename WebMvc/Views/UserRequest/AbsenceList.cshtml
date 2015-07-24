@@ -112,6 +112,8 @@
                  <tr>
                     <td colspan="2">
                             @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantPersonnel &&
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Estimator &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
                             {

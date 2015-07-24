@@ -11,6 +11,9 @@
 <div id="ErrorDialog" title="Ошибка" style="display:none;">
   <p>Произошла ошибка.</p>
 </div>
+<div id="NotifyDialog" title="Внимание!" style="display:none;">
+    <p>Автовыгрузка  удержаний  за месяц  производятся  в  последние  дни  месяца. удержания не попавшие  в  обрабатываемый  месяц ( созданные  после  выгрузки)  попадут  в следующий  месяц.</p>
+</div>
 @using (Html.BeginForm())
 {
      <table style="width:100%">
@@ -98,7 +101,7 @@
                                 {
                                     <input type="button" value="Печать" onclick="return Print();"/>
                                 } 
-                                @if (Model.UserId==10)
+                                @if ((userdto.UserRole & UserRole.Accountant)>0)
                                 {
                                     <span id="LoadingIndicator" style="float:right"></span>
                                     <input type="button" style="float:right;" value="Выгрузить в удержания" onclick="UploadToDeduction(1,3,1,'false');"/>
@@ -138,7 +141,7 @@
                     <th>
                         <div id="sort6" style="min-width:30px"><a href="#"  onclick = "SortChanged(6);">Сумма - расходы <br/>фактические</a></div>
                     </th>
-                    @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                    @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager || userdto.UserRole == UserRole.Estimator)
                     {
                     <th>
                         <div id="sort7" style="min-width:30px"><a href="#"  onclick = "SortChanged(7);">Состояние<br />выгрузки<br />авансового<br />отчета</a></div>
@@ -167,7 +170,7 @@
                             <td>@RequestBl.FormatSum(doc.DiffSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
-                            @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager)
+                            @if (userdto.UserRole == UserRole.Accountant || userdto.UserRole == UserRole.OutsourcingManager || userdto.UserRole == UserRole.Estimator)
                             {
                             <td>@doc.Status</td>
                             }
@@ -206,7 +209,11 @@
             autoOpen: false,
             close: function( event, ui ) {document.forms[0].submit();}
         });
+        $( "#NotifyDialog" ).dialog({
+            autoOpen: false
+        });
         $("#InfoDialog").dialog({autoOpen: false});
+        @if((userdto.UserRole & UserRole.Accountant)>0){<text>$("#NotifyDialog").dialog("open");</text>}
     });
     function resetFilter() {
         $("#BeginDate").val('');
