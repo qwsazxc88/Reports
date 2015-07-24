@@ -11324,6 +11324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
             else model.IsSurchargeAvailable = true;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.ManualDeductions = (entity.ManualDeductions!=null && entity.ManualDeductions.Any())? entity.ManualDeductions.Select(x => new ManualDeductionDto { UserId = x.Id, AllSum = x.AllSum, DeductionDate = x.DeductionDate, SendTo1C = x.SendTo1C, UserName = x.User.Name, DeleteDate=x.DeleteDate }).ToList(): new List<ManualDeductionDto>();
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
