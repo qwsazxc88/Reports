@@ -140,7 +140,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public HttpPostedFileBase EmploymentFile { get; set; }
         public string EmploymentFileName { get; set; }
         public int EmploymentFileId { get; set; }
-        
+        public int DeleteAttachmentId { get; set; }
 
         public BackgroundCheckModel()
         {

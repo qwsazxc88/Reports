@@ -57,7 +57,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ApplicationLetterScanAttachmentId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан" />
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ApplicationLetterScanAttachmentId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                      {<text>style="display:none;"</text>} value="Удалить скан" />
                     </div>
                 }
             </td>
@@ -73,7 +74,8 @@
             <td style="width:5%">
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                              {<text>style="display:none;"</text>}>Печать</button>
                     @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -97,7 +99,8 @@
                             </a>
                         </div>
                         <div class="formfield">
-                            <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentContractFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан" />
+                            <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentContractFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан" />
                         </div>
                     }
                 }
@@ -139,7 +142,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.OrderOnReceptionFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.OrderOnReceptionFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                           {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -207,7 +211,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ContractMatResponsibleFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ContractMatResponsibleFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -248,7 +253,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.PersonalDataFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.PersonalDataFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                       {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                     }
                 }
@@ -284,7 +290,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.DataObligationFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.DataObligationFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                         {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -319,7 +326,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                     {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -354,7 +362,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.RegisterPersonalRecordFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.RegisterPersonalRecordFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -389,7 +398,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionOfSecretFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionOfSecretFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                              {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -424,7 +434,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionEnsuringSafetyFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionEnsuringSafetyFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                    {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -459,7 +470,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.AgreePersonForCheckingFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.AgreePersonForCheckingFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -494,7 +506,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition1FileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition1FileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                            {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -529,7 +542,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition2FileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition2FileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                            {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -564,7 +578,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ObligationTradeSecretFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ObligationTradeSecretFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -596,7 +611,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate182HFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate182HFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                          {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -628,7 +644,8 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate2NDFLFileId);" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate2NDFLFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                           {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
@@ -732,10 +749,11 @@
     });
 
 
-    function DeleteScanDocuments(id) {
+    function DeleteScanDocuments(id, formname) {
         ShowFlash(true);
         $("#DeleteAttachmentId").val(id);
-        $("#CandidateDocumentsForm").submit();
+        //$("#CandidateDocumentsForm").submit();
+        $("#" + formname).submit();
     }
 
     function ShowFlash(IsShow)  //показываем индикатор загрузки

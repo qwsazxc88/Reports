@@ -14,7 +14,7 @@
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
 <br />
 @Html.Partial("CandidateState", Model.CandidateStateModel)
-
+@Html.HiddenFor(m => m.DeleteAttachmentId)
 
 <div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none; float:left;">
     <fieldset class="bordered doc-wrap panel"><legend>Департамент безопасности</legend>
@@ -294,7 +294,7 @@
             @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
             {
                 <div class=" clear">
-                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
+                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/> @Html.ValidationMessageFor(m => m.EmploymentFile)
                 </div>
             }
             @if (!string.IsNullOrEmpty(Model.EmploymentFileName))

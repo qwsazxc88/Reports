@@ -1973,8 +1973,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
-                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
-                    {
+                    //закомментарил чтобы консультанты могли перекрывать друг друга
+                    //if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
+                    //{
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
@@ -2059,7 +2060,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.Base = true;
                         }
-                    }
+                    //}
                     break;
                 case UserRole.ConsultantPersonnel:
                     if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == currUser.Id))
