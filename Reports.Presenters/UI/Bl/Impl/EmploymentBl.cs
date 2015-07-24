@@ -4637,6 +4637,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
             entity.IsValidate = viewModel.IsValidate;
+
+            
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
             if (entity.Candidate.IsScanFinal)
             {
