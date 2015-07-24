@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 {
     public class TreeGridAjaxModel
     {
-        public IList<Department> Departments { get; set; }
+        public IList<StaffListDepartmentDto> Departments { get; set; }
         public IList<UsersListItemDto> UserPositions { get; set; }
         public string DepId { get; set; }
     }

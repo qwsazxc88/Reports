@@ -111,6 +111,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentOperationModesDao); }
             set { staffdepartmentOperationModesDao = value; }
         }
+
+        protected IStaffEstablishedPostDao staffestablishedPostDao;
+        public IStaffEstablishedPostDao StaffEstablishedPostDao
+        {
+            get { return Validate.Dependency(staffestablishedPostDao); }
+            set { staffestablishedPostDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -133,36 +140,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+
+            //все закомментаренное работало когда не было штатных единиц
             if (itemLevel != 7)
             {
-                //руководство
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+
+                
+                ////руководство
+                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+                //    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                //foreach (var item in Users)
+                //{
+                //    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                //}
+                //model.UserPositions = ul;
+
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)//непоказываем начальников, потому что они видны уровнем выше
-                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+                ////нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
+                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                //foreach (var item in Users)
+                //{
+                //    if (UserDao.FindByLogin(item.Login + "R") == null)//непоказываем начальников, потому что они видны уровнем выше
+                //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                //}
+                //model.UserPositions = ul;
             }
 
             return model;
         }
-
 
         #region Заявки для подразделений
         /// <summary>
@@ -1535,7 +1548,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="DepId"></param>
         /// <returns></returns>
-        public IList<Department> GetDepartmentListByParent(string DepId)
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId)
         {
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
@@ -1551,10 +1564,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
                 }
 
-                return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
+                return GetDepListWithSEPCount(DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList());
             }
 
-            return DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList();
+            return GetDepListWithSEPCount(DepartmentDao.LoadAll().Where(x => x.ParentId.ToString() == DepId).ToList());
         }
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
@@ -1615,6 +1628,33 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    model.UserPositions = ul;
             //}
             return model;
+        }
+        /// <summary>
+        /// Дополнительно к подразделениям делаем подсчет количества штатных единиц.
+        /// </summary>
+        /// <param name="deps"></param>
+        /// <returns></returns>
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(IList<Department> deps)
+        {
+            IList<StaffListDepartmentDto> Sdeps = new List<StaffListDepartmentDto>();
+            foreach (var item in deps)
+            {
+                Sdeps.Add(new StaffListDepartmentDto
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    Name = item.Name,
+                    Code1C = item.Code1C,
+                    ParentId = item.ParentId,
+                    Path = item.Path,
+                    ItemLevel = item.ItemLevel,
+                    CodeSKD = item.CodeSKD,
+                    Priority = item.Priority,
+                    SEPCount = DepartmentDao.DepPositionCount(item.Id)
+                });
+            }
+
+            return Sdeps;
         }
         #endregion
     }

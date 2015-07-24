@@ -27,5 +27,11 @@ namespace Reports.Core.Dao
         /// <param name="DepId">Код родительского подразделения.</param>
         /// <returns></returns>
         IList<DepartmentWithFigradPointsDto> GetDepartmentWithFingradPoint(string DepId);
+        /// <summary>
+        /// Подсчет количества штатных единиц в пределах указанного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        int DepPositionCount(int Id);
     }
 }

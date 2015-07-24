@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 {
     public class TreeViewAjaxModel
     {
-        public IList<Department> Departments { get; set; }
+        public IList<StaffListDepartmentDto> Departments { get; set; }
         public string DepId { get; set; }
         //public string ParentId { get; set; }
         public string FactAddress { get; set; }

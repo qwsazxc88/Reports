@@ -162,10 +162,17 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentWithFigradPointsDto))).
                 List<DepartmentWithFigradPointsDto>();
         }
-
-        //public int DepPositionCount(string DepId)
-        //{
-        //    return Session.CreateSQLQuery(@"");
-        //}
+        /// <summary>
+        /// Подсчет количества штатных единиц в пределах указанного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public int DepPositionCount(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(:Id) as SEPCount")
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetInt32("Id", Id)
+                .UniqueResult<int>();
+        }
     }
 }

@@ -697,6 +697,8 @@
     <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
+    <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
+    <Compile Include="Dto\StaffList\StaffListDepartmentDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
