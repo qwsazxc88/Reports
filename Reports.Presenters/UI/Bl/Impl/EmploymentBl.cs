@@ -3735,8 +3735,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                    candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
             }
+
             try
             {
                 EmploymentCandidateDao.SaveAndFlush(candidate);
