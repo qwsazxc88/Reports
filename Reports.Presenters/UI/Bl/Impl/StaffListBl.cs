@@ -1650,7 +1650,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ItemLevel = item.ItemLevel,
                     CodeSKD = item.CodeSKD,
                     Priority = item.Priority,
-                    SEPCount = DepartmentDao.DepPositionCount(item.Id)
+                    SEPCount = DepartmentDao.DepPositionCount(item.Id),
+                    DepFingradName = string.IsNullOrEmpty(DepartmentDao.DepFingradName(item.Id)) ? "" : DepartmentDao.DepFingradName(item.Id)
                 });
             }
 

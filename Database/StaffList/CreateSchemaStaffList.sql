@@ -2237,8 +2237,13 @@ BEGIN
 		RETURN @SEPCount
 	END
 	ELSE
-		SELECT @SEPCount = isnull(sum(Quantity), 0) FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and IsUsed = 1
-
+		--SELECT @SEPCount = isnull(sum(Quantity), 0) FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and IsUsed = 1
+		SELECT @SEPCount = isnull(sum(C.Quantity), 0) 
+		FROM Department as A
+		INNER JOIN Department as B ON B.Path like A.Path + N'%'
+		INNER JOIN StaffEstablishedPost as C ON C.DepartmentId = B.Id and C.IsUsed = 1
+		WHERE A.Id = @DepartmentId 
+/*
 	--если есть подчиненные подразделения, то считаем и там
 	IF EXISTS (SELECT * FROM Department as A
 						 INNER JOIN Department as B ON B.ParentId = A.Code1C and B.ItemLevel <= 7
@@ -2257,15 +2262,20 @@ BEGIN
 
 			DELETE FROM @tbl WHERE DepartmentId = @DepId
 		END
-
-		
 	END
-
+*/
 	
 	RETURN @SEPCount
---SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4128) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4129) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4130) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4131) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4132) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4205) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
 END
 GO
+
+
 
 
 

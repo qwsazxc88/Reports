@@ -31,7 +31,7 @@ SELECT 1
 			 ,null	--пичину пока не указываю
 			 ,null	--создателя тоже
 FROM Department as A
-INNER JOIN Users as B ON B.DepartmentId = A.Id and B.IsActive = 1
+INNER JOIN Users as B ON B.DepartmentId = A.Id and B.IsActive = 1 and (RoleId & 2) > 0
 INNER JOIN Position as C ON C.id = B.PositionId
 GROUP BY A.Id, B.PositionId, C.Name, B.Salary
 

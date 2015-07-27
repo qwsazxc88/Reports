@@ -174,5 +174,21 @@ namespace Reports.Core.Dao.Impl
                 .SetInt32("Id", Id)
                 .UniqueResult<int>();
         }
+
+        /// <summary>
+        /// Название подразделения из Финграда.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public string DepFingradName(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT B.NameShort
+                                            FROM StaffDepartmentRequest as A
+                                            INNER JOIN StaffDepartmentManagerDetails as B ON B.DepRequestId = A.Id
+                                            WHERE A.IsUsed = 1 and A.Id = :Id")
+                .AddScalar("NameShort", NHibernateUtil.String)
+                .SetInt32("Id", Id)
+                .UniqueResult<string>();
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace Reports.Core.Dto
     public class StaffListDepartmentDto : Department
     {
         public int SEPCount { get; set; }
+        public string DepFingradName { get; set; }
     }
 }
