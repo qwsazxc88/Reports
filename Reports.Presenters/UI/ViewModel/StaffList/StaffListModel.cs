@@ -9,8 +9,11 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class StaffListModel
     {
         //public IList<DepartmentWithFigradPointsDto> Departments { get; set; }
-        public IList<Department> Departments { get; set; }
-        public IList<UsersListItemDto> UserPositions { get; set; }
+        public IList<StaffListDepartmentDto> Departments { get; set; }
+        //public IList<UsersListItemDto> UserPositions { get; set; }    // должности сотрудников
+        public IList<StaffEstablishedPostDto> EstablishedPosts { get; set; } //штатные единицы
         public string DepId { get; set; }
+        public int PositionCount { get; set; }
+        
     }
 }

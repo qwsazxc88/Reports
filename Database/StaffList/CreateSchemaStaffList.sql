@@ -29,6 +29,10 @@ IF OBJECT_ID ('FK_StaffProgramCodes_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffProgramCodes] DROP CONSTRAINT [FK_StaffProgramCodes_CreatorUser]
 GO
 
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes', 'F') IS NOT NULL	
+	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes]
+GO
+
 IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPost', 'F') IS NOT NULL	
 	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPost]
 GO
@@ -364,7 +368,7 @@ GO
 CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[RequestType] [int] NOT NULL,
+	[RequestTypeId] [int] NOT NULL,
 	[SEPId] [int] NULL,
 	[PositionId] [int] NULL,
 	[DepartmentId] [int] NULL,
@@ -739,7 +743,26 @@ CREATE TABLE [dbo].[StaffDepartmentOperationModes](
 GO
 
 
+if OBJECT_ID (N'StaffEstablishedPostRequestTypes', 'U') is not null
+	DROP TABLE [dbo].[StaffEstablishedPostRequestTypes]
+GO
+CREATE TABLE [dbo].[StaffEstablishedPostRequestTypes](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffEstablishedPostRequestTypes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffEstablishedPostRequestTypes] ADD  CONSTRAINT [DF_StaffEstablishedPostRequestTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentRequestTypes] ADD  CONSTRAINT [DF_StaffDepartmentRequestTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1149,6 +1172,13 @@ GO
 ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPost]
 GO
 
+ALTER TABLE [dbo].[StaffEstablishedPostRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes] FOREIGN KEY([RequestTypeId])
+REFERENCES [dbo].[StaffEstablishedPostRequestTypes] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes]
+GO
+
 ALTER TABLE [dbo].[StaffLandmarkTypes] ADD  CONSTRAINT [DF_StaffLandmarkTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1236,6 +1266,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequestTypes', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequestTypes', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequestTypes', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequestTypes', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов заявок для штатных единиц' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequestTypes'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequestTypes', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -1725,7 +1770,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Version'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'RequestType'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'RequestTypeId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id штатной единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'SEPId'
@@ -2104,8 +2149,10 @@ INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Изменение параметров СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Закрытие СП')
 
-
-
+--StaffEstablishedPostRequestTypes
+INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание ШЕ')
+INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
+INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
 
 --7. СОЗДАНИЕ ФУНКЦИЙ
 
@@ -2163,5 +2210,72 @@ BEGIN
 END
 
 GO
+
+
+
+
+IF OBJECT_ID ('fnGetStaffEstablishedPostCountByDepartment', 'FN') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetStaffEstablishedPostCountByDepartment]
+GO
+
+
+--функция возвращает количество штатных единиц подразделения учитывая внутреннюю структуру подразделения до 7 уровня включительно
+CREATE FUNCTION dbo.fnGetStaffEstablishedPostCountByDepartment
+(
+	@DepartmentId int	--Id подразделения
+)
+RETURNS int
+AS
+BEGIN
+	DECLARE @SEPCount int, @DepId int
+	DECLARE @tbl table (DepartmentId int)
+
+	--подсчитываем по текущему подразделению количесвто штатных единиц
+	IF (SELECT ItemLevel FROM Department WHERE Id = @DepartmentId) = 1
+	BEGIN
+		SELECT @SEPCount = isnull(sum(Quantity), 0) FROM StaffEstablishedPost WHERE IsUsed = 1
+		RETURN @SEPCount
+	END
+	ELSE
+		--SELECT @SEPCount = isnull(sum(Quantity), 0) FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and IsUsed = 1
+		SELECT @SEPCount = isnull(sum(C.Quantity), 0) 
+		FROM Department as A
+		INNER JOIN Department as B ON B.Path like A.Path + N'%'
+		INNER JOIN StaffEstablishedPost as C ON C.DepartmentId = B.Id and C.IsUsed = 1
+		WHERE A.Id = @DepartmentId 
+/*
+	--если есть подчиненные подразделения, то считаем и там
+	IF EXISTS (SELECT * FROM Department as A
+						 INNER JOIN Department as B ON B.ParentId = A.Code1C and B.ItemLevel <= 7
+						 WHERE A.Id = @DepartmentId)
+	BEGIN
+		INSERT INTO @tbl 
+		SELECT B.Id FROM Department as A
+		INNER JOIN Department as B ON B.ParentId = A.Code1C and B.ItemLevel <= 7
+		WHERE A.Id = @DepartmentId
+
+		WHILE EXISTS (SELECT * FROM @tbl)
+		BEGIN
+			SELECT top 1 @DepId = DepartmentId FROM @tbl
+
+			SET @SEPCount += (SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(@DepId))
+
+			DELETE FROM @tbl WHERE DepartmentId = @DepId
+		END
+	END
+*/
+	
+	RETURN @SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4129) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4130) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4131) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4132) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4205) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
+END
+GO
+
+
+
 
 

@@ -14,9 +14,10 @@
             <thead>
                 <tr>
                     <th rowspan="2">Структура подразделений</th>
+                    <th rowspan="2">Название в<br />Финграде</th>
                     <th rowspan="2">Уровень<br />подразделений</th>
                     <th colspan="3">Подразделения</th>
-                    <th colspan="3">Должности</th>
+                    <th colspan="3">Штатные единицы</th>
                     <th rowspan="2">Количество<br />штатных<br />единиц</th>
                     <th rowspan="2">Оклад</th>
                 </tr>    
@@ -39,6 +40,7 @@
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
                     </td>
+                    <td>@item.DepFingradName</td>
                     <td class="tdBtn">@item.ItemLevel</td>
                     <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
                     <td class="tdBtn"></td>
@@ -46,7 +48,7 @@
                     <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы"></button></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
-                    <td></td>
+                    <td>@item.SEPCount</td>
                     <td></td>
                 </tr>
             }
@@ -167,6 +169,7 @@
                                             "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                         "</td>" + 
+                                        "<td>" + result.Departments[i].DepFingradName + "</td>" +
                                         "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
@@ -174,7 +177,7 @@
                                         "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы'></button></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-                                        "<td></td>" +
+                                        "<td>" + result.Departments[i].SEPCount + "</td>" +
                                         "<td></td>" +
                                         "</tr>";
 
@@ -200,10 +203,9 @@
                         }
                     }
                     
-                    
-                    for (var i = 0; i < result.UserPositions.length; i++)//сотрудники, для уровней выше 7 руководство
+                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
                     {   
-                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
+                        tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
                                     "<td>" +
                                     "<span>";
                                         var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
@@ -212,22 +214,54 @@
                                             tblStr += "&nbsp;";
                                         }
                                         tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                        "<span Id='span-tr'" + result.UserPositions[i].Id + "' >&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
+                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
                                     "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
                                     "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
+                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                         $(ParentRowName).after(tblStr);//вставляем новую строку
                     }
+                    
+                    //этот кусок работал, когда не было штатных единиц
+//                    for (var i = 0; i < result.UserPositions.length; i++)//сотрудники, для уровней выше 7 руководство
+//                    {   
+//                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
+//                                    "<td>" +
+//                                    "<span>";
+//                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+//                                        for (var j = 0; j < BSCount; j++)
+//                                        {
+//                                            tblStr += "&nbsp;";
+//                                        }
+//                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+//                                        "<span Id='span-tr'" + result.UserPositions[i].Id + "' >&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
+//                                    "</span>" +
+//                                    "</td>" + 
+//                                    "<td></td>" +
+//                                    "<td></td>" +
+//                                    "<td></td>" +
+//                                    "<td></td>" +
+//                                    "<td></td>" +
+//                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
+//                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
+//                                    "<td></td>" +
+//                                    "<td></td>" +
+//                                    "</tr>";
+
+//                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+//                        $(ParentRowName).after(tblStr);//вставляем новую строку
+//                    }
                     
                     $(":button").button();
 

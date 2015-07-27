@@ -162,5 +162,33 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentWithFigradPointsDto))).
                 List<DepartmentWithFigradPointsDto>();
         }
+        /// <summary>
+        /// Подсчет количества штатных единиц в пределах указанного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public int DepPositionCount(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(:Id) as SEPCount")
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetInt32("Id", Id)
+                .UniqueResult<int>();
+        }
+
+        /// <summary>
+        /// Название подразделения из Финграда.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public string DepFingradName(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT B.NameShort
+                                            FROM StaffDepartmentRequest as A
+                                            INNER JOIN StaffDepartmentManagerDetails as B ON B.DepRequestId = A.Id
+                                            WHERE A.IsUsed = 1 and A.Id = :Id")
+                .AddScalar("NameShort", NHibernateUtil.String)
+                .SetInt32("Id", Id)
+                .UniqueResult<string>();
+        }
     }
 }

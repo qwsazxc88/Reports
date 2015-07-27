@@ -75,7 +75,7 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="DepId">Код родительского подразделения</param>
         /// <returns></returns>
         TreeGridAjaxModel GetDepartmentStructure(string DepId);
-        IList<Department> GetDepartmentListByParent(string DepId);
+        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId);
         /// <summary>
         /// Загружаем модель для составления Российских адресов.
         /// </summary>
