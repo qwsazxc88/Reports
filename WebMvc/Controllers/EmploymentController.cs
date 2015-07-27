@@ -2351,8 +2351,19 @@ namespace WebMvc.Controllers
             {
                 if (!model.RegistrationDate.HasValue)
                     ModelState.AddModelError("RegistrationDate", "Укажите дату оформления!");
-                else if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
-                    ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                else
+                {
+                    if (DateTime.Today >= new DateTime(2015, 8, 1).Date)
+                    {
+                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
+                            ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                    }
+                    else
+                    {
+                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
+                            ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                    }
+                }
             }
 
             if (!string.IsNullOrEmpty(model.ProbationaryPeriod))
