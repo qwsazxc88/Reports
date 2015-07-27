@@ -2,7 +2,7 @@
 
 --формируем за€вки
 INSERT INTO StaffEstablishedPostRequest([Version]
-																				,RequestType
+																				,RequestTypeId
 																				,SEPId
 																				,PositionId
 																				,DepartmentId
@@ -17,7 +17,7 @@ INSERT INTO StaffEstablishedPostRequest([Version]
 																				,CreatorID)
 
 SELECT 1
-			 ,1 -- пока справочника нет, ставлю 1 как за€вка на создание штатной единицы
+			 ,1 
 			 ,null	--это поле дл€ ссылок на существующие штатные единициы (за€вки на изменение)
 			 ,B.PositionId
 			 ,A.Id

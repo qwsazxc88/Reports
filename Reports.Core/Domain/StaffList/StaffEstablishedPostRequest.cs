@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     /// </summary>
     public class StaffEstablishedPostRequest : AbstractEntityWithVersion
     {
-        public virtual int RequestType { get; set; }
+        public virtual StaffEstablishedPostRequestTypes RequestType { get; set; }
         public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
