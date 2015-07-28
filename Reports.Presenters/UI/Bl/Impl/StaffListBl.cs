@@ -220,12 +220,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentRequestModel GetDepartmentRequest(StaffDepartmentRequestModel model)
         {
+            //СДЕЛАТЬ
+                //готовая заявка грузиться из реестра
+                //создание заявки на создание подразделения, идет по ветке где Id = 0
+                //создание заявки на изменение/удаление, нужно заполнить текущими даными, но с обнуленным Id, чтобы создалась новая заявка
+
+            //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
                 //Общие реквизиты
                 model.DateState = null;
                 model.DepartmentId = 0;
-                model.ItemLevel = DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1;
+                model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
                 model.Name = string.Empty;
                 model.IsBack = false;
                 model.OrderNumber = string.Empty;
@@ -288,6 +294,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+                //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
                 if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание подразделения
                 {
                     model.Id = 0;

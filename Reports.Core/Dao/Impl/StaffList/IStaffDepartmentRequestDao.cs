@@ -24,5 +24,11 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending);
+        /// <summary>
+        /// Достаем Id действующей заявки для данного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        int GetCurrentRequestId(int DepartmentId);
     }
 }

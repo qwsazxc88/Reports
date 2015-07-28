@@ -281,6 +281,7 @@ table.grid
   color:Black;
   width:100%;
 }
+
 table.grid2
 {
   border: 1px solid Black;
@@ -344,6 +345,7 @@ td.tdheader
   padding-left: 5px;
   padding-right: 5px;
 }
+
 
 /* TABLE-STATE
 ----------------------------------------------------------*/
@@ -1821,6 +1823,16 @@ legend {
     background-image: url('../../Content/themes/base/ui-icons_cd0a0a_256x240.png');
     background-repeat:no-repeat;
     background-position: -77px -131px;
+    display:inline-block;
+    cursor:pointer;   
+}
+.btnDepExpand
+{
+    width:25px;
+    float:right;
+    background-image: url('../../Content/themes/base/ui-icons_888888_256x240.png');
+    background-repeat:no-repeat;
+    background-position: -61px -51px;
     display:inline-block;
     cursor:pointer;   
 }

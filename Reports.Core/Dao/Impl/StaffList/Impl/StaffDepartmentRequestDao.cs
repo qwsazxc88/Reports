@@ -227,5 +227,19 @@ namespace Reports.Core.Dao.Impl
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
+        /// <summary>
+        /// Достаем Id действующей заявки для данного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public int GetCurrentRequestId(int DepartmentId)
+        {
+            return Session.CreateSQLQuery(@"SELECT A.Id
+                                            FROM StaffDepartmentRequest as A
+                                            WHERE A.IsUsed = 1 and A.DepartmentId = :DepartmentId")
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .SetInt32("DepartmentId", DepartmentId)
+                .UniqueResult<int>();
+        }
     }
 }
