@@ -14,6 +14,7 @@
             <thead>
                 <tr>
                     <th rowspan="2">Структура подразделений</th>
+                    <th rowspan="2">Должность</th>
                     <th rowspan="2">Название в<br />Финграде</th>
                     <th rowspan="2">Уровень<br />подразделений</th>
                     <th colspan="3">Подразделения</th>
@@ -34,12 +35,14 @@
             @{ int i = 0; }
             @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
             {
-                <tr id="tr-@item.Code1C" accessKey="@item.Path">
+                <tr id="tr-@item.Code1C" accessKey="@item.Path" style="background-color: #E9FFE9;">
                     <td>
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
+                    <td></td>
                     <td>@item.DepFingradName</td>
                     <td class="tdBtn">@item.ItemLevel</td>
                     <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
@@ -67,6 +70,7 @@
 }
 
 <script type="text/javascript">
+    var DepTable = [];
 
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
@@ -85,7 +89,7 @@
 
 
     //подгружаем уровни структуры и штатные единицы
-    function GetNodes(Id) {
+    function GetNodes(Id, IsExpandAll) {
         //чтобы не подгружались данные вторично
         if($("#getnodes-" + Id).hasClass("IsLoading")){
             var IsCollapse = false;
@@ -155,9 +159,15 @@
 
                     if (result.Departments != null)
                     {
+                        //DepTable = result.Departments;
                         for (var i = 0; i < result.Departments.length; i++)
                         {   
-                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible'>" +
+                            if(IsExpandAll)
+                            {
+                                DepTable[i] = result.Departments[i].Code1C;
+                            }
+
+                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
                                         "<td>" +
                                         "<span>";
                                             var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
@@ -168,7 +178,9 @@
                                             tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
                                             "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
+                                            "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
                                         "</td>" + 
+                                        "<td></td>" +
                                         "<td>" + result.Departments[i].DepFingradName + "</td>" +
                                         "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
@@ -203,17 +215,26 @@
                         }
                     }
                     
+
                     for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
                     {   
                         tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                    "<td></td>" +
+                                    //вариант с пробелами для отобржажения в первой колонке
+//                                    "<td>" +
+//                                    "<span>";
+//                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+//                                        for (var j = 0; j < BSCount; j++)
+//                                        {
+//                                            tblStr += "&nbsp;";
+//                                        }
+//                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+//                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+//                                    "</span>" +
+//                                    "</td>" + 
                                     "<td>" +
-                                    "<span>";
-                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-                                        for (var j = 0; j < BSCount; j++)
-                                        {
-                                            tblStr += "&nbsp;";
-                                        }
-                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                    "<span>" +
+                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
                                         "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
@@ -263,6 +284,23 @@
 //                        $(ParentRowName).after(tblStr);//вставляем новую строку
 //                    }
                     
+
+                    //пытаемся раскрыть рекурсивно всю ветку 
+                    if (DepTable.length > 0)
+                    {
+                        //console.log(DepTable);
+                        ShowFlash(true);
+                        for (var i = 0; i < DepTable.length; i++)
+                        {
+                            ShowFlash(true);
+                            GetNodes(DepTable[i], IsExpandAll);
+                        }
+                        DepTable = [];
+                        //ShowFlash(false);
+                    }
+                    
+
+
                     $(":button").button();
 
                     ShowFlash(false);
@@ -304,6 +342,7 @@
             $(".ui-dialog-titlebar-close").hide();
         }
     }
+
 
     //переходим в заявку для подразделения
     function GetDepartmentRequest(RequestType, DepartmentId)
