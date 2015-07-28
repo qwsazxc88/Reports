@@ -223,15 +223,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             //готовая заявка грузиться из реестра
             //создание заявки на создание подразделения, идет по ветке где Id = 0
             //создание заявки на изменение/удаление, нужно заполнить текущими даными, но с обнуленным Id, чтобы создалась новая заявка
+            //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
+            bool IsRequestExists = model.Id == 0 ? false : true;
+            if (model.Id == 0)
+                model.Id = StaffDepartmentRequestDao.GetCurrentRequestId(model.DepartmentId.HasValue ? model.DepartmentId.Value : 0);
 
             //заполняем заявку на все случаи жизни
-            if (model.Id == 0 && model.DepartmentId == 0)
+            if (model.Id == 0)
             {
                 //Общие реквизиты
                 model.DateState = null;
                 model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
                 model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
-                model.Name = string.Empty;
+                model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
                 model.IsBack = false;
                 model.OrderNumber = string.Empty;
                 model.OrderDate = null;
@@ -292,10 +296,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
-                bool IsRequestExists = model.Id == 0 ? false : true;
-                if (model.Id == 0)
-                    model.Id = StaffDepartmentRequestDao.GetCurrentRequestId(model.DepartmentId.Value);
 
                 StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
                 if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание подразделения
@@ -1253,7 +1253,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(StaffDepartmentRequestModel model)
         {
             //реквизиты инициатора
-            model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest, model.UserId);
+            model.DepRequestInfo = GetDepRequestInfo(model.Id, model.DateRequest, model.Id == 0 ? AuthenticationService.CurrentUser.Id : model.UserId);
             model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
