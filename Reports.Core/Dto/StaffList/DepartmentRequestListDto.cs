@@ -9,6 +9,7 @@ namespace Reports.Core.Dto
         public DateTime? DateRequest { get; set; }
         public string RequestTypeName { get; set; }
         public int RequestTypeId { get; set; }
+        public int DepartmentId { get; set; }
         public int ParentId { get; set; }
         public string Dep2Name { get; set; }
         public string Dep3Name { get; set; }

@@ -104,6 +104,7 @@ namespace WebMvc.Controllers
                 model.ParentId = DepartmentId.Value;
             else
                 model.DepartmentId = DepartmentId.Value;
+
             model.Id = Id.HasValue ? Id.Value : 0;
             model = StaffListBl.GetDepartmentRequest(model);
 

@@ -93,7 +93,7 @@
                     {
                         <tr>
                             <td style="text-align:center;">@i.ToString()</td>
-                            <td style="text-align:center;"><a class="ui-notify-close" href='@Url.Action("StaffDepartmentRequest", "StaffList", new { RequestType = @item.RequestTypeId, DepartmentId = @item.ParentId, id = @item.Id })' style="cursor:hand">@item.Id</a></td>
+                            <td style="text-align:center;"><a class="ui-notify-close" href='@Url.Action("StaffDepartmentRequest", "StaffList", new { RequestType = @item.RequestTypeId, DepartmentId = @item.DepartmentId, id = @item.Id })' style="cursor:hand">@item.Id</a></td>
                             <td>@(item.DateRequest.HasValue ? item.DateRequest.Value.ToShortDateString() : "")</td>
                             <td>@item.RequestTypeName</td>
                             <td>@item.Dep2Name</td>
