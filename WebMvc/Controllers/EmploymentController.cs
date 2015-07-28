@@ -2006,7 +2006,7 @@ namespace WebMvc.Controllers
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
-            if (model.Surname == null)
+            if (string.IsNullOrEmpty(model.Surname) || string.IsNullOrWhiteSpace(model.Surname))
                 ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
             else
             {
