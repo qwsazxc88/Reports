@@ -292,11 +292,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
+                //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
                 bool IsRequestExists = model.Id == 0 ? false : true;
                 if (model.Id == 0)
                     model.Id = StaffDepartmentRequestDao.GetCurrentRequestId(model.DepartmentId.Value);
+
                 StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
-                //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
                 if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание подразделения
                 {
                     model.Id = 0;
