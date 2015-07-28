@@ -37,6 +37,7 @@ namespace Reports.Core.Dao.Impl
                                        A.DateRequest, 
                                        B.Name as RequestTypeName, 
                                        A.RequestTypeId,
+                                       A.DepartmentId,
                                        A.ParentId,
                                        Dep2.Name as Dep2Name, 
                                        Dep3.Name as Dep3Name, 
@@ -82,6 +83,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DateRequest", NHibernateUtil.Date)
                 .AddScalar("RequestTypeName", NHibernateUtil.String)
                 .AddScalar("RequestTypeId", NHibernateUtil.Int32)
+                .AddScalar("DepartmentId", NHibernateUtil.Int32)
                 .AddScalar("ParentId", NHibernateUtil.Int32)
                 .AddScalar("Dep2Name", NHibernateUtil.String)
                 .AddScalar("Dep3Name", NHibernateUtil.String)
