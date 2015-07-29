@@ -64,6 +64,7 @@
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.ApplicationLetterScanFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ApplicationLetterScanFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
@@ -108,6 +109,7 @@
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.EmploymentContractFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.EmploymentContractFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
@@ -119,7 +121,8 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                 {<text>style="display:none;"</text>}>Печать</button>
                     @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -150,6 +153,7 @@
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.OrderOnReceptionFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.OrderOnReceptionFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
@@ -188,7 +192,8 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
                     @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -230,7 +235,8 @@
             <td>
                 @if (Model.IsDocListAvailable)
                 {
-                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                       {<text>style="display:none;"</text>}>Печать</button>
                     @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
                 }
             </td>
@@ -270,7 +276,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать Обязательство конфиденциальность</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -306,17 +313,20 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать анкеты кандидата</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                            {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+                @*
                 @if (string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield clear">
                         Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
                     </div>
                 }
+                *@
                 @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield">
@@ -325,10 +335,12 @@
                             @Model.EmploymentFileName
                         </a>
                     </div>
+                    @*
                     <div class="formfield">
                         <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
                                                                                                                                      {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    *@
                 }
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
@@ -342,7 +354,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать реестра личного дела</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -378,7 +391,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                 {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -414,7 +428,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                       {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -450,7 +465,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -486,7 +502,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                               {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -522,7 +539,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                               {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -558,7 +576,8 @@
             {<text> style = "display:none;" </text>} >
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -658,7 +677,8 @@
         <tr>
             <td>Заявление на получение банковской карты</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
             </td>
             <td>
                 Вам необходимо обратиться с паспортом к ответственному сотруднику за зарплатные счета<br />
@@ -684,7 +704,7 @@
                 <td colspan="3">
                     <button id="btnSentEmail" @if (Model.CandidateStatus == 11)
                                               {<text>style="float:right;"</text>}
-                                              else 
+                                              else
                                               {<text>style="display:none;"</text>}>Отправить email рководителю</button>    
                 </td>
                 <td >
