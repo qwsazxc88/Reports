@@ -825,9 +825,8 @@ namespace Reports.Core.Dao.Impl
                                 select distinct employee.Id from Users employee
                                     inner join dbo.Users currentUser
 	                                    on currentUser.Id = :userId
-                                    left join [dbo].[Users] employeeManagerAccount
-                                        on (employeeManagerAccount.RoleId & 4) > 0
-                                            and employeeManagerAccount.Login = u.Login+N'R'
+                                    --закомментарил ибо этот бред уже не понимал под конец дня
+                                    --left join [dbo].[Users] employeeManagerAccount on (employeeManagerAccount.RoleId & 4) > 0 and employeeManagerAccount.Login = u.Login+N'R'
                                             --and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                         on employee.DepartmentId = employeeDept.Id
@@ -837,7 +836,7 @@ namespace Reports.Core.Dao.Impl
                                         on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
                                     and employee.IsActive = 1
-                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
+                                    --and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
                             break;
