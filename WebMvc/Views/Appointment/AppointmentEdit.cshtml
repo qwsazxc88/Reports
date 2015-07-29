@@ -64,6 +64,7 @@
 </div>
 @using (Html.BeginForm("AppointmentEdit","Appointment"))
 {
+    @Html.HiddenFor(m => m.NonActual)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -79,6 +80,17 @@
                     </div>
                 </td>
             </tr>
+            @*@if (!String.IsNullOrWhiteSpace(Model.StaffCreatorName))
+            {
+            <tr>
+                <td>
+                Автор заявки:
+                </td>
+                <td>
+                Model.StaffCreatorName @Html.HiddenFor(m => m.StaffCreatorName)
+                </td>
+            </tr>
+            }*@
             <tr>
                 <td colspan="2">
                     @Html.Partial("ManagerInfoView", Model)
@@ -161,7 +173,16 @@
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
-                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
+                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable && Model.ReasonId<3 && Model.ReasonId>6 ? null : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr id="ReasonPositionIdTr">
+                <td>
+                  <span id="ReasonPositionIdLabel"></span>
+                </td>
+                <td>
+                   @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
+                   @Html.HiddenFor(m => m.isNeedToNotify)
                 </td>
             </tr>
             @if (!Model.ShowStaff)
@@ -227,7 +248,7 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.TypeId):
+                    Форма оформления сотрудника:
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
@@ -304,7 +325,7 @@
             }
             <tr>
                  <td>Выбрать принадлежность кандидата</td>
-                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.Id == 0 ) ? null : new { disabled = "disabled" })
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.IsManagerApproveAvailable) ? null : new { disabled = "disabled" })
                  </td>
             </tr> 
         </table>
@@ -322,7 +343,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    @Html.LabelFor(m => m.IsManagerApproved):
+                    Руководитель (заказчик) - Автор:
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
@@ -384,8 +405,8 @@
                 </td>
             </tr>*@
              
-            @* @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
-             {*@
+            @*@if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
+            {*@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
@@ -419,7 +440,7 @@
                  {
                      <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsStaffApproved):
+                            Начальник ОПиНП:
                         </td>
                         <td>
                             @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable && dto.Id == Model.StaffBossId ? null : (object)new { disabled = "disabled" }) 
@@ -453,7 +474,8 @@
                  }
             
              
-              
+         @if(!Model.NonActual)
+         {    
         <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
@@ -473,13 +495,44 @@
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
                 <td style="text-align:right">
+                @if (
+                         ((dto.UserRole & UserRole.Manager) > 0 && Model.IsManagerApproveAvailable) ||
+                         ((dto.UserRole & UserRole.ConsultantPersonnel) > 0 && !Model.BankAccountantAccept) ||
+                         ((dto.UserRole & UserRole.Manager) > 0 & Model.IsChiefApproveAvailable) ||
+                         ((dto.UserRole & UserRole.StaffManager) > 0 & Model.IsStaffApproveAvailable)
+                        )
+                {
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                       {<text>style="display:none"</text>}/>
+                }
+                    @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0 && Model.IsNonActualButtonAvailable)
+                    {
+                    <input type="submit" value="Заявка не актуальна" onclick="$('#NonActual').val(true);" />
+                    }
                 </td>
                 
+        </tr>
+        }
+        else
+        {
+            <tr>
+            <td style="color:Red">
+            Заявка не актуальна.
+            </td>
             </tr>
+        }
         </table>
     </div> 
+    if (Model.Reports != null && Model.Reports.Any())
+    { 
+       <div class="doc-wrap">
+       Отчёты:
+       @foreach(var el in Model.Reports)
+       {
+           @Html.ActionLink("№"+Model.DocumentNumber + "/" + el.Name+" ", "AppointmentReportEdit", new { id = el.Id }, null); 
+       }
+       </div>
+    }
                                                                                       if (Model.Candidates != null && Model.Candidates.Any())
                                                                                       {
     <div class="doc-wrap">
@@ -524,7 +577,9 @@
              $('#PassportData').mask('9999 999999');
         }); 
     $("#AddEmployment").dialog({autoOpen: false});
-    
+    $('#ReasonPositionId').change(function(){
+        $('#ReasonPosition').val($("#ReasonPositionId option:selected").text());
+    });
     $("#IsVacationExists").change(function()
     {
         $("#IsVacationExistsHidden").val($("#IsVacationExists").val());
@@ -561,6 +616,30 @@
     function ValidateForm()
     {
         var result = true;
+        @if(!Model.IsManagerApproved)
+        {<text>
+        if($("#ReasonId").val()==5)
+        $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CheckUserDismissal",
+            data: {userId:$('#ReasonPositionId').val()},
+            success: function(result)
+            {
+                if(!result.result)
+                {
+                    var r=confirm("У выбранного сотрудника нет заявления на увольнение, заявка может быть сохранена как черновик, пока сотрудник не заведёт заявление на увольнение. Уведомить Вас о том, что сотрудник написал заяваление?");
+                    $('#IsManagerApproved').attr('checked', false);
+                    $('#IsManagerApproved').attr('value', false);
+                    if(r)
+                        $('#isNeedToNotify').attr('value', true);
+                }
+            },
+            async:false
+        }
+        );
+        </text>
+        }
         clearControlErrors($("#SelectDepartmentBtn"));
         if($("#DepartmentId").val() == 0)
         {
@@ -641,26 +720,48 @@
             case '1':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
             case '2':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
                 $("#ReasonPositionTr").hide();
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").hide ();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
                 $("#ReasonDateLabel").text('Дата ухода:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
             case '5':
                 $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
                 $("#ReasonDateLabel").text('Дата увольнения:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
+            break
+            case '6':
+                $("#ReasonPositionLabel").text('ФИО сотрудника на замену: ');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionTr").show();
+                $("#ReasonPositionIdTr").show();
             break
         }
         if(reasonId == 3)

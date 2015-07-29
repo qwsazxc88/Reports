@@ -23,4 +23,13 @@ namespace Reports.Core.Dto.Employment2
         public int DocTypeId { get; set; }
         public bool IsNeeded { get; set; }
     }
+    public class EmploymentAttachmentDto
+    {
+        public int Id { get; set; }
+        public int CandidateId { get; set; }
+        public int RequestType { get; set; }
+        public string FileName { get; set; }
+        public DateTime DateCreated { get; set; }
+        public string Surname { get; set; }
+    }
 }

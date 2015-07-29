@@ -71,7 +71,7 @@
                         </tr>
                         <tr>
                                 <td>
-                                    @Html.LabelFor(m => m.UserName):
+                                    ФИО заказчика:
                                 </td>
                                 <td>
                                     @Html.TextBoxFor(model => model.UserName)
@@ -100,12 +100,17 @@
      <tr>
         <td colspan="2"> <div class="action-wrap" style="min-height:20px" >
         
-        @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
+        @if (Model.IsAddAvailable )
         {                               
             <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
             <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
             <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
             
+        }
+        @if (Model.IsAddForStaffAvailable)
+        {
+            <input type="button" value="Создать заявку на поиск кандидата" onclick="return createAppointmentForStaff();"/>  
+            <input type="button" value="Согласование кандидата от Руководителя" onclick="return createAppointmentWithoutStaffForStaff();" />
         }
         
         <input type="submit" value="Печать" style="float: right; margin-right:10px;" onclick="$('#ForPrint').val(1);"/>
@@ -132,6 +137,9 @@
                        <div id="sort22" ><a href="#" onclick = "SortChanged(22);"> Дата<br />создания</a></div>
                     </th>
                     <th>
+                        <div id="sort26" ><a href="#" onclick = "SortChanged(26);">Автор<br />заявки</a></div>
+                    </th>
+                    <th>
                         <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
                     </th>
                     <th>
@@ -144,8 +152,29 @@
                         <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
                     <th>
+                        <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
+                    </th>
+                     <th>
+                        <div id="sort11" style="min-width:80px"><a href="#"  onclick = "SortChanged(11);">Желательная<br/> дата выхода</a></div>
+                    </th>
+                    <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
                     </th>
+                    <th>
+                        <div id="sort24" ><a href="#" onclick="SortChanged(24);">ФИО<br />кандидата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Уровень<br/> ЗП</a></div>
+                    </th>  
+                    <th>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус<br />заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
+                    </th>  
                      <th>
                         <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
@@ -154,28 +183,8 @@
                     </th>
                    @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
-                    </th>*@
-                    <th>
-                        <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
-                    </th>
-                    <th>
-                        <div id="sort10" style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Уровень<br/> ЗП</a></div>
-                    </th>
-                     <th>
-                        <div id="sort11" style="min-width:80px"><a href="#"  onclick = "SortChanged(11);">Желательная<br/> дата выхода</a></div>
-                    </th>
-                    <th>
-                        <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
-                    </th>
-                    <th>
-                        <div id="sort24" ><a href="#" onclick="SortChanged(24);">ФИО<br />кандидата</a></div>
-                    </th>
-                    <th>
-                        <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
-                    </th>
-                    <th>
-                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
-                    </th>
+                    </th>*@                                       
+                                      
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -192,30 +201,30 @@
                             </td>
                             <td>@doc.BankAccountantAcceptCount</td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
+                            <td>@doc.StaffCreator</td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
                             <td>@doc.ManDep3Name</td>
                             <td>@doc.ManDep7Name</td>
-                            <td>@doc.CanPosition</td>
-                            <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
-                           @* <td>@doc.Period</td>*@
-                            <td>@doc.Schedule</td>
-                            <td>@RequestBl.FormatSum(@doc.Salary)</td>
+                            <td>@doc.Reason</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
-                            <td>@doc.Reason</td>@*12*@
+                            <td>@doc.CanPosition</td>
                             <td>@if (String.IsNullOrWhiteSpace(doc.CandidateFIO) && doc.Recruter == 1)
                                 {<p>Кандидат</p>}
                             @doc.CandidateFIO</td>
+                            <td>@doc.Schedule</td>
+                            <td>@RequestBl.FormatSum(@doc.Salary)</td>
+                            <td>@doc.Status</td>
                             <td>@switch (doc.Recruter)
                                 {
-                                    case 1: <text>УПиНП</text>
+                                    case 1: <text>ОПиНП</text>
                                         break;
                                     case 2: <text>Руководитель</text>
                                         break;
 
                                 }</td>
-                            <td>@doc.Status</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                         </tr>
                     }
                 }
@@ -269,7 +278,10 @@
     function createAppointmentForStaff() {
             createSelectManagerDialog(actionSelectManagerDialogUrl);
     }
-    function createSelectManagerDialog(url/*,params*/) {
+    function createAppointmentWithoutStaffForStaff() {
+            createSelectManagerDialog(actionSelectManagerDialogUrl,1);
+    }
+    function createSelectManagerDialog(url/*,params*/,type) {
             var elem = document.createElement('div');
             elem.id = "divSelectManagerDialog";
             var newDiv = $(elem);
@@ -307,6 +319,11 @@
                     "Создать заявку": function () {
                         var managerId = $("#ManagerId").val();
                         $(this).dialog("close");
+                        if(type==1)
+                        {
+                            window.location.href = '@Url.Action("AppointmentWithoutStaffEdit", "Appointment")?id=0&managerId=' + managerId;
+                        }
+                        else
                         window.location.href = '@Url.Action("AppointmentEdit", "Appointment")?id=0&managerId=' + managerId;
                     },
                     "Отмена": function () {

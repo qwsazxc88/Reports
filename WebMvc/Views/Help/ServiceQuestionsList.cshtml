@@ -3,6 +3,7 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.HelpServiceQuestionsListModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
     ViewBag.Title = "Задать вопрос";
 }
@@ -106,7 +107,10 @@
                                 <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
                                 @if (Model.IsAddAvailable)
                                 {
+                                    if ((dto.UserRole & UserRole.ConsultantPersonnel) == 0)
+                                    {
                                     <input type="button" value="Задать вопрос" onclick="location.href='@Url.Action("HelpQuestionEdit", "Help", new { id = 0 })'"/>
+                                    }
                                     <text>&nbsp; &nbsp; &nbsp;</text>   
                                     <input type="button" value="Задать вопрос за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help",new { isForQuestion = 1 } )'"/>
                                 }                                                                                     
@@ -167,7 +171,7 @@
                     <th>
                         <div id="sort12"  style="min-width:110px"><a href="#"  onclick = "SortChanged(12);">Перенаправлено<br/> роли</a></div>
                     </th>
-                    @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                    @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole> { UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager, UserRole.Estimator }))
                     {
                     <th>
                         <div id="sort15" ><a href="#" onclick="SortChanged(15);">База</a></div>
@@ -231,7 +235,7 @@
                                     <td>@if(doc.IsManagerQuestion){<text>Да</text>}</td>
                                 }
                                 <td>@doc.RedirectRole</td>
-                                @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole>{UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager}))
+                                @if (Reports.Presenters.Utils.Converters.RoleAccessChecker(new List<UserRole> { UserRole.ConsultantOutsourcing, UserRole.OutsourcingManager, UserRole.Estimator }))
                                 {
                                 <td>
                                     @Html.CheckBox("Base", doc.Base, new { disabled = "disabled" })

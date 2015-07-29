@@ -86,13 +86,15 @@ namespace Reports.Core.Dto.Employment2
         public bool IsApproveByHigherManagerAvailable { get; set; }
 
         public bool IsContractChangedToIndefinite { get; set; }
-
+        public DateTime? DismissalDate { get; set; }
         public int AppointmentReportId { get; set; }
         public string AppointmentReportNumber { get; set; }
         public int AppointmentId { get; set; }
         public int? AppointmentNumber { get; set; }
         public bool IsTechDissmiss { get; set; }
         public bool IsBlocked { get; set; }
+
+        public string MentorName { get; set; }
 
         /*
         [Display(Name = "Паспортные данные"),
@@ -125,6 +127,7 @@ namespace Reports.Core.Dto.Employment2
     public class CandidateStateDto
     {
         public int Id { get; set; }
+        public bool ScanFinal { get; set; }
         public bool GeneralFinal { get; set; }
         public bool PassportFinal { get; set; }
         public bool EducationFinal { get; set; }
@@ -136,6 +139,7 @@ namespace Reports.Core.Dto.Employment2
         public bool CandidateApp { get; set; }
         public bool CandidateReady { get; set; }
         public bool? BackgroundApproval { get; set; }
+        public bool? PrevBackgroundApproval { get; set; }
         public bool? TrainingApproval { get; set; }
         public bool? ManagerApproval { get; set; }
         public bool? PersonnelManagerApproval { get; set; }

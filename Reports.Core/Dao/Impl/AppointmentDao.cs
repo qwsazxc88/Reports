@@ -6,7 +6,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class AppointmentDao : DefaultDao<Appointment>, IAppointmentDao
@@ -75,7 +75,7 @@ namespace Reports.Core.Dao.Impl
                         v.BankAccountantAccept as BankAccountantAccept,
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount,
                 case
-                    when EC.Status is null then -1
+                    when EC.Status is null then -2
                     else                    
                     EC.Status 
                 end as EmploymentStatus ,
@@ -115,6 +115,7 @@ namespace Reports.Core.Dao.Impl
                 v.EditDate as EditDate,
                 -- u.Id as UserId,
                 u.Name as UserName,
+                st.Name as StaffCreator,
                 pos.Name as PositionName,
                 mapDep7.Name as ManDep7Name,
                 mapDep3.Name as ManDep3Name,
@@ -129,6 +130,7 @@ namespace Reports.Core.Dao.Impl
                 ar.Id as ReasonId,
                 ar.Name as Reason,
                 case
+                        when v.NonActual =1 then N'Заявка не актуальна'
                         when v.ManagerDateAccept is null then N'Черновик'
                         when v.ManagerDateAccept is not null and v.ChiefDateAccept is null and (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and (v.IsStoped=0 or v.IsStoped is null) then N'Отправлена на согласование Специалисту УКДиУ'
                         when (v.BankAccountantAccept is null or v.BankAccountantAccept=0) and v.IsStoped=1 then N'Специалистом УКДиУ приостановлено согласование'
@@ -147,10 +149,10 @@ namespace Reports.Core.Dao.Impl
                         v.Recruter,
                         v.FIO as CandidateFIO
                 from dbo.Appointment v
-                
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                 -- inner join dbo.Position aPos on v.PositionId = aPos.Id
                 inner join [dbo].[Users] u on u.Id = v.CreatorId
+                Left join [dbo].[Users] st on v.StaffCreatorId=st.id
                 left join dbo.Position pos on u.PositionId = pos.Id
                 inner join dbo.Department dep on v.DepartmentId = dep.Id
                 inner join dbo.Department crDep on u.DepartmentId = crDep.Id
@@ -189,7 +191,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Recruter",NHibernateUtil.Int32).
                 AddScalar("CandidateFIO",NHibernateUtil.String).
-                AddScalar("ReasonId",NHibernateUtil.Int32);
+                AddScalar("ReasonId",NHibernateUtil.Int32).
+                AddScalar("StaffCreator", NHibernateUtil.String);
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -515,6 +518,9 @@ namespace Reports.Core.Dao.Impl
                 case 25:
                     orderBy = @" order by BankAccountantAcceptCount";
                     break;
+                case 26:
+                    orderBy = @" order by StaffCreator";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -708,6 +714,7 @@ namespace Reports.Core.Dao.Impl
                 //    return sqlQueryPart;
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
+                case UserRole.Estimator:
                 case UserRole.ConsultantPersonnel:
                 case UserRole.StaffManager:
                 case UserRole.Trainer:
@@ -718,5 +725,12 @@ namespace Reports.Core.Dao.Impl
             }
         }
         #endregion
+
+        public List<Appointment> GetAppointmentForReasonPosition(int userId)
+        {
+            var res=Session.Query<Appointment>().Where(x => x.ReasonPositionUser.Id == userId && x.isNotifyNeeded);
+            if (res != null && res.Any()) return res.ToList();
+            else return null;
+        }
     }
 }

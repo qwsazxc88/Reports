@@ -16,7 +16,7 @@ using System.Reflection;
 using WebMvc.Helpers;
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager | UserRole.Estimator)]
     public class GraphicsController : BaseController
     {
         protected IEmployeeBl employeeBl;

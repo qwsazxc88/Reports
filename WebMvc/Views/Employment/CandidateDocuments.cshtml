@@ -13,11 +13,12 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.SendTo1C)</span>
 
-@using (Html.BeginForm("CandidateDocuments", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("CandidateDocuments", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "CandidateDocumentsForm" }))
 {
     @Html.HiddenFor(m => m.UserId)    
     @Html.HiddenFor(m => m.IsSave)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsSentEmail)
     
 
     <input type="hidden" id="DeleteAttachmentId" name="DeleteAttachmentId" value="@Model.DeleteAttachmentId" />
@@ -27,17 +28,17 @@
             <th>Название документа</th>
             <th>Образец</th>
             <th>Скан</th>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <th>Для<br />приема<br />требуется</th>
             }
         </tr>
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ApplicationLetterScanFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ApplicationLetterScanFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Заявление о приеме</td>
             <td style="width:5%">
-                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
             </td>
             <td>
                 <input type="hidden" id="ApplicationLetterScanAttachmentId" name="ApplicationLetterScanAttachmentId" value="@Model.ApplicationLetterScanAttachmentId" />
@@ -56,68 +57,87 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete15" value="Удалить скан" />
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ApplicationLetterScanAttachmentId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                      {<text>style="display:none;"</text>} value="Удалить скан" />
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.ApplicationLetterScanFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ApplicationLetterScanFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
         
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentContractFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.EmploymentContractFileNeeded)
             {<text> style = "display:none;" </text>} >
         <td>Печать трудового договора</td>
             <td style="width:5%">
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                              {<text>style="display:none;"</text>}>Печать</button>
+                    @*<button type="button" onclick="window.location.href='@Url.Action("PrintContractForm", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />
-                @if (string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                @if (Model.IsDocListAvailable)
                 {
-                    <div class="formfield clear">
-                        Выбрать для загрузки скан трудового договора<br /><input type="file" name="EmploymentContractFile" id="EmploymentContractFile"/>
-                    </div>
+                    <input type="hidden" id="EmploymentContractFileId" name="EmploymentContractFileId" value="@Model.EmploymentContractFileId" />
+                    if (string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                    {
+                        <div class="formfield clear">
+                            Выбрать для загрузки скан трудового договора<br /><input type="file" name="EmploymentContractFile" id="EmploymentContractFile"/>
+                        </div>
+                    }
+
+                    if (!string.IsNullOrEmpty(Model.EmploymentContractFileName))
+                    {
+                        <div class="formfield">
+                            <br />Скан:
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentContractFileId })' style="cursor:hand" target="_blank">
+                                @Model.EmploymentContractFileName
+                            </a>
+                        </div>
+                        <div class="formfield">
+                            <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentContractFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан" />
+                        </div>
+                    }
                 }
-                @if (!string.IsNullOrEmpty(Model.EmploymentContractFileName))
-                {
-                    <div class="formfield">
-                        <br />Скан:
-                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentContractFileId })' style="cursor:hand" target="_blank">
-                            @Model.EmploymentContractFileName
-                        </a>
-                    </div>
-                    <div class="formfield">
-                        <br /><input type="button" id="btnDelete1" value="Удалить скан" />
-                    </div>
-                }
+                
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.EmploymentContractFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.EmploymentContractFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.OrderOnReceptionFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.OrderOnReceptionFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать приказа о приеме</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                 {<text>style="display:none;"</text>}>Печать</button>
+                    @*<button type="button" onclick="window.location.href='@Url.Action("PrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />
-                @if (string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="OrderOnReceptionFileId" name="OrderOnReceptionFileId" value="@Model.OrderOnReceptionFileId" />
+                    if (string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан приказа о приеме<br /><input type="file" name="OrderOnReceptionFile" id="OrderOnReceptionFile" />
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.OrderOnReceptionFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderOnReceptionFileId })' style="cursor:hand" target="_blank">
@@ -125,12 +145,15 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete2" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.OrderOnReceptionFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                           {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
+                @Html.HiddenFor(m => m.OrderOnReceptionFileNeeded)
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.OrderOnReceptionFileNeeded, new { disabled = "disabled" })</td>
             }
         </tr>
@@ -163,23 +186,29 @@
             </td>
         </tr>
     *@
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ContractMatResponsibleFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ContractMatResponsibleFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать договора Мат. ответственность</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
+                    @*<button  type="button" onclick="window.location.href='@Url.Action("PrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="ContractMatResponsibleFileId" name="ContractMatResponsibleFileId" value="@Model.ContractMatResponsibleFileId" />
-                @if (string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="ContractMatResponsibleFileId" name="ContractMatResponsibleFileId" value="@Model.ContractMatResponsibleFileId" />
+                    if (string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан договора Мат. ответственность<br /><input type="file" name="ContractMatResponsibleFile" id="ContractMatResponsibleFile"/>
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.ContractMatResponsibleFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ContractMatResponsibleFileId })' style="cursor:hand" target="_blank">
@@ -187,34 +216,42 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete4" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ContractMatResponsibleFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ContractMatResponsibleFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.PersonalDataFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.PersonalDataFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать ДС Персональные данные</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>
-                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                @if (Model.IsDocListAvailable)
+                {
+                    <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                       {<text>style="display:none;"</text>}>Печать</button>
+                    @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+                }
             </td>
             <td>
-                <input type="hidden" id="PersonalDataFileId" name="PersonalDataFileId" value="@Model.PersonalDataFileId" />
-                @if (string.IsNullOrEmpty(Model.PersonalDataFileName))
+                @if (Model.IsDocListAvailable)
                 {
+                    <input type="hidden" id="PersonalDataFileId" name="PersonalDataFileId" value="@Model.PersonalDataFileId" />
+                    if (string.IsNullOrEmpty(Model.PersonalDataFileName))
+                    {
                     <div class="formfield clear">
                         Выбрать для загрузки скан ДС Персональные данные<br /><input type="file" name="PersonalDataFile" id="PersonalDataFile" />
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.PersonalDataFileName))
-                {
+                    }
+                    if (!string.IsNullOrEmpty(Model.PersonalDataFileName))
+                    {
                     <div class="formfield">
                         <br />Скан:
                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataFileId })' style="cursor:hand" target="_blank">
@@ -222,22 +259,25 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete5" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.PersonalDataFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                       {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    }
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.PersonalDataFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.DataObligationFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.DataObligationFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать Обязательство конфиденциальность</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -257,32 +297,36 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete6" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.DataObligationFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                         {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.DataObligationFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.EmploymentFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.EmploymentFileNeeded)
             {<text> style = "display:none;" </text>} >
-            <td>Печать личного листка по учету кадров</td>
+            <td>Печать анкеты кандидата</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                            {<text>style="display:none;"</text>}>Печать</button>*@
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
                 <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+                @*
                 @if (string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield clear">
-                        Выбрать для загрузки скан личного листка по учету кадров<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
+                        Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
                     </div>
                 }
+                *@
                 @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield">
@@ -291,23 +335,27 @@
                             @Model.EmploymentFileName
                         </a>
                     </div>
+                    @*
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete7" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                     {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    *@
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.EmploymentFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.RegisterPersonalRecordFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && dto.UserRole != UserRole.Estimator && !Model.RegisterPersonalRecordFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать реестра личного дела</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintRegisterPersonalRecord", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -327,22 +375,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete8" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.RegisterPersonalRecordFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.RegisterPersonalRecordFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.InstructionOfSecretFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.InstructionOfSecretFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать памятки сотруднику о сохранении коммерческой, банковской и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                 {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionOfSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -362,22 +412,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete9" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionOfSecretFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                              {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.InstructionOfSecretFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.InstructionEnsuringSafetyFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.InstructionEnsuringSafetyFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Инструкция по обеспечению сохранности сведений, составляющих коммерческую, и служебную тайну</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                       {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintInstructionEnsuringSafety", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -397,22 +449,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete10" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.InstructionEnsuringSafetyFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                    {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.InstructionEnsuringSafetyFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.AgreePersonForCheckingFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.AgreePersonForCheckingFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Согласие физического лица на проверку персональных данных (Приложение №3)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                    {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintAgreePersonForChecking", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -432,22 +486,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete11" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.AgreePersonForCheckingFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                 {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.AgreePersonForCheckingFileNeeded)</td>
             }
         </tr>
 
         
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.CashWorkAddition1FileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.CashWorkAddition1FileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                               {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition1", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -467,22 +523,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete12" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition1FileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                            {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.CashWorkAddition1FileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.CashWorkAddition2FileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.CashWorkAddition2FileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                               {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintCashWorkAddition2", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -502,22 +560,24 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete13" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.CashWorkAddition2FileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                            {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.CashWorkAddition2FileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.ObligationTradeSecretFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ObligationTradeSecretFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Обязательство о неразглашении коммерческой и служебной тайны</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
                 @*<button  type="button" onclick="window.location.href='@Url.Action("PrintObligationTradeSecret", "Employment", new { userId = Model.UserId })';">Печать</button>*@
             </td>
             <td>
@@ -537,18 +597,19 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete14" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.ObligationTradeSecretFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                                {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.ObligationTradeSecretFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate182HFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.Certificate182HFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Справка 182-Н от предыдущего работодателя</td>
             <td></td>
@@ -569,18 +630,19 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete16" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate182HFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                          {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate182HFileNeeded)</td>
             }
         </tr>
 
 
-        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && !Model.Certificate2NDFLFileNeeded)
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.Certificate2NDFLFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Справка 2-НДФЛ от предыдущего работодателя</td>
             <td></td>
@@ -601,11 +663,12 @@
                         </a>
                     </div>
                     <div class="formfield">
-                        <br /><input type="button" id="btnDelete17" value="Удалить скан"/>
+                        <br /><input type="button" onclick="DeleteScanDocuments(@Model.Certificate2NDFLFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                                           {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
                 }
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;">@Html.CheckBoxFor(m => m.Certificate2NDFLFileNeeded)</td>
             }
@@ -614,7 +677,8 @@
         <tr>
             <td>Заявление на получение банковской карты</td>
             <td>
-                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';">Печать</button>
+                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")';" @if (!Model.IsPrintButtonAvailable)
+                                                                                                                                                   {<text>style="display:none;"</text>}>Печать</button>
             </td>
             <td>
                 Вам необходимо обратиться с паспортом к ответственному сотруднику за зарплатные счета<br />
@@ -627,7 +691,7 @@
                 на Корпоративном портале.
 
             </td>
-            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager)
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
             {
                 <td style="text-align:center;"></td>
             }
@@ -637,7 +701,12 @@
         @if (dto.UserRole == UserRole.PersonnelManager && !Model.SendTo1C.HasValue)
         {
             <tr>
-                <td colspan="3"></td>
+                <td colspan="3">
+                    <button id="btnSentEmail" @if (Model.CandidateStatus == 11)
+                                              {<text>style="float:right;"</text>}
+                                              else
+                                              {<text>style="display:none;"</text>}>Отправить email рководителю</button>    
+                </td>
                 <td >
                     <button id="btnSaveDocNeeded" type="button">Сохранить</button>
                 </td>
@@ -648,134 +717,92 @@
     
     
     </fieldset>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
+
+
 
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empCandidateDocuments");
-        $("#ApplicationLetterScanFile").change(function () { this.form.submit(); });
-        $("#EmploymentContractFile").change(function () { this.form.submit(); });
-        $("#OrderOnReceptionFile").change(function () { this.form.submit(); });
-        $("#T2File").change(function () { this.form.submit(); });
-        $("#ContractMatResponsibleFile").change(function () { this.form.submit(); });
-        $("#PersonalDataFile").change(function () { this.form.submit(); });
-        $("#DataObligationFile").change(function () { this.form.submit(); });
-        $("#EmploymentFile").change(function () { this.form.submit(); });
-        $("#RegisterPersonalRecordFile").change(function () { this.form.submit(); });
-        $("#InstructionOfSecretFile").change(function () { this.form.submit(); });
-        $("#InstructionEnsuringSafetyFile").change(function () { this.form.submit(); });
-        $("#AgreePersonForCheckingFile").change(function () { this.form.submit(); });
-        $("#CashWorkAddition1File").change(function () { this.form.submit(); });
-        $("#CashWorkAddition2File").change(function () { this.form.submit(); });
-        $("#ObligationTradeSecretFile").change(function () { this.form.submit(); });
-        $("#Certificate182HFile").change(function () { this.form.submit(); });
-        $("#Certificate2NDFLFile").change(function () { this.form.submit(); });
+
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $("#ApplicationLetterScanFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#EmploymentContractFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#OrderOnReceptionFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#T2File").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#ContractMatResponsibleFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#PersonalDataFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#DataObligationFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#EmploymentFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#RegisterPersonalRecordFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#InstructionOfSecretFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#InstructionEnsuringSafetyFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#AgreePersonForCheckingFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#CashWorkAddition1File").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#CashWorkAddition2File").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#ObligationTradeSecretFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#Certificate182HFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+        $("#Certificate2NDFLFile").change(function () { ShowFlash(true); $("#CandidateDocumentsForm").submit(); });
+
+
+        $("#btnSentEmail").click(function () {
+            $("#IsSave").val(true);
+            $("#IsSentEmail").val(true);
+            $("#CandidateDocumentsForm").submit();
+        });
+
         $("#btnSaveDocNeeded").click(function () {
             $("#IsSave").val(true);
-            this.form.submit();
-        });
-
-
-        $("#btnDelete1").click(function () {
-            var Id = $("#EmploymentContractFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete2").click(function () {
-            var Id = $("#OrderOnReceptionFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete3").click(function () {
-            var Id = $("#T2FileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete4").click(function () {
-            var Id = $("#ContractMatResponsibleFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete5").click(function () {
-            var Id = $("#PersonalDataFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete6").click(function () {
-            var Id = $("#DataObligationFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete7").click(function () {
-            var Id = $("#EmploymentFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete8").click(function () {
-            var Id = $("#RegisterPersonalRecordFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete9").click(function () {
-            var Id = $("#InstructionOfSecretFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete10").click(function () {
-            var Id = $("#InstructionEnsuringSafetyFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete11").click(function () {
-            var Id = $("#AgreePersonForCheckingFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete12").click(function () {
-            var Id = $("#CashWorkAddition1FileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete13").click(function () {
-            var Id = $("#CashWorkAddition2FileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete14").click(function () {
-            var Id = $("#ObligationTradeSecretFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete15").click(function () {
-            var Id = $("#ApplicationLetterScanAttachmentId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete16").click(function () {
-            var Id = $("#Certificate182HFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
-        });
-
-        $("#btnDelete17").click(function () {
-            var Id = $("#Certificate2NDFLFileId").val();
-            $("#DeleteAttachmentId").val(Id);
-            this.form.submit();
+            $("#CandidateDocumentsForm").submit();
         });
     });
+
+
+    function DeleteScanDocuments(id, formname) {
+        ShowFlash(true);
+        $("#DeleteAttachmentId").val(id);
+        //$("#CandidateDocumentsForm").submit();
+        $("#" + formname).submit();
+    }
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
 </script>

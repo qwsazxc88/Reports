@@ -31,7 +31,10 @@
       <key column="UserId" foreign-key="FK_ClearanceChecklistRoleRecord_User"/>
       <one-to-many class="ClearanceChecklistRoleRecord" />
     </bag>
-
+    <bag name="VacationSaldo" table="VacationSaldo" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_VacationSaldo_User"/>
+      <one-to-many class="VacationSaldo" />
+    </bag>
     <bag name="ManualRoleRecords" table="ManualRoleRecord" lazy="true" cascade="save-update">
       <key column="UserId" foreign-key="FK_ManualRoleRecord_User"/>
       <one-to-many class="ManualRoleRecord" />

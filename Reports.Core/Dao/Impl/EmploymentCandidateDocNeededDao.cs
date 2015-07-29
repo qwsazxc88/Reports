@@ -71,5 +71,17 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
+
+        /// <summary>
+        /// Проверка на наличие полного списка подписанных документов кандидатом.
+        /// </summary>
+        /// <param name="CandidateId">Id кандидата</param>
+        /// <returns></returns>
+        public bool CheckCandidateSignDocExists(int CandidateId)
+        {
+            IQuery query = Session.CreateSQLQuery(@"SELECT dbo.fnCheckCandidateSignDocExists(" + CandidateId + ") as DocExists")
+                           .AddScalar("DocExists", NHibernateUtil.Boolean);
+            return query.UniqueResult<bool>();
+        }
     }
 }

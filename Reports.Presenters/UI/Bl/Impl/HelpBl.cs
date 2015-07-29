@@ -166,6 +166,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpBillingExecutorTaskDao); }
             set { helpBillingExecutorTaskDao = value; }
         }
+
+        protected IRequestPrintFormDao requestPrintFormDao;
+        public IRequestPrintFormDao RequestPrintFormDao
+        {
+            get { return Validate.Dependency(requestPrintFormDao); }
+            set { requestPrintFormDao = value; }
+        }
         #endregion
 
         #region Service Requests List
@@ -195,7 +202,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UserRole.PersonnelManager,
                 UserRole.ConsultantOutsourcing,
                 UserRole.ConsultantPersonnel,
-                UserRole.ConsultantOutsorsingManager
+                UserRole.Estimator
                
             });
             model.IsOriginalDocsVisible = RolesToShow.Contains(CurrentUser.UserRole);
@@ -205,13 +212,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<UserRole> RolesToEdit = new List<UserRole>{
                 
                 UserRole.PersonnelManager,
-                 UserRole.ConsultantOutsorsingManager
+                UserRole.Estimator
+                // UserRole.ConsultantOutsorsingManager Deprecated
             };
             model.IsOriginalDocsEditable = RolesToEdit.Contains(CurrentUser.UserRole) || CurrentUser.Id==10;
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.ConsultantOutsorsingManager) == UserRole.ConsultantOutsorsingManager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel ||(CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager) || ((CurrentUser.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager);
         }
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
@@ -276,7 +284,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<UserRole> ApprovedUsers = new List<UserRole>
             {
                 UserRole.ConsultantPersonnel,
-                UserRole.ConsultantOutsorsingManager,
+                //UserRole.ConsultantOutsorsingManager, Deprecated
                 UserRole.PersonnelManager
             };
             if (!ApprovedUsers.Contains(CurrentUser.UserRole) || model.Documents==null) return;
@@ -299,6 +307,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank();
+                model.Users = users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -334,6 +348,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
             IList<IdNameDto> list = null;
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) > 0)
+            {
+                var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).ToList();
+                return users;
+            }
+            else
             switch (currentUser.Level)
             {
                 case 2:
@@ -424,6 +444,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ServiceAttachment = serviceAttach.FileName;
                     model.DocumentsCount = serviceAttach.DocumentsCount;
                 }
+                
+                RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.ServiceRequest);
+                model.IsPrintFormAvailable = form != null;
+
                 if (entity.Consultant != null)
                     model.Worker = entity.Consultant.FullName;
                 if (entity.EndWorkDate.HasValue)
@@ -454,7 +478,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.ConsultantOutsorsingManager) != UserRole.ConsultantOutsorsingManager)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee && (currentRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -462,6 +486,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currentRole)
             {
+                case UserRole.ConsultantPersonnel:
                     case UserRole.Employee:
                     if (entity.Creator.Id == current.Id)
                     {
@@ -522,7 +547,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
                     break;
-                case UserRole.PersonnelManager:
+                /*case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
                     {
                         if (entity.Consultant != null && entity.Consultant.Id == current.Id
@@ -542,8 +567,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
-                    break;
-                case UserRole.ConsultantOutsorsingManager:
+                    break;*/ //DEPRECATED MAY BE PROBLEM
+                case UserRole.Estimator:
+                case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
                     {
                         if (entity.Consultant != null && entity.Consultant.Id == current.Id
@@ -562,15 +588,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //кнопка принятия в работу доступна пока не сформируется услуга не зависимо от того, кто ее принял в работу
                     if (entity.SendDate.HasValue && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         model.IsBeginWorkAvailable = true;
-                    //чтобы видно было, но в работу не принималось и скан не выкачивался
-                    if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+
+                    //чтобы видно было кадровикам, но в работу не принималось и скан не выкачивался
+                    List<int> EstimatorList = new List<int> { 2, 4, 5, 7, 8, 10, 11, 12, 16, 17, 20, 21, 26, 27 };
+                    List<int> PersonnelList = new List<int> { 1, 3, 6, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 22, 23, 24, 25, 28, 4, 2, 5, 7, 10, 11, 21, 26, 27 };
+                    if (AuthenticationService.CurrentUser.Id != 10 && (CurrentUser.UserRole & UserRole.Estimator) == 0)
                     {
-                        model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
-                        model.IsBeginWorkAvailable = false;
+                        if (entity.Type.Id == 4 || entity.Type.Id == 2 || entity.Type.Id == 5 || entity.Type.Id == 10 || entity.Type.Id == 11 || entity.Type.Id == 21 || entity.Type.Id == 7 || entity.Type.Id == 26 || entity.Type.Id == 27)
+                        {
+                            model.IsNotScanView = entity.Type.Id == 26 || entity.Type.Id == 27 ? false : true;
+                            model.IsBeginWorkAvailable = false;
+                        }
+                        else
+                            model.IsNotScanView = false;
                     }
                     else
-                        model.IsNotScanView = false;
-
+                    {
+                        if (!EstimatorList.Contains(entity.Type.Id))
+                        {
+                            model.IsBeginWorkAvailable = false;
+                            model.IsNotScanView = false;
+                        }
+                    }
                     //консультант составляет за сотрудника
                     if (entity.Creator.Id == current.Id)
                     {
@@ -903,6 +942,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currRole)
             {
+                case UserRole.ConsultantPersonnel:
                 case UserRole.Employee:
                     if (entity.Creator.Id == currUser.Id)
                     {
@@ -985,7 +1025,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Consultant = currUser;
                     }
                     break;
-                case UserRole.ConsultantOutsorsingManager:
+                case UserRole.PersonnelManager:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
                     {
                         if (model.Operation == 2 && entity.SendDate.HasValue)
@@ -1017,7 +1057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Creator.Id == currUser.Id && model.Operation == 1 && !entity.SendDate.HasValue)
                         entity.SendDate = DateTime.Now;
                     break;
-                case UserRole.PersonnelManager:
+                /*case UserRole.PersonnelManager: //DEPRECATED MAY BE PROBLEM
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
                     {
                         if (model.Operation == 2 && entity.SendDate.HasValue)
@@ -1044,7 +1084,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.BeginWorkDate = DateTime.Now;
                         entity.Consultant = currUser;
                     }
-                    break;
+                    break;*/
             }
         }
         public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
@@ -1066,7 +1106,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     HelpServiceRequest request = HelpServiceRequestDao.Load(id);
                     isAddAvailable =  (((CurrentUser.Id == request.Creator.Id) &&
-                                        ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
+                                        ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
                                         (request.Consultant != null && 
                                             CurrentUser.Id == request.Consultant.Id && 
                                             CurrentUser.UserRole == UserRole.ConsultantOutsourcing) ||
@@ -1075,7 +1115,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             CurrentUser.UserRole == UserRole.PersonnelManager) ||
                                          (request.Consultant != null &&
                                             CurrentUser.Id == request.Consultant.Id &&
-                                            CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager)
+                                            CurrentUser.UserRole == UserRole.ConsultantPersonnel)
                                         );
                 }
             }
@@ -1173,7 +1213,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceQuestionsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.ConsultantPersonnel) == UserRole.ConsultantPersonnel);
         }
         public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
         {
@@ -1341,8 +1381,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.Estimator:
                 case UserRole.PersonnelManager:
-                case UserRole.ConsultantOutsorsingManager:
+                //case UserRole.ConsultantOutsorsingManager:
                 case UserRole.Admin:
                     return true;
             }
@@ -1438,7 +1479,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
+                if ((currentRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel && (currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee && (currentRole & UserRole.DismissedEmployee) != UserRole.DismissedEmployee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
@@ -1501,6 +1542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //могут отвечать на любые открытые вопросы, не важно кому направленные
                     //вытащил кусок из закомментаренного условия
+
                     if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
@@ -1520,6 +1562,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else  model.IsBaseAvailable = entity.Base;
                     break;
                 case UserRole.ConsultantPersonnel:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
                              entity.ConsultantRoleId.Value == (int)UserRole.ConsultantPersonnel))
@@ -1539,10 +1594,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.ConsultantOutsorsingManager:
+                case UserRole.PersonnelManager:
                     if ((entity.ConsultantOutsorsingManager == null || (entity.ConsultantOutsorsingManager.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
-                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantOutsorsingManager))
+                             entity.ConsultantRoleId.Value == (int)UserRole.PersonnelManager))
                     {
                         if (//entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == current.Id
                             //&& 
@@ -1918,8 +1973,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
-                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
-                    {
+                    //закомментарил чтобы консультанты могли перекрывать друг друга
+                    //if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
+                    //{
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
@@ -2004,11 +2060,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.Base = true;
                         }
-                    }
+                    //}
                     break;
                 case UserRole.ConsultantPersonnel:
                     if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == currUser.Id))
                     {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
+                            entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
@@ -2192,14 +2264,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //        }
                 //    }
                 //    break;
-                case UserRole.ConsultantOutsorsingManager:
+                case UserRole.PersonnelManager:
                     if (entity.ConsultantOutsorsingManager == null || (entity.ConsultantOutsorsingManager.Id == currUser.Id))
                     {
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.ConsultantOutsorsingManager = currUser;
-                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsorsingManager;
+                            entity.ConsultantRoleId = (int)UserRole.PersonnelManager;
                             HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
                             {
                                 //Answer = entity.Answer,
@@ -2265,14 +2337,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsourcing &&
                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantPersonnel &&
                entity.ConsultantRoleId.Value != (int)UserRole.Accountant &&
-               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsorsingManager) ||//&&
+               entity.ConsultantRoleId.Value != (int)UserRole.PersonnelManager) ||//&&
                //entity.ConsultantRoleId.Value != (int)UserRole.PersonnelManager) ||
                !entity.SendDate.HasValue || entity.EndWorkDate.HasValue)
                 throw new ArgumentException("В текущем состоянии перенаправление заявки невозможно");
             if ((CurrentUser.UserRole & UserRole.ConsultantOutsourcing) != UserRole.ConsultantOutsourcing &&
                     (CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel &&
                     CurrentUser.UserRole != UserRole.Accountant &&
-                    CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)// &&
+                    CurrentUser.UserRole != UserRole.PersonnelManager)// &&
                     //CurrentUser.UserRole != UserRole.PersonnelManager)
                 throw new ArgumentException("Перенаправление заявки невозможно - неверная роль пользователя");
             List<Role> roles = RoleDao.LoadAll().ToList();
@@ -2281,8 +2353,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
                 model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
             }
-
-            if (CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager) return model;//для консультантов КО разрешаем перенаправление вопроса консультанту аутсора
+            if ((CurrentUser.UserRole & UserRole.PersonnelManager) != UserRole.PersonnelManager)
+            {
+                Role role = GetRoleForId(roles, (int)UserRole.PersonnelManager);
+                model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
+            }
+            if (CurrentUser.UserRole == UserRole.PersonnelManager) return model;//для консультантов КО разрешаем перенаправление вопроса консультанту аутсора
 
             if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel)
             {
@@ -2294,11 +2370,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int)UserRole.Accountant);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
             }
-            if (CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)
+            /*if (CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantOutsorsingManager);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
-            }
+            }*/
             return model;
         }
         protected Role GetRoleForId(List<Role> roles,int roleId)
@@ -2568,7 +2644,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetPersonnelBillingTitles(bool addAll)
         {
-            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            List<int> removedThemes = new List<int>() { 1, 7 };
+            List<IdNameDto> list = HelpBillingTitleDao.LoadAllSortedByOrder().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).Where(x => !removedThemes.Contains(x.Id)).ToList();
             if(addAll)
                 list.Insert(0, new IdNameDto(0, SelectAll));
             return list;
@@ -2576,7 +2653,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetIsAvailable(HelpPersonnelBillingListModel model)
         {
             //могут создавать задачи все кто имеет доступ к пункту меню, кроме просмотровой учетки
-            model.IsAddAvailable = CurrentUser.UserRole != UserRole.OutsourcingManager || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10);
+            model.IsAddAvailable = CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole != UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10);
         }
 
         public void SetPersonnelBillingListModel(HelpPersonnelBillingListModel model, bool hasError)
@@ -2617,7 +2694,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpPersonnelBillingRequest entity = null;
             if (id == 0)
             {
-                if (CurrentUser.UserRole != UserRole.OutsourcingManager || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
+                if (CurrentUser.UserRole != UserRole.OutsourcingManager || CurrentUser.UserRole == UserRole.Estimator || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && CurrentUser.Id == 10))
                     userId = current.Id;
                 else
                     throw new ValidationException(StrCannotCreatePersonnelBilling);
@@ -2707,7 +2784,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             if (AuthenticationService.CurrentUser.Id == 10 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ||
-                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator)
+                AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator||
+                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.Accountant ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.Estimator
+                )
             {
                 if (entity.Creator.Id == current.Id)
                 {
@@ -2763,7 +2845,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //открыто для создающего и отвечающих, кроме просмотровой роли
             bool isAddAvailable = (!entity.SendDate.HasValue && (entity.Creator.Id == CurrentUser.Id)) ||
-                ((entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)));
+                ((entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue && (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager) && (AuthenticationService.CurrentUser.UserRole != UserRole.Estimator)));
 
             List<RequestAttachment> list = RequestAttachmentDao.FindManyByRequestIdAndTypeId(entity.Id, typeId).ToList();
             RequestAttachmentsModel model = new RequestAttachmentsModel
@@ -2969,7 +3051,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             if (AuthenticationService.CurrentUser.Id == 10 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ||
-                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator)
+                AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager || AuthenticationService.CurrentUser.UserRole == UserRole.Estimator||
+                AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.Accountant ||
+                AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector
+                )
             {
                 if (entity.Creator.Id == currUser.Id)
                 {
@@ -2987,7 +3073,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else 
                 {
                     //кому направлена тема
-                    if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
+                    if (AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager && AuthenticationService.CurrentUser.UserRole != UserRole.Estimator)
                     {
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue && entity.Creator.Id != AuthenticationService.CurrentUser.Id)
                         {

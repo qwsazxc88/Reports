@@ -58,6 +58,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerRejectAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
         public bool IsTrainerCanSave { get; set; }
+        public bool IsBankAccountantAccept { get; set; }
         public string ManagerFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
@@ -100,6 +101,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
         public string ResumeComment { get; set; }
+        public string ResumeCommentByOPINP { get; set; }
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }

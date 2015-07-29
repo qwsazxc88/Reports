@@ -25,7 +25,7 @@ namespace WebMvc.Controllers
     /// Контролер для ГПД.
     /// </summary>
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager |UserRole.Chief | UserRole.Manager)]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |UserRole.Chief | UserRole.Manager)]
 
     public class GPDController : BaseController
     {
@@ -43,7 +43,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult Index()
         {
             GpdContractModel model = new GpdContractModel();
@@ -56,7 +56,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult Index(GpdContractModel model)
         {
             GpdBl.SetGpdContractView(model);
@@ -69,7 +69,7 @@ namespace WebMvc.Controllers
         /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdContractEdit(int Id, int PersonID, string Msg)
         {
             GpdContractEditModel model = GpdBl.SetGpdContractEdit(Id, PersonID, 0, null);
@@ -86,7 +86,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Обрабатываемая модель.</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
             ModelState.Clear();
@@ -132,7 +132,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdRefDetail()
         {
             GpdRefDetailModel model = new GpdRefDetailModel();
@@ -149,7 +149,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdRefDetail(GpdRefDetailModel model)
         {
             ModelState.Clear();
@@ -165,7 +165,7 @@ namespace WebMvc.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdRefDetailEdit(int Id)
         {
             GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0, 0);
@@ -180,7 +180,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Модель редактирования.</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdRefDetailEdit(GpdRefDetailEditModel model)
         {
             ModelState.Clear();
@@ -220,7 +220,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdActList()
         {
             bool hasError = false;
@@ -265,7 +265,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdActList(GpdActListModel model)
         {
             //GpdContractModel model = new GpdContractModel();
@@ -280,7 +280,7 @@ namespace WebMvc.Controllers
         /// <param name="GCID">ID договора.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager| UserRole.Manager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager| UserRole.Manager | UserRole.Estimator)]
         public ActionResult GpdActEdit(int Id, int GCID, string Msg)
         {
             bool hasError = false;
@@ -300,7 +300,7 @@ namespace WebMvc.Controllers
         /// <param name="model">Модель создания/редактирования акта ГПД.</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
         public ActionResult GpdActEdit(GpdActEditModel model)
         {
             bool hasError = false;

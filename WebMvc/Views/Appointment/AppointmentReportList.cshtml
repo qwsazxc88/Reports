@@ -4,7 +4,7 @@
 @model Reports.Presenters.UI.ViewModel.AppointmentListModel
 @{
     Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
-    ViewBag.Title = "Реестр заявок";
+    ViewBag.Title = "Реестр отчётов";
 }
 @using (Html.BeginForm())
 {
@@ -159,7 +159,43 @@
                         <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
                     <th>
+                        <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
+                    </th>
+                     <th>
+                        <div id="sort13"  style="min-width:50px"><a href="#"  onclick = "SortChanged(13);">Кандидат<br/> подобран</a></div>
+                    </th>
+                    <th>
+                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Принят<br/> на работу</a></div>
+                    </th>
+                     <th>
+                        <div id="sort18" style="min-width:110px"><a href="#"  onclick = "SortChanged(18);">Не принят<br/> (причина отказа)</a></div>
+                    </th>
+                    <th>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус<br />отчёта</a></div>
+                    </th>
+                    <th>
+                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения<br />в приёме</a></div>
+                    </th>
+                    <th>
+                        <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
+                    </th>
+                    <th>
+                        <div id="sort11" style="min-width:80px"><a href="#"  onclick = "SortChanged(11);">Желательная<br/> дата выхода</a></div>
+                    </th>
+                    <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort14"  style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">ФИО<br/> кандидата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Уровень<br/> ЗП</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
                     </th>
                      <th>
                         <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
@@ -167,51 +203,12 @@
                      <th>
                         <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
                     </th>
-                   @* <th>
-                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
-                    </th>*@
                     <th>
-                        <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
-                    </th>
-                    <th>
-                        <div id="sort10" style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Уровень<br/> ЗП</a></div>
-                    </th>
-                     <th>
-                        <div id="sort11" style="min-width:80px"><a href="#"  onclick = "SortChanged(11);">Желательная<br/> дата выхода</a></div>
-                    </th>
-                    <th>
-                        <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
-                    </th>
-                     <th>
-                        <div id="sort13"  style="min-width:50px"><a href="#"  onclick = "SortChanged(13);">Кандидат<br/> подобран</a></div>
-                    </th>
-                     <th>
-                        <div id="sort14"  style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">ФИО<br/> кандидата</a></div>
-                    </th>
-                     <th>
                         <div id="sort15"  style="min-width:110px"><a href="#"  onclick = "SortChanged(15);">Тел.<br/> кандидата</a></div>
                     </th>
                      <th>
                         <div id="sort16" style="min-width:110px"><a href="#"  onclick = "SortChanged(16);">E-mail<br/> кандидата</a></div>
-                    </th>
-                    <th>
-                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Принят<br/> на работу</a></div>
-                    </th>
-                    <th>
-                        <div id="sort18" style="min-width:110px"><a href="#"  onclick = "SortChanged(18);">Не принят<br/> (причина отказа)</a></div>
-                    </th>
-                    <th>
-                        <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
-                    </th>
-                    <th>
-                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
-                    </th>
-                    <th>
-                        <div id="sort28" ><a href="#"  onclick = "SortChanged(28);">Состояние<br />обучения</a></div>
-                    </th>
-                    <th>
-                        <div id="sort26"><a href="#" onclick = "SortChanged(26);">Статус<br />приёма</a></div>
-                    </th>
+                    </th> 
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -223,7 +220,7 @@
                         {
                             case 8: <text> class="bgGray" </text>
                                 break;
-                            case -1: <text> </text>
+                            case -2: <text> </text>
                                 break;
                             default:<text> class="bgBlue" </text>
                                 break;
@@ -242,26 +239,15 @@
                             <td>@doc.PositionName</td>
                             <td>@doc.ManDep3Name</td>
                             <td>@doc.ManDep7Name</td>
-                            <td>@doc.CanPosition</td>
-                            <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
-                           @* <td>@doc.Period</td>*@
-                            <td>@doc.Schedule</td>
-                            <td>@RequestBl.FormatSum(@doc.Salary)</td>
-                            <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
-                            <td>@doc.Reason</td>@*12*@
+                            <td>@doc.StaffName</td>
                             <td>@doc.RStaffAccept</td>
-                            <td>@doc.RName</td>
-                            <td>@doc.Phone</td>
-                            <td>@doc.Email</td>
                             <td>@doc.RApprove</td>
                             <td>@doc.RReject</td>
-                            <td>@doc.StaffName</td>@*19*@
                             <td>@doc.Status</td>
                             <td>@doc.EducationStatus</td>
                             <td>@{if (doc.EmploymentStatus != null)
                                   {
-                                      var es = Model.EmploymentStatuses.Where(x => x.Value == doc.EmploymentStatus.ToString());
+                                      var es = Model.EmploymentStatuses.Where(x => x.Value == ((int)doc.EmploymentStatus).ToString());
                                       if (es != null && es.Any())
                                       {
                                     <text>@es.First().Text</text>;
@@ -269,6 +255,16 @@
 
                                   }}
                             </td>
+                            <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
+                            <td>@doc.CanPosition</td>
+                            <td>@doc.RName</td>
+                            <td>@doc.Reason</td>
+                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
+                             <td>@doc.Schedule</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
+                            <td>@doc.Phone</td>
+                            <td>@doc.Email</td>
                         </tr>
                     }
                 }

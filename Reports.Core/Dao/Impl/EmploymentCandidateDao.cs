@@ -51,6 +51,7 @@ namespace Reports.Core.Dao.Impl
                 , managers.ProbationaryPeriod ProbationaryPeriod
                 , schedule.Name Schedule
                 , generalInfo.DateOfBirth DateOfBirth
+                , dis.EndDate as DismissalDate
 				, case when generalInfo.DisabilityCertificateNumber is null then N''
 					else N'Справка '
 						+ generalInfo.DisabilityCertificateSeries
@@ -60,13 +61,16 @@ namespace Reports.Core.Dao.Impl
 						+ N', срок действия справки: ' + convert(varchar, generalInfo.DisabilityCertificateExpirationDate, 104)
 					end Disabilities
                 , candidateUser.Grade Grade
-				, case
+				, case 
+                    when candidate.Status = 10 then N'Ожидает предварительного согласования ДБ'
 					when candidate.Status = 1 then N'Ожидает согласование ДБ'
 					when candidate.Status = 2 then N'Обучение'
                     when candidate.Status = 3 then N'Ожидается заявление о приеме'
 					when candidate.Status = 4 then N'Ожидает согласование руководителем'
 					when candidate.Status = 5 then N'Ожидает согласование вышестоящим руководителем'
 					when candidate.Status = 6 then N'Оформление Кадры'
+                    when candidate.Status = 11 then N'Контроль руководителя - пакет документов на подпись'
+                    when candidate.Status = 12 then N'Документы подписаны кандидатом'
 					when candidate.Status = 7 then N'Оформлен'
 					when candidate.Status = 8 then N'Выгружено в 1С'
 					when candidate.Status = 9 then N'Отклонен'
@@ -118,8 +122,10 @@ namespace Reports.Core.Dao.Impl
 				end as AppointmentNumber
                 ,isnull(candidate.IsTechDissmiss, 0) as IsTechDissmiss
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
+                ,managers.MentorName
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
+                left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
                 left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
@@ -159,6 +165,17 @@ namespace Reports.Core.Dao.Impl
         public IList<EmploymentCandidate> GetSomeCandidate()
         {
             return Session.Query<EmploymentCandidate>().Where(x => x.Appointment.Creator.Name.Contains("Поляк")).ToList();
+        }
+        public void CancelCandidatesByAppointmentId(int Id)
+        {
+            if (Id <= 0) return;
+            var candidates = Session.Query<EmploymentCandidate>().Where(x => !x.SendTo1C.HasValue && x.Appointment.Id == Id).ToList();
+            foreach (var el in candidates)
+            {
+                el.Status = Enum.EmploymentStatus.REJECTED;
+                SaveAndFlush(el);
+            }
+
         }
         public IList<CandidateDto> GetCandidates(int currentId,
                 UserRole role,
@@ -275,6 +292,7 @@ namespace Reports.Core.Dao.Impl
                             )
                         )
                         ", currentUser.Id);
+                sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
             }
             else if ((role & UserRole.PersonnelManager) > 0)//для кадровиков
             {
@@ -282,6 +300,7 @@ namespace Reports.Core.Dao.Impl
             }
             else if ((role & (UserRole.PersonnelManager
                 | UserRole.Security
+                | UserRole.ConsultantPersonnel
                 | UserRole.Trainer
                 | UserRole.OutsourcingManager
                 | UserRole.StaffManager)) > 0)
@@ -464,6 +483,12 @@ namespace Reports.Core.Dao.Impl
                 case 20:
                     orderBy = "AppointmentNumber";
                     break;
+                case 21:
+                    orderBy = "DismissalDate";
+                    break;
+                case 22:
+                    orderBy = "MentorName";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -523,6 +548,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("AppointmentNumber", NHibernateUtil.Int32)
                 .AddScalar("IsTechDissmiss", NHibernateUtil.Boolean)
                 .AddScalar("IsBlocked", NHibernateUtil.Boolean)
+                .AddScalar("DismissalDate", NHibernateUtil.DateTime)
+                .AddScalar("MentorName", NHibernateUtil.String)
                 ;
 
             return query;
@@ -577,6 +604,7 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("ScanFinal", NHibernateUtil.Boolean)
                 .AddScalar("GeneralFinal", NHibernateUtil.Boolean)
                 .AddScalar("PassportFinal", NHibernateUtil.Boolean)
                 .AddScalar("EducationFinal", NHibernateUtil.Boolean)
@@ -588,6 +616,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("CandidateApp", NHibernateUtil.Boolean)
                 .AddScalar("CandidateReady", NHibernateUtil.Boolean)
                 .AddScalar("BackgroundApproval", NHibernateUtil.Boolean)
+                .AddScalar("PrevBackgroundApproval", NHibernateUtil.Boolean)
                 .AddScalar("TrainingApproval", NHibernateUtil.Boolean)
                 .AddScalar("ManagerApproval", NHibernateUtil.Boolean)
                 .AddScalar("PersonnelManagerApproval", NHibernateUtil.Boolean)
@@ -614,7 +643,7 @@ namespace Reports.Core.Dao.Impl
             return query;
         }
         /// <summary>
-        /// Список сканов.
+        /// Список сканов документов по приему.
         /// </summary>
         /// <param name="CandidateID">Id кандидата</param>
         /// <returns></returns>
@@ -635,7 +664,22 @@ namespace Reports.Core.Dao.Impl
 
             return query;
         }
-        
+        /// <summary>
+        /// Достаем список сканов из анкеты.
+        /// </summary>
+        /// <param name="CandidateID">Id заявки кандидата.</param>
+        /// <returns></returns>
+        public IList<EmploymentAttachmentDto> GetCandidateQuestAttachmentList(int CandidateID)
+        {
+            IQuery query = Session.CreateSQLQuery("SELECT * FROM dbo.vwEmploymentScanInfo WHERE CandidateID = " + CandidateID.ToString())
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("CandidateId", NHibernateUtil.Int32)
+                .AddScalar("RequestType", NHibernateUtil.Int32)
+                .AddScalar("FileName", NHibernateUtil.String)
+                .AddScalar("DateCreated", NHibernateUtil.DateTime)
+                .AddScalar("Surname", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean<EmploymentAttachmentDto>()).List<EmploymentAttachmentDto>();
+        }
 
     }
 }

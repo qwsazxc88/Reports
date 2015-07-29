@@ -10,14 +10,14 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
 
-@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ManagerForm" }))
 {
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftM)
     @Html.HiddenFor(m => m.SendTo1C)
     
     <fieldset class="bordered doc-wrap panel">
-    <legend>Руководители</legend>
+    <legend>Руководители aaa</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
             <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
@@ -127,6 +127,11 @@
         </div>
 
         <div class="formfield clear">
+            @Html.LabelFor(m => m.MentorName)&nbsp;@Html.ValidationMessageFor(m => m.MentorName)<br />
+            @Html.EditorFor(m => m.MentorName)
+        </div>
+
+        <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
@@ -134,7 +139,7 @@
         @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
-                <button id="btnManagerDraft">Черновик</button>
+                <button id="btnManagerDraft" type="button">Черновик</button>
             </div>
         }
         
@@ -158,6 +163,12 @@
         @if (Model.IsApproveByManagerAvailable)
         {
             <button>Применить</button>
+        }
+        
+        @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+        @if (Model.IsCancelApproveAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
         }
         <br /><br />
     </div>
@@ -184,6 +195,11 @@
         @if (Model.IsApproveByHigherManagerAvailable)
         {
             <button>Применить</button>
+        }
+        @Html.HiddenFor(m => m.IsCancelApproveHigherAvailale)
+        @if (Model.IsCancelApproveHigherAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
         }
     </div>
 }
@@ -234,6 +250,11 @@
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();
         $('#IsLiableContainer').buttonset();
+
+        $("#btnManagerDraft").click(function(){
+            $("#IsDraftM").val(true);
+            $("#ManagerForm").submit();
+        });
 
         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
         else {$('#isExternalWorkContainer').hide();}

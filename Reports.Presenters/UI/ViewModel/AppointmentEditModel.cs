@@ -15,6 +15,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "В структурное подразделение")]
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
+        public bool NonActual { get; set; }
+        public bool IsNonActualButtonAvailable { get; set; }
+        public bool isNeedToNotify { get; set; }
         public int DepartmentRequiredLevel { get; set; }
         public int Recruter { get; set; }
         public int StaffBossId { get; set; }
@@ -23,6 +26,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AppointmentEditModel_City_Required", typeof(Resources))]
         public string City { get; set; }
+
         public int Priority { get; set; }
         public IList<IdNameDto> Priorities { get; set; }
         [Display(Name = "Должность")]
@@ -39,6 +43,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Основание появления вакансии")]
         public int ReasonId { get; set; }
         public int ReasonIdHidden { get; set; }
+        public IList<IdNameDto> UsersList { get; set; }
+        public int ReasonPositionId { get; set; }
         public IList<IdNameDto> Reasons;
 
         //[Display(Name = "Должность")]
@@ -61,7 +67,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
-
+        public IList<IdNameDto> Reports { get; set; }
         [Display(Name = "Доп. Предложения/компенсации")]
         public string Compensation { get; set; }
 
@@ -128,6 +134,7 @@ namespace Reports.Presenters.UI.ViewModel
         public CommentsModel CommentsModel { get; set; }
 
         public int StaffCreatorId { get; set; }
+        public string StaffCreatorName { get; set; }
         public bool ApproveForAll { get; set; }
         public bool ApproveForAllAvailable { get; set; }
         public IList<IdNameDto> AppointmentTypes { get; set; }

@@ -9,7 +9,8 @@ namespace Reports.Core.Domain
     public class Appointment : AbstractEntityWithVersion
     {
         #region Fields
-
+        public virtual bool NonActual { get; set; }
+        public virtual bool isNotifyNeeded {get;set;}
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
         public virtual bool IsStoped { get; set; }
@@ -44,7 +45,7 @@ namespace Reports.Core.Domain
         public virtual string PyrusNumber { get; set; }
 
         public virtual User Creator { get; set; }
-
+        public virtual User ReasonPositionUser { get; set; }
         public virtual User StaffCreator { get; set; }
 
         public virtual DateTime? ManagerDateAccept { get; set; }
@@ -70,6 +71,7 @@ namespace Reports.Core.Domain
         public virtual IList<AppointmentComment> Comments { get; set; }
         public virtual IList<EmploymentCandidate> Candidates { get; set; }
         public virtual IList<User> Recruters { get; set; }
+        public virtual IList<AppointmentReport> Reports { get; set; }
         public virtual User BankAccountant { get; set; }
 
         public virtual int AppointmentEducationTypeId { get; set; }

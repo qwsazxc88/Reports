@@ -87,6 +87,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Причина отказа")]
         public string HigherManagerRejectionReason { get; set; }
 
+        [Display(Name = "ФИО наставника")]
+        public string MentorName { get; set; }
+
         public bool IsApproveByManagerAvailable { get; set; }
         public bool IsApproveByHigherManagerAvailable { get; set; }
 
@@ -104,6 +107,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsAddCommentAvailable { get; set; }
         //public CommentsModel CommentsModel { get; set; }//комментарии
         public DateTime? SendTo1C { get; set; }
+
+        public bool IsCancelApproveAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
+        public bool IsCancelApproveHigherAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
         
         public ManagersModel()
         {

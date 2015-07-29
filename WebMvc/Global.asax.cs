@@ -237,17 +237,21 @@ namespace WebMvc
             HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;
-            if (lastErrorWrapper.InnerException != null)
-                lastError = lastErrorWrapper.InnerException;
-
-            string lastErrorTypeName = lastError.GetType().ToString();
-            string lastErrorMessage = lastError.Message;
-            string lastErrorStackTrace = lastError.StackTrace;
-            var usr=UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-            string txt= string.Format("Произошла ошибка:\r\n {0} \r\n {1} \r\n {2} \r\n {3} {4} {5}",lastErrorTypeName,lastErrorMessage,lastErrorStackTrace, usr.Id ,usr.Name, usr.UserRole);
+            /*if (lastErrorWrapper.InnerException != null)
+                lastError = lastErrorWrapper.InnerException;*/
+            string txt = "";
+            while (lastError != null)
+            {
+                string lastErrorTypeName = lastError.GetType().ToString();
+                string lastErrorMessage = lastError.Message;
+                string lastErrorStackTrace = lastError.StackTrace;
+                var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+                txt += string.Format("Произошла ошибка:<br/> {0} <br/> {1} <br/> {2} <br/> {3} {4} {5} <br> ", lastErrorTypeName, lastErrorMessage, lastErrorStackTrace, usr.Id, usr.Name, usr.UserRole);
+                lastError = lastError.InnerException;
+            }
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
             if (requbl==null) return;
-            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка", txt);
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", txt);
             /*if (ex != null)
             {
                 if (ex is HttpUnhandledException)

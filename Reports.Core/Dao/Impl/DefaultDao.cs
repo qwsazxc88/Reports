@@ -341,6 +341,7 @@ namespace Reports.Core.Dao.Impl
                                 @"select v.Id as Id,
                                 u.Id as UserId,
                                 '{3}' as Name,
+                                v.CreateDate as CreateDate,
                                 {2} as Date,  
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
@@ -453,7 +454,10 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
                 
                 #endregion
-
+                #region Estimator
+                case UserRole.Estimator:
+                    return String.Empty;
+                #endregion
                 #region OutsourcingManagers
 
                 case UserRole.OutsourcingManager:
@@ -467,8 +471,8 @@ namespace Reports.Core.Dao.Impl
                 #endregion
 
                 #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 default:
@@ -582,7 +586,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or 
                         (
-                            (u.RoleId & 2) > 0
+                            ((u.RoleId & 2) > 0 or (u.RoleId & 2097152) > 0)
                             and
                             u.DepartmentId in
                             (
@@ -626,7 +630,11 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
 
                 #endregion
-
+                #region Estimator
+                    case UserRole.Estimator:
+                    //sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Empty;
+                #endregion
                 #region OutsourcingManagers
 
                 case UserRole.OutsourcingManager:
@@ -641,8 +649,8 @@ namespace Reports.Core.Dao.Impl
                 #endregion
 
                 #region ConsultantOutsorsingManager
-                case UserRole.ConsultantOutsorsingManager:
-                    return string.Empty;
+                /*case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;*/
                 #endregion
 
                 #region -Deleted (Directors, Accountants, Secretary, Findep)
