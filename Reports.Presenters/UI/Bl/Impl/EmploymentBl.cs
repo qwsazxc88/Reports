@@ -3822,6 +3822,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue && !candidate.BackgroundCheck.ApprovalDate.HasValue)//если кандидат не проходил предварительную и обычную проверку
                         candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
                 }
+                else
+                {
+                    if (model.IsScanFinal)
+                    {
+                        if (candidate.GeneralInfo.IsFinal && candidate.Passport.IsFinal && candidate.Education.IsFinal && candidate.Family.IsFinal
+                                && candidate.MilitaryService.IsFinal && candidate.Experience.IsFinal && candidate.Contacts.IsFinal && candidate.BackgroundCheck.IsFinal &&
+                                candidate.BackgroundCheck.PrevApprovalDate.HasValue && !candidate.BackgroundCheck.ApprovalDate.HasValue)
+                        {
+                            candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                        }
+                    }
+                }
             }
             else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
             {
