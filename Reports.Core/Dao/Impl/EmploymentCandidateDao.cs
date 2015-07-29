@@ -41,7 +41,7 @@ namespace Reports.Core.Dao.Impl
                 , department.Name Department
                 , dep3.Name Department3
                 , position.Name Position
-                , personnelManagers.EmploymentDate EmploymentDate
+                , case when candidate.Status = 9 then null else personnelManagers.EmploymentDate end EmploymentDate
                 , personnelManagers.EmploymentOrderNumber EmploymentOrderNumber
                 , personnelManagers.EmploymentOrderDate EmploymentOrderDate
                 , personnelManagers.ContractNumber ContractNumber
