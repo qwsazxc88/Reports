@@ -213,6 +213,7 @@
     <Compile Include="Dao\Impl\HelpBillingExecutorTaskDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\Impl\ManualDeductionDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
