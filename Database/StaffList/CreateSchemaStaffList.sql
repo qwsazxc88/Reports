@@ -2154,6 +2154,12 @@ INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
 
+IF DB_NAME() = 'WebAppTest'
+BEGIN
+	INSERT INTO Kladr 
+	SELECT * FROM WebAppSKB.dbo.Kladr
+END
+
 --7. СОЗДАНИЕ ФУНКЦИЙ
 
 IF OBJECT_ID ('fnGetDepartmentOperationModes', 'TF') IS NOT NULL
