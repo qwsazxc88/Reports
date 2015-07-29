@@ -311,12 +311,14 @@
             </td>
             <td>
                 <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+                @*
                 @if (string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield clear">
                         Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/>
                     </div>
                 }
+                *@
                 @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
                 {
                     <div class="formfield">
@@ -325,10 +327,12 @@
                             @Model.EmploymentFileName
                         </a>
                     </div>
+                    @*
                     <div class="formfield">
                         <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'CandidateDocumentsForm');" @if (!Model.IsDeleteScanButtonAvailable)
                                                                                                                                      {<text>style="display:none;"</text>} value="Удалить скан"/>
                     </div>
+                    *@
                 }
             </td>
             @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
