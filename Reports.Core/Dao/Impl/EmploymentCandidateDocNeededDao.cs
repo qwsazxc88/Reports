@@ -79,10 +79,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public bool CheckCandidateSignDocExists(int CandidateId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT cast(case when count(*) = 0 then 1 else 0 end as bit) as DocExists
-                                                    FROM EmploymentCandidateDocNeeded as A
-                                                    LEFT JOIN RequestAttachment as B ON B.RequestId = A.CandidateId and B.RequestType = A.DocTypeId
-                                                    WHERE A.CandidateId = " + CandidateId.ToString() + " and A.IsNeeded = 1 and B.Id is null")
+            IQuery query = Session.CreateSQLQuery(@"SELECT dbo.fnCheckCandidateSignDocExists(" + CandidateId + ") as DocExists")
                            .AddScalar("DocExists", NHibernateUtil.Boolean);
             return query.UniqueResult<bool>();
         }
