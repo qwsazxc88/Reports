@@ -107,6 +107,28 @@
             </td>
         </tr>
         <tr>
+        <td>
+        Удержано (Авто)
+        </td>
+        <td>
+        <table>
+        <thead>
+        <tr>
+        <th>Сумма</th>
+        <th>Дата</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var el in Model.ManualDeductions)
+        {<tr>
+        <td>@el.AllSum</td>
+        <td>@el.SendTo1C</td>
+        </tr>}
+        </tbody>
+        </table>
+        </td>
+        </tr>
+        <tr>
             <td style="vertical-align:top">
                 @Html.LabelFor(m => m.Hotels):
             </td>

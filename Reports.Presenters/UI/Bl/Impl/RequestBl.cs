@@ -97,13 +97,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionTypeDao deductionTypeDao;
         protected IDeductionKindDao deductionKindDao;
         protected IDeductionDao deductionDao;
-
+        protected IManualDeductionDao manualDeductionDao;
         protected ITerraPointDao terraPointDao;
         protected ITerraPointToUserDao terraPointToUserDao;
         protected ITerraGraphicDao terraGraphicDao;
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IManualDeductionDao ManualDeductionDao
+        {
+            get { return Validate.Dependency(manualDeductionDao);}
+            set { manualDeductionDao = value; }
+        }
         public ISurchargeNoteDao SurchargeNoteDao
         {
             get { return Validate.Dependency(surcharcheNoteDao); }
@@ -5240,6 +5245,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
+                /*if (user != null && user.VacationSaldo != null && user.VacationSaldo.Any())
+                {
+                    var saldos = user.VacationSaldo.Where(x => x.Date < DateTime.Now);
+                    if (saldos != null && saldos.Any())
+                    {
+                        saldos = saldos.OrderByDescending(x => x.Date);
+                        var saldo = saldos.First();
+                        model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
+                        model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
+                    }
+                }
+                else
+                {
+                    model.PrincipalVacationDaysLeft = 0;
+                    model.AdditionalVacationDaysLeft = 0;
+                }*/
             }
             else
             {
@@ -7122,6 +7143,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region ManualDeduction
+        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, string UserName)
+        {
+            Department dep=null;
+            if(DepartmentId>0)
+                dep=DepartmentDao.Load(DepartmentId);
+            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName,dep);
+        }
+        #endregion
         public AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId)
         {
             RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id, typeId);
@@ -11321,6 +11351,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
             else model.IsSurchargeAvailable = true;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.ManualDeductions = (entity.ManualDeductions!=null && entity.ManualDeductions.Any())? entity.ManualDeductions.Select(x => new ManualDeductionDto { UserId = x.Id, AllSum = x.AllSum, DeductionDate = x.DeductionDate.ToShortDateString(), SendTo1C = x.SendTo1C.HasValue?x.SendTo1C.Value.ToShortDateString():"", UserName = x.User.Name, DeleteDate=x.DeleteDate.HasValue?x.DeleteDate.Value.ToShortDateString():"" }).ToList(): new List<ManualDeductionDto>();
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;

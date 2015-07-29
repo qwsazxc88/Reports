@@ -357,7 +357,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IMissionGoalDao)).
                   ImplementedBy(typeof(MissionGoalDao)).
                   LifeStyle.Is(type));
-
+            Register(Component.For<IManualDeductionDao>().
+                ImplementedBy<ManualDeductionDao>().
+                LifeStyle.Is(type));
 
 
 

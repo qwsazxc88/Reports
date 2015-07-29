@@ -841,6 +841,7 @@
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
+    <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
     <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />

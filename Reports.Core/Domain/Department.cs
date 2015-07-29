@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
@@ -20,6 +21,7 @@ namespace Reports.Core.Domain
         public virtual string Path { get; set; }
         public virtual int? ItemLevel { get; set; }
         public virtual string CodeSKD { get; set; }
+        public virtual IList<Department> Dep3 { get; set; }
         public virtual int? Priority { get; set; }
         #endregion
 
