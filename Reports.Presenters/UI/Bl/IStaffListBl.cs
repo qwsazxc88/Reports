@@ -51,7 +51,21 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         bool SaveEditDepartmentRequest(StaffDepartmentRequestModel model, out string error);
         #endregion
-        
+
+        #region
+        /// <summary>
+        /// Загрузка запросной формы реестра заявок ШЕ.
+        /// </summary>
+        /// <returns></returns>
+        StaffEstablishedPostRequestListModel GetStaffEstablishedPostRequestList();
+        /// <summary>
+        /// Загрузка реестра заявок ШЕ.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model);
+        #endregion
+
         #endregion
 
         #region Загрузка словарей и справочников.

@@ -1,10 +1,10 @@
-﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentRequestListModel
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffEstablishedPostRequestListModel
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "Заявки для подразделений";
+    ViewBag.Title = "Заявки для штатных единиц";
 }
 
-@using (Html.BeginForm("StaffDepartmentRequestList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestListForm" }))
+@using (Html.BeginForm("StaffEstablishedPostRequestList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffEstablishedPostRequestListForm" }))
 {
     @Html.HiddenFor(m => m.SortBy)
     @Html.HiddenFor(m => m.SortDescending)
@@ -85,7 +85,7 @@
                 <th><div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">Должность</a></div></th>
                 <th><div id="sort14" style="min-width:30px"><a href="#" onclick = "SortChanged(14);">Статус<br /> заявки</a></div></th>
             </tr>
-            <tbody id="DepRequestListBody">
+            <tbody id="SEPRequestListBody">
                 @{int i = 1;}
                 @if(Model.DepRequestList != null && Model.DepRequestList.Count != 0)
                 {
@@ -133,7 +133,7 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
 
     $(document).ready(function () {
-        setActiveMenuItem("moDepRequest");
+        setActiveMenuItem("moSEPRequest");
         $(document).tooltip({ track: true });
         $(":button").button();
 
@@ -172,8 +172,8 @@
     function GetFindRows()
     {
         ShowFlash(true);
-        $("#DepRequestListBody").remove();
-        $("#StaffDepartmentRequestListForm").submit();
+        $("#SEPRequestListBody").remove();
+        $("#StaffEstablishedPostRequestListForm").submit();
     }
 
     function SortChanged(sortedBy)

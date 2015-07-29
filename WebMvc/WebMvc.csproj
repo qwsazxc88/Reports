@@ -846,6 +846,7 @@
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
     <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
+    <Content Include="Views\StaffList\StaffEstablishedPostRequestList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

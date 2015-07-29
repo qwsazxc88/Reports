@@ -1243,6 +1243,44 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region Заявки для штатных единиц
+        /// <summary>
+        /// Загрузка запросной формы реестра заявок ШЕ.
+        /// </summary>
+        /// <returns></returns>
+        public StaffEstablishedPostRequestListModel GetStaffEstablishedPostRequestList()
+        {
+            StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            model.Statuses = GetDepRequestStatuses();
+
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реестра заявок ШЕ.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
+        {
+            model.DepRequestList = StaffDepartmentRequestDao.GetDepartmentRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
+                model.DepartmentId,
+                model.Id.HasValue ? model.Id.Value : 0,
+                model.Creator,
+                model.DateBegin,
+                model.DateEnd,
+                model.StatusId,
+                model.SortBy,
+                model.SortDescending);
+
+            model.Statuses = GetDepRequestStatuses();
+
+            return model;
+        }
+        #endregion
+
         #endregion
 
         #region Загрузка словарей и справочников.

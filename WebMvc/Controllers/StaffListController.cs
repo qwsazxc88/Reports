@@ -210,12 +210,46 @@ namespace WebMvc.Controllers
         }
         #endregion
 
+        #region Заявки для штатных единиц.
+        /// <summary>
+        /// Реестр заявок для ШЕ.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequestList()
+        {
+            StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
+            model = StaffListBl.GetStaffEstablishedPostRequestList();
+
+            return View(model);
+        }
+        /// <summary>
+        /// Реестр заявок для IT.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
+        {
+            if (ValidateModel(model))
+                model = StaffListBl.SetStaffEstablishedPostRequestList(model);
+            else
+                model.Statuses = StaffListBl.GetDepRequestStatuses();
+            return View(model);
+        }
+        #endregion
+
         #region Валидация
         protected bool ValidateModel(StaffDepartmentRequestListModel model)
         {
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffDepartmentRequestModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffEstablishedPostRequestListModel model)
         {
             return ModelState.IsValid;
         }
