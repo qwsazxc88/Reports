@@ -3512,7 +3512,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && (int)candidate.Status < (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && (int)candidate.Status != (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
                 {
                     error = "Кандидат еще не согласован! Сформировать список документов невозможно!";
                     return;
