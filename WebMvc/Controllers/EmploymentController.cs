@@ -190,7 +190,7 @@ namespace WebMvc.Controllers
                     {
                         if (ValidateModel(model))
                         {
-                            string str = model.IsAgree ? "Данные сохранены" : "Файл загружен!";
+                            string str = model.IsAgree ? "Данные сохранены!" : "Файл загружен!";
                             EmploymentBl.SaveScanOriginalDocumentsModelAttachments(model, out error);
                             //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
                             ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? str : error);
@@ -2006,7 +2006,7 @@ namespace WebMvc.Controllers
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
-            if (model.Surname == null)
+            if (string.IsNullOrEmpty(model.Surname) || string.IsNullOrWhiteSpace(model.Surname))
                 ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
             else
             {
