@@ -3826,6 +3826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
             {
                 candidate.IsScanFinal = false;
+                error = "Данные сохранены!";
                 //статус не меняем, потому что эту операцию делает только кадровик и может это делать на любом этапе оформления кандидата
                 //candidate.Status = 0;
             }

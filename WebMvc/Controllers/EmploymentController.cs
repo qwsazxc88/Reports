@@ -190,7 +190,7 @@ namespace WebMvc.Controllers
                     {
                         if (ValidateModel(model))
                         {
-                            string str = model.IsAgree ? "Данные сохранены" : "Файл загружен!";
+                            string str = model.IsAgree ? "Данные сохранены!" : "Файл загружен!";
                             EmploymentBl.SaveScanOriginalDocumentsModelAttachments(model, out error);
                             //model = EmploymentBl.GetScanOriginalDocumentsModel(model.UserId);
                             ModelState.AddModelError("ErrorMessage", string.IsNullOrEmpty(error) ? str : error);
