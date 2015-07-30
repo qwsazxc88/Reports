@@ -17,15 +17,16 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Номер заявки")]
         public int Id { get; set; }
 
+        [Display(Name = "Id штатной единицы")]
+        public int SEPId { get; set; }
+
         [Display(Name = "Вид заявки")]
         public int RequestTypeId { get; set; }
-        public IList<StaffDepartmentRequestTypes> RequestTypes { get; set; }
-
-        [Display(Name = "Id подразделения")]
-        public int? DepartmentId { get; set; }
+        public IList<StaffEstablishedPostRequestTypes> RequestTypes { get; set; }
 
         [Display(Name = "Назание структурного подразделения")]
-        public string Name { get; set; }
+        public int? DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
 
         [Display(Name = "Признак БЭК/ФРОНТ")]
         public bool IsBack { get; set; }
@@ -51,9 +52,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Причина создания ШЕ")]
         public int? ReasonId { get; set; }
-        public IList<IdNameDto> Reasons { get; set; }
-        //[Display(Name = "Инициатор")]
-        //public int UserId { get; set; }
+        public IList<AppointmentReason> Reasons { get; set; }
+
+        [Display(Name = "Инициатор")]
+        public int UserId { get; set; }
 
         #region Налоговые реквизиты
         [Display(Name = "КПП")]
@@ -76,6 +78,13 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Почтовый адрес")]
         public string PostAddress { get; set; }
+        #endregion
+
+        #region Служебные переменные
+        public bool IsNew { get; set; } //признак новой заявки
+        public bool IsUsed { get; set; }    //признак использования
+        public bool IsDraft { get; set; }   //черновик
+        public string MessageStr { get; set; }  //для сообщений
         #endregion
     }
 }

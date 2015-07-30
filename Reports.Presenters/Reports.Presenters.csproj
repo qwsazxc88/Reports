@@ -281,6 +281,7 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestListModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\TreeGridAjaxModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\TreeViewAjaxModel.cs">

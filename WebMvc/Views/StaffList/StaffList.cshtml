@@ -245,8 +245,8 @@
                                     "<td></td>" +
                                     "<td></td>" +
                                     //onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'
-                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
-                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы' onclick='GetEstablishedPostRequest(2, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
+                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы' onclick='GetEstablishedPostRequest(3, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
                                     "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "</tr>";
@@ -355,10 +355,10 @@
 
 
     //переходим в заявку для штатной единицы
-    function GetEstablishedPostRequest(RequestType, DepartmentId)
+    function GetEstablishedPostRequest(RequestType, DepartmentId, SEPId)
     {
         var actionUrl="@Url.Action("StaffEstablishedPostRequest", "StaffList")";
-        actionUrl += "?RequestType=" + RequestType + "&DepartmentId=" + DepartmentId;
+        actionUrl += "?RequestType=" + RequestType + "&DepartmentId=" + DepartmentId + "&SEPId=" + SEPId;
         location.href = actionUrl;
     }
 </script>

@@ -7,6 +7,7 @@ using WebMvc.Attributes;
 using Reports.Presenters.UI.Bl;
 using Reports.Core;
 using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Presenters.UI.ViewModel.StaffList;
 using System.Web.Script.Serialization;
 
@@ -243,32 +244,23 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Загрузка заявки для ШЕ на создание/изменение/удаление.
         /// </summary>
+        /// <param name="RequestType">Тип заявки.</param>
+        /// <param name="DepartmentId">Id подраздление</param>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? Id)
+        public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
-            StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
+            StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание ШЕ" : (RequestType == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
             model.RequestTypeId = RequestType;
-            if (model.RequestTypeId == 1)
-                model.ParentId = DepartmentId.Value;
-            else
-                model.DepartmentId = DepartmentId.Value;
-
+            model.DepartmentId = DepartmentId.Value;
+            model.SEPId = SEPId.HasValue ? SEPId.Value : 0;
             model.Id = Id.HasValue ? Id.Value : 0;
-            model = StaffListBl.GetDepartmentRequest(model);
+            model = StaffListBl.GetEstablishedPostRequest(model);
 
-            //if (RequestType == 1)
-            //{
-            //    model.ParentId = DepartmentId.Value;
-            //    model.Id = Id.HasValue ? Id.Value : 0;
-            //    model = StaffListBl.GetDepartmentRequest(model);
-            //}
-            //else
-            //{
-            //    model.DepartmentId = DepartmentId.Value;
-            //}
             return View(model);
         }
         /// <summary>
@@ -277,46 +269,58 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffEstablishedPostRequest(StaffDepartmentRequestModel model)
+        public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ModelState.Clear();
-            string error = string.Empty;
-            bool IsComplete = false;
-            if (model.IsDraft)  //сохранение черновика
-            {
-                IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
-                if (!IsComplete)
-                {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("Message", error);
-                }
-                else
-                {
-                    model = StaffListBl.GetDepartmentRequest(model);
-                    ModelState.AddModelError("Message", "Данные сохранены!");
-                }
-            }
-            else
-            {
-                if (ValidateModel(model))//проверки
-                {
-                    //отправка на согласование НЕ СДЕЛАНО
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("Message", "В разработке!");
-                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("Message", error);
-                    //    //return View(model);
-                    //}
-                }
-            }
+            //string error = string.Empty;
+            //bool IsComplete = false;
+            //if (model.IsDraft)  //сохранение черновика
+            //{
+            //    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+            //    if (!IsComplete)
+            //    {
+            //        StaffListBl.LoadDictionaries(model);
+            //        ModelState.AddModelError("Message", error);
+            //    }
+            //    else
+            //    {
+            //        model = StaffListBl.GetDepartmentRequest(model);
+            //        ModelState.AddModelError("Message", "Данные сохранены!");
+            //    }
+            //}
+            //else
+            //{
+            //    if (ValidateModel(model))//проверки
+            //    {
+            //        //отправка на согласование НЕ СДЕЛАНО
+            //        StaffListBl.LoadDictionaries(model);
+            //        ModelState.AddModelError("Message", "В разработке!");
+            //        //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+            //        //{
+            //        //    StaffListBl.LoadDictionaries(model);
+            //        //    ModelState.AddModelError("Message", error);
+            //        //    //return View(model);
+            //        //}
+            //    }
+            //}
 
             //заглушка для выкладки на тест для показа прототипов
-            //StaffListBl.LoadDictionaries(model);
-            //ModelState.AddModelError("Message", "В разработке!");
+            StaffListBl.LoadDictionaries(model);
+            ModelState.AddModelError("MessageStr", "В разработке!");
 
             return View(model);
+        }
+        /// <summary>
+        /// Автозаполнение должности.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompletePositionSearch(string term)
+        {
+            IList<IdNameDto> Positions = StaffListBl.GetPositionAutocomplete(term);
+            var PositionList = Positions.ToList().Select(a => new { label = a.Name, PositionId = a.Id }).Distinct();
+
+            return Json(PositionList, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

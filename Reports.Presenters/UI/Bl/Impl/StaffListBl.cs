@@ -14,6 +14,13 @@ namespace Reports.Presenters.UI.Bl.Impl
     public class StaffListBl : RequestBl, IStaffListBl
     {
         #region Dependencies
+        protected IAppointmentReasonDao appointmentreasonDao;
+        public IAppointmentReasonDao AppointmentReasonDao
+        {
+            get { return Validate.Dependency(appointmentreasonDao); }
+            set { appointmentreasonDao = value; }
+        }
+
         protected IKladrDao kladrDao;
         public IKladrDao KladrDao
         {
@@ -118,6 +125,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffestablishedPostDao); }
             set { staffestablishedPostDao = value; }
         }
+
+        protected IStaffEstablishedPostRequestTypesDao staffestablishedPostRequestTypesDao;
+        public IStaffEstablishedPostRequestTypesDao StaffEstablishedPostRequestTypesDao
+        {
+            get { return Validate.Dependency(staffestablishedPostRequestTypesDao); }
+            set { staffestablishedPostRequestTypesDao = value; }
+        }
+
+        protected IStaffEstablishedPostRequestDao staffestablishedPostRequestDao;
+        public IStaffEstablishedPostRequestDao StaffEstablishedPostRequestDao
+        {
+            get { return Validate.Dependency(staffestablishedPostRequestDao); }
+            set { staffestablishedPostRequestDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -1279,6 +1301,110 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return model;
         }
+        /// <summary>
+        /// Заполняем модель заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <returns></returns>
+        public StaffEstablishedPostRequestModel GetEstablishedPostRequest(StaffEstablishedPostRequestModel model)
+        {
+            //готовая заявка грузиться по Id
+            //создание заявки на создание ШЕ, идет по ветке где Id = 0
+            //создание заявки на изменение/удаление, нужно заполнить текущими даными, но с обнуленным Id, чтобы создалась новая заявка
+            //для заявок на редактирование надо сделать поиск текущей заявки по Id штатной единицы, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
+            bool IsRequestExists = model.Id == 0 ? false : true;
+            if (model.Id == 0)
+                model.Id = StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId);
+
+            //заполняем заявку на все случаи жизни
+            if (model.Id == 0)
+            {
+                model.DateRequest = null;
+                //model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
+                //model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
+                //model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
+                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
+                model.IsBack = false;
+                model.LegalAddress = string.Empty;
+                model.IsTaxAdminAccount = false;
+                model.IsEmployeAvailable = false;
+                model.PositionId = 0;
+                model.PositionName = string.Empty;
+                model.Quantity = 0;
+                model.Salary = 0;
+                model.ReasonId = 0;
+
+                //налоговые реквизиты
+                model.KPP = string.Empty;
+                model.OKTMO = string.Empty;
+                model.OKATO = string.Empty;
+                model.RegionCode = string.Empty;
+                model.TaxAdminCode = string.Empty;
+                model.TaxAdminName = string.Empty;
+                model.PostAddress = string.Empty;
+
+
+                LoadDictionaries(model);
+            }
+            else
+            {
+
+                StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+                if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание штатной единицы
+                {
+                    model.Id = 0;
+                    return GetEstablishedPostRequest(model);
+                }
+
+                if (!IsRequestExists)
+                {
+                    model.Id = 0;
+                }
+
+                model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
+                model.DateRequest = entity.DateRequest;
+                model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
+                model.PositionId = entity.Position.Id;
+                model.PositionName = entity.Position.Name;
+                model.Quantity = entity.Quantity;
+                model.Salary = entity.Salary;
+                model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
+
+                //кусок для подразделения
+                if (entity.Department != null)
+                {
+                    int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+                    if (DepId != 0)
+                    {
+                        StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
+                        model.IsBack = DepEntity.IsBack;
+                        if (DepEntity.LegalAddress != null)
+                        {
+                            model.LegalAddress = DepEntity.LegalAddress.Address;
+                        }
+                        model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
+                        model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
+                    }
+
+                    //налоговые реквизиты
+                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
+                    model.KPP = dt != null ? dt.KPP : string.Empty;
+                    model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
+                    model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                    model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
+                    model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
+                    model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
+                    model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+                }
+
+
+                LoadDictionaries(model);
+            }
+
+
+            return model;
+        }
         #endregion
 
         #endregion
@@ -1298,6 +1424,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
             model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
+        }
+        /// <summary>
+        /// Загрузка справочников модели для заявок к штатным единицам.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffEstablishedPostRequestModel model)
+        {
+            //реквизиты инициатора
+            model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
+            model.Reasons = AppointmentReasonDao.LoadAll();
+            //model.Reasons.Add(new AppointmentReason { Code = "", Id = 0, Name = "" });
+            model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
@@ -1336,6 +1474,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             return ManagersStr;
+        }
+        /// <summary>
+        /// Достаем для автозаполнения список должностей.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        public IList<IdNameDto> GetPositionAutocomplete(string Name)
+        {
+            return PositionDao.GetPositions(Name);
         }
         #endregion
 

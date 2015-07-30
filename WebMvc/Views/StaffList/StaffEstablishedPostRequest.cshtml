@@ -1,6 +1,404 @@
-﻿@{
-    ViewBag.Title = "StaffEstablishedPostRequest";
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffEstablishedPostRequestModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
 }
 
-<h2>StaffEstablishedPostRequest</h2>
+@using (Html.BeginForm("StaffEstablishedPostRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffEstablishedPostRequestForm" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IsDraft)
+    @Html.HiddenFor(m => m.SEPId)
+   
+    
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    <legend style="text-align:left;font-size:medium;">Заявка</legend>
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv1">
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DateRequest)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.DateRequest)
+                            @(Model.DateRequest.HasValue ? Model.DateRequest.Value.ToShortDateString() : string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Id)</td>
+                        <td>
+                            @(Model.Id != 0 ? Model.Id.ToString() : "")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestTypeId)</td>
+                        <td>
+                            @Html.HiddenFor(m => m.RequestTypeId)
+                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                        </td>
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
 
+
+        <div id="MainDiv2">
+            <h3>Подразделение</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                        <td>
+                            @Model.DepartmentName
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsBack)
+                        </td>
+                        <td>
+                            <div id="IsBackContainer">
+                                @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.LegalAddress)
+                            @Html.LabelFor(m => m.LegalAddress)
+                        </td>
+                        <td>
+                            @Model.LegalAddress
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsTaxAdminAccount)
+                        </td>
+                        <td>
+                            <div id="IsTaxAdminAccountContainer">
+                                @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
+                                                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                            else
+                                                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsEmployeAvailable)
+                        </td>
+                        <td>
+                            <div id="IsEmployeAvailableContainer">
+                                @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Налоговые реквизиты</b></td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.KPP)</td>
+                        <td>@Model.KPP</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKTMO)</td>
+                        <td>@Model.OKTMO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKATO)</td>
+                        <td>@Model.OKATO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RegionCode)</td>
+                        <td>@Model.RegionCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminCode)</td>
+                        <td>@Model.TaxAdminCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminName)</td>
+                        <td>@Model.TaxAdminName</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PostAddress)</td>
+                        <td>@Model.PostAddress</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv3">
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PositionId)</td>
+                        <td>
+                            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "StaffList")" />
+                            @Html.ValidationMessageFor(model => model.PositionId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Quantity)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Quantity, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.Quantity)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Salary)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Salary, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.Salary)
+                        </td>
+                    </tr>
+                    @*
+                    заготовка для возможного сложного справочника надбавок
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.OperationModes)</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.OperationModes)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].WeekDay)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i - 1].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationMode)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationMode) 
+                                                @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:99%;" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    *@
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ReasonId)</td>
+                        <td>
+                            @Html.HiddenFor(m => m.ReasonId)
+                            @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <br />
+        <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование">Согласовать</button>
+    </div>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSEPRequest");
+
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $(document).tooltip({ track: true });
+        $(":button").button();
+
+        $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit();});
+        $("#btnAgree").click(function(){ $("#IsDraft").val(false); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit();});
+
+
+        $("#MainDiv2").accordion({
+            header: "h3",
+            //active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        
+
+//        $( ".portlet" )
+//            .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
+//            .find( ".portlet-header" )
+//            .addClass( "ui-state-default ui-corner-all" )
+//            .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+// 
+//        $( ".portlet-toggle" ).click(function() {
+//            var icon = $( this );
+//            icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
+//            icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
+//        });
+
+//        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
+
+        //$("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
+        //$(".hasDatepicker").width("85px");
+
+
+        $('#IsBackContainer').buttonset();
+        $('#IsTaxAdminAccountContainer').buttonset();
+        $('#IsEmployeAvailableContainer').buttonset();
+
+
+        $("#IsBackTrue").click(function () {
+            $("#lblIsBackTrue").css("border-color", "red");
+            $("#lblIsBackFalse").css("border-color", "silver");
+        });
+        $("#IsBackFalse").click(function () {
+            $("#lblIsBackFalse").css("border-color", "red");
+            $("#lblIsBackTrue").css("border-color", "silver");
+        });
+
+                
+        $("#IsTaxAdminAccountTrue").click(function () {
+            $("#lblIsTaxAdminAccountTrue").css("border-color", "red");
+            $("#lblIsTaxAdminAccountFalse").css("border-color", "silver");
+        });
+        $("#IsTaxAdminAccountFalse").click(function () {
+            $("#lblIsTaxAdminAccountFalse").css("border-color", "red");
+            $("#lblIsTaxAdminAccountTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsEmployeAvailableTrue").click(function () {
+            $("#lblIsEmployeAvailableTrue").css("border-color", "red");
+            $("#lblIsEmployeAvailableFalse").css("border-color", "silver");
+        });
+        $("#IsEmployeAvailableFalse").click(function () {
+            $("#lblIsEmployeAvailableFalse").css("border-color", "red");
+            $("#lblIsEmployeAvailableTrue").css("border-color", "silver");
+        });
+
+        //автозаполнение должностей
+        $(function () {
+            $("[data-autocomplete-source]").each(
+                function () {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                        select: function (event, ui) {
+                            //для физиков
+                            if (ui.item.PositionId != null) {
+                                $("#PositionName").val(ui.item.label);
+                                $("#PositionId").val(ui.item.PositionId);
+                            }
+                            return true;
+                        }
+                    });
+                });
+            });
+
+    });
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+</script>
