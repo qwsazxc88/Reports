@@ -13,14 +13,14 @@
         <table id="tbl" class="grid">
             <thead>
                 <tr>
+                    <th rowspan="2">Уровень<br />подразделений</th>
                     <th rowspan="2">Структура подразделений</th>
                     <th rowspan="2">Должность</th>
-                    <th rowspan="2">Название в<br />Финграде</th>
-                    <th rowspan="2">Уровень<br />подразделений</th>
-                    <th colspan="3">Подразделения</th>
-                    <th colspan="3">Штатные единицы</th>
                     <th rowspan="2">Количество<br />штатных<br />единиц</th>
                     <th rowspan="2">Оклад</th>
+                    <th colspan="3">Подразделения</th>
+                    <th colspan="3">Штатные единицы</th>
+                    <th rowspan="2">Название в<br />Финграде</th>
                 </tr>    
                 <tr>
                     <th class="tdBtn">Создать</th>
@@ -36,23 +36,23 @@
             @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
             {
                 <tr id="tr-@item.Code1C" accessKey="@item.Path" style="background-color: #E9FFE9;">
+                    <td class="tdBtn">@item.ItemLevel</td>
                     <td>
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
                         <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
+                    <td>@item.SEPCount</td>
                     <td></td>
-                    <td>@item.DepFingradName</td>
-                    <td class="tdBtn">@item.ItemLevel</td>
+                    <td></td>
                     <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы" onclick="GetEstablishedPostRequest(1, @item.Id);"></button></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
-                    <td>@item.SEPCount</td>
-                    <td></td>
+                    <td>@item.DepFingradName</td>
                 </tr>
             }
             @{ i++; }
@@ -168,6 +168,7 @@
                             }
 
                             tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
+                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
                                         "<td>" +
                                         "<span>";
                                             var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
@@ -181,16 +182,15 @@
                                             "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
                                         "</td>" + 
                                         "<td></td>" +
-                                        "<td>" + result.Departments[i].DepFingradName + "</td>" +
-                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
+                                        "<td>" + result.Departments[i].SEPCount + "</td>" +
+                                        "<td></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы' onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'></button></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-                                        "<td>" + result.Departments[i].SEPCount + "</td>" +
-                                        "<td></td>" +
+                                        "<td>" + result.Departments[i].DepFingradName + "</td>" +
                                         "</tr>";
 
                             var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -220,6 +220,7 @@
                     {   
                         tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
                                     "<td></td>" +
+                                    "<td></td>" +
                                     //вариант с пробелами для отобржажения в первой колонке
 //                                    "<td>" +
 //                                    "<span>";
@@ -238,8 +239,8 @@
                                         "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
-                                    "<td></td>" +
-                                    "<td></td>" +
+                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
@@ -247,8 +248,7 @@
                                     //onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'
                                     "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы' onclick='GetEstablishedPostRequest(2, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
                                     "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы' onclick='GetEstablishedPostRequest(3, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
-                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
-                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                    "<td></td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
