@@ -6,6 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <property name="DateRequest" not-null="false"/>
     <many-to-one name="RequestType" class="StaffEstablishedPostRequestTypes" column="RequestTypeId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes" index="StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes" not-null="false"/>
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPost" index="StaffEstablishedPostRequest_StaffEstablishedPost" not-null="false"/>
     <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_StaffEstablishedPostRequest_Position" index="StaffEstablishedPostRequest_Position" not-null="false"/>

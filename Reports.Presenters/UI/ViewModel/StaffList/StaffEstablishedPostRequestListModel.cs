@@ -37,5 +37,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         //сортировка
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
+
+        public string MessageStr { get; set; }
     }
 }

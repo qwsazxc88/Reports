@@ -88,7 +88,6 @@ namespace WebMvc.Controllers
                 model.Statuses = StaffListBl.GetDepRequestStatuses();
             return View(model);
         }
-
         /// <summary>
         /// Загрузка заявки для подразделения на создание/изменение/удаление.
         /// </summary>
@@ -121,7 +120,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         /// <summary>
-        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// Жмем на кнопки в заявке для подразделений.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -167,7 +166,6 @@ namespace WebMvc.Controllers
 
             return View(model);
         }
-
         /// <summary>
         /// Начальная загрузка формы для построения адресов.
         /// </summary>
@@ -225,17 +223,99 @@ namespace WebMvc.Controllers
             return View(model);
         }
         /// <summary>
-        /// Реестр заявок для IT.
+        /// Реестр заявок для ШЕ.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
-            if (ValidateModel(model))
-                model = StaffListBl.SetStaffEstablishedPostRequestList(model);
+            
+            //if (ValidateModel(model))
+            //    model = StaffListBl.SetStaffEstablishedPostRequestList(model);
+            //else
+            //    model.Statuses = StaffListBl.GetDepRequestStatuses();
+
+            ModelState.AddModelError("MessageStr", "В разработке");
+            model.Statuses = StaffListBl.GetDepRequestStatuses();
+            return View(model);
+        }
+        /// <summary>
+        /// Загрузка заявки для ШЕ на создание/изменение/удаление.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? Id)
+        {
+            StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
+            ViewBag.Title = RequestType == 1 ? "Заявка на создание ШЕ" : (RequestType == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
+            model.RequestTypeId = RequestType;
+            if (model.RequestTypeId == 1)
+                model.ParentId = DepartmentId.Value;
             else
-                model.Statuses = StaffListBl.GetDepRequestStatuses();
+                model.DepartmentId = DepartmentId.Value;
+
+            model.Id = Id.HasValue ? Id.Value : 0;
+            model = StaffListBl.GetDepartmentRequest(model);
+
+            //if (RequestType == 1)
+            //{
+            //    model.ParentId = DepartmentId.Value;
+            //    model.Id = Id.HasValue ? Id.Value : 0;
+            //    model = StaffListBl.GetDepartmentRequest(model);
+            //}
+            //else
+            //{
+            //    model.DepartmentId = DepartmentId.Value;
+            //}
+            return View(model);
+        }
+        /// <summary>
+        /// Жмем на кнопки в заявке для ШЕ.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffEstablishedPostRequest(StaffDepartmentRequestModel model)
+        {
+            ModelState.Clear();
+            string error = string.Empty;
+            bool IsComplete = false;
+            if (model.IsDraft)  //сохранение черновика
+            {
+                IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                if (!IsComplete)
+                {
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("Message", error);
+                }
+                else
+                {
+                    model = StaffListBl.GetDepartmentRequest(model);
+                    ModelState.AddModelError("Message", "Данные сохранены!");
+                }
+            }
+            else
+            {
+                if (ValidateModel(model))//проверки
+                {
+                    //отправка на согласование НЕ СДЕЛАНО
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("Message", "В разработке!");
+                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    //{
+                    //    StaffListBl.LoadDictionaries(model);
+                    //    ModelState.AddModelError("Message", error);
+                    //    //return View(model);
+                    //}
+                }
+            }
+
+            //заглушка для выкладки на тест для показа прототипов
+            //StaffListBl.LoadDictionaries(model);
+            //ModelState.AddModelError("Message", "В разработке!");
+
             return View(model);
         }
         #endregion

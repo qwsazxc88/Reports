@@ -6,6 +6,9 @@ using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
+    /// <summary>
+    /// Модель заявок для подразделений.
+    /// </summary>
     public class StaffDepartmentRequestModel
     {
         #region Реквизиты инициатора

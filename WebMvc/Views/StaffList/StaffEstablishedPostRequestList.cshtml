@@ -8,6 +8,8 @@
 {
     @Html.HiddenFor(m => m.SortBy)
     @Html.HiddenFor(m => m.SortDescending)
+
+    <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
     <div class="filter-wrap">
         <table style="width:100%">
             <tr>
@@ -87,7 +89,7 @@
             </tr>
             <tbody id="SEPRequestListBody">
                 @{int i = 1;}
-                @if(Model.DepRequestList != null && Model.DepRequestList.Count != 0)
+                @if (Model.DepRequestList != null && Model.DepRequestList.Count != 0)
                 {
                     foreach (var item in Model.DepRequestList)
                     {
