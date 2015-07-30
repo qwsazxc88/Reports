@@ -254,7 +254,7 @@ DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DM
 
 --SELECT * FROM #TMP1
 --delete FROM #TMP1 where rowid <> 18
-
+--обработка операций
 WHILE EXISTS(SELECT * FROM #TMP1)
 BEGIN
 	SET @RowId = (SELECT top 1 rowid FROM #TMP1)

@@ -368,6 +368,7 @@ GO
 CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
+	[DateRequest] [datetime] NULL,
 	[RequestTypeId] [int] NOT NULL,
 	[SEPId] [int] NULL,
 	[PositionId] [int] NULL,
@@ -1770,6 +1771,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Version'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DateRequest'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'RequestTypeId'
 GO
 
@@ -2154,6 +2158,12 @@ INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
 
+IF DB_NAME() = 'WebAppTest'
+BEGIN
+	INSERT INTO Kladr 
+	SELECT * FROM WebAppSKB.dbo.Kladr
+END
+
 --7. СОЗДАНИЕ ФУНКЦИЙ
 
 IF OBJECT_ID ('fnGetDepartmentOperationModes', 'TF') IS NOT NULL
@@ -2266,6 +2276,7 @@ BEGIN
 */
 	
 	RETURN @SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4128) as SEPCount
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4129) as SEPCount
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4130) as SEPCount
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4131) as SEPCount

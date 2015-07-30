@@ -26,11 +26,12 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, A.StaffECSalary, C.Path
+            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, A.StaffECSalary, C.Path, D.Id as RequestId
                                        FROM StaffEstablishedPost as A
                                        INNER JOIN Position as B ON B.Id = A.PositionId
                                        INNER JOIN Department as C ON C.Id = A.DepartmentId
-                                       WHERE DepartmentId = :DepartmentId ORDER BY A.Priority");
+                                       LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
+                                       WHERE A.DepartmentId = :DepartmentId ORDER BY A.Priority");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("PositionId", NHibernateUtil.Int32)
@@ -40,6 +41,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Salary", NHibernateUtil.Decimal)
                 .AddScalar("StaffECSalary", NHibernateUtil.Decimal)
                 .AddScalar("Path", NHibernateUtil.String)
+                .AddScalar("RequestId", NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();

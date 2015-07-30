@@ -51,7 +51,27 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         bool SaveEditDepartmentRequest(StaffDepartmentRequestModel model, out string error);
         #endregion
-        
+
+        #region Заявки для штатных единиц
+        /// <summary>
+        /// Загрузка запросной формы реестра заявок ШЕ.
+        /// </summary>
+        /// <returns></returns>
+        StaffEstablishedPostRequestListModel GetStaffEstablishedPostRequestList();
+        /// <summary>
+        /// Загрузка реестра заявок ШЕ.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model);
+        /// <summary>
+        /// Заполняем модель заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <returns></returns>
+        StaffEstablishedPostRequestModel GetEstablishedPostRequest(StaffEstablishedPostRequestModel model);
+        #endregion
+
         #endregion
 
         #region Загрузка словарей и справочников.
@@ -61,10 +81,21 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="model">Модель заявки.</param>
         void LoadDictionaries(StaffDepartmentRequestModel model);
         /// <summary>
+        /// Загрузка справочников модели для заявок к штатным единицам.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        void LoadDictionaries(StaffEstablishedPostRequestModel model);
+        /// <summary>
         /// Заполняем список видов заявок для подразделений.
         /// </summary>
         /// <returns></returns>
         IList<IdNameDto> GetDepRequestStatuses();
+        /// <summary>
+        /// Достаем для автозаполнения список должностей.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        IList<IdNameDto> GetPositionAutocomplete(string Name);
         #endregion
 
         #region Для теста
