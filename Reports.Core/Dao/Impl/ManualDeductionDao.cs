@@ -54,7 +54,7 @@ namespace Reports.Core.Dao.Impl
                         NPP=(counter++),
                          UserName = x.User.Name,
                         AllSum = x.AllSum,
-                        DeductionDate = x.DeductionDate.ToShortDateString(),
+                        DeductionDate = x.DeductionDate,
                         DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "",
                         UserId = x.User.Id,
                         SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "",
@@ -65,17 +65,6 @@ namespace Reports.Core.Dao.Impl
                         MissionReportNumber=x.MissionReport.Number,
                         MissionReportId = x.MissionReport.Id
             }).ToList();
-        }
-        public class Department3LevelComp : IEqualityComparer<string>
-        {
-             public bool Equals(string b1, string b2)
-             {
-                 return b2.Contains(b1);
-             }
-             public int GetHashCode(string obj)
-             {
-                 return obj.GetHashCode();
-             }
         }
     }
 }
