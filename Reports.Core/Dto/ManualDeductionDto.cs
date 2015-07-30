@@ -11,7 +11,7 @@ namespace Reports.Core.Dto
         public int UserId {get;set;}
         public string UserName { get; set; }
         public decimal AllSum { get; set; }
-        public string DeductionDate { get; set; }
+        public DateTime DeductionDate { get; set; }
         public string SendTo1C { get; set; }
         public string DeleteDate { get; set; }
         public string Dep3Name { get; set; }
