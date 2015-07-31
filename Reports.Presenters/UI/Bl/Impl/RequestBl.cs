@@ -555,6 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                 case UserRole.PersonnelManager:
                     model.Users = UserDao.GetUsersForManager(user.Id, role, 0);
+                    //model.Users = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { user.Department.Id }, "");
                     break;
             }
             return model;
@@ -7646,7 +7647,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 while (!reader.EndOfStream)
                 {
                     string data = reader.ReadLine();
-                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;,:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:,;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:,;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;,:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:,;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
+                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
                     if (!m.Success) { Errors.Add("Неправильный формат данных.>" + data); continue; }
                     var el = new Deduction();
                     try
