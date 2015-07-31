@@ -25,7 +25,7 @@ namespace Reports.Core.Domain
         
         public virtual User User { get; set; }
         public virtual User Editor { get; set; }
-
+        public virtual ManualDeduction ManualDeduction { get; set; }
         public virtual DateTime? SendTo1C { get; set; }
         public virtual DateTime? DeleteDate { get; set; }
         public virtual bool DeleteAfterSendTo1C { get; set; }

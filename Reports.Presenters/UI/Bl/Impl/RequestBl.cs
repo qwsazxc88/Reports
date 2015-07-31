@@ -7828,7 +7828,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DismissalDate = deduction.DismissalDate;
                     model.IsFastDismissal = deduction.IsFastDismissal.HasValue ? deduction.IsFastDismissal.Value : false;
                 }
-
                 if (deduction.DeleteDate.HasValue)
                     model.IsDeleted = true;
                 SetHiddenFields(model);
@@ -7897,6 +7896,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
             SetFlagsState(model, false);
+
+            if (deduction!=null && deduction.ManualDeduction != null)
+            {
+                model.MissionReportNumber = deduction.ManualDeduction.MissionReport.Number;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (id == 0 && (currentUserRole & UserRole.Accountant) > 0)
             {
@@ -11352,7 +11356,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
             else model.IsSurchargeAvailable = true;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
-            model.ManualDeductions = (entity.ManualDeductions!=null && entity.ManualDeductions.Any())? entity.ManualDeductions.Select(x => new ManualDeductionDto { UserId = x.Id, AllSum = x.AllSum, DeductionDate = x.DeductionDate, SendTo1C = x.SendTo1C.HasValue?x.SendTo1C.Value.ToShortDateString():"", UserName = x.User.Name, DeleteDate=x.DeleteDate.HasValue?x.DeleteDate.Value.ToShortDateString():"" }).ToList(): new List<ManualDeductionDto>();
+            if (entity.ManualDeductions != null && entity.ManualDeductions.Any())
+            {
+                var manualded = entity.ManualDeductions.Where(x => x.Deductions.Any(d=>d.SendTo1C.HasValue));
+                if (manualded!=null )
+                {
+                    List<Deduction> deductionList=new List<Deduction>();
+                   foreach(var el in manualded)
+                   {
+                       deductionList.AddRange(el.Deductions.Where(x=>x.SendTo1C.HasValue).ToArray());
+                   }
+                   if(deductionList.Any())
+                       model.ManualDeductions=deductionList.Select(x=> new ManualDeductionDto { UserId = x.Id, AllSum = x.Sum, DeductionDate = x.DeductionDate, SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "", UserName = x.User.Name, DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "" }).ToList();
+                }                
+            }
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
