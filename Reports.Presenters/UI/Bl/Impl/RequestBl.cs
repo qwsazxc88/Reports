@@ -7831,7 +7831,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DismissalDate = deduction.DismissalDate;
                     model.IsFastDismissal = deduction.IsFastDismissal.HasValue ? deduction.IsFastDismissal.Value : false;
                 }
-
                 if (deduction.DeleteDate.HasValue)
                     model.IsDeleted = true;
                 SetHiddenFields(model);
@@ -7900,6 +7899,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
             SetFlagsState(model, false);
+
+            if (deduction!=null && deduction.ManualDeduction != null)
+            {
+                model.MissionReportNumber = deduction.ManualDeduction.MissionReport.Number;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (id == 0 && (currentUserRole & UserRole.Accountant) > 0)
             {
