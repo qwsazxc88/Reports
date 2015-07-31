@@ -23,5 +23,10 @@
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentRequest_EditorUser" index="StaffDepartmentRequest_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
+
+    <bag name="PostChargeLinks" lazy="true" cascade="all-delete-orphan">
+      <key column="SEPRequestId" foreign-key="FK_StaffEstablishedPostChargeLinks_StaffEstablishedPostRequest"/>
+      <one-to-many class="StaffEstablishedPostChargeLinks"/>
+    </bag>
   </class>
 </hibernate-mapping>

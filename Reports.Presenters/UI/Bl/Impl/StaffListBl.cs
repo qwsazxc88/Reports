@@ -139,7 +139,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffestablishedPostRequestDao); }
             set { staffestablishedPostRequestDao = value; }
         }
-        
+
+        protected IStaffEstablishedPostChargeLinksDao staffestablishedPostChargeLinksDao;
+        public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffestablishedPostChargeLinksDao); }
+            set { staffestablishedPostChargeLinksDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -1434,8 +1440,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //реквизиты инициатора
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.Reasons = AppointmentReasonDao.LoadAll();
-            //model.Reasons.Add(new AppointmentReason { Code = "", Id = 0, Name = "" });
+            //добавил пустую первую строку
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
+            model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.Id);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.

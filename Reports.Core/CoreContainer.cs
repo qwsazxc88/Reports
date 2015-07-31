@@ -673,6 +673,9 @@ namespace Reports.Core
             Register(Component.For<IStaffEstablishedPostRequestTypesDao>()
                 .ImplementedBy<StaffEstablishedPostRequestTypesDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostChargeLinksDao>()
+                .ImplementedBy<StaffEstablishedPostChargeLinksDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

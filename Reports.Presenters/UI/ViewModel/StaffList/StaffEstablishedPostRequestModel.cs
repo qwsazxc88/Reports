@@ -54,6 +54,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int? ReasonId { get; set; }
         public IList<AppointmentReason> Reasons { get; set; }
 
+        [Display(Name = "Надбавки")]
+        public IList<StaffEstablishedPostChargeLinksDto> PostChargeLinks { get; set; }
+
         [Display(Name = "Инициатор")]
         public int UserId { get; set; }
 

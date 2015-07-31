@@ -303,6 +303,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTaxDetailsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostRequestTypesDao.cs" />
@@ -323,6 +324,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTaxDetailsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostArchiveDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostRequestTypesDao.cs" />
@@ -594,6 +596,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentTypes.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPost.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostArchive.cs" />
+    <Compile Include="Domain\StaffList\StaffEstablishedPostChargeLinks.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostRequest.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostRequestTypes.cs" />
     <Compile Include="Domain\StaffList\StaffExtraCharges.cs" />
@@ -704,6 +707,7 @@
     <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
+    <Compile Include="Dto\StaffList\StaffEstablishedPostChargeLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
     <Compile Include="Dto\StaffList\StaffListDepartmentDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
@@ -1268,6 +1272,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostChargeLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostRequestTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationModes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRequestTypes.hbm.xml" />
