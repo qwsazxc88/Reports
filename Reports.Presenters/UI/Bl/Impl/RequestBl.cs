@@ -7617,7 +7617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 while (!reader.EndOfStream)
                 {
                     string data = reader.ReadLine();
-                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;,:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:,;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:,;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;,:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:,;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:,;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
+                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
                     if (!m.Success) { Errors.Add("Неправильный формат данных.>" + data); continue; }
                     var el = new Deduction();
                     try
