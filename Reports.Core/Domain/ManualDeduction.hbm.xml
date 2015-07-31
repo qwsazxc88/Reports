@@ -10,5 +10,9 @@
     <property name="CreateDate" not-null="true"/>
     <many-to-one name="MissionReport" class="MissionReport" column="MissionReportId" foreign-key="FK_ManualDeduction_MissionReport" not-null="true"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_ManualDeduction_User" not-null="true"/>
+    <bag name="Deductions" table="Deduction" lazy="true" >
+      <key column="ManualDeductionId" />
+      <one-to-many class="Deduction"/>
+    </bag>
   </class>
 </hibernate-mapping>
