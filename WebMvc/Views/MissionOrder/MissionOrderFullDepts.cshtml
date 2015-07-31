@@ -42,7 +42,7 @@
                         <tr>
                           <td colspan="2">
                             <input type="button" ng-click="GetData();" value="Выбрать"/>
-                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            <input type="button" value="Очистить" ng-click="resetFilter();"/>
                           </td>
                         </tr>
             </table>
@@ -51,13 +51,14 @@
     </tr>  
     <tr>
       <td>
+        <input type="button" style="float: right;" ng-click="Excel();" value="Открыть в Excel"/>
         <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
         <input type="button" style="float: right;" value="Филтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
        </td>
     </tr>    
      <tr>
         <td colspan="2">
-            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
+            <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
                 <tr>
                      <th ng-click="Sort('NPP')">
                        <a>№ П/П</a>
@@ -88,7 +89,7 @@
                         <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
                     </th>
                 </tr>
-                <tr id="FiltrRow">
+                <tr id="FiltrRow" class="noExl">
                 <td><input ng-model="search.NPP" class="filterinput" /></td>
                 <td><input ng-model="search.UserName" class="filterinput"  /></td>
                 <td><input ng-model="search.AllSum" class="filterinput"  /></td>
@@ -145,7 +146,6 @@
         $scope.reverse = false;
         var orderBy = $filter('orderBy');
         $scope.Sort = function (col) {
-            console.log("Sort by " + col);
             if ($scope.predicate == col) {
                 $scope.reverse = !$scope.reverse;
             }
@@ -153,6 +153,7 @@
                 $scope.predicate = col;
             }
         }
+
         $scope.GetData = function () {
             $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), UserName: $scope.model.UserName }).
               success(function (data, status, headers, config) {
@@ -165,6 +166,13 @@
                   alert('Ошибка при получении данных.');
               });
         }
+        $scope.resetFilter = function () {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+            $("#UserName").val('');
+            $scope.model.UserName = '';
+        }
     });	
 </script>
 <script type="text/javascript">
@@ -176,11 +184,7 @@
     resetFilter();
     $(':button').button();
     $('#FiltrRow').hide();
-    function resetFilter() {               
-        $("#DepartmentId").val('0');
-        $("#DepartmentNameLabel").text('');
-        $("#DepartmentName").val('');        
-        $("#UserName").val('');
-    }
     
+   
+
  </script> 
