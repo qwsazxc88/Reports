@@ -14,5 +14,6 @@ namespace Reports.Core.Domain
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime DeductionDate { get; set; }
         public virtual Decimal AllSum { get; set; }
+        public virtual IList<Deduction> Deductions { get; set; }
     }
 }
