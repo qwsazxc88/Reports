@@ -105,7 +105,7 @@ namespace Reports.Core.Dao.Impl
         {
             if (!string.IsNullOrEmpty(AccessGroupCode))
             {
-                whereString = string.Format(@"{0} AccessGroupCode = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), AccessGroupCode);
+                whereString = string.Format(@"{0} ag.AccessGroupCode = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), AccessGroupCode);
             }
 
             return whereString;
