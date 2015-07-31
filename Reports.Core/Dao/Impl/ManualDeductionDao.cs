@@ -54,7 +54,7 @@ namespace Reports.Core.Dao.Impl
                         NPP=(counter++),
                          UserName = x.User.Name,
                         AllSum = x.AllSum,
-                        DeductionDate = x.DeductionDate,
+                        DeductionDate = x.MissionReport.MissionOrder.BeginDate.HasValue ? x.MissionReport.MissionOrder.BeginDate.Value : x.MissionReport.MissionOrder.CreateDate,
                         DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "",
                         UserId = x.User.Id,
                         SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "",
