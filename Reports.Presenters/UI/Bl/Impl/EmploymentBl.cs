@@ -3477,6 +3477,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
+            if (candidate.SendTo1C.HasValue)
+            {
+                error = "Кандидат выгружен в 1С! Выполнение операции прервано!";
+                return;
+            }
+
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
             IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
 
@@ -3735,8 +3741,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                    candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
             }
+
             try
             {
                 EmploymentCandidateDao.SaveAndFlush(candidate);
@@ -3820,10 +3828,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!candidate.BackgroundCheck.PrevApprovalDate.HasValue && !candidate.BackgroundCheck.ApprovalDate.HasValue)//если кандидат не проходил предварительную и обычную проверку
                         candidate.Status = EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY;
                 }
+                else
+                {
+                    if (model.IsScanFinal)
+                    {
+                        if (candidate.GeneralInfo.IsFinal && candidate.Passport.IsFinal && candidate.Education.IsFinal && candidate.Family.IsFinal
+                                && candidate.MilitaryService.IsFinal && candidate.Experience.IsFinal && candidate.Contacts.IsFinal && candidate.BackgroundCheck.IsFinal &&
+                                candidate.BackgroundCheck.PrevApprovalDate.HasValue && !candidate.BackgroundCheck.ApprovalDate.HasValue)
+                        {
+                            candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                        }
+                    }
+                }
             }
             else if (model.IsScanODDraft && AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)//отменить согласование может только кадровик
             {
                 candidate.IsScanFinal = false;
+                error = "Данные сохранены!";
                 //статус не меняем, потому что эту операцию делает только кадровик и может это делать на любом этапе оформления кандидата
                 //candidate.Status = 0;
             }
@@ -4637,6 +4658,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
             entity.IsValidate = viewModel.IsValidate;
+
+            
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
             if (entity.Candidate.IsScanFinal)
             {
