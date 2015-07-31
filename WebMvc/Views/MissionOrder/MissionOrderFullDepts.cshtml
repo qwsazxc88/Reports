@@ -51,9 +51,9 @@
     </tr>  
     <tr>
       <td>
-        <input type="button" style="float: right;" ng-click="Excel();" value="Открыть в Excel"/>
+        <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
         <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
-        <input type="button" style="float: right;" value="Филтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
+        <input type="button" style="float: right;" value="Фильтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
        </td>
     </tr>    
      <tr>
@@ -73,21 +73,30 @@
                         <span class="sortorder" ng-show="predicate === 'AllSum'" ng-class="{reverse:reverse}"></span>
                     </th> 
                     <th ng-click="Sort('Dep3Name')">
-                        <a>Подразделение 3 уровня</a>
+                        <a>Подразделение<br />3 уровня</a>
                         <span class="sortorder" ng-show="predicate === 'Dep3Name'" ng-class="{reverse:reverse}"></span>
                     </th> 
                     <th ng-click="Sort('Dep7Name')">
-                        <a>Подразделение 7 уровня</a>
+                        <a>Подразделение<br />7 уровня</a>
                         <span class="sortorder" ng-show="predicate === 'Dep7Name'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('DeductionDate')">
-                        <a>Дата удержания</a>
+                        <a>Дата начала<br />командировки</a>
                         <span class="sortorder" ng-show="predicate === 'DeductionDate'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('MissionReportNumber')">
-                        <a>Номер авансового отчёта</a>
+                        <a>Номер<br />авансового<br />отчёта</a>
                         <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
                     </th>
+                </tr>                
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Итого: {{TotalSum}}</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <tr id="FiltrRow" class="noExl">
                 <td><input ng-model="search.NPP" class="filterinput" /></td>
@@ -139,40 +148,54 @@
 <script>
     var GridApp = angular.module('GridApp', []);
     GridApp.controller('GridController', function ($scope, $http, $filter) {
+        $scope.IsWorking = false;
         $scope.Grid = {};
         $scope.model = {};
-        $scope.model.DepartmentId = 0;
         $scope.model.UserName = '';
         $scope.reverse = false;
         var orderBy = $filter('orderBy');
         $scope.Sort = function (col) {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
             if ($scope.predicate == col) {
                 $scope.reverse = !$scope.reverse;
             }
             else {
                 $scope.predicate = col;
             }
+            $scope.IsWorking = false;
+            $(':button').button('enable');
         }
 
         $scope.GetData = function () {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
+            $scope.TotalSum = 0;
             $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), UserName: $scope.model.UserName }).
               success(function (data, status, headers, config) {
                   for (var i = 0; i < data.length; i++) {
+                      $scope.TotalSum += data[i].AllSum;
                       data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
                   }
                   $scope.Grid.Data = data;
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
               }).
               error(function (data, status, headers, config) {
                   alert('Ошибка при получении данных.');
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
               });
         }
         $scope.resetFilter = function () {
             $("#DepartmentId").val('0');
+            $scope.model.DepartmentId = 0;
             $("#DepartmentNameLabel").text('');
             $("#DepartmentName").val('');
             $("#UserName").val('');
             $scope.model.UserName = '';
         }
+        $scope.resetFilter();
     });	
 </script>
 <script type="text/javascript">
@@ -181,7 +204,6 @@
     $(document).ready(function () {
         setActiveMenuItem("moFullDepts");
     });
-    resetFilter();
     $(':button').button();
     $('#FiltrRow').hide();
     
