@@ -2364,13 +2364,13 @@ namespace WebMvc.Controllers
                     if (DateTime.Today >= new DateTime(2015, 8, 1).Date)
                     {
                         //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
-                        if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5)
+                        if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day >= 5)
                         {
                             ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
                         }
-                        else
+                        else //if (model.RegistrationDate.Value.Year == DateTime.Today.Year && model.RegistrationDate.Value.Month == DateTime.Today.Month)
                         {
-                            if (model.RegistrationDate.Value < DateTime.Today)
+                            if (model.RegistrationDate.Value < DateTime.Today && (model.RegistrationDate.Value.AddMonths(1).Year != DateTime.Today.Year || model.RegistrationDate.Value.AddMonths(1).Month != DateTime.Today.Month))
                                 ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
                         }
                     }
