@@ -2355,12 +2355,20 @@ namespace WebMvc.Controllers
                 {
                     if (DateTime.Today >= new DateTime(2015, 8, 1).Date)
                     {
-                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
-                            ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                        //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
+                        if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && model.RegistrationDate.Value.Day > 5)
+                        {
+                            ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
+                        }
+                        else
+                        {
+                            if (model.RegistrationDate.Value < DateTime.Today)
+                                ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                        }
                     }
                     else
                     {
-                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
+                        if (model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                             ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
                     }
                 }
