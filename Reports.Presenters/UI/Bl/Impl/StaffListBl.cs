@@ -1293,7 +1293,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
-            model.DepRequestList = StaffDepartmentRequestDao.GetDepartmentRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
+            model.EPRequestList = StaffEstablishedPostRequestDao.GetEstablishedPostRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
                 model.DepartmentId,
                 model.Id.HasValue ? model.Id.Value : 0,
                 model.Creator,
@@ -1410,6 +1410,613 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             return model;
+        }
+        /// <summary>
+        /// Процедура сохранения новой заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveNewEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity;// = new StaffEstablishedPostRequest();// = StaffDepartmentRequestDao.Load(model.Id.HasValue ? model.Id.Value : 0);
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (model.Id == 0)
+            {
+
+                entity = new StaffEstablishedPostRequest
+                {
+                    RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId),
+                    DateRequest = DateTime.Now,
+                    
+                    IsUsed = false,
+                    IsDraft = true,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+
+
+                ////надбавки
+                //IList<StaffEstablishedPostChargeLinks> ProgramCodes = new List<StaffEstablishedPostChargeLinks>();
+                //foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                //{
+                //    dmd.ProgramCodes.Add(new StaffProgramCodes
+                //    {
+                //        DepartmentManagerDetail = dmd,
+                //        Program = StaffProgramReferenceDao.Load(item.ProgramId),
+                //        Code = item.Code,
+                //        Creator = curUser,
+                //        CreateDate = DateTime.Now
+                //    });
+                //}
+                
+
+                
+
+                
+                
+
+                
+
+                //entity.DepartmentManagerDetails.Add(dmd);
+
+                //try
+                //{
+                //    StaffDepartmentRequestDao.SaveAndFlush(entity);
+                //    model.Id = entity.Id;
+                //    return true;
+                //}
+                //catch (Exception ex)
+                //{
+                //    StaffDepartmentRequestDao.RollbackTran();
+                //    RefAddressesDao.RollbackTran();
+                //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                //    return false;
+                //}
+            }
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
+        /// Процедура сохранения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveEditEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            //entity.Name = model.Name;
+            //entity.IsBack = model.IsBack;
+            //entity.OrderNumber = model.OrderNumber;
+            //entity.OrderDate = model.OrderDate;
+            //entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
+            //entity.IsEmployeAvailable = model.IsEmployeAvailable;
+            //entity.IsPlan = model.IsPlan;
+            //entity.IsDraft = true;
+            //entity.Editor = curUser;
+            //entity.EditDate = DateTime.Now;
+            //entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
+            //entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
+
+            ////юридический адрес
+            //RefAddresses la = null;
+            ////создаем новую запись или редактируем старую
+            //if (!string.IsNullOrEmpty(model.LegalAddress) && entity.LegalAddress == null)
+            //    la = new RefAddresses();
+            //else
+            //{
+            //    if (entity.LegalAddress != null)
+            //        la = RefAddressesDao.Get(entity.LegalAddress.Id);
+            //}
+
+            //if (la != null)
+            //{
+            //    la.Address = model.LegalAddress;
+            //    la.PostIndex = model.LegalPostIndex;
+            //    la.RegionCode = model.LegalRegionCode;
+            //    if (!string.IsNullOrEmpty(model.LegalRegionCode))
+            //    {
+            //        KladrDto kd = KladrDao.GetKladrByCode(model.LegalRegionCode).Single();
+            //        la.RegionName = kd.Name + " " + kd.ShortName;
+            //    }
+            //    la.AreaCode = model.LegalAreaCode;
+            //    if (!string.IsNullOrEmpty(model.LegalAreaCode))
+            //    {
+            //        KladrDto kd = KladrDao.GetKladrByCode(model.LegalAreaCode).Single();
+            //        la.AreaName = kd.Name + " " + kd.ShortName;
+            //    }
+            //    la.CityCode = model.LegalCityCode;
+            //    if (!string.IsNullOrEmpty(model.LegalCityCode))
+            //    {
+            //        KladrDto kd = KladrDao.GetKladrByCode(model.LegalCityCode).Single();
+            //        la.CityName = kd.Name + " " + kd.ShortName;
+            //    }
+            //    la.SettlementCode = model.LegalSettlementCode;
+            //    if (!string.IsNullOrEmpty(model.LegalSettlementCode))
+            //    {
+            //        KladrDto kd = KladrDao.GetKladrByCode(model.LegalSettlementCode).Single();
+            //        la.SettlementName = kd.Name + " " + kd.ShortName;
+            //    }
+            //    la.StreetCode = model.LegalStreetCode;
+            //    if (!string.IsNullOrEmpty(model.LegalStreetCode))
+            //    {
+            //        KladrDto kd = KladrDao.GetKladrByCode(model.LegalStreetCode).Single();
+            //        la.StreetName = kd.Name + " " + kd.ShortName;
+            //    }
+            //    la.HouseType = model.LegalHouseType;
+            //    la.HouseNumber = model.LegalHouseNumber;
+            //    la.BuildType = model.LegalBuildType;
+            //    la.BuildNumber = model.LegalBuildNumber;
+            //    la.FlatType = model.LegalFlatType;
+            //    la.FlatNumber = model.LegalFlatNumber;
+            //    la.IsUsed = true;
+            //    if (la.Id == 0)
+            //    {
+            //        la.Creator = curUser;
+            //        la.CreateDate = DateTime.Now;
+            //    }
+            //    else
+            //    {
+            //        la.Editor = curUser;
+            //        la.EditDate = DateTime.Now;
+            //    }
+
+            //    RefAddressesDao.SaveAndFlush(la);
+
+            //    entity.LegalAddress = la;
+            //}
+
+
+
+            ////поля ЦБ реквизитов
+            //if (entity.DepartmentCBDetails.Count == 0)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
+            //{
+            //    entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+
+            //    entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
+            //    {
+            //        DepRequest = entity,
+            //        ATMCountTotal = model.ATMCountTotal,
+            //        ATMCashInCount = model.ATMCashInCount,
+            //        ATMCount = model.ATMCount,
+            //        DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId),
+            //        DepATM = model.DepATMId == 0 ? null : DepartmentDao.Load(model.DepATMId),
+            //        CashInStartedDate = model.CashInStartedDate,
+            //        ATMStartedDate = model.ATMStartedDate,
+            //        Creator = curUser,
+            //        CreateDate = DateTime.Now
+            //    });
+            //}
+            //else
+            //{
+            //    entity.DepartmentCBDetails[0].ATMCountTotal = model.ATMCountTotal;
+            //    entity.DepartmentCBDetails[0].ATMCashInCount = model.ATMCashInCount;
+            //    entity.DepartmentCBDetails[0].ATMCount = model.ATMCount;
+            //    entity.DepartmentCBDetails[0].DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId);
+            //    entity.DepartmentCBDetails[0].DepATM = model.DepATMId == 0 ? null : DepartmentDao.Load(model.DepATMId);
+            //    entity.DepartmentCBDetails[0].CashInStartedDate = model.CashInStartedDate;
+            //    entity.DepartmentCBDetails[0].ATMStartedDate = model.ATMStartedDate;
+            //    entity.DepartmentCBDetails[0].Editor = curUser;
+            //    entity.DepartmentCBDetails[0].EditDate = DateTime.Now;
+            //}
+
+
+
+            ////поля управленческих реквизитов
+            //if (entity.DepartmentManagerDetails == null) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
+            //{
+            //    entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+            //    StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
+            //    dmd.DepRequest = entity;
+            //    dmd.NameShort = model.NameShort;
+            //    dmd.ReferenceReason = model.ReferenceReason;
+
+            //    //фактический адрес
+            //    if (!string.IsNullOrEmpty(model.FactAddress))
+            //    {
+            //        RefAddresses fa = new RefAddresses();
+            //        fa.Address = model.FactAddress;
+            //        fa.PostIndex = model.FactPostIndex;
+            //        fa.RegionCode = model.FactRegionCode;
+            //        if (!string.IsNullOrEmpty(model.FactRegionCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactRegionCode).Single();
+            //            fa.RegionName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.AreaCode = model.FactAreaCode;
+            //        if (!string.IsNullOrEmpty(model.FactAreaCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactAreaCode).Single();
+            //            fa.AreaName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.CityCode = model.FactCityCode;
+            //        if (!string.IsNullOrEmpty(model.FactCityCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactCityCode).Single();
+            //            fa.CityName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.SettlementCode = model.FactSettlementCode;
+            //        if (!string.IsNullOrEmpty(model.FactSettlementCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactSettlementCode).Single();
+            //            fa.SettlementName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.StreetCode = model.FactStreetCode;
+            //        if (!string.IsNullOrEmpty(model.FactStreetCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactStreetCode).Single();
+            //            fa.StreetName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.HouseType = model.FactHouseType;
+            //        fa.HouseNumber = model.FactHouseNumber;
+            //        fa.BuildType = model.FactBuildType;
+            //        fa.BuildNumber = model.FactBuildNumber;
+            //        fa.FlatType = model.FactFlatType;
+            //        fa.FlatNumber = model.FactFlatNumber;
+            //        fa.IsUsed = true;
+            //        fa.Creator = curUser;
+            //        fa.CreateDate = DateTime.Now;
+
+            //        RefAddressesDao.SaveAndFlush(fa);
+
+            //        dmd.FactAddress = fa;
+            //    }
+
+
+            //    dmd.DepStatus = model.DepStatus;
+            //    dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+            //    dmd.OpenDate = model.OpenDate;
+            //    dmd.CloseDate = model.CloseDate;
+            //    dmd.Reason = model.Reason;
+            //    dmd.OperationMode = model.OperationMode;
+            //    dmd.BeginIdleDate = model.BeginIdleDate;
+            //    dmd.EndIdleDate = model.EndIdleDate;
+            //    dmd.IsRentPlace = model.IsRentPlace;
+            //    dmd.AgreementDetails = model.AgreementDetails;
+            //    dmd.DivisionArea = model.DivisionArea;
+            //    dmd.AmountPayment = model.AmountPayment;
+            //    dmd.Phone = model.Phone;
+            //    dmd.IsBlocked = model.IsBlocked;
+            //    dmd.IsNetShop = model.IsNetShop;
+            //    dmd.IsAvailableCash = model.IsAvailableCash;
+            //    dmd.IsLegalEntity = model.IsLegalEntity;
+            //    dmd.PlanEPCount = model.PlanEPCount;
+            //    dmd.PlanSalaryFund = model.PlanSalaryFund;
+            //    dmd.Note = model.Note;
+            //    dmd.Creator = curUser;
+            //    dmd.CreateDate = DateTime.Now;
+
+            //    //режим работы
+            //    dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
+            //    foreach (var item in model.OperationModes)
+            //    {
+            //        dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+            //        {
+            //            DepartmentManagerDetail = dmd,
+            //            WorkBegin = item.WorkBegin,
+            //            WorkEnd = item.WorkEnd,
+            //            BreakBegin = item.BreakBegin,
+            //            BreakEnd = item.BreakEnd,
+            //            IsWorkDay = item.IsWorkDay,
+            //            Creator = curUser,
+            //            CreateDate = DateTime.Now
+            //        });
+            //    }
+
+            //    //операции
+            //    dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
+            //    foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+            //    {
+            //        dmd.DepOperations.Add(new StaffDepartmentOperationLinks
+            //        {
+            //            DepartmentManagerDetail = dmd,
+            //            DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
+            //            Creator = curUser,
+            //            CreateDate = DateTime.Now
+            //        });
+            //    }
+
+            //    //коды программ
+            //    dmd.ProgramCodes = new List<StaffProgramCodes>();
+            //    foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+            //    {
+            //        dmd.ProgramCodes.Add(new StaffProgramCodes
+            //        {
+            //            DepartmentManagerDetail = dmd,
+            //            Program = StaffProgramReferenceDao.Load(item.ProgramId),
+            //            Code = item.Code,
+            //            Creator = curUser,
+            //            CreateDate = DateTime.Now
+            //        });
+            //    }
+
+            //    //ориентиры
+            //    dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+            //    foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
+            //    {
+            //        dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks
+            //        {
+            //            DepartmentManagerDetail = dmd,
+            //            LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId),
+            //            Description = item.Description,
+            //            Creator = curUser,
+            //            CreateDate = DateTime.Now
+            //        });
+            //    }
+
+            //    entity.DepartmentManagerDetails.Add(dmd);
+            //}
+            //else
+            //{
+            //    entity.DepartmentManagerDetails[0].NameShort = model.NameShort;
+            //    entity.DepartmentManagerDetails[0].ReferenceReason = model.ReferenceReason;
+
+            //    //фактический адрес
+            //    RefAddresses fa = null;
+            //    //создаем новую запись или рекдактируем старую
+            //    if (!string.IsNullOrEmpty(model.FactAddress) && entity.DepartmentManagerDetails[0].FactAddress == null)
+            //        fa = new RefAddresses();
+            //    else
+            //    {
+            //        if (entity.DepartmentManagerDetails[0].FactAddress != null)
+            //            fa = RefAddressesDao.Get(entity.DepartmentManagerDetails[0].FactAddress.Id);
+            //    }
+
+            //    if (fa != null)
+            //    {
+            //        fa.Address = model.FactAddress;
+            //        fa.PostIndex = model.FactPostIndex;
+            //        fa.RegionCode = model.FactRegionCode;
+            //        if (!string.IsNullOrEmpty(model.FactRegionCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactRegionCode).Single();
+            //            fa.RegionName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.AreaCode = model.FactAreaCode;
+            //        if (!string.IsNullOrEmpty(model.FactAreaCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactAreaCode).Single();
+            //            fa.AreaName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.CityCode = model.FactCityCode;
+            //        if (!string.IsNullOrEmpty(model.FactCityCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactCityCode).Single();
+            //            fa.CityName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.SettlementCode = model.FactSettlementCode;
+            //        if (!string.IsNullOrEmpty(model.FactSettlementCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactSettlementCode).Single();
+            //            fa.SettlementName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.StreetCode = model.FactStreetCode;
+            //        if (!string.IsNullOrEmpty(model.FactStreetCode))
+            //        {
+            //            KladrDto kd = KladrDao.GetKladrByCode(model.FactStreetCode).Single();
+            //            fa.StreetName = kd.Name + " " + kd.ShortName;
+            //        }
+            //        fa.HouseType = model.FactHouseType;
+            //        fa.HouseNumber = model.FactHouseNumber;
+            //        fa.BuildType = model.FactBuildType;
+            //        fa.BuildNumber = model.FactBuildNumber;
+            //        fa.FlatType = model.FactFlatType;
+            //        fa.FlatNumber = model.FactFlatNumber;
+            //        fa.IsUsed = true;
+            //        if (fa.Id == 0)
+            //        {
+            //            fa.Creator = curUser;
+            //            fa.CreateDate = DateTime.Now;
+            //        }
+            //        else
+            //        {
+            //            fa.Editor = curUser;
+            //            fa.EditDate = DateTime.Now;
+            //        }
+
+            //        RefAddressesDao.SaveAndFlush(fa);
+
+            //        entity.DepartmentManagerDetails[0].FactAddress = fa;
+            //    }
+
+            //    entity.DepartmentManagerDetails[0].DepStatus = model.DepStatus;
+            //    entity.DepartmentManagerDetails[0].DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+            //    entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
+            //    entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
+            //    entity.DepartmentManagerDetails[0].Reason = model.Reason;
+            //    entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
+            //    entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
+            //    entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
+            //    entity.DepartmentManagerDetails[0].IsRentPlace = model.IsRentPlace;
+            //    entity.DepartmentManagerDetails[0].AgreementDetails = model.AgreementDetails;
+            //    entity.DepartmentManagerDetails[0].DivisionArea = model.DivisionArea;
+            //    entity.DepartmentManagerDetails[0].AmountPayment = model.AmountPayment;
+            //    entity.DepartmentManagerDetails[0].Phone = model.Phone;
+            //    entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
+            //    entity.DepartmentManagerDetails[0].IsNetShop = model.IsNetShop;
+            //    entity.DepartmentManagerDetails[0].IsAvailableCash = model.IsAvailableCash;
+            //    entity.DepartmentManagerDetails[0].IsLegalEntity = model.IsLegalEntity;
+            //    entity.DepartmentManagerDetails[0].PlanEPCount = model.PlanEPCount;
+            //    entity.DepartmentManagerDetails[0].PlanSalaryFund = model.PlanSalaryFund;
+            //    entity.DepartmentManagerDetails[0].Note = model.Note;
+            //    entity.DepartmentManagerDetails[0].Editor = curUser;
+            //    entity.DepartmentManagerDetails[0].EditDate = DateTime.Now;
+
+
+            //    //режим работы
+            //    if (entity.DepartmentManagerDetails[0].DepOperationModes == null)
+            //        entity.DepartmentManagerDetails[0].DepOperationModes = new List<StaffDepartmentOperationModes>();
+
+            //    foreach (var item in model.OperationModes)
+            //    {
+            //        StaffDepartmentOperationModes dom = new StaffDepartmentOperationModes();
+            //        //если не было, добавляем
+            //        if (item.Id == 0)
+            //        {
+            //            dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+            //            dom.WeekDay = item.WeekDay;
+            //            dom.WorkBegin = item.WorkBegin;
+            //            dom.WorkEnd = item.WorkEnd;
+            //            dom.BreakBegin = item.BreakBegin;
+            //            dom.BreakEnd = item.BreakEnd;
+            //            dom.IsWorkDay = item.IsWorkDay;
+            //            dom.Creator = curUser;
+            //            dom.CreateDate = DateTime.Now;
+
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Add(dom);
+            //        }
+            //        else//редактируем
+            //        {
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkBegin = item.WorkBegin;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkEnd = item.WorkEnd;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakBegin = item.BreakBegin;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakEnd = item.BreakEnd;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().IsWorkDay = item.IsWorkDay;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+            //            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+            //        }
+            //    }
+
+            //    //операции
+            //    if (entity.DepartmentManagerDetails[0].DepOperations == null)
+            //        entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+
+            //    foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
+            //    {
+            //        StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
+
+            //        //если была операция, но сняли птицу, то удаляем
+            //        if (item.Id != 0 && !item.IsUsed)
+            //        {
+            //            oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
+            //            entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
+            //        }
+
+            //        //если не было и поставили птицу
+            //        if (item.Id == 0 && item.IsUsed)
+            //        {
+            //            oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+            //            oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
+            //            oper.Creator = curUser;
+            //            oper.CreateDate = DateTime.Now;
+            //            entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
+            //        }
+            //    }
+
+            //    //коды программ
+            //    if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+            //        entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+            //    foreach (var item in model.ProgramCodes)
+            //    {
+            //        StaffProgramCodes pc = new StaffProgramCodes();
+
+            //        //если была запись и убрали значение кода, то удаляем
+            //        if (item.Id != 0 && item.Code == null)
+            //        {
+            //            pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+            //            entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+            //        }
+
+            //        //если не было записи и ввели код, то добавляем
+            //        if (item.Id == 0 && item.Code != null)
+            //        {
+            //            pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+            //            pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+            //            pc.Code = item.Code;
+            //            pc.Creator = curUser;
+            //            pc.CreateDate = DateTime.Now;
+
+            //            entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+            //        }
+
+            //        //запись была и есть код, то предпологаем, что это редактирование
+            //        if (item.Id != 0 && item.Code != null)
+            //        {
+            //            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+            //            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+            //            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+            //        }
+            //    }
+
+
+            //    //ориентиры
+            //    if (entity.DepartmentManagerDetails[0].DepartmentLandmarks == null)
+            //        entity.DepartmentManagerDetails[0].DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
+
+            //    foreach (var item in model.DepLandmarks)
+            //    {
+            //        StaffDepartmentLandmarks lm = new StaffDepartmentLandmarks();
+
+            //        //если была запись и убрали значение кода, то удаляем
+            //        if (item.Id != 0 && item.Description == null)
+            //        {
+            //            lm = entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id && x.Description != null).Single();
+            //            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Remove(lm);
+            //        }
+
+            //        //если не было записи и ввели код, то добавляем
+            //        if (item.Id == 0 && item.Description != null)
+            //        {
+            //            lm.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+            //            lm.LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId);
+            //            lm.Description = item.Description;
+            //            lm.Creator = curUser;
+            //            lm.CreateDate = DateTime.Now;
+
+            //            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Add(lm);
+            //        }
+
+            //        //запись была и есть код, то предпологаем, что это редактирование
+            //        if (item.Id != 0 && item.Description != null)
+            //        {
+            //            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Description = item.Description;
+            //            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+            //            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+            //        }
+
+            //    }
+
+            //}
+
+
+
+            //if (model.Id != 0)
+            //{
+
+
+            //    try
+            //    {
+            //        StaffDepartmentRequestDao.SaveAndFlush(entity);
+            //        model.Id = entity.Id;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        StaffDepartmentRequestDao.RollbackTran();
+            //        RefAddressesDao.RollbackTran();
+            //        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+            //        return false;
+            //    }
+
+            //    return true;
+
+            //}
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
         }
         #endregion
 

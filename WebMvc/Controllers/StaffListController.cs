@@ -232,13 +232,13 @@ namespace WebMvc.Controllers
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
-            //if (ValidateModel(model))
-            //    model = StaffListBl.SetStaffEstablishedPostRequestList(model);
-            //else
-            //    model.Statuses = StaffListBl.GetDepRequestStatuses();
+            if (ValidateModel(model))
+                model = StaffListBl.SetStaffEstablishedPostRequestList(model);
+            else
+                model.Statuses = StaffListBl.GetDepRequestStatuses();
 
-            ModelState.AddModelError("MessageStr", "В разработке");
-            model.Statuses = StaffListBl.GetDepRequestStatuses();
+            //ModelState.AddModelError("MessageStr", "В разработке");
+            //model.Statuses = StaffListBl.GetDepRequestStatuses();
             return View(model);
         }
         /// <summary>
@@ -272,22 +272,22 @@ namespace WebMvc.Controllers
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ModelState.Clear();
-            //string error = string.Empty;
-            //bool IsComplete = false;
-            //if (model.IsDraft)  //сохранение черновика
-            //{
-            //    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
-            //    if (!IsComplete)
-            //    {
-            //        StaffListBl.LoadDictionaries(model);
-            //        ModelState.AddModelError("Message", error);
-            //    }
-            //    else
-            //    {
-            //        model = StaffListBl.GetDepartmentRequest(model);
-            //        ModelState.AddModelError("Message", "Данные сохранены!");
-            //    }
-            //}
+            string error = string.Empty;
+            bool IsComplete = false;
+            if (model.IsDraft)  //сохранение черновика
+            {
+                IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                if (!IsComplete)
+                {
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("Message", error);
+                }
+                else
+                {
+                    model = StaffListBl.GetEstablishedPostRequest(model);
+                    ModelState.AddModelError("Message", "Данные сохранены!");
+                }
+            }
             //else
             //{
             //    if (ValidateModel(model))//проверки

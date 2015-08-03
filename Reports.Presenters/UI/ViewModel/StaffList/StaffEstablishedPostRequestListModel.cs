@@ -32,7 +32,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateEnd { get; set; }
 
-        public IList<DepartmentRequestListDto> DepRequestList { get; set; }
+        public IList<EstablishedPostRequestDto> EPRequestList { get; set; }
 
         //сортировка
         public int SortBy { get; set; }
