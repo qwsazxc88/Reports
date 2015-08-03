@@ -678,7 +678,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             var creator=UserDao.Load(model.UserId);
             if (creator != null && creator.Department != null)
-                model.UsersList = UserDao.GetUsersForManager(creator.Id, UserRole.Manager, creator.Department.Id);
+                model.UsersList = UserDao.GetUsersForManagerNotDismissed(creator.Id, UserRole.Manager, creator.Department.Id,model.DateCreated!=null?model.DateCreated:DateTime.Now.ToShortDateString());
+            if( model.ReasonPositionId>0 && model.UsersList!=null && !model.UsersList.Any(x=>x.Id==model.ReasonPositionId))
+            {
+                var u = UserDao.Load(model.ReasonPositionId);
+                model.UsersList.Add(new IdNameDto { Id = u.Id, Name = u.Name });
+            }
+            if( model.Id>0 && model.DateCreated!= null && DateTime.Parse(model.DateCreated)<new DateTime(2015,7,22))
+                model.UsersList.Add(new IdNameDto{ Id = 0, Name ="-"});
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.AppointmentEducationTypes=AppointmentEducationTypeDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
             model.Recruters = UserDao.GetStaffList().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
