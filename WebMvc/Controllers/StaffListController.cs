@@ -280,33 +280,33 @@ namespace WebMvc.Controllers
                 if (!IsComplete)
                 {
                     StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("Message", error);
+                    ModelState.AddModelError("MessageStr", error);
                 }
                 else
                 {
                     model = StaffListBl.GetEstablishedPostRequest(model);
-                    ModelState.AddModelError("Message", "Данные сохранены!");
+                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
                 }
             }
-            //else
-            //{
-            //    if (ValidateModel(model))//проверки
-            //    {
-            //        //отправка на согласование НЕ СДЕЛАНО
-            //        StaffListBl.LoadDictionaries(model);
-            //        ModelState.AddModelError("Message", "В разработке!");
-            //        //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
-            //        //{
-            //        //    StaffListBl.LoadDictionaries(model);
-            //        //    ModelState.AddModelError("Message", error);
-            //        //    //return View(model);
-            //        //}
-            //    }
-            //}
+            else
+            {
+                if (ValidateModel(model))//проверки
+                {
+                    //отправка на согласование НЕ СДЕЛАНО
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("MessageStr", "В разработке!");
+                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    //{
+                    //    StaffListBl.LoadDictionaries(model);
+                    //    ModelState.AddModelError("Message", error);
+                    //    //return View(model);
+                    //}
+                }
+            }
 
-            //заглушка для выкладки на тест для показа прототипов
-            StaffListBl.LoadDictionaries(model);
-            ModelState.AddModelError("MessageStr", "В разработке!");
+            ////заглушка для выкладки на тест для показа прототипов
+            //StaffListBl.LoadDictionaries(model);
+            //ModelState.AddModelError("MessageStr", "В разработке!");
 
             return View(model);
         }
@@ -334,6 +334,10 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffEstablishedPostRequestListModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
             return ModelState.IsValid;
         }
