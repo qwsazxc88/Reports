@@ -2334,13 +2334,21 @@ namespace WebMvc.Controllers
             if (model.PositionId == 0)
                 ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
 
-            if (!model.SalaryMultiplier.HasValue)
-                ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
+            if (!model.SalaryBasis.HasValue)
+                ModelState.AddModelError("SalaryBasis", "Укажите должностной оклад!");
+            else
+            {
+                if (model.SalaryBasis.Value <= 0)
+                {
+                    ModelState.AddModelError("SalaryBasis", "Должностной оклад должен иметь значение больше нуля!");
+                }
+            }
+
             if (!model.SalaryMultiplier.HasValue)
                 ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");
             else
             {
-                if (model.SalaryMultiplier.Value == 0)
+                if (model.SalaryMultiplier.Value <= 0)
                     ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
                 if (model.SalaryMultiplier.Value > 1)
                     ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
@@ -2356,13 +2364,13 @@ namespace WebMvc.Controllers
                     if (DateTime.Today >= new DateTime(2015, 8, 1).Date)
                     {
                         //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
-                        if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && model.RegistrationDate.Value.Day > 5)
+                        if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day >= 5)
                         {
                             ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
                         }
-                        else
+                        else //if (model.RegistrationDate.Value.Year == DateTime.Today.Year && model.RegistrationDate.Value.Month == DateTime.Today.Month)
                         {
-                            if (model.RegistrationDate.Value < DateTime.Today)
+                            if (model.RegistrationDate.Value < DateTime.Today && (model.RegistrationDate.Value.AddMonths(1).Year != DateTime.Today.Year || model.RegistrationDate.Value.AddMonths(1).Month != DateTime.Today.Month))
                                 ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
                         }
                     }
