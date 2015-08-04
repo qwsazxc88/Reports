@@ -17,7 +17,7 @@
     @Html.HiddenFor(m => m.SendTo1C)
     
     <fieldset class="bordered doc-wrap panel">
-    <legend>Руководители aaa</legend>
+    <legend>Руководители</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
             <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
