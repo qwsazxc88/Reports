@@ -14,7 +14,6 @@ namespace Reports.Core.Dto
         public int DepartmentId { get; set; }
         public int Quantity { get; set; }
         public decimal? Salary { get; set; }
-        public decimal? StaffECSalary { get; set; }
         public string Path { get; set; }    //поле из подразделения, используется в дереве
         public int RequestId { get; set; }  //Id действующей заявки
     }

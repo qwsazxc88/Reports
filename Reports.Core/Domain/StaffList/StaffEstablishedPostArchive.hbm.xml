@@ -10,7 +10,6 @@
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffEstablishedPostArchive_Department" index="StaffEstablishedPostArchive_Department" not-null="false"/>
     <property name="Quantity" not-null="false"/>
     <property name="Salary" precision="19" scale="2" not-null="false"/>
-    <property name="StaffECSalary" precision="19" scale="2" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
     <property name="BeginAccountDate" not-null="false"/>
     <property name="Priority" not-null="false"/>

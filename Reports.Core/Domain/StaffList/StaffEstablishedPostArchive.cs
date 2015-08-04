@@ -13,7 +13,6 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; }
         public virtual int Quantity { get; set; }
         public virtual Decimal Salary { get; set; }
-        public virtual Decimal StaffECSalary { get; set; }
         public virtual bool IsUsed { get; set; }
         public virtual DateTime? BeginAccountDate { get; set; }
         public virtual int Priority { get; set; }
