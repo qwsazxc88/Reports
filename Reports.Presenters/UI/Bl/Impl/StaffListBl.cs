@@ -146,6 +146,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffestablishedPostChargeLinksDao); }
             set { staffestablishedPostChargeLinksDao = value; }
         }
+
+        protected IStaffExtraChargesDao staffextraChargesDao;
+        public IStaffExtraChargesDao StaffExtraChargesDao
+        {
+            get { return Validate.Dependency(staffextraChargesDao); }
+            set { staffextraChargesDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -1293,7 +1301,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
-            model.DepRequestList = StaffDepartmentRequestDao.GetDepartmentRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
+            model.EPRequestList = StaffEstablishedPostRequestDao.GetEstablishedPostRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
                 model.DepartmentId,
                 model.Id.HasValue ? model.Id.Value : 0,
                 model.Creator,
@@ -1410,6 +1418,163 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             return model;
+        }
+        /// <summary>
+        /// Процедура сохранения новой заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveNewEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (model.Id == 0)
+            {
+
+                entity = new StaffEstablishedPostRequest
+                {
+                    RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId),
+                    DateRequest = DateTime.Now,
+                    StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId),
+                    Position = PositionDao.Get(model.PositionId),
+                    Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null,
+                    Quantity = model.Quantity,
+                    Salary = model.Salary,
+                    IsUsed = false,
+                    IsDraft = true,
+                    Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+
+
+                //надбавки
+                entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
+                foreach (var item in model.PostChargeLinks.Where(x => x.Amount != 0 || x.AmountProc != 0))
+                {
+                    entity.PostChargeLinks.Add(new StaffEstablishedPostChargeLinks
+                    {
+                        EstablishedPostRequest = entity,
+                        EstablishedPost = entity.StaffEstablishedPost,
+                        ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId),
+                        Amount = item.Amount,
+                        AmountProc = item.AmountProc,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+
+                try
+                {
+                    StaffEstablishedPostRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffEstablishedPostRequestDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
+        /// Процедура сохранения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool SaveEditEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            entity.RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId);
+            entity.DateRequest = DateTime.Now;
+            entity.StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId);
+            entity.Position = PositionDao.Get(model.PositionId);
+            entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
+            entity.Quantity = model.Quantity;
+            entity.Salary = model.Salary;
+            entity.IsUsed = false;
+            entity.IsDraft = true;
+            entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
+            entity.Editor = curUser;
+            entity.EditDate = DateTime.Now;
+
+            //надбавки
+            if (entity.PostChargeLinks == null)
+                entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
+
+            foreach (var item in model.PostChargeLinks)
+            {
+                StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
+
+                //если была запись и убрали значения, то удаляем
+                if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                {
+                    pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
+                    entity.PostChargeLinks.Remove(pcl);
+                }
+
+                //если не было записи и ввели значение, то добавляем
+                if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
+                {
+                    pcl.EstablishedPostRequest = entity;
+                    pcl.EstablishedPost = entity.StaffEstablishedPost;
+                    pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
+                    pcl.Amount = item.Amount;
+                    pcl.AmountProc = item.AmountProc;
+                    pcl.Creator = curUser;
+                    pcl.CreateDate = DateTime.Now;
+
+                    entity.PostChargeLinks.Add(pcl);
+                }
+
+                //запись была и есть код, то предпологаем, что это редактирование
+                if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
+                {
+                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
+                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
+                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                }
+            }
+
+
+            if (model.Id != 0)
+            {
+                try
+                {
+                    StaffEstablishedPostRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                }
+                catch (Exception ex)
+                {
+                    StaffEstablishedPostRequestDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+                return true;
+            }
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
         }
         #endregion
 

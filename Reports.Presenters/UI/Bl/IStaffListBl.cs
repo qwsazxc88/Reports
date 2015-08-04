@@ -70,6 +70,20 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="model">Модель заявки.</param>
         /// <returns></returns>
         StaffEstablishedPostRequestModel GetEstablishedPostRequest(StaffEstablishedPostRequestModel model);
+        /// <summary>
+        /// Процедура сохранения новой заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool SaveNewEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
+        /// <summary>
+        /// Процедура сохранения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool SaveEditEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
         #endregion
 
         #endregion

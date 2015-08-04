@@ -232,13 +232,13 @@ namespace WebMvc.Controllers
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
-            //if (ValidateModel(model))
-            //    model = StaffListBl.SetStaffEstablishedPostRequestList(model);
-            //else
-            //    model.Statuses = StaffListBl.GetDepRequestStatuses();
+            if (ValidateModel(model))
+                model = StaffListBl.SetStaffEstablishedPostRequestList(model);
+            else
+                model.Statuses = StaffListBl.GetDepRequestStatuses();
 
-            ModelState.AddModelError("MessageStr", "В разработке");
-            model.Statuses = StaffListBl.GetDepRequestStatuses();
+            //ModelState.AddModelError("MessageStr", "В разработке");
+            //model.Statuses = StaffListBl.GetDepRequestStatuses();
             return View(model);
         }
         /// <summary>
@@ -272,41 +272,41 @@ namespace WebMvc.Controllers
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ModelState.Clear();
-            //string error = string.Empty;
-            //bool IsComplete = false;
-            //if (model.IsDraft)  //сохранение черновика
-            //{
-            //    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
-            //    if (!IsComplete)
-            //    {
-            //        StaffListBl.LoadDictionaries(model);
-            //        ModelState.AddModelError("Message", error);
-            //    }
-            //    else
-            //    {
-            //        model = StaffListBl.GetDepartmentRequest(model);
-            //        ModelState.AddModelError("Message", "Данные сохранены!");
-            //    }
-            //}
-            //else
-            //{
-            //    if (ValidateModel(model))//проверки
-            //    {
-            //        //отправка на согласование НЕ СДЕЛАНО
-            //        StaffListBl.LoadDictionaries(model);
-            //        ModelState.AddModelError("Message", "В разработке!");
-            //        //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
-            //        //{
-            //        //    StaffListBl.LoadDictionaries(model);
-            //        //    ModelState.AddModelError("Message", error);
-            //        //    //return View(model);
-            //        //}
-            //    }
-            //}
+            string error = string.Empty;
+            bool IsComplete = false;
+            if (model.IsDraft)  //сохранение черновика
+            {
+                IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                if (!IsComplete)
+                {
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("MessageStr", error);
+                }
+                else
+                {
+                    model = StaffListBl.GetEstablishedPostRequest(model);
+                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                }
+            }
+            else
+            {
+                if (ValidateModel(model))//проверки
+                {
+                    //отправка на согласование НЕ СДЕЛАНО
+                    StaffListBl.LoadDictionaries(model);
+                    ModelState.AddModelError("MessageStr", "В разработке!");
+                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    //{
+                    //    StaffListBl.LoadDictionaries(model);
+                    //    ModelState.AddModelError("Message", error);
+                    //    //return View(model);
+                    //}
+                }
+            }
 
-            //заглушка для выкладки на тест для показа прототипов
-            StaffListBl.LoadDictionaries(model);
-            ModelState.AddModelError("MessageStr", "В разработке!");
+            ////заглушка для выкладки на тест для показа прототипов
+            //StaffListBl.LoadDictionaries(model);
+            //ModelState.AddModelError("MessageStr", "В разработке!");
 
             return View(model);
         }
@@ -334,6 +334,10 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffEstablishedPostRequestListModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
             return ModelState.IsValid;
         }

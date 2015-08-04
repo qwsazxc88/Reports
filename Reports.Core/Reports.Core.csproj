@@ -706,6 +706,7 @@
     <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
+    <Compile Include="Dto\StaffList\EstablishedPostRequestDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostChargeLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
