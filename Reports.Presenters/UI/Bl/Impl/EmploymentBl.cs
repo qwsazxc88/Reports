@@ -6083,12 +6083,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье выше уровнем, собираем ихние адреса в строку
 
                     CurrentLevel = entity.AppointmentCreator.Level.Value;
-                    //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
-                    while (CurrentLevel > 3)
+                    //как показала практика, бывет, что инициатор 2 уровня, он же будет вышестоящим руководством
+                    if (CurrentLevel == 2)
                     {
-                        managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
-                        .Where<User>(x => x.Level == CurrentLevel - 1)
-                        .ToList<User>();
+                        managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true).ToList<User>();
                         foreach (User mu in managers)
                         {
                             if (!string.IsNullOrEmpty(mu.Email))
@@ -6097,11 +6095,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
                             }
                         }
-                        if (managers.Count != 0) break;
-                        CurrentLevel -= 1;
                     }
+                    else  //для смертных
+                    {
+                        //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
+                        while (CurrentLevel > 3)
+                        {
+                            managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
+                            .Where<User>(x => x.Level == CurrentLevel - 1)
+                            .ToList<User>();
+                            foreach (User mu in managers)
+                            {
+                                if (!string.IsNullOrEmpty(mu.Email))
+                                {
+                                    //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                                    Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                                }
+                            }
+                            if (managers.Count != 0) break;
+                            CurrentLevel -= 1;
+                        }
 
-                    
+                    }
 
                     //ручная привязка утверждающего, если нет руководства в автомате и руководитель 3 уровня
                     if (managers.Count == 0)
