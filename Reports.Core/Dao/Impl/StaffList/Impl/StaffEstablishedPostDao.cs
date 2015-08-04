@@ -26,7 +26,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, A.StaffECSalary, C.Path, D.Id as RequestId
+            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, C.Path, D.Id as RequestId
                                        FROM StaffEstablishedPost as A
                                        INNER JOIN Position as B ON B.Id = A.PositionId
                                        INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -39,7 +39,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
                 .AddScalar("Quantity", NHibernateUtil.Int32)
                 .AddScalar("Salary", NHibernateUtil.Decimal)
-                .AddScalar("StaffECSalary", NHibernateUtil.Decimal)
                 .AddScalar("Path", NHibernateUtil.String)
                 .AddScalar("RequestId", NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)

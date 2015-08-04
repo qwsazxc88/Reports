@@ -5,7 +5,6 @@ INSERT INTO StaffEstablishedPost([Version]
 																	,DepartmentId
 																	,Quantity
 																	,Salary
-																	,StaffECSalary
 																	,IsUsed
 																	,BeginAccountDate
 																	,[Priority]
@@ -15,7 +14,6 @@ SELECT 1
 			 ,A.Id
 			 ,count(B.PositionId) as Quantity
 			 ,isnull(Salary, 0)
-			 ,0 as StaffECSalary
 			 ,1 as IsUsed
 			 ,getdate() as BeginAccountDate
 			 ,null	--пока не заполн€ю
@@ -35,7 +33,6 @@ INSERT INTO StaffEstablishedPostRequest([Version]
 																				,DepartmentId
 																				,Quantity
 																				,Salary
-																				,StaffECSalary
 																				,IsUsed
 																				,IsDraft
 																				,DateSendToApprove
@@ -50,7 +47,6 @@ SELECT 1
 			 ,DepartmentId
 			 ,Quantity
 			 ,Salary
-			 ,StaffECSalary
 			 ,IsUsed
 			 ,0
 			 ,getdate()
@@ -69,7 +65,6 @@ INSERT INTO StaffEstablishedPostArchive(SEPId
 																				,DepartmentId
 																				,Quantity
 																				,Salary
-																				,StaffECSalary
 																				,IsUsed
 																				,BeginAccountDate
 																				,[Priority]
@@ -79,7 +74,6 @@ SELECT Id
 			 ,DepartmentId
 			 ,Quantity
 			 ,Salary
-			 ,StaffECSalary
 			 ,IsUsed
 			 ,BeginAccountDate
 			 ,null	--пока не заполн€ю

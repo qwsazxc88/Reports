@@ -1515,6 +1515,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
 
+            //создаем запись в справочнике штатных единиц.
+            if (!model.IsDraft)
+            {
+                if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
+                {
+                    return false;
+                }
+            }
+
+
             //надбавки
             if (entity.PostChargeLinks == null)
                 entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
@@ -1547,13 +1557,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //запись была и есть код, то предпологаем, что это редактирование
                 if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
                 {
+                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
                     entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
                     entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
                     entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
                     entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                 }
             }
-
 
             if (model.Id != 0)
             {
@@ -1575,6 +1585,66 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если не по той ветке пошли
             error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
             return false;
+        }
+        /// <summary>
+        /// Сохраняем изменения в справочнике штатных единиц.
+        /// </summary>
+        /// <param name="entity">Текущая заявка.</param>
+        /// <param name="curUser">текущий пользователь.</param>
+        /// <param name="error">Сообщение об ошибке.</param>
+        /// <returns></returns>
+        protected bool SaveStaffEstablishedPostReference(StaffEstablishedPostRequest entity, User curUser, out string error)
+        {
+            error = string.Empty;
+            //StaffEstablishedPost sep = new StaffEstablishedPost();
+            ////если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
+            //if (entity.RequestType.Id == 1)
+            //{
+            //    sep.Position = entity.Position;
+            //    sep.Department = entity.Department;
+            //    sep.Quantity = entity.Quantity;
+            //    sep.Salary = entity.Salary;
+            //    sep.IsUsed = true;
+            //    sep.BeginAccountDate = entity.BeginAccountDate;
+            //    sep.Creator = curUser;
+            //    sep.CreateDate = DateTime.Now;
+            //}
+
+            ////если заявка на редактирование/удаление, редактируем текущую запись в справочнике
+            //if (entity.RequestType.Id != 1)
+            //{
+            //    sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
+            //    if (entity.RequestType.Id == 2)
+            //    {
+            //        sep.Position = entity.Position;
+            //        sep.Quantity = entity.Quantity;
+            //        sep.Salary = entity.Salary;
+            //    }
+            //    else if (entity.RequestType.Id == 3)
+            //    {
+            //        sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+            //    }
+            //    sep.Editor = curUser;
+            //    sep.EditDate = DateTime.Now;
+            //}
+
+            ////заносим в архив
+            //StaffEstablishedPostArchive ss = new StaffEstablishedPostArchive();
+
+            //try
+            //{
+            //    StaffEstablishedPostDao.SaveAndFlush(sep);
+            //    entity.StaffEstablishedPost = sep;
+            //}
+            //catch (Exception ex)
+            //{
+            //    StaffEstablishedPostDao.RollbackTran();
+            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+            //    return false;
+            //}
+
+
+            return true;
         }
         #endregion
 

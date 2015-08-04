@@ -394,7 +394,6 @@ CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
-	[StaffECSalary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[IsDraft] [bit] NULL,
 	[DateSendToApprove] [datetime] NULL,
@@ -423,7 +422,6 @@ CREATE TABLE [dbo].[StaffEstablishedPostArchive](
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
-	[StaffECSalary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[Priority] [int] NULL,
@@ -448,7 +446,6 @@ CREATE TABLE [dbo].[StaffEstablishedPost](
 	[DepartmentId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
-	[StaffECSalary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[Priority] [int] NULL,
@@ -1164,16 +1161,10 @@ GO
 ALTER TABLE [dbo].[StaffEstablishedPost] CHECK CONSTRAINT [FK_StaffEstablishedPost_Position]
 GO
 
-ALTER TABLE [dbo].[StaffEstablishedPost] ADD  CONSTRAINT [DF_StaffEstablishedPost_StaffECSalary]  DEFAULT ((0)) FOR [StaffECSalary]
-GO
-
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_Quantity]  DEFAULT ((1)) FOR [Quantity]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_Salary]  DEFAULT ((0)) FOR [Salary]
-GO
-
-ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_StaffECSalary]  DEFAULT ((0)) FOR [StaffECSalary]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostArchive] ADD  CONSTRAINT [DF_StaffEstablishedPostArchive_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -1211,9 +1202,6 @@ ALTER TABLE [dbo].[StaffEstablishedPostRequest] ADD  CONSTRAINT [DF_StaffEstabli
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostRequest] ADD  CONSTRAINT [DF_StaffEstablishedPostRequest_Salary]  DEFAULT ((0)) FOR [Salary]
-GO
-
-ALTER TABLE [dbo].[StaffEstablishedPostRequest] ADD  CONSTRAINT [DF_StaffEstablishedPostRequest_StaffECSalary]  DEFAULT ((0)) FOR [StaffECSalary]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostRequest] ADD  CONSTRAINT [DF_StaffEstablishedPostRequest_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -1844,9 +1832,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка (территориальная)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
-GO
-
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник штатных единиц' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPost'
 GO
 
@@ -1866,9 +1851,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество' , 
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Оклад' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'Salary'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка территориальная' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostArchive', @level2type=N'COLUMN',@level2name=N'IsUsed'
@@ -1914,9 +1896,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество' , 
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Оклад' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Salary'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка (территориальная)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'StaffECSalary'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
@@ -2288,6 +2267,9 @@ BEGIN
 	INSERT INTO Kladr 
 	SELECT * FROM WebAppSKB.dbo.Kladr
 END
+
+
+DELETE FROM Messages WHERE CommentPlaceType in (2, 3)
 
 --7. СОЗДАНИЕ ФУНКЦИЙ
 

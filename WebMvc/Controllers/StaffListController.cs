@@ -107,6 +107,9 @@ namespace WebMvc.Controllers
 
             model.Id = Id.HasValue ? Id.Value : 0;
             model = StaffListBl.GetDepartmentRequest(model);
+            //для комментариев
+            ViewBag.PlaceId = model.Id;
+            ViewBag.PlaceTypeId = 2; 
 
             //if (RequestType == 1)
             //{
@@ -164,6 +167,9 @@ namespace WebMvc.Controllers
             //заглушка для выкладки на тест для показа прототипов
             //StaffListBl.LoadDictionaries(model);
             //ModelState.AddModelError("Message", "В разработке!");
+            //для комментариев
+            ViewBag.PlaceId = model.Id;
+            ViewBag.PlaceTypeId = 2; 
 
             return View(model);
         }
@@ -260,6 +266,9 @@ namespace WebMvc.Controllers
             model.SEPId = SEPId.HasValue ? SEPId.Value : 0;
             model.Id = Id.HasValue ? Id.Value : 0;
             model = StaffListBl.GetEstablishedPostRequest(model);
+            //для комментариев
+            ViewBag.PlaceId = model.Id;
+            ViewBag.PlaceTypeId = 3; 
 
             return View(model);
         }
@@ -292,14 +301,13 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))//проверки
                 {
-                    //отправка на согласование НЕ СДЕЛАНО
+                    //отправка на согласование НЕ СДЕЛАНО, пока сразу сохраняем изменения в справочнике
                     StaffListBl.LoadDictionaries(model);
                     ModelState.AddModelError("MessageStr", "В разработке!");
-                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    //if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
                     //{
                     //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("Message", error);
-                    //    //return View(model);
+                    //    ModelState.AddModelError("MessageStr", error);
                     //}
                 }
             }
@@ -307,6 +315,9 @@ namespace WebMvc.Controllers
             ////заглушка для выкладки на тест для показа прототипов
             //StaffListBl.LoadDictionaries(model);
             //ModelState.AddModelError("MessageStr", "В разработке!");
+            //для комментариев
+            ViewBag.PlaceId = model.Id;
+            ViewBag.PlaceTypeId = 3; 
 
             return View(model);
         }

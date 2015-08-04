@@ -269,9 +269,12 @@
 
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование">Согласовать</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if(Model.Id == 0){<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    
+    if(Model.Id != 0)
+    {
+        @Html.Partial("~/Views/Info/Comments.cshtml")
+    }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -293,28 +296,35 @@
         $(":button").button();
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
-        $("#btnAgree").click(function () { $("#IsDraft").val(false); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
+        $("#btnAgree").click(function () {
+            if (!confirm("Эта операция заменит существующую запись в справочнике штатных единиц! Продолжить выполнение?")) {
+                return;
+            }
+            $("#IsDraft").val(false);
+            ShowFlash(true);
+            $("#StaffEstablishedPostRequestForm").submit();
+        });
 
 
         $("#MainDiv2").accordion({
             header: "h3",
-            //active: false,
+            active: false,//эта строка делает данный раздел закрытым по молчанию
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"
         });
 
 
-        $( ".portlet" )
-            .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
-            .find( ".portlet-header" )
-            .addClass( "ui-state-default ui-corner-all" )
-            .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
-         
-        $( ".portlet-toggle" ).click(function() {
-            var icon = $( this );
-            icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
-            icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
+        $(".portlet")
+            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".portlet-header")
+            .addClass("ui-state-default ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+        $(".portlet-toggle").click(function () {
+            var icon = $(this);
+            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+            icon.closest(".portlet").find(".portlet-content").toggle();
         });
 
         //        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто

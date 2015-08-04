@@ -697,9 +697,12 @@
 
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование">Согласовать</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if(Model.Id == 0){<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    
+    if(Model.Id != 0)
+    {
+        @Html.Partial("~/Views/Info/Comments.cshtml")
+    }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -725,7 +728,15 @@
         $(":button").button();
 
         $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
-        $("#btnAgree").click(function(){ $("#IsDraft").val(false); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
+        $("#btnAgree").click(function(){ 
+            if (!confirm("Эта операция заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
+                return;
+            }
+
+            $("#IsDraft").val(false); 
+            ShowFlash(true); 
+            $("#StaffDepartmentRequestForm").submit(); 
+        });
 
 
         $("#MainDiv").accordion({
