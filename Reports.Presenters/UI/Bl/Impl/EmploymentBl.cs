@@ -1100,8 +1100,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SendTo1C = entity.Candidate.SendTo1C;
                 //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
                 model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? false : true;
-                //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
+                //кадровикам удаление доступно всегда
                 model.IsDeleteScanButtonAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.OutsourcingManager) > 0 ? true : (entity.ApprovalDate.HasValue ? false : true);
+                //кадровикам удаление доступно всегда
+                model.IsDeleteScanButtonAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !entity.IsFinal ? true : model.IsDeleteScanButtonAvailable;
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
                 model.EmploymentFileId = attachmentId;
                 model.EmploymentFileName = attachmentFilename;
@@ -3039,6 +3041,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
             cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
             cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
+            cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 3, PointTypeName = "Вариант 7", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа." });
 
             return cpv;
         }
@@ -5034,7 +5037,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (PrevApprovalStatus == true)
                         {
                             //entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
-                            entity.Candidate.Status = 0;
+                            //если все вкладки кандидата заполнены до предварительного согласования и сообщения в ДП не было, то проставляем статус для ДП и шлем письмо
+                            if (entity.Candidate.IsScanFinal)
+                            {
+                                if (entity.IsFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && 
+                                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
+                                {
+                                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                                }
+                            }
+                            else
+                                entity.Candidate.Status = 0;
                         }
 
                         if (PrevApprovalStatus == false)
@@ -5054,6 +5068,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         //сообщение тренеру из ДП
                         EmploymentSendEmail(entity.Candidate.User.Id, 4, false);
+                        //если до предварительного согласования анкета была заполнена и поменялся статус на вторую проверку ДБ, шлем письмо.
+                        if(entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
+                            EmploymentSendEmail(entity.Candidate.User.Id, 1, false);
                         return true;
                     }
                     else
