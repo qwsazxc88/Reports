@@ -8,6 +8,8 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.SEPId)
+    @Html.HiddenFor(m => m.DepartmentId)
+    @Html.HiddenFor(m => m.PositionId)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -238,6 +240,7 @@
                                             <tr>
                                                 <td>
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPRequestId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPId)
                                                     @item.ChargeName
@@ -256,7 +259,6 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.ReasonId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.ReasonId)
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>
                     </tr>

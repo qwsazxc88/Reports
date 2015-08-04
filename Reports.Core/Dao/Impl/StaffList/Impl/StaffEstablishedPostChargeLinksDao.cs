@@ -34,6 +34,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ChargeName", NHibernateUtil.String)
                 .AddScalar("SEPRequestId", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
+                .AddScalar("Amount", NHibernateUtil.Decimal)
+                .AddScalar("AmountProc", NHibernateUtil.Decimal)
                 .SetInt32("Id", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();
