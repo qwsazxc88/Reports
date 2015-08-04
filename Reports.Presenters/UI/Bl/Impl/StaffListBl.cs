@@ -1357,8 +1357,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TaxAdminName = string.Empty;
                 model.PostAddress = string.Empty;
 
-
-                LoadDictionaries(model);
+                //кнопки
+                model.IsAgreeButtonAvailable = false;
             }
             else
             {
@@ -1412,10 +1412,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
                 }
 
+                //кнопки
+                model.IsAgreeButtonAvailable = entity.IsDraft;
 
-                LoadDictionaries(model);
             }
 
+            LoadDictionaries(model);
+            
 
             return model;
         }
@@ -1509,8 +1512,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
             entity.Quantity = model.Quantity;
             entity.Salary = model.Salary;
-            entity.IsUsed = false;
-            entity.IsDraft = true;
+            entity.IsUsed = !model.IsDraft;
+            entity.IsDraft = model.IsDraft;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
@@ -1518,6 +1521,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //создаем запись в справочнике штатных единиц.
             if (!model.IsDraft)
             {
+                entity.BeginAccountDate = DateTime.Now;
                 if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                 {
                     return false;
@@ -1596,52 +1600,77 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveStaffEstablishedPostReference(StaffEstablishedPostRequest entity, User curUser, out string error)
         {
             error = string.Empty;
-            //StaffEstablishedPost sep = new StaffEstablishedPost();
-            ////если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
-            //if (entity.RequestType.Id == 1)
-            //{
-            //    sep.Position = entity.Position;
-            //    sep.Department = entity.Department;
-            //    sep.Quantity = entity.Quantity;
-            //    sep.Salary = entity.Salary;
-            //    sep.IsUsed = true;
-            //    sep.BeginAccountDate = entity.BeginAccountDate;
-            //    sep.Creator = curUser;
-            //    sep.CreateDate = DateTime.Now;
-            //}
+            StaffEstablishedPost sep = new StaffEstablishedPost();
+            //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
+            if (entity.RequestType.Id == 1)
+            {
+                sep.Position = entity.Position;
+                sep.Department = entity.Department;
+                sep.Quantity = entity.Quantity;
+                sep.Salary = entity.Salary;
+                sep.IsUsed = true;
+                sep.BeginAccountDate = entity.BeginAccountDate;
+                sep.Creator = curUser;
+                sep.CreateDate = DateTime.Now;
+            }
 
-            ////если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            //if (entity.RequestType.Id != 1)
-            //{
-            //    sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
-            //    if (entity.RequestType.Id == 2)
-            //    {
-            //        sep.Position = entity.Position;
-            //        sep.Quantity = entity.Quantity;
-            //        sep.Salary = entity.Salary;
-            //    }
-            //    else if (entity.RequestType.Id == 3)
-            //    {
-            //        sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
-            //    }
-            //    sep.Editor = curUser;
-            //    sep.EditDate = DateTime.Now;
-            //}
+            //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
+            if (entity.RequestType.Id != 1)
+            {
+                sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
+                if (entity.RequestType.Id == 2)
+                {
+                    sep.Position = entity.Position;
+                    sep.Quantity = entity.Quantity;
+                    sep.Salary = entity.Salary;
+                }
+                else if (entity.RequestType.Id == 3)
+                {
+                    sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+                }
+                sep.Editor = curUser;
+                sep.EditDate = DateTime.Now;
+            }
 
-            ////заносим в архив
-            //StaffEstablishedPostArchive ss = new StaffEstablishedPostArchive();
 
-            //try
-            //{
-            //    StaffEstablishedPostDao.SaveAndFlush(sep);
-            //    entity.StaffEstablishedPost = sep;
-            //}
-            //catch (Exception ex)
-            //{
-            //    StaffEstablishedPostDao.RollbackTran();
-            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-            //    return false;
-            //}
+            try
+            {
+                StaffEstablishedPostDao.SaveAndFlush(sep);
+                entity.StaffEstablishedPost = sep;
+            }
+            catch (Exception ex)
+            {
+                StaffEstablishedPostDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            //архивируем изменения
+            sep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
+            sep.EstablishedPostArchive.Add(new StaffEstablishedPostArchive { 
+                StaffEstablishedPost = sep,
+                Position = sep.Position,
+                Department = sep.Department,
+                Quantity = sep.Quantity,
+                Salary = sep.Salary,
+                IsUsed = sep.IsUsed,
+                BeginAccountDate = sep.BeginAccountDate,
+                Priority = sep.Priority,
+                Creator = curUser,
+                CreateDate = DateTime.Now
+            });
+
+            try
+            {
+                StaffEstablishedPostDao.SaveAndFlush(sep);
+                entity.StaffEstablishedPost = sep;
+            }
+            catch (Exception ex)
+            {
+                StaffEstablishedPostDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
 
 
             return true;

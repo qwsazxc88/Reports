@@ -302,13 +302,16 @@ namespace WebMvc.Controllers
                 if (ValidateModel(model))//проверки
                 {
                     //отправка на согласование НЕ СДЕЛАНО, пока сразу сохраняем изменения в справочнике
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", "В разработке!");
-                    //if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("MessageStr", error);
-                    //}
+                    if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetEstablishedPostRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                    }
                 }
             }
 

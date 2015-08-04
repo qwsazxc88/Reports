@@ -10,6 +10,7 @@
     @Html.HiddenFor(m => m.SEPId)
     @Html.HiddenFor(m => m.DepartmentId)
     @Html.HiddenFor(m => m.PositionId)
+    @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -269,7 +270,7 @@
 
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if(Model.Id == 0){<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable){<text>disabled=disabled</text>}>Согласовать</button>
     </div>
     if(Model.Id != 0)
     {
