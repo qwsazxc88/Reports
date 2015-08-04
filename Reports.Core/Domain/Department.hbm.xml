@@ -13,5 +13,9 @@
 		<property name="ItemLevel" not-null="false"/>
     <property name="CodeSKD" not-null="false"/>
     <property name="Priority" not-null="false"/>
+    <bag name="Dep3" table="vwDepartmentToDep3" inverse="true">
+      <key column="DepartmentId"/>
+      <many-to-many class="Department" column="Dep3Level"/>
+    </bag>
   </class>
 </hibernate-mapping>
