@@ -30,7 +30,11 @@ namespace Reports.Core.Dao.Impl
                                 v.NotUseInAnalyticalStatement as NotUseInAnalyticalStatement,
                                 v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
-                                mr.Number as MissionReportNumber,
+                                case 
+                                    when mrd.id is not null then mrd.Number                                
+                                    else mr.Number 
+                                end as MissionReportNumber,
+                                                        
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
@@ -47,6 +51,8 @@ namespace Reports.Core.Dao.Impl
                                 left join dbo.MissionReport mr on v.id=mr.DeductionId
                                 inner join dbo.DeductionKind k on v.KindId = k.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].ManualDeduction MD On v.ManualDeductionId=MD.id
+                                left join [dbo].MissionReport MRD on MD.MissionReportId=MRD.id
                                 left join dbo.Position p on p.Id = u.PositionId
                                 left join dbo.Department dep on u.DepartmentId = dep.Id
                                 left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 

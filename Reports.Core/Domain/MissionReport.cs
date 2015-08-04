@@ -17,7 +17,7 @@ namespace Reports.Core.Domain
 
         public virtual int Number { get; set; }
         public virtual string Hotels { get; set; }
-
+        public virtual IList<ManualDeduction> ManualDeductions { get; set; }
 
         //public virtual MissionType Type { get; set; }
         //public virtual int Kind { get; set; }
