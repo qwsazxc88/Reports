@@ -3500,7 +3500,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //сохраняем сканы
             if (model.ApplicationLetterScanFile != null)
             {
-                if ((int)candidate.Status < (int)EmploymentStatus.PENDING_APPLICATION_LETTER)
+                if ((int)candidate.Status < (int)EmploymentStatus.PENDING_APPLICATION_LETTER || (int)candidate.Status == (int)EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY)
                 {
                     error = "Нельзя добавить скан заявления без проверки департамента безопасности!";
                     return;
