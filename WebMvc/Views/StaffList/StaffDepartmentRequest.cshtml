@@ -14,7 +14,7 @@
     @Html.HiddenFor(m => m.DMDetailId)
    
     
-    <h3>@Html.ValidationMessageFor(m => m.Message)</h3>
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <div id="MainDiv">
@@ -729,7 +729,7 @@
 
         $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
         $("#btnAgree").click(function(){ 
-            if (!confirm("Эта операция заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
+            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
                 return;
             }
 

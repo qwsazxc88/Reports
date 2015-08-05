@@ -242,7 +242,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Признак черновика.")]
         public bool IsDraft { get; set; }
         [Display(Name = "Для сообщений")]
-        public string Message { get; set; }
+        public string MessageStr { get; set; }
         #endregion
     }
 }

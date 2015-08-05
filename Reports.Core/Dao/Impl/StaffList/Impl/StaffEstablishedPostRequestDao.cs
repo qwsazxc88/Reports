@@ -53,10 +53,10 @@ namespace Reports.Core.Dao.Impl
                                        D.Id as PersonId, 
                                        D.Name as Surname, 
                                        E.Name as PositionName,
-                                       case when A.DateSendToApprove is null then 'Черновик'
+                                       case when A.DateSendToApprove is null and A.BeginAccountDate is null then 'Черновик'
 						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 'На согласовании'
 						                    when A.BeginAccountDate is not null then 'Утверждено' end as Status,
-			                           case when A.DateSendToApprove is null then 1
+			                           case when A.DateSendToApprove is null and A.BeginAccountDate is null then 1
 						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 2
 						                    when A.BeginAccountDate is not null then 3 end as StatusId
                                 FROM StaffEstablishedPostRequest as A

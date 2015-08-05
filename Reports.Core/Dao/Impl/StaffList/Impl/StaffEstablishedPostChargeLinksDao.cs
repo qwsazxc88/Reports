@@ -27,8 +27,8 @@ namespace Reports.Core.Dao.Impl
         {
             IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, B.AmountProc
                                                     FROM StaffExtraCharges as A
-                                                    LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
-                                                    LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId and C.Id = :Id")
+                                                    LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
+                                                    LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)
@@ -36,7 +36,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SEPId", NHibernateUtil.Int32)
                 .AddScalar("Amount", NHibernateUtil.Decimal)
                 .AddScalar("AmountProc", NHibernateUtil.Decimal)
-                .SetInt32("Id", Id);
+                .SetInt32("SEPRequestId", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();
         }

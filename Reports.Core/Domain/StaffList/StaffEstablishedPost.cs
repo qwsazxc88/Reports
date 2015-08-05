@@ -21,5 +21,6 @@ namespace Reports.Core.Domain
         public virtual DateTime? EditDate { get; set; }
         public virtual IList<StaffEstablishedPostChargeLinks> PostChargeLinks { get; set; }
         public virtual IList<StaffEstablishedPostArchive> EstablishedPostArchive { get; set; }
+        public virtual IList<StaffEstablishedPostRequest> EstablishedPostRequest { get; set; }
     }
 }

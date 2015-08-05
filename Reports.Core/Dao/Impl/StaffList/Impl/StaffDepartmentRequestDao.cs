@@ -70,7 +70,7 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Department as Dep5 ON C.Path like Dep5.Path + N'%' and Dep5.ItemLevel = 5
                                 LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
                                 INNER JOIN Users as D ON D.Id = A.CreatorID
-                                INNER JOIN Position as E ON E.Id = D.PositionId";
+                                LEFT JOIN Position as E ON E.Id = D.PositionId";
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
 

@@ -10,6 +10,7 @@
     @Html.HiddenFor(m => m.SEPId)
     @Html.HiddenFor(m => m.DepartmentId)
     @Html.HiddenFor(m => m.PositionId)
+    @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -243,11 +244,12 @@
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPRequestId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPId)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeName)
                                                     @item.ChargeName
                                                     
                                                 </td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].AmountProc, new { style = "width:70px;" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].AmountProc)</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -269,7 +271,7 @@
 
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if(Model.Id == 0){<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable){<text>disabled=disabled</text>}>Согласовать</button>
     </div>
     if(Model.Id != 0)
     {
@@ -297,7 +299,7 @@
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
         $("#btnAgree").click(function () {
-            if (!confirm("Эта операция заменит существующую запись в справочнике штатных единиц! Продолжить выполнение?")) {
+            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике штатных единиц! Продолжить выполнение?")) {
                 return;
             }
             $("#IsDraft").val(false);
