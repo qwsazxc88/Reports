@@ -1600,7 +1600,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveStaffEstablishedPostReference(StaffEstablishedPostRequest entity, User curUser, out string error)
         {
             error = string.Empty;
-            StaffEstablishedPost sep = new StaffEstablishedPost();
+            StaffEstablishedPost sep = entity.StaffEstablishedPost != null ? StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id) : new StaffEstablishedPost();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
             if (entity.RequestType.Id == 1)
             {
@@ -1617,7 +1617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
             if (entity.RequestType.Id != 1)
             {
-                sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
+                //sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
                 if (entity.RequestType.Id == 2)
                 {
                     sep.Position = entity.Position;
@@ -1633,17 +1633,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
-            try
-            {
-                StaffEstablishedPostDao.SaveAndFlush(sep);
-                entity.StaffEstablishedPost = sep;
-            }
-            catch (Exception ex)
-            {
-                StaffEstablishedPostDao.RollbackTran();
-                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                return false;
-            }
+            //try
+            //{
+            //    StaffEstablishedPostDao.SaveAndFlush(sep);
+            //    entity.StaffEstablishedPost = sep;
+            //}
+            //catch (Exception ex)
+            //{
+            //    StaffEstablishedPostDao.RollbackTran();
+            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+            //    return false;
+            //}
 
             //архивируем изменения
             sep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
@@ -1660,18 +1660,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 CreateDate = DateTime.Now
             });
 
-            try
-            {
-                StaffEstablishedPostDao.SaveAndFlush(sep);
-                entity.StaffEstablishedPost = sep;
-            }
-            catch (Exception ex)
-            {
-                StaffEstablishedPostDao.RollbackTran();
-                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                return false;
-            }
+            //try
+            //{
+            //    StaffEstablishedPostDao.SaveAndFlush(sep);
+            //    entity.StaffEstablishedPost = sep;
+            //}
+            //catch (Exception ex)
+            //{
+            //    StaffEstablishedPostDao.RollbackTran();
+            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+            //    return false;
+            //}
 
+            entity.StaffEstablishedPost = sep;
 
             return true;
         }
@@ -1706,7 +1707,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = AppointmentReasonDao.LoadAll();
             //добавил пустую первую строку
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
-            model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.Id);
+            //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
+            model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
