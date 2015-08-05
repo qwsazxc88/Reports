@@ -2262,6 +2262,10 @@ INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
 
+--DepartmentArchive
+INSERT INTO DepartmentArchive(DepartmentId, Code, Name, Code1C, ParentId, Path, ItemLevel, IsUsed)
+SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, 1 FROM Department
+
 IF DB_NAME() = 'WebAppTest'
 BEGIN
 	INSERT INTO Kladr 

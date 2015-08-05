@@ -270,6 +270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Общие реквизиты
                 model.DateState = null;
                 model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
+                model.ParentId = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Id : model.ParentId;
                 model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
                 model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
                 model.IsBack = false;
@@ -1228,12 +1229,29 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             }
 
+            //Утверждение
+            if (!model.IsDraft)
+            {
+                //if (!SaveDepartmentReference(entity, curUser, out error))
+                //{
+                //    return false;
+                //}
+                //если заявка на создание подразделения
+                    //заносим запись в справочник подразделений
+                    //заносим запись в архив
+                    //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
+
+                //если заявка на изменение/удаление подразделения
+                    //заносим изменения в справочник?
+                    //заносим запись в архив
+                    //находим действующую заявку и убираем у нее признак использования
+                    //у текущей заявки ставим признак использования
+
+            }
 
 
             if (model.Id != 0)
             {
-                
-
                 try
                 {
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
@@ -1254,6 +1272,88 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если не по той ветке пошли
             error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
             return false;
+        }
+        /// <summary>
+        /// Сохраняем изменения в справочнике подразделений.
+        /// </summary>
+        /// <param name="entity">Текущая заявка.</param>
+        /// <param name="curUser">текущий пользователь.</param>
+        /// <param name="error">Сообщение об ошибке.</param>
+        /// <returns></returns>
+        protected bool SaveDepartmentReference(StaffDepartmentRequest entity, User curUser, out string error)
+        {
+            error = string.Empty;
+            Department dep = entity.Department != null ? DepartmentDao.Get(entity.Department.Id) : new Department();
+            //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
+            if (entity.RequestType.Id == 1)
+            {
+                //dep.Code = entity.Position;
+                dep.Name = entity.Name;
+                //dep.Code1C = entity.Quantity;
+                //dep.ParentId = entity.Salary;
+                //dep.Path = true;
+                dep.ItemLevel = entity.ItemLevel;
+                //dep.CodeSKD = entity.ItemLevel;
+                //dep.Priority = entity.ItemLevel;
+                //dep.IsUsed = entity.ItemLevel;
+                //dep.Creator = curUser;
+                //dep.CreateDate = DateTime.Now;
+            }
+
+            ////если заявка на редактирование/удаление, редактируем текущую запись в справочнике
+            //if (entity.RequestType.Id != 1)
+            //{
+            //    if (entity.RequestType.Id == 2)
+            //    {
+            //        dep.Position = entity.Position;
+            //        dep.Quantity = entity.Quantity;
+            //        dep.Salary = entity.Salary;
+            //    }
+            //    else if (entity.RequestType.Id == 3)
+            //    {
+            //        dep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+            //    }
+            //    dep.Editor = curUser;
+            //    dep.EditDate = DateTime.Now;
+            //}
+
+
+            ////архивируем изменения
+            //if (dep.EstablishedPostArchive == null)
+            //    dep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
+
+            //dep.EstablishedPostArchive.Add(new StaffEstablishedPostArchive
+            //{
+            //    StaffEstablishedPost = dep,
+            //    Position = dep.Position,
+            //    Department = dep.Department,
+            //    Quantity = dep.Quantity,
+            //    Salary = dep.Salary,
+            //    IsUsed = dep.IsUsed,
+            //    BeginAccountDate = dep.BeginAccountDate,
+            //    Priority = dep.Priority,
+            //    Creator = curUser,
+            //    CreateDate = DateTime.Now
+            //});
+
+
+            try
+            {
+                DepartmentDao.SaveAndFlush(dep);
+
+                if (entity.Department == null)
+                    entity.Department = new Department();
+
+                entity.Department = dep;
+            }
+            catch (Exception ex)
+            {
+                StaffEstablishedPostDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
         }
         /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
@@ -1418,6 +1518,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             LoadDictionaries(model);
+            //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
+            model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
             
 
             return model;
@@ -1512,8 +1614,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
             entity.Quantity = model.Quantity;
             entity.Salary = model.Salary;
-            entity.IsUsed = !model.IsDraft;
-            entity.IsDraft = model.IsDraft;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
@@ -1525,6 +1625,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                 {
                     return false;
+                }
+
+                //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
+                if (entity.RequestType.Id != 1)
+                {
+                    int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
+                    if (OldRequestId != 0)
+                    {
+                        StaffEstablishedPostRequest OldEntity = StaffEstablishedPostRequestDao.Get(OldRequestId);
+                        OldEntity.IsUsed = false;
+
+                        try
+                        {
+                            StaffEstablishedPostRequestDao.SaveAndFlush(OldEntity);
+                        }
+                        catch (Exception ex)
+                        {
+                            StaffEstablishedPostRequestDao.RollbackTran();
+                            error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -1573,6 +1695,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 try
                 {
+                    entity.IsUsed = !model.IsDraft;
+                    entity.IsDraft = model.IsDraft;
+
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
                 }
@@ -1617,7 +1742,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
             if (entity.RequestType.Id != 1)
             {
-                //sep = StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id);
                 if (entity.RequestType.Id == 2)
                 {
                     sep.Position = entity.Position;
@@ -1633,20 +1757,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
-            //try
-            //{
-            //    StaffEstablishedPostDao.SaveAndFlush(sep);
-            //    entity.StaffEstablishedPost = sep;
-            //}
-            //catch (Exception ex)
-            //{
-            //    StaffEstablishedPostDao.RollbackTran();
-            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-            //    return false;
-            //}
-
             //архивируем изменения
-            sep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
+            if (sep.EstablishedPostArchive == null)
+                sep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
+
             sep.EstablishedPostArchive.Add(new StaffEstablishedPostArchive { 
                 StaffEstablishedPost = sep,
                 Position = sep.Position,
@@ -1660,19 +1774,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 CreateDate = DateTime.Now
             });
 
-            //try
-            //{
-            //    StaffEstablishedPostDao.SaveAndFlush(sep);
-            //    entity.StaffEstablishedPost = sep;
-            //}
-            //catch (Exception ex)
-            //{
-            //    StaffEstablishedPostDao.RollbackTran();
-            //    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-            //    return false;
-            //}
 
-            entity.StaffEstablishedPost = sep;
+            try
+            {
+                StaffEstablishedPostDao.SaveAndFlush(sep);
+
+                if (entity.StaffEstablishedPost == null)
+                    entity.StaffEstablishedPost = new StaffEstablishedPost();
+
+                entity.StaffEstablishedPost = sep;
+            }
+            catch (Exception ex)
+            {
+                StaffEstablishedPostDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
 
             return true;
         }
@@ -1707,8 +1824,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = AppointmentReasonDao.LoadAll();
             //добавил пустую первую строку
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
-            //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
-            model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
+            ////для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
+            //model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.

@@ -31,7 +31,7 @@ namespace Reports.Core.Dao.Impl
                                        INNER JOIN Position as B ON B.Id = A.PositionId
                                        INNER JOIN Department as C ON C.Id = A.DepartmentId
                                        LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
-                                       WHERE A.DepartmentId = :DepartmentId ORDER BY A.Priority");
+                                       WHERE A.DepartmentId = :DepartmentId and A.IsUsed = 1 ORDER BY A.Priority");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("PositionId", NHibernateUtil.Int32)

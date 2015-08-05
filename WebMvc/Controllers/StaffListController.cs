@@ -111,16 +111,7 @@ namespace WebMvc.Controllers
             ViewBag.PlaceId = model.Id;
             ViewBag.PlaceTypeId = 2; 
 
-            //if (RequestType == 1)
-            //{
-            //    model.ParentId = DepartmentId.Value;
-            //    model.Id = Id.HasValue ? Id.Value : 0;
-            //    model = StaffListBl.GetDepartmentRequest(model);
-            //}
-            //else
-            //{
-            //    model.DepartmentId = DepartmentId.Value;
-            //}
+           
             return View(model);
         }
         /// <summary>
@@ -140,26 +131,29 @@ namespace WebMvc.Controllers
                 if (!IsComplete)
                 {
                     StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("Message", error);
+                    ModelState.AddModelError("MessageStr", error);
                 }
                 else
                 {
                     model = StaffListBl.GetDepartmentRequest(model);
-                    ModelState.AddModelError("Message", "Данные сохранены!");
+                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
                 }
             }
             else
             {
                 if (ValidateModel(model))//проверки
                 {
-                    //отправка на согласование НЕ СДЕЛАНО
                     StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("Message", "В разработке!");
+                    ModelState.AddModelError("MessageStr", "В разработке!");
                     //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
                     //{
                     //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("Message", error);
-                    //    //return View(model);
+                    //    ModelState.AddModelError("MessageStr", "В разработке!");
+                    //}
+                    //else
+                    //{
+                    //    StaffListBl.LoadDictionaries(model);
+                    //    ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
                     //}
                 }
             }
@@ -283,6 +277,7 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             string error = string.Empty;
             bool IsComplete = false;
+
             if (model.IsDraft)  //сохранение черновика
             {
                 IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
@@ -310,14 +305,15 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! Штатная единица утверждена!");
                     }
+                }
+                else
+                {
+                    StaffListBl.LoadDictionaries(model);
                 }
             }
 
-            ////заглушка для выкладки на тест для показа прототипов
-            //StaffListBl.LoadDictionaries(model);
-            //ModelState.AddModelError("MessageStr", "В разработке!");
             //для комментариев
             ViewBag.PlaceId = model.Id;
             ViewBag.PlaceTypeId = 3; 
@@ -353,11 +349,26 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
+            if (model.Quantity <= 0)
+                ModelState.AddModelError("Quantity", "Укажите количество!");
+            if (model.Salary <= 0)
+                ModelState.AddModelError("Salary", "Укажите оклад!");
+            if (model.PostChargeLinks.Where(x => x.Amount != 0 && x.AmountProc != 0).Count() != 0)
+            {
+                ModelState.AddModelError("MessageStr", "Надбавка должна указываться только в одной единице измерения!");
+
+                for (int i = 0; i < model.PostChargeLinks.Count; i++)
+                {
+                    if (model.PostChargeLinks[i].Amount != 0 && model.PostChargeLinks[i].AmountProc != 0)
+                    {
+                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].Amount", "*");
+                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].AmountProc", "*");
+                    }
+                }
+            }
+
             return ModelState.IsValid;
         }
-        #endregion
-
-        #region Заявки для штатных единиц
         #endregion
 
         #region Для тестов
