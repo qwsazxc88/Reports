@@ -774,6 +774,16 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public virtual string GetDismDateWhere(string whereString, string DismDate)
+        {
+            
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format(@"Dism.SendTo1C is null or Dism.SendTo1C >'{0}' "
+                    , DismDate);
+            
+            return whereString;
+        }
         public virtual string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)

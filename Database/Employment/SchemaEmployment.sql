@@ -1064,6 +1064,7 @@ GO
 		[IsExternalPTWorker] [bit] NULL CONSTRAINT [DF_Managers_IsExternalPTWorker]  DEFAULT ((0)),
 		[SalaryBasis] [decimal](15, 2) NULL,
 		[RegistrationDate] [datetime] NULL,
+		[PlanRegistrationDate] [datetime] NULL,
 		[CancelRejectUserId] [int] NULL,
 		[CancelRejectDate] [datetime] NULL,
 		[CancelRejectHigherUserId] [int] NULL,
@@ -1984,6 +1985,9 @@ GO
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата оформления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Managers', @level2type=N'COLUMN',@level2name=N'RegistrationDate'
 	GO
 
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Планируемая дата приема' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Managers', @level2type=N'COLUMN',@level2name=N'PlanRegistrationDate'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Пользователь отменивший отклонение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Managers', @level2type=N'COLUMN',@level2name=N'CancelRejectUserId'
 	GO
 
@@ -2821,4 +2825,36 @@ BEGIN
 END
 
 GO
+
+
+IF OBJECT_ID ('fnCheckCandidateSignDocExists', 'FN') IS NOT NULL
+	DROP FUNCTION [dbo].[fnCheckCandidateSignDocExists]
+GO
+
+
+--функция проверяет наличие всех подписанных документов кандидатом
+CREATE FUNCTION dbo.fnCheckCandidateSignDocExists
+(
+	@CandidateId int	
+)
+RETURNS bit
+AS
+BEGIN
+	DECLARE @IsExists bit
+	
+	IF NOT EXISTS(SELECT * FROM EmploymentCandidateDocNeeded WHERE CandidateId = @CandidateId)
+		SET @IsExists = 0
+	ELSE
+		SELECT @IsExists = cast(case when count(*) = 0 then 1 else 0 end as bit) --as DocExists
+		FROM EmploymentCandidateDocNeeded as A
+		LEFT JOIN RequestAttachment as B ON B.RequestId = A.CandidateId and B.RequestType = A.DocTypeId
+		WHERE A.CandidateId = -1 and A.IsNeeded = 1 and B.Id is null
+	
+	RETURN @IsExists
+--SELECT dbo.fnCheckCandidateSignDocExists(-1) as SEPCount
+
+END
+GO
+
+
 --ФУНКЦИИ КОНЕЦ

@@ -178,7 +178,7 @@
             </tr>
             <tr id="ReasonPositionIdTr">
                 <td>
-                  <span id="ReasonPositionIdLabel"></span>
+                  <span id="ReasonPositionIdLabel">Выбрать из:</span>
                 </td>
                 <td>
                    @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
@@ -723,6 +723,7 @@
                 $('#ReasonPosition').attr('title', '');
                 $('#ReasonPosition').removeAttr('readonly');
                 $("#ReasonPositionIdTr").hide();
+                $("#ReasonPositionId").attr("disabled",true);
                 $("#ReasonPositionTr").hide();
             break
             case '2':
@@ -731,6 +732,7 @@
                 $('#ReasonPosition').attr('title', '');
                 $('#ReasonPosition').removeAttr('readonly');
                 $("#ReasonPositionIdTr").hide();
+                 $("#ReasonPositionId").attr("disabled",true);
                 $("#ReasonPositionTr").hide();
             break
             case '3':
@@ -738,6 +740,7 @@
                 $('#ReasonPosition').attr('title', '');
                 $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionIdTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionTr").hide ();
             break
             case '4':
@@ -745,6 +748,7 @@
                 $("#ReasonDateLabel").text('Дата ухода:');
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
                 $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
@@ -754,6 +758,7 @@
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
                 $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionIdTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionTr").show();
             break
             case '6':
@@ -761,7 +766,16 @@
                 $('#ReasonPosition').attr('title', 'Выбрать из справочника');
                 $('#ReasonPosition').attr('readonly','read-only');
                 $("#ReasonPositionTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionIdTr").show();
+            break
+            case '7':
+                $("#ReasonPositionLabel").text('ФИО уволившегося/переведенного сотрудника: ');
+                $('#ReasonPosition').attr('title', 'Введите ФИО');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionTr").show();
+                 $("#ReasonPositionId").attr("disabled",true);
+                $("#ReasonPositionIdTr").hide();
             break
         }
         if(reasonId == 3)

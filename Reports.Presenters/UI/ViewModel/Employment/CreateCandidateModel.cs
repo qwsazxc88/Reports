@@ -36,6 +36,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int PersonnelId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
 
+        [Display(Name = "Планируемая дата приема"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? PlanRegistrationDate { get; set; }
+
         // Id временного пользователя
         public int? UserId { get; set; }
         [Display(Name = "ФИО")]

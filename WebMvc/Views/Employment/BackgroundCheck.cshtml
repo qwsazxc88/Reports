@@ -20,7 +20,9 @@
     <input type="hidden" id="RowID" name="RowID" value="@Model.RowID" />
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DeleteAttachmentId)
-    
+    @Html.HiddenFor(m => m.IsPrintButtonAvailable)
+    @Html.HiddenFor(m => m.IsDeleteScanButtonAvailable)
+
     
     <div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;float:left;">
     <fieldset class="bordered doc-wrap panel">
@@ -331,8 +333,6 @@
     
     <div class="clear">
         <div class=" clear">
-            @Html.HiddenFor(m => m.IsPrintButtonAvailable)
-            @Html.HiddenFor(m => m.IsDeleteScanButtonAvailable)
             Вывести на печать анкету кандидата:
             <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if (!Model.IsPrintButtonAvailable)
                                                                                                                                                         {<text>style="display:none;"</text>}>Печать</button>
@@ -357,7 +357,8 @@
             </div>
                
             <div class="formfield">
-                <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'BackgroundCheckForm');"  @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                <br /><input type="button" onclick="DeleteScanDocuments(@Model.EmploymentFileId, 'BackgroundCheckForm');"  @if (!Model.IsDeleteScanButtonAvailable)
+                                                                                                                           {<text>style="display:none;"</text>} value="Удалить скан"/>
             </div>
         }
     </div>
