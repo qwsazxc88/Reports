@@ -95,6 +95,7 @@ namespace Reports.Core.Dto.Employment2
         public bool IsBlocked { get; set; }
 
         public string MentorName { get; set; }
+        public DateTime? PlanRegistrationDate { get; set; }
 
         /*
         [Display(Name = "Паспортные данные"),

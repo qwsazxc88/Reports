@@ -2037,6 +2037,9 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("DateOfBirth", "Некорректная дата рождения.");
             }
 
+            if (!model.PlanRegistrationDate.HasValue)
+                ModelState.AddModelError("PlanRegistrationDate", "Укажите планируемую дату приема!");
+
             return ModelState.IsValid;
         }
 
