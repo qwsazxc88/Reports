@@ -213,6 +213,9 @@
             <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Обучение</a></div>
         </th>
         <th>
+            <div id="sort23"><a href="#" onclick = "SortColumnChanged(23);">Планируемая<br />дата<br />приема</a></div>
+        </th>
+        <th>
             <div id="sort12"><a href="#" onclick = "SortColumnChanged(12);">Дата<br />приема</a></div>
         </th>
         <th>
@@ -335,6 +338,7 @@
                 <td>
                     &nbsp;@candidate.Training
                 </td>
+                <td>&nbsp;@candidate.PlanRegistrationDate</td>
                 <td>
                     &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
                 </td>

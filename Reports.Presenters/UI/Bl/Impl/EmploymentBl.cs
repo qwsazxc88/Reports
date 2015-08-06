@@ -3184,6 +3184,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Candidate = candidate,
                 Department = department,
+                PlanRegistrationDate = model.PlanRegistrationDate,
+                RegistrationDate = model.PlanRegistrationDate,
                 IsFront = false,
                 IsLiable = false
             };

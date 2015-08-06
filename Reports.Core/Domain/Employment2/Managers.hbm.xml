@@ -21,6 +21,7 @@
     <property name="IsLiable" not-null="true"/>
     <property name="RequestNumber" length="50" not-null="false"/>
     <property name="RegistrationDate" not-null="false" />
+    <property name="PlanRegistrationDate" not-null="false" />
 
     <property name="ManagerApprovalStatus" not-null="false"/>
     <many-to-one name="ApprovingManager" class="User" column="ApprovingManagerId" foreign-key="FK_Managers_ApprovingManager" index="Managers_ApprovingManager" not-null="false"/>
