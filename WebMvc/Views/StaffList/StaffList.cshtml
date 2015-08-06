@@ -21,6 +21,8 @@
                     <th colspan="3">Подразделения</th>
                     <th colspan="3">Штатные единицы</th>
                     <th rowspan="2">Название в<br />Финграде</th>
+                    <th rowspan="2">Комментарий</th>
+                    <th rowspan="2">Код в<br />Финграде</th>
                 </tr>    
                 <tr>
                     <th class="tdBtn">Создать</th>
@@ -43,8 +45,8 @@
                         </span>
                         <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
-                    <td>@item.SEPCount</td>
                     <td></td>
+                    <td>@item.SEPCount</td>
                     <td></td>
                     <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
                     <td class="tdBtn"></td>
@@ -53,6 +55,8 @@
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
                     <td>@item.DepFingradName</td>
+                    <td>@item.DepFingradNameComment</td>
+                    <td>@item.FinDepPointCode</td>
                 </tr>
             }
             @{ i++; }
@@ -190,7 +194,9 @@
                                         "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы' onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'></button></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-                                        "<td>" + result.Departments[i].DepFingradName + "</td>" +
+                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
+                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
+                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
                                         "</tr>";
 
                             var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -248,6 +254,8 @@
                                     //onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'
                                     "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы' onclick='GetEstablishedPostRequest(2, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
                                     "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы' onclick='GetEstablishedPostRequest(3, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
                                     "<td></td>" +
                                     "</tr>";
 

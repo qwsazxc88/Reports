@@ -587,6 +587,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[DepRequestId] [int] NULL,
 	[DepCode] [nvarchar](20) NULL,
 	[NameShort] [nvarchar](100) NULL,
+	[NameComment] [nvarchar](50) NULL,
 	[ReferenceReason] [nvarchar](100) NULL,
 	[PrevDepCode] [nvarchar](20) NULL,
 	[FactAddressId] [int] NULL,
@@ -1553,6 +1554,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Краткое название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'NameShort'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дополнение к краткому названию при закачке' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'NameComment'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Причина внесения в справочник' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'ReferenceReason'
 GO
 
@@ -2225,6 +2229,20 @@ WHERE     (AddressType = 5)
 GO
 
 
+IF OBJECT_ID ('vwStaffListDepartment', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwStaffListDepartment]
+GO
+
+--состояние заполнения анкет
+CREATE VIEW [dbo].[vwStaffListDepartment]
+AS
+SELECT C.Id, C.Code, C.Name, C.Code1C, C.ParentId, C.Path, C.ItemLevel, C.CodeSKD, C.Priority, B.NameShort as DepFingradName, B.NameComment as DepFingradNameComment, B.DepCode as FinDepPointCode
+FROM StaffDepartmentRequest as A
+INNER JOIN StaffDepartmentManagerDetails as B ON B.DepRequestId = A.Id
+INNER JOIN Department as C ON C.id = A.DepartmentId
+WHERE A.IsUsed = 1 
+GO
+
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
 --StaffExtraCharges
@@ -2396,8 +2414,6 @@ BEGIN
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
 END
 GO
-
-
 
 
 

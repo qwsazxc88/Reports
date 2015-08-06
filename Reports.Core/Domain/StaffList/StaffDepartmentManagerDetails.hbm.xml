@@ -9,6 +9,7 @@
     <many-to-one name="DepRequest" class="StaffDepartmentRequest" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>
     <property name="DepCode" length="20" not-null="false"/>
     <property name="NameShort" length="100" not-null="false"/>
+    <property name="NameComment" length="50" not-null="false"/>
     <property name="ReferenceReason" length="100" not-null="false"/>
     <property name="PrevDepCode" length="20" not-null="false"/>
     <many-to-one name="FactAddress" class="RefAddresses" column="FactAddressId" foreign-key="FK_StaffDepartmentManagerDetails_RefAddresses" index="StaffDepartmentManagerDetails_RefAddresses" not-null="false"/>

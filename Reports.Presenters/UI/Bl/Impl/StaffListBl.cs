@@ -2230,19 +2230,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<StaffListDepartmentDto> Sdeps = new List<StaffListDepartmentDto>();
             foreach (var item in deps)
             {
-                Sdeps.Add(new StaffListDepartmentDto
-                {
-                    Id = item.Id,
-                    Code = item.Code,
-                    Name = item.Name,
-                    Code1C = item.Code1C,
-                    ParentId = item.ParentId,
-                    Path = item.Path,
-                    ItemLevel = item.ItemLevel,
-                    CodeSKD = item.CodeSKD,
-                    Priority = item.Priority,
-                    SEPCount = DepartmentDao.DepPositionCount(item.Id),
-                    DepFingradName = string.IsNullOrEmpty(DepartmentDao.DepFingradName(item.Id)) ? "" : DepartmentDao.DepFingradName(item.Id)
+                StaffListDepartmentDto dto = DepartmentDao.DepFingradName(item.Id);
+                Sdeps.Add(new StaffListDepartmentDto {
+                    Id = dto.Id,
+                    Code = dto.Code,
+                    Name = dto.Name,
+                    Code1C = dto.Code1C,
+                    ParentId = dto.ParentId,
+                    Path = dto.Path,
+                    ItemLevel = dto.ItemLevel,
+                    CodeSKD = dto.CodeSKD,
+                    Priority = dto.Priority,
+                    DepFingradName = dto.DepFingradName,
+                    DepFingradNameComment = dto.DepFingradNameComment,
+                    FinDepPointCode = dto.FinDepPointCode,
+                    SEPCount = DepartmentDao.DepPositionCount(dto.Id)
                 });
             }
 
