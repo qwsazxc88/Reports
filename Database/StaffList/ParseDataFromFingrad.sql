@@ -9,7 +9,7 @@ DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DM
 SELECT A.Id, A.ParentId, B.FinDepName, B.FinDepNameShort,  C.* INTO #TMP
 FROM Department as A
 INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
-INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.FinDepPointCode
+LEFT JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.FinDepPointCode
 
 --приводим данные в порядок
 UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then null else [Дата_процедуры] end
