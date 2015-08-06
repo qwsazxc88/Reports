@@ -338,7 +338,7 @@
                 <td>
                     &nbsp;@candidate.Training
                 </td>
-                <td>&nbsp;@candidate.PlanRegistrationDate</td>
+                <td>&nbsp;@(candidate.PlanRegistrationDate.HasValue ? candidate.PlanRegistrationDate.Value.ToShortDateString() : string.Empty)</td>
                 <td>
                     &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
                 </td>
