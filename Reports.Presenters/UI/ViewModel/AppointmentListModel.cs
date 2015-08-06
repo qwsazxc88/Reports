@@ -31,7 +31,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApproveClick { get; set; }
 
         public IList<AppointmentDto> Documents { get; set; }
-
+        public string RecruteFio { get; set; }
         [Display(Name = "ФИО кандидата")]
         public string CandidateName { get; set; }
 
