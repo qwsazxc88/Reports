@@ -117,7 +117,9 @@
 
     $(document).ready(function () {
         UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
-        UIHelpers.attachDatepickerToInputs($('#PlanRegistrationDate'), "-80:-14;-80Y;-14Y", true);
+        //UIHelpers.attachDatepickerToInputs($('#PlanRegistrationDate'), "-80:-14;-80Y;-14Y", true);
+        $('#PlanRegistrationDate').datepicker({changeYear: true,
+                changeMonth: true});
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
             $('#SNILS').mask('999-999-999 99');
