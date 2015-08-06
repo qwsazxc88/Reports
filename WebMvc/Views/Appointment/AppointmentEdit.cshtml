@@ -533,6 +533,8 @@
        {
            @Html.ActionLink("№"+Model.DocumentNumber + "/" + el.Name+" ", "AppointmentReportEdit", new { id = el.Id }, null); 
        }
+       <br />
+       <input type="button" onclick="$('#AppointmentReportForm').submit()" value="Перейти в реестр отчётов" />
        </div>
     }
                                                                                       if (Model.Candidates != null && Model.Candidates.Any())
@@ -566,6 +568,9 @@
         </table>
     </div>
 }
+<form id="AppointmentReportForm" action="/Appointment/AppointmentReportList" method="POST">
+<input type="hidden" name="Number" id="Number" value="@Model.DocumentNumber"/>
+</form>
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 <script type="text/javascript">
@@ -578,6 +583,7 @@
             $('#SNILS').mask('999-999-999 99');
              $('#PassportData').mask('9999 999999');
         }); 
+    $("#AppointmentReportForm").hide();
     $("#AddEmployment").dialog({autoOpen: false});
     $('#ReasonPositionId').change(function(){
         $('#ReasonPosition').val($("#ReasonPositionId option:selected").text());

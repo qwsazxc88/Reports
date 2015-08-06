@@ -52,6 +52,10 @@
                 <label>Обучение требуется</label>
                 @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
                 @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
+            </div> 
+            <div>
+                <label>Планируемая дата приёма</label>
+                <input type="text" name="PlanRegistrationDate" id="PlanRegistrationDate" />
             </div>
             <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
             <input type="hidden" name="AppointmentId" value="@Model.AppId"/>
@@ -281,11 +285,7 @@
                         @Html.HiddenFor(model => model.ColloquyDate)
                     } 
                 </td>
-            </tr>
-            <tr>
-                <td>Комментарий к резюме от руководителя:</td>
-                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { } : (object)new { @readonly = "read-only" })</td>
-            </tr>
+            </tr>            
              <tr>
                 <td>
                     @Html.LabelFor(m => m.IsColloquyPassed):
@@ -294,6 +294,10 @@
                     @Html.DropDownListFor(model => model.IsColloquyPassed, new SelectList(Model.IsColloquyPassedValues, "ID", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsColloquyPassedHidden" name="IsColloquyPassedHidden" value="@Model.IsColloquyPassedHidden" />
                 </td>
+            </tr>
+         <tr>
+                <td>Комментарий руководителя после собеседования:</td>
+                <td>@Html.TextAreaFor(m => m.ResumeComment, Model.IsManagerEditable ? (object)new { } : (object)new { @readonly = "read-only" })</td>
             </tr>
             <tr>
                 <td>
@@ -410,7 +414,7 @@
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
-
+    $("#PlanRegistrationDate").datepicker({changeMonth: true, changeYear: true});
     $("#AddEmployment").dialog({autoOpen: false});
     UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         jQuery(function ($) {

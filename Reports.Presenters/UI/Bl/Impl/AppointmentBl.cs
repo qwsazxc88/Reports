@@ -240,7 +240,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(4, "Отправлена руководителю"),
                                                            new IdNameDto(3, "Кандидат выгружен в приём"),
-                                                           new IdNameDto(2, "Собеседование не пройдено")
+                                                           new IdNameDto(2, "Отказано")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
