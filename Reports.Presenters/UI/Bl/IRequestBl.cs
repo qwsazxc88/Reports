@@ -14,7 +14,7 @@ namespace Reports.Presenters.UI.Bl
         DepartmentChildrenDto GetUsersForDepartment(int departmentId);
         IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, string UserName);
         bool CheckDepartment(SurchargeNoteEditModel model, out int level);
-
+        void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment);
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model, bool hasError);
 

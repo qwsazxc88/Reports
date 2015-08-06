@@ -363,8 +363,12 @@ namespace Reports.Core.Dao.Impl
         #endregion
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
-        } 
-
+        }
+        public IList<TEntity> Find(Func<TEntity, bool> predicate)
+        {
+            var result= Session.Query<TEntity>().Where(predicate);
+            return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {

@@ -341,6 +341,7 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                            {<text>style="display:none"</text>}/>
+                   <input type="button" value="Печать" onclick="window.print();" />
                    @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
                     <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
                     <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />*@
