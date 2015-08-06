@@ -176,19 +176,30 @@ namespace Reports.Core.Dao.Impl
         }
 
         /// <summary>
-        /// Название подразделения из Финграда.
+        /// Подразделение с полями из финграда.
         /// </summary>
         /// <param name="Id">Id подразделения</param>
         /// <returns></returns>
-        public string DepFingradName(int Id)
+        public StaffListDepartmentDto DepFingradName(int Id)
         {
-            return Session.CreateSQLQuery(@"SELECT B.NameShort
-                                            FROM StaffDepartmentRequest as A
-                                            INNER JOIN StaffDepartmentManagerDetails as B ON B.DepRequestId = A.Id
-                                            WHERE A.IsUsed = 1 and A.Id = :Id")
-                .AddScalar("NameShort", NHibernateUtil.String)
+            return Session.CreateSQLQuery(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode
+                                            FROM vwStaffListDepartment as A
+                                            WHERE A.Id = :Id")
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("Code", NHibernateUtil.String)
+                .AddScalar("Name", NHibernateUtil.String)
+                .AddScalar("Code1C", NHibernateUtil.Int32)
+                .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("Path", NHibernateUtil.String)
+                .AddScalar("ItemLevel", NHibernateUtil.Int32)
+                .AddScalar("CodeSKD", NHibernateUtil.String)
+                .AddScalar("Priority", NHibernateUtil.Int32)
+                .AddScalar("DepFingradName", NHibernateUtil.String)
+                .AddScalar("DepFingradNameComment", NHibernateUtil.String)
+                .AddScalar("FinDepPointCode", NHibernateUtil.String)
                 .SetInt32("Id", Id)
-                .UniqueResult<string>();
+                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffListDepartmentDto))).UniqueResult<StaffListDepartmentDto>();
+                //.List<StaffListDepartmentDto>();
         }
     }
 }

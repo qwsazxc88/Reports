@@ -12,6 +12,7 @@ namespace Reports.Core.Domain
         public virtual StaffDepartmentRequest DepRequest { get; set; }
         public virtual string DepCode { get; set; }
         public virtual string NameShort { get; set; }
+        public virtual string NameComment { get; set; }
         public virtual string ReferenceReason { get; set; }
         public virtual string PrevDepCode { get; set; }
         public virtual RefAddresses FactAddress { get; set; }

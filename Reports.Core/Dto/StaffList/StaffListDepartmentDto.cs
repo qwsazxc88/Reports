@@ -11,5 +11,7 @@ namespace Reports.Core.Dto
     {
         public int SEPCount { get; set; }
         public string DepFingradName { get; set; }
+        public string DepFingradNameComment { get; set; }
+        public string FinDepPointCode { get; set; }
     }
 }

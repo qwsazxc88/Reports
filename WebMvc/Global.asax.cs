@@ -234,12 +234,12 @@ namespace WebMvc
         {
             Exception ex = Server.GetLastError();
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
-            HttpException lastErrorWrapper = ex as HttpException;
+            /*HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;
             /*if (lastErrorWrapper.InnerException != null)
                 lastError = lastErrorWrapper.InnerException;*/
-            string txt = "";
+            /*string txt = "";
             while (lastError != null)
             {
                 string lastErrorTypeName = lastError.GetType().ToString();
@@ -251,7 +251,7 @@ namespace WebMvc
             }
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
             if (requbl==null) return;
-            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", txt);
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", txt);*/
             /*if (ex != null)
             {
                 if (ex is HttpUnhandledException)

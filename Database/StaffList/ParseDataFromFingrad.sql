@@ -6,7 +6,7 @@ DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DM
 				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
 */
 --находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
-SELECT A.Id, A.ParentId, C.* INTO #TMP
+SELECT A.Id, A.ParentId, B.FinDepName, B.FinDepNameShort,  C.* INTO #TMP
 FROM Department as A
 INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
 INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.FinDepPointCode
@@ -15,7 +15,7 @@ INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.FinDepPointCode
 UPDATE #TMP SET [Дата_процедуры] = case when year([Дата_процедуры]) = 1899 then null else [Дата_процедуры] end
 								,[Вид_процедуры] = case when len([Вид_процедуры]) = 0 or [Вид_процедуры] = N'-' then null else [Вид_процедуры] end
 								,[Полное_наименование] = case when len([Полное_наименование]) = 0 or [Полное_наименование] = N'-' then null else [Полное_наименование] end
-								,[Сокращенное_наименование] = case when len([Сокращенное_наименование]) = 0 or [Сокращенное_наименование] = N'-' then null else [Сокращенное_наименование] end
+								,[Сокращенное_наименование] = isnull(FinDepName, case when len([Сокращенное_наименование]) = 0 or [Сокращенное_наименование] = N'-' then null else [Сокращенное_наименование] end)
 								,[Индекс] = case when len([Индекс]) = 0 or [Индекс] = N'-' then null else REPLACE(REPLACE([Индекс], N',', N'.'), CHAR(32), '') end
 								,[Субъект_федерации] = case when len([Субъект_федерации]) = 0 or [Субъект_федерации] = N'-' then null else [Субъект_федерации] end
 								,[Населенный_пункт] = case when len([Населенный_пункт]) = 0 or [Населенный_пункт] = N'-' then null else [Населенный_пункт] end
@@ -464,6 +464,7 @@ BEGIN
 																						,DepRequestId
 																						,DepCode
 																						,NameShort
+																						,NameComment
 																						,ReferenceReason
 																						,PrevDepCode
 																						,FactAddressId
@@ -492,6 +493,7 @@ BEGIN
 					,@DepRequestId
 					,A.[Код_подразделения]
 					,A.[Сокращенное_наименование]
+					,A.FinDepNameShort
 					,A.[Причины_внесения_в_справочник]
 					,A.[Прежний_код_подразделения]
 					,@FactAddressId		--адрес

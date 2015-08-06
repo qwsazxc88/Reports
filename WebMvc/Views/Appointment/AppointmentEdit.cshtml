@@ -178,7 +178,7 @@
             </tr>
             <tr id="ReasonPositionIdTr">
                 <td>
-                  <span id="ReasonPositionIdLabel"></span>
+                  <span id="ReasonPositionIdLabel">Выбрать из:</span>
                 </td>
                 <td>
                    @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
@@ -768,6 +768,14 @@
                 $("#ReasonPositionTr").show();
                  $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionIdTr").show();
+            break
+            case '7':
+                $("#ReasonPositionLabel").text('ФИО уволившегося/переведенного сотрудника: ');
+                $('#ReasonPosition').attr('title', 'Введите ФИО');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionTr").show();
+                 $("#ReasonPositionId").attr("disabled",true);
+                $("#ReasonPositionIdTr").hide();
             break
         }
         if(reasonId == 3)

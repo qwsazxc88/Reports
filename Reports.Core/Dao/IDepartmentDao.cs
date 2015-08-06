@@ -34,10 +34,10 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         int DepPositionCount(int Id);
         /// <summary>
-        /// Название подразделения из Финграда.
+        /// Подразделение с полями из финграда.
         /// </summary>
         /// <param name="Id">Id подразделения</param>
         /// <returns></returns>
-        string DepFingradName(int Id);
+        StaffListDepartmentDto DepFingradName(int Id);
     }
 }
