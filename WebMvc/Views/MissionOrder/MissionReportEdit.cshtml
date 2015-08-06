@@ -121,7 +121,7 @@
         </tr>
         @if (Model.StornoAddedDate.HasValue)
         {
-            <tr><td>Сторно:</td>
+            <tr style="color:Red"><td>Сторно:</td>
             <td>
             @Html.HiddenFor(m=>m.StornoAddedDate)
             @Html.HiddenFor(m=>m.StornoSum)
