@@ -53,10 +53,7 @@
                 @Html.RadioButton("IsTrainingNeeded", false, new { @id = "IsTrainingNeededFalse" })<label for="IsTrainingNeededFalse" id="lblTNFalse">Нет</label>
                 @Html.RadioButton("IsTrainingNeeded", true, new { @id = "IsTrainingNeededTrue" })<label for="IsTrainingNeededTrue" id="lblTNTrue" >Да</label>
             </div> 
-            <div class="formfield clear">
-                <label>Планируемая дата приёма</label>
-                <input type="text" name="PlanRegistrationDate" id="PlanRegistrationDate" />
-            </div>
+            
             <input type="hidden" name="AppointmentReportId" value="@Model.Id"/>
             <input type="hidden" name="AppointmentId" value="@Model.AppId"/>
         </fieldset>
