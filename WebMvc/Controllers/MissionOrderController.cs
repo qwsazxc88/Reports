@@ -89,6 +89,11 @@ namespace WebMvc.Controllers
             var result=RequestBl.GetManualDeductionDocs(DepartmentId, UserName);
             return Json(result);
         }
+        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment);
+            return Json(new { status = "Ok" });
+        }
         /// <summary>
         /// Гостиницы.
         /// </summary>

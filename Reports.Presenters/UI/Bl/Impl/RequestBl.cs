@@ -11110,6 +11110,28 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetMrStatuses();
         }
+        public void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            var mr=MissionReportDao.Load(MissionReportId);
+            mr.StornoAddedBy = UserDao.Load(CurrentUser.Id);
+            mr.StornoSum = StornoSum;
+            mr.StornoAddedDate = DateTime.Now;
+            mr.StornoComment = StornoComment;
+            MissionReportDao.SaveAndFlush(mr);
+            if (mr != null)
+            {
+                var md = ManualDeductionDao.Find(x => x.MissionReport.Id == mr.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
+            }
+        }
         public List<IdNameDto> GetMrStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -11358,6 +11380,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (surchargeDao != null)
                 model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
             else model.IsSurchargeAvailable = true;
+            if (entity.StornoAddedDate.HasValue)
+            {
+                model.StornoAddedDate = entity.StornoAddedDate.Value;
+                model.StornoComment = entity.StornoComment;
+                model.StornoAddedBy = entity.StornoAddedBy!=null?entity.StornoAddedBy.Name:"";
+                model.StornoSum = entity.StornoSum;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (entity.ManualDeductions != null && entity.ManualDeductions.Any())
             {
@@ -11578,6 +11607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            
             MissionReport missionReport = null;
             try
             {
@@ -11634,6 +11664,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Hotels = model.Hotels;
                 SaveMissionCosts(entity, model);
                 LoadCosts(model, entity);
+            }
+            ///Обработка автоматических удержаний
+            if(entity!=null)
+            {
+                var md=ManualDeductionDao.Find(x => x.MissionReport.Id == entity.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = entity.UserSumReceived + entity.PurchaseBookAllSum - entity.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
             }
             if (model.IsAccountantEditable)
             {
