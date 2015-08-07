@@ -330,6 +330,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PlanSalaryFund = 0; model.Note = string.Empty;
 
                 LoadDictionaries(model);
+
+                //кнопки
+                model.IsDraftButtonAvailable = true;
+                model.IsAgreeButtonAvailable = false;
             }
             else
             {
@@ -448,6 +452,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Note = dmd.Note;
 
                 LoadDictionaries(model);
+
+                //кнопки
+                model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
+                model.IsAgreeButtonAvailable = entity.IsDraft;
             }
             
             
@@ -1458,6 +1466,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostAddress = string.Empty;
 
                 //кнопки
+                model.IsDraftButtonAvailable = true;
                 model.IsAgreeButtonAvailable = false;
             }
             else
@@ -1513,6 +1522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //кнопки
+                model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
                 model.IsAgreeButtonAvailable = entity.IsDraft;
 
             }

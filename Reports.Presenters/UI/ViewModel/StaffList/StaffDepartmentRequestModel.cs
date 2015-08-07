@@ -243,6 +243,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsDraft { get; set; }
         [Display(Name = "Для сообщений")]
         public string MessageStr { get; set; }
+        public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
+        public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
         #endregion
     }
 }
