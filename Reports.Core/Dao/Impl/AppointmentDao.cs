@@ -20,7 +20,7 @@ namespace Reports.Core.Dao.Impl
         #region Selects for documents list
         protected const string sqlSelectForAppointmentRn = @";with res as
                                 ({0})
-                                select {1} as Number,* from res order by Number ";
+                                select {1} as Number,* from res {2} order by Number ";
 
         protected const string sqlSelectForAppointmentReportList =
             @"select 
@@ -64,8 +64,8 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
-                        when r.StaffDateAccept is null then N'Черновик'
-                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 and r.IsEducationExists is null then N'Собеседование не пройдено'
+                        when  r.StaffDateAccept is null then N'Черновик'
+                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 and r.IsEducationExists is null then N'Отказано'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'
                         when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат выгружен в приём'
@@ -84,6 +84,11 @@ namespace Reports.Core.Dao.Impl
                     when OnsTr.[IsComplete]=1 then N'Обучение пройдено'
                     else N''
                 end  as EducationStatus
+                        , 
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER1,
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER2,
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 2 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER3
+
                 from dbo.Appointment v
                 inner join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
@@ -148,6 +153,11 @@ namespace Reports.Core.Dao.Impl
                         V.BankAccountantAcceptCount as BankAccountantAcceptCount,
                         v.Recruter,
                         v.FIO as CandidateFIO
+                        , 
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER1,
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER2,
+                        (SELECT AUSR.Name FROM AppointmentRecruter AR inner join Users AUSR ON AR.RecruterId=AUSR.Id WHERE AR.AppointmentId = v.Id ORDER BY AR.RecruterId OFFSET 2 ROWS FETCH NEXT 1 ROWS ONLY) as RECRUTER3
+
                 from dbo.Appointment v
                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                 -- inner join dbo.Position aPos on v.PositionId = aPos.Id
@@ -192,7 +202,11 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Recruter",NHibernateUtil.Int32).
                 AddScalar("CandidateFIO",NHibernateUtil.String).
                 AddScalar("ReasonId",NHibernateUtil.Int32).
-                AddScalar("StaffCreator", NHibernateUtil.String);
+                AddScalar("StaffCreator", NHibernateUtil.String).
+                AddScalar("Recruter1", NHibernateUtil.String).
+                AddScalar("Recruter2", NHibernateUtil.String).
+                AddScalar("Recruter3", NHibernateUtil.String)
+                ;
         }
         public  IQuery CreateReportQuery(string sqlQuery)
         {
@@ -231,6 +245,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ManDep3Name", NHibernateUtil.String).
                 AddScalar("Recruter", NHibernateUtil.Int32).
                 AddScalar("EducationStatus", NHibernateUtil.String).
+                AddScalar("Recruter1", NHibernateUtil.String).
+                AddScalar("Recruter2", NHibernateUtil.String).
+                AddScalar("Recruter3", NHibernateUtil.String).
                 AddScalar("ReasonId", NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
@@ -355,6 +372,7 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                string RecruterFio,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -376,10 +394,15 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += String.Format(@" ar.id={0} ", reasonId);
             }
+            string RecruterStr="";
+            if (!String.IsNullOrWhiteSpace(RecruterFio))
+            {
+                RecruterStr= String.Format(@" where (Recruter1 like '{0}%' or Recruter2 like '{0}%' or Recruter3 like '{0}%') ", RecruterFio.Trim());
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString , RecruterStr , sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
@@ -394,6 +417,7 @@ namespace Reports.Core.Dao.Impl
                 DateTime? endDate,
                 string userName,
                 string CandidateFio,
+                string RecruterFio,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -415,16 +439,21 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += String.Format(@" r.name like '{0}%' ", CandidateFio.Trim());
             }
+            string RecruterStr = "";
+            if (!String.IsNullOrWhiteSpace(RecruterFio))
+            {
+                RecruterStr = String.Format(@" where (Recruter1 like '{0}%' or Recruter2 like '{0}%' or Recruter3 like '{0}%') ", RecruterFio.Trim());
+            }
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, RecruterStr, sortBy, sortDescending);
 
             IQuery query = CreateReportQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(AppointmentDto))).List<AppointmentDto>();
         }
-        public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
+        public string GetSqlQueryOrdered(string sqlQuery, string whereString, string RecruterStr,
                     int sortedBy,
                     bool? sortDescending)
         {
@@ -434,13 +463,13 @@ namespace Reports.Core.Dao.Impl
             if (!sortDescending.HasValue)
             {
                 orderBy = " ORDER BY EditDate DESC,UserName";
-                return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+                return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy),RecruterStr);
             }
             switch (sortedBy)
             {
                 case 0:
                     orderBy = " ORDER BY EditDate DESC,UserName";
-                    return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+                    return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy), RecruterStr);
                 case 1:
                     orderBy = @" order by AppNumber";
                     break;
@@ -521,12 +550,24 @@ namespace Reports.Core.Dao.Impl
                 case 26:
                     orderBy = @" order by StaffCreator";
                     break;
+                case 27:
+                    orderBy = @" order by StaffCreator";
+                    break;
+                case 28:
+                    orderBy = @" order by Recruter1";
+                    break;
+                case 29:
+                    orderBy = @" order by Recruter2";
+                    break;
+                case 30:
+                    orderBy = @" order by Recruter3";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
             else
                 orderBy += " ASC ";
-            return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            return string.Format(sqlSelectForAppointmentRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy), RecruterStr);
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
         }

@@ -78,6 +78,14 @@
                                 </td>
                          </tr>
                          <tr>
+                                <td>
+                                    ФИО рекрутера:
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.RecruteFio)
+                                </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -146,10 +154,10 @@
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
                     <th>
-                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
                     </th>
                     <th>
                         <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
@@ -175,12 +183,22 @@
                     <th>
                         <div id="sort23" style="min-width:80px"><a href="#"  onclick = "SortChanged(23);">Рекрутер</a></div>
                     </th>  
-                     <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
+                    <th>
+                        <div id="sort28" style="min-width:80px"><a href="#"  onclick = "SortChanged(28);">Рекрутер 1</a></div>
+                    </th>
+                    <th>
+                        <div id="sort29" style="min-width:80px"><a href="#"  onclick = "SortChanged(29);">Рекрутер 2</a></div>
+                    </th>
+                    <th>
+                        <div id="sort30" style="min-width:80px"><a href="#"  onclick = "SortChanged(30);">Рекрутер 3</a></div>
+                    </th>
+                    <th>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
                     </th>
                      <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
                     </th>
+                     
                    @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
                     </th>*@                                       
@@ -203,9 +221,9 @@
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.StaffCreator</td>
                             <td>@doc.UserName</td>
-                            <td>@doc.PositionName</td>
-                            <td>@doc.ManDep3Name</td>
-                            <td>@doc.ManDep7Name</td>
+                            <td>@doc.PositionName</td>                            
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                             <td>@doc.Reason</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
                             <td>@doc.CanPosition</td>
@@ -223,8 +241,11 @@
                                         break;
 
                                 }</td>
-                            <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
+                            <td>@doc.Recruter1</td>
+                            <td>@doc.Recruter2</td>
+                            <td>@doc.Recruter3</td>                            
+                            <td>@doc.ManDep3Name</td>
+                            <td>@doc.ManDep7Name</td>
                         </tr>
                     }
                 }

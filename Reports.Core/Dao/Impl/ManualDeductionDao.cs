@@ -16,7 +16,7 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, Department department)
         {
-            var query = Session.Query<ManualDeduction>();
+            var query = Session.Query<ManualDeduction>().Where(x=>!x.DeleteDate.HasValue);
             if (department!=null)
             {
                 query=query.Where(x=>x.User.Department.Path.Contains(department.Path));
