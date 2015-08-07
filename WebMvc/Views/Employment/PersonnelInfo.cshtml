@@ -1197,6 +1197,33 @@
                             $('#add-managers-comment-dialog').dialog("open");
                             e.preventDefault();
                         });
+
+                        //диалог для перехода в пайрус
+                        $('#DivPyrus').dialog(
+                        {
+                            autoOpen: false,
+                            modal: true,
+                            width: "auto",
+                            draggable: false,
+                            resizable: false,
+                            title: "Список форм на регистрацию доступов в системе Pyrus",
+//                            buttons:
+//                            {
+//                                "OK": function () {
+//                                    //$('#add-higher-education-diploma-dialog form').submit();
+//                                    //$(this).dialog("close");
+//                                },
+//                                "Отмена": function () {
+//                                    //$(":text").val('');
+//                                    $(this).dialog("close");
+//                                }
+//                            }
+                        });
+
+                        $("#btnPyrus").click(function(e){ 
+                            $('#DivPyrus').dialog("open");
+                            e.preventDefault();
+                        });
                     });
                 }
 
