@@ -603,13 +603,13 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=0 ";
                         break;
                     case 8://Welcome 
-                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult>2 ";
+                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     case 9://собеседование назначено
-                        statusWhere = @" r.ColloquyDate is not null and r.IsColloquyPassed is null ";
+                        statusWhere = @" r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     case 10://входное тестирование
-                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult is null ";
+                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
