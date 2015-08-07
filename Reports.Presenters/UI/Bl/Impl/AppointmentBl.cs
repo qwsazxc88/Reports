@@ -234,13 +234,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
            List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(5,"Собеседование пройдено"),
-                                                           new IdNameDto(6,"Обучение пройдено"),
-                                                           new IdNameDto(7,"Обучение не пройдено"),
+                                                           new IdNameDto(5, "Собеседование пройдено"),
+                                                           new IdNameDto(6, "Обучение пройдено"),
+                                                           new IdNameDto(7, "Обучение не пройдено"),
                                                            new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(4, "Отправлена руководителю"),
                                                            new IdNameDto(3, "Кандидат выгружен в приём"),
-                                                           new IdNameDto(2, "Отказано")
+                                                           new IdNameDto(2, "Отказано"),
+                                                           new IdNameDto(8, "Welcome курс"),
+                                                           new IdNameDto(9, "Собеседование назначено"),
+                                                           new IdNameDto(10, "Входное тестирование"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
