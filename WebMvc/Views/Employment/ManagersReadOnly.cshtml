@@ -15,6 +15,7 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftM)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsPyrusDialogVisible)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
@@ -147,9 +148,12 @@
     
     
     <div class="clear">
-        <label>Создать задачу в Пайрусе на регистрацию доступов для кандидата</label>
-        <button type="button" id="btnPyrus">Создать</button>
-        <br /><br />
+        @if (Model.IsPyrusDialogVisible)
+        {
+            <label>Создать задачу в Пайрусе на регистрацию доступов для кандидата</label>
+            <button type="button" id="btnPyrus">Создать</button>
+            <br /><br />
+        }
         <label><b>Список руководителей: </b></label>
         @Model.ManagerApprovalList<br /><br />
 
