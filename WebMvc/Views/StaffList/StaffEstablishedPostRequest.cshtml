@@ -11,6 +11,7 @@
     @Html.HiddenFor(m => m.DepartmentId)
     @Html.HiddenFor(m => m.PositionId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
+    @Html.HiddenFor(m => m.IsDraftButtonAvailable)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -151,9 +152,9 @@
                                 else
                                 {
                                     @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue", disabled = "disabled" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
-                                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                                                        else
-                                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                                                                                           {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                                           else
+                                                                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Да</label>
                                     @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
                                                                                                                                                                                                         {<text>style="border-color:red;"</text>}
                                                                                                                                                                                                         else
@@ -251,7 +252,7 @@
                                                 <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)</td>
                                                 <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].AmountProc)</td>
                                             </tr>
-                                                    { i++; }
+                                            { i++; }
                                         }
                                     </table>
                                 </div>
@@ -270,10 +271,12 @@
 
 
         <br />
-        <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable){<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
+                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    if(Model.Id != 0)
+    if (Model.Id != 0)
     {
         @Html.Partial("~/Views/Info/Comments.cshtml")
     }

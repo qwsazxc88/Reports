@@ -88,6 +88,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsUsed { get; set; }    //признак использования
         public bool IsDraft { get; set; }   //черновик
         public string MessageStr { get; set; }  //для сообщений
+        public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
         #endregion
     }

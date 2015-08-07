@@ -12,6 +12,8 @@
     @Html.HiddenFor(m => m.ParentId)
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
+    @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
+    @Html.HiddenFor(m => m.IsDraftButtonAvailable)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -696,13 +698,15 @@
         </div>
 
         <br />
-        <button id="btnSave" type="button" title="Сохранить заявку">Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if(Model.Id == 0){<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
+                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    if(Model.Id != 0)
-    {
+                                                                                     if (Model.Id != 0)
+                                                                                     {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-    }
+                                                                                     }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
