@@ -66,9 +66,9 @@ namespace Reports.Core.Dao.Impl
                 case
                         when  r.StaffDateAccept is null then N'Черновик'
                         when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2)  and r.IsEducationExists is null then N'Отказано'
-                        when r.ColloquyDate is not null and r.IsColloquyPassed is null then N'Собеседование назначено'
-                        when r.IsColloquyPassed=1 and r.TestingResult is null then N'Входное тестирование'
-                        when r.IsColloquyPassed=1 and r.TestingResult>2  then N'Welcome курс'
+                        when r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId==2 and v.Recruter=1 then N'Собеседование назначено'
+                        when r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 then N'Входное тестирование'
+                        when r.IsColloquyPassed=1 and r.TestingResult>2 and r.IsEducationExists is null and v.AppointmentEducationTypeId=2 and v.Recruter=1  then N'Welcome курс'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'
                         when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат выгружен в приём'
