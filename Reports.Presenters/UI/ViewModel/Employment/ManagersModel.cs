@@ -110,7 +110,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsCancelApproveAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
         public bool IsCancelApproveHigherAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
-        
+        public bool IsPyrusDialogVisible { get; set; }
+
         public ManagersModel()
         {
             this.Version = 0;
