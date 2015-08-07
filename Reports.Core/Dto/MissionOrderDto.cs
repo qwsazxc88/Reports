@@ -67,5 +67,7 @@ namespace Reports.Core.Dto
         public DateTime? ArchiveDate { get; set; }
         public string ArchiveNumber { get; set; }
         public bool IsDismissal { get; set; }
+        public decimal StornoSum { get; set; }
+        public string StornoComment { get; set; }
     }
 }

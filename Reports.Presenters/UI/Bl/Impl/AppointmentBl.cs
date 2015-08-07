@@ -240,7 +240,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(4, "Отправлена руководителю"),
                                                            new IdNameDto(3, "Кандидат выгружен в приём"),
-                                                           new IdNameDto(2, "Собеседование не пройдено")
+                                                           new IdNameDto(2, "Отказано")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -277,6 +277,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EndDate,
                 model.UserName,
                 model.CandidateName,
+                model.RecruteFio,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -294,6 +295,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.RecruteFio,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -398,6 +400,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.ReasonPositionId = entity.ReasonPositionUser.Id;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
                         break;
+                    case 7:
                     case 6:
                     case 3:
                         model.ReasonPosition = entity.ReasonPosition;
