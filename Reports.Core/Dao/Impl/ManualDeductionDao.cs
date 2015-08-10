@@ -52,7 +52,8 @@ namespace Reports.Core.Dao.Impl
             return result.Select(x => new ManualDeductionDto
             {
                         NPP=(counter++),
-                         UserName = x.User.Name,
+                        UserName = x.User.Name,
+                        Position = x.User.Position!=null?x.User.Position.Name:"",
                         AllSum = x.AllSum,
                         DeductionDate = x.MissionReport.MissionOrder.BeginDate.HasValue ? x.MissionReport.MissionOrder.BeginDate.Value : x.MissionReport.MissionOrder.CreateDate,
                         DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "",
