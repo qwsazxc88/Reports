@@ -20,7 +20,7 @@ namespace Reports.Core.Domain
         public virtual string Phone { get; set; }
         public virtual string Email { get; set; }
         public virtual DateTime? ColloquyDate { get; set; }
-
+        public virtual DateTime? LessonDate { get; set; }
         public virtual AppointmentEducationType Type { get; set; }
         public virtual string EducationTime { get; set; }
         public virtual string TempLogin { get; set; }
