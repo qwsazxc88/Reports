@@ -21,6 +21,19 @@
  <input type="text" id="SurchargeSum" />
  <input type="button" value="Создать" onclick="AddSurcharge();" />
 </div>
+<div id="StornoDialog" title="Сторно выданной суммы" > 
+     <div>
+     <p>Введите сумму:</p>
+     <input type="text" id="StornoSum" />
+     </div>
+     <br />
+     <div>
+     <p>Причина сторнирования:</p>
+     <input type="text" id="StornoComment" />   
+     </div>
+     <hr />
+     <input type="button" id='AddStornoBtn' value="Создать" onclick="AddStorno();" />
+</div>
 </div>
 @using (Html.BeginForm("MissionReportEdit", "MissionOrder", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
 {
@@ -106,6 +119,47 @@
                 <br/>
             </td>
         </tr>
+        @if (Model.StornoAddedDate.HasValue)
+        {
+            <tr style="color:Red"><td>Сторно:</td>
+            <td>
+            @Html.HiddenFor(m=>m.StornoAddedDate)
+            @Html.HiddenFor(m=>m.StornoSum)
+            @Html.HiddenFor(m=>m.StornoAddedBy)
+            @Html.HiddenFor(m=>m.StornoComment)
+            @Model.StornoSum &nbsp;@Model.StornoAddedDate &nbsp;@Model.StornoAddedBy &nbsp;@Model.StornoComment
+            </td>
+            </tr>
+        }
+        @if (Model.ManualDeductions != null)
+        {
+        <tr>
+        <td>
+        Удержано (Авто)
+        </td>
+        <td>
+        <table>
+        
+        <tr>
+        <th>Сумма</th>
+        <th>Дата</th>
+        </tr>
+        
+        <tbody>
+        
+            @foreach (var el in Model.ManualDeductions)
+            {
+                <tr>
+                <td>@el.AllSum</td>
+                <td>@el.SendTo1C</td>
+                </tr>
+            }
+        
+        </tbody>
+        </table>
+        </td>
+        </tr>
+        }
         <tr>
             <td style="vertical-align:top">
                 @Html.LabelFor(m => m.Hotels):
@@ -135,7 +189,7 @@
             <td colspan="2">
                 <hr/>
             </td>
-        </tr>
+        </tr>        
         <tr>
             <td>@Model.UserFio</td>
             <td>
@@ -242,24 +296,28 @@
                 @*<input type="button" value="Создать удержание" onclick="" />*@
                 <input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> 
             }
+            @if ((dto.UserRole & UserRole.Accountant) > 0 && !Model.StornoAddedDate.HasValue)
+            {
+                <input type="button" id="StornoButton" value="Сторно выданной суммы" onclick="$('#StornoDialog').dialog('open');" /> 
+            }
             @if (Model.Id > 0)
             {
                 <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
             }
             <input type="hidden" id="IsDocumentsSaveToArchiveAvailable" name="IsDocumentsSaveToArchiveAvailable" value="@Model.IsDocumentsSaveToArchiveAvailable" />
             <input type="button" id="IsDocumentsSaveToArchiveBtn" value="Оригиналы переданы в архив" onclick="return DocumentsSaveToArchive();" @if (!Model.IsDocumentsSaveToArchiveAvailable)
-                                                                                                               {<text>style="display:none"</text>}/>
+                                                                                                                                                {<text>style="display:none"</text>}/>
             <input type="hidden" id="IsPrintArchivistAddressAvailable" name="IsPrintArchivistAddressAvailable" value="@Model.IsPrintArchivistAddressAvailable" />
             <input type="button" value="Документы для архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
-                                                                                                               {<text>style="display:none"</text>}/>
-            @if ((dto.UserRole & UserRole.Accountant) > 0 
-                && Model.IsUserDismissal 
-                && Model.DeductionDocNumber==0
-                && DateTime.Now>=new DateTime(2015,4,1)
+                                                                                                             {<text>style="display:none"</text>}/>
+            @if ((dto.UserRole & UserRole.Accountant) > 0
+                && Model.IsUserDismissal
+                && Model.DeductionDocNumber == 0
+                && DateTime.Now >= new DateTime(2015, 4, 1)
                 )
-                    {
+            {
                     <input type="button" id="ExportButton" value="Выгрузить в удержания" onclick=" UploadToDeduction(2, 3, 2, 'true');" />
-                    }
+            }
             @if ((dto.UserRole & UserRole.Accountant) > 0)
             {
                 <input type="button" id="SendNotifyButton" value="Отправить сотруднику уведомление об удержании" onclick="SendNotify();"/>
@@ -375,6 +433,7 @@
         var  actionPrintArchivistAddressDialogUrl = "@Url.Action("PrintArchivistAddressDialog", "MissionOrder")";
         $(document).ready(function () {
             $("#SurchargeDialog").dialog({ autoOpen: false });
+            $("#StornoDialog").dialog({ autoOpen: false });
             $("#ArchiveDate").datepicker({changeMonth: true, changeYear: true});
             $(".hasDatepicker").width("75px");
             /*$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
@@ -1285,6 +1344,58 @@
             $(".loading").removeClass("loading");
             alert("При отправке данных произошла ошибка.");
             $("#SurchargeDialog").dialog( "close" );
+            }
+        });
+    }
+    function AddStorno()
+    {
+        clearControlErrors($("#StornoSum"));
+        clearControlErrors($("#StornoComment"));
+        var b= @Model.Id;
+        var c=$.trim($("#StornoSum").val());
+        var d=$.trim($("#StornoComment").val());
+        $("#AddStornoBtn").hide();
+        if(c == '' )
+            {
+                addControlError($("#StornoSum"),'Обязательное поле');
+                addControlError($("#StornoComment"),'Обязательное поле');
+                $("#AddStornoBtn").show();
+                return false;
+            }
+        if(d == '' )
+            {
+                addControlError($("#StornoComment"),'Обязательное поле');
+                $("#AddStornoBtn").show();
+                return false;
+            }
+        $("#LoadingIndicator").addClass("loading");
+        
+        jQuery.ajaxSettings.traditional = true;
+        $.ajax({
+        url: '@Url.Action("AddStorno", "MissionOrder")',
+        type: 'POST',
+        data: {missionReportId:b,StornoSum:c,StornoComment:d},
+        success: function(result){
+            $(".loading").removeClass("loading");
+            if(result.status=='Ok') 
+            {
+                $("#AddStornoBtn").show();
+                $("#StornoButton").hide();
+                $("#StornoDialog").dialog( "close" );
+            }
+            else
+            { 
+                $("#AddStornoBtn").show();
+                console.log(result);
+                alert("При добавлении данных произошла ошибка.");
+                $("#StornoDialog").dialog( "close" );
+            }
+            },
+        error: function(){
+            $("#AddStornoBtn").show();
+            $(".loading").removeClass("loading");
+            alert("При отправке данных произошла ошибка.");
+            $("#StornoDialog").dialog( "close" );
             }
         });
     }

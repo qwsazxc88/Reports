@@ -79,6 +79,21 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
         }
+
+        public ActionResult MissionOrderFullDepts()
+        {
+            return View();                 
+        }
+        public JsonResult GetFullDepts(int DepartmentId, string UserName)
+        {
+            var result=RequestBl.GetManualDeductionDocs(DepartmentId, UserName);
+            return Json(result);
+        }
+        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment);
+            return Json(new { status = "Ok" });
+        }
         /// <summary>
         /// Гостиницы.
         /// </summary>

@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using Reports.Core.Dto;
+using System.Collections.Generic;
+using System;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class MissionReportEditModel : UserInfoModel, IContainId
@@ -21,8 +23,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Справочно.Проживал в гостинице")]
         public string Hotels { get; set; }
-
-
+        public IList<ManualDeductionDto> ManualDeductions { get; set; }
+        public decimal StornoSum { get; set; }
+        public string StornoAddedBy { get; set; }
+        public string StornoComment { get; set; }
+        public DateTime? StornoAddedDate { get; set; } 
         //[Display(Name = "")]
         public string UserFio { get; set; }
         public bool IsUserApproved { get; set; }

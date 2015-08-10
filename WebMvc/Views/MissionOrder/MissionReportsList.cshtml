@@ -221,6 +221,12 @@
                         <div id="sort18" ><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
                     </th>
                     <th>
+                        <div id="sort20" ><a href="#" onclick = "SortChanged(20);">Сторно</a></div>
+                    </th>
+                    <th>
+                        <div id="sort21" ><a href="#" onclick = "SortChanged(21);">Причина<br />сторнирования</a></div>
+                    </th>
+                    <th>
                         <div id="sort16"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
                     </th>
                    @*  <th>
@@ -282,6 +288,8 @@
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
                             <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
+                            <td>@RequestBl.FormatSum(@doc.StornoSum)</td>
+                            <td>@doc.StornoComment</td>
                             <td>@RequestBl.FormatSum(@doc.Saldo)</td>
                             
                           @*  <td>@doc.HasMission</td>

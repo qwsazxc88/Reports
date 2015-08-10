@@ -26,6 +26,7 @@ namespace Reports.Core.Domain
         public virtual bool IsLiable { get; set; } //ok
         public virtual string RequestNumber { get; set; } //ok
         public virtual DateTime? RegistrationDate { get; set; }
+        public virtual DateTime? PlanRegistrationDate { get; set; }
 
         public virtual bool? ManagerApprovalStatus { get; set; }
         public virtual User ApprovingManager { get; set; }

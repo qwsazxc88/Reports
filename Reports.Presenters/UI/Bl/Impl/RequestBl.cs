@@ -97,13 +97,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionTypeDao deductionTypeDao;
         protected IDeductionKindDao deductionKindDao;
         protected IDeductionDao deductionDao;
-
+        protected IManualDeductionDao manualDeductionDao;
         protected ITerraPointDao terraPointDao;
         protected ITerraPointToUserDao terraPointToUserDao;
         protected ITerraGraphicDao terraGraphicDao;
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IManualDeductionDao ManualDeductionDao
+        {
+            get { return Validate.Dependency(manualDeductionDao);}
+            set { manualDeductionDao = value; }
+        }
         public ISurchargeNoteDao SurchargeNoteDao
         {
             get { return Validate.Dependency(surcharcheNoteDao); }
@@ -5244,6 +5249,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
+                /*if (user != null && user.VacationSaldo != null && user.VacationSaldo.Any())
+                {
+                    var saldos = user.VacationSaldo.Where(x => x.Date < DateTime.Now);
+                    if (saldos != null && saldos.Any())
+                    {
+                        saldos = saldos.OrderByDescending(x => x.Date);
+                        var saldo = saldos.First();
+                        model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
+                        model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
+                    }
+                }
+                else
+                {
+                    model.PrincipalVacationDaysLeft = 0;
+                    model.AdditionalVacationDaysLeft = 0;
+                }*/
             }
             else
             {
@@ -7126,6 +7147,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region ManualDeduction
+        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, string UserName)
+        {
+            Department dep=null;
+            if(DepartmentId>0)
+                dep=DepartmentDao.Load(DepartmentId);
+            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName,dep);
+        }
+        #endregion
         public AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId)
         {
             RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id, typeId);
@@ -7801,7 +7831,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DismissalDate = deduction.DismissalDate;
                     model.IsFastDismissal = deduction.IsFastDismissal.HasValue ? deduction.IsFastDismissal.Value : false;
                 }
-
                 if (deduction.DeleteDate.HasValue)
                     model.IsDeleted = true;
                 SetHiddenFields(model);
@@ -7870,6 +7899,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
             SetFlagsState(model, false);
+
+            if (deduction!=null && deduction.ManualDeduction != null)
+            {
+                model.MissionReportNumber = deduction.ManualDeduction.MissionReport.Number;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (id == 0 && (currentUserRole & UserRole.Accountant) > 0)
             {
@@ -11076,6 +11110,28 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetMrStatuses();
         }
+        public void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            var mr=MissionReportDao.Load(MissionReportId);
+            mr.StornoAddedBy = UserDao.Load(CurrentUser.Id);
+            mr.StornoSum = StornoSum;
+            mr.StornoAddedDate = DateTime.Now;
+            mr.StornoComment = StornoComment;
+            MissionReportDao.SaveAndFlush(mr);
+            if (mr != null)
+            {
+                var md = ManualDeductionDao.Find(x => x.MissionReport.Id == mr.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
+            }
+        }
         public List<IdNameDto> GetMrStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -11324,7 +11380,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (surchargeDao != null)
                 model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
             else model.IsSurchargeAvailable = true;
+            if (entity.StornoAddedDate.HasValue)
+            {
+                model.StornoAddedDate = entity.StornoAddedDate.Value;
+                model.StornoComment = entity.StornoComment;
+                model.StornoAddedBy = entity.StornoAddedBy!=null?entity.StornoAddedBy.Name:"";
+                model.StornoSum = entity.StornoSum;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (entity.ManualDeductions != null && entity.ManualDeductions.Any())
+            {
+                var manualded = entity.ManualDeductions.Where(x => x.Deductions.Any(d=>d.SendTo1C.HasValue));
+                if (manualded!=null )
+                {
+                    List<Deduction> deductionList=new List<Deduction>();
+                   foreach(var el in manualded)
+                   {
+                       deductionList.AddRange(el.Deductions.Where(x=>x.SendTo1C.HasValue).ToArray());
+                   }
+                   if(deductionList.Any())
+                       model.ManualDeductions=deductionList.Select(x=> new ManualDeductionDto { UserId = x.Id, AllSum = x.Sum, DeductionDate = x.DeductionDate, SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "", UserName = x.User.Name, DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "" }).ToList();
+                }                
+            }
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
@@ -11530,6 +11607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            
             MissionReport missionReport = null;
             try
             {
@@ -11586,6 +11664,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Hotels = model.Hotels;
                 SaveMissionCosts(entity, model);
                 LoadCosts(model, entity);
+            }
+            ///Обработка автоматических удержаний
+            if(entity!=null)
+            {
+                var md=ManualDeductionDao.Find(x => x.MissionReport.Id == entity.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = entity.UserSumReceived + entity.PurchaseBookAllSum - entity.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
             }
             if (model.IsAccountantEditable)
             {
