@@ -68,6 +68,10 @@
                         <a>ФИО</a>
                         <span class="sortorder" ng-show="predicate === 'UserName'" ng-class="{reverse:reverse}"></span>
                     </th>
+                    <th ng-click="Sort('Position')">
+                        <a>Должность</a>
+                        <span class="sortorder" ng-show="predicate === 'Position'" ng-class="{reverse:reverse}"></span>
+                    </th>
                     <th ng-click="Sort('AllSum')">
                         <a>Сумма</a>
                         <span class="sortorder" ng-show="predicate === 'AllSum'" ng-class="{reverse:reverse}"></span>
@@ -92,6 +96,7 @@
                 <tr>
                     <th></th>
                     <th></th>
+                    <th></th>
                     <th>Итого: {{TotalSum}}</th>
                     <th></th>
                     <th></th>
@@ -101,6 +106,7 @@
                 <tr id="FiltrRow" class="noExl">
                 <td><input ng-model="search.NPP" class="filterinput" /></td>
                 <td><input ng-model="search.UserName" class="filterinput"  /></td>
+                <td><input ng-model="search.Position" class="filterinput"  /></td>
                 <td><input ng-model="search.AllSum" class="filterinput"  /></td>
                 <td><input ng-model="search.Dep3Name" class="filterinput"  /></td>
                 <td><input ng-model="search.Dep7Name" class="filterinput"  /></td>
@@ -112,6 +118,7 @@
                 <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
 			        <td>{{row.NPP}}</td>
                     <td>{{row.UserName}}</td>
+                    <td>{{row.Position}}</td>
                     <td>{{row.AllSum}}</td>
                     <td>{{row.Dep3Name}}</td>
                     <td>{{row.Dep7Name}}</td>

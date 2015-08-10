@@ -10,6 +10,7 @@ namespace Reports.Core.Dto
         public int NPP {get;set;}
         public int UserId {get;set;}
         public string UserName { get; set; }
+        public string Position { get; set; }
         public decimal AllSum { get; set; }
         public DateTime DeductionDate { get; set; }
         public string SendTo1C { get; set; }
