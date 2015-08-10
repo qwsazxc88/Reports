@@ -15,6 +15,7 @@
 	<property name="Phone" length="32" not-null="true"/>
 	<property name="Email" length="32" not-null="true"/>
 	<property name="ColloquyDate" not-null="false"/>
+    <property name="LessonDate" not-null="false"/>
 	<many-to-one name="Type" class="AppointmentEducationType" column="TypeId" foreign-key="FK_AppointmentReport_AppointmentEducationType" index="AppointmentReport_AppointmentEducationType"  not-null="true"/>
 	<property name="EducationTime" length="32" not-null="false"/>
 	<property name="TempLogin" length="32" not-null="false"/>

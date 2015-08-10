@@ -313,7 +313,10 @@
          <td>Результат тестирования специалистом ОПИНП</td>
          <td>@Html.DropDownListFor(m => m.TestingResult, new SelectList(Model.TestingResults, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : (object)new { disabled = "disabled" })</td>
          </tr>              
-                        
+         <tr>
+         <td>Обучение назначено:</td>
+         <td>@Html.EditorFor(m=>m.LessonDate)</td>
+         </tr>     
               <tr>
                 <td>
                     @Html.LabelFor(m => m.IsEducationExists):
@@ -424,6 +427,7 @@
         }); 
     $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
+    $("#LessonDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");
      onTypeChange();
    });

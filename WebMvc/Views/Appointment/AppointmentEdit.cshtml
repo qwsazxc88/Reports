@@ -469,7 +469,7 @@
                      </td>
                  </tr>
                  <tr><td>Срочность</td>
-                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })</td>
+                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })</td>
                  </tr>
                  }
             

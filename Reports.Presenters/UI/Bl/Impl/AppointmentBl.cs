@@ -571,7 +571,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && current.Id==ConfigurationService.StaffBossId.Value)
+                    if (!entity.DeleteDate.HasValue )
                     {
                         if(entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                             model.IsStaffApproveAvailable = true;
@@ -1631,6 +1631,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateAccept = FormatDate(entity.DateAccept);
             model.ResumeComment = entity.ResumeComment;
             model.ResumeCommentByOPINP = entity.ResumeCommentByOPINP;
+            model.LessonDate = entity.LessonDate.HasValue ? entity.LessonDate.Value.ToShortDateString() : "";
             SetManagerInfoModel(entity.Appointment.Creator, model,null,entity);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.AppointmentReport);
             LoadDictionaries(model);
@@ -1702,6 +1703,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (current.Id == entity.Appointment.Creator.Id && !entity.DeleteDate.HasValue)
                     {
+                        model.IsEditable = true;
                         if (entity.AcceptManager != null && !string.IsNullOrEmpty(entity.TempLogin))
                                 model.IsPrintLoginAvailable = true;
                         
@@ -1726,7 +1728,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && (current.Id == entity.Appointment.AcceptStaff.Id || (entity.Appointment.Recruters!=null?entity.Appointment.Recruters.Any(x=>x.Id==current.Id):false)))
+                    if (!entity.DeleteDate.HasValue /*&& (current.Id == entity.Appointment.AcceptStaff.Id || (entity.Appointment.Recruters!=null?entity.Appointment.Recruters.Any(x=>x.Id==current.Id):false))*/)
                     {
                         if (entity.AcceptManager != null && entity.AcceptManager.Id == current.Id && 
                                 !string.IsNullOrEmpty(entity.TempLogin))
@@ -1736,10 +1738,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (!entity.StaffDateAccept.HasValue)
                             {
+                                model.IsStaffApproveAvailable = true;
                                 model.IsEditable = true;
                                 if (model.AttachmentId > 0)
                                 {
-                                    model.IsStaffApproveAvailable = true;
+                                    
                                     model.IsDeleteScanAvailable = true;
                                     model.IsManagerApproveAvailable = true;
                                     model.IsColloquyDateEditable = true;
@@ -1967,6 +1970,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
                     entity.EducationTime = model.TypeId == 1 ? model.EducationTime : null;
                     //entity.RejectReason = model.RejectReason;
+                }
+                if (!String.IsNullOrWhiteSpace(model.LessonDate))
+                {
+                    DateTime res;
+                    if (DateTime.TryParse(model.LessonDate, out res)) { entity.LessonDate = res; };
                 }
                 if(model.IsColloquyDateEditable)
                 {
