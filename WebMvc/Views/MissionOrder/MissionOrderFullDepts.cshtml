@@ -85,11 +85,15 @@
                         <span class="sortorder" ng-show="predicate === 'Dep7Name'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('DeductionDate')">
-                        <a>Дата начала<br />командировки</a>
+                        <a>Дата окончания<br />командировки</a>
                         <span class="sortorder" ng-show="predicate === 'DeductionDate'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('MissionReportNumber')">
                         <a>Номер<br />авансового<br />отчёта</a>
+                        <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Status')">
+                        <a>Статус</a>
                         <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
                     </th>
                 </tr>                
@@ -98,6 +102,7 @@
                     <th></th>
                     <th></th>
                     <th>Итого: {{TotalSum}}</th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -112,6 +117,7 @@
                 <td><input ng-model="search.Dep7Name" class="filterinput"  /></td>
                 <td><input ng-model="search.DeductionDate" class="filterinput"  /></td>
                 <td><input ng-model="search.MissionReportNumber" class="filterinput"  /></td>
+                <td><input ng-model="search.Status" class="filterinput"  /></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -124,6 +130,7 @@
                     <td>{{row.Dep7Name}}</td>
                     <td>{{row.DeductionDate | date: 'dd.MM.yyyy'}}</td>
                     <td>{{row.MissionReportNumber}}</td>
+                    <td>{{row.Status}}</td>
 		        </tr>
                 </tbody>
             </table>

@@ -39,6 +39,7 @@ namespace Reports.Core.Dao.Impl
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
                                      when v.UploadingDocType is not null and v.UploadingDocType!=4 and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
+                                     when v.ManualDeductionId is not null then N'Автоудержание'
                                      when v.UploadingDocType = 4 and v.SendTo1C is null and v.DeleteDate is null then N'Загруженно из файла'
                                      else N'Записана'
                                 end as Status,
@@ -169,6 +170,9 @@ namespace Reports.Core.Dao.Impl
                         break;
                     case 4: //4, "Автовыгрузка"
                         statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
+                        break;
+                    case 5:
+                        statusWhere = @" v.ManualDeductionId is not null ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
