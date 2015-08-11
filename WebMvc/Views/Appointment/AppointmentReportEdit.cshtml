@@ -8,6 +8,10 @@
     ViewBag.Title = "Отчет по подбору сотрудника";
 }
 <div style="visibility:hidden">
+<div id="CopyReportDialog" title="Копировать отчёт в">
+    <input type="text" id="TargetAppointment" />
+    <input type="button" onclick="CopyAppointmentReport();" value="Создать"/>
+</div>
 <div id="AddEmployment" title="Добавление кандидата">
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
@@ -85,7 +89,7 @@
                 <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
                 <input type="hidden" id="City" name="City" value="@Model.City" />
-                @Html.EditorFor(m=>m.CandidateRejectDate)
+                @Html.HiddenFor(m=>m.CandidateRejectDate)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -384,6 +388,7 @@
                    <input type="button" value="Добавить резюме кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
                                                                                                                                                                              {<text>style="display:none"</text>}/>
                     }
+                    <input type="button" value="Копировать отчёт" onclick="$('#CopyReportDialog').dialog('open');"/>
                    @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
                                                                 {<text>style="display:none"</text>}  />*@
@@ -431,6 +436,7 @@
   $(document).ready(function () {
     $("#PlanRegistrationDate").datepicker({changeMonth: true, changeYear: true});
     $("#AddEmployment").dialog({autoOpen: false});
+    $("#CopyReportDialog").dialog({autoOpen: false});
     UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
@@ -485,6 +491,32 @@
         $("#ApproveForAll").val('True');
         return true;
     }*/
+    function CopyAppointmentReport()
+    {
+        clearControlErrors($("#TargetAppointment"));
+        if($("#TargetAppointment").val()=='')
+        {
+                addControlError($("#TargetAppointment"),'Обязательное поле');
+                return false;
+         }
+         $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CopyAppointmentReport",
+            data: {AppointmentNumber:$('#TargetAppointment').val(),AppointmentReportId:@(Model.Id) },
+            success: function(data)
+            {
+                if(data.status=='Ok')
+                {
+                    document.location.href = '/Appointment/AppointmentReportEdit/'+data.ReportId;
+                }
+                else{alert(data.message);}
+            },
+            error: function(data){ alert('При отправке данных произошла ошибка.');}
+        }
+        );
+    }
+    @*CopyAppointmentReport(int AppointmentNumber,int AppointmentReportId)*@
     function ValidateForm()
     {
         var result = true;
