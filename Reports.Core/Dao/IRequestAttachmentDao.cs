@@ -18,5 +18,6 @@ namespace Reports.Core.Dao
         List<RequestAttachment> FindOldEntities(int beforeId);
         void Evict(RequestAttachment entity);
         void SaveFileNotChangeAndFlush(RequestAttachment entity);
+         void CloneAttach(int AttachId, int TargetRequestId);
     }
 }

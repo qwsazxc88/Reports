@@ -238,7 +238,7 @@
             </tr>
             <tr>
                 <td>Комментарий к резюме от ОПиНП:</td>
-                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
+                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, Model.UserId==dto.Id || (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
             </tr>
             }
         </table>
@@ -320,7 +320,7 @@
          </tr>              
          <tr>
          <td>Обучение назначено:</td>
-         <td>@Html.EditorFor(m=>m.LessonDate)</td>
+         <td>@Html.EditorFor(m => m.LessonDate,(dto.UserRole & UserRole.Trainer) > 0 ? null : (object)new { disabled = "disabled" })</td>
          </tr>     
               <tr>
                 <td>
