@@ -152,7 +152,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(employmentCandidateDao); }
             set { employmentCandidateDao = value; }
         }
-
+        public object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId)
+        {
+            var app=AppointmentDao.Find(x => x.Number == AppointmentNumber);
+            if (app != null && app.Any())
+            {
+                var sourcereport = AppointmentReportDao.Load(AppointmentReportId);
+                if (sourcereport == null) return new { status = "Error", message = "Отчёт не найден." };
+                var newrepid = CreateAppointmentReport(app.First());
+                var newrep = AppointmentReportDao.Load(newrepid);
+                newrep.Name = sourcereport.Name;
+                newrep.Phone = sourcereport.Phone;
+                newrep.ResumeCommentByOPINP = sourcereport.ResumeCommentByOPINP;
+                AppointmentReportDao.SaveAndFlush(newrep);
+                return new { status = "Ok", message = "Отчёт создан.", ReportId=newrep.Id };
+            }
+            else return new { status = "Error", message = "Заявка не найдена." };
+        }
         public AppointmentListModel GetAppointmentListModel()
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -1171,6 +1187,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         public int CreateAppointmentReport(Appointment entity/*,User creator*/)
         {
             int id = 0;
+            int secondnumber = 0;
+            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            if (reports != null && reports.Any())
+            {
+                foreach (var el in reports)
+                {
+                    if (el.SecondNumber > secondnumber) secondnumber = el.SecondNumber;
+                }
+            }
+            secondnumber++;
             AppointmentReport report = new AppointmentReport
                                                {
                                                    Appointment = entity,
@@ -1180,7 +1206,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    Email = string.Empty,
                                                    Name = entity.FIO!=null?entity.FIO:"",
                                                    Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
-                                                   SecondNumber=1,
+                                                   SecondNumber = secondnumber,
                                                    Phone = string.Empty,
                                                    Type = AppointmentEducationTypeDao.Get(entity.AppointmentEducationTypeId),
                                                    IsColloquyPassed=entity.Recruter==2,

@@ -26,7 +26,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveAppointmentReportEditModel(AppointmentReportEditModel model, UploadFileDto fileDto, out string error);
         int CreateNewReport(int otherReportId);
         PrintLoginFormModel GetPrintLoginFormModel(int id);
-
+        object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId);
         AttachmentModel GetFileContext(int id /*,int typeId*/);
         bool DeleteAttachment(DeleteAttacmentModel model);
 
