@@ -66,7 +66,7 @@ namespace Reports.Core.Dao.Impl
                 case
                         when r.CandidateRejectDate is not null then N'Кандидат отказался от вакансии'
                         when  r.StaffDateAccept is null then N'Черновик'
-                        when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2)  and r.IsEducationExists is null then N'Отказано'
+                        when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or (r.TestingResult<=2 and r.TestingResult>0))  and r.IsEducationExists is null then N'Отказано'
                         when r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 then N'Собеседование назначено'
                         when r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 then N'Входное тестирование'
                         when r.IsColloquyPassed=1 and r.TestingResult>2 and r.IsEducationExists is null and v.AppointmentEducationTypeId=2 and v.Recruter=1  then N'Welcome курс'
@@ -586,7 +586,7 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is null ";
                         break;
                     case 2://2, "Кандидату отказано"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2) ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or (r.TestingResult<=2 and r.TestingResult>0)) ";
                         break;
                     case 3://3, "кандидат принят"
                         statusWhere = @" r.CandidateRejectDate is null and r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
