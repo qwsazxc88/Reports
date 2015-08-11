@@ -85,6 +85,7 @@
                 <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
                 <input type="hidden" id="City" name="City" value="@Model.City" />
+                @Html.EditorFor(m=>m.CandidateRejectDate)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -226,7 +227,7 @@
                                                                                                                {<text>style="display:none"</text>}/>
                 </td>
             </tr>
-            <tr @if (!Model.IsEditable)
+            <tr @if (!Model.IsEditable && !Model.CandidateRejectDate.HasValue)
                 {<text>style="display:none"</text>}>    
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
@@ -344,6 +345,8 @@
                     } 
                 </td>
             </tr>*@
+         if (!Model.CandidateRejectDate.HasValue)
+         {
              <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
@@ -357,11 +360,20 @@
                     <input type="submit" value="Отклонить отчет" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                             {<text>style="display:none"</text>}/>
                 </td>
+                <td style="text-align:right">
+                    <input type="submit" value="Кандидат отказался от вакансии" onclick="return CandidateReject();" @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0)
+                                                                                                                    {<text>style="display:none"</text>}/>
+                </td>
             </tr>
+         }
+         else
+         {
+             <tr><td style="color:Red">Кандидат отказался от вакансии.</td></tr>
+         }
      }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
+                    @if ( !Model.CandidateRejectDate.HasValue && Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
                     {
                         
                         <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
@@ -459,6 +471,10 @@
         if(!result)
             return false;
         $("#IsDelete").val("true");
+        return true;
+    }
+    function CandidateReject() {
+        $("#CandidateRejectDate").val('@(DateTime.Now.ToShortDateString())');
         return true;
     }
     /*function ValidateFormApproveAll()
