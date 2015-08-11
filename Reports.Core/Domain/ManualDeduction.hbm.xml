@@ -8,6 +8,7 @@
     <property name="AllSum" not-null="true"/>
     <property name="DeductionDate" not-null="true"/>
     <property name="CreateDate" not-null="true"/>
+    <property name="Status" not-null="false"/>
     <many-to-one name="MissionReport" class="MissionReport" column="MissionReportId" foreign-key="FK_ManualDeduction_MissionReport" not-null="true"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_ManualDeduction_User" not-null="true"/>
     <bag name="Deductions" table="Deduction" lazy="true" >

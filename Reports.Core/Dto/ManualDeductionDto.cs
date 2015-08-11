@@ -19,5 +19,6 @@ namespace Reports.Core.Dto
         public string Dep7Name { get; set; }
         public int MissionReportNumber { get; set; }
         public int MissionReportId { get; set; }
+        public string Status { get; set; }
     }
 }
