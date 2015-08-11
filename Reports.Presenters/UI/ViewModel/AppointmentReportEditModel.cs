@@ -20,7 +20,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
         [Display(Name = "Место работы (город)")]
         public string City { get; set; }
-
+        public string CandidateRejectedBy { get; set; }
+        public DateTime? CandidateRejectDate { get; set; }
         [Display(Name = "Должность")]
         public string CandidatePosition { get; set; }
 

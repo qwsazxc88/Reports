@@ -29,7 +29,8 @@ namespace Reports.Core.Domain
         public virtual bool? IsEducationExists { get; set; }
         public virtual bool? IsColloquyPassed { get; set; }
         public virtual DateTime? DateAccept { get; set; }
-
+        public virtual DateTime? CandidateRejectDate { get; set; }
+        public virtual User CandidateRejectedBy { get; set; }
         public virtual string ResumeComment { get; set; }
         public virtual string ResumeCommentByOPINP { get; set; }
         public virtual User Creator { get; set; }
