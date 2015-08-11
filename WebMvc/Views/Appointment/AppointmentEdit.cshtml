@@ -160,7 +160,7 @@
                     @Html.LabelFor(m => m.ReasonId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), ((Model.IsEditable && !Model.BankAccountantAccept) || (dto.UserRole == UserRole.ConsultantPersonnel)) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), (Model.IsEditable) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
@@ -227,7 +227,7 @@
                     @Html.LabelFor(m => m.Schedule):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager))>0 ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -235,7 +235,7 @@
                     @Html.LabelFor(m => m.Salary):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                 </td>
             </tr>
              <tr>
@@ -243,7 +243,7 @@
                     @Html.LabelFor(m => m.Bonus):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                 </td>
             </tr>
             <tr>
@@ -251,7 +251,7 @@
                     Форма оформления сотрудника:
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
@@ -262,7 +262,7 @@
                     @Html.LabelFor(m => m.Compensation):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
              <tr>
@@ -270,7 +270,7 @@
                     @Html.LabelFor(m => m.EducationRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -278,7 +278,7 @@
                     @Html.LabelFor(m => m.ExperienceRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
              <tr>
@@ -286,7 +286,7 @@
                     @Html.LabelFor(m => m.OtherRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             @*<tr>
@@ -302,7 +302,7 @@
                     @Html.LabelFor(m => m.Responsibility):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -310,7 +310,7 @@
                     @Html.LabelFor(m => m.DesirableBeginDate):
                 </td>
                 <td>
-                    @if (Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0)
+                    @if (Model.IsEditable)
                     {
                         @Html.EditorFor(model => model.DesirableBeginDate)
                     }
