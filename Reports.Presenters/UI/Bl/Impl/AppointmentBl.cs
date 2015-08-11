@@ -164,7 +164,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 newrep.Name = sourcereport.Name;
                 newrep.Phone = sourcereport.Phone;
                 newrep.ResumeCommentByOPINP = sourcereport.ResumeCommentByOPINP;
+                newrep.Email = sourcereport.Email;
                 AppointmentReportDao.SaveAndFlush(newrep);
+                RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(sourcereport.Id, RequestAttachmentTypeEnum.AppointmentReport);
+                if (attach != null)
+                {
+                    RequestAttachmentDao.CloneAttach(attach.Id, newrep.Id);
+                }
+                
                 return new { status = "Ok", message = "Отчёт создан.", ReportId=newrep.Id };
             }
             else return new { status = "Error", message = "Заявка не найдена." };
@@ -621,7 +628,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsEditable = true;
                 model.IsManagerApproveAvailable = true;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable || ((CurrentUser.UserRole & UserRole.StaffManager)>0)
                 || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole == UserRole.ConsultantPersonnel && (model.IsVacationExists != 1 || model.BankAccountantAccept != true || model.BankAccountantAcceptCount < int.Parse(model.VacationCount)));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
@@ -1200,7 +1207,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport report = new AppointmentReport
                                                {
                                                    Appointment = entity,
-                                                   Creator = entity.AcceptStaff,
+                                                   Creator = entity.AcceptStaff!=null?entity.AcceptStaff:UserDao.Load(CurrentUser.Id) ,
                                                    CreateDate = DateTime.Now,
                                                    EditDate = DateTime.Now,
                                                    Email = string.Empty,
@@ -1735,6 +1742,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (current.Id == entity.Appointment.Creator.Id && !entity.DeleteDate.HasValue)
                     {
+                        if (!entity.StaffDateAccept.HasValue)
+                        {
+                            model.IsStaffApproveAvailable = true;
+                        }
                         model.IsEditable = true;
                         if (entity.AcceptManager != null && !string.IsNullOrEmpty(entity.TempLogin))
                                 model.IsPrintLoginAvailable = true;
