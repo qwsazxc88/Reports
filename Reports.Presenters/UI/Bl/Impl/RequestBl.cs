@@ -7735,7 +7735,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Записана"),
                                                            new IdNameDto(2, "Выгружена в 1С"),
                                                            new IdNameDto(3, "Отклонена"),
-                                                           new IdNameDto(4, "Автовыгрузка")
+                                                           new IdNameDto(4, "Автовыгрузка"),
+                                                           new IdNameDto(5, "Автоудержание")
                                                        }.OrderBy(x => x.Name).ToList();
             if (addAll)
                 deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
