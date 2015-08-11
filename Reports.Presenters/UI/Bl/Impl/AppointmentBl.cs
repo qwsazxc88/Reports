@@ -244,7 +244,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(8, "Welcome курс"),
                                                            new IdNameDto(9, "Собеседование назначено"),
                                                            new IdNameDto(10, "Входное тестирование"),
-                                                           new IdNameDto(11,"Кандидат отказался от вакансии")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -1688,11 +1687,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             model.AppId = entity.Appointment.Id;
-            if (entity.CandidateRejectDate.HasValue)
-            {
-                model.CandidateRejectDate = entity.CandidateRejectDate;
-                model.CandidateRejectedBy = entity.CandidateRejectedBy != null ? entity.CandidateRejectedBy.Name : "";
-            }
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsBankAccountantAccept = entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAcceptCount > 0;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
@@ -1963,11 +1957,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User currUser = UserDao.Get(current.Id);
             bool dateAcceptSet = false;
-            if (model.CandidateRejectDate.HasValue)
-            {
-                entity.CandidateRejectDate = DateTime.Now;
-                entity.CandidateRejectedBy = UserDao.Load(CurrentUser.Id);
-            }
             if (!model.IsDelete)
             {
                 if (model.IsEditable)

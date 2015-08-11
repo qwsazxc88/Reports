@@ -43,7 +43,5 @@ namespace Reports.Core.Dto
                 public string Recruter2 { get; set; }
                 public string Recruter3 { get; set; }
                 public Reports.Core.Enum.EmploymentStatus EmploymentStatus { get; set; }
-                public string CandidateRejectedBy { get; set; }
-                public string CandidateRejectDate { get; set; }
     }
 }

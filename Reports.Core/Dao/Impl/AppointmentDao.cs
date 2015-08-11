@@ -64,7 +64,6 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
-                        when r.CandidateRejectDate is not null then N'Кандидат отказался от вакансии'
                         when  r.StaffDateAccept is null then N'Черновик'
                         when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2)  and r.IsEducationExists is null then N'Отказано'
                         when r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 then N'Собеседование назначено'
@@ -583,37 +582,34 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Черновик"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is null ";
+                        statusWhere = @" r.StaffDateAccept is null ";
                         break;
                     case 2://2, "Кандидату отказано"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2) ";
+                        statusWhere = @" r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or r.TestingResult<=2) ";
                         break;
                     case 3://3, "кандидат принят"
-                        statusWhere = @" r.CandidateRejectDate is null and r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
+                        statusWhere = @" r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
                         break;
                     case 4://4, "Отправлено руководителю"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
                         break;
                     case 5://5, "Собеседование пройдено"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
                         break;
                     case 6://6, "Обучение пройдено"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=1 ";
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=1 ";
                         break;
                     case 7://7, "Обучение не пройдено"
-                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=0 ";
+                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=0 ";
                         break;
                     case 8://Welcome 
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     case 9://собеседование назначено
-                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     case 10://входное тестирование
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
-                        break;
-                    case 11:
-                        statusWhere = @" r.CandidateRejectDate is not null ";
+                        statusWhere = @" r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
