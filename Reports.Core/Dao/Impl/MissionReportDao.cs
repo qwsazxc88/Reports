@@ -37,6 +37,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 v.UserAllSum as UserSum,
+                                o.UserSumNotCash as OrderUserSumNotCash,
                                 v.UserSumReceived as UserSumReceived,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
@@ -450,6 +451,9 @@ namespace Reports.Core.Dao.Impl
                 case 21:
                     orderBy = @" order by StornoComment";
                     break;
+                case 22:
+                    orderBy = @" order by OrderUserSumNotCash";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -518,7 +522,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("IsDismissal", NHibernateUtil.Boolean).
                 AddScalar("TabelNumber", NHibernateUtil.String).
                 AddScalar("StornoSum", NHibernateUtil.Decimal).
-                AddScalar("StornoComment",NHibernateUtil.String);
+                AddScalar("StornoComment",NHibernateUtil.String).
+                AddScalar("OrderUserSumNotCash",NHibernateUtil.Decimal);
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)

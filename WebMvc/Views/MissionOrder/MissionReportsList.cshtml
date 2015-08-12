@@ -221,6 +221,9 @@
                         <div id="sort18" ><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
                     </th>
                     <th>
+                        <div id="sort22" ><a href="#"  onclick = "SortChanged(22);">Сумма<br/>в подотчет<br/> из приказа</a></div>
+                    </th>
+                    <th>
                         <div id="sort20" ><a href="#" onclick = "SortChanged(20);">Сторно</a></div>
                     </th>
                     <th>
@@ -268,7 +271,11 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        <tr @if(doc.IsDismissal && doc.State!="Выгружен в 1с") {<text> class="warning" </text>}>
+                        <tr 
+                        @if (doc.OrderUserSumNotCash != doc.UserSumReceived)
+                        {<text> class="bgGreen" </text>}
+                        @if (doc.IsDismissal && doc.State != "Выгружен в 1с")
+                        {<text> class="warning" </text>}>
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
@@ -288,6 +295,7 @@
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
                             <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
+                            <td>@RequestBl.FormatSum(@doc.OrderUserSumNotCash)</td>
                             <td>@RequestBl.FormatSum(@doc.StornoSum)</td>
                             <td>@doc.StornoComment</td>
                             <td>@RequestBl.FormatSum(@doc.Saldo)</td>
