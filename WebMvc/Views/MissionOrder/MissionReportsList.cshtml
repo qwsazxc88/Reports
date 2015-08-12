@@ -274,7 +274,7 @@
                         <tr 
                         @if (doc.OrderUserSumNotCash != doc.UserSumReceived)
                         {<text> class="bgGreen" </text>}
-                        @if (doc.IsDismissal && doc.State != "Выгружен в 1с")
+                        @if (doc.IsDismissal && doc.State != "Выгружен в 1с" && doc.OrderUserSumNotCash == doc.UserSumReceived)
                         {<text> class="warning" </text>}>
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
