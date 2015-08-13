@@ -154,19 +154,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId)
         {
-            var app=AppointmentDao.Find(x => x.Number == AppointmentNumber);
-            if (app != null && app.Any())
+            var apps=AppointmentDao.Find(x => x.Number == AppointmentNumber);
+            if (apps != null && apps.Any())
             {
-                if (!app.First().StaffDateAccept.HasValue)
+                var app = apps.First();
+                if (!app.StaffDateAccept.HasValue)
                 {
                     return new { status = "Error", message = "Заявка не принята в работу." };
                 }
+                if (app.NonActual)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к не актуальной заявке." };
+                }
+                if (app.DeleteDate.HasValue)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к отклоненной заявке." };
+                }
+                if (app.Recruter==2)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к упрощенной заявке." };
+                }
                 var sourcereport = AppointmentReportDao.Load(AppointmentReportId);
                 if (sourcereport == null) return new { status = "Error", message = "Отчёт не найден." };
-                var newrepid = CreateAppointmentReport(app.First());
+                var newrepid = CreateAppointmentReport(app);
                 var newrep = AppointmentReportDao.Load(newrepid);
                 newrep.Name = sourcereport.Name;
                 newrep.Phone = sourcereport.Phone;
+                newrep.IsColloquyPassed = new bool?();
                 newrep.ResumeCommentByOPINP = sourcereport.ResumeCommentByOPINP;
                 newrep.Email = sourcereport.Email;                
                 newrep.EducationTime = sourcereport.EducationTime;
