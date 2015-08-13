@@ -157,6 +157,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             var app=AppointmentDao.Find(x => x.Number == AppointmentNumber);
             if (app != null && app.Any())
             {
+                if (!app.First().StaffDateAccept.HasValue)
+                {
+                    return new { status = "Error", message = "Заявка не принята в работу." };
+                }
                 var sourcereport = AppointmentReportDao.Load(AppointmentReportId);
                 if (sourcereport == null) return new { status = "Error", message = "Отчёт не найден." };
                 var newrepid = CreateAppointmentReport(app.First());
@@ -164,7 +168,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 newrep.Name = sourcereport.Name;
                 newrep.Phone = sourcereport.Phone;
                 newrep.ResumeCommentByOPINP = sourcereport.ResumeCommentByOPINP;
-                newrep.Email = sourcereport.Email;
+                newrep.Email = sourcereport.Email;                
+                newrep.EducationTime = sourcereport.EducationTime;
                 AppointmentReportDao.SaveAndFlush(newrep);
                 RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(sourcereport.Id, RequestAttachmentTypeEnum.AppointmentReport);
                 if (attach != null)
@@ -1102,6 +1107,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 
                 case UserRole.StaffManager:
+                    if (model.AppointmentEducationType != entity.AppointmentEducationTypeId)
+                    {
+                        entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                        AppointmentReportDao.Update(x => x.Appointment.Id == entity.Id, y => y.Type = AppointmentEducationTypeDao.Load(entity.AppointmentEducationTypeId));
+                    }
                     if (model.NonActual)
                     {
                         entity.NonActual = model.NonActual;
@@ -2062,7 +2072,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.StaffManager:
                 {
-                    if (!entity.DeleteDate.HasValue && (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id)))
+                    if (!entity.DeleteDate.HasValue /*&& (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id))*/)
                     {
                         entity.TestingResult = model.TestingResult;
                         entity.ResumeCommentByOPINP = model.ResumeCommentByOPINP;
