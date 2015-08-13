@@ -2106,6 +2106,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 break;
                 case UserRole.Manager:
                 {
+                    if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
+                    {
+                        entity.StaffDateAccept = DateTime.Now;
+                        entity.AcceptStaff = currUser;
+                    } 
                     if(!entity.DeleteDate.HasValue && entity.StaffDateAccept.HasValue
                         && !entity.ManagerDateAccept.HasValue 
                         && entity.Appointment.Creator.Id == current.Id 
