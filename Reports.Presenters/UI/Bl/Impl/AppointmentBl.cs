@@ -2205,7 +2205,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
                 throw new ValidationException(string.Format(CannotCreateReport));
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
-            
+            int secondnumber = 0;
+            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            if (reports != null && reports.Any())
+            {
+                foreach (var el in reports)
+                {
+                    if (el.SecondNumber > secondnumber) secondnumber = el.SecondNumber;
+                }
+            }
+            secondnumber++;
             AppointmentReport report = new AppointmentReport
             {
                 Appointment = entity.Appointment,
@@ -2215,7 +2224,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Email = string.Empty,
                 Name = string.Empty,
                 Number = entity.Number,
-                SecondNumber=entity.SecondNumber+1,
+                SecondNumber = secondnumber,
                 Phone = string.Empty,
                 Type = AppointmentEducationTypeDao.Get(1),
             };
