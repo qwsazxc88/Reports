@@ -723,7 +723,7 @@
     function onReasonChange()
     {
         var reasonId = $("#ReasonId").val();
-        var isDisabled= @((dto.UserRole & UserRole.ConsultantPersonnel)==0 && Model.BankAccountantAccept? "true":"false");
+        var isDisabled= @((dto.UserRole & UserRole.ConsultantPersonnel)==0 && Model.IsManagerApproved? "true":"false");
         switch(reasonId)
         {
             case '1':
