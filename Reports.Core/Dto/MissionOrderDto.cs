@@ -58,6 +58,7 @@ namespace Reports.Core.Dto
         public decimal GradeSum { get; set; }
         public decimal UserSum { get; set; }
         public decimal UserSumReceived { get; set; }
+        public decimal OrderUserSumNotCash { get; set; }
         public decimal AccountantSum { get; set; }
         public Decimal? GradeIncrease { get; set; }
         public Decimal? Saldo { get; set; }
