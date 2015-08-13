@@ -218,7 +218,7 @@
                     @Html.LabelFor(m => m.EducationTime):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.EducationTime, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.EducationTime, Model.UserId == dto.Id || Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -453,14 +453,14 @@
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
     $("#LessonDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");
-     onTypeChange();
+     
    });
    function onTypeChange()
    {
         if($("#IsEditable").val())
         {
             var typeId = $("#TypeId").val();
-            if(typeId == 1)
+            if(typeId == 1 )
                 $("#EducationTime").removeAttr("readonly");
             else
             {
