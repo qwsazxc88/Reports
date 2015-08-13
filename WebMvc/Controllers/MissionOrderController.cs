@@ -21,6 +21,7 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
+    [PreventSpam]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
