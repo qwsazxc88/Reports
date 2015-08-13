@@ -325,7 +325,7 @@
             }
             <tr>
                  <td>Выбрать принадлежность кандидата</td>
-                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.IsManagerApproveAvailable) ? null : new { disabled = "disabled" })
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.IsManagerApproveAvailable || (dto.UserRole & (UserRole.StaffManager))>0) ? null : new { disabled = "disabled" })
                  </td>
             </tr> 
         </table>
@@ -723,6 +723,7 @@
     function onReasonChange()
     {
         var reasonId = $("#ReasonId").val();
+        var isDisabled= @((dto.UserRole & UserRole.ConsultantPersonnel)==0 && Model.BankAccountantAccept? "true":"false");
         switch(reasonId)
         {
             case '1':
@@ -785,6 +786,13 @@
                  $("#ReasonPositionId").attr("disabled",true);
                 $("#ReasonPositionIdTr").hide();
             break
+        }
+        if(isDisabled)
+        {
+            $("#ReasonPositionId").attr("disabled",true);
+            $('#ReasonPosition').attr('readonly','read-only');
+            $('#ReasonBeginDate').attr('readonly','read-only');
+
         }
         if(reasonId == 3)
             $("#ReasonDateTr").hide();

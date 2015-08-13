@@ -171,7 +171,7 @@
                     @Html.LabelFor(m => m.Name):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Name, Model.IsEditable ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                    @Html.TextBoxFor(model => model.Name, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
             @if (Model.ShowStaff)
@@ -181,7 +181,7 @@
                     @Html.LabelFor(m => m.Phone):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Phone, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Phone, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -189,7 +189,7 @@
                     @Html.LabelFor(m => m.Email):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Email, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Email, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             }
