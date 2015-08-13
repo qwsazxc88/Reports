@@ -10,6 +10,7 @@ using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
     [Authorize]
+    [PreventSpam]
     public class InfoController : BaseController
     {
         [HttpGet]
