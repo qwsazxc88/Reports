@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
 using Reports.Core.Dto.Employment2;
+using System;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentReportEditModel : ManagerInfoModel, IContainId, IAttachment
@@ -19,7 +20,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
         [Display(Name = "Место работы (город)")]
         public string City { get; set; }
-
+        public string CandidateRejectedBy { get; set; }
+        public DateTime? CandidateRejectDate { get; set; }
         [Display(Name = "Должность")]
         public string CandidatePosition { get; set; }
 
@@ -48,7 +50,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
-
+        public string LessonDate { get; set; }
         [Display(Name = "Срок обучения")]
         public string EducationTime { get; set; }
 

@@ -370,6 +370,18 @@ namespace Reports.Core.Dao.Impl
             var result= Session.Query<TEntity>().Where(predicate);
             return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
         }
+        public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
+        {
+            var result = Session.Query<TEntity>().Where(predicate);
+            if (result != null )
+            {
+                foreach (var el in result)
+                {
+                    action(el);
+                    SaveAndFlush(el);
+                }
+            }            
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
