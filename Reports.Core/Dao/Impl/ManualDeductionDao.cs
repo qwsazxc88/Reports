@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
         {
             string[] statuses = new string[] { "Отклонено", "АО добавлен в реестр", "АО выгружен на удержание" };
 
-            var query = Session.Query<ManualDeduction>().Where(x=>x.AllSum>0 && (!x.MissionReport.ManagerDateAccept.HasValue || !x.MissionReport.UserDateAccept.HasValue)  );
+            var query = Session.Query<ManualDeduction>().Where(x=>x.AllSum>0 && ((!x.MissionReport.ManagerDateAccept.HasValue || !x.MissionReport.UserDateAccept.HasValue) || x.Status==2 ));
             if (department!=null)
             {
                 query=query.Where(x=>x.User.Department.Path.Contains(department.Path));
