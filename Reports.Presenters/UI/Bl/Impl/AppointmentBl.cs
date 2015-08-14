@@ -2041,7 +2041,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Phone = model.Phone;
                     entity.Email = model.Email;
                     //entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
-                    entity.EducationTime = model.TypeId == 1 ? model.EducationTime : null;
+                    entity.EducationTime =  model.EducationTime ;
                     //entity.RejectReason = model.RejectReason;
                 }
                 if (!String.IsNullOrWhiteSpace(model.LessonDate))
