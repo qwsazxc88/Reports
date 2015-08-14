@@ -7148,12 +7148,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region ManualDeduction
-        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, string UserName)
+        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, int Status, string UserName)
         {
             Department dep=null;
             if(DepartmentId>0)
                 dep=DepartmentDao.Load(DepartmentId);
-            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName,dep);
+            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName, Status,dep);
         }
         #endregion
         public AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId)
