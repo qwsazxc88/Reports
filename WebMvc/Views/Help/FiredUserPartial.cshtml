@@ -10,8 +10,24 @@
         @Html.ValidationMessageFor(m => m.FiredUserSurname)
         @Html.ValidationMessageFor(m => m.FiredUserName)
         @Html.ValidationMessageFor(m => m.FiredUserPatronymic)
+
     </td>
 </tr>
+<tr>
+                            <td style="width:220px">
+                                Структурное подразделение уволенного:
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" />
+                                <input type="hidden" id="DepartmentId" value="@Model.DepartmentId" name="DepartmentId"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                               <input type="button" value="Выбрать" onclick="changeDepartment();"/>            
+                            </td>
+                        </tr> 
 <tr>
     <td>
         @Html.LabelFor(m => m.UserBirthDate)

@@ -484,6 +484,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 return;
             }
+            if (entity!=null && entity.FiredUserDepartment != null)
+            {
+                model.DepartmentId = entity.FiredUserDepartment.Id;
+                model.DepartmentName = entity.FiredUserDepartment.Name;
+            }
             switch (currentRole)
             {
                 case UserRole.ConsultantPersonnel:
@@ -891,6 +896,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FiredUserName = model.FiredUserName;
                 entity.FiredUserSurname = model.FiredUserSurname;
                 entity.FiredUserPatronymic = model.FiredUserPatronymic;
+                if (model.DepartmentId > 0)
+                {
+                    var dep = DepartmentDao.Load(model.DepartmentId);
+                    entity.FiredUserDepartment = dep;
+                }
                 if(model.UserBirthDate!=null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);

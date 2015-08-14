@@ -30,7 +30,15 @@
                             <td colspan="2">
                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>            
                             </td>
-                        </tr>                        
+                        </tr>  
+                        <tr>
+                        <td>Статус:</td>
+                        <td><select name='Status' id='Status'>
+                            <option value="0"></option>
+                            <option value="1">АО добавлен в реестр</option>
+                            <option value="2">АО выгружен на удержание</option>
+                        </select></td>
+                        </tr>                      
                         <tr>
                             <td>
                               Имя сотрудника:
@@ -102,7 +110,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th>Итого: {{TotalSum}}</th>
+                    <th>Итого: {{TotalSum | currency : '' : 2}}</th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -126,7 +134,7 @@
 			        <td>{{row.NPP}}</td>
                     <td>{{row.UserName}}</td>
                     <td>{{row.Position}}</td>
-                    <td>{{row.AllSum}}</td>
+                    <td>{{row.AllSum | currency : '' : 2}}</td>
                     <td>{{row.Dep3Name}}</td>
                     <td>{{row.Dep7Name}}</td>
                     <td>{{row.DeductionDate | date: 'dd.MM.yyyy'}}</td>
@@ -186,7 +194,7 @@
             $scope.IsWorking = true;
             $(':button').button('disable');
             $scope.TotalSum = 0;
-            $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), UserName: $scope.model.UserName }).
+            $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), Status: $('#Status').val(), UserName: $scope.model.UserName }).
               success(function (data, status, headers, config) {
                   for (var i = 0; i < data.length; i++) {
                       $scope.TotalSum += data[i].AllSum;

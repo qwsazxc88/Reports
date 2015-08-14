@@ -14,14 +14,18 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, Department department)
+        public IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, int Status, Department department)
         {
             string[] statuses = new string[] { "Отклонено", "АО добавлен в реестр", "АО выгружен на удержание" };
 
-            var query = Session.Query<ManualDeduction>()/*.Where(x=>!x.DeleteDate.HasValue)*/;
+            var query = Session.Query<ManualDeduction>().Where(x=>x.AllSum>0 && ((!x.MissionReport.ManagerDateAccept.HasValue || !x.MissionReport.UserDateAccept.HasValue) || x.Status==2 ));
             if (department!=null)
             {
                 query=query.Where(x=>x.User.Department.Path.Contains(department.Path));
+            }
+            if (Status > 0)
+            {
+                query = query.Where(x => x.Status == Status);
             }
             if (!String.IsNullOrWhiteSpace(UserName))
             {

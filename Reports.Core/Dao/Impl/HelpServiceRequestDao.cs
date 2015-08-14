@@ -35,7 +35,9 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 up.Name as Position,
                                 case when v.CreatorId != v.UserId then crUser.Name else N'' end as ManagerName,
-                                dep.Name as Dep7Name,
+                                case when v.DepartmentId is not null then fDep.Name
+                                    else dep.Name 
+                                end as Dep7Name,
                                 v.Number as RequestNumber,
                                 v.FiredUserName as FiredUserName,
                                 v.FiredUserSurname as FiredUserSurname,
@@ -80,6 +82,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 LEFT join dbo.Department dep on u.DepartmentId = dep.Id
                                 inner join dbo.Users currentUser on currentUser.Id = :userId
+                                left join [dbo].[Department] fDep ON v.DepartmentId=fDep.id
                                 LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
