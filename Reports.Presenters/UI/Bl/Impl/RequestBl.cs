@@ -11126,6 +11126,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     foreach (var el in md)
                     {
+                        var deduction = DeductionDao.Find(x => x.ManualDeduction.Id == el.Id);
+                        if (deduction != null && deduction.Any()) continue;
                         //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
                         el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
                         ManualDeductionDao.SaveAndFlush(el);
