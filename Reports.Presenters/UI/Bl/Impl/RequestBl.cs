@@ -7148,12 +7148,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region ManualDeduction
-        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, string UserName)
+        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, int Status, string UserName)
         {
             Department dep=null;
             if(DepartmentId>0)
                 dep=DepartmentDao.Load(DepartmentId);
-            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName,dep);
+            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName, Status,dep);
         }
         #endregion
         public AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId)
@@ -11126,6 +11126,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     foreach (var el in md)
                     {
+                        var deduction = DeductionDao.Find(x => x.ManualDeduction.Id == el.Id);
+                        if (deduction != null && deduction.Any()) continue;
                         //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
                         el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
                         ManualDeductionDao.SaveAndFlush(el);

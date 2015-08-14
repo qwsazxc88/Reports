@@ -21,6 +21,7 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
+    [PreventSpam]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
@@ -84,9 +85,9 @@ namespace WebMvc.Controllers
         {
             return View();                 
         }
-        public JsonResult GetFullDepts(int DepartmentId, string UserName)
+        public JsonResult GetFullDepts(int DepartmentId, int Status, string UserName)
         {
-            var result=RequestBl.GetManualDeductionDocs(DepartmentId, UserName);
+            var result=RequestBl.GetManualDeductionDocs(DepartmentId, Status, UserName);
             return Json(result);
         }
         public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)

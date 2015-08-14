@@ -15,6 +15,7 @@ using System.Linq;
 namespace WebMvc.Controllers
 {
     [Authorize]
+    [PreventSpam]
     public class HelpController : BaseController
     {
         protected IHelpBl helpBl;
