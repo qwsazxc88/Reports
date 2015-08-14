@@ -296,7 +296,7 @@
                 @*<input type="button" value="Создать удержание" onclick="" />*@
                 <input type="button" value="Создать доплату" onclick="$('#SurchargeDialog').dialog('open');" /> 
             }
-            @if ((dto.UserRole & UserRole.Accountant) > 0 && !Model.StornoAddedDate.HasValue)
+            @if ((dto.UserRole & UserRole.Accountant) > 0 && !Model.StornoAddedDate.HasValue && !(Model.ManualDeductions!=null && Model.ManualDeductions.Any()))
             {
                 <input type="button" id="StornoButton" value="Сторно выданной суммы" onclick="$('#StornoDialog').dialog('open');" /> 
             }
