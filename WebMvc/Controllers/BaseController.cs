@@ -7,7 +7,7 @@ using log4net;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Presenters.Services;
-
+using Newtonsoft.Json;
 namespace WebMvc.Controllers
 {
     [HandleError(View = "Error")]
