@@ -198,7 +198,7 @@
               success(function (data, status, headers, config) {
                   for (var i = 0; i < data.length; i++) {
                       $scope.TotalSum += data[i].AllSum;
-                      data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
+                      //data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
                   }
                   $scope.Grid.Data = data;
                   $scope.IsWorking = false;
