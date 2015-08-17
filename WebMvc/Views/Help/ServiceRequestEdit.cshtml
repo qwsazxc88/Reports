@@ -284,7 +284,7 @@
         clearControlErrors($('#Requirements'));
        getDictionariesStates();
     }
-    function setValuesToDropdown(controlName,data)
+    function setValuesToDropdown_(controlName,data)
     {
             var optionsValues = '<select id="' + controlName + '" name="' + controlName + '">';
             $.each(data, function (item, data) {
@@ -310,7 +310,7 @@
                                 $('#IsRequirementsVisible').val(result.IsRequirementsVisible);
                                 $('#IsPeriodVisible').val(result.IsPeriodVisible);
                                 SetControlStates();
-                                setValuesToDropdown('PeriodId',result.Periods);
+                                setValuesToDropdown_('PeriodId',result.Periods);
                                 if((result.PeriodId != 0) /*&& ($('#PeriodId').val() == 0)*/)
                                     $('#PeriodId').val(result.PeriodId);
                            }
