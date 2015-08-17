@@ -70,9 +70,9 @@ namespace Reports.Core.Dao.Impl
                                     else N''
                                 end as Status,
                                 v.Address as address,
-                                case when v.DepartmnetId is not null then fDep3.Name
+                                case when v.DepartmentId is not null then fDep3.Name
                                     else dep3.Name 
-                                end as Dep3Name
+                                end as Dep3Name,
                                 L.Name as ProdTimeName,
                                 O.Name as PeriodName
                                 from dbo.HelpServiceRequest v
