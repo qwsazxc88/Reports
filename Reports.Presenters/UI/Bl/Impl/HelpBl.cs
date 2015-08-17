@@ -1561,7 +1561,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsSaveAvailable = true;
                             model.IsAnswerEditable = true;
                         }
-                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        if (entity.SendDate.HasValue &&  !entity.EndWorkDate.HasValue/*!entity.BeginWorkDate.HasValue*/)
                         {
                             model.IsRedirectAvailable = true;
                             model.IsBeginWorkAvailable = true;

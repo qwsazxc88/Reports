@@ -18,7 +18,8 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Web.Routing;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
@@ -85,10 +86,11 @@ namespace WebMvc.Controllers
         {
             return View();                 
         }
-        public JsonResult GetFullDepts(int DepartmentId, int Status, string UserName)
+        public ContentResult GetFullDepts(int DepartmentId, int Status, string UserName)
         {
             var result=RequestBl.GetManualDeductionDocs(DepartmentId, Status, UserName);
-            return Json(result);
+            string  content = JsonConvert.SerializeObject(result);
+            return  Content(content);
         }
         public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
         {
