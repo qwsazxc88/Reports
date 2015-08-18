@@ -1,0 +1,34 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffMovementsData">
+    <!--Стандартные поля заявки-->
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <property name="AdditionPersonnel" not-null="false"/>
+    <property name="AdditionPersonnelTo" not-null="false"/>
+    <property name="AdditionPosition" not-null="false"/>
+    <property name="AdditionPositionTo" not-null="false"/>
+    <property name="AdditionQuality" not-null="false"/>
+    <property name="AdditionQualityTo" not-null="false"/>
+    <property name="AdditionTraveling" not-null="false"/>
+    <property name="AdditionTravelingTo" not-null="false"/>
+    <property name="AdditionFront" not-null="false"/>
+    <property name="AdditionFrontTo" not-null="false"/>
+    <property name="AdditionalAgreementNumber" not-null="false"/>
+    <property name="AdditionalAgreementDate" not-null="false"/>
+    <property name="SalaryType" not-null="false"/>
+    <property name="RegionCoefficient" not-null="false"/>
+    <property name="Grade" not-null="false"/>    
+    <property name="NorthFactor" not-null="false"/>
+    <property name="ChangesToAgreementEntries" not-null="false"/>
+    <property name="ChangesToAgreement" not-null="false"/>
+    <property name="AgreementDate" not-null="false"/>
+    <property name="AdditionalAgreementEntries" not-null="false"/>    
+    <property name="MovementReason" not-null="false"/>
+    <property name="MovementTempReason" not-null="false"/>    
+    <many-to-one name="Signatory" class="Signer" column="Signatory" foreign-key="FK_StaffMovementsData_Signatory" not-null="false"/>
+    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroup" foreign-key="FK_StaffMovementsData_AccessGroup" not-null="false"/>
+    <many-to-one name="HoursType" class="EmploymentHoursType" column="HoursType" foreign-key="FK_StaffMovementsData_EmployementHoursType" not-null="false"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,48 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffMovements">
+    <!--Стандартные поля заявки-->
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <property name="SendDate" not-null="false"/>
+    <property name="DeleteDate" not-null="false"/>
+    <property name="RejectDate" not-null="false"/>
+    <property name="SendTo1C" not-null="false"/>
+    <property name="Number"  not-null="false"/>
+    
+    <many-to-one name="Type" class="refStaffMovementsTypes" column="Type" foreign-key="FK_StaffMovements_Type" not-null="true"/>
+    <many-to-one name="Status" class="refStaffMovementsStatus" column="Status" foreign-key="FK_StaffMovements_Status" not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffMovements_User" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_StaffMovements_Creator" not-null="true"/>
+    <many-to-one name="RejectedBy" class="User" column="RejectedBy" foreign-key="FK_StaffMovements_RejectedBy" not-null="false"/>
+    <many-to-one name="RejectReason" class="refStaffMovementsRejectReason" column="RejectReason" foreign-key="FK_StaffMovements_RejectReason" not-null="false"/>
+    <!--Поля заявки-->
+    <property name="OrderDate" not-null="false"/>
+    <property name="MovementDate" not-null="false"/>
+    <property name="SourceManagerAccept" not-null="false"/>
+    <property name="TargetManagerAccept" not-null="false"/>
+    <property name="SourceChiefAccept" not-null="false"/>
+    <property name="TargetChiefAccept" not-null="false"/>
+    <property name="PersonnelManagerAccept" not-null="false"/>
+    <property name="PersonnelManagerBankAccept" not-null="false"/>
+    <property name="MovementTempTo" not-null="false"/>
+    <many-to-one name="SourcePosition" class="StaffEstablishedPost" column="SourcePosition" foreign-key="FK_StaffMovements_StaffEstablishedPost" not-null="true"/>
+    <many-to-one name="TargetPosition" class="StaffEstablishedPostRequest" column="TargetPosition" foreign-key="FK_StaffMovements_StaffEstablishedPostRequest" not-null="true"/>
+    <many-to-one name="SourceManager" class="User" column="SourceManagerId" foreign-key="FK_StaffMovements_SourceManager" not-null="false"/>
+    <many-to-one name="TargetManager" class="User" column="TargetManagerId" foreign-key="FK_StaffMovements_TargetManager" not-null="false"/>
+    <many-to-one name="SourceChief" class="User" column="SourceChiefId" foreign-key="FK_StaffMovements_SourceChief" not-null="false"/>
+    <many-to-one name="TargetChief" class="User" column="TargetChiefId" foreign-key="FK_StaffMovements_TargetChief" not-null="false"/>
+    <many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_StaffMovements_PersonnelManager" not-null="false"/>
+    <many-to-one name="PersonnelManagerBank" class="User" column="PersonnelManagerBankId" foreign-key="FK_StaffMovements_PersonnelManagerBank" not-null="false"/>
+    <many-to-one name="SourceDepartment" class="Department" column="SourceDepartmentId" foreign-key="FK_StaffMovements_SourceDepartment" not-null="true"/>
+    <many-to-one name="TargetDepartment" class="Department" column="TargetDepartmentId" foreign-key="FK_StaffMovements_TargetDepartment" not-null="true"/>
+    <many-to-one name="Data" class="StaffMovementsData" column="DataId" foreign-key="FK_StaffMovements_Data" not-null="true"/>
+    <bag name="Docs" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="RequestId" foreign-key="FK_StaffMovementsDocs_Request"/>
+      <one-to-many class="StaffMovementsDocs"/>
+    </bag>
+    
+  </class>
+</hibernate-mapping>

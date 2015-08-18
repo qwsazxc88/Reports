@@ -15,7 +15,7 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Тип заявки
         /// </summary>
-        public virtual int Type { get; set; }
+        public virtual AbstractReferencyBookEntity Type { get; set; }
         #endregion
         #region Пользователи
         /// <summary>
