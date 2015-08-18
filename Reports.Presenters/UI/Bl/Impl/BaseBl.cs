@@ -19,6 +19,15 @@ namespace Reports.Presenters.UI.Bl.Impl
     {
         protected string SelectAll = "Все";
 
+        public static void ChangeStatus(this StandartRequestEntity entity, IDao<AbstractReferencyBookEntity> RefBookDao, int Status) 
+        {
+            var _status = RefBookDao.Load(Status);
+            entity.Status = _status;
+        }
+        public static void ChangeProperties<T,key>(this T entity, Action<T> action) where T:IEntity<key>
+        {
+            action(entity);
+        }
         public static string[] RublesWords =
                                         {
                                             "рубль",
