@@ -122,7 +122,7 @@
         }
         
         <input type="submit" value="Печать" style="float: right; margin-right:10px;" onclick="$('#ForPrint').val(1);"/>
-        
+        <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid2');" />
         </div>
         </td>
     </tr>   
@@ -254,6 +254,7 @@
        </tr>
     </table> 
 }
+
 <script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
@@ -275,6 +276,9 @@
         }
         //$("#TypeId").val('0');
          $("#StatusId").val('0');
+         $("#ReasonId").val('0');
+         $("#Number").val('');
+         $("#RecruteFio").val('');
          $("#UserName").val('');
     }
     /*function setSelection()
@@ -356,5 +360,5 @@
         function disableSaveButton() {
             $(".ui-dialog-buttonpane button:contains('Создать заявку')").button("disable");
         }
-
+      
  </script>

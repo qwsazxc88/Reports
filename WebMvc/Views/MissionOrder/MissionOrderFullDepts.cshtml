@@ -61,6 +61,7 @@
       <td>
         <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
         <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
+        <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid');" />
         <input type="button" style="float: right;" value="Фильтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
        </td>
     </tr>    
@@ -197,7 +198,7 @@
               success(function (data, status, headers, config) {
                   for (var i = 0; i < data.length; i++) {
                       $scope.TotalSum += data[i].AllSum;
-                      data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
+                      //data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
                   }
                   $scope.Grid.Data = data;
                   $scope.IsWorking = false;

@@ -21,5 +21,6 @@ namespace Reports.Core.Dto
         public string Manager4 { get; set; }
         public decimal SaldoPrimary{ get; set; }
         public decimal SaldoAdditional { get; set; }
+        public DateTime? DateAccept { get; set; }
     }
 }

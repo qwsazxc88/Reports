@@ -8,6 +8,12 @@
     ViewBag.Title = "Отчет по подбору сотрудника";
 }
 <div style="visibility:hidden">
+<div id="CopyReportDialog" title="Копировать отчёт в">
+    <div><label>Номер заявки на подбор:</label>
+    <input type="text" id="TargetAppointment" />
+    </div>
+    <input type="button" onclick="CopyAppointmentReport();" value="Создать"/>
+</div>
 <div id="AddEmployment" title="Добавление кандидата">
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
@@ -85,6 +91,7 @@
                 <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
                 <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
                 <input type="hidden" id="City" name="City" value="@Model.City" />
+                @Html.HiddenFor(m=>m.CandidateRejectDate)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -164,7 +171,7 @@
                     @Html.LabelFor(m => m.Name):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Name, Model.IsEditable ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                    @Html.TextBoxFor(model => model.Name, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 50, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
             @if (Model.ShowStaff)
@@ -174,7 +181,7 @@
                     @Html.LabelFor(m => m.Phone):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Phone, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Phone, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -182,7 +189,7 @@
                     @Html.LabelFor(m => m.Email):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Email, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Email, Model.IsEditable && !Model.IsStaffApproved ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             }
@@ -211,7 +218,7 @@
                     @Html.LabelFor(m => m.EducationTime):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.EducationTime, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.EducationTime, Model.UserId == dto.Id || Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -226,14 +233,14 @@
                                                                                                                {<text>style="display:none"</text>}/>
                 </td>
             </tr>
-            <tr @if (!Model.IsEditable)
+            <tr @if (!Model.IsEditable && !Model.CandidateRejectDate.HasValue)
                 {<text>style="display:none"</text>}>    
                 <td>Прикрепить скан </td>
                 <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
             <tr>
                 <td>Комментарий к резюме от ОПиНП:</td>
-                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
+                <td>@Html.TextAreaFor(m => m.ResumeCommentByOPINP, Model.UserId==dto.Id || (dto.UserRole & UserRole.StaffManager)>0 ? (object)new {  } : (object)new { @readonly = "read-only" })</td>
             </tr>
             }
         </table>
@@ -313,7 +320,10 @@
          <td>Результат тестирования специалистом ОПИНП</td>
          <td>@Html.DropDownListFor(m => m.TestingResult, new SelectList(Model.TestingResults, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : (object)new { disabled = "disabled" })</td>
          </tr>              
-                        
+         <tr>
+         <td>Обучение назначено:</td>
+         <td>@Html.EditorFor(m => m.LessonDate,(dto.UserRole & UserRole.Trainer) > 0 ? null : (object)new { disabled = "disabled" })</td>
+         </tr>     
               <tr>
                 <td>
                     @Html.LabelFor(m => m.IsEducationExists):
@@ -341,6 +351,8 @@
                     } 
                 </td>
             </tr>*@
+         if (!Model.CandidateRejectDate.HasValue)
+         {
              <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
@@ -354,11 +366,21 @@
                     <input type="submit" value="Отклонить отчет" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                             {<text>style="display:none"</text>}/>
                 </td>
+                <td style="text-align:right">
+                    <input type="submit" value="Кандидат отказался от вакансии" onclick="return CandidateReject();" @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) == 0)
+                                                                                                                    {<text>style="display:none"</text>}/>
+                </td>
+                
             </tr>
+         }
+         else
+         {
+             <tr><td style="color:Red">Кандидат отказался от вакансии.</td></tr>
+         }
      }
              <tr>
                 <td colspan="2">
-                    @if (Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
+                    @if ( !Model.CandidateRejectDate.HasValue && Model.IsColloquyPassed == 1 && (dto.Id == Model.UserId) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
                     {
                         
                         <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
@@ -368,6 +390,10 @@
                     {
                    <input type="button" value="Добавить резюме кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id }) + "'");" @if (!Model.IsAddAvailable)
                                                                                                                                                                              {<text>style="display:none"</text>}/>
+                    }
+                    @if ((dto.UserRole & UserRole.StaffManager) > 0)
+                    {
+                    <input type="button" value="Копировать отчёт" onclick="$('#CopyReportDialog').dialog('open');"/>
                     }
                    @*<input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
                                                                 @if (!Model.IsPrintLoginAvailable)
@@ -416,6 +442,7 @@
   $(document).ready(function () {
     $("#PlanRegistrationDate").datepicker({changeMonth: true, changeYear: true});
     $("#AddEmployment").dialog({autoOpen: false});
+    $("#CopyReportDialog").dialog({autoOpen: false});
     UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
@@ -424,15 +451,16 @@
         }); 
     $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
+    $("#LessonDate").datepicker({changeMonth: true, changeYear: true});
     $(".hasDatepicker").width("75px");
-     onTypeChange();
+     
    });
    function onTypeChange()
    {
         if($("#IsEditable").val())
         {
             var typeId = $("#TypeId").val();
-            if(typeId == 1)
+            if(typeId == 1 )
                 $("#EducationTime").removeAttr("readonly");
             else
             {
@@ -457,6 +485,10 @@
         $("#IsDelete").val("true");
         return true;
     }
+    function CandidateReject() {
+        $("#CandidateRejectDate").val('@(DateTime.Now.ToShortDateString())');
+        return true;
+    }
     /*function ValidateFormApproveAll()
     {
         var result = ValidateForm();
@@ -465,6 +497,32 @@
         $("#ApproveForAll").val('True');
         return true;
     }*/
+    function CopyAppointmentReport()
+    {
+        clearControlErrors($("#TargetAppointment"));
+        if($("#TargetAppointment").val()=='')
+        {
+                addControlError($("#TargetAppointment"),'Обязательное поле');
+                return false;
+         }
+         $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CopyAppointmentReport",
+            data: {AppointmentNumber:$('#TargetAppointment').val(),AppointmentReportId:@(Model.Id) },
+            success: function(data)
+            {
+                if(data.status=='Ok')
+                {
+                    document.location.href = '/Appointment/AppointmentReportEdit/'+data.ReportId;
+                }
+                else{alert(data.message);}
+            },
+            error: function(data){ alert('При отправке данных произошла ошибка.');}
+        }
+        );
+    }
+    @*CopyAppointmentReport(int AppointmentNumber,int AppointmentReportId)*@
     function ValidateForm()
     {
         var result = true;

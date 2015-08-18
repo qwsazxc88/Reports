@@ -180,4 +180,18 @@ function validateMaxLength(control, maxLength) {
     }
     return true;
 }
-  
+function getExcelTable(selector) {
+    var form = $('<form>').attr({
+        method: 'POST',
+        action: '/Base/Excel'
+    }).css({
+        display: 'none'
+    });
+    form.append($('<input>').attr({
+        type: 'hidden',
+        name: 'table',
+        value: $(selector).html()
+    }));
+    form.appendTo('body');
+    form.submit();
+}  
