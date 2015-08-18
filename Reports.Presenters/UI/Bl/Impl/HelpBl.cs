@@ -846,7 +846,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     HelpServiceRequestDao.SaveAndFlush(entity);
                     if (entity.Version != model.Version)
                     {
-                        entity.EditDate = DateTime.Now;
+                        if((entity.Creator !=null && entity.Creator.Id == CurrentUser.Id) || (entity.User!=null && entity.User.Id==CurrentUser.Id))
+                            entity.EditDate = DateTime.Now;
                         HelpServiceRequestDao.SaveAndFlush(entity);
                     }
                 }
@@ -1747,7 +1748,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     HelpQuestionRequestDao.SaveAndFlush(entity);
                     if (entity.Version != model.Version)
                     {
-                        entity.EditDate = DateTime.Now;
+                        if((entity.Creator!=null && entity.Creator.Id==CurrentUser.Id) || (entity.User!=null && entity.User.Id==CurrentUser.Id))
+                            entity.EditDate = DateTime.Now;
                         HelpQuestionRequestDao.SaveAndFlush(entity);
                     }
                 }
