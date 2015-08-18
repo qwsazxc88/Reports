@@ -434,6 +434,8 @@
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
+    <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\StandartRequestEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
@@ -585,6 +587,9 @@
     <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
     <Compile Include="Domain\StaffList\RefAddresses.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentCBDetails.cs" />
+    <Compile Include="Domain\StaffMovements.cs" />
+    <Compile Include="Domain\StaffMovementsData.cs" />
+    <Compile Include="Domain\StaffMovementsDocs.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentLandmarks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagerDetails.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
@@ -728,6 +733,7 @@
     <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Enum\EmploymentStatus.cs" />
+    <Compile Include="Enum\StaffMovementsStatus.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />
@@ -1274,6 +1280,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostChargeLinks.hbm.xml" />
+    <Content Include="Domain\StaffMovements.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostRequestTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationModes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRequestTypes.hbm.xml" />
