@@ -88,7 +88,7 @@
                    <td>@i</td>
                    <td>@switch (el.DocType)
                        {
-                           case 1:<a href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = el.DocId })'>Приказ на коммандировку № @el.Number</a>
+                           case 1:<a href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = el.DocId })'>Приказ на командировку № @el.Number</a>
                            break;
                            case 2:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Авансовый отчёт № @el.Number проверен</a>
                            break;
