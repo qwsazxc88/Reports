@@ -25,6 +25,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string TargetPositionName { get; set; }
         public int TargetPositionId { get; set; }
         public IList<IdNameDto> TargetPositions { get; set; }
+        public StandartUserDto SourceManager { get; set; }
+        public StandartUserDto TargetManager { get; set; }
         #endregion
         #region Для Руководителя      
         [Display(Name = "Ставка")]
@@ -63,13 +65,15 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal AdditionTraveling { get; set; }
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб.)")]
         public decimal AdditionFront { get; set; }
+        public DateTime? AdditionFrontTo { get; set; }
         [Display(Name = "Грейд")]
         public int Grade { get; set; }
         [Display(Name = "График работы")]
         public int HoursType { get; set; }
         public IList<IdNameDto> HoursTypes { get; set; }
         [Display(Name = "Северный стаж")]
-        public decimal NorthFactor { get; set; }
+        public int NorthFactor { get; set; }
+        public IList<IdNameDto> NorthFactors { get; set; }
         [Display(Name = "Пункты Дополнительного соглашения")]
         public string AdditionalAgreementEnties { get; set; }
         [Display(Name="Внести изменения в ТД №")]
@@ -90,11 +94,28 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }
+        public int MovementNoteAttachmentId { get; set; }
+        public UploadFileDto MovementNoteDto { get; set; }
+
         public HttpPostedFileBase AdditionalAgreementDoc { get; set; }
+        public int AdditionalAgreementDocAttachmentId { get; set; }
+        public UploadFileDto AdditionalAgreementDocDto { get; set; }
+
         public HttpPostedFileBase MovementOrderDoc { get; set; }
+        public int MovementOrderDocAttachmentId { get; set; }
+        public UploadFileDto MovementOrderDocDto { get; set; }
+
         public HttpPostedFileBase MaterialLiabilityDoc { get; set; }
+        public int MaterialLiabilityDocAttachmentId { get; set; }
+        public UploadFileDto MaterialLiabilityDocDto { get; set; }
+
         public HttpPostedFileBase RequirementsOrderDoc { get; set; }
+        public int RequirementsOrderDocAttachmentId { get; set; }
+        public UploadFileDto RequirementsOrderDocDto { get; set; }
+
         public HttpPostedFileBase ServiceOrderDoc { get; set; }
+        public int ServiceOrderDocAttachmentId { get; set; }
+        public UploadFileDto ServiceOrderDocDto { get; set; }
         #endregion
     }
 }

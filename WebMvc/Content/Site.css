@@ -231,15 +231,14 @@ input.widget
     margin: 0;
     padding: 5px 10px;
 }
-span.custom-combobox:hover, span.custom-combobox:focus
+
+.custom-combobox-wraper:hover a, .custom-combobox-wraper a:focus,.custom-combobox-wraper:hover input, .custom-combobox-wraper input:focus
 {
     border: 1px solid #248BAD;
     -webkit-box-shadow: 0px 0px 22px 0px rgba(118, 199, 255, 1);
     -moz-box-shadow:    0px 0px 22px 0px rgba(118, 199, 255, 1);
     box-shadow:         0px 0px 22px 0px rgba(118, 199, 255, 1);
 }
-
-
 input.widget:focus 
 {
     border: 1px solid #248BAD;

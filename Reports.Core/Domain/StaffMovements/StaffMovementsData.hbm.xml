@@ -7,6 +7,7 @@
     
     <property name="AdditionPersonnel" not-null="false"/>
     <property name="AdditionPersonnelTo" not-null="false"/>
+    <property name="AdditionTerritory" not-null="false"/>
     <property name="AdditionPosition" not-null="false"/>
     <property name="AdditionPositionTo" not-null="false"/>
     <property name="AdditionQuality" not-null="false"/>
@@ -26,7 +27,8 @@
     <property name="AgreementDate" not-null="false"/>
     <property name="AdditionalAgreementEntries" not-null="false"/>    
     <property name="MovementReason" not-null="false"/>
-    <property name="MovementTempReason" not-null="false"/>    
+    <property name="MovementTempReason" not-null="false"/>
+    <property name="MovementCondition" not-null="false"/>
     <many-to-one name="Signatory" class="Signer" column="Signatory" foreign-key="FK_StaffMovementsData_Signatory" not-null="false"/>
     <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroup" foreign-key="FK_StaffMovementsData_AccessGroup" not-null="false"/>
     <many-to-one name="HoursType" class="EmploymentHoursType" column="HoursType" foreign-key="FK_StaffMovementsData_EmployementHoursType" not-null="false"/>

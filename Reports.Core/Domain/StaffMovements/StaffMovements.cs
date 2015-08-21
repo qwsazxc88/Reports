@@ -24,7 +24,7 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Исходная должность
         /// </summary>
-        public virtual StaffEstablishedPost SourcePosition { get; set; }
+        public virtual StaffEstablishedPostRequest SourcePosition { get; set; }
 
         /// <summary>
         /// Целевая должность
