@@ -1,0 +1,497 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffMovementsEditModel
+@{
+    ViewBag.Title = "Редактирование заявки на перемещение";
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+}
+@using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{    
+    @Html.HiddenFor(m=>m.RequestType)
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+          <h2>@Model.RequestTypes.Where(x=>x.Id==Model.RequestType).First().Name</h2>
+            <table width="100%">
+                <tr>
+                    <td colspan="2">
+                    @Html.ValidationSummary(false, "")
+                    <div id="Error" visible="false" style="color:Red"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td width=200px>@Html.LabelFor(m=>m.CreateDate)</td>
+                    <td>
+                        @Html.HiddenFor(m=>m.CreateDate)
+                        @Html.DisplayFor(m=>m.CreateDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m=>m.Number)</td>
+                    <td>
+                        @Html.HiddenFor(m => m.Number)
+                        @Html.DisplayFor(m => m.Number)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.TargetDepartmentName):
+                    </td>
+                    <td>
+                        <label id="TargetDepartmentNameLabel">@Model.TargetDepartmentName</label>
+                        <input type="hidden" id="TargetDepartmentName" name="TargetDepartmentName" value="@Model.TargetDepartmentName" />
+                        <input type="hidden" id="TargetDepartmentId" name="TargetDepartmentId" value="@Model.TargetDepartmentId" />
+                        <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="7" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @if (Model.IsEditable)
+                        {
+                            <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment(5);"/>
+                        }            
+                    </td>
+                </tr>
+                <tr>
+                <td>
+                @Html.LabelFor(m=>m.TargetPositionName)
+                </td>
+                <td>
+                <select width="300px" name="TargetPositionId" id="TargetPositionId">
+                @if (Model.TargetPositions != null)
+                {
+                    foreach (var el in Model.TargetPositions)
+                    { 
+                    <option value="@el.Id">@el.Name</option>
+                    }
+                }
+                </select>
+                @Html.HiddenFor(m=>m.User.StaffEstablishedPostId)
+                </td>
+                </tr>
+                <tr>
+                <td>
+                @Html.LabelFor(m=>m.MovementDate)
+                </td>
+                <td>@Html.TextBoxFor(m=>m.MovementDate)</td>
+                </tr>
+                <tr>
+                <td colspan="2">
+                    <div id="tabs" width="100%">
+                          <ul>
+                            <li><a href="#tabs-1">Данные по переводу</a></li>
+                            <li><a href="#tabs-2">Руководитель</a></li>
+                            <li><a href="#tabs-3">Кадры</a></li>
+                            <li><a href="#tabs-4">Документы</a></li>
+                          </ul>
+                          <div id="tabs-1">
+                            <fieldset class="bordered doc-wrap-blue panel" >
+                            <legend title='Реквизиты инициатора(автора) заявки' class="bordered">Реквизиты инициатора(автора) заявки</legend>
+                            <table>
+                                
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.Creator.Name)
+                                        @Html.HiddenFor(m=>m.Creator.Id)
+                                        @Html.DisplayFor(m => m.Creator.Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.PositionName)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.Creator.PositionName)
+                                        @Html.HiddenFor(m=>m.Creator.PositionId)
+                                        @Html.DisplayFor(m => m.Creator.PositionName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.Dep3Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.Creator.Dep3Name)
+                                        @Html.HiddenFor(m => m.Creator.Dep3Id)
+                                        @Html.DisplayFor(m => m.Creator.Dep3Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.Dep7Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.Creator.Dep7Name)
+                                        @Html.HiddenFor(m => m.Creator.Dep7Id)
+                                        @Html.DisplayFor(m => m.Creator.Dep7Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.Chiefs)</td>
+                                    <td>
+                                        @Model.Creator.Chiefs.Aggregate("",(all,next)=>all+(all.Length>0?", ":"")+ next)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Creator.Personnels)</td>
+                                    <td>
+                                        @Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next)
+                                    </td>
+                                </tr>
+                            </table>
+                            </fieldset>
+                            <fieldset class="bordered doc-wrap-blue panel" >
+                            <legend title='Место работы сотрудника в настоящее время' class="bordered">Место работы сотрудника в настоящее время</legend>
+                            <table>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.User.Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.User.Name)
+                                        @Html.HiddenFor(m => m.User.Id)
+                                        @Html.DisplayFor(m => m.User.Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.PositionName)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.User.PositionName)
+                                        @Html.HiddenFor(m => m.User.PositionId)
+                                        @Html.DisplayFor(m => m.User.PositionName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.Dep3Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.User.Dep3Name)
+                                        @Html.HiddenFor(m => m.User.Dep3Id)
+                                        @Html.DisplayFor(m => m.User.Dep3Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.Dep7Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.User.Dep7Name)
+                                        @Html.HiddenFor(m => m.User.Dep7Id)
+                                        @Html.DisplayFor(m => m.User.Dep7Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.Chiefs)</td>
+                                    <td>
+                                        @Model.User.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.Personnels)</td>
+                                    <td>
+                                        @Model.User.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="portlet">
+                                            <div class="portlet-header">@Html.LabelFor(m => m.User.Charges)</div>
+                                            <div class="portlet-content">
+                                                <table class="grid">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Надбавка</th>
+                                                            <th>Сумма</th>
+                                                            <th>%</th>
+                                                        </tr>
+                                                    <//thead>
+                                                    @{ int i = 1; }
+                                                    @foreach (var item in Model.User.Charges)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].Id)
+                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].ChargeId)
+                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].SEPRequestId)
+                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].SEPId)
+                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].ChargeName)
+                                                                @item.ChargeName
+                                                    
+                                                            </td>
+                                                            <td style="text-align:center;">@Html.TextBoxFor(m => m.User.Charges[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.User.Charges[i - 1].Amount)</td>
+                                                            <td style="text-align:center;">@Html.TextBoxFor(m => m.User.Charges[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.User.Charges[i - 1].AmountProc)</td>
+                                                        </tr>
+                                                        { i++; }
+                                                    }
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            </fieldset>
+                          </div>
+                          <div id="tabs-2">
+                          <fieldset class="bordered doc-wrap-blue panel">
+                          <table>
+                            <tr>
+                                <td>@Html.LabelFor(m=>m.MovementCondition)</td>
+                                <td>@Html.TextBoxFor(m=>m.MovementCondition)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m=>m.MovementDate)</td>
+                                <td>@Html.DisplayFor(m => m.MovementDate)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m=>m.TargetSalary)</td>
+                                <td>@Html.DisplayFor(m => m.TargetSalary)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m=>m.TargetCasing)</td>
+                                <td>@Html.TextBoxFor(m => m.TargetCasing)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m=>m.AdditionPersonnel)</td>
+                                <td>@Html.TextBoxFor(m => m.AdditionPersonnel)</td>
+                            </tr>
+                          </table>
+                          </fieldset>
+                          </div>
+                          <div id="tabs-3">
+                             <fieldset class="bordered doc-wrap-blue panel">
+                            <table>
+                                <tr>
+                                    <td> 
+                                    <table>
+                                        <tr>
+                                        <td>@Html.LabelFor(m=>m.OrderDate)</td>
+                                        <td>@Html.TextBoxFor(m=>m.OrderDate)</td>
+                                        </tr>
+                                        <tr>
+                                        <td>@Html.LabelFor(m=>m.AdditionalAgreementDate)</td>
+                                        <td>@Html.TextBoxFor(m => m.AdditionalAgreementDate)</td>
+                                        </tr>
+                                    </table>
+                                    </td>
+                                    <td>
+                                    <table>
+                                        <tr>
+                                        <td>@Html.LabelFor(m=>m.OrderNumber)</td>
+                                        <td>@Html.TextBoxFor(m => m.OrderNumber)</td>
+                                        </tr>
+                                        <tr>
+                                        <td>@Html.LabelFor(m=>m.AdditionalAgreementNumber)</td>
+                                        <td>@Html.TextBoxFor(m => m.AdditionalAgreementNumber)</td>
+                                        </tr>
+                                    </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    <div id="IsHourlyContainer" class="formfield clear">
+                                        
+                                        @Html.RadioButtonFor(m => m.IsHourly, false, new { @id = "IsHourlyFalse" })<label for="IsHourlyFalse" id="lblHourlyFalse" @if (!Model.IsHourly)
+                                                                                                                                                                            {<text>style="border-color:#248BAD;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по дням</label>
+                                        @Html.RadioButtonFor(m => m.IsHourly, true, new { @id = "IsHourlyTrue" })<label for="IsHourlyTrue" id="lblHourlyTrue" @if (Model.IsHourly)
+                                                                                                                                                                        {<text>style="border-color:#248BAD;"</text>} else{<text> style="border-color:none;"</text>}>Оклад по часам</label>
+                                    </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.RegionCoefficient)</td>
+                                    <td>@Html.TextBoxFor(m=>m.RegionCoefficient)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AdditionTerritory)</td>
+                                    <td>@Html.TextBoxFor(m => m.AdditionTerritory)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AdditionTraveling)</td>
+                                    <td>@Html.TextBoxFor(m => m.AdditionTraveling)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AdditionFront)</td>
+                                    <td>@Html.TextBoxFor(m => m.AdditionFront)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.Grade)</td>
+                                    <td>@Html.TextBoxFor(m => m.Grade)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.HoursType)</td>
+                                    <td>@Html.DropDownListFor(m => m.HoursType,new SelectList(Model.HoursTypes,"Id","Name"))</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.NorthFactor)</td>
+                                    <td>@Html.TextBoxFor(m => m.NorthFactor)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.ChangesToAgreementEnties)</td>
+                                    <td>@Html.TextBoxFor(m => m.ChangesToAgreementEnties)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.ChangesToAgreement)</td>
+                                    <td>@Html.TextBoxFor(m => m.ChangesToAgreement)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AgreementDate)</td>
+                                    <td>@Html.TextBoxFor(m => m.AgreementDate)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AdditionalAgreementEnties)</td>
+                                    <td>@Html.TextBoxFor(m => m.AdditionalAgreementEnties)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.MovementReason)</td>
+                                    <td>@Html.TextBoxFor(m => m.MovementReason)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.AccessGroup)</td>
+                                    <td>@Html.DropDownListFor(m => m.AccessGroup, new SelectList(Model.AccessGroupsList, "Id", "Name"))</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m=>m.SignatoryName)</td>
+                                    <td>@Html.DropDownListFor(m => m.SignatoryId, new SelectList(Model.SignatoryList, "Id", "Name"))</td>
+                                </tr>
+                            </table>
+                            </fieldset>
+                          </div>
+                          <div id="tabs-4">
+                          <fieldset class="bordered doc-wrap-blue panel">
+                          <table class="grid">
+                          <thead>
+                              <tr>
+                                <th>Название документа</th><th>Образец</th><th>Скан</th><th>Для перевода требуется</th>
+                              </tr>
+                          </thead>
+                          <tr>
+                              <td>
+                              Заявление о переводе
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="MovementNote" /></td>
+                              <td><input type="checkbox" name="IsMovementNoteRequired"/></td>
+                            </tr>
+                            <tr>
+                              <td>
+                              Дополнительное соглашение
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="AdditionalAgreementDoc" /></td>
+                              <td><input type="checkbox" name="IsAdditionalAgreementDocRequired"/></td>
+                            </tr>
+                            <tr>
+                              <td>
+                              Приказ о переводе
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="MovementOrderDoc" /></td>
+                              <td><input type="checkbox" name="IsMovementOrderDocRequired"/></td>
+                            </tr>
+                            <tr>
+                              <td>
+                              Договор мат.ответственность
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="MaterialLiabilityDoc" /></td>
+                              <td><input type="checkbox" name="IsMaterialLiabilityDocRequired"/></td>
+                          </tr>
+                          <tr>
+                              <td>
+                              Печать порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="RequirementsOrderDoc" /></td>
+                              <td><input type="checkbox" name="IsRequirementsOrderDocRequired"/></td>
+                          </tr>
+                          <tr>
+                              <td>
+                              Печать порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
+                              </td>
+                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="file" name="ServiceOrderDoc" /></td>
+                              <td><input type="checkbox" name="IsServiceOrderDocRequired"/></td>
+                          </tr>
+                          </table>
+                          </fieldset>
+                          </div>
+                    </div>
+                </td>
+                </tr>               
+        </table>
+        </div>                          
+      </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+                <table>
+                     <tr>
+                        <td colspan="2">
+                            <input type="submit"  onclick="return ValidateForm();" value="Сохранить"/>
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </td>
+    </tr> 
+    </table>
+}
+<style>
+label { font-size:1.1em; }
+
+</style>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    function setOptionsToDropdown(controlName,data)
+    {
+        var optionsValues = '';
+        optionsValues += '<option value="0"></option>';
+        $.each(data, function (item, data) {
+            optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+        })
+        optionsValues += '';
+        var options = $('#' + controlName );
+        options.children().remove();
+        options.append(optionsValues);
+    }
+    function ConfigureFields()
+    {
+        $("#MovementDate, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+        $('#IsHourlyContainer').buttonset();
+        $(':button, :input[type=button], :input[type=submit]').button();
+        $(':input[type=text]').addClass("widget");
+        $('select').combobox();
+        $("#IsHourlyTrue").click(function(){
+            $("#lblHourlyTrue").css("border-color", "#248BAD");
+            $("#lblHourlyFalse").css("border-color", "silver");
+        });
+        $("#IsHourlyFalse").click(function(){
+            $("#lblHourlyTrue").css("border-color", "silver");
+            $("#lblHourlyFalse").css("border-color", "#248BAD");
+        });
+        $("#TargetDepartmentId").change(function ()
+        {
+            var url = "/StaffMovements/GetPositionsForDepartment/"+$("#TargetDepartmentId").val();
+            $.getJSON(url,
+                function (result) {
+                    setOptionsToDropdown("TargetPositionId", result);                    
+                });
+        });
+        
+       var tabs= $("#tabs").tabs();
+        tabs.find( ".ui-tabs-nav" ).sortable({
+                      axis: "x",
+                      stop: function() {
+                        tabs.tabs( "refresh" );
+                      }
+                    });
+        $(".portlet")
+            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".portlet-header")
+            .addClass("ui-state-default ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+        $(".portlet-toggle").click(function () {
+            var icon = $(this);
+            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+            icon.closest(".portlet").find(".portlet-content").toggle();
+        });
+    }
+    $(document).ready(function () {
+        setActiveMenuItem("StaffMovements");
+        ConfigureFields();
+    });
+</script>
+
+

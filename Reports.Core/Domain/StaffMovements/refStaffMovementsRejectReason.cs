@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Reports.Core.Domain
 {
-    public class StaffMovementsData: AbstractEntity
+    public class refStaffMovementsRejectReason: AbstractReferencyBookEntity
     {
-
     }
 }

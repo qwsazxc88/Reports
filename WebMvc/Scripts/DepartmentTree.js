@@ -19,8 +19,9 @@ function createDepartmentDialog(SelType)
     if (SelType == 1) { departmentId = $("#DepNextId").val(); }
     if (SelType == 2) { departmentId = $("#DepCachinId").val(); }
     if (SelType == 3) { departmentId = $("#DepATMId").val(); }
-
-
+    //Кадровые перемещения
+    if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
+    if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
     //var typeId = $("#RequestTypeId").val();
 
     var title =  "Выбор структурного подразделения";
@@ -137,7 +138,18 @@ function SaveDepartment(SelType) {
         $('#DepATMName').val("");
         $('#DepATMNameLabel').text("");
     }
-    
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val("0");
+        $('#SourceDepartmentName').val("");
+        $('#SourceDepartmentNameLabel').text("");
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val("0");
+        $('#TargetDepartmentName').val("");
+        $('#TargetDepartmentNameLabel').text("");
+    }
     return;
 }
 function setDepartmentValues(control, SelType) {
@@ -165,6 +177,19 @@ function setDepartmentValues(control, SelType) {
         $('#DepATMId').val($('#' + control).val());
         $('#DepATMName').val($('#' + control + ' option:selected').text());
         $('#DepATMNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val($('#' + control).val());
+        $('#SourceDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#SourceDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val($('#' + control).val());
+        $('#TargetDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentId').change();
     }
 }
 function Level2IDChange() {
