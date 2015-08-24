@@ -9,6 +9,6 @@ namespace Reports.Core.Dao
 {
     public interface IManualDeductionDao: IDao<ManualDeduction>
     {
-        IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, Department department);
+        IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, int Status,Department department);
     }
 }

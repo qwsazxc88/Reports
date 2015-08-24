@@ -18,9 +18,11 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Web.Routing;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 namespace WebMvc.Controllers
 {
+    [PreventSpam]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
@@ -84,10 +86,16 @@ namespace WebMvc.Controllers
         {
             return View();                 
         }
-        public JsonResult GetFullDepts(int DepartmentId, string UserName)
+        public ContentResult GetFullDepts(int DepartmentId, int Status, string UserName)
         {
-            var result=RequestBl.GetManualDeductionDocs(DepartmentId, UserName);
-            return Json(result);
+            var result=RequestBl.GetManualDeductionDocs(DepartmentId, Status, UserName);
+            string  content = JsonConvert.SerializeObject(result);
+            return  Content(content);
+        }
+        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment);
+            return Json(new { status = "Ok" });
         }
         /// <summary>
         /// Гостиницы.

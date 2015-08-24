@@ -210,6 +210,27 @@ namespace Reports.Core.Dao.Impl
             }
             return entity;
         }
+        public void CloneAttach(int AttachId,int TargetRequestId)
+        {
+            string sql=@"INSERT INTO RequestAttachment
+                            (Version, FileName, ContextType,Context,RequestId,RequestType,DateCreated,Description,CreatorRoleId,FilePath,DocumentsCount,UserId)
+                            SELECT 1 as Version,
+		                            FileName,
+		                            ContextType,
+		                            Context,
+		                            {1},
+		                            RequestType,
+		                            DateCreated,
+		                            Description,
+		                            CreatorRoleId,
+		                            FilePath,
+		                            DocumentsCount,
+		                            UserId
+                            FROM RequestAttachment
+                            Where id={0}";
+            var query=Session.CreateSQLQuery(String.Format(sql, AttachId, TargetRequestId));
+            query.List();
+        }
         protected static string GetRootPath()
         {
             string rootPath = ConfigurationManager.AppSettings[RootFilesFolderPath];

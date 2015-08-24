@@ -78,7 +78,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string FiredUserName { get; set; }
         public string FiredUserSurname { get; set; }
         public string FiredUserPatronymic { get; set; }
-
+        public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         [Display(Name = "Дата рождения")]
         public string UserBirthDate { get; set; }
 
