@@ -2005,7 +2005,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsColloquyPassed = entity.IsColloquyPassed.HasValue?(entity.IsColloquyPassed.Value?1:0):-1;
                 SetFlagsState(entity.Id, UserDao.Load(current.Id), current.UserRole, entity, model);
                 //Задолбала Улькина
-                model = GetAppointmentReportEditModel(entity.Id);
+                model.ReloadPage = true;
                 return true;
             }
             catch (Exception ex)
