@@ -158,6 +158,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Manager4", NHibernateUtil.String)
                 .AddScalar("SaldoPrimary",NHibernateUtil.Decimal)
                 .AddScalar("SaldoAdditional",NHibernateUtil.Decimal)
+                .AddScalar("DateAccept",NHibernateUtil.DateTime)
                 ;
             return query;
         }
@@ -209,6 +210,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 12:
                     orderBy = "SaldoAdditional";
+                    break;
+                case 13:
+                    orderBy = "DateAccept";
                     break;
                 default:
                     orderBy = "UserName";

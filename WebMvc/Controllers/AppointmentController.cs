@@ -132,6 +132,11 @@ namespace WebMvc.Controllers
             //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
+        public JsonResult CopyAppointmentReport(int AppointmentNumber,int AppointmentReportId)
+        {
+            var res = AppointmentBl.CopyAppointmentReport(AppointmentNumber, AppointmentReportId);
+            return Json(res);
+        }
         public JsonResult CheckUserDismissal(int userId)
         {
             var res=AppointmentBl.CheckUserDismissal(userId);
@@ -391,6 +396,10 @@ namespace WebMvc.Controllers
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
+            }
+            else
+            {
+                model = AppointmentBl.GetAppointmentReportEditModel(model.Id);                
             }
             return View(model);
         }

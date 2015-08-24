@@ -484,6 +484,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 return;
             }
+            if (entity!=null && entity.FiredUserDepartment != null)
+            {
+                model.DepartmentId = entity.FiredUserDepartment.Id;
+                model.DepartmentName = entity.FiredUserDepartment.Name;
+            }
             switch (currentRole)
             {
                 case UserRole.ConsultantPersonnel:
@@ -841,7 +846,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     HelpServiceRequestDao.SaveAndFlush(entity);
                     if (entity.Version != model.Version)
                     {
-                        entity.EditDate = DateTime.Now;
+                        if((entity.Creator !=null && entity.Creator.Id == CurrentUser.Id) || (entity.User!=null && entity.User.Id==CurrentUser.Id))
+                            entity.EditDate = DateTime.Now;
                         HelpServiceRequestDao.SaveAndFlush(entity);
                     }
                 }
@@ -891,6 +897,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FiredUserName = model.FiredUserName;
                 entity.FiredUserSurname = model.FiredUserSurname;
                 entity.FiredUserPatronymic = model.FiredUserPatronymic;
+                if (model.DepartmentId > 0)
+                {
+                    var dep = DepartmentDao.Load(model.DepartmentId);
+                    entity.FiredUserDepartment = dep;
+                }
                 if(model.UserBirthDate!=null) entity.UserBirthDate = DateTime.Parse(model.UserBirthDate);
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
@@ -1551,7 +1562,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsSaveAvailable = true;
                             model.IsAnswerEditable = true;
                         }
-                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        if (entity.SendDate.HasValue &&  !entity.EndWorkDate.HasValue/*!entity.BeginWorkDate.HasValue*/)
                         {
                             model.IsRedirectAvailable = true;
                             model.IsBeginWorkAvailable = true;
@@ -1737,7 +1748,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     HelpQuestionRequestDao.SaveAndFlush(entity);
                     if (entity.Version != model.Version)
                     {
-                        entity.EditDate = DateTime.Now;
+                        if((entity.Creator!=null && entity.Creator.Id==CurrentUser.Id) || (entity.User!=null && entity.User.Id==CurrentUser.Id))
+                            entity.EditDate = DateTime.Now;
                         HelpQuestionRequestDao.SaveAndFlush(entity);
                     }
                 }

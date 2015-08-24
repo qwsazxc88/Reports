@@ -55,6 +55,9 @@
     <Reference Include="MVCControlsToolkit">
       <HintPath>..\Lib\MVCControlsToolkit.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\Lib\NHibernate.dll</HintPath>
     </Reference>

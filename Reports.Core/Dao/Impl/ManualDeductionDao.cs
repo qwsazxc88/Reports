@@ -14,12 +14,18 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, Department department)
+        public IList<ManualDeductionDto> GetDocuments(User CurrentUser, string UserName, int Status, Department department)
         {
-            var query = Session.Query<ManualDeduction>().Where(x=>!x.DeleteDate.HasValue);
+            string[] statuses = new string[] { "Отклонено", "АО добавлен в реестр", "АО выгружен на удержание" };
+
+            var query = Session.Query<ManualDeduction>().Where(x=>x.AllSum>0 && ((!x.MissionReport.ManagerDateAccept.HasValue || !x.MissionReport.UserDateAccept.HasValue) || x.Status==2 ));
             if (department!=null)
             {
                 query=query.Where(x=>x.User.Department.Path.Contains(department.Path));
+            }
+            if (Status > 0)
+            {
+                query = query.Where(x => x.Status == Status);
             }
             if (!String.IsNullOrWhiteSpace(UserName))
             {
@@ -52,9 +58,10 @@ namespace Reports.Core.Dao.Impl
             return result.Select(x => new ManualDeductionDto
             {
                         NPP=(counter++),
-                         UserName = x.User.Name,
+                        UserName = x.User.Name,
+                        Position = x.User.Position!=null?x.User.Position.Name:"",
                         AllSum = x.AllSum,
-                        DeductionDate = x.MissionReport.MissionOrder.BeginDate.HasValue ? x.MissionReport.MissionOrder.BeginDate.Value : x.MissionReport.MissionOrder.CreateDate,
+                        DeductionDate = x.MissionReport.MissionOrder.EndDate.HasValue ? x.MissionReport.MissionOrder.EndDate.Value : x.MissionReport.MissionOrder.CreateDate,
                         DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "",
                         UserId = x.User.Id,
                         SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "",
@@ -63,7 +70,8 @@ namespace Reports.Core.Dao.Impl
                         (x.User.Department.Dep3 != null && x.User.Department.Dep3.Any() ? x.User.Department.Dep3.First().Name : "")
                         :"",
                         MissionReportNumber=x.MissionReport.Number,
-                        MissionReportId = x.MissionReport.Id
+                        MissionReportId = x.MissionReport.Id,
+                        Status = statuses[x.Status]
             }).ToList();
         }
     }
