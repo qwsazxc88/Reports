@@ -1727,6 +1727,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.IsSave = false;
 
             
             return model;
@@ -3506,10 +3507,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
-            if (candidate.SendTo1C.HasValue)
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
             {
-                error = "Кандидат выгружен в 1С! Выполнение операции прервано!";
-                return;
+                if (candidate.SendTo1C.HasValue)
+                {
+                    error = "Кандидат выгружен в 1С! Выполнение операции прервано!";
+                    return;
+                }
             }
 
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
