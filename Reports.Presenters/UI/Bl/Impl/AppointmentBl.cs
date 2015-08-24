@@ -2002,7 +2002,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
                 model.IsEducationExists = entity.IsEducationExists.HasValue ? (entity.IsEducationExists.Value ? 1 : 0) : -1;
+                model.IsColloquyPassed = entity.IsColloquyPassed.HasValue?(entity.IsColloquyPassed.Value?1:0):-1;
                 SetFlagsState(entity.Id, UserDao.Load(current.Id), current.UserRole, entity, model);
+                //Задолбала Улькина
+                model = GetAppointmentReportEditModel(entity.Id);
                 return true;
             }
             catch (Exception ex)
