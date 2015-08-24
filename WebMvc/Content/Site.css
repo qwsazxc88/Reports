@@ -1775,6 +1775,17 @@ legend {
     border-radius: 5px;
     margin:5px;
  }
+  .WarningBlock
+ {
+     display:block;
+     position:relative;
+     padding:10px;
+     background-color: #FADEDE;
+     color: #A80707;
+        border: 1px solid #D9CACA;
+        border-radius: 5px;
+        margin:5px;
+ }
  .HiddenObject
  {
      visibility:hidden;
