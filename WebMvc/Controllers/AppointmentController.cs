@@ -397,6 +397,10 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
+            else
+            {
+                model = AppointmentBl.GetAppointmentReportEditModel(model.Id);                
+            }
             return View(model);
         }
         protected bool ValidateAppointmentReportEditModel(AppointmentReportEditModel model,UploadFileDto fileDto)
