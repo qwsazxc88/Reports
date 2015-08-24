@@ -2699,8 +2699,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
             model.EmployeeName = candidate.User.Name;
             model.PositionName = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-            //model.DepartmentName = candidate.Managers.Department.Name;
             model.DepartmentName = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
+
+            if (candidate.PersonnelManagers != null)
+            {
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    //model.EmployerRepresentativeName = candidate.PersonnelManagers.Signer.Name;
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+                    //model.EmployerRepresentativePreamblePartyTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
+                            }
+                        }
+                    }
+                }
+            }
 
             return model;
         }
