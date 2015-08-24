@@ -11,5 +11,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string EmployeeName { get; set; }
         public string PositionName { get; set; }
         public string DepartmentName { get; set; }
+        public string EmployerRepresentativeName { get; set; }
+        public string EmployerRepresentativePosition { get; set; }
+        public string EmployerRepresentativeNameShortened { get; set; }
     }
 }
