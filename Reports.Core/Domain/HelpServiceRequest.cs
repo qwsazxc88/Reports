@@ -17,7 +17,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? ConfirmWorkDate { get; set; }
         public virtual DateTime? RejectWorkDate { get; set; }
         public virtual DateTime? NotEndWorkDate { get; set; }
-        
+        public virtual Department FiredUserDepartment { get; set; }
         public virtual int Number { get; set; }
 
         public virtual HelpServiceType Type { get; set; }

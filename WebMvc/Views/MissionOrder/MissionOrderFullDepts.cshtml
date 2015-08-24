@@ -30,7 +30,15 @@
                             <td colspan="2">
                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>            
                             </td>
-                        </tr>                        
+                        </tr>  
+                        <tr>
+                        <td>Статус:</td>
+                        <td><select name='Status' id='Status'>
+                            <option value="0"></option>
+                            <option value="1">АО добавлен в реестр</option>
+                            <option value="2">АО выгружен на удержание</option>
+                        </select></td>
+                        </tr>                      
                         <tr>
                             <td>
                               Имя сотрудника:
@@ -69,6 +77,10 @@
                         <a>ФИО</a>
                         <span class="sortorder" ng-show="predicate === 'UserName'" ng-class="{reverse:reverse}"></span>
                     </th>
+                    <th ng-click="Sort('Position')">
+                        <a>Должность</a>
+                        <span class="sortorder" ng-show="predicate === 'Position'" ng-class="{reverse:reverse}"></span>
+                    </th>
                     <th ng-click="Sort('AllSum')">
                         <a>Сумма</a>
                         <span class="sortorder" ng-show="predicate === 'AllSum'" ng-class="{reverse:reverse}"></span>
@@ -82,18 +94,24 @@
                         <span class="sortorder" ng-show="predicate === 'Dep7Name'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('DeductionDate')">
-                        <a>Дата начала<br />командировки</a>
+                        <a>Дата окончания<br />командировки</a>
                         <span class="sortorder" ng-show="predicate === 'DeductionDate'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('MissionReportNumber')">
                         <a>Номер<br />авансового<br />отчёта</a>
                         <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
                     </th>
+                    <th  ng-click="Sort('Status')">
+                        <a>Статус</a>
+                        <span class="sortorder" ng-show="predicate === 'MissionReportNumber'" ng-class="{reverse:reverse}"></span>
+                    </th>
                 </tr>                
                 <tr>
                     <th></th>
                     <th></th>
-                    <th>Итого: {{TotalSum}}</th>
+                    <th></th>
+                    <th>Итого: {{TotalSum | currency : '' : 2}}</th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -102,22 +120,26 @@
                 <tr id="FiltrRow" class="noExl">
                 <td><input ng-model="search.NPP" class="filterinput" /></td>
                 <td><input ng-model="search.UserName" class="filterinput"  /></td>
+                <td><input ng-model="search.Position" class="filterinput"  /></td>
                 <td><input ng-model="search.AllSum" class="filterinput"  /></td>
                 <td><input ng-model="search.Dep3Name" class="filterinput"  /></td>
                 <td><input ng-model="search.Dep7Name" class="filterinput"  /></td>
                 <td><input ng-model="search.DeductionDate" class="filterinput"  /></td>
                 <td><input ng-model="search.MissionReportNumber" class="filterinput"  /></td>
+                <td><input ng-model="search.Status" class="filterinput"  /></td>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
 			        <td>{{row.NPP}}</td>
                     <td>{{row.UserName}}</td>
-                    <td>{{row.AllSum}}</td>
+                    <td>{{row.Position}}</td>
+                    <td>{{row.AllSum | currency : '' : 2}}</td>
                     <td>{{row.Dep3Name}}</td>
                     <td>{{row.Dep7Name}}</td>
                     <td>{{row.DeductionDate | date: 'dd.MM.yyyy'}}</td>
                     <td>{{row.MissionReportNumber}}</td>
+                    <td>{{row.Status}}</td>
 		        </tr>
                 </tbody>
             </table>
@@ -126,25 +148,7 @@
     </table> 
 }
 </div>
-<style type="text/css">
-  .sortorder:after {
-    content: '\25b2';
-    color:Blue;
-  }
-  .sortorder.reverse:after {
-    content: '\25bc';
-    color:Blue;
-  }
-  .filterinput {
-    width: 100%;
-    margin: 0px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border: 1px solid #aaa;
- }
 
-</style>
 <script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
 <script>
     var GridApp = angular.module('GridApp', []);
@@ -172,11 +176,11 @@
             $scope.IsWorking = true;
             $(':button').button('disable');
             $scope.TotalSum = 0;
-            $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), UserName: $scope.model.UserName }).
+            $http.post('/MissionOrder/GetFullDepts', { DepartmentId: $('#DepartmentId').val(), Status: $('#Status').val(), UserName: $scope.model.UserName }).
               success(function (data, status, headers, config) {
                   for (var i = 0; i < data.length; i++) {
                       $scope.TotalSum += data[i].AllSum;
-                      data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
+                      //data[i].DeductionDate = new Date(parseInt(data[i].DeductionDate.substr(6)));
                   }
                   $scope.Grid.Data = data;
                   $scope.IsWorking = false;

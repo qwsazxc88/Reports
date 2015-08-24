@@ -369,6 +369,18 @@ namespace Reports.Core.Dao.Impl
             var result= Session.Query<TEntity>().Where(predicate);
             return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
         }
+        public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
+        {
+            var result = Session.Query<TEntity>().Where(predicate);
+            if (result != null )
+            {
+                foreach (var el in result)
+                {
+                    action(el);
+                    SaveAndFlush(el);
+                }
+            }            
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -797,7 +809,7 @@ namespace Reports.Core.Dao.Impl
                     (select d1.ID from dbo.Department d
                      inner join dbo.Department d1 on d1.Path like d.Path +'%'
                      and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
-                     and d.Id = {0}) "
+                     and d.Id = {0})"
                     , departmentId);
             }
             return whereString;

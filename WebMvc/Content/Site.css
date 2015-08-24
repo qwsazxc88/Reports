@@ -219,11 +219,47 @@ textarea
 {
     min-height: 75px;
 }
+select
+{
+    border: 1px solid #989B9C;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+input.widget
+{
+    margin: 0;
+    padding: 5px 10px;
+}
 
+.custom-combobox-wraper:hover a, .custom-combobox-wraper a:focus,.custom-combobox-wraper:hover input, .custom-combobox-wraper input:focus
+{
+    border: 1px solid #248BAD;
+    -webkit-box-shadow: 0px 0px 22px 0px rgba(118, 199, 255, 1);
+    -moz-box-shadow:    0px 0px 22px 0px rgba(118, 199, 255, 1);
+    box-shadow:         0px 0px 22px 0px rgba(118, 199, 255, 1);
+}
+input.widget:focus 
+{
+    border: 1px solid #248BAD;
+    -webkit-box-shadow: 0px 0px 22px 0px rgba(118, 199, 255, 1);
+    -moz-box-shadow:    0px 0px 22px 0px rgba(118, 199, 255, 1);
+    box-shadow:         0px 0px 22px 0px rgba(118, 199, 255, 1);
+}
+input.widget:hover 
+{
+    border: 1px solid #248BAD;
+    -webkit-box-shadow: 0px 0px 22px 0px rgba(118, 199, 255, 0.5);
+    -moz-box-shadow:    0px 0px 22px 0px rgba(118, 199, 255, 0.5);
+    box-shadow:         0px 0px 22px 0px rgba(118, 199, 255, 0.5);
+}
 input[type="text"] 
 {
     width: 200px;
-    border: 1px solid black;
+    border: 1px solid #989B9C;     
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 input[type="text"].halfwidth
@@ -249,7 +285,10 @@ input[type="text"].calc
 input[type="password"] 
 {
     width: 200px;
-    border: 1px solid black;
+    border: 1px solid #77797A;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 /* TABLE
@@ -681,6 +720,12 @@ div#title
     background-color: #E9FFE9;
 }
 
+.doc-wrap-blue  
+{
+    padding: 10px;
+    background-color: #F0F7FA;
+    width:100%;
+}
 .comment-wrap  
 {
     padding: 10px;
@@ -1730,6 +1775,17 @@ legend {
     border-radius: 5px;
     margin:5px;
  }
+  .WarningBlock
+ {
+     display:block;
+     position:relative;
+     padding:10px;
+     background-color: #FADEDE;
+     color: #A80707;
+        border: 1px solid #D9CACA;
+        border-radius: 5px;
+        margin:5px;
+ }
  .HiddenObject
  {
      visibility:hidden;
@@ -1914,3 +1970,54 @@ legend {
     margin: 0 1em 1em 0;
     height: 50px;
   }
+
+  .sortorder:after {
+    content: '\25b2';
+    color:Blue;
+  }
+  .sortorder.reverse:after {
+    content: '\25bc';
+    color:Blue;
+  }
+  .filterinput {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: 1px solid #aaa;
+ }
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+  }
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+  }
+  .custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
+  }
+  legend.bordered
+{
+    padding:10px 10px;
+    border: 1px solid silver;
+    background-color:White;
+    font-size:1.1em; 
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background: rgb(246,248,249); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(246,248,249,1)), color-stop(50%,rgba(229,235,238,1)), color-stop(51%,rgba(215,222,227,1)), color-stop(100%,rgba(245,247,249,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
+
+}

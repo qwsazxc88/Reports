@@ -333,6 +333,17 @@
     <Compile Include="Dao\Impl\StaffList\IStaffPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramCodesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramReferenceDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsRejectReasonDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsStatusDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDataDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDocsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsStatusDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDataDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDocsDao.cs" />
     <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
@@ -434,6 +445,12 @@
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
+    <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsRejectReasonDao.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsStatus.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsTypes.cs" />
+    <Compile Include="Domain\StandartRequestEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
@@ -585,6 +602,9 @@
     <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
     <Compile Include="Domain\StaffList\RefAddresses.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentCBDetails.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovements.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsData.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsDocs.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentLandmarks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagerDetails.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
@@ -711,6 +731,8 @@
     <Compile Include="Dto\StaffList\StaffEstablishedPostChargeLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
     <Compile Include="Dto\StaffList\StaffListDepartmentDto.cs" />
+    <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
+    <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
@@ -728,6 +750,8 @@
     <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Enum\EmploymentStatus.cs" />
+    <Compile Include="Enum\StaffMovementsDocsTypes.cs" />
+    <Compile Include="Enum\StaffMovementsStatus.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />
@@ -1273,7 +1297,13 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsData.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsDocs.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostChargeLinks.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovements.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostRequestTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationModes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRequestTypes.hbm.xml" />

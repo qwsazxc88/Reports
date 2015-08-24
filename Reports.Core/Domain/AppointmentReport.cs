@@ -20,7 +20,7 @@ namespace Reports.Core.Domain
         public virtual string Phone { get; set; }
         public virtual string Email { get; set; }
         public virtual DateTime? ColloquyDate { get; set; }
-
+        public virtual DateTime? LessonDate { get; set; }
         public virtual AppointmentEducationType Type { get; set; }
         public virtual string EducationTime { get; set; }
         public virtual string TempLogin { get; set; }
@@ -29,7 +29,8 @@ namespace Reports.Core.Domain
         public virtual bool? IsEducationExists { get; set; }
         public virtual bool? IsColloquyPassed { get; set; }
         public virtual DateTime? DateAccept { get; set; }
-
+        public virtual DateTime? CandidateRejectDate { get; set; }
+        public virtual User CandidateRejectedBy { get; set; }
         public virtual string ResumeComment { get; set; }
         public virtual string ResumeCommentByOPINP { get; set; }
         public virtual User Creator { get; set; }

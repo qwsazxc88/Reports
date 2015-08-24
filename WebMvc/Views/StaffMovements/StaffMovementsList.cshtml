@@ -1,0 +1,303 @@
+﻿@using Reports.Presenters.UI.ViewModel
+@model StaffMovementsListModel
+@{
+    ViewBag.Title = "Кадровые перемещения - реестр заявок";
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+}
+<script type="text/javascript" src="../../Scripts/angular.min.js"></script>
+<div ng-app="GridApp" >
+@using (Html.BeginForm())
+{
+     <table style="width:100%" ng-controller="GridController">     
+     <tr>
+     </tr>
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>                                           
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.Status):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.Statuses, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.UserName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.UserName)
+                            </td>
+                        </tr>                         
+                        <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>                      
+                        <tr>
+                          <td colspan="2">
+                            <input type="button" ng-click="GetData();" value="Выбрать"/>
+                            <input type="button" value="Очистить" ng-click="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    
+                   <tr>
+                          <td>
+                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("Create", "StaffMovements")'"/>                                                                                                                   
+                            <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
+                            <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
+                            <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid');" />
+                            <input type="button" style="float: right;" value="Фильтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
+                           </td>
+                        </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+     <tr>
+        <td colspan="2">            
+            <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
+                <tr style='cursor: pointer; ' class="noselect">
+                     <th ng-click="Sort('NPP')">
+                       <a>№<br /> П/П</a>
+                       <span class="sortorder" ng-show="predicate === 'NPP'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('CreateDate')">
+                        <a>Дата<br />создания</a>
+                        <span class="sortorder" ng-show="predicate === 'CreateDate'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Number')">
+                        <a>Номер<br />заявки</a>
+                        <span class="sortorder" ng-show="predicate === 'Number'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('UserName')">
+                        <a>ФИО<br />сотрудника</a>
+                        <span class="sortorder" ng-show="predicate === 'UserName'" ng-class="{reverse:reverse}"></span>
+                    </th> 
+                    <th ng-click="Sort('Position')">
+                        <a>Должность</a>
+                        <span class="sortorder" ng-show="predicate === 'Position'" ng-class="{reverse:reverse}"></span>
+                    </th> 
+                    <th ng-click="Sort('Creator')">
+                        <a>Автор<br />заявки</a>
+                        <span class="sortorder" ng-show="predicate === 'Creator'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dep3Name')">
+                        <a>Дирекция<br />3 ур.<br />текущая</a>
+                        <span class="sortorder" ng-show="predicate === 'Dep3Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dep7Name')">
+                        <a>Подразделение<br />7 ур.<br />текущее</a>
+                        <span class="sortorder" ng-show="predicate === 'Dep7Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('PositionCurrent')">
+                        <a>Должность<br />текущая</a>
+                        <span class="sortorder" ng-show="predicate === 'PositionCurrent'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('SourceManagerName')">
+                        <a>Руководитель<br />отпускающий</a>
+                        <span class="sortorder" ng-show="predicate === 'SourceManagerName'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('TargetManagerName')">
+                        <a>Руководитель<br />принимаюющий</a>
+                        <span class="sortorder" ng-show="predicate === 'TargetManagerName'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('PositionTarget')">
+                        <a>Перевод на<br />должность</a>
+                        <span class="sortorder" ng-show="predicate === 'PositionTarget'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('TargetDep3Name')">
+                        <a>Перевод<br />в Дирекцию<br />3 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TargetDep3Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('TargetDep7Name')">
+                        <a>Перевод<br />в подразделение<br />7 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TargetDep7Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('MoveDate')">
+                        <a>Дата<br />перевода</a>
+                        <span class="sortorder" ng-show="predicate === 'MoveDate'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Salary')">
+                        <a>Размер<br />ставки</a>
+                        <span class="sortorder" ng-show="predicate === 'Salary'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Conjunction')">
+                        <a>По<br />совм.</a>
+                        <span class="sortorder" ng-show="predicate === 'Conjunction'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('DocsStatus')">
+                        <a>Состояние<br />документов<br />перевода</a>
+                        <span class="sortorder" ng-show="predicate === 'DocsStatus'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Status')">
+                        <a>Текущее<br />состояние</a>
+                        <span class="sortorder" ng-show="predicate === 'Status'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                </tr>
+                <tr id="FiltrRow">
+                    <td><input ng-model="search.NPP" class="filterinput" /></td>
+                    <td><input ng-model="search.CreateDate" class="filterinput"  /></td>
+                    <td><input ng-model="search.Number" class="filterinput"  /></td>
+                    <td><input ng-model="search.UserName" class="filterinput"  /></td>
+                    <td><input ng-model="search.Position" class="filterinput"  /></td>
+                    <td><input ng-model="search.Creator" class="filterinput"  /></td>
+                    <td><input ng-model="search.Dep3Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.Dep7Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.PositionCurrent" class="filterinput"  /></td>
+                    <td><input ng-model="search.SourceManagerName" class="filterinput"  /></td>
+                    <td><input ng-model="search.TargetManagerName" class="filterinput"  /></td>
+                    <td><input ng-model="search.PositionTarget" class="filterinput"  /></td>
+                    <td><input ng-model="search.TargetDep3Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.TargetDep7Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.MoveDate" class="filterinput"  /></td>
+                    <td><input ng-model="search.Salary" class="filterinput"  /></td>
+                    <td><input ng-model="search.Conjunction" class="filterinput"  /></td>
+                    <td><input ng-model="search.DocsStatus" class="filterinput"  /></td>
+                    <td><input ng-model="search.Status" class="filterinput"  /></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
+			        <td>{{row.NPP}}</td>
+                    <td>{{row.CreateDate| date: 'dd.MM.yyyy'}}</td>
+                    <td><a href="/StaffMovements/Edit/{{row.Number}}">{{row.Number}}</a></td>
+                    <td>{{row.UserName }}</td>
+                    <td>{{row.Position}}</td>
+                    <td>{{row.Creator}}</td>
+                    <td>{{row.Dep3Name}}</td>
+                    <td>{{row.Dep7Name}}</td>
+                    <td>{{row.PositionCurrent}}</td>
+                    <td>{{row.SourceManagerName}}</td>
+                    <td>{{row.TargetManagerName}}</td>
+                    <td>{{row.PositionTarget}}</td>
+                    <td>{{row.TargetDep3Name}}</td>
+                    <td>{{row.TargetDep7Name}}</td>
+                    <td>{{row.MoveDate| date: 'dd.MM.yyyy'}}</td>
+                    <td>{{row.Salary| currency : '' : 2}}</td>
+                    <td><input type="checkbox" ng-model="row.Conjunction" /></td>
+                    <td>{{row.DocsStatus}}</td>
+                    <td>{{row.Status}}</td>
+		        </tr>
+                </tbody>
+            </table>
+        </td>
+     </tr>
+    </table> 
+}
+</div>
+<script>
+    var GridApp = angular.module('GridApp', []);
+    GridApp.controller('GridController', function ($scope, $http, $filter) {
+        $scope.IsWorking = false;
+        $scope.Grid = {};
+        $scope.model = {};
+        $scope.model.UserName = '';
+        $scope.reverse = false;
+        var orderBy = $filter('orderBy');
+        $scope.Sort = function (col) {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
+            if ($scope.predicate == col) {
+                $scope.reverse = !$scope.reverse;
+            }
+            else {
+                $scope.predicate = col;
+            }
+            $scope.IsWorking = false;
+            $(':button').button('enable');
+        }
+
+        $scope.GetData = function () {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
+            $scope.TotalSum = 0;
+            $http.post('/StaffMovements/', { DepartmentId: $('#DepartmentId').val(), Status: $('#Status').val(), UserName: $('#UserName').val(), Number: $('#Number').val() }).
+              success(function (data, status, headers, config) {
+                  for (var i = 0; i < data.length; i++) {
+                      $scope.TotalSum += data[i].AllSum;
+                  }
+                  $scope.Grid.Data = data;
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
+              }).
+              error(function (data, status, headers, config) {
+                  alert('Ошибка при получении данных.');
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
+              });
+        }
+    });	
+</script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+        $("#Statuses").combobox();
+        $(".hasDatepicker").width("75px");
+        $(':button, :input[type=button], :input[type=submit]').button();
+        setActiveMenuItem("StaffMovements");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+   
+ </script> 

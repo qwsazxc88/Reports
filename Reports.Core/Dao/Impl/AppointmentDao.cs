@@ -64,8 +64,15 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
+                        when r.CandidateRejectDate is not null then N'Кандидат отказался от вакансии'
                         when  r.StaffDateAccept is null then N'Черновик'
-                        when  r.StaffDateAccept is not null and r.IsColloquyPassed=0 and r.IsEducationExists is null then N'Отказано'
+                        when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or (r.TestingResult<=2 and r.TestingResult>0))  and r.IsEducationExists is null then N'Отказано'
+                        
+                        when r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 then N'Собеседование назначено'
+                        when r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 then N'Входное тестирование'
+                        when r.IsColloquyPassed=1 and r.TestingResult>2 and r.IsEducationExists is null and v.AppointmentEducationTypeId=1 and v.Recruter=1  then N'Welcome курс'
+                        when r.IsColloquyPassed=1 then N'Собеседование пройдено'
+                        when r.StaffDateAccept is not null and r.IsEducationExists is null and LessonDate is not null then N'Обучение назначено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'
                         when r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) then 'Кандидат выгружен в приём'
@@ -579,25 +586,37 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Черновик"
-                        statusWhere = @" r.StaffDateAccept is null ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is null ";
                         break;
                     case 2://2, "Кандидату отказано"
-                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=0 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or (r.TestingResult<=2 and r.TestingResult>0)) ";
                         break;
                     case 3://3, "кандидат принят"
-                        statusWhere = @" r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.Id in (select AppointmentReportId from EmploymentCandidate where AppointmentReportId=r.id ) ";
                         break;
                     case 4://4, "Отправлено руководителю"
-                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsColloquyPassed is null ";
                         break;
                     case 5://5, "Собеседование пройдено"
-                        statusWhere = @" r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsColloquyPassed=1 and r.IsEducationExists is null ";
                         break;
                     case 6://6, "Обучение пройдено"
-                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=1 ";
                         break;
                     case 7://7, "Обучение не пройдено"
-                        statusWhere = @" r.StaffDateAccept is not null and r.IsEducationExists=0 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=0 ";
+                        break;
+                    case 8://Welcome 
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        break;
+                    case 9://собеседование назначено
+                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        break;
+                    case 10://входное тестирование
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        break;
+                    case 11:
+                        statusWhere = @" r.CandidateRejectDate is not null ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
@@ -619,34 +638,37 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Черновик"
-                        statusWhere = @"v.ManagerDateAccept is null ";
+                        statusWhere = @" v.DeleteDate is null and v.ManagerDateAccept is null AND is v.NonActual!=1";
                         break;
                     case 2://2, "Отправлена на согласование вышестоящему руководителю"
-                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
+                        statusWhere = @"  v.DeleteDate is null and v.NonActual!=1 and v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is not null and v.IsVacationExists=1";
                         break;
                     case 3://3, "Согласована вышестоящим руководителем"
-                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter<2";
+                        statusWhere = @" v.DeleteDate is null and v.NonActual!=1 and v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter<2";
                         break;
                     case 4://4, "Принята в работу"
-                        statusWhere = @"v.StaffDateAccept is not null ";
+                        statusWhere = @" v.DeleteDate is null and v.NonActual!=1 and v.StaffDateAccept is not null ";
                         break;
                     case 5://5, "Отменена"
-                        statusWhere = @"v.DeleteDate is not null";
+                        statusWhere = @" v.DeleteDate is not null";
                         break;
                     case 6://Нет подходящих вакансий
-                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
+                        statusWhere = @" v.DeleteDate is null and v.NonActual!=1 and  v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.IsVacationExists=0 ";
                             break;
                     case 7://Отправлена на согласование в кадровую службу
-                        statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null ";
+                            statusWhere = @" v.DeleteDate is null and  v.NonActual!=1 and  v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept is null ";
                             break;
                     case 8://Согласование приостановленно
-                            statusWhere = @" v.BankAccountantAccept is null and v.IsStoped=1 ";
+                            statusWhere = @" v.DeleteDate is null and  v.NonActual!=1 and v.BankAccountantAccept is null and v.IsStoped=1 ";
                             break;
                     case 9: //Не хватает вакансий
-                            statusWhere = @" v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount and v.BankAccountantAcceptCount>0"; 
+                            statusWhere = @" v.DeleteDate is null and  v.NonActual!=1 and v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.BankAccountantAccept=1 and v.BankAccountantAcceptCount<v.VacationCount and v.BankAccountantAcceptCount>0"; 
                         break;
                     case 10://3, "Согласована вышестоящим руководителем. Поиск не требуется"
-                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter=2";
+                        statusWhere = @"  v.DeleteDate is null and  v.NonActual!=1 and v.ChiefDateAccept is not null and v.StaffDateAccept is null and recruter=2";
+                        break;
+                    case 11://Заявка не актуальна
+                        statusWhere = @" v.NonActual=1 ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
