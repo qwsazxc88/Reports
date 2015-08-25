@@ -78,6 +78,14 @@
                                 </td>
                          </tr>
                          <tr>
+                                <td>
+                                    ФИО Рекрутера:
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.RecruteFio)
+                                </td>
+                         </tr>
+                         <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
@@ -125,6 +133,7 @@
         }
         *@
          <input type="submit" value="Печать" style="float: right; margin-right:10px;"  onclick="$('#ForPrint').val(2);"/>
+         <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid2');" />
         </div>
         </td>
     </tr>   
@@ -152,12 +161,12 @@
                     <th>
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
-                    <th>
-                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
+                     <th>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
                     </th>
                      <th>
-                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
-                    </th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
+                    </th>                    
                     <th>
                         <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
                     </th>
@@ -197,18 +206,18 @@
                     <th>
                         <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
                     </th>
-                     <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур. кандидата</a></div>
-                    </th>
-                     <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур. кандидата</a></div>
-                    </th>
                     <th>
                         <div id="sort15"  style="min-width:110px"><a href="#"  onclick = "SortChanged(15);">Тел.<br/> кандидата</a></div>
                     </th>
                      <th>
                         <div id="sort16" style="min-width:110px"><a href="#"  onclick = "SortChanged(16);">E-mail<br/> кандидата</a></div>
                     </th> 
+                    <th>
+                        <div id="sort27" ><a href="#"  onclick = "SortChanged(27);">Дирекция<br/> 3 ур. руководителя</a></div>
+                    </th>
+                     <th>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур. руководителя</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -236,9 +245,9 @@
                             </td>
                             <td>@doc.CreateDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
-                            <td>@doc.PositionName</td>
-                            <td>@doc.ManDep3Name</td>
-                            <td>@doc.ManDep7Name</td>
+                            <td>@doc.PositionName</td>                            
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                             <td>@doc.StaffName</td>
                             <td>@doc.RStaffAccept</td>
                             <td>@doc.RApprove</td>
@@ -261,10 +270,10 @@
                             <td>@doc.Reason</td>
                              <td>@RequestBl.FormatSum(@doc.Salary)</td>
                              <td>@doc.Schedule</td>
-                            <td>@doc.Dep3Name</td>
-                            <td>@doc.Dep7Name</td>
                             <td>@doc.Phone</td>
                             <td>@doc.Email</td>
+                            <td>@doc.ManDep3Name</td>
+                            <td>@doc.ManDep7Name</td>
                         </tr>
                     }
                 }
@@ -295,6 +304,9 @@
         //$("#TypeId").val('0');
          $("#StatusId").val('0');
          $("#UserName").val('');
+         $("#CandidateName").val('');
+         $("#Number").val('');
+         $("#RecruteFio").val('');
     }
     /*function setSelection()
     {
