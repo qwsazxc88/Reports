@@ -13,14 +13,13 @@ namespace Reports.Core.Domain
         public virtual string DepCode { get; set; }
         public virtual string NameShort { get; set; }
         public virtual string NameComment { get; set; }
-        public virtual string ReferenceReason { get; set; }
+        public virtual StaffDepartmentReasons DepartmentReasons { get; set; }
         public virtual string PrevDepCode { get; set; }
         public virtual RefAddresses FactAddress { get; set; }
         public virtual string DepStatus { get; set; }
         public virtual StaffDepartmentTypes DepartmentType { get; set; }
         public virtual DateTime? OpenDate { get; set; }
         public virtual DateTime? CloseDate { get; set; }
-        public virtual string Reason { get; set; }
         public virtual string OperationMode { get; set; }
         public virtual DateTime? BeginIdleDate { get; set; }
         public virtual DateTime? EndIdleDate { get; set; }

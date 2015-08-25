@@ -5,6 +5,14 @@ use WebAppTest
 go
 
 --1. УДАЛЕНИЕ ССЫЛОК
+--так как многократно приходится пересоздавать структуру, удаляю связи для других таблиц 
+IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPostRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPostRequest]
+GO
+IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPost', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPost]
+GO
+
 IF OBJECT_ID ('FK_RefAddresses_Editors', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Editors]
 GO
@@ -139,6 +147,10 @@ GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentReasons', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentReasons]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentRequest', 'F') IS NOT NULL
@@ -588,14 +600,13 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[DepCode] [nvarchar](20) NULL,
 	[NameShort] [nvarchar](100) NULL,
 	[NameComment] [nvarchar](50) NULL,
-	[ReferenceReason] [nvarchar](100) NULL,
+	[ReasonId] [int] NULL,
 	[PrevDepCode] [nvarchar](20) NULL,
 	[FactAddressId] [int] NULL,
 	[DepStatus] [nvarchar](50) NULL,
 	[DepTypeId] [int] NULL,
 	[OpenDate] [datetime] NULL,
 	[CloseDate] [datetime] NULL,
-	[Reason] [nvarchar](100) NULL,
 	[OperationMode] [nvarchar](400) NULL,
 	[BeginIdleDate] [datetime] NULL,
 	[EndIdleDate] [datetime] NULL,
@@ -802,7 +813,32 @@ CREATE TABLE [dbo].[StaffEstablishedPostChargeLinks](
 GO
 
 
+if OBJECT_ID (N'StaffDepartmentReasons', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentReasons]
+GO
+CREATE TABLE [dbo].[StaffDepartmentReasons](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_StaffDepartmentReasons] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentReasons] ADD  CONSTRAINT [DF_StaffDepartmentReasons_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentReasons] FOREIGN KEY([ReasonId])
+REFERENCES [dbo].[StaffDepartmentReasons] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentReasons]
+GO
+
 ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostChargeLinks_Salary]  DEFAULT ((0)) FOR [Amount]
 GO
 
@@ -1344,6 +1380,18 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentReasons', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentReasons', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentReasons', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник причин внесения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentReasons'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostChargeLinks', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -1557,9 +1605,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дополнение к краткому названию при закачке' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'NameComment'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Причина внесения в справочник' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'ReferenceReason'
-GO
-
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Прежний код подразделения для финграда' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'PrevDepCode'
 GO
 
@@ -1578,7 +1623,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата закрытия офиса' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'CloseDate'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Причина создания/изменения/удаления СП' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'Reason'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id причины внесения в справочник' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'ReasonId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperationMode'
@@ -2286,10 +2331,33 @@ INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращен
 INSERT INTO DepartmentArchive(DepartmentId, Code, Name, Code1C, ParentId, Path, ItemLevel, IsUsed)
 SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, 1 FROM Department
 
+--StaffDepartmentReasons
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'-')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'вне плана')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'вне плана РР')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'Заблокирован')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'История')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'не переезд - демодернизация')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'перевод ДжиИ')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд внутри помещения')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд вынужденный')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд затяжной')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд сетевой')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд стандартный')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'по плану РР')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивная точка')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивный переезд')
+
+
 IF DB_NAME() = 'WebAppTest'
 BEGIN
 	INSERT INTO Kladr 
 	SELECT * FROM WebAppSKB.dbo.Kladr
+
+	UPDATE sysdiagrams SET definition = B.definition
+	FROM sysdiagrams as A
+	INNER JOIN WebAppSKB.dbo.sysdiagrams as B ON B.diagram_id = A.diagram_id 
+
 END
 
 
