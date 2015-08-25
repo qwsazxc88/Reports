@@ -310,10 +310,12 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@Html.LabelFor(m => m.ReferenceReason)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.ReferenceReason, (object)new { style = "width:400px;" })
-                            @Html.ValidationMessageFor(model => model.ReferenceReason)
+                            @Html.LabelFor(m => m.ReasonId):
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.ReasonId)
                         </td>
                     </tr>
                     <tr>
@@ -369,13 +371,6 @@
                         <td>
                             @Html.TextBoxFor(m => m.CloseDate)
                             @Html.ValidationMessageFor(model => model.CloseDate)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.Reason)</td>
-                        <td>
-                            @Html.TextBoxFor(m => m.Reason, (object)new { style = "width:400px;" })
-                            @Html.ValidationMessageFor(model => model.Reason)
                         </td>
                     </tr>
                     <tr>

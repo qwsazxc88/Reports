@@ -145,7 +145,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string NameShort { get; set; }
 
         [Display(Name = "Причина внесения в справочник")]
-        public string ReferenceReason { get; set; }
+        public int? ReasonId { get; set; }
+        public IList<IdNameDto> Reasons { get; set; }
 
         [Display(Name = "Фактический адрес")]
         public int? FactAddressId { get; set; }
@@ -176,9 +177,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Дата закрытия офиса")]
         public DateTime? CloseDate { get; set; }
-
-        [Display(Name = "Причина создания/изменения/удаления СП")]
-        public string Reason { get; set; }
 
         [Display(Name = "Режим работы подразделения")]
         public IList<DepOperationModeDto> OperationModes { get; set; }

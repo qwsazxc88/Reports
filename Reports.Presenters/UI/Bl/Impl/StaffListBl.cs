@@ -153,6 +153,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffextraChargesDao); }
             set { staffextraChargesDao = value; }
         }
+
+        protected IStaffDepartmentReasonsDao staffsepartmentReasonsDao;
+        public IStaffDepartmentReasonsDao StaffDepartmentReasonsDao
+        {
+            get { return Validate.Dependency(staffsepartmentReasonsDao); }
+            set { staffsepartmentReasonsDao = value; }
+        }
         
         #endregion
 
@@ -303,14 +310,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //Управленческие реквизиты
                 model.NameShort = string.Empty;
-                model.ReferenceReason = string.Empty;
+                model.ReasonId = 0;
                 model.FactAddressId = 0;
                 model.DepStatus = string.Empty;
                 model.DepTypeId = 0;
 
                 model.OpenDate = null;
                 model.CloseDate = null;
-                model.Reason = string.Empty;
                 model.OperationMode = string.Empty;
                 model.BeginIdleDate = null;
                 model.EndIdleDate = null;
@@ -411,7 +417,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
                 model.DMDetailId = dmd.Id;
                 model.NameShort = dmd.NameShort;
-                model.ReferenceReason = dmd.ReferenceReason;
+                model.ReasonId = dmd.DepartmentReasons.Id;
                 if (dmd.FactAddress != null)
                 {
                     model.FactAddressId = dmd.FactAddress.Id;
@@ -434,7 +440,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
                 model.OpenDate = dmd.OpenDate;
                 model.CloseDate = dmd.CloseDate;
-                model.Reason = dmd.Reason;
                 model.OperationMode = dmd.OperationMode;
                 model.BeginIdleDate = dmd.BeginIdleDate;
                 model.EndIdleDate = dmd.EndIdleDate;
@@ -573,7 +578,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
                 dmd.NameShort = model.NameShort;
-                dmd.ReferenceReason = model.ReferenceReason;
+                dmd.DepartmentReasons = model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
 
                 //фактический адрес
                 if (!string.IsNullOrEmpty(model.FactAddress))
@@ -630,7 +635,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
-                dmd.Reason = model.Reason;
                 dmd.OperationMode = model.OperationMode;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
@@ -867,7 +871,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
                 dmd.NameShort = model.NameShort;
-                dmd.ReferenceReason = model.ReferenceReason;
+                dmd.DepartmentReasons = model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
 
                 //фактический адрес
                 if (!string.IsNullOrEmpty(model.FactAddress))
@@ -925,7 +929,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
-                dmd.Reason = model.Reason;
                 dmd.OperationMode = model.OperationMode;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
@@ -1007,7 +1010,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 entity.DepartmentManagerDetails[0].NameShort = model.NameShort;
-                entity.DepartmentManagerDetails[0].ReferenceReason = model.ReferenceReason;
+                entity.DepartmentManagerDetails[0].DepartmentReasons = model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
 
                 //фактический адрес
                 RefAddresses fa = null;
@@ -1081,7 +1084,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
                 entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
                 entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
-                entity.DepartmentManagerDetails[0].Reason = model.Reason;
                 entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
                 entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
                 entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
@@ -1822,6 +1824,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
             model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
+            model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

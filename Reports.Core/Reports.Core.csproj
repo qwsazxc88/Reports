@@ -298,6 +298,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentReasonsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTaxDetailsDao.cs" />
@@ -319,6 +320,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentReasonsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTaxDetailsDao.cs" />
@@ -610,6 +612,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperationModes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperations.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentReasons.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentRequest.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentRequestTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentTaxDetails.cs" />
@@ -1297,6 +1300,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentReasons.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
