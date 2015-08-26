@@ -676,6 +676,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 list.Add(new IdNameDto(i,GetMonthName(i)));
             return list;
         }
+        public static string GetMonthName(int month, int type)
+        {
+            string[][] monthes=new string[3][];
+            monthes[0] = new string[]{"Январь","Февраль","Март","Апрель","Май", "Июнь", "Июль", "Август","Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+            monthes[1] = new string[] { "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря" };
+            monthes[2] = new string[] { "Январе", "Феврале", "Марте", "Апреле", "Мае", "Июне", "Июле", "Августе", "Сентябре", "Октябре", "Ноябре", "Декабре" };
+            return monthes[type][month-1];
+        }
         public static string GetMonthName(int month)
         {
             switch (month)

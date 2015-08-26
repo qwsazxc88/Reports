@@ -328,7 +328,8 @@ namespace Reports.Core.Dao.Impl
                                 select distinct employee.Id from Users employee
                                     left join [dbo].[Users] employeeManagerAccount
                                     on (employeeManagerAccount.RoleId & 4) > 0
-                                        and employeeManagerAccount.Login = u.Login+N'R'
+                                        --закомментарил добавление R к логину, так как руководитель уже имеет это в конце своего логина
+                                        and employeeManagerAccount.Login = u.Login--+N'R'
                                         and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                       on employee.DepartmentId = employeeDept.Id
