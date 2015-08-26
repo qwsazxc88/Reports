@@ -2888,7 +2888,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Schedules = GetSchedules();
             model.ContractPoint1_Items = GetContractPointVariants().Where(x => x.PointTypeId == 1).OrderBy(x => x.PointId).ToList();
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
-            model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
+            model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).ToList();
             model.NorthExperienceTypes = GetNorthExperienceTypes();
             model.ExtraCharges = ExtraChargesDao.LoadAll();
         }
@@ -3063,10 +3063,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
             cpv.Add(new ContractPointDto { PointId = 6, PointTypeId = 3, PointTypeName = "Вариант 2", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов." });
             cpv.Add(new ContractPointDto { PointId = 7, PointTypeId = 3, PointTypeName = "Вариант 3", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: ненормированный рабочий день." });
-            cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
-            cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
-            cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
-            cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 3, PointTypeName = "Вариант 7", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа." });
+            //побили на две части закомментаренный пункт
+            //cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
+            cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал." });
+            cpv.Add(new ContractPointDto { PointId = 12, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = " РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год." });
+            cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
+            cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 7", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
+            cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 3, PointTypeName = "Вариант 8", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа." });
 
             return cpv;
         }
