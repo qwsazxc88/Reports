@@ -59,7 +59,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
         }
-        protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
+        /*protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
         public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
         {
             get { return Validate.Dependency(staffEstablishedPostChargeLinksDao); }
@@ -77,7 +77,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(staffEstablishedPostRequestDao); }
             set { staffEstablishedPostRequestDao = value; }
-        }
+        }*/
         public IRequestNextNumberDao RequestNextNumberDao
         {
             get { return Validate.Dependency(requestNextNumberDao); }
@@ -807,13 +807,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Dep3Name=Dep3.First().Name;
                 }
             }
-            var staffEstablishedPost = StaffEstablishedPostDao.Find(x => x.Department.Id == model.Dep7Id && x.Position.Id == model.PositionId);
+            /*var staffEstablishedPost = StaffEstablishedPostDao.Find(x => x.Department.Id == model.Dep7Id && x.Position.Id == model.PositionId);
             if (staffEstablishedPost != null && staffEstablishedPost.Any())
             {
                 var post = staffEstablishedPost.First();
                 model.Charges = StaffEstablishedPostChargeLinksDao.GetChargesForEstablishedPosts(post.Id);
                 model.StaffEstablishedPostId = post.Id;
-            }
+            }*/
         }
     }
     

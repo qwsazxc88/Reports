@@ -199,10 +199,12 @@ function getExcelTable(selector) {
 (function ($) {
     $.widget("custom.combobox", {
         _create: function () {
-            this.wrapper = $("<span>")
-          .addClass("custom-combobox")
+        this.parentwrapper = $("<div>")
+          .addClass("custom-combobox-wraper")
           .insertAfter(this.element);
-
+            this.wrapper = $("<span>")
+          .addClass("custom-combobox").appendTo(this.parentwrapper);
+          
             this.element.hide();
             this._createAutocomplete();
             this._createShowAllButton();

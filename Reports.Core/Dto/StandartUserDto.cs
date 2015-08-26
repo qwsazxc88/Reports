@@ -26,8 +26,8 @@ namespace Reports.Core.Dto
         public int SalaryType { get; set; }
         [Display(Name = "Оклад")]
         public decimal Casing { get; set; }
-        [Display(Name = "Надбавки")]
-        public IList<StaffEstablishedPostChargeLinksDto> Charges { get; set; }
+        /*[Display(Name = "Надбавки")]
+        public IList<StaffEstablishedPostChargeLinksDto> Charges { get; set; }*/
         [Display(Name = "Вышестоящие руководители")]
         public IList<string> Chiefs { get; set; }
         [Display(Name = "Кадровики")]
