@@ -9,11 +9,7 @@ namespace Reports.Core.Domain
     {
         public virtual StaffMovementsData Data { get; set; }
         //Основные данные заявки                
-        /// <summary>
-        /// Тип перемещения
-        /// </summary>
-        public virtual AbstractReferencyBookEntity MoveType { get; set; }
-	
+        	
 	    //Подразделения
         /// <summary>
         /// Исходное подразделение
@@ -28,11 +24,12 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Исходная должность
         /// </summary>
-        public virtual int SourcePosition { get; set; }
+        public virtual StaffEstablishedPost SourcePosition { get; set; }
+
         /// <summary>
         /// Целевая должность
         /// </summary>
-        public virtual int TargetPosition { get; set; }
+        public virtual StaffEstablishedPostRequest TargetPosition { get; set; }
 
 	    //Люди                
         /// <summary>
@@ -98,6 +95,8 @@ namespace Reports.Core.Domain
         /// Дата согласования кадровиком
         /// </summary>
         public virtual DateTime? PersonnelManagerAccept { get; set; }
+
+        public virtual IList<StaffMovementsDocs> Docs { get; set; }
 
     }
 }

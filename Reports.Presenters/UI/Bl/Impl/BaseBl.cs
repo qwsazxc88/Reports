@@ -12,22 +12,13 @@ using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Linq;
-
+using Reports.Presenters.UI.ViewModel;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl
     {
         protected string SelectAll = "Все";
 
-        public static void ChangeStatus(this StandartRequestEntity entity, IDao<AbstractReferencyBookEntity> RefBookDao, int Status) 
-        {
-            var _status = RefBookDao.Load(Status);
-            entity.Status = _status;
-        }
-        public static void ChangeProperties<T,key>(this T entity, Action<T> action) where T:IEntity<key>
-        {
-            action(entity);
-        }
         public static string[] RublesWords =
                                         {
                                             "рубль",
@@ -67,6 +58,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
+        }
+        protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
+        public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostChargeLinksDao); }
+            set { staffEstablishedPostChargeLinksDao = value; }
+        }
+
+        protected IStaffEstablishedPostDao staffEstablishedPostDao;
+        public IStaffEstablishedPostDao StaffEstablishedPostDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostDao); }
+            set { staffEstablishedPostDao = value; }
+        }
+        protected IStaffEstablishedPostRequestDao staffEstablishedPostRequestDao;
+        public IStaffEstablishedPostRequestDao StaffEstablishedPostRequestDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostRequestDao); }
+            set { staffEstablishedPostRequestDao = value; }
         }
         public IRequestNextNumberDao RequestNextNumberDao
         {
@@ -757,8 +767,56 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return date.ToShortDateString();
         }
-
+        
+        public void LoadUserData(StandartUserDto model)
+        {
+            if (model.Id <= 0) return;
+            var user = UserDao.Load(model.Id);
+            if (user == null) return;
+            model.Name = user.Name;
+            if (user.Position != null)
+            {
+                model.PositionId = user.Position.Id;
+                model.PositionName = user.Position.Name;
+            }
+            if(user.Personnels!=null && user.Personnels.Any())
+            {
+                var personnels=user.Personnels;
+                model.Personnels = new List<string>();
+                foreach(var el in personnels)
+                {
+                    model.Personnels.Add(el.Name);
+                }
+            }
+            var chiefs=GetChiefsForManager(user.Id);
+            if(chiefs!=null && chiefs.Any())
+            {
+                model.Chiefs = new List<string>();
+                foreach(var el in chiefs)
+                    model.Chiefs.Add(String.Format("{0} ({1})",el.Name,el.Position!=null?el.Position.Name:""));
+            }
+            var Dep7=user.Department;
+            if(Dep7!=null)
+            {
+                model.Dep7Id=Dep7.Id;
+                model.Dep7Name=Dep7.Name;
+                var Dep3= Dep7.Dep3;
+                if(Dep3!=null && Dep3.Any())
+                {
+                    model.Dep3Id=Dep3.First().Id;
+                    model.Dep3Name=Dep3.First().Name;
+                }
+            }
+            var staffEstablishedPost = StaffEstablishedPostDao.Find(x => x.Department.Id == model.Dep7Id && x.Position.Id == model.PositionId);
+            if (staffEstablishedPost != null && staffEstablishedPost.Any())
+            {
+                var post = staffEstablishedPost.First();
+                model.Charges = StaffEstablishedPostChargeLinksDao.GetChargesForEstablishedPosts(post.Id);
+                model.StaffEstablishedPostId = post.Id;
+            }
+        }
     }
+    
     public class BlockGSSAPINTLMCredential : ICredentialsByHost
     {
         private readonly NetworkCredential wrappedNetworkCredential;

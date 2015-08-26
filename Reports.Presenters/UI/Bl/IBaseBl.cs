@@ -12,9 +12,5 @@ namespace Reports.Presenters.UI.Bl
         IUser CurrentUser { get; }
         IList<MessagesDto> GetComments(int PlaceTypeId, int PlaceId);
         void AddComment(MessagesDto message);
-
-        static void ChangeStatus(this StandartRequestEntity entity, IDao<AbstractReferencyBookEntity> RefBookDao, int Status);
-        static void ChangeProperties<T, key>(this T entity, Action<T> action) where T : IEntity<key>;
-
     }
 }

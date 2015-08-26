@@ -7,6 +7,9 @@ function createDepartmentDialog()
     elem.id = "divDepartmentDialog";
     var newDiv = $(elem);
     var departmentId = $("#DepartmentId").val();
+    //Кадровые перемещения
+    if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
+    if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
     //var typeId = $("#RequestTypeId").val();
 
     var title =  "Выбор структурного подразделения";
@@ -99,6 +102,18 @@ function SaveDepartment() {
     $('#DepartmentId').val("0");
     $('#DepartmentName').val("");
     $('#DepartmentNameLabel').text("");
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val("0");
+        $('#SourceDepartmentName').val("");
+        $('#SourceDepartmentNameLabel').text("");
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val("0");
+        $('#TargetDepartmentName').val("");
+        $('#TargetDepartmentNameLabel').text("");
+    }
     return;
 }
 function setDepartmentValues(control) {
@@ -106,6 +121,19 @@ function setDepartmentValues(control) {
     $('#DepartmentName').val($('#' + control + ' option:selected').text());
     $('#DepartmentNameLabel').text($('#' + control + ' option:selected').text());
 }
+    }
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val($('#' + control).val());
+        $('#SourceDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#SourceDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val($('#' + control).val());
+        $('#TargetDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentId').change();
 function Level2IDChange() {
     if($('#Level2ID').val() == 0)
         setEmptyToDropdown('Level3ID');
