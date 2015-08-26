@@ -312,7 +312,7 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m=>m.NorthFactor)</td>
-                                    <td>@Html.TextBoxFor(m => m.NorthFactor)</td>
+                                    <td>@Html.DropDownListFor(m=>m.NorthFactor,new SelectList(Model.NorthFactors,"Id","Name"))</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m=>m.ChangesToAgreementEnties)</td>
@@ -358,7 +358,13 @@
                               Заявление о переводе
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="MovementNote" /></td>
+                              <td>
+                                @if (Model.MovementNoteDto!=null && !string.IsNullOrEmpty(Model.MovementNoteDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
+                                }
+                                <input type="file" name="MovementNote" />
+                              </td>
                               <td><input type="checkbox" name="IsMovementNoteRequired"/></td>
                             </tr>
                             <tr>
@@ -366,7 +372,13 @@
                               Дополнительное соглашение
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="AdditionalAgreementDoc" /></td>
+                              <td>
+                               @if (Model.AdditionalAgreementDocDto != null && !string.IsNullOrEmpty(Model.AdditionalAgreementDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AdditionalAgreementDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.AdditionalAgreementDocDto.FileName</a>
+                                }
+                                <input type="file" name="AdditionalAgreementDoc" />                               
+                              </td>
                               <td><input type="checkbox" name="IsAdditionalAgreementDocRequired"/></td>
                             </tr>
                             <tr>
@@ -374,7 +386,13 @@
                               Приказ о переводе
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="MovementOrderDoc" /></td>
+                              <td>
+                                @if (Model.MovementOrderDocDto != null && !string.IsNullOrEmpty(Model.MovementOrderDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementOrderDocDto.FileName</a>
+                                }
+                                <input type="file" name="MovementOrderDoc" />
+                              </td>
                               <td><input type="checkbox" name="IsMovementOrderDocRequired"/></td>
                             </tr>
                             <tr>
@@ -382,7 +400,13 @@
                               Договор мат.ответственность
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="MaterialLiabilityDoc" /></td>
+                              <td>
+                                @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MaterialLiabilityDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MaterialLiabilityDocDto.FileName</a>
+                                }
+                                <input type="file" name="MaterialLiabilityDoc" />
+                              </td>
                               <td><input type="checkbox" name="IsMaterialLiabilityDocRequired"/></td>
                           </tr>
                           <tr>
@@ -390,7 +414,13 @@
                               Печать порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="RequirementsOrderDoc" /></td>
+                              <td>
+                                  @if (Model.RequirementsOrderDocDto != null && !string.IsNullOrEmpty(Model.RequirementsOrderDocDto.FileName))
+                                    {
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.RequirementsOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.RequirementsOrderDocDto.FileName</a>
+                                    }
+                                  <input type="file" name="RequirementsOrderDoc" />
+                              </td>
                               <td><input type="checkbox" name="IsRequirementsOrderDocRequired"/></td>
                           </tr>
                           <tr>
@@ -398,7 +428,13 @@
                               Печать порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
                               </td>
                               <td><input type="button" value="Печать" /></td>
-                              <td><input type="file" name="ServiceOrderDoc" /></td>
+                              <td>
+                                    @if (Model.ServiceOrderDocDto != null && !string.IsNullOrEmpty(Model.ServiceOrderDocDto.FileName))
+                                    {
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ServiceOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceOrderDocDto.FileName</a>
+                                    }
+                                    <input type="file" name="ServiceOrderDoc" />
+                              </td>
                               <td><input type="checkbox" name="IsServiceOrderDocRequired"/></td>
                           </tr>
                           </table>

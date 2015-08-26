@@ -19,6 +19,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IRoleDao roleDao;
+        public IRoleDao RoleDao
+        {
+            get { return Validate.Dependency(roleDao); }
+            set { roleDao = value; }
+        }
+        protected IRequestAttachmentDao requestAttachmentDao;
+        public IRequestAttachmentDao RequestAttachmentDao
+        {
+            get { return Validate.Dependency(requestAttachmentDao); }
+            set { requestAttachmentDao = value; }
+        }
         protected IStaffMovementsDao staffMovementsDao;
         public IStaffMovementsDao StaffMovementsDao
         {
@@ -152,15 +164,96 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TargetPositionName = entity.TargetPosition.Position.Name;
                 model.TargetDepartmentId = entity.TargetDepartment.Id;
                 model.TargetDepartmentName = entity.TargetDepartment.Name;
+                model.TargetManager = new StandartUserDto { Id = entity.TargetManager.Id };
+                LoadUserData(model.TargetManager);
+                model.SourceManager = new StandartUserDto { Id = entity.TargetManager.Id };
+                LoadUserData(model.SourceManager);
                 #endregion
                 #region Для руководителей
+                model.MovementCondition = entity.Data.MovementCondition;
+                model.AdditionPersonnel = entity.Data.AdditionPersonnel;
+                model.AdditionPersonnelTo = entity.Data.AdditionPersonnelTo;
+                model.AdditionPosition = entity.Data.AdditionPosition;
+                model.AdditionPositionTo = entity.Data.AdditionPositionTo;
+                model.AdditionQuality = entity.Data.AdditionQuality;
+                model.AdditionQualityTo = entity.Data.AdditionQualityTo;
                 #endregion
                 #region Для бухгалтеров
                 model.OrderDate = entity.OrderDate;
+                model.AdditionalAgreementDate = entity.Data.AdditionalAgreementDate;
+                model.AdditionalAgreementNumber = entity.Data.AdditionalAgreementNumber;
+                model.IsHourly = entity.Data.SalaryType == 1;
+                model.RegionCoefficient = entity.Data.RegionCoefficient;
+                model.AdditionTerritory = entity.Data.AdditionTerritory;
+                model.AdditionTraveling = entity.Data.AdditionTraveling;
+                model.AdditionFront = entity.Data.AdditionFront;
+                model.AdditionFrontTo = entity.Data.AdditionFrontTo;
+                model.Grade = entity.Data.Grade;
+                model.HoursType = entity.Data.HoursType.Id;
+                model.NorthFactor = entity.Data.NorthFactor;
+                model.AdditionalAgreementEnties = entity.Data.AdditionalAgreementEntries;
+                model.AgreementDate = entity.Data.AgreementDate;
+                model.ChangesToAgreement = entity.Data.ChangesToAgreement;
+                model.ChangesToAgreementEnties = entity.Data.ChangesToAgreementEntries;
+                model.MovementReason = entity.Data.MovementReason;
+                model.AccessGroup = entity.Data.AccessGroup.Id;
+                model.SignatoryId = entity.Data.Signatory.Id;
+                model.SignatoryName = entity.Data.Signatory.Name;
+                #endregion
+                #region Files
+                var docs = entity.Docs;
+                if (docs != null && docs.Any())
+                {
+                    var AdditionalAgreementDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc).First();
+                    model.AdditionalAgreementDocDto = new UploadFileDto();
+                    if (AdditionalAgreementDoc != null && AdditionalAgreementDoc.Attachment!=null)
+                    {                        
+                        model.AdditionalAgreementDocDto.FileName = AdditionalAgreementDoc.Attachment.FileName;
+                        model.AdditionalAgreementDocAttachmentId = AdditionalAgreementDoc.Attachment.Id;
+                    }
+                    var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
+                    model.MaterialLiabilityDocDto = new UploadFileDto();
+                    if (MaterialLiabilityDoc != null && MaterialLiabilityDoc.Attachment != null)
+                    {
+                        model.MaterialLiabilityDocDto.FileName = MaterialLiabilityDoc.Attachment.FileName;
+                        model.MaterialLiabilityDocAttachmentId = MaterialLiabilityDoc.Attachment.Id;
+                    }
+                    var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
+                    model.MovementNoteDto = new UploadFileDto();
+                    if (MovementNote != null && MovementNote.Attachment != null)
+                    {
+                        model.MovementNoteDto.FileName = MovementNote.Attachment.FileName;
+                        model.MovementNoteAttachmentId = MovementNote.Attachment.Id;
+                    }
+                    var MovementOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc).First();
+                    model.MovementOrderDocDto = new UploadFileDto();
+                    if (MovementOrderDoc != null && MovementOrderDoc.Attachment != null)
+                    {
+                        model.MovementOrderDocDto.FileName = MovementOrderDoc.Attachment.FileName;
+                        model.MovementOrderDocAttachmentId = MovementOrderDoc.Attachment.Id;
+                    }
+                    var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
+                    model.RequirementsOrderDocDto = new UploadFileDto();
+                    if (RequirementsOrderDoc != null && RequirementsOrderDoc.Attachment != null)
+                    {
+                        model.RequirementsOrderDocDto.FileName = RequirementsOrderDoc.Attachment.FileName;
+                        model.RequirementsOrderDocAttachmentId = RequirementsOrderDoc.Attachment.Id;
+                    }
+                    var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
+                    model.ServiceOrderDocDto = new UploadFileDto();
+                    if (ServiceOrderDoc != null && ServiceOrderDoc.Attachment != null)
+                    {
+                        model.ServiceOrderDocDto.FileName = ServiceOrderDoc.Attachment.FileName;
+                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;
+                    }
+                }
                 #endregion
             }
+            //Подгружаем данные о сотруднике
             LoadUserData(model.User);
+            //Заполняем справочники
             LoadDictionaries(model);
+            //Подгружаем данные о создателе заявки
             if ((model.Creator==null || model.Creator.Id == 0) && model.Id==0)
             {
                 model.Creator = new StandartUserDto();
@@ -194,6 +287,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.RequestTypes = RequestTypes.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             }
+            var NorthFactors = GetNorthExperienceTypes();
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
@@ -208,8 +302,40 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
-
+            #region файлы
+            if (entity.Docs == null || !entity.Docs.Any())
+            {
+                for(int i=1;i<=6;i++)
+                {
+                    //Создаём все документы сразу
+                    StaffMovementsDocs doc = new StaffMovementsDocs { Request = entity, DocType = i };
+                    StaffMovementsDocsDao.SaveAndFlush(doc);
+                }
+            }
+            SaveFiles(model);
+            #endregion
         }
+        private void SaveFiles(StaffMovementsEditModel model)
+        {
+            var entity = StaffMovementsDao.Load(model.Id);
+            var docs = entity.Docs;
+            #region файлики
+            var tmp = "";
+            var AdditionalAgreementDoc= docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc).First();
+            SaveAttachment(AdditionalAgreementDoc.Id, AdditionalAgreementDoc.Attachment != null ? AdditionalAgreementDoc.Attachment.Id : 0, model.AdditionalAgreementDocDto, RequestAttachmentTypeEnum.StaffMovements,out tmp);
+            var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
+            SaveAttachment(MaterialLiabilityDoc.Id, MaterialLiabilityDoc.Attachment != null ? MaterialLiabilityDoc.Attachment.Id : 0, model.MaterialLiabilityDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
+            SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var MovementOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc).First();
+            SaveAttachment(MovementOrderDoc.Id, MovementOrderDoc.Attachment != null ? MovementOrderDoc.Attachment.Id : 0, model.MovementOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
+            SaveAttachment(RequirementsOrderDoc.Id, RequirementsOrderDoc.Attachment != null ? RequirementsOrderDoc.Attachment.Id : 0, model.RequirementsOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
+            SaveAttachment(ServiceOrderDoc.Id, ServiceOrderDoc.Attachment != null ? ServiceOrderDoc.Attachment.Id : 0, model.ServiceOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            #endregion
+        }
+
         private void ChangeEntityProperties(StaffMovements entity, StaffMovementsEditModel model)
         {
             ChangeEntityStatus(entity, model);
@@ -235,14 +361,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region Данные о переводе
             entity.MovementDate = model.MovementDate;
             entity.OrderDate = model.OrderDate;
-            entity.SourcePosition = StaffEstablishedPostDao.Get(model.User.StaffEstablishedPostId);
+            entity.SourcePosition = StaffEstablishedPostRequestDao.Get(model.User.StaffEstablishedPostId);
             entity.SourceDepartment = entity.SourcePosition.Department;
             entity.TargetPosition = StaffEstablishedPostRequestDao.Load(model.TargetPositionId);
             entity.TargetDepartment = entity.TargetPosition.Department;
+            entity.SourceManager = GetManagerForDepartment(entity.SourceDepartment);
+            entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             #endregion
             #region Для руководителей
+            entity.Data.MovementCondition = model.MovementCondition;
+            entity.Data.AdditionPersonnel = model.AdditionPersonnel;
+            entity.Data.AdditionPersonnelTo = model.AdditionPersonnelTo;
+            entity.Data.AdditionPosition = model.AdditionPosition;
+            entity.Data.AdditionPositionTo = model.AdditionPositionTo;
+            entity.Data.AdditionQuality = model.AdditionQuality;
+            entity.Data.AdditionQualityTo = model.AdditionQualityTo;
             #endregion
             #region Для бухгалтеров
+            entity.Data.AdditionalAgreementDate = model.AdditionalAgreementDate;
+            entity.Data.AdditionalAgreementNumber = model.AdditionalAgreementNumber;
+            entity.OrderDate = model.OrderDate;
+            entity.Data.SalaryType = model.IsHourly ? 1 : 0;
+            entity.Data.RegionCoefficient = model.RegionCoefficient;
+            entity.Data.AdditionTerritory = model.AdditionTerritory;
+            entity.Data.AdditionTraveling = model.AdditionTraveling;
+            entity.Data.AdditionFront = model.AdditionFront;
+            entity.Data.AdditionFrontTo = model.AdditionFrontTo;
+            entity.Data.Grade = model.Grade;
+            entity.Data.HoursType = EmploymentHoursTypeDao.Load(model.HoursType);
+            entity.Data.NorthFactor = model.NorthFactor;
+            entity.Data.AdditionalAgreementEntries = model.AdditionalAgreementEnties;
+            entity.Data.AgreementDate = model.AgreementDate;
+            entity.Data.ChangesToAgreement = model.ChangesToAgreement;
+            entity.Data.ChangesToAgreementEntries = model.ChangesToAgreementEnties;
+            entity.Data.MovementReason = model.MovementReason;
+            entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);
+            entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);
             #endregion
         }
         private void ChangeEntityStatus(StaffMovements entity, StaffMovementsEditModel model)
@@ -256,7 +410,87 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.Position.Name }).ToList();
             }
-            else return null;                 
+            else return new List<IdNameDto>();                 
+        }
+        #endregion
+        #region Files
+        public AttachmentModel GetFileContext(int id/*,int typeId*/)
+        {
+            RequestAttachment attachment = RequestAttachmentDao.Load(id);
+            return new AttachmentModel
+            {
+                Context = attachment.UncompressContext,
+                FileName = attachment.FileName,
+                ContextType = attachment.ContextType
+            };
+        }
+        protected int? SaveAttachment(int entityId, int id, UploadFileDto dto, RequestAttachmentTypeEnum type, out string attachment)
+        {
+            attachment = string.Empty;
+            if (dto == null)
+                return new int?();
+            RequestAttachment attach = id != 0 ?
+               RequestAttachmentDao.Get(id) :
+               new RequestAttachment
+               {
+                   RequestId = entityId,
+                   RequestType = (int)type,
+                   CreatorRole = RoleDao.Load((int)CurrentUser.UserRole),
+               };
+            if (id == 0)
+            {
+                RequestAttachment existingAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entityId, type);
+                if (existingAttach != null)
+                {
+                    Log.InfoFormat("Файл уже существует", entityId, type, existingAttach.Id);
+                    attach = existingAttach;
+                }
+            }
+            attach.DateCreated = DateTime.Now;
+            attach.UncompressContext = dto.Context;
+            attach.ContextType = dto.ContextType;
+            attach.FileName = dto.FileName;
+            attach.CreatorRole = RoleDao.Load((int)CurrentUser.UserRole);
+            RequestAttachmentDao.SaveAndFlush(attach);
+            attachment = attach.FileName;
+            if (type == RequestAttachmentTypeEnum.StaffMovements)
+            {
+                var doc=StaffMovementsDocsDao.Load(entityId);
+                doc.Attachment = attach;
+                StaffMovementsDocsDao.SaveAndFlush(doc);
+            }
+            return attach.Id;
+        }
+        public bool DeleteAttachment(DeleteAttacmentModel model)
+        {
+            RequestAttachmentDao.Delete(model.Id);
+            return true;
+        }
+
+        #endregion
+        #region Dictionaries
+        public IList<IdNameDto> GetNorthExperienceTypes()
+        {
+            IList<IdNameDto> inDto = new List<IdNameDto> { };
+
+            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не полагается северная надбавка" });
+            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутствует, начать начисление стажа с даты приема" });
+            inDto.Add(new IdNameDto { Id = 3, Name = "Северный стаж у сотрудника имеется, указать количество северного стажа" });
+
+            return inDto;
+        }
+        public User GetManagerForDepartment(Department dep)
+        {
+            var managers=DepartmentDao.GetDepartmentManagers(dep.Id,true);
+            if (managers != null && managers.Any())
+            {
+                var level=managers.Max(x => x.Level.Value);
+                managers = managers.Where(x => x.Level.Value == level).ToList();
+                var mainmanager = managers.Where(x => x.IsMainManager);
+                if (mainmanager != null && mainmanager.Any()) return mainmanager.First();
+                else return managers.First();
+            }
+            return null;
         }
         #endregion
     }
