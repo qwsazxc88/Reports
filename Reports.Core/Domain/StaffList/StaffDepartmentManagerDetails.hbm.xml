@@ -26,7 +26,7 @@
     <property name="AmountPayment" not-null="false"/>
     <property name="Phone" length="20" not-null="false"/>
     <property name="IsBlocked" not-null="false"/>
-    <property name="IsNetShop" not-null="false"/>
+    <many-to-one name="NetShopIdentification" class="StaffNetShopIdentification" column="NetShopId" foreign-key="FK_StaffDepartmentManagerDetails_StaffNetShopIdentification" index="StaffDepartmentManagerDetails_StaffNetShopIdentification" not-null="false"/>
     <property name="IsAvailableCash" not-null="false"/>
     <property name="IsLegalEntity" not-null="false"/>
     <property name="PlanEPCount" not-null="false"/>

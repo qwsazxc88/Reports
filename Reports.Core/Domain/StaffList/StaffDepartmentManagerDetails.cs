@@ -29,7 +29,7 @@ namespace Reports.Core.Domain
         public virtual decimal? AmountPayment { get; set; }
         public virtual string Phone { get; set; }
         public virtual bool IsBlocked { get; set; }
-        public virtual bool IsNetShop { get; set; }
+        public virtual StaffNetShopIdentification NetShopIdentification { get; set; }
         public virtual bool IsAvailableCash { get; set; }
         public virtual bool IsLegalEntity { get; set; }
         public virtual int PlanEPCount { get; set; }

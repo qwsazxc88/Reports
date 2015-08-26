@@ -116,6 +116,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Количество банкоматов всего")]
         public int ATMCountTotal { get; set; }
 
+        [Display(Name = "Количество запущенных банкоматов с функцией кэшин")]
+        public int ATMCashInStarted { get; set; }
+
         [Display(Name = "Количество банкоматов с функцией кэшин")]
         public int ATMCashInCount { get; set; }
 
@@ -212,7 +215,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsBlocked { get; set; }
 
         [Display(Name = "Признак сетевого магазина")]
-        public bool IsNetShop { get; set; }
+        public int? NetShopId { get; set; }
+        public IList<IdNameDto> NetShopTypes { get; set; }
 
         [Display(Name = "Признак наличия кассы")]
         public bool IsAvailableCash { get; set; }

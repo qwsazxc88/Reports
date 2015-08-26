@@ -8,6 +8,7 @@
 
     <many-to-one name="DepRequest" class="StaffDepartmentRequest" column="DepRequestId" foreign-key="FK_StaffDepartmentCBDetails_StaffDepartmentRequest" index="StaffDepartmentCBDetails_StaffDepartmentRequest" not-null="false"/>
     <property name="ATMCountTotal" not-null="false"/>
+    <property name="ATMCashInStarted" not-null="false"/>
     <property name="ATMCashInCount" not-null="false"/>
     <property name="ATMCount" not-null="false"/>
     <many-to-one name="DepCashin" class="Department" column="DepCachinId" foreign-key="FK_StaffDepartmentCBDetails_DepCashin" index="StaffDepartmentCBDetails_DepCashin" not-null="false"/>

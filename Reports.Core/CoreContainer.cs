@@ -682,6 +682,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentReasonsDao>()
                 .ImplementedBy<StaffDepartmentReasonsDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffNetShopIdentificationDao>()
+                .ImplementedBy<StaffNetShopIdentificationDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

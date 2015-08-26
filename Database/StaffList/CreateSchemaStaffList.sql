@@ -13,6 +13,9 @@ IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPost', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPost]
 GO
 
+
+
+
 IF OBJECT_ID ('FK_RefAddresses_Editors', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Editors]
 GO
@@ -147,6 +150,10 @@ GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffNetShopIdentification', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffNetShopIdentification]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentReasons', 'F') IS NOT NULL
@@ -616,7 +623,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[AmountPayment] [numeric](18, 2) NULL,
 	[Phone] [nvarchar](200) NULL,
 	[IsBlocked] [bit] NULL,
-	[IsNetShop] [bit] NULL,
+	[NetShopId] [int] NULL,
 	[IsAvailableCash] [bit] NULL,
 	[IsLegalEntity] [bit] NULL,
 	[PlanEPCount] [int] NULL,
@@ -667,6 +674,7 @@ CREATE TABLE [dbo].[StaffDepartmentCBDetails](
 	[ATMCountTotal] [int] NULL,
 	[ATMCashInCount] [int] NULL,
 	[ATMCount] [int] NULL,
+	[ATMCashInStarted] [int] NULL,
 	[DepCachinId] [int] NULL,
 	[DepATMId] [int] NULL,
 	[CashInStartedDate] [datetime] NULL,
@@ -828,7 +836,36 @@ CREATE TABLE [dbo].[StaffDepartmentReasons](
 
 GO
 
+
+
+if OBJECT_ID (N'StaffNetShopIdentification', 'U') is not null
+	DROP TABLE [dbo].[StaffNetShopIdentification]
+GO
+CREATE TABLE [dbo].[StaffNetShopIdentification](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_StaffNetShopIdentification] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffNetShopIdentification] ADD  CONSTRAINT [DF_StaffNetShopIdentification_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffNetShopIdentification] FOREIGN KEY([NetShopId])
+REFERENCES [dbo].[StaffNetShopIdentification] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffNetShopIdentification]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentReasons] ADD  CONSTRAINT [DF_StaffDepartmentReasons_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1380,6 +1417,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffNetShopIdentification', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffNetShopIdentification', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffNetShopIdentification', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов идентификаций сетевых магазинов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffNetShopIdentification'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id вида идентификации сетевого магазина' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'NetShopId'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentReasons', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -1530,6 +1582,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество банкоматов с функцией ресайклинг' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'ATMCount'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество запущенных банкоматов с функцией кэшин' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'ATMCashInStarted'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения инкассирующее кэшины' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCBDetails', @level2type=N'COLUMN',@level2name=N'DepCachinId'
 GO
 
@@ -1651,9 +1706,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер телефона
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак блокировки подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsBlocked'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак сетевого магазина' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsNetShop'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак наличия кассы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsAvailableCash'
@@ -2347,6 +2399,41 @@ INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд стандартный')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'по плану РР')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивная точка')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивный переезд')
+
+--StaffNetShopIdentification
+INSERT INTO StaffNetShopIdentification(Name) VALUES (N'-')
+INSERT INTO StaffNetShopIdentification(Name) VALUES (N'не заполнено')
+INSERT INTO StaffNetShopIdentification(Name) VALUES (N'не сетевая')
+INSERT INTO StaffNetShopIdentification(Name) VALUES (N'сетевая')
+
+--StaffDepartmentTypes
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'-')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Cash-in')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Банк')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Банкомат')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Банкомат, Cash-in')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Дирекция')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ДО')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ККО')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'МО')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'МО1')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'МО2')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'нет')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ОКВКУ')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ОО')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'помещение с банкоматом')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Представительство')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'склад')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'СПО')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'СТМО1')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'СТМО2')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'СТУРМ')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Табель')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ТМО1')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ТМО2')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ТУРМ')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'УРМ')
+INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Филиал')
 
 
 IF DB_NAME() = 'WebAppTest'
