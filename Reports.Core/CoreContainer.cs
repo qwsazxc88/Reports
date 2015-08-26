@@ -698,6 +698,7 @@ namespace Reports.Core
             Register(Component.For<IStaffNetShopIdentificationDao>()
                 .ImplementedBy<StaffNetShopIdentificationDao>()
                 .LifeStyle.Is(type));
+            #endregion
         }
         #endregion
 
