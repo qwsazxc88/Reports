@@ -676,6 +676,12 @@ namespace Reports.Core
             Register(Component.For<IStaffEstablishedPostChargeLinksDao>()
                 .ImplementedBy<StaffEstablishedPostChargeLinksDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentReasonsDao>()
+                .ImplementedBy<StaffDepartmentReasonsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffNetShopIdentificationDao>()
+                .ImplementedBy<StaffNetShopIdentificationDao>()
+                .LifeStyle.Is(type));
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
@@ -694,9 +700,6 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For<IStaffMovementsDataDao>()
                 .ImplementedBy<StaffMovementsDataDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffNetShopIdentificationDao>()
-                .ImplementedBy<StaffNetShopIdentificationDao>()
                 .LifeStyle.Is(type));
             #endregion
         }
