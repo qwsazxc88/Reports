@@ -695,7 +695,9 @@ namespace Reports.Core
             Register(Component.For<IStaffMovementsDataDao>()
                 .ImplementedBy<StaffMovementsDataDao>()
                 .LifeStyle.Is(type));
-            #endregion
+            Register(Component.For<IStaffNetShopIdentificationDao>()
+                .ImplementedBy<StaffNetShopIdentificationDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

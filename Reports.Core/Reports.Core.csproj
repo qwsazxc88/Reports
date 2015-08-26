@@ -310,6 +310,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffExtraChargesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffLandmarkTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffNetShopIdentificationDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramCodesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramReferenceDao.cs" />
@@ -332,6 +333,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffExtraChargesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffLandmarkTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffNetShopIdentificationDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramCodesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramReferenceDao.cs" />
@@ -624,6 +626,7 @@
     <Compile Include="Domain\StaffList\StaffEstablishedPostRequestTypes.cs" />
     <Compile Include="Domain\StaffList\StaffExtraCharges.cs" />
     <Compile Include="Domain\StaffList\StaffLandmarkTypes.cs" />
+    <Compile Include="Domain\StaffList\StaffNetShopIdentification.cs" />
     <Compile Include="Domain\StaffList\StaffPostChargeLinks.cs" />
     <Compile Include="Domain\StaffList\StaffProgramCodes.cs" />
     <Compile Include="Domain\StaffList\StaffProgramReference.cs" />
@@ -1300,6 +1303,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffNetShopIdentification.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentReasons.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />

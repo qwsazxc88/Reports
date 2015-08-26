@@ -238,6 +238,13 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>@Html.LabelFor(m => m.ATMCashInStarted)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMCashInStarted, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.ATMCashInStarted)
+                        </td>
+                    </tr>
+                    <tr>
                         <td>@Html.LabelFor(m => m.ATMCashInCount)</td>
                         <td>
                             @Html.TextBoxFor(m => m.ATMCashInCount, (object)new { style = "width:70px;" })
@@ -546,29 +553,21 @@
                                 @Html.RadioButtonFor(m => m.IsBlocked, true, new { @id = "IsBlockedTrue" })<label id="lblIsBlockedTrue" for="IsBlockedTrue" @if (Model.IsBlocked)
                                                                                                                                                             {<text>style="border-color:red;"</text>}
                                                                                                                                                             else
-                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
+                                                                                                                                                            {<text> style="border-color:none;"</text>}>Заблокирован</label>
                                 @Html.RadioButtonFor(m => m.IsBlocked, false, new { @id = "IsBlockedFalse" })<label id="lblIsBlockedFalse" for="IsBlockedFalse" @if (!Model.IsBlocked)
                                                                                                                                                                 {<text>style="border-color:red;"</text>}
                                                                                                                                                                 else
-                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
+                                                                                                                                                                {<text> style="border-color:none;"</text>}>Действует</label>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsNetShop)
+                            @Html.LabelFor(m => m.NetShopId):
                         </td>
                         <td>
-                            <div id="IsNetShopContainer">
-                                @Html.RadioButtonFor(m => m.IsNetShop, true, new { @id = "IsNetShopTrue" })<label id="lblIsNetShopTrue" for="IsNetShopTrue" @if (Model.IsNetShop)
-                                                                                                                                                            {<text>style="border-color:red;"</text>}
-                                                                                                                                                            else
-                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsNetShop, false, new { @id = "IsNetShopFalse" })<label id="lblIsNetShopFalse" for="IsNetShopFalse" @if (!Model.IsNetShop)
-                                                                                                                                                                {<text>style="border-color:red;"</text>}
-                                                                                                                                                                else
-                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
+                            @Html.DropDownListFor(model => model.NetShopId, new SelectList(Model.NetShopTypes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.NetShopId)
                         </td>
                     </tr>
                     <tr>
@@ -805,7 +804,6 @@
         $('#IsPlanContainer').buttonset();
         $('#IsRentPlaceContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
-        $('#IsNetShopContainer').buttonset();
         $('#IsAvailableCashContainer').buttonset();
         $('#IsLegalEntityContainer').buttonset();
 
@@ -867,16 +865,6 @@
         $("#IsBlockedFalse").click(function () {
             $("#lblIsBlockedFalse").css("border-color", "red");
             $("#lblIsBlockedTrue").css("border-color", "silver");
-        });
-
-
-        $("#IsNetShopTrue").click(function () {
-            $("#lblIsNetShopTrue").css("border-color", "red");
-            $("#lblIsNetShopFalse").css("border-color", "silver");
-        });
-        $("#IsNetShopFalse").click(function () {
-            $("#lblIsNetShopFalse").css("border-color", "red");
-            $("#lblIsNetShopTrue").css("border-color", "silver");
         });
 
 

@@ -10,6 +10,7 @@ namespace Reports.Core.Domain
     {
         public virtual StaffDepartmentRequest DepRequest { get; set; }
         public virtual int? ATMCountTotal { get; set; }
+        public virtual int? ATMCashInStarted { get; set; }
         public virtual int? ATMCashInCount { get; set; }
         public virtual int? ATMCount { get; set; }
         public virtual Department DepCashin { get; set; }

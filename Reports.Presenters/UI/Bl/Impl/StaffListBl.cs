@@ -160,7 +160,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffsepartmentReasonsDao); }
             set { staffsepartmentReasonsDao = value; }
         }
-        
+
+        protected IStaffNetShopIdentificationDao staffnetshopIdentificationDao;
+        public IStaffNetShopIdentificationDao StaffNetShopIdentificationDao
+        {
+            get { return Validate.Dependency(staffnetshopIdentificationDao); }
+            set { staffnetshopIdentificationDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -301,6 +307,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //ЦБ реквизиты
                 model.ATMCountTotal = 0;
+                model.ATMCashInStarted = 0;
                 model.ATMCashInCount = 0;
                 model.ATMCount = 0;
                 model.DepCachinId = 0;
@@ -327,7 +334,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Phone = string.Empty;
 
                 model.IsBlocked = false;
-                model.IsNetShop = false;
+                model.NetShopId = 0;
                 model.IsAvailableCash = false;
 
                 model.IsLegalEntity = false;
@@ -404,6 +411,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //ЦБ реквизиты
                 StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
                 model.ATMCountTotal = cbd.ATMCountTotal.HasValue ? cbd.ATMCountTotal.Value : 0;
+                model.ATMCashInStarted = cbd.ATMCashInStarted.HasValue ? cbd.ATMCashInStarted.Value : 0;
                 model.ATMCashInCount = cbd.ATMCashInCount.HasValue ? cbd.ATMCashInCount.Value : 0;
                 model.ATMCount = cbd.ATMCount.HasValue ? cbd.ATMCount.Value : 0;
                 model.DepCachinId = cbd.DepCashin != null ? cbd.DepCashin.Id : 0;
@@ -449,7 +457,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AmountPayment = dmd.AmountPayment;
                 model.Phone = dmd.Phone;
                 model.IsBlocked = dmd.IsBlocked;
-                model.IsNetShop = dmd.IsNetShop;
+                model.NetShopId = dmd.NetShopIdentification != null ? dmd.NetShopIdentification.Id : 0;
                 model.IsAvailableCash = dmd.IsAvailableCash;
                 model.IsLegalEntity = dmd.IsLegalEntity;
                 model.PlanEPCount = dmd.PlanEPCount;
@@ -562,6 +570,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     DepRequest = entity,
                     ATMCountTotal = model.ATMCountTotal,
+                    ATMCashInStarted = model.ATMCashInStarted,
                     ATMCashInCount = model.ATMCashInCount,
                     ATMCount = model.ATMCount,
                     DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId),
@@ -644,7 +653,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.AmountPayment = model.AmountPayment;
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
-                dmd.IsNetShop = model.IsNetShop;
+                dmd.NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
                 dmd.IsAvailableCash = model.IsAvailableCash;
                 dmd.IsLegalEntity = model.IsLegalEntity;
                 dmd.PlanEPCount = model.PlanEPCount;
@@ -839,6 +848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     DepRequest = entity,
                     ATMCountTotal = model.ATMCountTotal,
+                    ATMCashInStarted = model.ATMCashInStarted,
                     ATMCashInCount = model.ATMCashInCount,
                     ATMCount = model.ATMCount,
                     DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId),
@@ -852,6 +862,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 entity.DepartmentCBDetails[0].ATMCountTotal = model.ATMCountTotal;
+                entity.DepartmentCBDetails[0].ATMCashInStarted = model.ATMCashInStarted;
                 entity.DepartmentCBDetails[0].ATMCashInCount = model.ATMCashInCount;
                 entity.DepartmentCBDetails[0].ATMCount = model.ATMCount;
                 entity.DepartmentCBDetails[0].DepCashin = model.DepCachinId == 0 ? null : DepartmentDao.Load(model.DepCachinId);
@@ -938,7 +949,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.AmountPayment = model.AmountPayment;
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
-                dmd.IsNetShop = model.IsNetShop;
+                dmd.NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
                 dmd.IsAvailableCash = model.IsAvailableCash;
                 dmd.IsLegalEntity = model.IsLegalEntity;
                 dmd.PlanEPCount = model.PlanEPCount;
@@ -1093,7 +1104,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].AmountPayment = model.AmountPayment;
                 entity.DepartmentManagerDetails[0].Phone = model.Phone;
                 entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
-                entity.DepartmentManagerDetails[0].IsNetShop = model.IsNetShop;
+                entity.DepartmentManagerDetails[0].NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
                 entity.DepartmentManagerDetails[0].IsAvailableCash = model.IsAvailableCash;
                 entity.DepartmentManagerDetails[0].IsLegalEntity = model.IsLegalEntity;
                 entity.DepartmentManagerDetails[0].PlanEPCount = model.PlanEPCount;
@@ -1825,6 +1836,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
+            model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.
