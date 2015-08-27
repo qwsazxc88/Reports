@@ -534,7 +534,7 @@ CREATE TABLE [dbo].[StaffDepartmentRequest](
 	[ParentId] [int] NULL,
 	[Name] [nvarchar](128) NULL,
 	[IsBack] [bit] NULL,
-	[OrderNumber] [nvarchar](150) NULL,
+	[OrderNumber] [nvarchar](200) NULL,
 	[OrderDate] [datetime] NULL,
 	[LegalAddressId] [int] NULL,
 	[IsTaxAdminAccount] [bit] NULL,
