@@ -87,7 +87,7 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.OrderNumber)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.OrderNumber, (object)new { maxlength = "50", style = "width:400px;" })
+                            @Html.TextBoxFor(m => m.OrderNumber, (object)new { maxlength = "200", style = "width:400px;" })
                             @Html.ValidationMessageFor(model => model.OrderNumber)
                         </td>
                     </tr>
