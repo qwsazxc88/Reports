@@ -1241,7 +1241,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    SecondNumber = secondnumber,
                                                    Phone = string.Empty,
                                                    Type = AppointmentEducationTypeDao.Get(entity.AppointmentEducationTypeId),
-                                                   IsColloquyPassed=entity.Recruter==2,
+                                                   IsColloquyPassed=entity.Recruter==2?true:new bool?(),
                                                                                                 };
             if (entity.Recruter == 2) report.StaffDateAccept = DateTime.Now;
                 AppointmentReportDao.Save(report);
