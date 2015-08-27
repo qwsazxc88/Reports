@@ -2205,11 +2205,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, otherReportId));
             if(entity.Appointment.DeleteDate.HasValue)
                 throw new ValidationException(string.Format(StrAppointmentWasDeleted));
-            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
-                throw new ValidationException(string.Format(CannotCreateReport));
+            /*if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
+                throw new ValidationException(string.Format(CannotCreateReport));*/
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
             int secondnumber = 0;
-            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Appointment.Id);
             if (reports != null && reports.Any())
             {
                 foreach (var el in reports)
