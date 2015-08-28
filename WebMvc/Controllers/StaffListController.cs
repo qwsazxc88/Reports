@@ -334,6 +334,34 @@ namespace WebMvc.Controllers
         }
         #endregion
 
+        #region Штатная расстановка.
+        /// <summary>
+        /// Штатное расстановка, первичная загрузка страницы.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffListArrangement()
+        {
+            StaffListArrangementModel model = new StaffListArrangementModel();
+            model.Departments = StaffListBl.GetDepartmentListByParent(null);
+            return View(model);
+        }
+        /// <summary>
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult StaffListArrangement(string DepId)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        #endregion
+
         #region Валидация
         protected bool ValidateModel(StaffDepartmentRequestListModel model)
         {

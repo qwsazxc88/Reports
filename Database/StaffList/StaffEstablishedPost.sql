@@ -81,3 +81,13 @@ SELECT Id
 FROM StaffEstablishedPost
 
 
+--проставляем Id штатной единицы для пользователей по текущим данным
+UPDATE Users SET SEPId = B.Id
+FROM Users as A
+INNER JOIN StaffEstablishedPost as B ON B.PositionId = A.PositionId and B.DepartmentId = A.DepartmentId and B.Salary = A.Salary
+--where a.DepartmentId = 11356
+
+--обнуляем оклады сотрудников, пока штатное расписание доступно всем
+UPDATE StaffEstablishedPost SET Salary = 0
+UPDATE StaffEstablishedPostRequest SET Salary = 0
+UPDATE StaffEstablishedPostArchive SET Salary = 0
