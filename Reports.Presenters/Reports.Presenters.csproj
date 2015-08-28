@@ -123,7 +123,6 @@
     <Compile Include="UI\Bl\Impl\HelpBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffListBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffMovementsBl.cs" />
-    <Compile Include="UI\Bl\Impl\StaffMovementsBl.cs" />
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
@@ -285,7 +284,6 @@
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
-    <Compile Include="UI\ViewModel\StandartEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
@@ -297,9 +295,6 @@
     <Compile Include="UI\ViewModel\StaffList\TreeViewModel.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StandartEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteListModel.cs" />
