@@ -57,6 +57,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Edit(StaffMovementsEditModel model)
         {
+            ModelState.Clear();
             if ((model.Creator == null || model.Creator.Id == 0) && model.Id == 0)
             {
                 StaffMovementsBl.SetModel(model);

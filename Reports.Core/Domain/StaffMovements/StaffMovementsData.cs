@@ -18,7 +18,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? AdditionTravelingTo { get; set; }
         public virtual decimal AdditionFront { get; set; }
         public virtual DateTime? AdditionFrontTo { get; set; }
-
+        public virtual decimal TargetCasing { get; set; }
         public virtual string AdditionalAgreementNumber { get; set; }
         public virtual DateTime? AdditionalAgreementDate { get; set; }
         public virtual int SalaryType { get; set; }

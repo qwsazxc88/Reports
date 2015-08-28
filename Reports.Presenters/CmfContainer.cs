@@ -65,7 +65,6 @@ namespace Reports.Presenters
             Register(Component.For(typeof(IStaffMovementsBl))
                        .ImplementedBy(typeof(StaffMovementsBl))
                        .LifeStyle.Is(type));
-            
             Register(Component.For(typeof(IAuthenticationService)).ImplementedBy(typeof(AuthenticationService)).
                     Named("IAuthenticationService").LifeStyle.Is(type));
             //AddComponent("IAuthenticationService", typeof(IAuthenticationService), typeof(AuthenticationService));
