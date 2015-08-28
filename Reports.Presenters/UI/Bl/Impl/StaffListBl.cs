@@ -1820,6 +1820,65 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
+        #region Штатная расстановка.
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        public StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId)
+        {
+            StaffListArrangementModel model = new StaffListArrangementModel();
+
+            //если не определены права ничего не грузим
+            if (string.IsNullOrEmpty(DepId)) return model;
+
+            Department dep = DepartmentDao.GetByCode(DepId);
+            int DepartmentId = dep.Id;
+            int itemLevel = dep.ItemLevel.Value;
+
+
+            //достаем уровень подразделений и сотрудников с должностями к ним
+            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
+
+            //все закомментаренное работало когда не было штатных единиц
+            if (itemLevel != 7)
+            {
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+
+
+                ////руководство
+                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
+                //    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                //foreach (var item in Users)
+                //{
+                //    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                //}
+                //model.UserPositions = ul;
+
+                //уровень подразделений
+                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
+            }
+            else
+            {
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+                ////нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
+                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
+                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
+                //foreach (var item in Users)
+                //{
+                //    if (UserDao.FindByLogin(item.Login + "R") == null)//непоказываем начальников, потому что они видны уровнем выше
+                //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
+                //}
+                //model.UserPositions = ul;
+            }
+
+            return model;
+        }
+        #endregion
+
+
         #region Загрузка словарей и справочников.
         /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.

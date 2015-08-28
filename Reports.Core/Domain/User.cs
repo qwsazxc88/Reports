@@ -179,6 +179,10 @@ namespace Reports.Core.Domain
         /// Надбавки
         /// </summary>
         public virtual IList<StaffPostChargeLinks> StaffPostCharges { get; set; }
+        /// <summary>
+        /// Штатная единица.
+        /// </summary>
+        public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         #endregion
 
         #region Constructors

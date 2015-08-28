@@ -850,6 +850,7 @@
     <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
     <Content Include="Views\StaffList\StaffEstablishedPostRequest.cshtml" />
     <Content Include="Views\StaffList\StaffEstablishedPostRequestList.cshtml" />
+    <Content Include="Views\StaffList\StaffListArrangement.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
     <Content Include="Views\StaffList\TreeView.cshtml" />

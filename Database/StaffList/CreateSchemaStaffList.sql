@@ -14,6 +14,12 @@ IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPost', 'F') IS NOT NULL
 GO
 
 
+--для таблицы пользоателей
+UPDATE Users SET SEPId = null
+IF OBJECT_ID ('FK_Users_StaffEstablishedPost', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_Users_StaffEstablishedPost]
+GO
+
 
 
 IF OBJECT_ID ('FK_RefAddresses_Editors', 'F') IS NOT NULL
@@ -1414,6 +1420,12 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentOperationModes] CHECK CONSTRAINT [FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails]
 GO
 
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_StaffEstablishedPost] FOREIGN KEY([SEPId])
+REFERENCES [dbo].[StaffEstablishedPost] ([Id])
+GO
+
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_StaffEstablishedPost]
+GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ

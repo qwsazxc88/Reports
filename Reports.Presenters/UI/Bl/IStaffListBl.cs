@@ -88,6 +88,15 @@ namespace Reports.Presenters.UI.Bl
 
         #endregion
 
+        #region Штатная расстановка.
+        /// <summary>
+        /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения</param>
+        /// <returns></returns>
+        StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId);
+        #endregion
+
         #region Загрузка словарей и справочников.
         /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.
