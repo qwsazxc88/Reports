@@ -13,7 +13,32 @@ namespace Reports.Presenters.UI.ViewModel
         {
             this.User = new StandartUserDto();
             this.Creator = new StandartUserDto();
+            this.StatusId = 1;
         }
+        #region Служебное
+        public bool IsDepartmentEditable { get; set; }
+        public bool IsPositionEditable { get; set; }
+
+        public bool IsManagerEditable { get; set; }
+        public bool IsPersonnelManagerEditable { get; set; }
+        public bool IsSourceManagerAcceptAvailable { get; set; }
+        public bool IsTargetManagerAcceptAvailable { get; set; }
+        public bool IsPersonnelManagerAcceptAvailable { get; set; }
+        public bool IsPersonnelManagerBankAcceptAvailable { get; set; }
+        public bool IsChiefAcceptAvailable { get; set; }
+        public bool IsUserAcceptAvailable { get; set; }
+        public bool ISRejectAvailable { get; set; }
+        public bool IsDocsEditable { get; set; }
+        public bool IsDocsAddAvailable { get; set; }
+        public bool IsConfirmButtonAvailable { get; set; }
+        public bool IsStopButtonAvailable { get; set; }
+
+        public bool IsRejectButtonPressed { get; set; }
+        public bool IsAcceptButtonPressed { get; set; }
+        public bool IsConfirmButtonPressed { get; set; }
+        public bool IsCancelButtonPressed { get; set; }
+        public bool IsStopButtonPressed { get; set; }
+        #endregion
         #region Общее
         public IList<IdNameDto> RequestTypes { get; set; }
         [Display(Name = "Дата перевода")]
@@ -28,7 +53,24 @@ namespace Reports.Presenters.UI.ViewModel
         public StandartUserDto SourceManager { get; set; }
         public StandartUserDto TargetManager { get; set; }
         #endregion
-        #region Для Руководителя      
+        #region Согласования
+        [Display(Name="Согласовано сотрудником")]
+        public DateTime? SendDate { get; set; }
+        [Display(Name = "Согласовано отпускающим руководителем")]
+        public DateTime? SourceManagerAccept { get; set; }
+        [Display(Name = "Согласовано принимающим руководителем")]
+        public DateTime? TargetManagerAccept { get; set; }
+        [Display(Name = "Согласовано кадровиком банка")]
+        public DateTime? PersonnelManagerBankAccept { get; set; }
+        public string PersonnelManagerBank { get; set; }
+        [Display(Name = "Согласовано вышестоящим руководителем")]
+        public DateTime? ChiefAccept { get; set; }
+        public string Chief { get; set; }
+        [Display(Name = "Согласовано кадровиком")]
+        public DateTime? PersonnelManagerAccept { get; set; }
+        public string PersonnelManager { get; set; }
+        #endregion
+        #region Для Руководителя
         [Display(Name = "Ставка")]
         public decimal TargetSalary { get; set; }
         [Display(Name = "Вид расчёта оклада")]
@@ -94,26 +136,32 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }
+        public bool MovementNoteIsRequired { get; set; }
         public int MovementNoteAttachmentId { get; set; }
         public UploadFileDto MovementNoteDto { get; set; }
 
         public HttpPostedFileBase AdditionalAgreementDoc { get; set; }
+        public bool AdditionalAgreementDocIsRequired { get; set; }
         public int AdditionalAgreementDocAttachmentId { get; set; }
         public UploadFileDto AdditionalAgreementDocDto { get; set; }
 
         public HttpPostedFileBase MovementOrderDoc { get; set; }
+        public bool MovementOrderDocIsRequired { get; set; }
         public int MovementOrderDocAttachmentId { get; set; }
         public UploadFileDto MovementOrderDocDto { get; set; }
 
         public HttpPostedFileBase MaterialLiabilityDoc { get; set; }
+        public bool MaterialLiabilityDocIsRequired { get; set; }
         public int MaterialLiabilityDocAttachmentId { get; set; }
         public UploadFileDto MaterialLiabilityDocDto { get; set; }
 
         public HttpPostedFileBase RequirementsOrderDoc { get; set; }
+        public bool RequirementsOrderDocIsRequired { get; set; }
         public int RequirementsOrderDocAttachmentId { get; set; }
         public UploadFileDto RequirementsOrderDocDto { get; set; }
 
         public HttpPostedFileBase ServiceOrderDoc { get; set; }
+        public bool ServiceOrderDocIsRequired { get; set; }
         public int ServiceOrderDocAttachmentId { get; set; }
         public UploadFileDto ServiceOrderDocDto { get; set; }
         #endregion

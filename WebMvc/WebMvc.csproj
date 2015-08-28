@@ -206,6 +206,9 @@
     <Content Include="Scripts\globinfo\jquery.glob.ru-RU.min.js" />
     <Content Include="Scripts\globinfo\jquery.glob.ru.js" />
     <Content Include="Scripts\globinfo\jquery.glob.ru.min.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.custom.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.custom.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.9.custom.min.js" />
     <Content Include="Scripts\jquery.bgiframe.js" />
     <Content Include="Scripts\jquery.bgiframe.min.js" />
@@ -840,8 +843,10 @@
     <Content Include="Views\StaffMovements\StaffMovementsEdit.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml">
-      <SubType>Code</SubType>
+      <SubType>Code</SubType>    
     </Content>
+	<Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />

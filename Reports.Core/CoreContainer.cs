@@ -607,9 +607,6 @@ namespace Reports.Core
             Register(Component.For<IMessagesDao>()
                 .ImplementedBy<MessagesDao>()
                 .LifeStyle.Is(type));
-
-
-
             Register(Component.For<IDepartmentArchiveDao>()
                 .ImplementedBy<DepartmentArchiveDao>()
                 .LifeStyle.Is(type));

@@ -24,12 +24,12 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Исходная должность
         /// </summary>
-        public virtual StaffEstablishedPostRequest SourcePosition { get; set; }
+        public virtual Position SourcePosition { get; set; }
 
         /// <summary>
         /// Целевая должность
         /// </summary>
-        public virtual StaffEstablishedPostRequest TargetPosition { get; set; }
+        public virtual Position TargetPosition { get; set; }
 
 	    //Люди                
         /// <summary>
