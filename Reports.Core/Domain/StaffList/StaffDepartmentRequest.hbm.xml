@@ -13,7 +13,7 @@
     <many-to-one name="ParentDepartment" class="Department" column="ParentId" foreign-key="FK_StaffDepartmentRequest_DepartmentParent" index="StaffDepartmentRequest_DepartmentParent" not-null="false"/>
     <property name="Name" length="128" not-null="false"/>
     <property name="IsBack" not-null="false"/>
-    <property name="OrderNumber" length="150" not-null="false"/>
+    <property name="OrderNumber" length="200" not-null="false"/>
     <property name="OrderDate" not-null="false"/>
     <many-to-one name="LegalAddress" class="RefAddresses" column="LegalAddressId" foreign-key="FK_StaffDepartmentRequest_RefAddresses" index="StaffDepartmentRequest_RefAddresses" not-null="false"/>
     <property name="IsTaxAdminAccount" not-null="false"/>

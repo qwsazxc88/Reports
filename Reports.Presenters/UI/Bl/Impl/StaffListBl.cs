@@ -425,7 +425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
                 model.DMDetailId = dmd.Id;
                 model.NameShort = dmd.NameShort;
-                model.ReasonId = dmd.DepartmentReasons.Id;
+                model.ReasonId = dmd.DepartmentReasons != null ? dmd.DepartmentReasons.Id : 0;
                 if (dmd.FactAddress != null)
                 {
                     model.FactAddressId = dmd.FactAddress.Id;
