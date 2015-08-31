@@ -25,6 +25,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
         public string ReserveCategory { get; set; } //ok
 
+        [Display(Name = "Категория запаса")]
+        public int? ReserveCategoryId { get; set; } //ok
+        public IEnumerable<SelectListItem> ReserveCategoryes { get; set; }
+
         [Display(Name = "Воинское звание")]
         public int? RankId { get; set; } //ok
         public IList<MilitaryRanksDto> RankItems { get; set; }
