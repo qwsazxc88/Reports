@@ -61,11 +61,16 @@
             }
             *@
         }
-
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.ReserveCategory)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategory)<br />
             @Html.EditorFor(m => m.ReserveCategory)
         </div>
+        *@
+        <div class="formfield clear">
+                @Html.LabelFor(m => m.ReserveCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategoryId)<br />
+                @Html.DropDownListFor(m => m.ReserveCategoryId, Model.ReserveCategoryes)
+         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.RankId)&nbsp;@Html.ValidationMessageFor(m => m.RankId)<br />
             @Html.DropDownListFor(m => m.RankId, new SelectList(Model.RankItems, "Id", "Name"))
