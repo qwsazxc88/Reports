@@ -19,6 +19,7 @@ function createDepartmentDialog(SelType)
     if (SelType == 1) { departmentId = $("#DepNextId").val(); }
     if (SelType == 2) { departmentId = $("#DepCachinId").val(); }
     if (SelType == 3) { departmentId = $("#DepATMId").val(); }
+    if (SelType == 4) { departmentId = $("#ParentId").val(); }
 
 
     //var typeId = $("#RequestTypeId").val();
@@ -137,7 +138,14 @@ function SaveDepartment(SelType) {
         $('#DepATMName').val("");
         $('#DepATMNameLabel').text("");
     }
-    
+
+    //для штатного расписания
+    if (SelType == 4) {
+        $('#ParentId').val("0");
+        $('#DepParentName').val("");
+        $('#DepParentNameLabel').text("");
+    }
+
     return;
 }
 function setDepartmentValues(control, SelType) {
@@ -165,6 +173,13 @@ function setDepartmentValues(control, SelType) {
         $('#DepATMId').val($('#' + control).val());
         $('#DepATMName').val($('#' + control + ' option:selected').text());
         $('#DepATMNameLabel').text($('#' + control + ' option:selected').text());
+    }
+
+    //для штатного расписания
+    if (SelType == 4) {
+        $('#ParentId').val($('#' + control).val());
+        $('#DepParentName').val($('#' + control + ' option:selected').text());
+        $('#DepParentNameLabel').text($('#' + control + ' option:selected').text());
     }
 }
 function Level2IDChange() {
