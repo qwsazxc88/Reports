@@ -10,6 +10,7 @@
     <property name="MilitaryCardNumber" length="20" not-null="false"/>
     <property name="MilitaryCardDate" not-null="false"/>
     <property name="ReserveCategory" length="20" not-null="false"/>
+    <property name="ReserveCategoryId" column="ReserveCategoryId" not-null="false"/>
     <property name="RankId" column="RankId" not-null="false"/>
     <property name="SpecialityCategoryId" not-null="false"/>
     <property name="MilitarySpecialityCode" length="7" not-null="false"/>
@@ -25,6 +26,7 @@
     <property name="PersonnelType" column="PersonnelTypeId" not-null="false"/>
     <property name="IsAssigned" not-null="true"/>
     <property name="ConscriptionStatus" column="ConscriptionStatusId" not-null="false"/>
+    
 
     <property name="IsFinal" not-null="true"/>
     <property name="IsValidate" not-null="false"/>
