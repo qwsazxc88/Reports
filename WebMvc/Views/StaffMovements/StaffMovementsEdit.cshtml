@@ -156,13 +156,13 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.Chiefs)</td>
                                     <td>
-                                        @Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next)
+                                        @(Model.Creator.Chiefs!=null?Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.Personnels)</td>
                                     <td>
-                                        @Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next)
+                                        @(Model.Creator.Personnels!=null?Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
                                     </td>
                                 </tr>
                             </table>
