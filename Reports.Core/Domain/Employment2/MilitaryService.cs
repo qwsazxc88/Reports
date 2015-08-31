@@ -17,6 +17,7 @@ namespace Reports.Core.Domain
         public virtual string MilitaryCardNumber { get; set; } //ok
         public virtual DateTime? MilitaryCardDate { get; set; } //ok
         public virtual string ReserveCategory { get; set; } //ok
+        public virtual int? ReserveCategoryId { get; set; } //ok
         public virtual int? RankId { get; set; } //ok
         public virtual int? SpecialityCategoryId { get; set; } //ok - Состав (профиль)
         public virtual string MilitarySpecialityCode { get; set; } //ok
@@ -33,6 +34,7 @@ namespace Reports.Core.Domain
         public virtual int? PersonnelType { get; set; } //ok
         public virtual bool IsAssigned { get; set; } //ok
         public virtual int? ConscriptionStatus { get; set; } //ok
+        
         // Скан военного билета
         // Скан мобилизационного талона
 
