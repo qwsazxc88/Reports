@@ -9,7 +9,6 @@
     @Html.HiddenFor(m => m.Id)
     @*<input type="hidden" name="Id" value="@Model.Id" />*@
     @Html.HiddenFor(m => m.IsDraft)
-    @Html.HiddenFor(m => m.ParentId)
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
@@ -165,6 +164,18 @@
                             @Html.HiddenFor(m => m.DepNextId)
                             @Html.HiddenFor(m => m.DepNextName)
                             @Html.ValidationMessageFor(model => model.DepNextId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.ParentId)<br />
+                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(4);"/>
+                        </td>
+                        <td>
+                            <label id="DepParentNameLabel">@Model.DepParentName</label>
+                            @Html.HiddenFor(m => m.ParentId)
+                            @Html.HiddenFor(m => m.DepParentName)
+                            @Html.ValidationMessageFor(model => model.ParentId)
                         </td>
                     </tr>
                     <tr>

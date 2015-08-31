@@ -19,6 +19,7 @@ function createDepartmentDialog(SelType)
     if (SelType == 1) { departmentId = $("#DepNextId").val(); }
     if (SelType == 2) { departmentId = $("#DepCachinId").val(); }
     if (SelType == 3) { departmentId = $("#DepATMId").val(); }
+    if (SelType == 6) { departmentId = $("#ParentId").val(); }
     //Кадровые перемещения
     if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
     if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
@@ -138,6 +139,14 @@ function SaveDepartment(SelType) {
         $('#DepATMName').val("");
         $('#DepATMNameLabel').text("");
     }
+    
+    //для штатного расписания
+    if (SelType == 6) {
+        $('#ParentId').val("0");
+        $('#DepParentName').val("");
+        $('#DepParentNameLabel').text("");
+    }
+    
     //для кадровых перемещений
     if (SelType == 4) {
         $('#SourceDepartmentId').val("0");
@@ -178,6 +187,13 @@ function setDepartmentValues(control, SelType) {
         $('#DepATMName').val($('#' + control + ' option:selected').text());
         $('#DepATMNameLabel').text($('#' + control + ' option:selected').text());
     }
+
+    //для штатного расписания
+    if (SelType == 6) {
+        $('#ParentId').val($('#' + control).val());
+        $('#DepParentName').val($('#' + control + ' option:selected').text());
+        $('#DepParentNameLabel').text($('#' + control + ' option:selected').text());
+        
     //для кадровых перемещений
     if (SelType == 4) {
         $('#SourceDepartmentId').val($('#' + control).val());

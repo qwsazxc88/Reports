@@ -35,8 +35,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Id подразделения")]
         public int? DepartmentId { get; set; }
 
-        [Display(Name = "Id родительского подразделения")]
+        [Display(Name = "Родительское подразделение")]
         public int? ParentId { get; set; }
+        public string DepParentName { get; set; }
 
         [Display(Name = "Уровень подразделения")]
         public int? ItemLevel { get; set; }

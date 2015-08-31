@@ -284,6 +284,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateState = null;
                 model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
                 model.ParentId = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Id : model.ParentId;
+                model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Name : model.DepParentName;
                 model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
                 model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
                 model.IsBack = false;
@@ -367,6 +368,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateState = entity.DateState;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.DepParentName = entity.ParentDepartment != null ? entity.ParentDepartment.Name : string.Empty;
                 model.ItemLevel = entity.ItemLevel;
                 model.Name = entity.Name;
                 model.IsBack = entity.IsBack;
@@ -763,7 +765,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
             entity.IsEmployeAvailable = model.IsEmployeAvailable;
             entity.IsPlan = model.IsPlan;
-            entity.IsDraft = true;
+            entity.IsDraft = model.IsDraft;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
             entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
@@ -1845,33 +1847,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (itemLevel != 7)
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
-
-
-                ////руководство
-                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                //    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                //foreach (var item in Users)
-                //{
-                //    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                //}
-                //model.UserPositions = ul;
-
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
             }
             else
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
-                ////нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                //IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                //IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                //foreach (var item in Users)
-                //{
-                //    if (UserDao.FindByLogin(item.Login + "R") == null)//непоказываем начальников, потому что они видны уровнем выше
-                //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                //}
-                //model.UserPositions = ul;
             }
 
             return model;
