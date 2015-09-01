@@ -249,11 +249,13 @@ namespace WebMvc.Controllers
             int depLevel;
             if (!AppointmentBl.CheckDepartment(model, out depLevel))
             {
-                if(depLevel != AppointmentBl.GetRequeredDepartmentLevel())
-                    ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel, 
+                if (depLevel != AppointmentBl.GetRequeredDepartmentLevel())
+                    ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel,
                         AppointmentBl.GetRequeredDepartmentLevel()));
                 else
+                {
                     ModelState.AddModelError("SelectDepartmentBtn", StrInvalidDepartment);
+                }
             }
             return ModelState.IsValid;
         }
