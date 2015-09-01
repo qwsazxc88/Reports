@@ -38,6 +38,11 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsConfirmButtonPressed { get; set; }
         public bool IsCancelButtonPressed { get; set; }
         public bool IsStopButtonPressed { get; set; }
+
+        public bool IsCreatorInfoVisible { get; set; }
+        public bool IsManagerVisible { get; set; }
+        public bool IsDocsVisible { get; set; }
+        public bool IsPersonnelVisible { get; set; }
         #endregion
         #region Общее
         public IList<IdNameDto> RequestTypes { get; set; }
