@@ -2203,6 +2203,13 @@ namespace WebMvc.Controllers
 
             if (!model.IsMSDraft)
             {
+                if (model.IsLiableForMilitaryService)
+                {
+                    if (!model.ReserveCategoryId.HasValue)
+                    {
+                        ModelState.AddModelError("ReserveCategoryId", "Укажите категорию запаса!");
+                    }
+                }
                 //MilitaryServiceModel mt = EmploymentBl.GetMilitaryServiceModel(model.UserId);
                 //if (model.IsLiableForMilitaryService)
                 //{

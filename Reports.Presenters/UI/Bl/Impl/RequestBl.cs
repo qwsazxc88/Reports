@@ -7638,7 +7638,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 import.InputFile = path.Substring(path.LastIndexOf('\\') + 1);
                 DeductionImport_Dao.SaveAndFlush(import);
                 Deductions = new List<Deduction>();
-                StreamReader reader = new StreamReader(path);
+                Encoding enc=Encoding.GetEncoding("Windows-1251");
+                StreamReader reader = new StreamReader(path,enc);
                 var type = DeductionTypeDao.Load(1);
                 var kinds = DeductionKindDao.LoadAll();
                 while (!reader.EndOfStream)

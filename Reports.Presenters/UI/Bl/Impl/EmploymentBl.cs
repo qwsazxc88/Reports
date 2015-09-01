@@ -813,6 +813,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MobilizationTicketScan);
                 model.MobilizationTicketScanAttachmentId = attachmentId;
                 model.MobilizationTicketScanAttachmentFilename = attachmentFilename;
+                //model.ReserveCategoryId = entity.ReserveCategoryId != null ? entity.ReserveCategoryId.Value : 0;
+                model.ReserveCategoryId = entity.ReserveCategoryId;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -2856,6 +2858,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.MilitaryValidityCategoryes = EmploymentMilitaryServiceDao.GetMilitaryValidityCategoryes();
             model.MilitaryRelationAccounts = EmploymentMilitaryServiceDao.GetMilitaryRelationAccounts();
             model.SpecialityCategoryes = EmploymentMilitaryServiceDao.GetMilitarySpecialityCategoryes();
+            model.ReserveCategoryes = GetReserveCategoryes();
         }
         public void LoadDictionaries(ExperienceModel model)
         {
@@ -2960,6 +2963,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Военнообязанный", Value = "1"},
                 new SelectListItem {Text = "Не военнообязанный", Value = "2"},
                 new SelectListItem {Text = "Призывник", Value = "3"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetReserveCategoryes()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "", Value = ""},
+                new SelectListItem {Text = "1", Value = "1"},
+                new SelectListItem {Text = "2", Value = "2"}
             };
         }
 
@@ -4493,6 +4506,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategoryId = viewModel.SpecialityCategoryId;
             entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
+            entity.ReserveCategoryId = viewModel.ReserveCategoryId;
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
