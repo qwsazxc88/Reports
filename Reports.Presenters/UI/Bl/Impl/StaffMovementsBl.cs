@@ -450,17 +450,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (model.StatusId)
             {
                 case 1: //Черновик. Могут редактировать руководитель и сотрудник
+                    model.IsEditable = true;
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
                     model.IsUserAcceptAvailable = true;
                     break;
                 case 2://Отправлена на согласование руководителю отпускающему. Может редактировать руководитель
+                    model.IsEditable = true;
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
                     break;
                 case 3://Отправлена на согласование руководителю принимающему. может редактировать руководитель принимающий
+                    model.IsEditable = true;
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsManagerEditable = true;
@@ -480,6 +483,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsChiefAcceptAvailable = true;
                     break;
                 case 7://Оформление кадры. Доступно редактирование кадровикам, проставление галок в документах
+                    model.IsEditable = true;
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsPersonnelManagerEditable = true;
@@ -657,6 +661,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.TargetPosition = PositionDao.Load(model.TargetPositionId);
             }       
+            #endregion
+            #region Общее
+            if (model.IsEditable)
+            {
+                entity.MovementDate = model.MovementDate;
+            }
             #endregion
             #region Для руководителей
             if (model.IsManagerEditable)

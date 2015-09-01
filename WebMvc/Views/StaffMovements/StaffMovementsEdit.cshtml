@@ -105,7 +105,7 @@
                 <td>
                 @Html.LabelFor(m => m.MovementDate)
                 </td>
-                <td>@Html.TextBoxFor(m => m.MovementDate, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                <td>@Html.TextBoxFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
                 </tr>
                 <tr>
                 <td colspan="2">
