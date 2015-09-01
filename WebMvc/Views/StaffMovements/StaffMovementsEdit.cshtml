@@ -112,9 +112,18 @@
                     <div id="tabs" width="100%">
                           <ul>
                             <li><a href="#tabs-1">Данные по переводу</a></li>
+                            @if (Model.IsManagerVisible)
+                            {
                             <li><a href="#tabs-2">Руководитель</a></li>
+                            }
+                            @if (Model.IsPersonnelVisible)
+                            {
                             <li><a href="#tabs-3">Кадры</a></li>
+                            }
+                            @if (Model.IsDocsVisible)
+                            {
                             <li><a href="#tabs-4">Документы</a></li>
+                            }
                           </ul>
                           <div id="tabs-1">
                             <fieldset class="bordered doc-wrap-blue panel" >
@@ -129,6 +138,8 @@
                                         @Html.DisplayFor(m => m.Creator.Name)
                                     </td>
                                 </tr>
+                                @if (Model.IsCreatorInfoVisible)
+                                {
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.PositionName)</td>
                                     <td>
@@ -156,15 +167,16 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.Chiefs)</td>
                                     <td>
-                                        @(Model.Creator.Chiefs!=null?Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
+                                        @(Model.Creator.Chiefs != null ? Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.Personnels)</td>
                                     <td>
-                                        @(Model.Creator.Personnels!=null?Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
+                                        @(Model.Creator.Personnels != null ? Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
+                                }
                             </table>
                             </fieldset>
                             <fieldset class="bordered doc-wrap-blue panel" >
@@ -253,6 +265,8 @@
                             </table>
                             </fieldset>
                           </div>
+                          @if (Model.IsManagerVisible)
+                          {
                           <div id="tabs-2">
                           <fieldset class="bordered doc-wrap-blue panel">
                           <table>
@@ -279,6 +293,9 @@
                           </table>
                           </fieldset>
                           </div>
+                          }
+                          @if (Model.IsPersonnelVisible)
+                          {
                           <div id="tabs-3">
                              <fieldset class="bordered doc-wrap-blue panel">
                             <table>
@@ -382,6 +399,9 @@
                             </table>
                             </fieldset>
                           </div>
+                          }
+                          @if (Model.IsDocsVisible)
+                          {
                           <div id="tabs-4">
                           <fieldset class="bordered doc-wrap-blue panel">
                           <table class="grid">
@@ -495,6 +515,7 @@
                           </table>
                           </fieldset>
                           </div>
+                          }
                     </div>
                 </td>
                 </tr>               

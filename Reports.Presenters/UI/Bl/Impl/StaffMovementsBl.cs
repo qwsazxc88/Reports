@@ -405,6 +405,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsTargetManagerAcceptAvailable = false;
             model.IsUserAcceptAvailable = false;
             #endregion
+            //В зависимости от создателя
+            if (model.Creator.Id > 0)
+            {
+                var creator = UserDao.Load(model.Creator.Id);
+                switch (creator.UserRole)
+                {
+                    case UserRole.PersonnelManager:
+                        model.IsCreatorInfoVisible = false;
+                        break;
+                    case UserRole.Employee:
+                        model.IsCreatorInfoVisible = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsCreatorInfoVisible = true;
+                        break;
+                    case UserRole.ConsultantPersonnel:
+                        model.IsCreatorInfoVisible = true;
+                        break;
+                }
+            }
             //Флаги по типу модели
             switch (model.RequestType)
             {
@@ -488,6 +508,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (CurrentUser.UserRole)
             {
                 case UserRole.Employee:
+                    model.IsDocsVisible = false;
+                    model.IsPersonnelVisible = false;
+                    model.IsManagerVisible = false;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
                     model.IsManagerEditable = false;//Редактирование руководителем
                     model.IsDocsEditable = false;//Редактирование документов
@@ -505,6 +528,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsStopButtonAvailable = false;//Конпка приостановки                 
                     break;
                 case UserRole.Manager:
+                    model.IsDocsVisible = true;
+                    model.IsPersonnelVisible = false;
+                    model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
                     model.IsManagerEditable = model.IsManagerEditable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
@@ -522,6 +548,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsStopButtonAvailable = false;//Конпка приостановки                 
                     break;
                 case UserRole.ConsultantPersonnel:
+                    model.IsDocsVisible = false;
+                    model.IsPersonnelVisible = false;
+                    model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
                     model.IsManagerEditable = false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
@@ -539,6 +568,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsStopButtonAvailable = true;//Конпка приостановки  
                     break;
                 case UserRole.PersonnelManager:
+                    model.IsDocsVisible = true;
+                    model.IsPersonnelVisible = true;
+                    model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = model.IsPersonnelManagerEditable && true; //Редактирование кадровиком
                     model.IsManagerEditable = false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = model.IsDocsEditable && true;//Редактирование документов
