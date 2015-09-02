@@ -98,6 +98,7 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IMailListDao.cs" />
     <Compile Include="Dao\IManualDeductionDao.cs" />
     <Compile Include="Dao\IMessagesDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Dao\Impl\HelpBillingExecutorTaskDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\Impl\MailListDao.cs" />
     <Compile Include="Dao\Impl\ManualDeductionDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
@@ -491,6 +493,7 @@
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
     <Compile Include="Domain\InspectorToUser.cs" />
+    <Compile Include="Domain\MailList.cs" />
     <Compile Include="Domain\ManualDeduction.cs" />
     <Compile Include="Domain\Messages.cs" />
     <Compile Include="Domain\Mission.cs" />
@@ -1208,6 +1211,7 @@
     <EmbeddedResource Include="Domain\Messages.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
+    <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

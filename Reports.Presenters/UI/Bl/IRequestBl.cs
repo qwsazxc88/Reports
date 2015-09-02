@@ -34,7 +34,7 @@ namespace Reports.Presenters.UI.Bl
 
         AbsenceListModel GetAbsenceListModel();
         void SetAbsenceListModel(AbsenceListModel model, bool hasError);
-
+        void SendMail();
         AbsenceEditModel GetAbsenceEditModel(int id, int userId);
         void ReloadDictionariesToModel(AbsenceEditModel model);
         bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
