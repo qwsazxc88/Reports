@@ -1,0 +1,11 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MailList" dynamic-update="true" table="MailList">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Subject"  not-null="false"/>
+    <property name="Text"  not-null="false"/>
+    <property name="SendDate"  not-null="false"/>
+    <many-to-one name="User" class="User" column="To" foreign-key="FK_MailList_User" not-null="true"/>
+  </class>
+</hibernate-mapping>
