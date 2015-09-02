@@ -13,7 +13,7 @@ namespace Reports.Core.Domain
             set;
         }
         public virtual User To { get; set; }
-        public virtual string Text {get;set;}
-        public virtual string Subject { get; set; }
+        public virtual string MailText {get;set;}
+        public virtual string MailSubject { get; set; }
     }
 }

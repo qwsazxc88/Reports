@@ -3,9 +3,9 @@
     <id name="Id">
       <generator class="native" />
     </id>
-    <property name="Subject"  not-null="false"/>
-    <property name="Text"  not-null="false"/>
+    <property name="MailSubject"  not-null="false"/>
+    <property name="MailText"  not-null="false"/>
     <property name="SendDate"  not-null="false"/>
-    <many-to-one name="User" class="User" column="To" foreign-key="FK_MailList_User" not-null="true"/>
+    <many-to-one name="To" class="User" column="UserId" foreign-key="FK_MailList_User" not-null="true"/>
   </class>
 </hibernate-mapping>

@@ -12442,7 +12442,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 var address = mail.To.Email;
                 if(!string.IsNullOrEmpty(address)) 
-                    SendEmail(address, mail.Subject, mail.Text);
+                    SendEmail(address, mail.MailSubject, mail.MailText);
                 mail.SendDate = DateTime.Now;
                 MailListDao.SaveAndFlush(mail);
             }

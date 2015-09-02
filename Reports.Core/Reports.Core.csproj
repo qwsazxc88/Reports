@@ -1211,7 +1211,7 @@
     <EmbeddedResource Include="Domain\Messages.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
-    <Content Include="Domain\MailList.hbm.xml" />
+    <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>
