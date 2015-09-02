@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using Reports.Core;
+using Reports.Presenters.UI.Bl;
 namespace WebMvc.Controllers
 {
     public class MailListController : Controller
     {
-        //
-        // GET: /MailList/
-
-        public ActionResult Index()
+        protected IRequestBl requestBl;
+        public IRequestBl RequestBl
         {
-            return View();
+            get
+            {
+                requestBl = Ioc.Resolve<IRequestBl>();
+                return Validate.Dependency(requestBl);
+            }
+        }
+
+        public EmptyResult Index()
+        {
+            RequestBl.SendMail();
+            return new EmptyResult();
         }
 
     }

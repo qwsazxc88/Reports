@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
+        protected IMailListDao maillistDao;
 
         protected ISicklistTypeDao sicklistTypeDao;
         protected ISicklistPaymentRestrictTypeDao sicklistPaymentRestrictTypeDao;
@@ -104,6 +105,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IMailListDao MailListDao
+        {
+            get { return Validate.Dependency(maillistDao); }
+            set { maillistDao = value; }
+        }
         public IManualDeductionDao ManualDeductionDao
         {
             get { return Validate.Dependency(manualDeductionDao);}
@@ -12428,7 +12434,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
-
+        #region MailList
+        public void SendMail()
+        {
+            var mails = MailListDao.GetMails();
+            foreach (var mail in mails)
+            {
+                var address = mail.To.Email;
+                if(!string.IsNullOrEmpty(address)) 
+                    SendEmail(address, mail.Subject, mail.Text);
+                mail.SendDate = DateTime.Now;
+                MailListDao.SaveAndFlush(mail);
+            }
+        }
+        #endregion
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
