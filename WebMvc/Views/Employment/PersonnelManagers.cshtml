@@ -266,7 +266,10 @@
         {
             <div class="formfield clearleft">
                 <button id="btnPMDraft" >Сохранить</button>         
+                @if (Model.StatusId != 7 && Model.StatusId != 8)
+                {
                 <button >Утвердить</button>         
+                }
             </div>            
             <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
         }
