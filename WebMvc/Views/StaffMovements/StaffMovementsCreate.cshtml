@@ -59,7 +59,7 @@
                 <table>
                      <tr>
                         <td colspan="2">
-                            <input type="submit"  onclick="return ValidateForm();" value="Создать заявку за сотрудника"/>
+                            <input type="submit"  onclick="return ValidateForm();" value="Создать заявку @(dto.UserRole != UserRole.Employee ? " за сотрудника" : "")"/>
                         </td>
                     </tr>
                 </table>

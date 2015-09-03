@@ -20,9 +20,15 @@
     <property name="AdditionalAgreementDate" not-null="false"/>
     <property name="TargetCasing" not-null="false"/>
     <property name="SalaryType" not-null="false"/>
+    <property name="Salary" not-null="false"/>
     <property name="RegionCoefficient" not-null="false"/>
     <property name="Grade" not-null="false"/>    
     <property name="NorthFactor" not-null="false"/>
+    <property name="NorthFactorOrder" not-null="false"/>
+    <property name="NorthFactorYear" not-null="false"/>
+    <property name="NorthFactorMonth" not-null="false"/>
+    <property name="NorthFactorDay" not-null="false"/>
+    <property name="NorthFactorAddition" not-null="false"/>
     <property name="ChangesToAgreementEntries" not-null="false"/>
     <property name="ChangesToAgreement" not-null="false"/>
     <property name="AgreementDate" not-null="false"/>

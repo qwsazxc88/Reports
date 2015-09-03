@@ -13,6 +13,6 @@ namespace Reports.Presenters.UI.Bl
         void SaveModel(StaffMovementsEditModel model);
         StaffMovementsListModel GetListModel();
         IList<IdNameDto> GetPositionsForDepartment(int id);
-        IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status);
+        IList<StaffMovementsDto> GetDocuments( int DepartmentId, string UserName, int Number, int Status);
     }
 }

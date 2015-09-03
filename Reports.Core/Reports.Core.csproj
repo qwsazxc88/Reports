@@ -671,6 +671,7 @@
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
     <Compile Include="Dto\SicklistDto.cs" />
+    <Compile Include="Enum\CommentsPlaceTypes.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
@@ -701,6 +702,7 @@
     <Compile Include="StringHelper.cs" />
     <Compile Include="Utils\IncorrectDatabaseVersionException.cs" />
     <Compile Include="Utils\PasswordManager.cs" />
+    <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\Utils.cs" />
     <Compile Include="Validate.cs" />
   </ItemGroup>

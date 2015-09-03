@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Редактирование заявки на перемещение";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+    ViewBag.PlaceId = Model.Id;
+    ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements; 
 }
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
@@ -102,10 +104,16 @@
                 </td>
                 </tr>
                 <tr>
-                <td>
-                @Html.LabelFor(m => m.MovementDate)
-                </td>
-                <td>@Html.TextBoxFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                    <td>
+                    @Html.LabelFor(m => m.MovementDate)
+                    </td>
+                    <td>@Html.TextBoxFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                </tr>
+                <tr class="TempMovingContainer">
+                    <td>
+                    @Html.LabelFor(m => m.MovementTempTo)
+                    </td>
+                    <td>@Html.TextBoxFor(m => m.MovementTempTo, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
                 </tr>
                 <tr>
                 <td colspan="2">
@@ -138,8 +146,6 @@
                                         @Html.DisplayFor(m => m.Creator.Name)
                                     </td>
                                 </tr>
-                                @if (Model.IsCreatorInfoVisible)
-                                {
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Creator.PositionName)</td>
                                     <td>
@@ -176,7 +182,6 @@
                                         @(Model.Creator.Personnels != null ? Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
-                                }
                             </table>
                             </fieldset>
                             <fieldset class="bordered doc-wrap-blue panel" >
@@ -275,12 +280,23 @@
                                 <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
-                                <td>@Html.LabelFor(m => m.MovementDate)</td>
-                                <td>@Html.DisplayFor(m => m.MovementDate)</td>
-                            </tr>
+                                    <td>
+                                    <div id="IsTempMovingContainer" class="formfield clear">
+                                        
+                                        @Html.RadioButtonFor(m => m.IsTempMoving, false, new { @id = "IsTempMovingFalse" })<label for="IsTempMovingFalse" id="lblIsTempMovingFalse" @if (!Model.IsTempMoving)
+                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                  else
+                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Постоянно</label>
+                                        @Html.RadioButtonFor(m => m.IsTempMoving, true, new { @id = "IsTempMovingTrue" })<label for="IsTempMovingTrue" id="lblIsTempMovingTrue" @if (Model.IsTempMoving)
+                                                                                                                                                              {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                              else
+                                                                                                                                                              {<text> style="border-color:none;"</text>}>Временно</label>
+                                    </div>
+                                    </td>
+                                </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetSalary)</td>
-                                <td>@Html.DisplayFor(m => m.TargetSalary)</td>
+                                <td>@Html.TextBoxFor(m => m.TargetSalary, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetCasing)</td>
@@ -288,7 +304,30 @@
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionPersonnel)</td>
-                                <td>@Html.TextBoxFor(m => m.AdditionPersonnel, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPersonnel, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <div class="TempMovingContainer formfield">
+                                 @Html.LabelFor(m => m.AdditionPersonnelTo)
+                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                 </div>
+                              </td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m => m.AdditionPosition)</td>
+                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPosition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <div class="TempMovingContainer formfield">
+                                @Html.LabelFor(m => m.AdditionPositionTo)
+                                @Html.TextBoxFor(m => m.AdditionPositionTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                                <td>@Html.LabelFor(m => m.AdditionQuality)</td>
+                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionQuality, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <div class="TempMovingContainer formfield">
+                                @Html.LabelFor(m => m.AdditionQualityTo)
+                                @Html.TextBoxFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                </div>
+                                </td>
                             </tr>
                           </table>
                           </fieldset>
@@ -354,7 +393,13 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionFront)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionFront, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionFront, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                
+                                    <div class="TempMovingContainer formfield">
+                                        @Html.LabelFor(m => m.AdditionFrontTo)
+                                        @Html.TextBoxFor(m => m.AdditionFrontTo, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    </div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Grade)</td>
@@ -366,7 +411,24 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.NorthFactor)</td>
-                                    <td>@Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>
+                                       <div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                        <div id="NorthFactor_2" class = "formfield">
+                                            @Html.LabelFor(m => m.NorthFactorOrder)
+                                            @Html.DropDownListFor(m => m.NorthFactorOrder, new SelectList(Model.NorthFactorOrders, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                        </div>
+                                        <div id="NorthFactor_3" class = "formfield">
+                                            @Html.LabelFor(m => m.NorthFactorYear)
+                                            @Html.TextBoxFor(m => m.NorthFactorYear)
+                                            @Html.LabelFor(m => m.NorthFactorMonth)
+                                            @Html.TextBoxFor(m => m.NorthFactorMonth)
+                                            @Html.LabelFor(m => m.NorthFactorDay)
+                                            @Html.TextBoxFor(m => m.NorthFactorDay)
+                                            @Html.LabelFor(m => m.NorthFactorAddition)
+                                            @Html.TextBoxFor(m => m.NorthFactorAddition)
+                                        </div>
+                                     </td>
+                                    
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.ChangesToAgreementEnties)</td>
@@ -530,9 +592,9 @@
         <td colspan="2">
             <table>
                 <tr>
-                    <td>@Html.LabelFor(m=>m.SendDate)</td>
+                    <td>@Html.LabelFor(m => m.SendDate)</td>
                     <td>
-                        <input type="checkbox" disabled="disabled" @(Model.SendDate.HasValue?"checked":"") />
+                        <input type="checkbox" disabled="disabled" @(Model.SendDate.HasValue ? "checked" : "") />
                         @if (Model.IsUserAcceptAvailable)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
@@ -541,8 +603,10 @@
                         @Html.DisplayFor(m => m.User.Name)
                     </td>
                 </tr>
+                @if (Model.RequestType == 2)
+                {
                 <tr>
-                    <td>@Html.LabelFor(m=>m.SourceManagerAccept)</td>
+                    <td>@Html.LabelFor(m => m.SourceManagerAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.SourceManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsSourceManagerAcceptAvailable)
@@ -550,25 +614,29 @@
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.SourceManagerAccept)
-                        @(Model.SourceManager!=null?Model.SourceManager.Name:"")
+                        @(Model.SourceManager != null ? Model.SourceManager.Name : "")
                     </td>
                 </tr>
+                }
                 <tr>
-                    <td>@Html.LabelFor(m=>m.TargetManagerAccept)</td>
+                    @if (Model.RequestType != 2)
+                    {<td>Руководитель</td> }
+                    else
+                    {<td>@Html.LabelFor(m => m.TargetManagerAccept)</td>}
                     <td>
-                        <input type="checkbox" disabled="disabled" @(Model.TargetManagerAccept.HasValue?"checked":"") />
+                        <input type="checkbox" disabled="disabled" @(Model.TargetManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsTargetManagerAcceptAvailable)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.TargetManagerAccept)
-                        @(Model.TargetManager!=null?Model.TargetManager.Name:"")
+                        @(Model.TargetManager != null ? Model.TargetManager.Name : "")
                     </td>
                 </tr>
                 <tr>
-                    <td>@Html.LabelFor(m=>m.PersonnelManagerBankAccept)</td>
+                    <td>@Html.LabelFor(m => m.PersonnelManagerBankAccept)</td>
                     <td>
-                        <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue?"checked":"") />
+                        <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue ? "checked" : "") />
                         @if (Model.IsPersonnelManagerBankAcceptAvailable)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
@@ -578,9 +646,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>@Html.LabelFor(m=>m.ChiefAccept)</td>
+                    <td>@Html.LabelFor(m => m.ChiefAccept)</td>
                     <td>
-                        <input type="checkbox" disabled="disabled" @(Model.ChiefAccept.HasValue?"checked":"") />
+                        <input type="checkbox" disabled="disabled" @(Model.ChiefAccept.HasValue ? "checked" : "") />
                         @if (Model.IsChiefAcceptAvailable)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
@@ -590,7 +658,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>@Html.LabelFor(m=>m.PersonnelManagerAccept)</td>
+                    <td>@Html.LabelFor(m => m.PersonnelManagerAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsPersonnelManagerAcceptAvailable)
@@ -634,6 +702,7 @@
     </tr> 
     </table>
 }
+@Html.Partial("~/Views/Info/Comments.cshtml")
 <style>
 label { font-size:1.1em; }
 .field-validation-error
@@ -666,7 +735,7 @@ label { font-size:1.1em; }
             result = false;
         }
         
-        @if(Model.IsManagerEditable)
+        @if (Model.IsManagerEditable)
         {<text>
             clearControlErrors($("#MovementDate"));
             if($("#MovementDate").val() == '')
@@ -698,7 +767,7 @@ label { font-size:1.1em; }
             }
         </text>
         }
-        @if(Model.IsPersonnelManagerEditable)
+        @if (Model.IsPersonnelManagerEditable)
         {<text>
             clearControlErrors($("#OrderDate"));
             if($("#OrderDate").val() == '')
@@ -851,10 +920,21 @@ label { font-size:1.1em; }
     }
     function ConfigureFields()
     {
-        $("#MovementDate, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+        $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
         $('#IsHourlyContainer').buttonset();
+        $('#IsTempMovingContainer').buttonset();
         $(':button, :input[type=button], :input[type=submit]').button();
         $(':input[type=text]').addClass("widget");
+        $("#IsTempMovingTrue").click(function(){
+            $("#lblIsTempMovingTrue").css("border-color", "#248BAD");
+            $("#lblIsTempMovingFalse").css("border-color", "silver");
+            $(".TempMovingContainer").show("highlight");
+        });
+        $("#IsTempMovingFalse").click(function(){
+            $("#lblIsTempMovingTrue").css("border-color", "silver");
+            $("#lblIsTempMovingFalse").css("border-color", "#248BAD");
+            $(".TempMovingContainer").hide();
+        });
         $("#IsHourlyTrue").click(function(){
             $("#lblHourlyTrue").css("border-color", "#248BAD");
             $("#lblHourlyFalse").css("border-color", "silver");
@@ -862,6 +942,17 @@ label { font-size:1.1em; }
         $("#IsHourlyFalse").click(function(){
             $("#lblHourlyTrue").css("border-color", "silver");
             $("#lblHourlyFalse").css("border-color", "#248BAD");
+        });
+        $("#NorthFactor").change(function()
+        {
+            $("[id^='NorthFactor_']").hide();
+            if($("#NorthFactor").val()==2)
+                $("#NorthFactor_2").show("highlight");
+            if($("#NorthFactor").val()==3)
+            {
+                $("#NorthFactor_2").show("highlight");
+                $("#NorthFactor_3").show("highlight");
+            }
         });
         $("#TargetDepartmentId").change(function ()
         {
@@ -871,7 +962,15 @@ label { font-size:1.1em; }
                     setOptionsToDropdown("TargetPositionId", result);                    
                 });
         });
-        
+        if($("#IsTempMoving").val()==true)
+        {
+            $(".TempMovingContainer").show();
+        }
+        else
+        {
+            $(".TempMovingContainer").hide();
+        }
+        $("#NorthFactor").change();
        var tabs= $("#tabs").tabs();
         tabs.find( ".ui-tabs-nav" ).sortable({
                       axis: "x",
