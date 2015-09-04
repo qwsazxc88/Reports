@@ -39,7 +39,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsCancelButtonPressed { get; set; }
         public bool IsStopButtonPressed { get; set; }
 
-        public bool IsCreatorInfoVisible { get; set; }
         public bool IsManagerVisible { get; set; }
         public bool IsDocsVisible { get; set; }
         public bool IsPersonnelVisible { get; set; }
@@ -48,6 +47,8 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> RequestTypes { get; set; }
         [Display(Name = "Дата перевода")]
         public DateTime? MovementDate { get; set; }
+        [Display(Name = "Дата временного перевода до")]
+        public DateTime? MovementTempTo { get; set; }
         [Display(Name = "В подразделение")]
         public string TargetDepartmentName { get; set; }
         public int TargetDepartmentId { get; set; }
@@ -86,13 +87,17 @@ namespace Reports.Presenters.UI.ViewModel
         public string MovementCondition { get; set; }
         [Display(Name="Должностная надбавка")]
         public decimal AdditionPosition {get;set;}
+        [Display(Name = "Дата окончания временной надбавки")]
         public DateTime? AdditionPositionTo {get;set;}
         [Display(Name = "Персональная надбавка")]
         public decimal AdditionPersonnel { get; set; }
+        [Display(Name="Дата окончания временной надбавки")]
         public DateTime? AdditionPersonnelTo { get; set; }
         [Display(Name = "Надбавка за стаж работы")]
         public decimal AdditionQuality { get; set; }
+        [Display(Name = "Дата окончания временной надбавки")]
         public DateTime? AdditionQualityTo { get; set; }
+        public bool IsTempMoving { get; set; }
         #endregion
         #region Для кадровиков
         public bool IsHourly { get; set; }
@@ -112,6 +117,7 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal AdditionTraveling { get; set; }
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб.)")]
         public decimal AdditionFront { get; set; }
+        [Display(Name = "Дата окончания временной надбавки")]
         public DateTime? AdditionFrontTo { get; set; }
         [Display(Name = "Грейд")]
         public int Grade { get; set; }
@@ -120,6 +126,17 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> HoursTypes { get; set; }
         [Display(Name = "Северный стаж")]
         public int NorthFactor { get; set; }
+        [Display(Name="Порядок начисления надбавок")]
+        public int NorthFactorOrder { get; set; }
+        [Display(Name = "лет")]
+        public int NorthFactorYear { get; set; }
+        [Display(Name = "месяцев")]
+        public int NorthFactorMonth { get; set; }
+        [Display(Name = "дней")]
+        public int NorthFactorDay { get; set; }
+        [Display(Name="Надбавка")]
+        public decimal NorthFactorAddition { get; set; }
+        public IList<IdNameDto> NorthFactorOrders { get; set; }
         public IList<IdNameDto> NorthFactors { get; set; }
         [Display(Name = "Пункты Дополнительного соглашения")]
         public string AdditionalAgreementEnties { get; set; }

@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IExtraChargesDao extraChargesDao;
+        public IExtraChargesDao ExtraChargesDao
+        {
+            get { return Validate.Dependency(extraChargesDao); }
+            set { extraChargesDao = value; }
+        }
         protected IPositionDao positionDao;
         public IPositionDao PositionDao
         {
@@ -115,11 +121,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             return model;
         }
         public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
         {
-            var docs = StaffMovementsDao.GetDocuments(DepartmentId, UserName, Number, Status);
+            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, DepartmentId, UserName, Number, Status);
             int iterator = 1;
             if (docs != null && docs.Any())
                 return docs.Select(x => new StaffMovementsDto
@@ -129,8 +136,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Dep3Name = x.SourceDepartment!=null?((x.SourceDepartment.Dep3 != null && x.SourceDepartment.Dep3.Any()) ? x.SourceDepartment.Dep3.First().Name : ""):"",
                     Dep7Name = x.SourceDepartment!=null?x.SourceDepartment.Name:"",
                     TargetManagerName = x.TargetManager!=null?x.TargetManager.Name:"",
-                    SourceMangerName = x.SourceManager!=null?x.TargetManager.Name:"",
-                    Status =x.Status!=null? x.Status.Name:"",
+                    SourceMangerName = x.SourceManager != null ? x.SourceManager.Name : "",
+                    Status =x.Status!=null? (x.Status.Id==3 && x.Type.Id!=2)?"Отправлена на согласование руководителю": x.Status.Name:"",
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
@@ -180,6 +187,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #endregion
                 #region Данные о переводе
                 model.MovementDate = entity.MovementDate;
+                model.MovementTempTo = entity.MovementTempTo;
                 model.TargetPositionId = entity.TargetPosition.Id;
                 model.TargetPositions = new List<IdNameDto>();
                 model.TargetPositions.Add(new IdNameDto {  Id= model.TargetPositionId, Name=model.TargetPositionName});
@@ -192,7 +200,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadUserData(model.SourceManager);
                 #endregion
                 #region Для руководителей
+                model.IsTempMoving = entity.IsTempMoving;
                 model.TargetCasing = entity.Data.TargetCasing;
+                model.TargetSalary = entity.Data.Salary;
                 model.MovementCondition = entity.Data.MovementCondition;
                 model.AdditionPersonnel = entity.Data.AdditionPersonnel;
                 model.AdditionPersonnelTo = entity.Data.AdditionPersonnelTo;
@@ -201,7 +211,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AdditionQuality = entity.Data.AdditionQuality;
                 model.AdditionQualityTo = entity.Data.AdditionQualityTo;
                 #endregion
-                #region Для бухгалтеров
+                #region Для кадровиков
                 model.OrderDate = entity.OrderDate;
                 model.AdditionalAgreementDate = entity.Data.AdditionalAgreementDate;
                 model.AdditionalAgreementNumber = entity.Data.AdditionalAgreementNumber;
@@ -214,6 +224,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
                 model.NorthFactor = entity.Data.NorthFactor;
+                model.NorthFactorOrder = entity.Data.NorthFactorOrder;
+                model.NorthFactorAddition = entity.Data.NorthFactorAddition;
+                model.NorthFactorDay = entity.Data.NorthFactorDay;
+                model.NorthFactorMonth = entity.Data.NorthFactorMonth;
+                model.NorthFactorYear = entity.Data.NorthFactorYear;
                 model.AdditionalAgreementEnties = entity.Data.AdditionalAgreementEntries;
                 model.AgreementDate = entity.Data.AgreementDate;
                 model.ChangesToAgreement = entity.Data.ChangesToAgreement;
@@ -298,6 +313,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         private void LoadDictionaries(StaffMovementsEditModel model)
         {
+            var extracharges = ExtraChargesDao.LoadAll();
+            if (extracharges != null && extracharges.Any())
+            {
+                model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            }
             var HoursTypes = EmploymentHoursTypeDao.LoadAll();
             if(HoursTypes!=null && HoursTypes.Any())
             {
@@ -405,31 +425,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsTargetManagerAcceptAvailable = false;
             model.IsUserAcceptAvailable = false;
             #endregion
-            //В зависимости от создателя
-            if (model.Creator.Id > 0)
-            {
-                var creator = UserDao.Load(model.Creator.Id);
-                switch (creator.UserRole)
-                {
-                    case UserRole.PersonnelManager:
-                        model.IsCreatorInfoVisible = false;
-                        break;
-                    case UserRole.Employee:
-                        model.IsCreatorInfoVisible = true;
-                        break;
-                    case UserRole.Manager:
-                        model.IsCreatorInfoVisible = true;
-                        break;
-                    case UserRole.ConsultantPersonnel:
-                        model.IsCreatorInfoVisible = true;
-                        break;
-                }
-            }
             //Флаги по типу модели
             switch (model.RequestType)
             {
                 case 1: model.IsDepartmentEditable = false;
                     model.IsPositionEditable = false;
+                    model.IsTargetManagerAcceptAvailable = true;
+                    model.IsSourceManagerAcceptAvailable = false;
                     break;
                 case 2:
                     model.IsDepartmentEditable = true;
@@ -438,10 +440,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 3: 
                     model.IsDepartmentEditable = false;
                     model.IsPositionEditable = true;
+                    model.IsTargetManagerAcceptAvailable = true;
+                    model.IsSourceManagerAcceptAvailable = false;
                     break;
             }
-            //Если вышло из состояния черновика, то редактировать подразделение и должность нельзя.
-            if (model.StatusId > 1)
+            //Если вышло из состояния черновика, то редактировать подразделение и должность нельзя. Заисключением кадровиков
+            if (model.StatusId > 1 && UserRole.PersonnelManager != CurrentUser.UserRole)
             {
                 model.IsDepartmentEditable = false;
                 model.IsPositionEditable = false;
@@ -453,6 +457,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsEditable = true;
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;
                     model.IsUserAcceptAvailable = true;
                     break;
                 case 2://Отправлена на согласование руководителю отпускающему. Может редактировать руководитель
@@ -476,45 +481,75 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = true;
                     model.IsStopButtonAvailable = true;
                     model.IsPersonnelManagerBankAcceptAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 6://Отправлена на согласование вышестоящему руководителю
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsChiefAcceptAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 7://Оформление кадры. Доступно редактирование кадровикам, проставление галок в документах
                     model.IsEditable = true;
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsPersonnelManagerEditable = true;
+                    model.IsPersonnelManagerAcceptAvailable = true;
                     model.IsDocsEditable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 8://Контроль руководителя - пакет документов на подпись. Доступно вложение документов
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsDocsAddAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 9://Документы подписаны
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsConfirmButtonAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 10://Перевод оформлен
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 11://'Отклонен' Уже ничо нельзя сделать. Поезд ушёл.
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 12://'Выгружен в 1С' Уже ничо нельзя сделать. Поезд ушёл.
+                    model.IsTargetManagerAcceptAvailable = false;
                     break;
             }
             //Флаги по ролям
             switch (CurrentUser.UserRole)
             {
+                case UserRole.OutsourcingManager:
+                    model.IsDocsVisible = true;
+                    model.IsPersonnelVisible = true;
+                    model.IsManagerVisible = true;
+
+                    model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
+                    model.IsManagerEditable = false;//Редактирование руководителем
+                    model.IsDocsEditable = false;//Редактирование документов
+                    model.IsDocsAddAvailable = false;//Добавление документов
+
+                    model.IsUserAcceptAvailable = false; //Утверждение сотрудником
+                    model.ISRejectAvailable = false; //Отмена
+                    model.IsSourceManagerAcceptAvailable = false;//Утверждение отпускающим руководителем
+                    model.IsTargetManagerAcceptAvailable = false;//Утверждение принимающим руководителем
+                    model.IsPersonnelManagerAcceptAvailable = false;//Утверждение кадровиком
+                    model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
+                    model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
+
+                    model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
+                    model.IsStopButtonAvailable = false;//Конпка приостановки  
+                    break;
                 case UserRole.Employee:
-                    model.IsDocsVisible = false;
+                    model.IsDocsVisible = true;
                     model.IsPersonnelVisible = false;
-                    model.IsManagerVisible = false;
+                    model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
                     model.IsManagerEditable = false;//Редактирование руководителем
                     model.IsDocsEditable = false;//Редактирование документов
@@ -536,18 +571,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsManagerEditable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsManagerEditable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
 
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
-                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && true;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
-                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;//Утверждение принимающим руководителем
+                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager!=null?model.SourceManager.Id==CurrentUser.Id:false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
+                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Утверждение принимающим руководителем
                     model.IsPersonnelManagerAcceptAvailable = false;//Утверждение кадровиком
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
-                    model.IsChiefAcceptAvailable = model.IsChiefAcceptAvailable && true;//Утверждение вышестоящим руководителем                    
-
+                    if (model.TargetManager != null)
+                    {
+                        var chiefs = GetChiefsForManager(model.TargetManager.Id);
+                        model.IsChiefAcceptAvailable = model.IsChiefAcceptAvailable && chiefs.Any(x => x.Id == CurrentUser.Id);//Утверждение вышестоящим руководителем                    
+                    }
+                    else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки                 
                     break;
@@ -556,7 +595,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsPersonnelManagerBankAcceptAvailable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = false;//Добавление документов
 
@@ -576,10 +615,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = true;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = model.IsPersonnelManagerEditable && true; //Редактирование кадровиком
-                    model.IsManagerEditable = false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsPersonnelManagerEditable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = model.IsDocsEditable && true;//Редактирование документов
-                    model.IsDocsAddAvailable = false;//Добавление документов
-
+                    model.IsDocsAddAvailable = true;//Добавление документов
+                    
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
                     model.IsSourceManagerAcceptAvailable = false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
@@ -656,6 +695,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.TargetDepartment = DepartmentDao.Load(model.TargetDepartmentId);
                 entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
+                entity.TargetManagerAccept = null;
+                entity.TargetChief = null;
+                entity.TargetChiefAccept = null;
             }
             if (model.IsPositionEditable)
             {
@@ -666,12 +708,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsEditable)
             {
                 entity.MovementDate = model.MovementDate;
+                entity.MovementTempTo = model.MovementTempTo;
             }
             #endregion
             #region Для руководителей
             if (model.IsManagerEditable)
             {
-                entity.MovementDate = model.MovementDate; //Дата перевода
+                entity.IsTempMoving = model.IsTempMoving;
                 entity.Data.TargetCasing = model.TargetCasing; //Оклад
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
                 entity.Data.AdditionPersonnel = model.AdditionPersonnel;//Персональная надбавка
@@ -680,12 +723,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionPositionTo = model.AdditionPositionTo;//Должностная надбавка до
                 entity.Data.AdditionQuality = model.AdditionQuality;//Квалификационная надбавка
                 entity.Data.AdditionQualityTo = model.AdditionQualityTo;//Квалификационная надбавка до
+                entity.Data.Salary = model.TargetSalary;
             }
             #endregion
             #region Для бухгалтеров
             if (model.IsPersonnelManagerEditable)
             {
-                entity.MovementDate = model.MovementDate; //Дата перевода
                 entity.Data.AdditionalAgreementDate = model.AdditionalAgreementDate;//Дата доп соглашения
                 entity.Data.AdditionalAgreementNumber = model.AdditionalAgreementNumber;//Номер доп. соглашения
                 entity.OrderDate = model.OrderDate;//Дата приказа
@@ -698,6 +741,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = EmploymentHoursTypeDao.Load(model.HoursType);//График работы
                 entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
+                entity.Data.NorthFactorAddition = model.NorthFactorAddition;
+                entity.Data.NorthFactorYear = model.NorthFactorYear;
+                entity.Data.NorthFactorMonth = model.NorthFactorMonth;
+                entity.Data.NorthFactorDay = model.NorthFactorDay;
+                entity.Data.NorthFactorOrder = model.NorthFactorOrder;
                 entity.Data.AdditionalAgreementEntries = model.AdditionalAgreementEnties;//Пункты доп.соглашения
                 entity.Data.AgreementDate = model.AgreementDate;//Дата соглашения
                 entity.Data.ChangesToAgreement = model.ChangesToAgreement;//Номер соглашения
@@ -734,14 +782,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         //Если согласовано пользователем
                         entity.SendDate = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.SourceManager);
+                        if (entity.Type.Id == 2)
+                        {
+                            entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.SourceManager);
+                        }
+                        else
+                        {
+                            entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.TargetManager);
+                        }
                     }
                     if (model.IsAcceptButtonPressed && model.IsSourceManagerAcceptAvailable)
                     {
                         //Если согласовано отпускающим руководителем
                         entity.SendDate = DateTime.Now;
-                        entity.SourceManagerAccept = DateTime.Now;                        
+                        entity.SourceManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.TargetManager);
+                    }
+                    if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
+                    {
+                        //Если согласовано отпускающим руководителем
+                        entity.SendDate = DateTime.Now;
+                        entity.SourceManagerAccept = DateTime.Now;
+                        entity.TargetManagerAccept = DateTime.Now;
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
                     }
                     break;
                 case 2:

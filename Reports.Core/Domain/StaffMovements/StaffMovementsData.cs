@@ -22,10 +22,16 @@ namespace Reports.Core.Domain
         public virtual string AdditionalAgreementNumber { get; set; }
         public virtual DateTime? AdditionalAgreementDate { get; set; }
         public virtual int SalaryType { get; set; }
+        public virtual decimal Salary { get; set; }
         public virtual decimal RegionCoefficient { get; set; }
         public virtual int Grade { get; set; }
         public virtual EmploymentHoursType HoursType { get; set; }
         public virtual int NorthFactor { get; set; }
+        public virtual int NorthFactorOrder { get; set; }
+        public virtual int NorthFactorYear { get; set; }
+        public virtual int NorthFactorMonth { get; set; }
+        public virtual int NorthFactorDay { get; set; }
+        public virtual decimal NorthFactorAddition { get; set; }
         public virtual string ChangesToAgreementEntries { get; set; }
         public virtual string ChangesToAgreement { get; set; }
         public virtual DateTime? AgreementDate { get; set; }

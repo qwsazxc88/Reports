@@ -11,7 +11,7 @@
     <property name="RejectDate" not-null="false"/>
     <property name="SendTo1C" not-null="false"/>
     <property name="Number"  not-null="false"/>
-    
+    <property name="IsTempMoving"  not-null="false"/>
     <many-to-one name="Type" class="refStaffMovementsTypes" column="Type" foreign-key="FK_StaffMovements_Type" not-null="true"/>
     <many-to-one name="Status" class="refStaffMovementsStatus" column="Status" foreign-key="FK_StaffMovements_Status" not-null="false"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffMovements_User" not-null="false"/>
