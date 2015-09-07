@@ -93,7 +93,7 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal AdditionPersonnel { get; set; }
         [Display(Name="Дата окончания временной надбавки")]
         public DateTime? AdditionPersonnelTo { get; set; }
-        [Display(Name = "Надбавка за стаж работы")]
+        [Display(Name = "Надбавка за квалификацию")]
         public decimal AdditionQuality { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         public DateTime? AdditionQualityTo { get; set; }
