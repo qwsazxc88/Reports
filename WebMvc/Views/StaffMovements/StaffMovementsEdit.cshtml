@@ -962,7 +962,7 @@ label { font-size:1.1em; }
                     setOptionsToDropdown("TargetPositionId", result);                    
                 });
         });
-        if($("#IsTempMoving").val()==true)
+        if(@(Model.IsTempMoving?"true":"false"))
         {
             $(".TempMovingContainer").show();
         }

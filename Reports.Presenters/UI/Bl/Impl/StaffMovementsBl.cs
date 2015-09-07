@@ -595,7 +595,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsPersonnelManagerBankAcceptAvailable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = (model.IsPersonnelManagerBankAcceptAvailable ) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = false;//Добавление документов
 
@@ -615,14 +615,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = true;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = model.IsPersonnelManagerEditable && true; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsPersonnelManagerEditable && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = (model.IsPersonnelManagerEditable|| model.IsManagerEditable) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = model.IsDocsEditable && true;//Редактирование документов
                     model.IsDocsAddAvailable = true;//Добавление документов
                     
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
-                    model.IsSourceManagerAcceptAvailable = false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
-                    model.IsTargetManagerAcceptAvailable = false;//Утверждение принимающим руководителем
+                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && true;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
+                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;//Утверждение принимающим руководителем
                     model.IsPersonnelManagerAcceptAvailable = model.IsPersonnelManagerAcceptAvailable && true;//Утверждение кадровиком
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
