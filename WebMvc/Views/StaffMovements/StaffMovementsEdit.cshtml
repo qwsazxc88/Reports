@@ -275,7 +275,7 @@
                           <div id="tabs-2">
                           <fieldset class="bordered doc-wrap-blue panel">
                           <table>
-                            <tr>
+                            <tr class="TempMovingContainer">
                                 <td>@Html.LabelFor(m => m.MovementCondition)</td>
                                 <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
@@ -745,7 +745,7 @@ label { font-size:1.1em; }
                 result = false;
             }
             clearControlErrors($("#MovementCondition"));
-            if($("#MovementCondition").val() == '')
+            if($("#MovementCondition").val() == '' && $("IsTempMoving").val()==false)
             {
                 addControlError($("#MovementCondition"),'Необходимо заполнить условие перевода');
                 addControlError($("#JSError"),'Необходимо заполнить условие перевода');

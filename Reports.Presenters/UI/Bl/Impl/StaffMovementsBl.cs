@@ -122,6 +122,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffMovementsListModel model = new StaffMovementsListModel();
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
+            model.Status = 0;
             return model;
         }
         public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
