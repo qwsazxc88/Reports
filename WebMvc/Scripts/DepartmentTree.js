@@ -8,10 +8,8 @@ function createDepartmentDialog(SelType)
     elem.id = "divDepartmentDialog";
     var newDiv = $(elem);
     //var departmentId = $("#DepartmentId").val();
-
-
     var departmentId = 0;
-    if (SelType == null) { SelType = 0; ; }
+    if (SelType == null) { SelType = 0; }
     //для всего остального
     if (SelType == 0) { departmentId = $("#DepartmentId").val(); }
         
@@ -193,7 +191,7 @@ function setDepartmentValues(control, SelType) {
         $('#ParentId').val($('#' + control).val());
         $('#DepParentName').val($('#' + control + ' option:selected').text());
         $('#DepParentNameLabel').text($('#' + control + ' option:selected').text());
-        
+    }
     //для кадровых перемещений
     if (SelType == 4) {
         $('#SourceDepartmentId').val($('#' + control).val());
