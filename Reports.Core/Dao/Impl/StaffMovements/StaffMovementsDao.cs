@@ -55,7 +55,7 @@ namespace Reports.Core.Dao.Impl
             if (DepartmentId > 0)
                 query=query.Where(x => x.SourceDepartment.Id == DepartmentId);
             if(!String.IsNullOrWhiteSpace(UserName))
-                query=query.Where(x => x.Creator.Name.Contains(UserName));
+                query=query.Where(x => x.User.Name.Contains(UserName));
             if(Status>0)
                 query=query.Where(x => x.Status.Id == Status);
             if(Number>0)
