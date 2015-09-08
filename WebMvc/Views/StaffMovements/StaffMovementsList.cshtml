@@ -46,7 +46,7 @@
                                 @Html.LabelFor(m => m.Status):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.Statuses, new SelectList(Model.Statuses, "ID", "Name")) 
+                                @Html.DropDownListFor(model => model.Status, new SelectList(Model.Statuses, "ID", "Name")) 
                              </td>
                         </tr>
                         <tr>
@@ -146,7 +146,7 @@
                         <span class="sortorder" ng-show="predicate === 'SourceManagerName'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th  ng-click="Sort('TargetManagerName')">
-                        <a>Руководитель<br />принимаюющий</a>
+                        <a>Руководитель<br />принимающий</a>
                         <span class="sortorder" ng-show="predicate === 'TargetManagerName'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th  ng-click="Sort('PositionTarget')">
