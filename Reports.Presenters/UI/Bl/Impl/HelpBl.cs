@@ -353,29 +353,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 var users = UserDao.GetUsersForConsultantBank().Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).ToList();
                 return users;
             }
-            else
-            switch (currentUser.Level)
+            else if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
-                case 2:
-                case 3:
-                    IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
-                    if (depList == null || depList.Count() == 0)
-                        throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);
-                    //model.Users = list;
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    if (currentUser.Department == null)
-                        throw new ValidationException(string.Format(StrNoDepartmentForUser, currentUser.Id));
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { currentUser.Department.Id }, Name);
-                    //model.Users = list;
-                    break;
-                default:
-                    list = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name, AuthenticationService.CurrentUser.Id);
-                    break;
+                var users = UserDao.GetUsersForPersonnel(CurrentUser.Id).Select(x=>new IdNameDto{ Id = x.Id, Name = x.Name}).ToList();
+                return users;
             }
+            else
+                switch (currentUser.Level)
+                {
+                    case 2:
+                    case 3:
+                        IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                        if (depList == null || depList.Count() == 0)
+                            throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                        list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);
+                        //model.Users = list;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        if (currentUser.Department == null)
+                            throw new ValidationException(string.Format(StrNoDepartmentForUser, currentUser.Id));
+                        list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { currentUser.Department.Id }, Name);
+                        //model.Users = list;
+                        break;
+                    default:
+                        list = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name, AuthenticationService.CurrentUser.Id);
+                        break;
+                }
             return list.ToList();
         }
         public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
