@@ -585,6 +585,10 @@
                               <td>@Html.CheckBoxFor(m => m.ServiceOrderDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
                           </table>
+                          @if (Model.IsDocsEditable && Model.Id > 0)
+                          {
+                            <input type="button" onclick="SaveDocs()" value="Сохранить требования к документам" />
+                          }
                           </fieldset>
                           </div>
                           }
@@ -728,6 +732,24 @@ label { font-size:1.1em; }
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    function SaveDocs()
+    {
+        $.ajax({
+              type: 'POST',
+              url: "/StaffMovements/SaveDocs",
+              data: {   id : $('#Id').val(), 
+                        ServiceOrderDocIsRequired: $('#ServiceOrderDocIsRequired').val(),
+                        RequirementsOrderDocIsRequired : $('#RequirementsOrderDocIsRequired').val(),
+                        MaterialLiabilityDocIsRequired : $('#MaterialLiabilityDocIsRequired').val(),
+                        MovementOrderDocIsRequired : $('#MovementOrderDocIsRequired').val(),
+                        AdditionalAgreementDocIsRequired : $('#AdditionalAgreementDocIsRequired').val()
+                        },
+              success: function () {
+                    alert('Требования к документам успешно сохраненны.');                    
+                },
+              async:false
+            }); 
+    }
     function ValidateForm()
     {
         var result =true;
@@ -737,16 +759,14 @@ label { font-size:1.1em; }
         $.ajax({
               type: 'POST',
               url: "/StaffMovements/CheckMovementDate",
-              data: { date : $('#MovementDate').val(), UserId: $('#User_Id').val()},
+              data: { date : $('#MovementDate').val(), UserId: $('#User_Id').val(), id: $('#Id').val()},
               success: function (data) {
                     console.log(data);
-                    if(!data.result)
-                    { console.log('lol');result=false; addControlError($("#JSError"),'На данную дату существуюет другая заявка.'); }                    
+                    if(data != "Ok")
+                    { console.log(data.result);result=false; addControlError($("#JSError"),'На данную дату существуюет другая заявка.'); }                    
                 },
               async:false
-            });    
-            console.log('kuku');
-        console.log(result);  
+            });  
         if($("#TargteDepartmentId").val() == 0)
         {
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');

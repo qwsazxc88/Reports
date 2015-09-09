@@ -343,7 +343,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IList<IdNameDto> GetPersonAutocomplete(string Name)
         {
             User currentUser = UserDao.Load(CurrentUser.Id);
-
+            
             //if (currentUser == null)
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
             //        CurrentUser.Id));
@@ -355,7 +355,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
-                var users = UserDao.GetUsersForPersonnel(CurrentUser.Id).Select(x=>new IdNameDto{ Id = x.Id, Name = x.Name}).ToList();
+                var users = UserDao.GetUsersForPersonnel(CurrentUser.Id).Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
                 return users;
             }
             else

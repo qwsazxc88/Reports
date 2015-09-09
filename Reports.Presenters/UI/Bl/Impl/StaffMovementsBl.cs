@@ -247,6 +247,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     var AdditionalAgreementDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc).First();
                     model.AdditionalAgreementDocDto = new UploadFileDto();
+                    model.AdditionalAgreementDocIsRequired = AdditionalAgreementDoc!=null?AdditionalAgreementDoc.IsRequired:false;
                     if (AdditionalAgreementDoc != null && AdditionalAgreementDoc.Attachment!=null)
                     {                        
                         model.AdditionalAgreementDocDto.FileName = AdditionalAgreementDoc.Attachment.FileName;
@@ -254,6 +255,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
                     model.MaterialLiabilityDocDto = new UploadFileDto();
+                    model.MaterialLiabilityDocIsRequired =MaterialLiabilityDoc!=null? MaterialLiabilityDoc.IsRequired:false;
                     if (MaterialLiabilityDoc != null && MaterialLiabilityDoc.Attachment != null)
                     {
                         model.MaterialLiabilityDocDto.FileName = MaterialLiabilityDoc.Attachment.FileName;
@@ -261,6 +263,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
                     model.MovementNoteDto = new UploadFileDto();
+                    model.MovementNoteIsRequired = MovementNote!=null?MovementNote.IsRequired:false;
                     if (MovementNote != null && MovementNote.Attachment != null)
                     {
                         model.MovementNoteDto.FileName = MovementNote.Attachment.FileName;
@@ -268,6 +271,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MovementOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc).First();
                     model.MovementOrderDocDto = new UploadFileDto();
+                    model.MovementOrderDocIsRequired =MovementOrderDoc!=null? MovementOrderDoc.IsRequired:false;
                     if (MovementOrderDoc != null && MovementOrderDoc.Attachment != null)
                     {
                         model.MovementOrderDocDto.FileName = MovementOrderDoc.Attachment.FileName;
@@ -275,6 +279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
                     model.RequirementsOrderDocDto = new UploadFileDto();
+                    model.RequirementsOrderDocIsRequired = RequirementsOrderDoc!=null?RequirementsOrderDoc.IsRequired:false;
                     if (RequirementsOrderDoc != null && RequirementsOrderDoc.Attachment != null)
                     {
                         model.RequirementsOrderDocDto.FileName = RequirementsOrderDoc.Attachment.FileName;
@@ -282,10 +287,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
                     model.ServiceOrderDocDto = new UploadFileDto();
+                    model.ServiceOrderDocIsRequired = ServiceOrderDoc!=null? ServiceOrderDoc.IsRequired: false;
                     if (ServiceOrderDoc != null && ServiceOrderDoc.Attachment != null)
                     {
                         model.ServiceOrderDocDto.FileName = ServiceOrderDoc.Attachment.FileName;
-                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;
+                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;                        
                     }
                 }
                 #endregion
@@ -379,6 +385,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(model.IsDocsAddAvailable)
                 SaveFiles(model);
             #endregion
+        }
+        public void SaveDocsModel(StaffMovementsEditModel model)
+        {            
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, y => y.IsRequired = model.AdditionalAgreementDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc, y => y.IsRequired = model.MovementOrderDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
         }
         private void SaveFiles(StaffMovementsEditModel model)
         {
@@ -1075,9 +1090,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
-        public bool CheckMovementsExist(DateTime date, int UserId)
+        public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId);
+            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id);
             if (res != null && res.Any())
                 return true;
             else return false;
