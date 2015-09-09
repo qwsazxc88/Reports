@@ -21,6 +21,8 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Стандартные поля
         [Display(Name = "Дата создания")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime CreateDate { get; set; }
         [Display(Name = "Номер заявки")]
         public string Number { get; set; }

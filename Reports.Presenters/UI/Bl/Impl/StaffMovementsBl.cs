@@ -164,6 +164,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.User.Id = entity.User.Id;
                 model.RequestType = entity.Type.Id;
                 model.MovementDate = entity.MovementDate;
+                model.MovementTempReason = entity.Data.MovementTempReason;
+                model.MovementReason = entity.Data.MovementReason;
                 model.CreateDate = entity.CreateDate;
                 var targetposition = entity.TargetPosition;
                 if (targetposition != null)
@@ -234,7 +236,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AgreementDate = entity.Data.AgreementDate;
                 model.ChangesToAgreement = entity.Data.ChangesToAgreement;
                 model.ChangesToAgreementEnties = entity.Data.ChangesToAgreementEntries;
-                model.MovementReason = entity.Data.MovementReason;
+                model.MovementReasonOrder = entity.Data.MovementReasonOrder;
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 model.SignatoryId = entity.Data.Signatory!=null?entity.Data.Signatory.Id:0;
                 model.SignatoryName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
@@ -245,6 +247,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     var AdditionalAgreementDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc).First();
                     model.AdditionalAgreementDocDto = new UploadFileDto();
+                    model.AdditionalAgreementDocIsRequired = AdditionalAgreementDoc!=null?AdditionalAgreementDoc.IsRequired:false;
                     if (AdditionalAgreementDoc != null && AdditionalAgreementDoc.Attachment!=null)
                     {                        
                         model.AdditionalAgreementDocDto.FileName = AdditionalAgreementDoc.Attachment.FileName;
@@ -252,6 +255,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
                     model.MaterialLiabilityDocDto = new UploadFileDto();
+                    model.MaterialLiabilityDocIsRequired =MaterialLiabilityDoc!=null? MaterialLiabilityDoc.IsRequired:false;
                     if (MaterialLiabilityDoc != null && MaterialLiabilityDoc.Attachment != null)
                     {
                         model.MaterialLiabilityDocDto.FileName = MaterialLiabilityDoc.Attachment.FileName;
@@ -259,6 +263,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
                     model.MovementNoteDto = new UploadFileDto();
+                    model.MovementNoteIsRequired = MovementNote!=null?MovementNote.IsRequired:false;
                     if (MovementNote != null && MovementNote.Attachment != null)
                     {
                         model.MovementNoteDto.FileName = MovementNote.Attachment.FileName;
@@ -266,6 +271,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var MovementOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc).First();
                     model.MovementOrderDocDto = new UploadFileDto();
+                    model.MovementOrderDocIsRequired =MovementOrderDoc!=null? MovementOrderDoc.IsRequired:false;
                     if (MovementOrderDoc != null && MovementOrderDoc.Attachment != null)
                     {
                         model.MovementOrderDocDto.FileName = MovementOrderDoc.Attachment.FileName;
@@ -273,6 +279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
                     model.RequirementsOrderDocDto = new UploadFileDto();
+                    model.RequirementsOrderDocIsRequired = RequirementsOrderDoc!=null?RequirementsOrderDoc.IsRequired:false;
                     if (RequirementsOrderDoc != null && RequirementsOrderDoc.Attachment != null)
                     {
                         model.RequirementsOrderDocDto.FileName = RequirementsOrderDoc.Attachment.FileName;
@@ -280,10 +287,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
                     model.ServiceOrderDocDto = new UploadFileDto();
+                    model.ServiceOrderDocIsRequired = ServiceOrderDoc!=null? ServiceOrderDoc.IsRequired: false;
                     if (ServiceOrderDoc != null && ServiceOrderDoc.Attachment != null)
                     {
                         model.ServiceOrderDocDto.FileName = ServiceOrderDoc.Attachment.FileName;
-                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;
+                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;                        
                     }
                 }
                 #endregion
@@ -378,6 +386,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SaveFiles(model);
             #endregion
         }
+        public void SaveDocsModel(StaffMovementsEditModel model)
+        {            
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, y => y.IsRequired = model.AdditionalAgreementDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementOrderDoc, y => y.IsRequired = model.MovementOrderDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
+            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
+        }
         private void SaveFiles(StaffMovementsEditModel model)
         {
             //Сохраняем файлы
@@ -460,6 +477,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsSourceManagerAcceptAvailable = true;
                     model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;
                     model.IsUserAcceptAvailable = true;
+                    model.IsDocsAddAvailable = true;
                     break;
                 case 2://Отправлена на согласование руководителю отпускающему. Может редактировать руководитель
                     model.IsEditable = true;
@@ -467,6 +485,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ISRejectAvailable = true;
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
+                    model.IsDocsAddAvailable = true;
                     break;
                 case 3://Отправлена на согласование руководителю принимающему. может редактировать руководитель принимающий
                     model.IsEditable = true;
@@ -555,7 +574,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = false;//Редактирование руководителем
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = false;//Добавление документов
-
+                    model.IsDocsAddAvailable = model.IsDocsAddAvailable = true;
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
                     model.IsSourceManagerAcceptAvailable = false;//Утверждение отпускающим руководителем
@@ -575,7 +594,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = model.IsManagerEditable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
-
+                    
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
                     model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager!=null?model.SourceManager.Id==CurrentUser.Id:false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
@@ -710,6 +729,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.MovementDate = model.MovementDate;
                 entity.MovementTempTo = model.MovementTempTo;
+                entity.Data.MovementReason = model.MovementReason;
+                entity.Data.MovementTempReason = model.MovementTempReason;
             }
             #endregion
             #region Для руководителей
@@ -727,7 +748,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Salary = model.TargetSalary;
             }
             #endregion
-            #region Для бухгалтеров
+            #region Для кадров
             if (model.IsPersonnelManagerEditable)
             {
                 entity.Data.AdditionalAgreementDate = model.AdditionalAgreementDate;//Дата доп соглашения
@@ -751,7 +772,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AgreementDate = model.AgreementDate;//Дата соглашения
                 entity.Data.ChangesToAgreement = model.ChangesToAgreement;//Номер соглашения
                 entity.Data.ChangesToAgreementEntries = model.ChangesToAgreementEnties;//Пункты соглашения
-                entity.Data.MovementReason = model.MovementReason;//Причина перемещения
+                entity.Data.MovementReasonOrder = model.MovementReasonOrder;//Причина перемещения
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);//Подписант
                 //Ставим галочки в документах
@@ -1068,5 +1089,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return null;
         }
         #endregion
+
+        public bool CheckMovementsExist(DateTime date, int UserId, int id)
+        {
+            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id);
+            if (res != null && res.Any())
+                return true;
+            else return false;
+        }
     }
 }
+
