@@ -164,6 +164,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.User.Id = entity.User.Id;
                 model.RequestType = entity.Type.Id;
                 model.MovementDate = entity.MovementDate;
+                model.MovementTempReason = entity.Data.MovementTempReason;
+                model.MovementReason = entity.Data.MovementReason;
                 model.CreateDate = entity.CreateDate;
                 var targetposition = entity.TargetPosition;
                 if (targetposition != null)
@@ -234,7 +236,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AgreementDate = entity.Data.AgreementDate;
                 model.ChangesToAgreement = entity.Data.ChangesToAgreement;
                 model.ChangesToAgreementEnties = entity.Data.ChangesToAgreementEntries;
-                model.MovementReason = entity.Data.MovementReason;
+                model.MovementReasonOrder = entity.Data.MovementReasonOrder;
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 model.SignatoryId = entity.Data.Signatory!=null?entity.Data.Signatory.Id:0;
                 model.SignatoryName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
@@ -460,6 +462,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsSourceManagerAcceptAvailable = true;
                     model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;
                     model.IsUserAcceptAvailable = true;
+                    model.IsDocsAddAvailable = true;
                     break;
                 case 2://Отправлена на согласование руководителю отпускающему. Может редактировать руководитель
                     model.IsEditable = true;
@@ -467,6 +470,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ISRejectAvailable = true;
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
+                    model.IsDocsAddAvailable = true;
                     break;
                 case 3://Отправлена на согласование руководителю принимающему. может редактировать руководитель принимающий
                     model.IsEditable = true;
@@ -555,7 +559,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = false;//Редактирование руководителем
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = false;//Добавление документов
-
+                    model.IsDocsAddAvailable = model.IsDocsAddAvailable = true;
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
                     model.IsSourceManagerAcceptAvailable = false;//Утверждение отпускающим руководителем
@@ -575,7 +579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = model.IsManagerEditable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
-
+                    
                     model.IsUserAcceptAvailable = model.IsUserAcceptAvailable && true; //Утверждение сотрудником
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
                     model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager!=null?model.SourceManager.Id==CurrentUser.Id:false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
@@ -710,6 +714,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.MovementDate = model.MovementDate;
                 entity.MovementTempTo = model.MovementTempTo;
+                entity.Data.MovementReason = model.MovementReason;
+                entity.Data.MovementTempReason = model.MovementTempReason;
             }
             #endregion
             #region Для руководителей
@@ -727,7 +733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Salary = model.TargetSalary;
             }
             #endregion
-            #region Для бухгалтеров
+            #region Для кадров
             if (model.IsPersonnelManagerEditable)
             {
                 entity.Data.AdditionalAgreementDate = model.AdditionalAgreementDate;//Дата доп соглашения
@@ -751,7 +757,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AgreementDate = model.AgreementDate;//Дата соглашения
                 entity.Data.ChangesToAgreement = model.ChangesToAgreement;//Номер соглашения
                 entity.Data.ChangesToAgreementEntries = model.ChangesToAgreementEnties;//Пункты соглашения
-                entity.Data.MovementReason = model.MovementReason;//Причина перемещения
+                entity.Data.MovementReasonOrder = model.MovementReasonOrder;//Причина перемещения
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);//Подписант
                 //Ставим галочки в документах
@@ -1068,5 +1074,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return null;
         }
         #endregion
+
+        public bool CheckMovementsExist(DateTime date, int UserId)
+        {
+            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId);
+            if (res != null && res.Any())
+                return true;
+            else return false;
+        }
     }
 }
+

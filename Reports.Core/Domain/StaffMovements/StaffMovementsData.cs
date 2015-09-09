@@ -38,6 +38,7 @@ namespace Reports.Core.Domain
         public virtual string AdditionalAgreementEntries { get; set; }
         public virtual AccessGroup AccessGroup { get; set; }
         public virtual string MovementReason { get; set; }
+        public virtual string MovementReasonOrder { get; set; }
         public virtual string MovementTempReason { get; set; }
         public virtual string MovementCondition { get; set; }
         public  virtual Signer Signatory { get; set; }

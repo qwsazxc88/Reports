@@ -34,6 +34,7 @@
     <property name="AgreementDate" not-null="false"/>
     <property name="AdditionalAgreementEntries" not-null="false"/>    
     <property name="MovementReason" not-null="false"/>
+    <property name="MovementReasonOrder" not-null="false"/>
     <property name="MovementTempReason" not-null="false"/>
     <property name="MovementCondition" not-null="false"/>
     <many-to-one name="Signatory" class="Signer" column="Signatory" foreign-key="FK_StaffMovementsData_Signatory" not-null="false"/>

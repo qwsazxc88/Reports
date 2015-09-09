@@ -107,13 +107,23 @@
                     <td>
                     @Html.LabelFor(m => m.MovementDate)
                     </td>
-                    <td>@Html.TextBoxFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                    <td>@Html.EditorFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.MovementReason)</td>
+                    <td>@Html.TextBoxFor(m => m.MovementReason, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
                 </tr>
                 <tr class="TempMovingContainer">
                     <td>
                     @Html.LabelFor(m => m.MovementTempTo)
                     </td>
-                    <td>@Html.TextBoxFor(m => m.MovementTempTo, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                    <td>@Html.EditorFor(m => m.MovementTempTo, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
+                </tr>
+                <tr class="TempMovingContainer">
+                    <td>
+                    @Html.LabelFor(m => m.MovementTempReason)
+                    </td>
+                    <td>@Html.EditorFor(m => m.MovementTempReason, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
                 </tr>
                 <tr>
                 <td colspan="2">
@@ -274,11 +284,7 @@
                           {
                           <div id="tabs-2">
                           <fieldset class="bordered doc-wrap-blue panel">
-                          <table>
-                            <tr class="TempMovingContainer">
-                                <td>@Html.LabelFor(m => m.MovementCondition)</td>
-                                <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
+                          <table>                            
                             <tr>
                                     <td>
                                     <div id="IsTempMovingContainer" class="formfield clear">
@@ -294,6 +300,10 @@
                                     </div>
                                     </td>
                                 </tr>
+                            <tr class="TempMovingContainer">
+                                <td>@Html.LabelFor(m => m.MovementCondition)</td>
+                                <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                            </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetSalary)</td>
                                 <td>@Html.TextBoxFor(m => m.TargetSalary, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
@@ -447,9 +457,9 @@
                                     <td>@Html.TextBoxFor(m => m.AdditionalAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.MovementReason)</td>
-                                    <td>@Html.TextBoxFor(m => m.MovementReason, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
+                                    <td>@Html.LabelFor(m => m.MovementReasonOrder)</td>
+                                    <td>@Html.TextBoxFor(m => m.MovementReasonOrder, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                </tr>                                
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AccessGroup)</td>
                                     <td>@Html.DropDownListFor(m => m.AccessGroup, new SelectList(Model.AccessGroupsList, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
@@ -482,12 +492,12 @@
                                 {
                                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
                                 }
-                                @if (Model.IsDocsAddAvailable)
+                                @if (Model.IsDocsAddAvailable && Model.MovementNoteIsRequired)
                                 {
                                     <input type="file" name="MovementNote" />
                                 }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.MovementNoteIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.MovementNoteIsRequired, (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                               <td>
@@ -499,7 +509,7 @@
                                {
                                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AdditionalAgreementDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.AdditionalAgreementDocDto.FileName</a>
                                }
-                                @if (Model.IsDocsAddAvailable)
+                                @if (Model.IsDocsAddAvailable && Model.AdditionalAgreementDocIsRequired)
                                 {
                                     <input type="file" name="AdditionalAgreementDoc" />                               
                                 }
@@ -516,7 +526,7 @@
                                 {
                                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementOrderDocDto.FileName</a>
                                 }
-                                @if (Model.IsDocsAddAvailable)
+                                @if (Model.IsDocsAddAvailable && Model.MovementOrderDocIsRequired)
                                 {
                                     <input type="file" name="MovementOrderDoc" />
                                 }
@@ -533,7 +543,7 @@
                                 {
                                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MaterialLiabilityDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MaterialLiabilityDocDto.FileName</a>
                                 }
-                                @if (Model.IsDocsAddAvailable)
+                                @if (Model.IsDocsAddAvailable && Model.MaterialLiabilityDocIsRequired)
                                 {
                                     <input type="file" name="MaterialLiabilityDoc" />
                                 }
@@ -550,7 +560,7 @@
                                   {
                                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.RequirementsOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.RequirementsOrderDocDto.FileName</a>
                                   }
-                                  @if (Model.IsDocsAddAvailable)
+                                  @if (Model.IsDocsAddAvailable && Model.RequirementsOrderDocIsRequired)
                                   {
                                     <input type="file" name="RequirementsOrderDoc" />
                                   }
@@ -567,7 +577,7 @@
                                     {
                                         <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ServiceOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceOrderDocDto.FileName</a>
                                     }
-                                    @if (Model.IsDocsAddAvailable)
+                                    @if (Model.IsDocsAddAvailable && Model.ServiceOrderDocIsRequired)
                                     {
                                         <input type="file" name="ServiceOrderDoc" />
                                     }
@@ -692,7 +702,7 @@
                         }
                         @if (Model.ISRejectAvailable)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Reject');" value="Отклонить( заявка будет удалена)" />
+                            <input type="submit"  onclick="return ButtonPressed('Reject');" value="Отклонить( заявка будет заблокирована )" />
                         }
                         </td>
                     </tr>
@@ -721,8 +731,22 @@ label { font-size:1.1em; }
     function ValidateForm()
     {
         var result =true;
+          
         clearControlErrors($("#TargteDepartmentId"));
         clearControlErrors($("#JSError"));
+        $.ajax({
+              type: 'POST',
+              url: "/StaffMovements/CheckMovementDate",
+              data: { date : $('#MovementDate').val(), UserId: $('#User_Id').val()},
+              success: function (data) {
+                    console.log(data);
+                    if(!data.result)
+                    { console.log('lol');result=false; addControlError($("#JSError"),'На данную дату существуюет другая заявка.'); }                    
+                },
+              async:false
+            });    
+            console.log('kuku');
+        console.log(result);  
         if($("#TargteDepartmentId").val() == 0)
         {
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
@@ -741,7 +765,7 @@ label { font-size:1.1em; }
             if($("#MovementDate").val() == '')
             {
                 addControlError($("#MovementDate"),'Необходимо выбрать дату перевода');
-                addControlError($("#Error"),'Необходимо выбрать дату перевода');
+                addControlError($("#JSError"),'Необходимо выбрать дату перевода');
                 result = false;
             }
             clearControlErrors($("#MovementCondition"));
@@ -751,6 +775,13 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить условие перевода');
                 result = false;
             }
+            clearControlErrors($("#TargetSalary"));
+            if($("#TargetSalary").val() == '')
+            {
+                addControlError($("#TargetSalary"),'Необходимо заполнить ставку');
+                addControlError($("#JSError"),'Необходимо заполнить ставку');
+                result = false;
+            }
             clearControlErrors($("#TargetCasing"));
             if($("#TargetCasing").val() == '')
             {
@@ -758,13 +789,13 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить оклад');
                 result = false;
             }
-            clearControlErrors($("#AdditionPersonnel"));
+           /*clearControlErrors($("#AdditionPersonnel"));
             if($("#AdditionPersonnel").val() == '')
             {
                 addControlError($("#AdditionPersonnel"),'Необходимо заполнить персональную надбавку');
                 addControlError($("#JSError"),'Необходимо заполнить персональную надбавку');
                 result = false;
-            }
+            }*/
         </text>
         }
         @if (Model.IsPersonnelManagerEditable)
@@ -874,10 +905,10 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить Пункты Дополнительного соглашения');
                 result = false;
             }
-            clearControlErrors($("#MovementReason"));
-            if($("#MovementReason").val() == '' )
+            clearControlErrors($("#MovementReasonOrder"));
+            if($("#MovementReasonOrder").val() == '' )
             {
-                addControlError($("#MovementReason"),'Необходимо заполнить Основание для приказа о переводе');
+                addControlError($("#MovementReasonOrder"),'Необходимо заполнить Основание для приказа о переводе');
                 addControlError($("#JSError"),'Необходимо заполнить Основание для приказа о переводе');
                 result = false;
             }

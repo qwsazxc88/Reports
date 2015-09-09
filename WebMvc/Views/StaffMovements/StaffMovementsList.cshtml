@@ -76,7 +76,7 @@
                         <tr>
                           <td colspan="2">
                             <input type="button" ng-click="GetData();" value="Выбрать"/>
-                            <input type="button" value="Очистить" ng-click="resetFilter();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
                           </td>
                         </tr>
             </table>
@@ -290,12 +290,12 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
-        if ($("#DepartmentReadOnly").val() == "False") {
-            $("#DepartmentId").val('0');
-            $("#DepartmentNameLabel").text('');
-            $("#DepartmentName").val('');
-        }
-         $("#StatusId").val('0');
+        
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DepartmentName").val('');
+       
+         $("#Status").val('0');
          $("#UserName").val('');
          $("#Number").val('');
     }

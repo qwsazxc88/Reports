@@ -82,5 +82,11 @@ namespace WebMvc.Controllers
             var positions = StaffMovementsBl.GetPositionsForDepartment(id);
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(positions));
         }
+
+        public ContentResult CheckMovementDate(DateTime date, int UserId)
+        {
+            if ( StaffMovementsBl.CheckMovementsExist(date, UserId)) return Content("{result:false}");
+            else return Content("{result:true}");
+        }
     }
 }
