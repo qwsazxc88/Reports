@@ -20,7 +20,6 @@
     @Html.HiddenFor(m => m.IsDepartmentEditable)
     @Html.HiddenFor(m => m.IsDocsAddAvailable)
     @Html.HiddenFor(m => m.IsDocsEditable)
-    @Html.HiddenFor(m => m.IsEditable)
     @Html.HiddenFor(m => m.IsManagerEditable)
     @Html.HiddenFor(m => m.IsPersonnelManagerAcceptAvailable)
     @Html.HiddenFor(m => m.IsPersonnelManagerBankAcceptAvailable)
@@ -107,24 +106,9 @@
                     <td>
                     @Html.LabelFor(m => m.MovementDate)
                     </td>
-                    <td>@Html.EditorFor(m => m.MovementDate, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
-                </tr>
-                <tr>
-                    <td>@Html.LabelFor(m => m.MovementReason)</td>
-                    <td>@Html.TextBoxFor(m => m.MovementReason, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
-                </tr>
-                <tr class="TempMovingContainer">
-                    <td>
-                    @Html.LabelFor(m => m.MovementTempTo)
-                    </td>
-                    <td>@Html.EditorFor(m => m.MovementTempTo, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
-                </tr>
-                <tr class="TempMovingContainer">
-                    <td>
-                    @Html.LabelFor(m => m.MovementTempReason)
-                    </td>
-                    <td>@Html.EditorFor(m => m.MovementTempReason, Model.IsEditable ? null : (object)new { disabled = "disabled" })</td>
-                </tr>
+                    <td>@Html.EditorFor(m => m.MovementDate, (Model.StatusId<=1 || Model.IsPersonnelManagerBankAcceptAvailable || Model.IsManagerEditable || Model.IsPersonnelManagerEditable) ? null : (object)new { disabled = "disabled" })</td>
+                </tr>         
+                
                 <tr>
                 <td colspan="2">
                     <div id="tabs" width="100%">
@@ -300,7 +284,34 @@
                                     </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                    <div id="ConjunctionContainer" class="formfield clear">
+                                        
+                                        @Html.RadioButtonFor(m => m.Conjunction, false, new { @id = "IsConjunctionFalse" })<label for="IsConjunctionFalse" id="lblIsConjunctionFalse" @if (!Model.Conjunction)
+                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                  else
+                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Осонвная</label>
+                                        @Html.RadioButtonFor(m => m.Conjunction, true, new { @id = "IsConjunctionTrue" })<label for="IsConjunctionTrue" id="lblIsConjunctionTrue" @if (Model.Conjunction)
+                                                                                                                                                              {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                              else
+                                                                                                                                                              {<text> style="border-color:none;"</text>}>По совместительству</label>
+                                    </div>
+                                    </td>
+                                </tr>
                             <tr class="TempMovingContainer">
+                                <td>
+                                @Html.LabelFor(m => m.MovementTempTo)
+                                </td>
+                                <td>@Html.EditorFor(m => m.MovementTempTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                            </tr>
+                            <tr class="TempMovingContainer">
+                                <td>
+                                @Html.LabelFor(m => m.MovementTempReason)
+                                </td>
+                                <td>@Html.EditorFor(m => m.MovementTempReason, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                            </tr>
+                            <tr>
                                 <td>@Html.LabelFor(m => m.MovementCondition)</td>
                                 <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
@@ -692,6 +703,7 @@
                 <table>
                      <tr>
                         <td colspan="2">
+                        <div id="toolbar" class="ui-widget-header ui-corner-all">
                         @if (Model.IsSaveAvailable)
                         {
                             <input type="submit"  onclick="return ValidateForm();" value="Сохранить" />
@@ -708,6 +720,7 @@
                         {
                             <input type="submit"  onclick="return ButtonPressed('Reject');" value="Отклонить( заявка будет заблокирована )" />
                         }
+                        </div>
                         </td>
                     </tr>
                 </table>
@@ -738,11 +751,11 @@ label { font-size:1.1em; }
               type: 'POST',
               url: "/StaffMovements/SaveDocs",
               data: {   id : $('#Id').val(), 
-                        ServiceOrderDocIsRequired: $('#ServiceOrderDocIsRequired').val(),
-                        RequirementsOrderDocIsRequired : $('#RequirementsOrderDocIsRequired').val(),
-                        MaterialLiabilityDocIsRequired : $('#MaterialLiabilityDocIsRequired').val(),
-                        MovementOrderDocIsRequired : $('#MovementOrderDocIsRequired').val(),
-                        AdditionalAgreementDocIsRequired : $('#AdditionalAgreementDocIsRequired').val()
+                        ServiceOrderDocIsRequired: $('#ServiceOrderDocIsRequired').is(':checked'),
+                        RequirementsOrderDocIsRequired : $('#RequirementsOrderDocIsRequired').is(':checked'),
+                        MaterialLiabilityDocIsRequired : $('#MaterialLiabilityDocIsRequired').is(':checked'),
+                        MovementOrderDocIsRequired : $('#MovementOrderDocIsRequired').is(':checked'),
+                        AdditionalAgreementDocIsRequired : $('#AdditionalAgreementDocIsRequired').is(':checked')
                         },
               success: function () {
                     alert('Требования к документам успешно сохраненны.');                    
@@ -972,10 +985,21 @@ label { font-size:1.1em; }
     function ConfigureFields()
     {
         $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
-        $('#IsHourlyContainer').buttonset();
-        $('#IsTempMovingContainer').buttonset();
+        $('#IsHourlyContainer').buttonset(@if(!Model.IsPersonnelManagerEditable){<text>{disabled: true}</text>});
+        $('#IsTempMovingContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
+        $('#ConjunctionContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
         $(':button, :input[type=button], :input[type=submit]').button();
         $(':input[type=text]').addClass("widget");
+        @if(Model.IsManagerEditable)
+        {<text>
+        $("#IsConjunctionTrue").click(function(){
+            $("#lblIsConjunctionTrue").css("border-color", "#248BAD");
+            $("#lblIsConjunctionFalse").css("border-color", "silver");
+        });
+        $("#IsConjunctionFalse").click(function(){
+            $("#lblIsConjunctionTrue").css("border-color", "silver");
+            $("#lblIsConjunctionFalse").css("border-color", "#248BAD");
+        });
         $("#IsTempMovingTrue").click(function(){
             $("#lblIsTempMovingTrue").css("border-color", "#248BAD");
             $("#lblIsTempMovingFalse").css("border-color", "silver");
@@ -986,6 +1010,10 @@ label { font-size:1.1em; }
             $("#lblIsTempMovingFalse").css("border-color", "#248BAD");
             $(".TempMovingContainer").hide();
         });
+        </text>
+        }
+        @if(Model.IsPersonnelManagerEditable)
+        {<text>
         $("#IsHourlyTrue").click(function(){
             $("#lblHourlyTrue").css("border-color", "#248BAD");
             $("#lblHourlyFalse").css("border-color", "silver");
@@ -994,6 +1022,7 @@ label { font-size:1.1em; }
             $("#lblHourlyTrue").css("border-color", "silver");
             $("#lblHourlyFalse").css("border-color", "#248BAD");
         });
+        </text>}
         $("#NorthFactor").change(function()
         {
             $("[id^='NorthFactor_']").hide();

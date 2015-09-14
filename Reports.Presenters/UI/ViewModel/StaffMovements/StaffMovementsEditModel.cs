@@ -49,7 +49,7 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? MovementDate { get; set; }
-        [Display(Name = "Дата временного перевода до")]
+        [Display(Name = "Дата окончания временного перевода")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? MovementTempTo { get; set; }
@@ -116,6 +116,7 @@ namespace Reports.Presenters.UI.ViewModel
                ApplyFormatInEditMode = true)]
         public DateTime? AdditionQualityTo { get; set; }
         public bool IsTempMoving { get; set; }
+        public bool Conjunction { get; set; }
         #endregion
         #region Для кадровиков
         public bool IsHourly { get; set; }

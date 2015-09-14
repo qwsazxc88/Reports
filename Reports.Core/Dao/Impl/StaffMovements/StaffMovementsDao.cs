@@ -16,7 +16,7 @@ namespace Reports.Core.Dao.Impl
         {
             
         }
-        public IList<StaffMovements> GetDocuments(int UserId, int DepartmentId, string UserName, int Number, int Status)
+        public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status)
         {
             var CurrentUser = UserDao.Load(UserId);
             var mandepts=Session.Query<ManualRoleRecord>()
@@ -25,7 +25,7 @@ namespace Reports.Core.Dao.Impl
                 .ToList();
             
             var query=Session.Query<StaffMovements>();
-            switch (CurrentUser.UserRole)
+            switch (role)
             {
                 case UserRole.Employee:
                     query=query.Where(x => x.User.Id == CurrentUser.Id);
