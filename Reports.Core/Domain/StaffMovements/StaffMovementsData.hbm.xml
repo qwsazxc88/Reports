@@ -37,6 +37,7 @@
     <property name="MovementReasonOrder" not-null="false"/>
     <property name="MovementTempReason" not-null="false"/>
     <property name="MovementCondition" not-null="false"/>
+    <property name="Conjunction" not-null="false"/>    
     <many-to-one name="Signatory" class="Signer" column="Signatory" foreign-key="FK_StaffMovementsData_Signatory" not-null="false"/>
     <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroup" foreign-key="FK_StaffMovementsData_AccessGroup" not-null="false"/>
     <many-to-one name="HoursType" class="EmploymentHoursType" column="HoursType" foreign-key="FK_StaffMovementsData_EmployementHoursType" not-null="false"/>

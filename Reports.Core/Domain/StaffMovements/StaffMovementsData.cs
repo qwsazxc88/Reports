@@ -42,5 +42,6 @@ namespace Reports.Core.Domain
         public virtual string MovementTempReason { get; set; }
         public virtual string MovementCondition { get; set; }
         public  virtual Signer Signatory { get; set; }
+        public virtual bool Conjunction { get; set; }
     }
 }
