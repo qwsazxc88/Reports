@@ -9,8 +9,8 @@ namespace Reports.Presenters.UI.ViewModel
     public class AnalyticalStatementDetailsModel : UserInfoModel
     {
         public int SortBy { get; set; }
-        public bool? SortDescending { get; set; }
-
+        public bool SortDescending { get; set; }
+        public int id { get; set; }
         public IList<AnalyticalStatementDetailsDto> Documents { get; set; }
     }
 }
