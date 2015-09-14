@@ -9151,7 +9151,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
+                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id,0,false);
                 model.UserDept = (analytical != null && analytical.Any()) ? analytical.Last().SaldoEnd : 0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
@@ -12549,16 +12549,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortDescending, showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
         }
-        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
+        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model)
         {
-            var user = UserDao.Load(userId);
-
-            AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
-            {
-                Documents = MissionOrderDao.GetAnalyticalStatementDetails(user.Id)
-            };
+            model.Documents = MissionOrderDao.GetAnalyticalStatementDetails(model.id, model.SortBy, model.SortDescending);
+            var user = UserDao.Load(model.id);
             model.DateCreated = DateTime.Now.ToString("dd.MM.yyyy");
-            model.DocumentNumber = userId.ToString();
+            model.DocumentNumber = model.id.ToString();
             SetUserInfoModel(user, model);
             return model;
         }
