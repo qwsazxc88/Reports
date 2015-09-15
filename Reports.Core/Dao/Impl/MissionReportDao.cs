@@ -37,11 +37,12 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 v.UserAllSum as UserSum,
+                                o.UserSumNotCash as OrderUserSumNotCash,
                                 v.UserSumReceived as UserSumReceived,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
                                 case when v.[AccountantDateAccept] is not null then
-                                     isnull(AccountantAllSum,0) - isnull(PurchaseBookAllSum,0) 
+                                     isnull(AccountantAllSum,0) - isnull(PurchaseBookAllSum,0) + isnull(StornoSum,0) 
                                     - isnull([UserSumReceived],0)
                                      else null end as Saldo,
                                 case when v.DeleteDate is not null then N'Отклонен'
@@ -73,7 +74,9 @@ namespace Reports.Core.Dao.Impl
                                 ArchiveDate,
                                 -- case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
                                 ArchiveNumber,
-                                u.Code as TabelNumber
+                                u.Code as TabelNumber,
+                                v.StornoSum,
+                                v.StornoComment
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
@@ -261,6 +264,7 @@ namespace Reports.Core.Dao.Impl
 
                 case UserRole.Accountant:
                     return string.Empty;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 case UserRole.Findep:
@@ -441,6 +445,15 @@ namespace Reports.Core.Dao.Impl
                 case 19:
                     orderBy = @" order by Dep3Name";
                     break;
+                case 20:
+                    orderBy = @" order by StornoSum";
+                    break;
+                case 21:
+                    orderBy = @" order by StornoComment";
+                    break;
+                case 22:
+                    orderBy = @" order by OrderUserSumNotCash";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -507,7 +520,10 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("IsDismissal", NHibernateUtil.Boolean).
-                AddScalar("TabelNumber", NHibernateUtil.String) ;
+                AddScalar("TabelNumber", NHibernateUtil.String).
+                AddScalar("StornoSum", NHibernateUtil.Decimal).
+                AddScalar("StornoComment",NHibernateUtil.String).
+                AddScalar("OrderUserSumNotCash",NHibernateUtil.Decimal);
         }
 
         public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)

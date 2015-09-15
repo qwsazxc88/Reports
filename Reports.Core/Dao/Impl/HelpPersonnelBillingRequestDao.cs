@@ -24,30 +24,37 @@ namespace Reports.Core.Dao.Impl
                                     ,v.CreateDate
                                     ,v.UserName as ForUserName
                                     ,dep3.Name as Dep3Name
-                                    ,dep7.Name as Dep7Name
+                                    --,dep7.Name as Dep7Name
                                     ,v.Number as RequestNumber
-                                    ,u.Name as CreatorName
+                                    ,case 
+                                    when (u.RoleId & 8 >0 OR u.RoleId & 4194304 >0) then u.Name
+                                    else '' end as CreatorName
+                                    ,case 
+                                    when (u.RoleId & 8 =0 AND u.RoleId & 4194304 =0) then u.Name
+                                    else '' end as CreatorName_Bank
                                     --,case when RecipientId = -1 then N'Все расчетчики'
 	                                      --when RecipientId = -2 then N'Все консультанты ОК'
 	                                      --when uRep.Id is  null then N''
 	                                      --else uRep.Name end as RepicientName
                                     ,case when v.[SendDate] is null then 1
-                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
-                                                                         when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null and v.[EndWorkDate] is null then 2 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
                                                                          when v.[EndWorkDate] is not null then 4
                                                                         else 0
                                                                     end as StatusNumber
                                     ,case when v.[SendDate] is null then N'Черновик'
-                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null then N'Запрос отправлен' 
-                                                                         when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then  N'Запрос прочитан' 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is null and v.[EndWorkDate] is null then N'Запрос отправлен' 
+                                                                         when v.[SendDate] is not null and v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then  N'Запрос прочитан' 
                                                                          when v.[EndWorkDate] is not null then  N'Запрос обработан' 
                                                                         else  N'' 
                                                                     end as Status
+                                    ,dbo.fnGetBillingTaskExecutorNames(v.Id) as RepicientName
+                                    ,dbo.fnGetBillingTaskExecutorNames_Bank(v.Id) as RepicientName_Bank
                                     from [dbo].[HelpPersonnelBillingRequest] v
                                     inner join [dbo].[HelpBillingTitle] t on t.Id = v.TitleId
                                     inner join [dbo].[HelpBillingUrgency] un on un.Id = v.UrgencyId
                                     inner join [dbo].[Users] u on u.Id = v.CreatorId
-                                    inner join [dbo].[Department] dep7 on v.DepartmentId = dep7.Id 
+                                    left join [dbo].[Department] dep7 on v.DepartmentId = dep7.Id 
                                     left join  [dbo].[Department] dep3 on dep7.Path like dep3.Path+N'%' and dep3.ItemLevel = 3
                                     
                                     ";
@@ -66,12 +73,15 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("ForUserName", NHibernateUtil.String).
                 AddScalar("Dep3Name", NHibernateUtil.String).
-                AddScalar("Dep7Name", NHibernateUtil.String).
+                //AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.Int32).
                 AddScalar("CreatorName", NHibernateUtil.String).
+                AddScalar("CreatorName_Bank", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("RepicientName", NHibernateUtil.String).
+                AddScalar("RepicientName_Bank", NHibernateUtil.String);
         }
         public List<HelpPersonnelBillingRequestDto> GetDocuments(int userId,
                UserRole role,
@@ -117,15 +127,18 @@ namespace Reports.Core.Dao.Impl
         {
             switch (role)
             {
-                case UserRole.ConsultantOutsorsingManager:
+                case UserRole.TaxCollector:
+                //case UserRole.ConsultantOutsorsingManager: DEPRECATED
                 case UserRole.Estimator:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.Accountant:
                 case UserRole.PersonnelManager:
-                    sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT * 
+                    sqlQuery = string.Format(sqlQuery + " {0} ", @"INNER JOIN (SELECT DISTINCT * 
 												                   FROM (SELECT Id AS HelpBillingId, CreatorId as UserId FROM HelpPersonnelBillingRequest
 															             UNION ALL
 															             SELECT HelpBillingId, UserId FROM HelpBillingExecutorTasks) as tbl) as UB ON UB.HelpBillingId = v.id and UB.UserId = " + userId.ToString());
                     return string.Empty;
-                case UserRole.OutsourcingManager:
+                case UserRole.OutsourcingManager:                 
                 case UserRole.ConsultantOutsourcing:
                     return string.Empty;
                 default:
@@ -179,6 +192,12 @@ namespace Reports.Core.Dao.Impl
                 case 10:
                     orderBy = @" order by Status";
                     break;
+                case 11:
+                    orderBy = @" order by RepicientName_Bank";
+                    break;
+                case 12:
+                    orderBy = @" order by CreatorName_Bank";
+                    break; 
                 //case 11:
                 //    orderBy = @" order by Dep3Name";
                 //    break;

@@ -7,7 +7,8 @@
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
     <property name="Number"  not-null="true"/>
-
+    <property name="CandidateRejectDate" not-null="false"/>
+    <many-to-one name="CandidateRejectedBy" class="User" column="CandidateRejectedBy" foreign-key="FK_AppointmentReport_CandidateRejectedBy" not-null="false"/>
 
     <property name="SecondNumber" not-null="false"/>
 	<many-to-one name="Appointment" class="Appointment" column="AppointmentId" foreign-key="FK_AppointmentReport_Appointment" index="AppointmentReport_Appointment"  not-null="true"/>
@@ -15,6 +16,7 @@
 	<property name="Phone" length="32" not-null="true"/>
 	<property name="Email" length="32" not-null="true"/>
 	<property name="ColloquyDate" not-null="false"/>
+    <property name="LessonDate" not-null="false"/>
 	<many-to-one name="Type" class="AppointmentEducationType" column="TypeId" foreign-key="FK_AppointmentReport_AppointmentEducationType" index="AppointmentReport_AppointmentEducationType"  not-null="true"/>
 	<property name="EducationTime" length="32" not-null="false"/>
 	<property name="TempLogin" length="32" not-null="false"/>
@@ -23,7 +25,7 @@
 	<property name="IsEducationExists" not-null="false"/>
   <property name="IsColloquyPassed" not-null="false"/>
 	<property name="DateAccept" not-null="false"/>
-	  
+    <property name="TestingResult" not-null="false"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_AppointmentReport_CreatorUser" index="IX_AppointmentReport_CreatorUser_Id"  not-null="true"/>
 	<property name="StaffDateAccept" not-null="false"/>
 	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_AppointmentReport_StaffUser" index="IX_AppointmentReport_StaffUser"  not-null="false"/>
@@ -33,6 +35,7 @@
 	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_AppointmentReport_DeleteUser" index="IX_AppointmentReport_DeleteUser"  not-null="false"/>
 	<property name="SendTo1C" not-null="false"/>
     <property name="ResumeComment" not-null="false"/>
+    <property name="ResumeCommentByOPINP" not-null="false"/>
     <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="AppointmentReportId" foreign-key="FK_AppointmentReportComment_AppointmentReport"/>
       <one-to-many class="AppointmentReportComment"/>

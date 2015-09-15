@@ -21,6 +21,7 @@
     <property name="IsLiable" not-null="true"/>
     <property name="RequestNumber" length="50" not-null="false"/>
     <property name="RegistrationDate" not-null="false" />
+    <property name="PlanRegistrationDate" not-null="false" />
 
     <property name="ManagerApprovalStatus" not-null="false"/>
     <many-to-one name="ApprovingManager" class="User" column="ApprovingManagerId" foreign-key="FK_Managers_ApprovingManager" index="Managers_ApprovingManager" not-null="false"/>
@@ -31,9 +32,15 @@
     <many-to-one name="ApprovingHigherManager" class="User" column="ApprovingHigherManagerId" foreign-key="FK_Managers_ApprovingHigherManager" index="Managers_ApprovingHigherManager" not-null="false"/>
     <property name="HigherManagerApprovalDate" not-null="false" />
     <property name="HigherManagerRejectionReason" length="50" not-null="false"/>
-    
+
+    <many-to-one name="CancelRejectUser" class="User" column="CancelRejectUserId" foreign-key="FK_Managers_CancelRejectUser" index="Managers_CancelRejectUser" not-null="false"/>
+    <property name="CancelRejectDate" not-null="false" />
+    <many-to-one name="CancelRejectHigherUser" class="User" column="CancelRejectHigherUserId" foreign-key="FK_Managers_CancelRejectHigherUser" index="Managers_CancelRejectHigherUser" not-null="false"/>
+    <property name="CancelRejectHigherDate" not-null="false" />
+        
     <many-to-one name="RejectingChief" class="User" column="RejectingChiefId" foreign-key="FK_Managers_RejectingChief" index="Managers_RejectingChief" not-null="false"/>
     <property name="ChiefRejectionReason" length="50" not-null="false"/>
+    <property name="MentorName" length="100" not-null="false"/>
 
   </class>
 </hibernate-mapping>

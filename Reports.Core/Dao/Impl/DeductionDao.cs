@@ -7,6 +7,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 namespace Reports.Core.Dao.Impl
 {
     public class DeductionDao : DefaultDao<Deduction>, IDeductionDao
@@ -29,11 +30,16 @@ namespace Reports.Core.Dao.Impl
                                 v.NotUseInAnalyticalStatement as NotUseInAnalyticalStatement,
                                 v.UploadingDocType as UploadingDocType,
                                 dep.Name as  Dep7Name,
-                                mr.Number as MissionReportNumber,
+                                case 
+                                    when mrd.id is not null then mrd.Number                                
+                                    else mr.Number 
+                                end as MissionReportNumber,
+                                                        
                                 v.DismissalDate,
                                 case when v.DeleteDate is not null then N'Отклонена'
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
                                      when v.UploadingDocType is not null and v.UploadingDocType!=4 and v.SendTo1C is null and v.DeleteDate is null then N'Автовыгрузка'
+                                     when v.ManualDeductionId is not null then N'Автоудержание'
                                      when v.UploadingDocType = 4 and v.SendTo1C is null and v.DeleteDate is null then N'Загруженно из файла'
                                      else N'Записана'
                                 end as Status,
@@ -46,6 +52,8 @@ namespace Reports.Core.Dao.Impl
                                 left join dbo.MissionReport mr on v.id=mr.DeductionId
                                 inner join dbo.DeductionKind k on v.KindId = k.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].ManualDeduction MD On v.ManualDeductionId=MD.id
+                                left join [dbo].MissionReport MRD on MD.MissionReportId=MRD.id
                                 left join dbo.Position p on p.Id = u.PositionId
                                 left join dbo.Department dep on u.DepartmentId = dep.Id
                                 left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
@@ -53,6 +61,12 @@ namespace Reports.Core.Dao.Impl
         public DeductionDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
+        }
+        public Deduction GetDeductionByNumber(int number)
+        {
+            var d=Session.Query<Deduction>().Where(x => x.Number == number);
+            if (d != null && d.Any()) return d.First();
+            else return null;
         }
         public virtual IList<DeductionDto> GetDocuments(
                                 int userId,
@@ -157,6 +171,9 @@ namespace Reports.Core.Dao.Impl
                     case 4: //4, "Автовыгрузка"
                         statusWhere = @"UploadingDocType is not null and v.SendTo1C is null and v.DeleteDate is null";
                         break;
+                    case 5:
+                        statusWhere = @" v.ManualDeductionId is not null ";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -172,6 +189,7 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.Accountant:
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     return string.Empty;
                 default:

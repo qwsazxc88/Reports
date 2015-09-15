@@ -15,6 +15,7 @@ using System.Linq;
 namespace WebMvc.Controllers
 {
     [Authorize]
+    [PreventSpam]
     public class HelpController : BaseController
     {
         protected IHelpBl helpBl;
@@ -62,8 +63,8 @@ namespace WebMvc.Controllers
 
         #region Service Requests
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager | UserRole.ConsultantPersonnel
+            | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator | UserRole.DismissedEmployee)]
         public ActionResult Index()
         {
             //UserRole.PersonnelManager
@@ -103,7 +104,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsorsingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
         public ActionResult CreateServiceRequest(int? isForQuestion)
         {
             CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();
@@ -141,8 +142,8 @@ namespace WebMvc.Controllers
             return View("ServiceRequestEdit", model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
-         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager | UserRole.ConsultantPersonnel
+         | UserRole.Admin | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager | UserRole.Estimator| UserRole.DismissedEmployee)]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);
@@ -700,14 +701,14 @@ namespace WebMvc.Controllers
         #endregion
         #region Personnel Billing
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult PersonnelBillingList()
         {
             var model = HelpBl.GetPersonnelBillingList();
             return View(model);
         }
         [HttpPost]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult PersonnelBillingList(HelpPersonnelBillingListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -716,7 +717,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.ConsultantOutsorsingManager | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.OutsourcingManager  | UserRole.Estimator | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.ConsultantPersonnel | UserRole.Accountant | UserRole.TaxCollector)]
         public ActionResult EditPersonnelBillingRequest(int id)
         {
             EditPersonnelBillingRequestViewModel model = HelpBl.GetPersonnelBillingRequestEditModel(id);
@@ -765,7 +766,7 @@ namespace WebMvc.Controllers
 
         protected bool ValidateModel(EditPersonnelBillingRequestViewModel model)
         {
-            if (model.Operation == 1 && model.RecipientList.Where(x => x.IsRecipient == true).Count() == 0)
+            if (model.Operation == 1 && string.IsNullOrEmpty(model.DateSended) && ((model.RecipientList == null || model.RecipientList.Count == 0) || model.RecipientList.Where(x => x.IsRecipient == true).Count() == 0))
                 ModelState.AddModelError("RecipientList", "Выберите исполнителя!");
             return ModelState.IsValid;
         }
@@ -906,6 +907,20 @@ namespace WebMvc.Controllers
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
+        }
+        [HttpGet]
+        public FileContentResult GetPrintForm(int id, int typeId)
+        {
+            try
+            {
+                AttachmentModel model = RequestBl.GetPrintFormFileContext(id, (RequestPrintFormTypeEnum)typeId);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on GetPrintForm:", ex);
+                throw;
+            }
         }
         #endregion
     }

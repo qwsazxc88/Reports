@@ -20,6 +20,7 @@ namespace Reports.Core.Dto
                 public decimal Salary { get; set; }
                 public DateTime? DesirableBeginDate { get; set; }
                 public string Reason { get; set; }
+                public int ReasonId { get; set; }
                 public int? RId { get; set; }
                 public int? RNumber { get; set; }
                 public string RStaffAccept { get; set; }
@@ -37,6 +38,12 @@ namespace Reports.Core.Dto
                 public string EducationStatus { get; set; }
                 public int Recruter { get; set; }
                 public string CandidateFIO { get; set; }
+                public string StaffCreator { get; set; }
+                public string Recruter1 { get; set; }
+                public string Recruter2 { get; set; }
+                public string Recruter3 { get; set; }
                 public Reports.Core.Enum.EmploymentStatus EmploymentStatus { get; set; }
+                public string CandidateRejectedBy { get; set; }
+                public string CandidateRejectDate { get; set; }
     }
 }

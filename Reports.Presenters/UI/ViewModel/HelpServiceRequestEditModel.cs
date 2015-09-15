@@ -63,6 +63,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsEndWorkAvailable { get; set; }
         public bool IsNotEndWorkAvailable { get; set; }
         public bool IsNotScanView { get; set; } //не показывать скан, только пустую ссылку
+        public bool IsPrintFormAvailable { get; set; }  //печать документов сформированных в 1С
 
         public bool IsUserEmployee { get; set; }
         public int Operation { get; set; }
@@ -77,7 +78,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string FiredUserName { get; set; }
         public string FiredUserSurname { get; set; }
         public string FiredUserPatronymic { get; set; }
-
+        public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         [Display(Name = "Дата рождения")]
         public string UserBirthDate { get; set; }
 

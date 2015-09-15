@@ -67,7 +67,8 @@
         <tr>
         <th>№<br />П/П</th>
         <th><a>Наименование</a></th>
-        <th><a>Дата</a></th>
+        <th><div id="sort1" ><a href="#" onclick = "SortChanged(1);">Номер</a></div></th>
+        <th><div id="sort0" ><a href="#" onclick = "SortChanged(0);">Дата</a></div></th>
         <th><a>Сальдо<br />начальное</a></th>
         <th><a>Оплачено за<br /> сотрудника</a></th>
         <th><a>Выдано</a></th>
@@ -88,18 +89,21 @@
                    <td>@i</td>
                    <td>@switch (el.DocType)
                        {
-                           case 1:<a href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = el.DocId })'>Приказ на коммандировку № @el.Number</a>
+                           case 1:<a href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = el.DocId })'>Приказ на командировку № @el.Number</a>
                            break;
                            case 2:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Авансовый отчёт № @el.Number проверен</a>
                            break;
+                           case 6:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Сторно к авансовому отчёту № @el.Number</a>
+                                                                                                                                  break;
                            case 3:<a href='@Url.Action("MissionUserCredsList", "MissionOrder", new { userid = Model.DocumentNumber })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
-                           break;
-                           case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано @(el.Number>0? " по авансовому отчету №"+ el.Number :"")</a>
-                           break;
-                           case 5:<a>Ручная доплата по АО №@el.Number</a>
-                           break;
+                                                                                                                                                                                                  break;
+                           case 4:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'>Удержано @(el.Number > 0 ? " по авансовому отчету №" + el.Number : "")</a>
+                                                                                                                  break;
+                           case 5:<p>Ручная доплата (справочно <a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'>АО № @el.Number</a>)</p>
+                                                                                                                                                 break;
                        }
                    </td>
+                   <td>@el.Number</td>
                    <td>@if (el.Date != DateTime.MinValue)
                        {
                          @el.Date.ToString("dd.MM.yyyy")
@@ -148,8 +152,8 @@
             $("#SortDescending").val('False');
         else
             $("#SortDescending").val('True');
-         setSortFields()
-         GetDocs();
+        setSortFields();
+         document.getElementById("RequestData").submit();
          return false;
     }
    

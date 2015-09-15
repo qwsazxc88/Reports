@@ -10,13 +10,13 @@
     ViewBag.Title = "Прием - Департамент безопасности";
 }
 
-
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span>
-
+<br />
 @Html.Partial("CandidateState", Model.CandidateStateModel)
+@Html.HiddenFor(m => m.DeleteAttachmentId)
 
-<div style="float:left">
+<div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none; float:left;">
     <fieldset class="bordered doc-wrap panel"><legend>Департамент безопасности</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AverageSalary)<br />
@@ -180,6 +180,16 @@
             <span class="fakeFormField">@Html.DisplayFor(m => m.Smoking)&nbsp;</span>
         </div>
 
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.OwnerOfShares)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.OwnerOfShares)&nbsp;</span>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionInGoverningBodies)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.PositionInGoverningBodies)&nbsp;</span>
+        </div>
+
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
@@ -194,7 +204,7 @@
                 </div>
             }
 
-            <div class="letter clear">
+            <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
                 <p class="content">
                     Я, _______________ даю свое согласие ПАО &laquo;Совкомбанк&raquo; на обработку как с использованием средств автоматизации,
                     так и без использования таких средств, моих персональных данных, т.е. совершение в том числе следующих действий:
@@ -230,7 +240,7 @@
                 </div>
             }
 
-            <div class="letter clear">                
+            <div class="letter clear" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">                
                 <p class="content">
                     Я, _______________ заверяю, что мои ответы на вопросы анкеты являются полными, достоверными.
                     В дальнейшем обязуюсь сообщать обо всех изменениях в своем положении в отдел персонала для их внесения
@@ -266,8 +276,43 @@
 
 
 
-<form id="CheckApproveForm" action="/Employment/BackgroundCheckReadOnly" target="tabs8" method="post">
+<form id="BackgroundCheckReadOnly" action="/Employment/BackgroundCheckReadOnly" method="post" enctype="multipart/form-data">
         @Html.HiddenFor(m => m.UserId)
+        @Html.HiddenFor(m => m.SendTo1C)
+        @Html.HiddenFor(m => m.IsPrintButtonAvailable)
+        @Html.HiddenFor(m => m.IsDeleteScanButtonAvailable)
+
+        <div class="clear">
+            <div class=" clear">
+                Вывести на печать анкету кандидата:
+                <button  type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("PrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать</button>*@
+            </div>
+            
+
+            <input type="hidden" id="EmploymentFileId" name="EmploymentFileId" value="@Model.EmploymentFileId" />
+            @if (string.IsNullOrEmpty(Model.EmploymentFileName) && Model.IsDeleteScanButtonAvailable)
+            {
+                <div class=" clear">
+                    Выбрать для загрузки скан анкеты кандидата<br /><input type="file" name="EmploymentFile" id="EmploymentFile"/> @Html.ValidationMessageFor(m => m.EmploymentFile)
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.EmploymentFileName))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.EmploymentFileId })' style="cursor:hand" target="_blank">
+                        @Model.EmploymentFileName
+                    </a>
+                </div>
+                @*
+                <div class="formfield">
+                    <br /><input type="button" id="btnDelete7" @if(!Model.IsDeleteScanButtonAvailable){<text>style="display:none;"</text>} value="Удалить скан"/>
+                </div>
+                *@
+            }
+        </div>
+
         <div class="clear">
             <span style="font-size:large;">@Html.ValidationMessageFor(m => m.IsValidate)</span><br /><br />
             @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
@@ -299,7 +344,15 @@
             @if (Model.IsApproveBySecurityAvailable)
             {
                 <!--<button>Применить</button>-->
-                <input type="button" value="Применить" onclick="AjaxFormRequest('tabs8', 'CheckApproveForm', '/Employment/BackgroundCheckReadOnly', 'POST')" />
+                @*<input type="button" value="Применить" onclick="AjaxFormRequest('tabs8', 'BackgroundCheckReadOnly', '/Employment/BackgroundCheckReadOnly', 'POST')" />*@
+                
+                <input type="button" value="Применить" onclick="$('#BackgroundCheckReadOnly').submit();" />
+            }
+            @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+            @if (Model.IsCancelApproveAvailale)
+            {
+                @*<input type="button" value="Отменить согласование" onclick="AjaxFormRequest('tabs8', 'BackgroundCheckReadOnly', '/Employment/BackgroundCheckReadOnly', 'POST')"/>*@
+                <input type="button" value="Отменить согласование" onclick="$('#BackgroundCheckReadOnly').submit();"/>
             }
         </div>
     </form>

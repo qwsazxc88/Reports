@@ -98,6 +98,8 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IMailListDao.cs" />
+    <Compile Include="Dao\IManualDeductionDao.cs" />
     <Compile Include="Dao\IMessagesDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
@@ -212,6 +214,8 @@
     <Compile Include="Dao\Impl\HelpBillingExecutorTaskDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
+    <Compile Include="Dao\Impl\MailListDao.cs" />
+    <Compile Include="Dao\Impl\ManualDeductionDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
@@ -489,6 +493,8 @@
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
     <Compile Include="Domain\InspectorToUser.cs" />
+    <Compile Include="Domain\MailList.cs" />
+    <Compile Include="Domain\ManualDeduction.cs" />
     <Compile Include="Domain\Messages.cs" />
     <Compile Include="Domain\Mission.cs" />
     <Compile Include="Domain\MissionAirTicketType.cs" />
@@ -548,6 +554,7 @@
     <Compile Include="Domain\UserLogin.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
+    <Compile Include="Domain\VacationSaldo.cs" />
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Domain\WorkingCalendar.cs" />
     <Compile Include="Domain\WorkingGraphic.cs" />
@@ -616,6 +623,7 @@
     <Compile Include="Dto\ImportDto.cs" />
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
+    <Compile Include="Dto\ManualDeductionDto.cs" />
     <Compile Include="Dto\MessagesDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionHotelsDto.cs" />
@@ -1190,7 +1198,10 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml" />
+    <EmbeddedResource Include="Domain\VacationSaldo.hbm.xml" />
+    <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\DeductionImport.hbm.xml" />
     <EmbeddedResource Include="Domain\Employment2\EmploymentCandidateDocNeeded.hbm.xml" />
     <EmbeddedResource Include="Domain\GpdChargingType.hbm.xml" />
@@ -1199,6 +1210,8 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingComments.hbm.xml" />
     <EmbeddedResource Include="Domain\Messages.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
+    <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
+    <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

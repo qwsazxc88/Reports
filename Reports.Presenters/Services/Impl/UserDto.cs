@@ -46,16 +46,16 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.ConsultantOutsourcing;
                 if (IsInRole(ReportRoleConstants.ConsultantPersonnel))
                     return UserRole.ConsultantPersonnel;
-                if (IsInRole(ReportRoleConstants.ConsultantAccountant))
-                    return UserRole.ConsultantAccountant;
+                /*if (IsInRole(ReportRoleConstants.ConsultantAccountant))
+                    return UserRole.ConsultantAccountant;*/
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))
                 //    return SafetyZoneRoles.RegisterAdminHosp;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterDoctor))
                 //    return SafetyZoneRoles.RegisterDoctor;
-                if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
-                    return UserRole.ConsultantOutsorsingManager;
+                /*if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
+                    return UserRole.ConsultantOutsorsingManager;*/
                 if (IsInRole(ReportRoleConstants.DismissedEmployee))
                     return UserRole.DismissedEmployee;
                 if (IsInRole(ReportRoleConstants.Estimator))
@@ -131,8 +131,9 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                   || ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10)//для инфоуслуг от роли кадровики нужны только наши расчетчики
-                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
+                   || ((dto.UserRole & UserRole.PersonnelManager) > 0 )//DEPRECATED пускаем всех кадровиков Раньше:--для инфоуслуг от роли кадровики нужны только наши расчетчики
+                   || (dto.UserRole & UserRole.Estimator) > 0// Убрали Консультант ОК теперь тут будут расчётчики
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpQuestionAvailable(IUser dto)
@@ -142,15 +143,16 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
-                   || (dto.UserRole & UserRole.ConsultantAccountant) > 0
+                   || (dto.UserRole & UserRole.Accountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                   //|| (dto.UserRole & UserRole.PersonnelManager) > 0
-                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0
+                   || (dto.UserRole & UserRole.Estimator) > 0
+                   || (dto.UserRole & UserRole.PersonnelManager) > 0 
+                   //|| (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0 //DEPRECATED Убрали роль консультант ОК, пустили кадровиков
                    || (dto.UserRole & UserRole.DismissedEmployee) > 0;
         }
         public static bool IsHelpPersonnelBillingAvailable(IUser dto)
         {
-            return (dto.UserRole & (UserRole.Estimator | UserRole.ConsultantOutsorsingManager | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)) > 0 ||
+            return (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.TaxCollector |UserRole.Estimator | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Accountant | UserRole.ConsultantOutsourcing)) > 0 ||
                 ((dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id == 10);
         }
         public static bool IsHelpTemplateAvailable(IUser dto)

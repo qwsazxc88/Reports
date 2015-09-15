@@ -12,7 +12,9 @@ namespace Reports.Presenters.UI.Bl
     {
         CreateRequestModel GetCreateRequestModel(int? userId);
         DepartmentChildrenDto GetUsersForDepartment(int departmentId);
-
+        IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, int Status,string UserName);
+        bool CheckDepartment(SurchargeNoteEditModel model, out int level);
+        void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment);
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model, bool hasError);
 
@@ -32,7 +34,7 @@ namespace Reports.Presenters.UI.Bl
 
         AbsenceListModel GetAbsenceListModel();
         void SetAbsenceListModel(AbsenceListModel model, bool hasError);
-
+        void SendMail();
         AbsenceEditModel GetAbsenceEditModel(int id, int userId);
         void ReloadDictionariesToModel(AbsenceEditModel model);
         bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
@@ -53,7 +55,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
         AnalyticalStatementModel GetAnalyticalStatementModel();
-        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId);
+        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model);
         IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending);
         MissionListModel GetMissionListModel();
         void SetMissionListModel(MissionListModel model, bool hasError);
@@ -196,6 +198,7 @@ namespace Reports.Presenters.UI.Bl
 
         bool ExportFromMissionReportToDeduction(IEnumerable<int> DocIds, int typeId, int kindId, int uploadingType, bool isFastDissmissal, bool EnableSendEmail);
         bool SendNotifyEmailToUser(int MissionReportId);
+        bool sendEmail(string to, string subj, string body);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);

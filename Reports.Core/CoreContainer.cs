@@ -297,7 +297,9 @@ namespace Reports.Core
                      ImplementedBy(typeof(RequestPrintFormDao)).
                      LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
-
+            Register(Component.For<IMailListDao>().
+                ImplementedBy<MailListDao>().
+                LifeStyle.Is(type));
             Register(Component.For(typeof(ISicklistBabyMindingTypeDao)).
                      ImplementedBy(typeof(SicklistBabyMindingTypeDao)).
                      LifeStyle.Is(type));
@@ -357,7 +359,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IMissionGoalDao)).
                   ImplementedBy(typeof(MissionGoalDao)).
                   LifeStyle.Is(type));
-
+            Register(Component.For<IManualDeductionDao>().
+                ImplementedBy<ManualDeductionDao>().
+                LifeStyle.Is(type));
 
 
 

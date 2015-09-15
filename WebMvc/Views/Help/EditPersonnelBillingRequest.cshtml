@@ -75,7 +75,25 @@
                     <input type="hidden" id="UrgencyIdHidden" name="UrgencyIdHidden" value="@Model.UrgencyIdHidden" />
                 </td>
         </tr>
-         <tr>
+        @if(Model.IsEditable)
+        {
+            <tr>
+                <td>@Html.LabelFor(model => model.Question):</td>
+                <td style="vertical-align:top">
+                    @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                </td>
+            </tr>
+        }
+        @if(Model.IsAnswerEditable)
+        {
+            <tr>
+                <td>@Html.LabelFor(model => model.Answer):</td>
+                <td>
+                    @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                </td>
+            </tr>
+        }
+        <tr>
          @*
                 <td>
                     @Html.LabelFor(m => m.RecipientId):
@@ -92,13 +110,19 @@
                                 @*<button id="btnSaveExecutor" type="button">Назначить исполнителей</button><br /><br />*@
                                 <div id="tabs">
                                     <ul>
-                                        <li><a href="#tabs1">Сотрудники</a></li>
+                                        <li><a href="#tabs1"  onclick="Switch(0);">Сотрудники внутренние</a></li>
                                         @if (string.IsNullOrEmpty(Model.DateSended))
                                         {
-                                            <li><a href="#tabs2">Группы</a></li>
+                                            <li><a href="#tabs2"  onclick="Switch(0);">Группы внутренние</a></li>
                                         }
+                                        <li><a href="#tabs1"  onclick="Switch(1);">Сотрудники внешние</a></li>
+                                        @if (string.IsNullOrEmpty(Model.DateSended))
+                                        {
+                                            <li><a href="#tabs2"  onclick="Switch(1);">Группы внешние</a></li>
+                                        }                                        
                                     </ul>
                                     <div id="tabs1">
+                                        
                                         <table id="tblExecutors" class="grid">
                                             <thead>
                                                 <tr>
@@ -108,10 +132,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="tblEBody">
-                                                @{ int i = 1; }
+                                                @{ int i = 1; List<int> outterGroups = new List<int>() { 3, 8, 9 };             }
                                                 @foreach (var item in Model.RecipientList)
                                                 {
-                                                    <tr>
+                                                    <tr @if (outterGroups.Contains(item.RoleId))
+                                                        {<text> class="bank"</text>}
+                                                        else
+                                                        {
+                                                            <text> class="outsors"</text>
+                                                        }>
                                                         <td class="centered">
                                                             @Html.HiddenFor(m => m.RecipientList[i - 1].Id)
                                                             @Html.HiddenFor(m => m.RecipientList[i - 1].UserId)
@@ -133,6 +162,7 @@
                                     @if (string.IsNullOrEmpty(Model.DateSended))
                                     {
                                             <div id="tabs2">
+                                               
                                             <table id="tblExecutorGroups" class="grid">
                                                 <thead>
                                                     <tr>
@@ -144,7 +174,12 @@
                                                     @{ int j = 1; }
                                                     @foreach (var item in Model.RecipientGroups)
                                                     {
-                                                        <tr>
+                                                        <tr @if (outterGroups.Contains(item.RoleId))
+                                                        {<text> class="bank"</text>}
+                                                        else
+                                                        {
+                                                            <text> class="outsors"</text>
+                                                        }>
                                                             <td class="centered">
                                                                 @Html.HiddenFor(m => m.RecipientGroups[j - 1].RoleId)
                                                                 @Html.HiddenFor(m => m.RecipientGroups[j - 1].Description)
@@ -160,7 +195,7 @@
                                             </table>
                                         </div>
                                     }
-                                    
+                                   
                                 </div>
                                 
                                 
@@ -172,18 +207,6 @@
                     <input type="hidden" id="RecipientIdHidden" name="RecipientIdHidden" value="@Model.RecipientIdHidden" />
                     *@
                 </td>
-        </tr>
-        <tr>
-                    <td>@Html.LabelFor(model => model.Question):</td>
-                    <td style="vertical-align:top">
-                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
-                    </td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(model => model.Answer):</td>
-            <td>
-                @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
-            </td>
         </tr>
         <tr>
             <td colspan="2">
@@ -249,6 +272,7 @@
 }
 
 <script type="text/javascript">
+    var switchCurrent=0;
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
         $(document).ready(function () {
@@ -263,6 +287,7 @@
             $("#accordion").accordion("activate", -1);
 
             $("#tabs").tabs();
+            Switch(0);
             $("#accordion").show();
 
 //            $("#btnSaveExecutor").button().click(function(){ 
@@ -282,9 +307,12 @@
             success: function(result){
                 //список сотрудников
                 var ResultStr = "<tbody id='tblEBody'>";
+                var outterGroups=[3,8,9];
                 for (var i = 0; i < result.RecipientList.length; i++)
                 {
-                    ResultStr += "<tr>"+
+                    var strclass=" class='bank' ";
+                    if(outterGroups.lastIndexOf(result.RecipientList[i].RoleId)<0) strclass=" class='outsors' "
+                    ResultStr += "<tr "+strclass+" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientList_" + i + "__Id' type='hidden' value='" + result.RecipientList[i].Id + "' name='RecipientList[" + i + "].Id' data-val='true'></input>" +
                                         "<input id='RecipientList_" + i + "__UserId' type='hidden' value='" + result.RecipientList[i].UserId + "' name='RecipientList[" + i + "].UserId' data-val='true'></input>" +
@@ -311,7 +339,11 @@
                 ResultStr = "<tbody id='tblEGBody'>";
                 for (var i = 0; i < result.RecipientGroups.length; i++)
                 {
-                    ResultStr += "<tr>"+
+                    var strclass=" class='bank' ";
+                    if(outterGroups.lastIndexOf(result.RecipientGroups[i].RoleId)<0) strclass=" class='outsors' "
+                    console.log(outterGroups);console.log(outterGroups.lastIndexOf(result.RecipientList[i].RoleId));
+                    console.log(strclass+" " +result.RecipientGroups[i].Description+" "+ result.RecipientGroups[i].RoleId);
+                    ResultStr += "<tr "+ strclass +" >"+
                                     "<td class='centered'>" +
                                         "<input id='RecipientGroups_" + i + "__RoleId' type='hidden' value='" + result.RecipientGroups[i].RoleId + "' name='RecipientGroups[" + i + "].RoleId' data-val='true'></input>" +
                                         "<input id='RecipientGroups_" + i + "__Description' type='hidden' value='" + result.RecipientGroups[i].Description + "' name='RecipientGroups[" + i + "].Description'></input>" +
@@ -329,6 +361,7 @@
                     //console.log(ResultStr);
                 $("#tblEGBody").remove();
                 $("#tblExecutorGroups").append(ResultStr);
+                Switch(switchCurrent);
             },
             error: function(){
                 alert("При загрузке данных произошла ошибка.");
@@ -345,8 +378,8 @@
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
             result = false;
         }        
-        if(!IsFieldNotEmpty($("#UserName")))
-            result = false;
+//        if(!IsFieldNotEmpty($("#UserName")))
+//            result = false;
         if(!IsFieldNotEmpty($("#Question")))
             result = false;
         else if(!validateMaxLength($("#Question"),8192))
@@ -384,7 +417,22 @@
             $(controlname).val(true);
         }
     }
-
+    
+    function Switch(val)
+    {
+        switchCurrent=val;
+        if(val==0)
+        {
+            $(".bank").hide();
+            $(".outsors").show();
+        }
+        if(val==1)
+        {
+            $(".bank").show();
+            $(".outsors").hide();
+        }
+    }
+    
     function GroupCheckedChange(i){
         var controlname = "#RecipientGroups_" + i + "__IsRecipient";
         var controlname2 = "#RecipientGroups_" + i + "_IsRecipient";

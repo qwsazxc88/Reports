@@ -38,11 +38,20 @@ namespace Reports.Core.Domain
         public virtual string Smoking { get; set; }
         public virtual string Drinking { get; set; }
         public virtual string PyrusRef { get; set; } //ok
+        public virtual string OwnerOfShares { get; set; }
+        public virtual string PositionInGoverningBodies { get; set; } //ok
 
         public virtual bool IsApprovalSkipped { get; set; }
         public virtual bool? ApprovalStatus { get; set; }
         public virtual User Approver { get; set; }
         public virtual DateTime? ApprovalDate { get; set; } //ok
+        //предварительное согласование
+        public virtual bool? PrevApprovalStatus { get; set; }
+        public virtual User PrevApprover { get; set; }
+        public virtual DateTime? PrevApprovalDate { get; set; } //ok
+
+        public virtual User CancelRejectUser { get; set; }
+        public virtual DateTime? CancelRejectDate { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }
         public virtual bool IsValidate { get; set; }

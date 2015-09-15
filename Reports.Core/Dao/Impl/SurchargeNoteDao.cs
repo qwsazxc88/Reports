@@ -56,18 +56,21 @@ namespace Reports.Core.Dao.Impl
             if (departmentId > 0)
             {
                 dep = Ioc.Resolve<IDepartmentDao>().Load(departmentId);
-                if (user.Department == null) dep = null;
-                else
+                if (user.Department != null) 
                     if (!dep.Path.Contains(user.Department.Path) && !depts.Contains(dep)) dep = null;
             }
             if (dep != null)
             {
-                    crit.Add(Restrictions.Eq("department.Id", dep.Id));
+                    crit.Add(Restrictions.Like("department.Path", dep.Path + "%"));
             }
             else
-            {                
-                if (user != null && user.Department!=null && role!= UserRole.PersonnelManagerBank)
+            {
+                if (user != null && role != UserRole.ConsultantPersonnel)
+                {
+                    if(user.Department!=null)
                     crit.Add(Restrictions.In("creator.Department", depts) || Restrictions.Like("department.Path", user.Department.Path + "%"));
+                    
+                }
             }
             if (beginDate.HasValue)
             {
@@ -75,7 +78,7 @@ namespace Reports.Core.Dao.Impl
             }
             if (endDate.HasValue)
             {
-                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value));
+                crit.Add(Restrictions.Where<SurchargeNote>(x => x.CreateDate <= endDate.Value+TimeSpan.FromDays(1)));
             }
             if (!String.IsNullOrWhiteSpace(docNumber))
             {
@@ -89,7 +92,7 @@ namespace Reports.Core.Dao.Impl
                 Id=x.Id,
                 CountantDateAccept=x.CountantDateAccept,
                 CountantId = x.Countant!=null?x.Countant.Id:0,
-                CountantName =x.Countant!=null?x.Countant.Name:"",
+                CountantName =x.Countant!=null?x.Countant.Name:"",                
                 CreateDate=x.CreateDate,
                 CreatorId=x.Creator.Id,
                 CreatorName=x.Creator.Name,
@@ -97,6 +100,10 @@ namespace Reports.Core.Dao.Impl
                 Number=x.Number.ToString(),
                 NoteType=x.NoteType,
                 PayDay=x.PayDay,
+                PayDayEnd = x.PayDayEnd,
+                PayType = x.PayType,
+                DismissalDate = x.DismissalDate,
+                MonthId = x.MonthId,
                 PersonnelDateAccept=x.PersonnelDateAccept,
                 PersonnelName=x.Personnel!=null?x.Personnel.Name:"",
                 PersonnelsId=x.Personnel!=null?x.Personnel.Id:0,
@@ -107,11 +114,11 @@ namespace Reports.Core.Dao.Impl
                 DepartmentName=x.DocDep7.Name,
                 Status=x.DeleteDate.HasValue?"Заявка отклонена":(x.CountantDateAccept.HasValue)?"Отработана расчётным отделом":(x.PersonnelDateAccept.HasValue)?"Отработана отделом кадров":(x.PersonnelManagerDateAccept.HasValue)?"Отработана УКДиУ":"Заявка создана"
             });
-            if (role == UserRole.PersonnelManager && userId != 10)
+            /*if (role == UserRole.PersonnelManager && userId != 10)
             {
                 var employees = UserDao.GetUsersForPersonnel(userId).ToArray();
                 res = res.Where(x => employees.Any(y => y.Id == x.CreatorId));
-            }
+            }*/
             switch (sortedBy)
             {
                 case 1:
@@ -146,6 +153,21 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 11:
                     res = res.OrderBy(x => x.PersonnelManagerBankDateAccept);
+                    break;
+                case 12:
+                    res = res.OrderBy(x => x.PayDayEnd);
+                    break;
+                case 13:
+                    res = res.OrderBy(x => x.PayType);
+                    break;
+                case 14:
+                    res = res.OrderBy(x => x.PayDay);
+                    break;
+                case 15:
+                    res = res.OrderBy(x => x.DismissalDate);
+                    break;
+                case 16:
+                    res = res.OrderBy(x => x.MonthId);
                     break;
             }
             if (sortDescending.HasValue && sortDescending.Value)

@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
+        protected IMailListDao maillistDao;
 
         protected ISicklistTypeDao sicklistTypeDao;
         protected ISicklistPaymentRestrictTypeDao sicklistPaymentRestrictTypeDao;
@@ -97,13 +98,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionTypeDao deductionTypeDao;
         protected IDeductionKindDao deductionKindDao;
         protected IDeductionDao deductionDao;
-
+        protected IManualDeductionDao manualDeductionDao;
         protected ITerraPointDao terraPointDao;
         protected ITerraPointToUserDao terraPointToUserDao;
         protected ITerraGraphicDao terraGraphicDao;
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IMailListDao MailListDao
+        {
+            get { return Validate.Dependency(maillistDao); }
+            set { maillistDao = value; }
+        }
+        public IManualDeductionDao ManualDeductionDao
+        {
+            get { return Validate.Dependency(manualDeductionDao);}
+            set { manualDeductionDao = value; }
+        }
         public ISurchargeNoteDao SurchargeNoteDao
         {
             get { return Validate.Dependency(surcharcheNoteDao); }
@@ -550,6 +561,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                 case UserRole.PersonnelManager:
                     model.Users = UserDao.GetUsersForManager(user.Id, role, 0);
+                    //model.Users = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { user.Department.Id }, "");
                     break;
             }
             return model;
@@ -570,7 +582,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
                            //new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
-                           new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
+                           //new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
                            //new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля")
                           // new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
@@ -828,8 +840,9 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               0,
               model.StatusId,
+              null, null,
               model.BeginDate,
-              model.EndDate,
+              model.EndDate,              
               model.UserName,
               model.SortBy, model.SortDescending, model.Number).ToList().ConvertAll(x => new AllRequestDto
               {
@@ -1164,6 +1177,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             attach.ContextType = dto.ContextType;
             attach.FileName = dto.FileName;
             attach.CreatorRole = RoleDao.Load((int)CurrentUser.UserRole);
+            attach.Creator = UserDao.Load(CurrentUser.Id);
             RequestAttachmentDao.SaveAndFlush(attach);
             attachment = attach.FileName;
             return attach.Id;
@@ -1880,6 +1894,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //0,
                 model.BeginDate,
                 model.EndDate,
+                model.BeginCreateDate,
+                model.EndCreateDate,
                 model.UserName,
                 model.SortBy,
                 model.SortDescending,
@@ -2129,6 +2145,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                     {
@@ -2205,6 +2222,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(current, dismissal, model, user);
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
+                    //Отпарвка почты если кому-то в подборе оно нужно
+                    var appointmentDao=Ioc.Resolve<IAppointmentDao>();
+                    var appointments=appointmentDao.GetAppointmentForReasonPosition(model.UserId);
+                    if (appointments!=null)
+                        foreach (var el in appointments)
+                        {
+                            var email = el.Creator.Email;
+                            if (String.IsNullOrWhiteSpace(email)) continue;
+                            string body = String.Format("Создано заявление на увольнение №{0} для сотрудника {1}. Номер заявки на подбор {2}.",dismissal.Number,dismissal.User.Name,el.Number);
+                            var res=SendEmail(email, "Создано заявление на увольнение", body);
+                        }                   
                 }
                 #endregion
                 else
@@ -2388,7 +2416,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.WorkbookRequestScanAttachment = string.Empty;
                         #endregion
 
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
                         dismissal.DeleteDate = DateTime.Now;
@@ -2658,9 +2686,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 );
             }
-            model.IsBottomEnabled = (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager ? true : false;
+            model.IsBottomEnabled = (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator ? true : false;
             model.RegistryNumber = clearanceChecklist.RegistryNumber;
-            if (IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            if (IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (currentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
             }
@@ -2740,7 +2768,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Regex oKTMORegEx = new Regex(@"^\d{8}$|^$");
             error = String.Empty;
 
-            if ((current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+            if ((current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (current.UserRole & UserRole.Estimator) != UserRole.Estimator)
             {
                 throw new ArgumentException("Доступ запрещен.");
             }
@@ -3071,6 +3099,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -3187,7 +3216,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             mission.DeleteAfterSendTo1C = true;
                         // ----------------------------
                         if (model.OrderScanAttachmentId > 0)
@@ -4018,7 +4047,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             sicklist.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
@@ -4136,7 +4165,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Для расчетчика, кадровика или аутсорсинга
             if (((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
                 || (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
-                || (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager))
+                || (current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager
+                || (current.UserRole & UserRole.Estimator) == UserRole.Estimator))
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -4275,8 +4305,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.Estimator:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsTypeEditable = true;
+                        break;
                     case UserRole.OutsourcingManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
+                        break;
+                    case UserRole.ConsultantPersonnel:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        model.IsExperienceEditable = true;
+                        model.IsTypeEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
@@ -4292,7 +4335,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
                     || (currentUserRole & UserRole.Manager) == UserRole.Manager
-                    || (currentUserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                    || (currentUserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager
+                    || (currentUserRole & UserRole.Estimator) == UserRole.Estimator)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -4333,6 +4377,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //model.IsTimesheetStatusEditable = true;
                         }
                     }
+                    break;
+                case UserRole.Estimator:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            
+                            if (entity.ManagerDateAccept.HasValue)
+                            {
+                                model.IsApprovedEnable = true;
+                            }
+                            else
+                            {
+                                model.IsApprovedForAllEnable = true;
+                            }
+                                
+                            // и кадровики, и расчетчики могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (entity.UserDateAccept != null && entity.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }
+                        }                        
+
+                        // разрешить редактирование документа кадровиками, если он еще не выгружен в 1С
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                            model.IsDatesEditable = true;
+                        }
+                    }
+                    // Разрешить удаление, если согласовано всеми и выгружено в 1С
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue && isSuperPersonnelManager)
+                        model.IsDeleteAvailable = true;
+                    else if (entity.PersonnelManagerDateAccept.HasValue && entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue) //в состоянии 'Согласованно кадровиком' показываем кнопку 'отклонить заявку'
+                        model.IsDeleteAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
                     // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
@@ -4477,6 +4558,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             int currentUserId, UserRole currentUserRole)
         {
             // Не выдавать ошибки конфликта дат для расчетчиков аутсорсинга
+            if ((CurrentUser.UserRole & UserRole.Estimator) > 0) return true;
             if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;
@@ -4719,6 +4801,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -4882,7 +4965,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             absence.DeleteAfterSendTo1C = true;
                         absence.CreateDate = DateTime.Now;
                         absence.DeleteDate = DateTime.Now;
@@ -5120,6 +5203,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                        }.OrderBy(x => x.Name).ToList();
             switch (adaptForRole)
             {
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Manager:
                     requestStatusesList.Insert(0, new IdNameDto(11, "Требует моего одобрения"));
@@ -5171,6 +5255,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
+                /*if (user != null && user.VacationSaldo != null && user.VacationSaldo.Any())
+                {
+                    var saldos = user.VacationSaldo.Where(x => x.Date < DateTime.Now);
+                    if (saldos != null && saldos.Any())
+                    {
+                        saldos = saldos.OrderByDescending(x => x.Date);
+                        var saldo = saldos.First();
+                        model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
+                        model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
+                    }
+                }
+                else
+                {
+                    model.PrincipalVacationDaysLeft = 0;
+                    model.AdditionalVacationDaysLeft = 0;
+                }*/
             }
             else
             {
@@ -5192,8 +5292,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = vacation.Creator.Name;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
-                model.PrincipalVacationDaysLeft = vacation.PrincipalVacationDaysLeft ?? 0;
-                model.AdditionalVacationDaysLeft = vacation.AdditionalVacationDaysLeft ?? 0;
+                if (vacation.User != null && vacation.User.VacationSaldo != null && vacation.User.VacationSaldo.Any())
+                {
+                    var saldos = vacation.User.VacationSaldo.Where(x => x.Date < vacation.CreateDate);
+                    if (saldos != null && saldos.Any())
+                    {
+                        saldos = saldos.OrderByDescending(x => x.Date);
+                        var saldo = saldos.First();
+                        model.PrincipalVacationDaysLeft = saldo.SaldoPrimary;
+                        model.AdditionalVacationDaysLeft = saldo.SaldoAdditional;
+                    }
+                }
+                else
+                {
+                    model.PrincipalVacationDaysLeft = 0;
+                    model.AdditionalVacationDaysLeft = 0;
+                }
                 if (vacation.DeleteDate.HasValue)
                     model.IsDeleted = true;
             }
@@ -5337,7 +5451,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = string.Empty;
                         model.UnsignedOrderScanAttachmentId = 0;
                         model.UnsignedOrderScanAttachment = string.Empty;
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             vacation.DeleteAfterSendTo1C = true;
                         vacation.CreateDate = DateTime.Now;
                         vacation.DeleteDate = DateTime.Now;
@@ -5460,7 +5574,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool CheckUserRightsForEntity(User user, IUser current, ICheckForEntity model)
         {
-            if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 if (model.IsDeleteAvailable && model.IsDelete)
                     return true;
@@ -5496,6 +5610,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
+                case UserRole.Estimator:
+                    return true;
                 case UserRole.PersonnelManager:
                     int? superPersonnelId = ConfigurationService.SuperPersonnelId;
                     if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
@@ -5602,12 +5718,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.Estimator:
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
-                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager || (currentUserRole & UserRole.Manager) == UserRole.Manager)
+                if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager|| (CurrentUser.UserRole & UserRole.Estimator)>0 || (currentUserRole & UserRole.Manager) == UserRole.Manager)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -5683,6 +5800,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     model.IsErrorNotificationAvailable = true;
                                 }
                             }
+                        }
+                        if (!vacation.SendTo1C.HasValue)
+                        {
+                            model.IsVacationTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                        model.IsDaysLeftEditable = true;
+                    }
+                    else if (!vacation.SendTo1C.HasValue &&
+                             !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+
+                    break;
+                case UserRole.Estimator:
+                    model.IsUnsignedConfirmationAllowed = true;
+                    if (!vacation.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;                            
+                            // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (vacation.UserDateAccept != null && vacation.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
+                            }                            
                         }
                         if (!vacation.SendTo1C.HasValue)
                         {
@@ -6112,6 +6255,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
 
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -6238,7 +6382,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             childVacation.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
@@ -6332,8 +6476,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             #region Согласование кадровиком
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
-                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+            if ((current.UserRole & UserRole.Estimator) == UserRole.Estimator ||
+                (current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||                    
                     (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
@@ -6395,9 +6540,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = null;
             if (model.DepartmentId != 0)
                 dep = DepartmentDao.Load(model.DepartmentId);
-
+            var user=UserDao.Load(CurrentUser.Id);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
-            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
+            model.AccessGroupList = AccessGroupDao.GetAccessGroupList(user,dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
             return model;
         }
         #endregion
@@ -7008,6 +7153,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region ManualDeduction
+        public IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, int Status, string UserName)
+        {
+            Department dep=null;
+            if(DepartmentId>0)
+                dep=DepartmentDao.Load(DepartmentId);
+            return ManualDeductionDao.GetDocuments(UserDao.Load(CurrentUser.Id),UserName, Status,dep);
+        }
+        #endregion
         public AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId)
         {
             RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id, typeId);
@@ -7493,18 +7647,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 import.InputFile = path.Substring(path.LastIndexOf('\\') + 1);
                 DeductionImport_Dao.SaveAndFlush(import);
                 Deductions = new List<Deduction>();
-                StreamReader reader = new StreamReader(path);
+                Encoding enc=Encoding.GetEncoding("Windows-1251");
+                StreamReader reader = new StreamReader(path,enc);
                 var type = DeductionTypeDao.Load(1);
                 var kinds = DeductionKindDao.LoadAll();
                 while (!reader.EndOfStream)
                 {
                     string data = reader.ReadLine();
-                    Match m = Regex.Match(data, "^[\"']\\d+[\"']\\s*[;,:]\\s*[\"'](?<Department>[^\"']+)['\"]\\s*[:,;]\\s*['\"](?<Surname>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Name>[^'\"]+)[\'\"]\\s*[:,;]\\s*['\"](?<Patronymic>[^'\"]+)[\"']\\s*[:,;]\\s*['\"](?<Cnilc>[^'\"]+)['\"]\\s*[;,:]\\s*['\"](?<Sum>[^'\"]+)['\"]\\s*[:,;]\\s*['\"][^#'\"]+(?<DeductionKind>#\\d+)['\"]\\s*[:,;]\\s*['\"](?<Period>[^'\"]+)['\"]\\s*[:,;]\\s*['\"](?<Phone>[^'\"]+)\"\\s*[:,;][^\\r\\n$]*$");
+                    Match m = Regex.Match(data, "^[\"']*\\d+[\"']*\\s*[;:]\\s*[\"']*(?<Department>[^\"']+)['\"]*\\s*[:;]\\s*['\"]*(?<Surname>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Name>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*(?<Patronymic>[^'\"]+)[\"']*\\s*[:;]\\s*['\"]*(?<Cnilc>[^'\"]+)['\"]*\\s*[;:]\\s*['\"]*(?<Sum>[^'\"]+)['\"]*\\s*[:;]\\s*['\"]*[^#'\"]+(?<DeductionKind>#\\d+)['\"]*\\s*[:;]\\s*['\"]*(?<Period>[^'\"]+)['\"]*[^\\r\\n$]*$");
                     if (!m.Success) { Errors.Add("Неправильный формат данных.>" + data); continue; }
                     var el = new Deduction();
                     try
                     {
-                        el.Sum = decimal.Parse(m.Groups["Sum"].Value, System.Globalization.CultureInfo.InvariantCulture);
+                        el.Sum = decimal.Parse(m.Groups["Sum"].Value.Replace(',','.'), System.Globalization.CultureInfo.InvariantCulture);
                         el.Kind = kinds.Where(x => x.Name.Contains(m.Groups["DeductionKind"].Value.Trim())).First();
                         el.DeductionDate = DateTime.Parse(m.Groups["Period"].Value);
                         el.EditDate = DateTime.Now;
@@ -7525,7 +7680,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         foundedUsers = foundedUsers.Where(x => (x.UserRole & UserRole.Employee) > 0).ToList();
 
-                        el.User = foundedUsers.First(x => !x.ContractType.HasValue);
+                        el.User = foundedUsers.Any(x => !x.ContractType.HasValue)? foundedUsers.First(x => !x.ContractType.HasValue):null;
                         if (el.User == null)
                         {
                             Errors.Add("Пользователь по совместительству.>" + data); continue;
@@ -7590,7 +7745,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(1, "Записана"),
                                                            new IdNameDto(2, "Выгружена в 1С"),
                                                            new IdNameDto(3, "Отклонена"),
-                                                           new IdNameDto(4, "Автовыгрузка")
+                                                           new IdNameDto(4, "Автовыгрузка"),
+                                                           new IdNameDto(5, "Автоудержание")
                                                        }.OrderBy(x => x.Name).ToList();
             if (addAll)
                 deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
@@ -7683,7 +7839,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DismissalDate = deduction.DismissalDate;
                     model.IsFastDismissal = deduction.IsFastDismissal.HasValue ? deduction.IsFastDismissal.Value : false;
                 }
-
                 if (deduction.DeleteDate.HasValue)
                     model.IsDeleted = true;
                 SetHiddenFields(model);
@@ -7752,6 +7907,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, /*User user,*/ Deduction deduction, DeductionEditModel model)
         {
             SetFlagsState(model, false);
+
+            if (deduction!=null && deduction.ManualDeduction != null)
+            {
+                model.MissionReportNumber = deduction.ManualDeduction.MissionReport.Number;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (id == 0 && (currentUserRole & UserRole.Accountant) > 0)
             {
@@ -7761,6 +7921,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (currentUserRole)
             {
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (deduction.SendTo1C.HasValue && !deduction.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -7876,6 +8037,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool CheckDeductionUserRights(IUser current)
         {
             if ((current.UserRole & UserRole.Accountant) > 0 ||
+                (current.UserRole & UserRole.Estimator)>0||
                (current.UserRole & UserRole.OutsourcingManager) > 0)
                 return true;
             return false;
@@ -7891,7 +8053,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var id in DocIds)
                 {
                     var report = MissionReportDao.Load(id);
-                    if (report.Deduction != null || ((!report.SendTo1C.HasValue) && uploadingType != 2)) continue;
+                    if (report.Deduction != null || ((!report.AccountantDateAccept.HasValue) && uploadingType != 2)) continue;
                     var deduction = new Deduction
                     {
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Deduction),
@@ -7928,6 +8090,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailToUser(null, el);
             return true;
         }
+        /// <summary>
+        /// deprecated
+        /// </summary>
+        /// <param name="deductionNumber"></param>
+        /// <param name="MissionReportid"></param>
+        /// <returns></returns>
         public string SetDeductionDoc(int deductionNumber, int MissionReportid)
         {
             var list = DeductionDao.LoadAll().Where(x => x.Number == deductionNumber);
@@ -8003,7 +8171,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(deduction, model);
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             deduction.DeleteAfterSendTo1C = true;
                         //deduction.EditDate = DateTime.Now;
                         deduction.DeleteDate = DateTime.Now;
@@ -8085,6 +8253,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 , creator.Name
                 , creator.Email);
             EmailDto dto = SendEmail(mr.User.Email, "Удержание", body);
+            if (string.IsNullOrEmpty(dto.Error))
+                return true;
+            else
+                return false;
+        }
+        public bool sendEmail(string to, string subj, string body)
+        {
+            EmailDto dto = SendEmail(to, subj, body);
             if (string.IsNullOrEmpty(dto.Error))
                 return true;
             else
@@ -8598,11 +8774,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if ((superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
                 || ((CurrentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                || ((CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
                 || (CurrentUser.UserRole == UserRole.Accountant))
             {
                 model.IsCorrectionsOnlyModeAvailable = true;
             }
-            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
+            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 model.IsRecalculationAvailable = true;
             }
@@ -8740,7 +8917,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SaveIsRecalculated(MissionOrderListModel model, List<int> idsToSetIsRecalculated, List<int> idsToResetIsRecalculated)
         {
             List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsToSetIsRecalculated).ToList();
-            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId)
+            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId || (CurrentUser.UserRole & UserRole.Estimator) == UserRole.Estimator)
             {
                 foreach (MissionOrder order in orders)
                 {
@@ -8974,7 +9151,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
+                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id,0,false);
                 model.UserDept = (analytical != null && analytical.Any()) ? analytical.Last().SaldoEnd : 0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
@@ -9094,7 +9271,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
-                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+                        if ((current.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager || (current.UserRole & UserRole.Estimator) == UserRole.Estimator)
                             missionOrder.DeleteAfterSendTo1C = true;
                         missionOrder.DeleteDate = DateTime.Now;
                         //missionOrder.CreateDate = DateTime.Now;
@@ -9131,7 +9308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
                         //string org = GetStringForList(orgList);
                         MissionOrderDao.SaveAndFlush(missionOrder);
-                        if (missionOrder.Version != model.Version)
+                        if (missionOrder.Version != model.Version && !model.IsTicketsEditable)
                         {
                             missionOrder.EditDate = DateTime.Now;
                             MissionOrderDao.SaveAndFlush(missionOrder);
@@ -9161,13 +9338,70 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        private void ChangeCosts(MissionOrder entity, MissionOrderEditModel model)
+        {
+            var report = MissionReportDao.GetReportForOrder(entity.Id);
+            if (report==null) return;
+            IList<MissionReportCost> list = report.Costs !=null?report.Costs:new List<MissionReportCost>();
+            IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll();
+            if (!entity.IsResidencePaid && model.IsResidencePaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 2).First(),
+                    Sum = entity.SumResidence,
+                    UserSum = null//entity.IsResidencePaid ? null:entity.UserSumResidence,
+                };
+                list.Add(cost);
+            }
+            if (!entity.IsAirTicketsPaid && model.IsAirTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 3).First(),
+                    Sum = entity.SumAir,
+                    UserSum = null//entity.IsAirTicketsPaid ? null : entity.UserSumAir,
+                };
+                list.Add(cost);
+            }
 
+            if (!entity.IsTrainTicketsPaid && model.IsTrainTicketsPaid)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = true,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 4).First(),
+                    Sum = entity.SumTrain,
+                    UserSum = null//entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
+                };
+                list.Add(cost);
+            }
+            report.Costs = list;
+            MissionReportDao.SaveAndFlush(report);
+        }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
             bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
 
             #region Common props edits
 
+            if (model.IsTicketsEditable)
+            {
+                ChangeCosts(entity, model);
+                entity.IsResidencePaid = model.IsResidencePaid;
+                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
+                SaveMissionTargets(entity, model.Targets);
+                return;
+            }
             if (model.IsEditable)
             {
                 entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
@@ -9196,7 +9430,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
             }
-
             #endregion
 
             #region Secretary edits
@@ -9699,7 +9932,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     bool canEdit = false;
                     bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit) || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
-                    {
+                    {                        
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
                         {
                             model.IsEditable = true;
@@ -9716,6 +9949,16 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     }
                     break;
+                case UserRole.Accountant:
+                    var rep = MissionReportDao.GetReportForOrder(entity.Id);
+                    if (rep == null)
+                        model.IsTicketsEditable = true;
+                    else
+                    {
+                        model.IsTicketsEditable = !rep.SendTo1C.HasValue;
+                    }
+                    break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -9740,7 +9983,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsChiefApproveAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
+            model.IsSaveAvailable = model.IsEditable || model.IsTicketsEditable || model.IsUserApprovedAvailable
                 || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
@@ -9848,10 +10091,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Log.ErrorFormat("CheckUserRights  PersonnelManager user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
                     }
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
                     return true;
                 case UserRole.Accountant:
+                    return true;
                 case UserRole.Findep:
                     if (isSave)
                         return false;
@@ -10504,6 +10749,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return true;
                     Log.ErrorFormat("CheckUserAmoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     //case UserRole.Secretary:
                     return true;
@@ -10566,6 +10812,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsManagerApproveAvailable = true;
 
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     /*if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;*/
@@ -10871,6 +11118,30 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetMrStatuses();
         }
+        public void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            var mr=MissionReportDao.Load(MissionReportId);
+            mr.StornoAddedBy = UserDao.Load(CurrentUser.Id);
+            mr.StornoSum = StornoSum;
+            mr.StornoAddedDate = DateTime.Now;
+            mr.StornoComment = StornoComment;
+            MissionReportDao.SaveAndFlush(mr);
+            if (mr != null)
+            {
+                var md = ManualDeductionDao.Find(x => x.MissionReport.Id == mr.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        var deduction = DeductionDao.Find(x => x.ManualDeduction.Id == el.Id);
+                        if (deduction != null && deduction.Any()) continue;
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
+            }
+        }
         public List<IdNameDto> GetMrStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -11115,7 +11386,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
             SetFlagsState(model, false);
+            var surchargeDao = Ioc.Resolve<ISurchargeDao>();
+            if (surchargeDao != null)
+                model.IsSurchargeAvailable = !surchargeDao.IsSurchargeAvailable(entity.Id);
+            else model.IsSurchargeAvailable = true;
+            if (entity.StornoAddedDate.HasValue)
+            {
+                model.StornoAddedDate = entity.StornoAddedDate.Value;
+                model.StornoComment = entity.StornoComment;
+                model.StornoAddedBy = entity.StornoAddedBy!=null?entity.StornoAddedBy.Name:"";
+                model.StornoSum = entity.StornoSum;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (entity.ManualDeductions != null && entity.ManualDeductions.Any())
+            {
+                var manualded = entity.ManualDeductions.Where(x => x.Deductions.Any(d=>d.SendTo1C.HasValue));
+                if (manualded!=null )
+                {
+                    List<Deduction> deductionList=new List<Deduction>();
+                   foreach(var el in manualded)
+                   {
+                       deductionList.AddRange(el.Deductions.Where(x=>x.SendTo1C.HasValue).ToArray());
+                   }
+                   if(deductionList.Any())
+                       model.ManualDeductions=deductionList.Select(x=> new ManualDeductionDto { UserId = x.Id, AllSum = x.Sum, DeductionDate = x.DeductionDate, SendTo1C = x.SendTo1C.HasValue ? x.SendTo1C.Value.ToShortDateString() : "", UserName = x.User.Name, DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "" }).ToList();
+                }                
+            }
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
@@ -11295,6 +11591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     Log.ErrorFormat("CheckUserMrRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 //    return true;
@@ -11320,6 +11617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            
             MissionReport missionReport = null;
             try
             {
@@ -11376,6 +11674,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Hotels = model.Hotels;
                 SaveMissionCosts(entity, model);
                 LoadCosts(model, entity);
+            }
+            ///Обработка автоматических удержаний
+            if(entity!=null)
+            {
+                var md=ManualDeductionDao.Find(x => x.MissionReport.Id == entity.Id);
+                if (md!=null && md.Any())
+                {
+                    foreach (var el in md)
+                    {
+                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                        el.AllSum = entity.UserSumReceived + entity.PurchaseBookAllSum - entity.StornoSum;
+                        ManualDeductionDao.SaveAndFlush(el);
+                    }
+                }
             }
             if (model.IsAccountantEditable)
             {
@@ -11444,6 +11756,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (model.IsManagerReject)
                 {
+                    #region Отправка писем сотруднику об отклонении отчета
+                    string address = entity.User.Email;
+                    if (!string.IsNullOrWhiteSpace(address))
+                    {
+                        SendEmail(address, "Руководитель отклонил Ваш авансовый отчёт.", String.Format("Руководитель {0}   отклонил   Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                    }
+                    #endregion
                     entity.UserDateAccept = null;
                     entity.AcceptUser = null;
                     model.IsManagerApproved = false;
@@ -11451,6 +11770,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else if (model.IsManagerApproved)
                 {
+                    #region Отправка писем сотруднику об отклонении отчета
+                    string address = entity.User.Email;
+                    if (!string.IsNullOrWhiteSpace(address))
+                    {
+                        SendEmail(address, "Руководитель согласовал Ваш авансовый отчёт.", String.Format("Руководитель {0} согласовал Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                    }
+                    #endregion
                     entity.ManagerDateAccept = DateTime.Now;
                     entity.AcceptManager = UserDao.Load(current.Id);
                 }
@@ -11466,10 +11792,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (model.IsAccountantReject)
                     {
+                        #region Отправка писем руководителю и сотруднику об отклонении отчета
+                        string address = entity.User.Email;
+                        if(!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address,"Бухгалтер отклонил Ваш авансовый отчёт.",String.Format("Бухгалтер {0}   отклонил   Ваш АО №{1}",CurrentUser.Name,entity.Number));
+                        }
+                        /*address = entity.AcceptManager!=null?entity.AcceptManager.Email:"";
+                        if(!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, String.Format("Бухгалтер отклонил АО №{0} сотрудника {1}", entity.Number, entity.User.Name), String.Format("Бухгалтер {0} отклонил АО №{1} сотрудника {2}", CurrentUser.Name, entity.Number, entity.User.Name));
+                        }*///Письма руководителю слать только если галку снимаем
+                        #endregion
                         entity.AccountantDateAccept = null;
                         entity.AcceptAccountant = UserDao.Load(current.Id);
-                        entity.ManagerDateAccept = null;
-                        entity.AcceptManager = null;
+                        //entity.ManagerDateAccept = null;
+                        //entity.AcceptManager = null;  руководителя галку  не снимаем с пор не давних. письмо отправлять нужно, если галку снимать
                         entity.UserDateAccept = null;
                         entity.AcceptUser = null;
                         //SetMissionTransactionEditable(model, true);
@@ -11479,6 +11817,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if (model.IsAccountantApproved)
                     {
+                        #region Отправка писем руководителю и сотруднику о согласовании отчета
+                        string address = entity.User.Email;
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, "Бухгалтер принял Ваш авансовый отчёт.", String.Format("Бухгалтер {0} принял Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                        }
+                        address = entity.AcceptManager != null ? entity.AcceptManager.Email : "";
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, String.Format("Бухгалтер принял АО №{0} сотрудника {1}", entity.Number, entity.User.Name), String.Format("Бухгалтер {0} принял АО №{1} сотрудника {2}", CurrentUser.Name, entity.Number, entity.User.Name));
+                        }
+                        #endregion
                         entity.AccountantDateAccept = DateTime.Now;
                         entity.AcceptAccountant = UserDao.Load(current.Id);
                         SetMissionTransactionEditable(model, false);
@@ -11835,6 +12185,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
             }
+            var creator = UserDao.Load(model.CreatorId);
+            if (creator != null && creator.Department != null)
+            {
+                var dep3 = DepartmentDao.GetParentDepartmentWithLevel(creator.Department, 3);
+                if (dep3 != null)
+                    model.CreatorDepartment3 = dep3.Name;
+
+            }
             model.Chiefs = chiefsBuilder.ToString();
             if (user != null)
             {
@@ -11845,6 +12203,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PersonnelsApproved = personnels.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
                 }
             }
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="1-й месяц"}, new IdNameDto{ Id=2, Name="2-й месяц"} };
         }
         public void GetDictionaries(SurchargeNoteListModel model)
         {
@@ -11855,6 +12229,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Statuses.Add(new IdNameDto { Id = 3, Name = "Заявка отработана расчётным отделом" });
             model.Statuses.Add(new IdNameDto { Id = 4, Name = "Заявка отклонена" });
             model.Statuses.Add(new IdNameDto { Id = 5, Name = "Заявка отработана УКДиУ" });
+            model.PayTypes = new List<IdNameDto> { new IdNameDto{Id=1,Name="Фитнес-Плюс компенсационная выплата (#3511)"},
+                                                new IdNameDto{Id=2,Name="Скидка на покупку страховой коробочки (#3512)"},
+                                                //new IdNameDto{Id=3,Name="Суточные сверх нормы (#4103)"},
+                                                //new IdNameDto{Id=4,Name="Стоимость билетов (#4103)"},
+                                                new IdNameDto{Id=5,Name="Возмещение ГСМ для командировки (#4103)"},
+                                                new IdNameDto{Id=6,Name="Штраф за нарушение ПДД (#4103)"},
+                                                new IdNameDto{Id=7,Name="Подарочные сертификаты стимулирующего характера (#3404)"},
+                                                new IdNameDto{Id=8,Name="Подарки сотрудникам к праздничным дням (#3401)"},
+                                                new IdNameDto{Id=9,Name="Возмещение расходов по переезду работника в другую местность (#3508)"},
+                                                new IdNameDto{Id=10,Name="Подарки детям к праздничным дням (#3403)"},
+                                                new IdNameDto{Id=11,Name="Подарки денежные стимулирующего характера (#3405)"},
+                                                new IdNameDto{Id=12,Name="Начисление (возврат) суммы за ДМС (#3510)"},
+                                                new IdNameDto{Id=13,Name="Прочие начисления (#4103)"},
+                                                new IdNameDto{Id=14,Name="Начисление (возврат) суммы страхования от несчастных случаев и болезней (#3513)"}
+            };
+            model.MonthTypes = new List<IdNameDto> { new IdNameDto { Id = 1, Name = "1-й месяц" }, new IdNameDto { Id = 2, Name = "2-й месяц" } };
         }
         public SurchargeNoteEditModel GetSurchargeNoteEditModel(int id)
         {
@@ -11893,6 +12283,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Dep3Name = entity.DocDep3.Name;
                 model.DepartmentName = entity.DocDep7.Name;
                 model.DepartmentId = entity.DocDep7.Id;
+                model.MonthId = entity.MonthId;
+                model.PayType = entity.PayType;
+                model.PayDayEnd = entity.PayDayEnd;
+                model.DismissalDate = entity.DismissalDate;
             }
             GetDictionaries(model);
             if (model.IsDelete) model.IsEditable = false;
@@ -11916,9 +12310,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = creator,
                     CreateDate = DateTime.Now,
                     NoteType = model.NoteType,
-                    PayDay = model.PayDay,
+                    PayDay = model.NoteType!=3?model.PayDay:DateTime.Now,
+                    PayDayEnd = model.PayDayEnd,
+                    DismissalDate = model.DismissalDate,
+                    PayType = model.PayType,
+                    MonthId = model.MonthId,
                     DocDep7 = DepartmentDao.Load(model.DepartmentId),
-                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : RequestTypeEnum.SurchargeNote1))
+                    Number = RequestNextNumberDao.GetNextNumberForType((int)((model.NoteType == 0) ? RequestTypeEnum.SurchargeNote0 : 
+                                                                             (model.NoteType == 1) ? RequestTypeEnum.SurchargeNote1 :
+                                                                             (model.NoteType == 2) ? RequestTypeEnum.SurchargeNote2 :
+                                                                             (model.NoteType == 3) ? RequestTypeEnum.SurchargeNote3 :
+                                                                             (model.NoteType == 4) ? RequestTypeEnum.SurchargeNote4 :
+                                                                             (model.NoteType == 5) ? RequestTypeEnum.SurchargeNote5 :
+                                                                             RequestTypeEnum.SurchargeNote6
+                                                                             ))
                 };
                 entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
                 SurchargeNoteDao.SaveAndFlush(entity);
@@ -11926,7 +12331,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                var entity = SurchargeNoteDao.Load(model.Id);
+                var entity = SurchargeNoteDao.Get(model.Id);
+                
                 if (model.IsDelete)
                 {
                     entity.DeleteDate = DateTime.Now;
@@ -11936,9 +12342,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.DocumentDepartment = model.DepartmentId;
                     entity.DocDep7 = DepartmentDao.Load(model.DepartmentId);
                     entity.DocDep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.DocDep7, 3);
+                    entity.MonthId = model.MonthId;
+                    entity.PayDayEnd = model.PayDayEnd;
+                    entity.PayType = model.PayType;
+                    entity.DismissalDate = model.DismissalDate;
                     entity.PayDay = model.PayDay;
                 }
-                if (CurrentUser.UserRole == UserRole.PersonnelManagerBank)
+                if (CurrentUser.UserRole == UserRole.ConsultantPersonnel)
                 {
                     if (model.PersonnelManagerBankAccept)
                     {
@@ -11961,7 +12371,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PersonnelsId = entity.Personnel.Id;
                     }
                 }
-                if (CurrentUser.Id == 10)
+                if (CurrentUser.Id == 10 || (CurrentUser.UserRole & UserRole.Estimator)>0)
                 {
                     if (model.CountantAccept)
                     {
@@ -11987,10 +12397,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CreateDate = entity.CreateDate;
             model.CreatorName = entity.Creator.Name;
             model.CreatorDepartment = entity.Creator.Department.Name;
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(entity.Creator.Department, 3);
+            model.CreatorDepartment3 = dep3 != null ? dep3.Name : "";
             model.CreatorId = entity.Creator.Id;
             model.PayDay = entity.PayDay;
             model.DepartmentId = entity.DocDep7.Id;
             model.Position = entity.Creator.Position.Name;
+            if (entity.PersonnelManagerBank != null)
+            {
+                model.PersonnelManagerBankName = entity.PersonnelManagerBank.Name;
+                
+            }
+            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerDateAccept;
             if (entity.Personnel != null)
             {
                 model.PersonnelName = entity.Personnel.Name;
@@ -12021,8 +12439,53 @@ namespace Reports.Presenters.UI.Bl.Impl
             var dep = DepartmentDao.Load(id);
             return dep.ItemLevel == level;
         }
-        #endregion
+        public bool CheckDepartment(SurchargeNoteEditModel model, out int level)
+        {
+            level = 0;
+            int departmentId = model.DepartmentId;
+            
+            Department dep = DepartmentDao.Load(departmentId);
+            if (dep == null)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            if (!dep.ItemLevel.HasValue)
+                throw new ArgumentException(string.Format("Не найдено подразделение {0}", departmentId));
+            level = dep.ItemLevel.Value;
 
+            User currUser = UserDao.Load(model.CreatorId);
+
+            if (currUser == null)
+                throw new ArgumentException(string.Format(" Пользователь не найден {0}", model.UserId));
+            List<DepartmentDto> departments;
+            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
+            switch (currUser.Level)
+            {
+                case 2:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 2, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                case 3:
+                    departments = DepartmentDao.GetDepartmentsForManager23(currUser.Id, 3, false).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                default:
+                    if (currUser.Department == null)
+                        throw new ValidationException(string.Format("Не найдено подразделение для пользователя {0}", currUser.Id));
+                    return dep.Path.StartsWith(currUser.Department.Path);
+            }
+        }
+        #endregion
+        #region MailList
+        public void SendMail()
+        {
+            var mails = MailListDao.GetMails();
+            foreach (var mail in mails)
+            {
+                var address = mail.To.Email;
+                if(!string.IsNullOrEmpty(address)) 
+                    SendEmail(address, mail.MailSubject, mail.MailText);
+                mail.SendDate = DateTime.Now;
+                MailListDao.SaveAndFlush(mail);
+            }
+        }
+        #endregion
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -12086,16 +12549,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortDescending, showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
         }
-        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
+        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model)
         {
-            var user = UserDao.Load(userId);
-
-            AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
-            {
-                Documents = MissionOrderDao.GetAnalyticalStatementDetails(user.Id)
-            };
+            model.Documents = MissionOrderDao.GetAnalyticalStatementDetails(model.id, model.SortBy, model.SortDescending);
+            var user = UserDao.Load(model.id);
             model.DateCreated = DateTime.Now.ToString("dd.MM.yyyy");
-            model.DocumentNumber = userId.ToString();
+            model.DocumentNumber = model.id.ToString();
             SetUserInfoModel(user, model);
             return model;
         }
@@ -12178,7 +12637,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public EditMissionPbDocumentModel GetEditMissionPbDocumentModel(int id)
         {
             IUser current = AuthenticationService.CurrentUser;
-            if ((current.UserRole & UserRole.Accountant) != UserRole.Accountant && (current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager
+            if ((current.UserRole & UserRole.Accountant) != UserRole.Accountant && (current.UserRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager && (current.UserRole & UserRole.Estimator) != UserRole.Estimator
                 && (current.UserRole & UserRole.Findep) != UserRole.Findep)
                 throw new ArgumentException("Доступ запрещен.");
             EditMissionPbDocumentModel model = new EditMissionPbDocumentModel { UserId = current.Id, Id = id };

@@ -146,7 +146,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
             // Для руководителей-замов ближайшие руководители находится на том же уровне
-            if (managerAccount != null && !managerAccount.IsMainManager && false)//Отключено
+            if (managerAccount != null && !managerAccount.IsMainManager )//Отключено
             {
                 mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
                     .Where<User>(manager => manager.IsMainManager)
@@ -430,7 +430,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return dto;
             }
         }
-
+        
         protected EmailDto GetEmailDto(Settings settings,
                 string to, string subject, string body)
         {
@@ -666,6 +666,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             for (int i = 1; i < 13; i++)
                 list.Add(new IdNameDto(i,GetMonthName(i)));
             return list;
+        }
+        public static string GetMonthName(int month, int type)
+        {
+            string[][] monthes=new string[3][];
+            monthes[0] = new string[]{"Январь","Февраль","Март","Апрель","Май", "Июнь", "Июль", "Август","Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+            monthes[1] = new string[] { "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря" };
+            monthes[2] = new string[] { "Январе", "Феврале", "Марте", "Апреле", "Мае", "Июне", "Июле", "Августе", "Сентябре", "Октябре", "Ноябре", "Декабре" };
+            return monthes[type][month-1];
         }
         public static string GetMonthName(int month)
         {

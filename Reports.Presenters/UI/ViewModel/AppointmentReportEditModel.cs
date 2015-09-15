@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
 using Reports.Core.Dto.Employment2;
+using System;
 namespace Reports.Presenters.UI.ViewModel
 {
     public class AppointmentReportEditModel : ManagerInfoModel, IContainId, IAttachment
@@ -19,7 +20,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
         [Display(Name = "Место работы (город)")]
         public string City { get; set; }
-
+        public string CandidateRejectedBy { get; set; }
+        public DateTime? CandidateRejectDate { get; set; }
         [Display(Name = "Должность")]
         public string CandidatePosition { get; set; }
 
@@ -48,7 +50,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
-
+        public string LessonDate { get; set; }
         [Display(Name = "Срок обучения")]
         public string EducationTime { get; set; }
 
@@ -57,6 +59,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
+        public bool IsTrainerCanSave { get; set; }
+        public bool IsBankAccountantAccept { get; set; }
         public string ManagerFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
@@ -99,11 +103,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
         public string ResumeComment { get; set; }
+        public string ResumeCommentByOPINP { get; set; }
         public CommentsModel CommentsModel { get; set; }
         public int DepartmentId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
         public IList<CandidateDto> Candidates { get; set; }
-
+        public IList<IdNameDto> TestingResults { get; set; }
+        public int TestingResult { get; set; }
         /*public bool ApproveForAllAvailable { get; set; }
         public bool ApproveForAll { get; set; }*/
     }

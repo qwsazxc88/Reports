@@ -28,6 +28,9 @@
 	<property name="UserSumReceived"  not-null="true"/>
 	<property name="AccountantAllSum"  not-null="true"/>
   <property name="PurchaseBookAllSum"  not-null="true"/>
+    <property name="StornoComment" not-null="false"/>
+    <property name="StornoSum" not-null="false"/>
+    <property name="StornoAddedDate" not-null="false"/>
 	<!--<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>-->
 	<!--<property name="NeedToAcceptByChief"  not-null="true"/>
@@ -41,7 +44,7 @@
 	<property name="AirTicketsRequestNumber" length="16" not-null="false"/>
 	<property name="TrainTicketsRequestNumber" length="16" not-null="false"/>
   <many-to-one name="Secretary" class="User" column="SecretaryId" foreign-key="FK_MissionReport_Secretary" index="IX_MissionReport_Secretary_Id"  not-null="false"/>-->
-
+    <many-to-one name="StornoAddedBy" column="StornoAddedById" foreign-key ="FK_MissionReport_StornoAdder" not-null="false"/>
 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionReport_User" index="IX_MissionReport_User_Id"  not-null="true"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_MissionReport_CreatorUser" index="IX_MissionReport_CreatorUser_Id"  not-null="true"/>
   <many-to-one name="Deduction" class="Deduction" column="DeductionId" foreign-key="FK_MissionReport_Deduction" not-null="false"/>
@@ -59,8 +62,11 @@
   <property name="ArchiveDate" not-null="false"/>
   <property name="ArchiveNumber" length="128" not-null="false"/>
   <many-to-one name="Archivist" class="User" column="Archivist" foreign-key="FK_MissionReport_Archivist" index="IX_MissionReport_Archivist"  not-null="false"/>
-   
 
+    <bag name="ManualDeductions" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="MissionReportId" foreign-key="FK_ManualDeduction_MissionReport"/>
+      <one-to-many class="ManualDeduction"/>
+    </bag>
 	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
   <many-to-one name="AdditionalMissionOrder" class="MissionOrder" column="AdditionalMissionOrderId" foreign-key="FK_MissionReport_AdditionalMissionOrder" index="IX_MissionReport_AdditionalMissionOrder"  not-null="false"/>  
 	  

@@ -23,6 +23,7 @@ namespace Reports.Core.Dao
             string Number);
 
         DateTime? GetMinDeductionPeriod();
+        Deduction GetDeductionByNumber(int number);
         IList<Deduction> GetDeductionsByImportId(int id);
     }
 }

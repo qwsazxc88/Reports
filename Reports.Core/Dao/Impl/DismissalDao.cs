@@ -26,6 +26,8 @@ namespace Reports.Core.Dao.Impl
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,
+            DateTime? beginCreateDate,
+            DateTime? endCreateDate,
             string userName, 
             int sortedBy,
             bool? sortDescending,
@@ -42,9 +44,9 @@ namespace Reports.Core.Dao.Impl
                                 "v.[EndDate]",
                                 "v.[EndDate]");
 
-            return GetDefaultDocuments(userId, role, departmentId,
+            return GetDismissalDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate,userName, 
+                statusId, beginDate, endDate, beginCreateDate, endCreateDate, userName, 
                 sqlQuery,sortedBy,sortDescending, Number);
 
             #region Deleted
@@ -152,6 +154,69 @@ namespace Reports.Core.Dao.Impl
                 query.SetInt32("departmentId", departmentId);*/
             //return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
             #endregion
+        }
+        public virtual IList<VacationDto> GetDismissalDocuments(
+                                int userId,
+                                UserRole role,
+                                int departmentId,
+                                int positionId,
+                                int typeId,
+                                int statusId,
+                                DateTime? beginDate,
+                                DateTime? endDate,
+                                DateTime? beginCreateDate,
+                                DateTime? endCreateDate,
+                                string userName,
+                                string sqlQuery,
+                                int sortedBy,
+                                bool? sortDescending,
+                                string Number
+            )
+        {
+            string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDissmissalDatesWhere(whereString, beginDate, endDate, beginCreateDate,endCreateDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetDocumentNumberWhere(whereString, Number);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
+
+            IQuery query = CreateQuery(sqlQuery);
+            query.SetInt32("userId", userId);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+        }
+        public virtual string GetDissmissalDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate, DateTime? beginCreateDate,
+            DateTime? endCreateDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] < :endDate ";
+            }
+            if (beginCreateDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@"v.[CreateDate] >= '{0}' ",beginCreateDate);
+            }
+            if (endCreateDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += String.Format(@"v.[CreateDate] < '{0}' ",endCreateDate);
+            }
+            return whereString;
         }
         public DateTime? GetDismissalDateForUser(int userId)
         {

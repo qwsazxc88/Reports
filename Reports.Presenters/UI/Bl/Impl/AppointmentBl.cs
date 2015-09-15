@@ -152,7 +152,49 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(employmentCandidateDao); }
             set { employmentCandidateDao = value; }
         }
-
+        public object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId)
+        {
+            var apps=AppointmentDao.Find(x => x.Number == AppointmentNumber);
+            if (apps != null && apps.Any())
+            {
+                var app = apps.First();
+                if (!app.StaffDateAccept.HasValue)
+                {
+                    return new { status = "Error", message = "Заявка не принята в работу." };
+                }
+                if (app.NonActual)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к не актуальной заявке." };
+                }
+                if (app.DeleteDate.HasValue)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к отклоненной заявке." };
+                }
+                if (app.Recruter==2)
+                {
+                    return new { status = "Error", message = "Нельзя копировать отчёт к упрощенной заявке." };
+                }
+                var sourcereport = AppointmentReportDao.Load(AppointmentReportId);
+                if (sourcereport == null) return new { status = "Error", message = "Отчёт не найден." };
+                var newrepid = CreateAppointmentReport(app);
+                var newrep = AppointmentReportDao.Load(newrepid);
+                newrep.Name = sourcereport.Name;
+                newrep.Phone = sourcereport.Phone;
+                newrep.IsColloquyPassed = new bool?();
+                newrep.ResumeCommentByOPINP = sourcereport.ResumeCommentByOPINP;
+                newrep.Email = sourcereport.Email;                
+                newrep.EducationTime = sourcereport.EducationTime;
+                AppointmentReportDao.SaveAndFlush(newrep);
+                RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(sourcereport.Id, RequestAttachmentTypeEnum.AppointmentReport);
+                if (attach != null)
+                {
+                    RequestAttachmentDao.CloneAttach(attach.Id, newrep.Id);
+                }
+                
+                return new { status = "Ok", message = "Отчёт создан.", ReportId=newrep.Id };
+            }
+            else return new { status = "Error", message = "Заявка не найдена." };
+        }
         public AppointmentListModel GetAppointmentListModel()
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -205,6 +247,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = AppointmentReasonDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Reasons.Add(new IdNameDto{Id=0,Name="Все"});
         }
+        public bool CheckUserDismissal(int userid)
+        {
+            return UserDao.CheckUserDismissal(userid);
+        }
         protected List<IdNameDto> GetAppRequestStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -215,11 +261,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            //new IdNameDto(5, "Отменена"),
-                                                           new IdNameDto(6, "Нет подходящих вакансий")
+                                                           new IdNameDto(6, "Нет вакансий"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(6, "Не одобрен бухгалтером"),
-                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
-                                                           //new IdNameDto(8, "Требует одобрения бухгалтером"),
+                                                           new IdNameDto(7, "Отправлена на согласование Специалисту УКДиУ"),
+                                                           new IdNameDto(8, "Специалистом УКДиУ приостановленно согласование"),
+                                                           new IdNameDto(9, "Не хватает свободных вакансий. Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(10, "Согласована вышестоящим руководителем. Поиск сотрудника не требуется.")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -228,13 +276,17 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
            List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(5,"Собеседование пройдено"),
-                                                           new IdNameDto(6,"Обучение пройдено"),
-                                                           new IdNameDto(7,"Обучение не пройдено"),
+                                                           new IdNameDto(5, "Собеседование пройдено"),
+                                                           new IdNameDto(6, "Обучение пройдено"),
+                                                           new IdNameDto(7, "Обучение не пройдено"),
                                                            new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(4, "Отправлена руководителю"),
                                                            new IdNameDto(3, "Кандидат выгружен в приём"),
-                                                           new IdNameDto(2, "Собеседование не пройдено")
+                                                           new IdNameDto(2, "Отказано"),
+                                                           new IdNameDto(8, "Welcome курс"),
+                                                           new IdNameDto(9, "Собеседование назначено"),
+                                                           new IdNameDto(10, "Входное тестирование"),
+                                                           new IdNameDto(11,"Кандидат отказался от вакансии")
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -271,6 +323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EndDate,
                 model.UserName,
                 model.CandidateName,
+                model.RecruteFio,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -288,6 +341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.RecruteFio,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -306,6 +360,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var result = new NoteModel 
             { 
                 Date=DateTime.Now,
+                DateFrom=appointment.CreateDate,
                 To="",
                 From=appointment.AcceptManager.Name,
                 Theme="Согласование кандидата на приём",
@@ -333,12 +388,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
                 model.StaffCreatorId = entity.StaffCreator == null ? 0 : entity.StaffCreator.Id;
+                model.StaffCreatorName = entity.StaffCreator == null ? "" : entity.StaffCreator.Name;
+                model.isNeedToNotify = entity.isNotifyNeeded;
                 model.FIO = entity.FIO;
+                model.Priority = entity.Priority;
                 model.PyrusNumber = entity.PyrusNumber;
+                model.AppointmentEducationType = entity.AppointmentEducationTypeId;
+                if(entity.Recruters!=null && entity.Recruters.Any())
+                {
+                    model.Recruter1id = entity.Recruters[0].Id;
+                    if (entity.Recruters.Count > 1) model.Recruter2id = entity.Recruters[1].Id;
+                    if (entity.Recruters.Count > 2) model.Recruter3id = entity.Recruters[2].Id;
+                }
                 model.Recruter = entity.Recruter;
                 if (entity.Candidates != null && entity.Candidates.Any())
                 {
                     model.Candidates = entity.Candidates.Select(x => new Reports.Core.Dto.Employment2.CandidateDto { Id = x.Id, Name = x.User.Name, EmploymentDate = (x.PersonnelManagers != null) ? x.PersonnelManagers.CompleteDate : null, Status = x.SendTo1C.HasValue ? "Выгружено в 1С" : "Не выгружено в 1С" }).ToList();
+                }
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
                 }
                 //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.ShowStaff = entity.Recruter == 1;
@@ -373,11 +442,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case 4:
                     case 5:
                         model.ReasonPosition = entity.ReasonPosition;
+                        if(entity.ReasonPositionUser!=null)
+                            model.ReasonPositionId = entity.ReasonPositionUser.Id;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
                         break;
+                    case 7:
                     case 6:
                     case 3:
                         model.ReasonPosition = entity.ReasonPosition;
+                        if (entity.ReasonPositionUser != null)
+                            model.ReasonPositionId = entity.ReasonPositionUser.Id;
                         model.ReasonBeginDate = string.Empty;
                         break;
                     /*case 4:
@@ -401,6 +475,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator =  managerId.HasValue? UserDao.Load(managerId.Value) : currUser;
                 model.ShowStaff = true;
                 model.Recruter = 1;
+                model.AppointmentEducationType = 1;
                 model.IsVacationExists = 1;
                 SetCreatorDepartment(creator, model);
                 model.UserId = creator.Id;//currUser.Id;
@@ -414,8 +489,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, currUser,current.UserRole, entity, model);
             SetHiddenFields(model);
             if ((current.UserRole & UserRole.Manager) != UserRole.Manager 
-                && model.StaffCreatorId != current.Id 
-                &&current.UserRole != UserRole.PersonnelManagerBank
+                && model.StaffCreatorId != current.Id
+                && current.UserRole != UserRole.ConsultantPersonnel
                 &&current.UserRole != UserRole.StaffManager
                 )
             { model.IsEditable = false; model.IsSaveAvailable = false; }
@@ -456,9 +531,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id, User current,UserRole  currRole, Appointment entity, AppointmentEditModel model)
         {
             SetFlagsState(model, false);
+            if (entity != null)
+            {
+                model.NonActual = entity.NonActual;
+                var candidates = entity.Candidates!=null?entity.Candidates.Where(x => x.Status != Reports.Core.Enum.EmploymentStatus.REJECTED):null;
+                if (candidates == null || !candidates.Any())
+                {
+                    model.IsNonActualButtonAvailable = true;
+                }
+            }
+            model.StaffBossId = ConfigurationService.StaffBossId.HasValue?ConfigurationService.StaffBossId.Value:0;
             if(model.Id == 0)
             {
-                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id && currRole!= UserRole.PersonnelManagerBank && currRole!=UserRole.OutsourcingManager)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && currRole!= UserRole.StaffManager)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -504,8 +589,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                             else
                             {
-                               if(entity.BankAccountantAccept.HasValue)
-                                   model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                                if (entity.BankAccountantAccept.HasValue)
+                                {
+                                    model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator) && entity.BankAccountantAccept.Value;
+                                    
+                                }
+                                else
+                                { if (entity.Reason.Id == 3 || entity.Reason.Id == 6)  model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator); }
                             }
                     }
                     else if (!entity.DeleteDate.HasValue 
@@ -515,12 +605,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                             if (!isApprovedReportExists)
                                 model.IsManagerRejectAvailable = true;
-                            if (!entity.ChiefDateAccept.HasValue)
+                            if (!entity.ChiefDateAccept.HasValue && entity.BankAccountantAccept.HasValue && entity.IsVacationExists && entity.BankAccountantAcceptCount>0)
                                 model.IsChiefApproveAvailable = true;
+                            else if (!entity.ChiefDateAccept.HasValue)
+                            {
+                                if (entity.Reason.Id == 3 || entity.Reason.Id == 6) model.IsChiefApproveAvailable = IsManagerChiefForCreator(current, entity.Creator);
+                            }
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue)
+                    if (!entity.DeleteDate.HasValue )
                     {
                         if(entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                             model.IsStaffApproveAvailable = true;
@@ -533,24 +627,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsEditable = true;
                                 model.IsManagerApproveAvailable = true;
-                            }
-                            if(entity.ManagerDateAccept.HasValue 
-                                && model.StaffCreatorId == current.Id /*|| IsManagerChiefForCreator(current, entity.Creator)*/
-                                && !entity.ChiefDateAccept.HasValue)
-                                    model.IsChiefApproveAvailable = true;
+                            }                            
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.Security:
                 case UserRole.PersonnelManager:    
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole==UserRole.PersonnelManagerBank && (model.IsVacationExists!=1 || model.BankAccountantAccept!=true || model.BankAccountantAcceptCount<int.Parse(model.VacationCount)));
+
+            if ((entity.Creator.Id == current.Id || (entity.StaffCreator!=null && entity.StaffCreator.Id==current.Id)) && !entity.ManagerDateAccept.HasValue)
+            {
+                model.IsEditable = true;
+                model.IsManagerApproveAvailable = true;
+            }
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable || ((CurrentUser.UserRole & UserRole.StaffManager)>0)
+                || model.IsChiefApproveAvailable || model.IsStaffApproveAvailable || (currRole == UserRole.ConsultantPersonnel && (model.IsVacationExists != 1 || model.BankAccountantAccept != true || model.BankAccountantAcceptCount < int.Parse(model.VacationCount)));
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
@@ -621,7 +719,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(AppointmentEditModel model)
         {
+            model.Priorities = new List<IdNameDto>
+            {
+                new IdNameDto{Id=0, Name="-"},
+                new IdNameDto{Id=1, Name="Срочно"},
+                new IdNameDto{Id=2, Name="Очень срочно"}
+            };
+            var creator=UserDao.Load(model.UserId);
+            if (creator != null && creator.Department != null)
+                model.UsersList = UserDao.GetUsersForManagerNotDismissed(creator.Id, UserRole.Manager, creator.Department.Id,model.DateCreated!=null?model.DateCreated:DateTime.Now.ToShortDateString());
+            if( model.ReasonPositionId>0 && model.UsersList!=null && !model.UsersList.Any(x=>x.Id==model.ReasonPositionId))
+            {
+                var u = UserDao.Load(model.ReasonPositionId);
+                model.UsersList.Add(new IdNameDto { Id = u.Id, Name = u.Name });
+            }
+            if( model.Id>0 && model.DateCreated!= null && DateTime.Parse(model.DateCreated)<new DateTime(2015,7,22))
+                model.UsersList.Add(new IdNameDto{ Id = 0, Name ="-"});
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            model.AppointmentEducationTypes=AppointmentEducationTypeDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
+            model.Recruters = UserDao.GetStaffList().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Recruters.Add(new IdNameDto { Id = 0, Name = "-" });
             model.DepartmentRequiredLevel = 7;
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>
@@ -670,7 +787,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             // + руководители по ручным привязкам
-            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesEmployment);
             foreach (var manualRoleManager in manualRoleManagers)
             {
                 if (!chiefs.Contains(manualRoleManager))
@@ -693,7 +810,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Chiefs = chiefsBuilder.ToString();
 
             #endregion
-
+            if(appointment!=null)
+            model.DocumentNumber = appointment.Number.ToString();
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
@@ -715,12 +833,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
 
-            User currUser = UserDao.Load(model.UserId);
+            
+            User currUser;
+            if ((CurrentUser.UserRole & UserRole.Manager) > 0) currUser = UserDao.Load(CurrentUser.Id);
+            else currUser = UserDao.Load(model.UserId);// если еще раз тут будешь, вспомни, что Улькина может создавать за сотрудника
+            if (CurrentUser.UserRole == UserRole.StaffManager) return true;
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
             List<DepartmentDto> departments;
+            
+            if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
             switch (currUser.Level)
             {
                 case 2:
@@ -779,7 +903,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
                         EditDate = DateTime.Now,
+                        AppointmentEducationTypeId=model.AppointmentEducationType
                     };
+                    if ((CurrentUser.UserRole & UserRole.StaffManager) > 0) entity.StaffCreator = UserDao.Load(CurrentUser.Id);
                     ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
@@ -805,6 +931,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity.DeleteDate.HasValue)
                     model.IsDeleted = true;
+                if (entity.Reports != null && entity.Reports.Any())
+                {
+                    model.Reports = entity.Reports.Select(x => new IdNameDto { Id = x.Id, Name = x.SecondNumber.ToString() }).ToList();
+                }
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
@@ -858,6 +988,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.FIO = model.FIO;
+                entity.isNotifyNeeded=model.isNeedToNotify;
                 entity.Bonus = Decimal.Parse(model.Bonus);
                 entity.PyrusNumber = model.PyrusNumber;
                 entity.City = model.City;
@@ -871,13 +1002,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = (model.ReasonId != 3 && !String.IsNullOrWhiteSpace(model.ReasonBeginDate)) ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
                 entity.DesirableBeginDate = model.ShowStaff ? DateTime.Parse(model.DesirableBeginDate) : entity.ReasonBeginDate.HasValue ? entity.ReasonBeginDate.Value+TimeSpan.FromDays(14) : DateTime.Now;
-                
+                //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                 entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
+                if (model.ReasonId > 2 && model.ReasonId < 7 && model.ReasonPositionId>0)
+                {
+                    entity.ReasonPositionUser = UserDao.Load(model.ReasonPositionId);
+                }
                 entity.Responsibility = (String.IsNullOrWhiteSpace(model.Responsibility))?"-":model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = (String.IsNullOrWhiteSpace(model.Schedule))?"-":model.Schedule;
                 entity.Type = model.TypeId == 1?true:false;
-                if (current.UserRole == UserRole.PersonnelManagerBank)
+                if (current.UserRole == UserRole.ConsultantPersonnel)
                 {
                     entity.BankAccountant = UserDao.Load(current.Id);
                     entity.IsVacationExists = model.IsVacationExists == 1 ? true : false;
@@ -891,7 +1026,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             switch (current.UserRole)
             {
-                case UserRole.PersonnelManagerBank:
+                case UserRole.ConsultantPersonnel:
                     if (entity.BankAccountantAccept.HasValue && entity.IsVacationExists)
                     {
                         EmailDto dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
@@ -912,6 +1047,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id)
                     {
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                             && model.IsDelete)
                         {
@@ -929,7 +1070,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && model.IsManagerApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
+                            entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             entity.AcceptManager = currUser;
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                             EmailDto dto = SendEmailForBankAccountant(entity.Creator, entity); //dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
@@ -942,6 +1085,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
                     {
+                        if (model.NonActual)
+                        {
+                            entity.NonActual = model.NonActual;
+                            EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
+                        }
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
                            && model.IsDelete)
                         {
@@ -972,10 +1121,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                
                 case UserRole.StaffManager:
+                    if (model.AppointmentEducationType != entity.AppointmentEducationTypeId)
+                    {
+                        entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                        AppointmentReportDao.Update(x => x.Appointment.Id == entity.Id, y => y.Type = AppointmentEducationTypeDao.Load(entity.AppointmentEducationTypeId));
+                    }
+                    if (model.NonActual)
+                    {
+                        entity.NonActual = model.NonActual;
+                        EmploymentCandidateDao.CancelCandidatesByAppointmentId(model.Id);
+                        RejectReports(entity.Id, currUser, "Заявка отклонена");
+                    }
                     if (!entity.DeleteDate.HasValue)
                     {
-                        if (model.StaffCreatorId == current.Id)
+                        entity.NonActual = model.NonActual;
+                        if (model.StaffCreatorId == current.Id || entity.Creator.Id == current.Id)
                         {
                             if (model.ApproveForAll)
                             {
@@ -1019,7 +1181,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                  && model.IsStaffApproved)
                             {
                                 entity.StaffDateAccept = DateTime.Now;
+                                var recruters = new List<User>();
+                                if(model.Recruter1id>0) recruters.Add( UserDao.Load(model.Recruter1id));
+                                if(model.Recruter2id>0) recruters.Add( UserDao.Load(model.Recruter2id));
+                                if(model.Recruter3id>0) recruters.Add( UserDao.Load(model.Recruter3id));
+                                entity.Recruters = recruters;
+                                //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
                                 entity.AcceptStaff = currUser;
+                                entity.Priority = model.Priority;
                                 CreateAppointmentReport(entity);
                             }
                         }
@@ -1030,10 +1199,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.StaffDateAccept = DateTime.Now;
                             entity.AcceptStaff = currUser;
+                            //entity.AppointmentEducationTypeId = model.AppointmentEducationType;
+                            var recruters = new List<User>();
+                            if (model.Recruter1id > 0) recruters.Add(UserDao.Load(model.Recruter1id));
+                            if (model.Recruter2id > 0) recruters.Add(UserDao.Load(model.Recruter2id));
+                            if (model.Recruter3id > 0) recruters.Add(UserDao.Load(model.Recruter3id));
+                            entity.Recruters = recruters;
+                            entity.Priority = model.Priority;
                             CreateAppointmentReport(entity);
                         }
                     }
                     break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     break;
                 default:
@@ -1043,20 +1220,30 @@ namespace Reports.Presenters.UI.Bl.Impl
         public int CreateAppointmentReport(Appointment entity/*,User creator*/)
         {
             int id = 0;
+            int secondnumber = 0;
+            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            if (reports != null && reports.Any())
+            {
+                foreach (var el in reports)
+                {
+                    if (el.SecondNumber > secondnumber) secondnumber = el.SecondNumber;
+                }
+            }
+            secondnumber++;
             AppointmentReport report = new AppointmentReport
                                                {
                                                    Appointment = entity,
-                                                   Creator = entity.AcceptStaff,
+                                                   Creator = entity.AcceptStaff!=null?entity.AcceptStaff:UserDao.Load(CurrentUser.Id) ,
                                                    CreateDate = DateTime.Now,
                                                    EditDate = DateTime.Now,
                                                    Email = string.Empty,
                                                    Name = entity.FIO!=null?entity.FIO:"",
                                                    Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
-                                                   SecondNumber=1,
+                                                   SecondNumber = secondnumber,
                                                    Phone = string.Empty,
-                                                   Type = AppointmentEducationTypeDao.Get(1),
-                                                   IsColloquyPassed=entity.Recruter==2,
-                                                                                                  };
+                                                   Type = AppointmentEducationTypeDao.Get(entity.AppointmentEducationTypeId),
+                                                   IsColloquyPassed=entity.Recruter==2?true:new bool?(),
+                                                                                                };
             if (entity.Recruter == 2) report.StaffDateAccept = DateTime.Now;
                 AppointmentReportDao.Save(report);
                 id = report.Id;
@@ -1083,6 +1270,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #region Emails
+        public int SendEmailForAppointmentManager(int AppId)
+        {
+            var app=AppointmentDao.Load(AppId);
+            app.IsStoped = true;
+            AppointmentDao.SaveAndFlush(app);
+            string addr = app.Creator.Email;
+            if (String.IsNullOrEmpty(addr))
+                return 1;
+            string subj=String.Format("Заявка на подбор персонала №{0}",app.Number);
+            string body=String.Format("Ваша заявка на подбор персонала №{0} от {1} рассмотренна кадровой службой. Просьба дать ответ на комментарий.",app.Number,app.CreateDate.ToShortDateString());
+            var dto= SendEmail(addr, subj, body);
+            if (String.IsNullOrEmpty(dto.Error))
+                return 0;
+            else return 2;
+        }
         protected EmailDto SendEmailForBankAccountantReject(User user, Appointment entity)
         {
             string BankAccountantEmail = user.Email;
@@ -1110,6 +1312,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(chief, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
         }
+        
         protected EmailDto SendEmailForStaffManager(Appointment entity)
         {
             string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
@@ -1135,7 +1338,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(personnel, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
         }*/
-
+        
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
@@ -1470,6 +1673,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsColloquyPassed = 1;
             }
             else model.ShowStaff = true;
+            model.TestingResult = entity.TestingResult;
             model.AppId = entity.Appointment.Id;
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);
@@ -1478,7 +1682,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsColloquyPassed = !entity.IsColloquyPassed.HasValue ? -1 : (entity.IsColloquyPassed.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
-            model.DocumentNumber = entity.Appointment.Id+"/"+entity.Number.ToString()+"_"+entity.SecondNumber;
+            model.DocumentNumber = entity.Appointment.Number+"/"+entity.SecondNumber;
             model.Phone = entity.Phone;
             model.Email = entity.Email;
             model.ColloquyDate = FormatDate(entity.ColloquyDate);
@@ -1486,6 +1690,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RejectReason = entity.RejectReason;
             model.DateAccept = FormatDate(entity.DateAccept);
             model.ResumeComment = entity.ResumeComment;
+            model.ResumeCommentByOPINP = entity.ResumeCommentByOPINP;
+            model.LessonDate = entity.LessonDate.HasValue ? entity.LessonDate.Value.ToShortDateString() : "";
             SetManagerInfoModel(entity.Appointment.Creator, model,null,entity);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.AppointmentReport);
             LoadDictionaries(model);
@@ -1503,6 +1709,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   new IdNameDto {Id = 0,Name = "Нет"},
                                   new IdNameDto {Id = 1,Name = "Да"},
                               }.OrderBy(x => x.Name).ToList();
+            model.TestingResults = new List<IdNameDto>
+            {
+                new IdNameDto {Id=0, Name="-"},
+                new IdNameDto {Id=1, Name="Тест не пройден(отклонение)"},
+                new IdNameDto {Id=2, Name="худший(отклонение)"},
+                new IdNameDto {Id=3, Name="ниже среднего"},
+                new IdNameDto {Id=4, Name="средний"},
+                new IdNameDto {Id=5, Name="выше среднего"},
+                new IdNameDto {Id=6, Name="лучший"}
+            };
             model.IsColloquyPassedValues = new List<IdNameDto>
                               {
                                   new IdNameDto {Id = -1,Name = string.Empty},
@@ -1531,7 +1747,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             model.AppId = entity.Appointment.Id;
+            if (entity.CandidateRejectDate.HasValue)
+            {
+                model.CandidateRejectDate = entity.CandidateRejectDate;
+                model.CandidateRejectedBy = entity.CandidateRejectedBy != null ? entity.CandidateRejectedBy.Name : "";
+            }
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
+            model.IsBankAccountantAccept = entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAccept.HasValue && entity.Appointment.BankAccountantAcceptCount > 0;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
@@ -1546,6 +1768,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (current.Id == entity.Appointment.Creator.Id && !entity.DeleteDate.HasValue)
                     {
+                        if (!entity.StaffDateAccept.HasValue)
+                        {
+                            model.IsStaffApproveAvailable = true;
+                        }
+                        model.IsEditable = true;
                         if (entity.AcceptManager != null && !string.IsNullOrEmpty(entity.TempLogin))
                                 model.IsPrintLoginAvailable = true;
                         
@@ -1570,7 +1797,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && current.Id == entity.Appointment.AcceptStaff.Id)
+                    if (!entity.DeleteDate.HasValue /*&& (current.Id == entity.Appointment.AcceptStaff.Id || (entity.Appointment.Recruters!=null?entity.Appointment.Recruters.Any(x=>x.Id==current.Id):false))*/)
                     {
                         if (entity.AcceptManager != null && entity.AcceptManager.Id == current.Id && 
                                 !string.IsNullOrEmpty(entity.TempLogin))
@@ -1580,10 +1807,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (!entity.StaffDateAccept.HasValue)
                             {
+                                model.IsStaffApproveAvailable = true;
                                 model.IsEditable = true;
                                 if (model.AttachmentId > 0)
                                 {
-                                    model.IsStaffApproveAvailable = true;
+                                    
                                     model.IsDeleteScanAvailable = true;
                                     model.IsManagerApproveAvailable = true;
                                     model.IsColloquyDateEditable = true;
@@ -1636,15 +1864,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.PersonnelManagerBank:
+                case UserRole.Trainer:
+                    model.IsTrainerCanSave = model.IsColloquyPassed == 1;
+                    break;
+                case UserRole.ConsultantPersonnel:
                 case UserRole.PersonnelManager:
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
+                case UserRole.Security:
                     break;
                 default:
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
-            }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable 
-                                    || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable;
+            }             
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable
+                                    || model.IsStaffApproveAvailable || model.IsStaffSetDateAcceptAvailable | model.IsTrainerCanSave;
         }
         protected void SetHiddenFields(AppointmentReportEditModel model, AppointmentReport entity)
         {
@@ -1747,6 +1980,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.RejectReason = model.RejectReason;
                             }
                             break;
+                        case UserRole.Trainer:
+                            
+                            break;
                         default:
                             throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
                     }
@@ -1766,8 +2002,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
-                
+                model.IsEducationExists = entity.IsEducationExists.HasValue ? (entity.IsEducationExists.Value ? 1 : 0) : -1;
+                model.IsColloquyPassed = entity.IsColloquyPassed.HasValue?(entity.IsColloquyPassed.Value?1:0):-1;
                 SetFlagsState(entity.Id, UserDao.Load(current.Id), current.UserRole, entity, model);
+                //Задолбала Улькина
+                model.ReloadPage = true;
                 return true;
             }
             catch (Exception ex)
@@ -1790,19 +2029,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User currUser = UserDao.Get(current.Id);
             bool dateAcceptSet = false;
+            if (model.CandidateRejectDate.HasValue)
+            {
+                entity.CandidateRejectDate = DateTime.Now;
+                entity.CandidateRejectedBy = UserDao.Load(CurrentUser.Id);
+            }
             if (!model.IsDelete)
             {
                 if (model.IsEditable)
                 {
                     //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
                     //model.UserId = entity.Creator.Id;
-                    entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
+                    //entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
                     entity.Name = model.Name;
                     entity.Phone = model.Phone;
                     entity.Email = model.Email;
                     //entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
-                    entity.EducationTime = model.TypeId == 1 ? model.EducationTime : null;
+                    entity.EducationTime =  model.EducationTime ;
                     //entity.RejectReason = model.RejectReason;
+                }
+                if (!String.IsNullOrWhiteSpace(model.LessonDate))
+                {
+                    DateTime res;
+                    if (DateTime.TryParse(model.LessonDate, out res)) { entity.LessonDate = res; };
                 }
                 if(model.IsColloquyDateEditable)
                 {
@@ -1814,10 +2063,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
 
                     entity.ResumeComment = model.ResumeComment;
-                    if (model.IsEducationExists >= 0)
-                        entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
-                    else
-                        entity.IsEducationExists = new bool?();
+                   
                     if (model.IsColloquyPassed >= 0)
                         entity.IsColloquyPassed = model.IsColloquyPassed == 1 ? true : false;
                     else
@@ -1830,10 +2076,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (model.IsStaffSetDateAcceptAvailable)
                 {
-                    if (model.IsEducationExists >= 0)
+                    /*if (model.IsEducationExists >= 0)
                         entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
                     else
-                        entity.IsEducationExists = new bool?();
+                        entity.IsEducationExists = new bool?();*/
                     if (!string.IsNullOrEmpty(model.DateAccept) && entity.IsEducationExists.HasValue)
                     {
                         entity.DateAccept = DateTime.Parse(model.DateAccept);
@@ -1845,14 +2091,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.StaffManager:
                 {
-                    if (!entity.DeleteDate.HasValue && entity.Appointment.AcceptStaff.Id == current.Id)
+                    if (!entity.DeleteDate.HasValue /*&& (entity.Appointment.AcceptStaff.Id == current.Id || entity.Appointment.Recruters.Any(x=>x.Id==current.Id))*/)
                     {
-                        /*if (model.ApproveForAll)
-                        {
-
-                        }
-                        else
-                        {*/
+                        entity.TestingResult = model.TestingResult;
+                        entity.ResumeCommentByOPINP = model.ResumeCommentByOPINP;
                             if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
                             {
                                 entity.StaffDateAccept = DateTime.Now;
@@ -1883,6 +2125,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 break;
                 case UserRole.Manager:
                 {
+                    if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
+                    {
+                        entity.StaffDateAccept = DateTime.Now;
+                        entity.AcceptStaff = currUser;
+                    } 
                     if(!entity.DeleteDate.HasValue && entity.StaffDateAccept.HasValue
                         && !entity.ManagerDateAccept.HasValue 
                         && entity.Appointment.Creator.Id == current.Id 
@@ -1903,6 +2150,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
                 break;
+                case UserRole.Trainer:
+                if (model.IsEducationExists >= 0)
+                    entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
+                else
+                    entity.IsEducationExists = new bool?();
+                break;
+                case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                 break;
                 default:
@@ -1952,10 +2206,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, otherReportId));
             if(entity.Appointment.DeleteDate.HasValue)
                 throw new ValidationException(string.Format(StrAppointmentWasDeleted));
-            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id)
-                throw new ValidationException(string.Format(CannotCreateReport));
+            /*if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id && !entity.Appointment.Recruters.Any(x=>x.Id==CurrentUser.Id))
+                throw new ValidationException(string.Format(CannotCreateReport));*/
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
-            
+            int secondnumber = 0;
+            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Appointment.Id);
+            if (reports != null && reports.Any())
+            {
+                foreach (var el in reports)
+                {
+                    if (el.SecondNumber > secondnumber) secondnumber = el.SecondNumber;
+                }
+            }
+            secondnumber++;
             AppointmentReport report = new AppointmentReport
             {
                 Appointment = entity.Appointment,
@@ -1965,7 +2228,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Email = string.Empty,
                 Name = string.Empty,
                 Number = entity.Number,
-                SecondNumber=entity.SecondNumber+1,
+                SecondNumber = secondnumber,
                 Phone = string.Empty,
                 Type = AppointmentEducationTypeDao.Get(1),
             };

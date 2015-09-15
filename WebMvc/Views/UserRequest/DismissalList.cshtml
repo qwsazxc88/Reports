@@ -99,13 +99,20 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                @Html.LabelFor(m => m.BeginDate):
+                                Период по дате увольнения с:
                                 @Html.EditorFor(model => model.BeginDate) 
                                 @Html.LabelFor(m => m.EndDate):
                                 @Html.EditorFor(model => model.EndDate) 
                              </td>
                         </tr>
-                        
+                        <tr>
+                            <td colspan="2">
+                                Период по дате создания заявки с:
+                                @Html.EditorFor(model => model.BeginCreateDate) 
+                                по:
+                                @Html.EditorFor(model => model.EndCreateDate) 
+                             </td>
+                        </tr>
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
@@ -136,6 +143,7 @@
                  <tr>
                     <td colspan="2">
                         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+                            ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantPersonnel &&
                             ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.DismissedEmployee)
@@ -206,7 +214,7 @@
                         <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
                     </th>
                     <th>
-                        <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
+                        <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Дата увольнения</a></div>
                     </th>                    
                     <th>
                         <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
@@ -290,6 +298,8 @@
     $(document).ready(function () {
         $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+        $("#BeginCreateDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndCreateDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("userDismissal");

@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface ISurchargeBL
     {
-        int AddSurcharge(int userId, float sum, int creatorId, DateTime editDate, int missionReportId);
+        int AddSurcharge(int userId, float sum, int creatorId, DateTime editDate, int missionReportId, int deductionNumber);
         IList<SurchargeDto> GetDocuments(int userId, UserRole role, int departmentId, int statusId, DateTime? beginDate, DateTime? endDate, string userName, int sortedBy, bool? sortDescending, string Number);
     }
 }

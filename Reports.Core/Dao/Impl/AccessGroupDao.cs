@@ -52,6 +52,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="sortDescending">Тип сортировки</param>
         /// <returns></returns>
         public IList<AccessGroupListDto> GetAccessGroupList(
+                User user,
                 Department depFromFilter,
                 string AccessGroupCode,
                 string userName,
@@ -62,8 +63,23 @@ namespace Reports.Core.Dao.Impl
                 int sortBy,
                 bool? sortDescending)
         {
-            string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers" : "vwAccessGroupList");
+            string sqlQuery = "SELECT * FROM dbo." + (!IsManagerShow ? "vwAccessGroupListWithoutManagers ag " : "vwAccessGroupList ag");
+            sqlQuery += " INNER JOIN Users u ON ag.userId=u.Id ";
+            sqlQuery += " inner join dbo.Department crDep on u.DepartmentId = crDep.Id ";
+            sqlQuery += " LEFT JOIN (	SELECT  userId,SaldoPrimary,SaldoAdditional FROM VacationSaldo vs2	INNER JOIN (SELECT MAX(vs1.Id) as id FROM VacationSaldo vs1 GROUP BY UserID) p ON p.id=vs2.id) vs ON ag.UserId=vs.UserId";
             string whereString = GetDepartmentWhere(depFromFilter);
+            if (user != null)
+            {
+                string whererole = GetWhereForUserRole(user.UserRole, user.Id);
+                if (whereString.Length > 0)
+                {
+                    if (whererole.Length > 0)
+                    {
+                        whereString += " AND " + whererole;
+                    }
+                }
+                else whereString= whererole;
+            }
             whereString = GetAccessGroupCodeWhere(whereString, AccessGroupCode);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetManagersWhere(whereString, Manager6, Manager5, Manager4);
@@ -89,7 +105,7 @@ namespace Reports.Core.Dao.Impl
         {
             if (!string.IsNullOrEmpty(AccessGroupCode))
             {
-                whereString = string.Format(@"{0} AccessGroupCode = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), AccessGroupCode);
+                whereString = string.Format(@"{0} ag.AccessGroupCode = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), AccessGroupCode);
             }
 
             return whereString;
@@ -140,6 +156,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Manager6", NHibernateUtil.String)
                 .AddScalar("Manager5", NHibernateUtil.String)
                 .AddScalar("Manager4", NHibernateUtil.String)
+                .AddScalar("SaldoPrimary",NHibernateUtil.Decimal)
+                .AddScalar("SaldoAdditional",NHibernateUtil.Decimal)
+                .AddScalar("DateAccept",NHibernateUtil.DateTime)
                 ;
             return query;
         }
@@ -157,37 +176,46 @@ namespace Reports.Core.Dao.Impl
             switch (sortedBy)
             {
                 case 1:
-                    orderBy = "UserName";
+                    orderBy = "ag.UserName";
                     break;
                 case 2:
-                    orderBy = "PositionName";
+                    orderBy = "ag.PositionName";
                     break;
                 case 3:
-                    orderBy = "Dep3Name";
+                    orderBy = "ag.Dep3Name";
                     break;
                 case 4:
-                    orderBy = "Dep7Name";
+                    orderBy = "ag.Dep7Name";
                     break;
                 case 5:
-                    orderBy = "AccessGroupName";
+                    orderBy = "ag.AccessGroupName";
                     break;
                 case 6:
-                    orderBy = "Email";
+                    orderBy = "ag.Email";
                     break;
                 case 7:
-                    orderBy = "EndDate";
+                    orderBy = "ag.EndDate";
                     break;
                 case 8:
-                    orderBy = "Manager6";
+                    orderBy = "ag.Manager6";
                     break;
                 case 9:
-                    orderBy = "Manager5";
+                    orderBy = "ag.Manager5";
                     break;
                 case 10:
-                    orderBy = "Manager4";
+                    orderBy = "ag.Manager4";
+                    break;
+                case 11:
+                    orderBy = "SaldoPrimary";
+                    break;
+                case 12:
+                    orderBy = "SaldoAdditional";
+                    break;
+                case 13:
+                    orderBy = "u.DateAccept";
                     break;
                 default:
-                    orderBy = "UserName";
+                    orderBy = "ag.UserName";
                     break;
             }
 
@@ -196,6 +224,84 @@ namespace Reports.Core.Dao.Impl
             sqlQuery += orderBy;
 
             return sqlQuery;
+        }
+        public override string GetWhereForUserRole(UserRole role, int userId)
+        {
+            User currentUser = UserDao.Load(userId);
+            if (currentUser == null)
+                return string.Empty;
+            switch (role)
+            {
+                case UserRole.Manager:
+
+                    const string sqlQueryPartTemplate = @" ((u.Id = {0}) or ({1})) ";
+                    string sqlDepQueryPart="";
+                    switch (currentUser.Level)
+                    {
+                        case 2:
+                            sqlDepQueryPart = string.Format(
+                            @" exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager2ToManager3 dmtom on  dmtom.Manager2Id = uC.[Id]
+                                    where uC.Id = {0} and dmtom.Manager3Id = u.Id
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager23ToDepartment3 dmtod on  dmtod.ManagerId = uC.[Id]
+                                    inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager2ParentToManager2Child dmtom on  dmtom.ParentId = uC.[Id]
+                                    where uC.Id = {0} and dmtom.ChildId = u.Id
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
+                                )
+                                ", currentUser.Id);
+                            break;
+                        case 3:
+                            sqlDepQueryPart = string.Format(
+                                @" exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.ManualRoleRecord mrr on  (mrr.UserId = uC.[Id] and mrr.TargetDepartmentId > 0)
+                                    inner join dbo.Department dc on dc.Id = mrr.TargetDepartmentId
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel < crDep.ItemLevel
+                                )", currentUser.Id);
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            sqlDepQueryPart = string.Format(
+                                @" exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel <= crDep.ItemLevel
+                                )", currentUser.Id);
+                            break;
+                        
+                    }
+                    string sqlQueryPart = string.Format(sqlQueryPartTemplate, currentUser.Id, sqlDepQueryPart);
+                    return sqlQueryPart;
+                default: return string.Empty;
+                
+            }
         }
     }
 }

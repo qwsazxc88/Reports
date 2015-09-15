@@ -9,9 +9,13 @@ namespace Reports.Core.Dao
     public interface IUserDao : IDao<User>
     {
         User FindByLogin(string login);
+        bool CheckUserDismissal(int userid);
         IList<User> FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);
         bool IsLoginWithOtherIdExists(string login, int id);
+        IList<IdNameDto> GetUsersForManagerNotDismissed(int managerId, UserRole managerRole,
+            int departmentId, string DismDate);
+        IList<User> GetStaffList();
         IList<User> GetUsersWithRole(UserRole role);
         IList<User> LoadUserByCodes(List<string> codes);
         IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole,int departmentId);
@@ -19,6 +23,7 @@ namespace Reports.Core.Dao
         IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
                            DateTime beginDate, DateTime endDate, int departmentId, string userName);
         IList<User> GetUsersForPersonnel(int persId);
+        IList<IdNameDto> GetUsersForConsultantBank();
         IList<User> GetUserWithEmailAndRole(UserRole role, string email, string departmentPath, List<int> levelList);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);

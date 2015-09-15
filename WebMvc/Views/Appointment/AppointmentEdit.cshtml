@@ -64,6 +64,7 @@
 </div>
 @using (Html.BeginForm("AppointmentEdit","Appointment"))
 {
+    @Html.HiddenFor(m => m.NonActual)
     <div class="doc-wrap">
         <table style="width:100%">
         <tr>
@@ -79,6 +80,17 @@
                     </div>
                 </td>
             </tr>
+            @*@if (!String.IsNullOrWhiteSpace(Model.StaffCreatorName))
+            {
+            <tr>
+                <td>
+                Автор заявки:
+                </td>
+                <td>
+                Model.StaffCreatorName @Html.HiddenFor(m => m.StaffCreatorName)
+                </td>
+            </tr>
+            }*@
             <tr>
                 <td colspan="2">
                     @Html.Partial("ManagerInfoView", Model)
@@ -111,7 +123,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (Model.IsEditable || (dto.UserRole== UserRole.PersonnelManagerBank))
+                    @if (Model.IsEditable || (dto.UserRole == UserRole.ConsultantPersonnel))
                     {
                         <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -148,7 +160,7 @@
                     @Html.LabelFor(m => m.ReasonId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), (Model.IsEditable) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), ((Model.IsEditable && !Model.BankAccountantAccept) || (dto.UserRole == UserRole.ConsultantPersonnel)) ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
@@ -161,7 +173,16 @@
                   <span id="ReasonPositionLabel">Должность:</span>
                 </td>
                 <td>
-                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
+                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable && Model.ReasonId<3 && Model.ReasonId>6 ? null : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr id="ReasonPositionIdTr">
+                <td>
+                  <span id="ReasonPositionIdLabel">Выбрать из:</span>
+                </td>
+                <td>
+                   @Html.DropDownListFor(m => m.ReasonPositionId, new SelectList(Model.UsersList, "Id", "Name"), Model.IsEditable ? null: (object)new { @readonly = "read-only" }) 
+                   @Html.HiddenFor(m => m.isNeedToNotify)
                 </td>
             </tr>
             @if (!Model.ShowStaff)
@@ -206,7 +227,7 @@
                     @Html.LabelFor(m => m.Schedule):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager))>0 ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -214,7 +235,7 @@
                     @Html.LabelFor(m => m.Salary):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                 </td>
             </tr>
              <tr>
@@ -222,15 +243,15 @@
                     @Html.LabelFor(m => m.Bonus):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.TypeId):
+                    Форма оформления сотрудника:
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
@@ -241,7 +262,7 @@
                     @Html.LabelFor(m => m.Compensation):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
              <tr>
@@ -249,7 +270,7 @@
                     @Html.LabelFor(m => m.EducationRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -257,7 +278,7 @@
                     @Html.LabelFor(m => m.ExperienceRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
              <tr>
@@ -265,7 +286,7 @@
                     @Html.LabelFor(m => m.OtherRequirements):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             @*<tr>
@@ -281,7 +302,7 @@
                     @Html.LabelFor(m => m.Responsibility):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0 ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
             <tr>
@@ -289,7 +310,7 @@
                     @Html.LabelFor(m => m.DesirableBeginDate):
                 </td>
                 <td>
-                    @if (Model.IsEditable)
+                    @if (Model.IsEditable || (dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.StaffManager)) > 0)
                     {
                         @Html.EditorFor(model => model.DesirableBeginDate)
                     }
@@ -300,8 +321,13 @@
                     } 
                 </td>
             </tr>
+                
             }
-             
+            <tr>
+                 <td>Выбрать принадлежность кандидата</td>
+                 <td>@Html.DropDownListFor(m => m.AppointmentEducationType, new SelectList(Model.AppointmentEducationTypes, "Id", "Name"), (Model.IsManagerApproveAvailable || (dto.UserRole & (UserRole.StaffManager))>0) ? null : new { disabled = "disabled" })
+                 </td>
+            </tr> 
         </table>
         </fieldset>
         <table style="width:100%">
@@ -317,7 +343,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    @Html.LabelFor(m => m.IsManagerApproved):
+                    Руководитель (заказчик) - Автор:
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
@@ -336,7 +362,7 @@
                     }
                 </td>
             </tr>
-        @if (dto.UserRole == UserRole.PersonnelManagerBank && Model.IsManagerApproved)
+        @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
         {
          <tr>
                 <td>
@@ -352,9 +378,15 @@
                 
         }   
         <tr>
-                    <td>@if (dto.UserRole != UserRole.PersonnelManagerBank) { <text>Специалист УКДиУ:</text>}
+                    <td>@if (dto.UserRole != UserRole.ConsultantPersonnel)
+                        { <text>Специалист УКДиУ:</text>}
                     </td>
-                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.PersonnelManagerBank && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div></td>
+                    <td><div id="VacancyCountApprove">Количество вакансий:@Html.TextBoxFor(m => m.BankAccountantAcceptCount, (dto.UserRole == UserRole.ConsultantPersonnel && (Model.BankAccountantAccept != true || Model.IsVacationExists != 1 || (Model.IsVacationExists == 1 && Model.BankAccountantAcceptCount < int.Parse(Model.VacationCount)))) ? null : (object)new { disabled = "disabled" }) &nbsp; @Model.BankAccountantName</div>
+                    @if (dto.UserRole == UserRole.ConsultantPersonnel && Model.IsManagerApproved)
+                    { 
+                      <input type="button" value="Отправить Email руководителю" id="SendEmailButton" onclick="SendEmailForManager();"/>                    
+                    }
+                    </td>
                 </tr>
             @* <tr>
                 <td>
@@ -373,8 +405,8 @@
                 </td>
             </tr>*@
              
-             @if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
-             {
+            @*@if (Model.BankAccountantAccept/* && (Model.IsVacationExists == 1 || (int.Parse(Model.VacationCount) <= Model.BankAccountantAcceptCount))*/)
+            {*@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.IsChiefApproved):
@@ -390,6 +422,7 @@
                      <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
                 </td>
             </tr>
+            
             @* <tr>
                 <td>
                     @Html.LabelFor(m => m.IsPersonnelApproved):
@@ -403,14 +436,14 @@
                      <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
                 </td>
             </tr>*@
-                 if (Model.ShowStaff)
+                 @if (Model.ShowStaff)
                  {
                      <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsStaffApproved):
+                            Начальник ОПиНП:
                         </td>
                         <td>
-                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                            @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable && dto.Id == Model.StaffBossId ? null : (object)new { disabled = "disabled" }) 
                             Принял в работу
                             @*@Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
                             Уведомлен об отклонении заявки*@
@@ -420,35 +453,92 @@
                             <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
                         </td>
                     </tr>
+                 <tr>
+                     <td>Рекрутер 1:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter1id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id==Model.StaffBossId ? null : new { disabled="disabled"})
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 2:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter2id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>Рекрутер 3:</td>
+                     <td>@Html.DropDownListFor(x => x.Recruter3id, new SelectList(Model.Recruters, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 && dto.Id == Model.StaffBossId ? null : new { disabled = "disabled" })
+                     </td>
+                 </tr>
+                 <tr><td>Срочность</td>
+                 <td>@Html.DropDownListFor(m => m.Priority, new SelectList(Model.Priorities, "Id", "Name"), (dto.UserRole & UserRole.StaffManager) > 0 ? null : new { disabled = "disabled" })</td>
+                 </tr>
                  }
-             }
+            
+             
+         @if(!Model.NonActual)
+         {    
         <tr>
                 <td>
-                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
+                    <input type="button" value="Печать" onclick="window.print();" />
                   @* @Html.ActionLink("Создать отчёт","CreateReportForOldAppointment",new {id=Model.Id},null) *@                  
                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>*@
                   @* @if (dto.Id==Model.UserId && (Model.IsManagerApproved && Model.BankAccountantAccept && !Model.ShowStaff && Model.IsChiefApproved))
                     {
                     <input type="button" value="Выгрузить в приём" onclick="$('#CandidateFIO').val($('#FIO').val());$('#NewUserDepId').val($('#DepartmentId').val());$('#AddEmployment').dialog('open');"/>
                     }*@
-                   @if (Model.ManagerId==dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists==0|| !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
-                    {
+                   @if (Model.ManagerId == dto.Id && (Model.BankAccountantAccept && (Model.IsVacationExists == 0 || !Model.BankAccountantAccept || (int.Parse(Model.VacationCount) > Model.BankAccountantAcceptCount))))
+                   {
                         @*<input type="button" value="Создать служебную записку"  onClick="javascript:window.location.href='/Appointment/Note/@Model.Id'" />*@
                        <input type="button" value="Создать служебную записку (.docx)"  onClick="javascript:window.location.href='/Appointment/NoteDocX/@Model.Id'" />
-                    }
+                   }
                    <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
                 <td style="text-align:right">
+                @if (
+                         ((dto.UserRole & UserRole.Manager) > 0 && Model.IsManagerApproveAvailable) ||
+                         ((dto.UserRole & UserRole.ConsultantPersonnel) > 0 && !Model.BankAccountantAccept) ||
+                         ((dto.UserRole & UserRole.Manager) > 0 & Model.IsChiefApproveAvailable) ||
+                         ((dto.UserRole & UserRole.StaffManager) > 0 & Model.IsStaffApproveAvailable)
+                        )
+                {
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                       {<text>style="display:none"</text>}/>
+                }
+                    @if ((dto.UserRole & (UserRole.Manager | UserRole.StaffManager)) > 0 && Model.IsNonActualButtonAvailable)
+                    {
+                    <input type="submit" value="Заявка не актуальна" onclick="$('#NonActual').val(true);" />
+                    }
                 </td>
                 
+        </tr>
+        }
+        else
+        {
+            <tr>
+            <td style="color:Red">
+            Заявка не актуальна.
+            </td>
             </tr>
+        }
         </table>
     </div> 
-    if(Model.Candidates!=null && Model.Candidates.Any())
-    {
+    if (Model.Reports != null && Model.Reports.Any())
+    { 
+       <div class="doc-wrap">
+       Отчёты:
+       @foreach(var el in Model.Reports)
+       {
+           @Html.ActionLink("№"+Model.DocumentNumber + "/" + el.Name+" ", "AppointmentReportEdit", new { id = el.Id }, null); 
+       }
+       <br />
+       <input type="button" onclick="$('#AppointmentReportForm').submit()" value="Перейти в реестр отчётов" />
+       </div>
+    }
+                                                                                      if (Model.Candidates != null && Model.Candidates.Any())
+                                                                                      {
     <div class="doc-wrap">
     Принятые сотрудники(@Model.Candidates.Count):
     <br />
@@ -466,7 +556,7 @@
     </tbody>
     </table>
     </div>  
-    }
+                                                                                      }
     <br />
     <div class="comment-wrap">
         <table style="width:100%">
@@ -478,6 +568,9 @@
         </table>
     </div>
 }
+<form id="AppointmentReportForm" action="/Appointment/AppointmentReportList" method="POST">
+<input type="hidden" name="Number" id="Number" value="@Model.DocumentNumber"/>
+</form>
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 <script type="text/javascript">
@@ -490,8 +583,11 @@
             $('#SNILS').mask('999-999-999 99');
              $('#PassportData').mask('9999 999999');
         }); 
+    $("#AppointmentReportForm").hide();
     $("#AddEmployment").dialog({autoOpen: false});
-    
+    $('#ReasonPositionId').change(function(){
+        $('#ReasonPosition').val($("#ReasonPositionId option:selected").text());
+    });
     $("#IsVacationExists").change(function()
     {
         $("#IsVacationExistsHidden").val($("#IsVacationExists").val());
@@ -514,9 +610,44 @@
         $("#IsDelete").val("true");
         return true;
     }
+    function SendEmailForManager()
+    {
+     $("#SendEmailButton").hide();
+     $.ajax({
+        type: "POST",
+        url: "/Appointment/SendEmailFor",
+        data: {AppointmentId:@Model.Id},
+        success: function(message){$("#SendEmailButton").show();alert(message.status);},
+        error:function(){$("#SendEmailButton").show();alert('При отправки сообщения произошла ошибка.');}
+        });
+    }
     function ValidateForm()
     {
         var result = true;
+        @if(!Model.IsManagerApproved)
+        {<text>
+        if($("#ReasonId").val()==5)
+        $.ajax(
+        {   
+            type: "POST",
+            url:"/Appointment/CheckUserDismissal",
+            data: {userId:$('#ReasonPositionId').val()},
+            success: function(result)
+            {
+                if(!result.result)
+                {
+                    var r=confirm("У выбранного сотрудника нет заявления на увольнение, заявка может быть сохранена как черновик, пока сотрудник не заведёт заявление на увольнение. Уведомить Вас о том, что сотрудник написал заяваление?");
+                    $('#IsManagerApproved').attr('checked', false);
+                    $('#IsManagerApproved').attr('value', false);
+                    if(r)
+                        $('#isNeedToNotify').attr('value', true);
+                }
+            },
+            async:false
+        }
+        );
+        </text>
+        }
         clearControlErrors($("#SelectDepartmentBtn"));
         if($("#DepartmentId").val() == 0)
         {
@@ -592,32 +723,76 @@
     function onReasonChange()
     {
         var reasonId = $("#ReasonId").val();
+        var isDisabled= @((dto.UserRole & UserRole.ConsultantPersonnel)==0 && Model.IsManagerApproved? "true":"false");
         switch(reasonId)
         {
             case '1':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
+                $("#ReasonPositionId").attr("disabled",true);
                 $("#ReasonPositionTr").hide();
             break
             case '2':
                 //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionIdTr").hide();
+                 $("#ReasonPositionId").attr("disabled",true);
                 $("#ReasonPositionTr").hide();
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
+                $('#ReasonPosition').attr('title', '');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionTr").hide ();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
                 $("#ReasonDateLabel").text('Дата ухода:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionId").attr("disabled",false);
+                $("#ReasonPositionIdTr").show();
                 $("#ReasonPositionTr").show();
             break
             case '5':
                 $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
                 $("#ReasonDateLabel").text('Дата увольнения:');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionIdTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
                 $("#ReasonPositionTr").show();
             break
+            case '6':
+                $("#ReasonPositionLabel").text('ФИО сотрудника на замену: ');
+                $('#ReasonPosition').attr('title', 'Выбрать из справочника');
+                $('#ReasonPosition').attr('readonly','read-only');
+                $("#ReasonPositionTr").show();
+                 $("#ReasonPositionId").attr("disabled",false);
+                $("#ReasonPositionIdTr").show();
+            break
+            case '7':
+                $("#ReasonPositionLabel").text('ФИО уволившегося/переведенного сотрудника: ');
+                $('#ReasonPosition').attr('title', 'Введите ФИО');
+                $('#ReasonPosition').removeAttr('readonly');
+                $("#ReasonPositionTr").show();
+                 $("#ReasonPositionId").attr("disabled",true);
+                $("#ReasonPositionIdTr").hide();
+            break
+        }
+        if(isDisabled)
+        {
+            $("#ReasonPositionId").attr("disabled",true);
+            $('#ReasonPosition').attr('readonly','read-only');
+            $('#ReasonBeginDate').attr('readonly','read-only');
+
         }
         if(reasonId == 3)
             $("#ReasonDateTr").hide();

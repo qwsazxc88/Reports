@@ -10,11 +10,12 @@
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
 
-@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ManagerForm" }))
 {
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsDraftM)
     @Html.HiddenFor(m => m.SendTo1C)
+    @Html.HiddenFor(m => m.IsPyrusDialogVisible)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
@@ -127,6 +128,11 @@
         </div>
 
         <div class="formfield clear">
+            @Html.LabelFor(m => m.MentorName)&nbsp;@Html.ValidationMessageFor(m => m.MentorName)<br />
+            @Html.EditorFor(m => m.MentorName)
+        </div>
+
+        <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
@@ -134,7 +140,7 @@
         @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
-                <button id="btnManagerDraft">Черновик</button>
+                <button id="btnManagerDraft" type="button">Черновик</button>
             </div>
         }
         
@@ -142,6 +148,12 @@
     
     
     <div class="clear">
+        @if (Model.IsPyrusDialogVisible)
+        {
+            <label>Создать задачу в Пайрусе на регистрацию доступов для кандидата</label>
+            <button type="button" id="btnPyrus">Создать</button>
+            <br /><br />
+        }
         <label><b>Список руководителей: </b></label>
         @Model.ManagerApprovalList<br /><br />
 
@@ -158,6 +170,12 @@
         @if (Model.IsApproveByManagerAvailable)
         {
             <button>Применить</button>
+        }
+        
+        @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+        @if (Model.IsCancelApproveAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
         }
         <br /><br />
     </div>
@@ -185,8 +203,75 @@
         {
             <button>Применить</button>
         }
+        @Html.HiddenFor(m => m.IsCancelApproveHigherAvailale)
+        @if (Model.IsCancelApproveHigherAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
+        }
     </div>
 }
+
+<div id="DivPyrus" style="display:none;">
+    <table class="grid">
+        <thead>
+            <tr>
+                <th>Категория сотрудников</th>
+                <th>Название формы</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Менеджер по обслуживанию клиентов</td>
+            <td>Регистрация нового МОКа</td>
+            <td><a href="https://pyrus.com/t#uf166701" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Менеджер по развитию торговой сети</td>
+            <td>Регистрация нового МРТС</td>
+            <td><a href="https://pyrus.com/t#uf167041" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник Службы дистанционного взыскания</td>
+            <td>Регистрация нового сотрудника СДВ</td>
+            <td><a href="https://pyrus.com/t#uf194178" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник Службы судебного взыскания</td>
+            <td>Регистрация нового сотрудника ССВ</td>
+            <td><a href="https://pyrus.com/t#uf180510" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник СЭБ</td>
+            <td>Регистрация нового сотрудника СЭБ</td>
+            <td><a href="https://pyrus.com/t#uf196474" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела по андеррайтингу физ. и юр. лиц</td>
+            <td>Регистрация нового спец. Отдела по андеррайтингу физ. и юр. лиц</td>
+            <td><a href="https://pyrus.com/t#uf177525" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела прямых продаж</td>
+            <td>Регистрация нового спец. Отдела прямых продаж</td>
+            <td><a href="https://pyrus.com/t#uf173528" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела сопровождения клиентов</td>
+            <td>Регистрация нового спец. Отдела сопр. клиентов</td>
+            <td><a href="https://pyrus.com/t#uf167008" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник ТСП</td>
+            <td>Регистрация нового сотрудника ТСП</td>
+            <td><a href="https://pyrus.com/t#uf167006" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудники других подразделений</td>
+            <td>Доступы в информационные системы (Общая форма)</td>
+            <td><a href="https://pyrus.com/t#uf7520" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+    </table>
+</div>
 
 <div id="add-managers-comment-dialog" title="Добавление комментария">
     @using (Html.BeginForm("ManagersAddComments", "Employment", FormMethod.Post))
@@ -234,6 +319,11 @@
         $('#isFrontContainer').buttonset();
         $('#isExternalWorkContainer').buttonset();
         $('#IsLiableContainer').buttonset();
+
+        $("#btnManagerDraft").click(function(){
+            $("#IsDraftM").val(true);
+            $("#ManagerForm").submit();
+        });
 
         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
         else {$('#isExternalWorkContainer').hide();}
@@ -329,9 +419,38 @@
             $addManagersCommentDialog.dialog("open");
             e.preventDefault();
         });
+
+
+        var $PyrusDialog = $('#DivPyrus').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            title: "Список форм на регистрацию доступов в системе Pyrus",
+//            buttons:
+//            {
+//                "OK": function () {
+//                    //$('#add-higher-education-diploma-dialog form').submit();
+//                    //$(this).dialog("close");
+//                },
+//                "Отмена": function () {
+//                    //$(":text").val('');
+//                    $(this).dialog("close");
+//                }
+//            }
+        });
+
+        $("#btnPyrus").click(function(e){ 
+            $PyrusDialog.dialog("open");
+            e.preventDefault();
+        });
     });
 
     function changePosition(){
         if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
     }
+
+    
 </script>

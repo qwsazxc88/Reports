@@ -72,7 +72,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsChiefApproveNeedHidden { get; set; }
         [Display(Name = "Причина командировки на выходные/праздничные дни или продолжительностью более 7 дней")]
         public string LongTermReason { get; set; }
-
+        public bool IsTicketsEditable { get; set; }
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool? IsManagerApprovedHidden { get; set; }

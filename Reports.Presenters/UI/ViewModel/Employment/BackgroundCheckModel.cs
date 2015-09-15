@@ -86,6 +86,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Ваше отношение к алкоголю")]
         public string Drinking { get; set; }
 
+        [Display(Name = "Являетесь ли Вы или Ваши родственники акционерами (владельцами долей) предприятий и организаций")]
+        public string OwnerOfShares { get; set; }
+
+        [Display(Name = "Занимаете ли Вы или Ваши родственники должности в органах управления иных юридических лиц")]
+        public string PositionInGoverningBodies { get; set; }
+
         [Display(Name = "Правильность предоставленных данных подтверждаю")]
         public bool IsValidate { get; set; } //ok
 
@@ -123,6 +129,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Ссылка на задачу в системе Pyrus")]
         public string PyrusRef { get; set; } //ok
+
+        public bool IsCancelApproveAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
+
+        public DateTime? SendTo1C { get; set; }
+        public bool IsPrintButtonAvailable { get; set; }
+        public bool IsDeleteScanButtonAvailable { get; set; }
+
+        //личный листок по учету кадров
+        public HttpPostedFileBase EmploymentFile { get; set; }
+        public string EmploymentFileName { get; set; }
+        public int EmploymentFileId { get; set; }
+        public int DeleteAttachmentId { get; set; }
 
         public BackgroundCheckModel()
         {
