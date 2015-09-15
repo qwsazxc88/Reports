@@ -46,6 +46,7 @@ namespace Reports.Presenters.UI.Bl
 
         CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         ScanOriginalDocumentsModel GetScanOriginalDocumentsModel(int? userId = null);
+        PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
         CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);

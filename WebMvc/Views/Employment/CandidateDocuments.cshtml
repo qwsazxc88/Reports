@@ -158,34 +158,47 @@
             }
         </tr>
         @*
-        <tr>
+        <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.T2FileNeeded)
+            {<text> style = "display:none;" </text>} >
+            <td>Печать Т2</td>
             <td>
-                <!--<button  type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>-->
-                <button  type="button" onclick="window.location.href='@Url.Action("PrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
-            </td>
-            <td>
-                <input type="hidden" id="T2FileId" name="T2FileId" value="@Model.T2FileId" />
-                @if (string.IsNullOrEmpty(Model.T2FileName))
+                @if (Model.IsDocListAvailable)
                 {
-                    <div class="formfield clear">
-                        Выбрать для загрузки скан Т2<br /><input type="file" name="T2File" id="T2File" />
-                    </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.T2FileName))
-                {
-                    <div class="formfield">
-                        <br />Скан:
-                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.T2FileId })' style="cursor:hand" target="_blank">
-                            @Model.T2FileName
-                        </a>
-                    </div>
-                    <div class="formfield">
-                        <br /><input type="button" id="btnDelete3" value="Удалить скан" />
-                    </div>
+                    <!--<button  type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>-->
+                    <button  type="button" onclick="window.location.href='@Url.Action("PrintT2", "Employment", new { userId = Model.UserId })';">Печать</button>
                 }
             </td>
+            <td>
+                @if (Model.IsDocListAvailable)
+                {
+                    <input type="hidden" id="T2FileId" name="T2FileId" value="@Model.T2FileId" />
+                    if (string.IsNullOrEmpty(Model.T2FileName))
+                    {
+                        <div class="formfield clear">
+                            Выбрать для загрузки скан Т2<br /><input type="file" name="T2File" id="T2File" />
+                        </div>
+                    }
+                    if (!string.IsNullOrEmpty(Model.T2FileName))
+                    {
+                        <div class="formfield">
+                            <br />Скан:
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.T2FileId })' style="cursor:hand" target="_blank">
+                                @Model.T2FileName
+                            </a>
+                        </div>
+                        <div class="formfield">
+                            <br /><input type="button" id="btnDelete3" value="Удалить скан" />
+                        </div>
+                    }
+                }
+            </td>
+            @if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.OutsourcingManager || dto.UserRole == UserRole.Estimator)
+            {
+                @Html.HiddenFor(m => m.T2FileNeeded)
+                <td style="text-align:center;">@Html.CheckBoxFor(m => m.T2FileNeeded)</td>
+            }
         </tr>
-    *@
+        *@
         <tr @if (dto.UserRole != UserRole.PersonnelManager && dto.UserRole != UserRole.OutsourcingManager && dto.UserRole != UserRole.Estimator && !Model.ContractMatResponsibleFileNeeded)
             {<text> style = "display:none;" </text>} >
             <td>Печать договора Мат. ответственность</td>

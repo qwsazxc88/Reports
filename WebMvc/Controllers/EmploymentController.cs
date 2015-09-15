@@ -1780,6 +1780,7 @@ namespace WebMvc.Controllers
             model.IsManagersAvailable = IsManagersAvailable;
             model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
             model.TabIndex = TabIndex;
+            model = EmploymentBl.GetPersonnelInfoModel(model);
             return View(model);
         }
 
