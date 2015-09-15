@@ -34,7 +34,7 @@ namespace Reports.Presenters.UI.Bl
 
         AbsenceListModel GetAbsenceListModel();
         void SetAbsenceListModel(AbsenceListModel model, bool hasError);
-
+        void SendMail();
         AbsenceEditModel GetAbsenceEditModel(int id, int userId);
         void ReloadDictionariesToModel(AbsenceEditModel model);
         bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
@@ -55,7 +55,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
         AnalyticalStatementModel GetAnalyticalStatementModel();
-        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId);
+        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model);
         IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending);
         MissionListModel GetMissionListModel();
         void SetMissionListModel(MissionListModel model, bool hasError);

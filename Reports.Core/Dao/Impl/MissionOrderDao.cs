@@ -662,7 +662,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DeductionId",NHibernateUtil.Int32).
                 AddScalar("DeductionUploadingDate",NHibernateUtil.DateTime);
         }
-        public IList<AnalyticalStatementDetailsDto> GetAnalyticalStatementDetails(int userId)
+        public IList<AnalyticalStatementDetailsDto> GetAnalyticalStatementDetails(int userId, int sortOrder, bool sortDesc)
         {
             IQuery sqlQuery=Session.CreateSQLQuery("exec GetAnalyticalStatementDetails " + userId)
                 .AddScalar("Date", NHibernateUtil.DateTime)
@@ -674,6 +674,12 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("PurchaseBookAllSum",NHibernateUtil.Single);
             var result= sqlQuery.SetResultTransformer(Transformers.AliasToBean(typeof(AnalyticalStatementDetailsDto)))
                 .List<AnalyticalStatementDetailsDto>();
+            switch (sortOrder)
+            {
+                case 1: result = result.OrderBy(x => x.Number).ThenBy(x=>x.Date).ToList();
+                    break;
+            }
+            if (sortDesc) result = result.Reverse().ToList();
             float Saldo = 0;
             if (result != null)
                 foreach (var el in result)
