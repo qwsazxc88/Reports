@@ -98,5 +98,7 @@ namespace Reports.Core.Domain
 
         public virtual IList<StaffMovementsDocs> Docs { get; set; }
 
+        public virtual bool IsTempMoving { get; set; }
+
     }
 }

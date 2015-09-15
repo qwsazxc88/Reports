@@ -7,6 +7,6 @@ namespace Reports.Core.Dao
 {
     public interface IStaffMovementsDao:IDao<StaffMovements>
     {
-        IList<StaffMovements> GetDocuments(int DepartmentId, string UserName, int Number, int Status);
+        IList<StaffMovements> GetDocuments(int UserId, UserRole role ,int DepartmentId, string UserName, int Number, int Status);
     }
 }

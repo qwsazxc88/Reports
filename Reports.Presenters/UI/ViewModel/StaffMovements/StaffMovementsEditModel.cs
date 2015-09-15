@@ -38,11 +38,21 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsConfirmButtonPressed { get; set; }
         public bool IsCancelButtonPressed { get; set; }
         public bool IsStopButtonPressed { get; set; }
+
+        public bool IsManagerVisible { get; set; }
+        public bool IsDocsVisible { get; set; }
+        public bool IsPersonnelVisible { get; set; }
         #endregion
         #region Общее
         public IList<IdNameDto> RequestTypes { get; set; }
         [Display(Name = "Дата перевода")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? MovementDate { get; set; }
+        [Display(Name = "Дата окончания временного перевода")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
+        public DateTime? MovementTempTo { get; set; }
         [Display(Name = "В подразделение")]
         public string TargetDepartmentName { get; set; }
         public int TargetDepartmentId { get; set; }
@@ -55,15 +65,23 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Согласования
         [Display(Name="Согласовано сотрудником")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? SendDate { get; set; }
         [Display(Name = "Согласовано отпускающим руководителем")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? SourceManagerAccept { get; set; }
         [Display(Name = "Согласовано принимающим руководителем")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? TargetManagerAccept { get; set; }
         [Display(Name = "Согласовано кадровиком банка")]
         public DateTime? PersonnelManagerBankAccept { get; set; }
         public string PersonnelManagerBank { get; set; }
         [Display(Name = "Согласовано вышестоящим руководителем")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? ChiefAccept { get; set; }
         public string Chief { get; set; }
         [Display(Name = "Согласовано кадровиком")]
@@ -81,19 +99,34 @@ namespace Reports.Presenters.UI.ViewModel
         public string MovementCondition { get; set; }
         [Display(Name="Должностная надбавка")]
         public decimal AdditionPosition {get;set;}
+        [Display(Name = "Дата окончания временной надбавки")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AdditionPositionTo {get;set;}
         [Display(Name = "Персональная надбавка")]
         public decimal AdditionPersonnel { get; set; }
+        [Display(Name="Дата окончания временной надбавки")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AdditionPersonnelTo { get; set; }
-        [Display(Name = "Надбавка за стаж работы")]
+        [Display(Name = "Надбавка за квалификацию")]
         public decimal AdditionQuality { get; set; }
+        [Display(Name = "Дата окончания временной надбавки")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AdditionQualityTo { get; set; }
+        public bool IsTempMoving { get; set; }
+        public bool Conjunction { get; set; }
         #endregion
         #region Для кадровиков
         public bool IsHourly { get; set; }
         [Display(Name="Дата приказа о переводе")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? OrderDate { get; set; }
         [Display(Name="Дата ДС")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AdditionalAgreementDate { get; set; }
         [Display(Name="Номер приказа о переводе")]
         public string OrderNumber { get; set; }
@@ -107,6 +140,9 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal AdditionTraveling { get; set; }
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб.)")]
         public decimal AdditionFront { get; set; }
+        [Display(Name = "Дата окончания временной надбавки")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AdditionFrontTo { get; set; }
         [Display(Name = "Грейд")]
         public int Grade { get; set; }
@@ -115,6 +151,17 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> HoursTypes { get; set; }
         [Display(Name = "Северный стаж")]
         public int NorthFactor { get; set; }
+        [Display(Name="Порядок начисления надбавок")]
+        public int NorthFactorOrder { get; set; }
+        [Display(Name = "лет")]
+        public int NorthFactorYear { get; set; }
+        [Display(Name = "месяцев")]
+        public int NorthFactorMonth { get; set; }
+        [Display(Name = "дней")]
+        public int NorthFactorDay { get; set; }
+        [Display(Name="Надбавка")]
+        public decimal NorthFactorAddition { get; set; }
+        public IList<IdNameDto> NorthFactorOrders { get; set; }
         public IList<IdNameDto> NorthFactors { get; set; }
         [Display(Name = "Пункты Дополнительного соглашения")]
         public string AdditionalAgreementEnties { get; set; }
@@ -123,9 +170,15 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Внести изменения в пункты ТД")]
         public string ChangesToAgreementEnties { get; set; }
         [Display(Name = "Дата ТД, в который вносятся изменения")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
+               ApplyFormatInEditMode = true)]
         public DateTime? AgreementDate { get; set; }
         [Display(Name="Основание для приказа о переводе")]
+        public string MovementReasonOrder { get; set; }
+        [Display(Name = "Основание для перевода")]
         public string MovementReason { get; set; }
+        [Display(Name = "Основание для временного перевода")]
+        public string MovementTempReason { get; set; }
         [Display(Name="Группа доступа")]
         public int AccessGroup { get; set; }
         public IList<IdNameDto> AccessGroupsList { get; set; }
@@ -136,7 +189,7 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }
-        public bool MovementNoteIsRequired { get; set; }
+        public bool MovementNoteIsRequired { get { return true; } set {  } }
         public int MovementNoteAttachmentId { get; set; }
         public UploadFileDto MovementNoteDto { get; set; }
 

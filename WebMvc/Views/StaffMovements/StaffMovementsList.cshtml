@@ -1,6 +1,9 @@
 ﻿@using Reports.Presenters.UI.ViewModel
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
 @model StaffMovementsListModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Кадровые перемещения - реестр заявок";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
 }
@@ -46,7 +49,7 @@
                                 @Html.LabelFor(m => m.Status):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.Statuses, new SelectList(Model.Statuses, "ID", "Name")) 
+                                @Html.DropDownListFor(model => model.Status, new SelectList(Model.Statuses, "ID", "Name")) 
                              </td>
                         </tr>
                         <tr>
@@ -76,7 +79,7 @@
                         <tr>
                           <td colspan="2">
                             <input type="button" ng-click="GetData();" value="Выбрать"/>
-                            <input type="button" value="Очистить" ng-click="resetFilter();"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
                           </td>
                         </tr>
             </table>
@@ -90,7 +93,10 @@
                     
                    <tr>
                           <td>
-                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("Create", "StaffMovements")'"/>                                                                                                                   
+                          @if ((dto.UserRole & (UserRole.PersonnelManager | UserRole.Manager | UserRole.Employee ))>0)
+                          {
+                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("Create", "StaffMovements")'"/>  
+                          }                                                                                                                 
                             <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
                             <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
                             <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid');" />
@@ -146,7 +152,7 @@
                         <span class="sortorder" ng-show="predicate === 'SourceManagerName'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th  ng-click="Sort('TargetManagerName')">
-                        <a>Руководитель<br />принимаюющий</a>
+                        <a>Руководитель<br />принимающий</a>
                         <span class="sortorder" ng-show="predicate === 'TargetManagerName'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th  ng-click="Sort('PositionTarget')">
@@ -290,12 +296,12 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
-        if ($("#DepartmentReadOnly").val() == "False") {
-            $("#DepartmentId").val('0');
-            $("#DepartmentNameLabel").text('');
-            $("#DepartmentName").val('');
-        }
-         $("#StatusId").val('0');
+        
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DepartmentName").val('');
+       
+         $("#Status").val('0');
          $("#UserName").val('');
          $("#Number").val('');
     }
