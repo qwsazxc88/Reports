@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
+        protected IMailListDao maillistDao;
 
         protected ISicklistTypeDao sicklistTypeDao;
         protected ISicklistPaymentRestrictTypeDao sicklistPaymentRestrictTypeDao;
@@ -104,6 +105,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IMailListDao MailListDao
+        {
+            get { return Validate.Dependency(maillistDao); }
+            set { maillistDao = value; }
+        }
         public IManualDeductionDao ManualDeductionDao
         {
             get { return Validate.Dependency(manualDeductionDao);}
@@ -7641,7 +7647,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 import.InputFile = path.Substring(path.LastIndexOf('\\') + 1);
                 DeductionImport_Dao.SaveAndFlush(import);
                 Deductions = new List<Deduction>();
-                StreamReader reader = new StreamReader(path);
+                Encoding enc=Encoding.GetEncoding("Windows-1251");
+                StreamReader reader = new StreamReader(path,enc);
                 var type = DeductionTypeDao.Load(1);
                 var kinds = DeductionKindDao.LoadAll();
                 while (!reader.EndOfStream)
@@ -9144,7 +9151,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id);
+                var analytical = MissionOrderDao.GetAnalyticalStatementDetails(entity.User.Id,0,false);
                 model.UserDept = (analytical != null && analytical.Any()) ? analytical.Last().SaldoEnd : 0f;//.Aggregate(0f,(sum,next)=>sum+ (next.Reported-next.Ordered));
                 model.IsResidencePaid = entity.IsResidencePaid;
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
@@ -11749,6 +11756,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (model.IsManagerReject)
                 {
+                    #region Отправка писем сотруднику об отклонении отчета
+                    string address = entity.User.Email;
+                    if (!string.IsNullOrWhiteSpace(address))
+                    {
+                        SendEmail(address, "Руководитель отклонил Ваш авансовый отчёт.", String.Format("Руководитель {0}   отклонил   Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                    }
+                    #endregion
                     entity.UserDateAccept = null;
                     entity.AcceptUser = null;
                     model.IsManagerApproved = false;
@@ -11756,6 +11770,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else if (model.IsManagerApproved)
                 {
+                    #region Отправка писем сотруднику об отклонении отчета
+                    string address = entity.User.Email;
+                    if (!string.IsNullOrWhiteSpace(address))
+                    {
+                        SendEmail(address, "Руководитель согласовал Ваш авансовый отчёт.", String.Format("Руководитель {0} согласовал Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                    }
+                    #endregion
                     entity.ManagerDateAccept = DateTime.Now;
                     entity.AcceptManager = UserDao.Load(current.Id);
                 }
@@ -11771,10 +11792,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (model.IsAccountantReject)
                     {
+                        #region Отправка писем руководителю и сотруднику об отклонении отчета
+                        string address = entity.User.Email;
+                        if(!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address,"Бухгалтер отклонил Ваш авансовый отчёт.",String.Format("Бухгалтер {0}   отклонил   Ваш АО №{1}",CurrentUser.Name,entity.Number));
+                        }
+                        /*address = entity.AcceptManager!=null?entity.AcceptManager.Email:"";
+                        if(!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, String.Format("Бухгалтер отклонил АО №{0} сотрудника {1}", entity.Number, entity.User.Name), String.Format("Бухгалтер {0} отклонил АО №{1} сотрудника {2}", CurrentUser.Name, entity.Number, entity.User.Name));
+                        }*///Письма руководителю слать только если галку снимаем
+                        #endregion
                         entity.AccountantDateAccept = null;
                         entity.AcceptAccountant = UserDao.Load(current.Id);
-                        entity.ManagerDateAccept = null;
-                        entity.AcceptManager = null;
+                        //entity.ManagerDateAccept = null;
+                        //entity.AcceptManager = null;  руководителя галку  не снимаем с пор не давних. письмо отправлять нужно, если галку снимать
                         entity.UserDateAccept = null;
                         entity.AcceptUser = null;
                         //SetMissionTransactionEditable(model, true);
@@ -11784,6 +11817,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if (model.IsAccountantApproved)
                     {
+                        #region Отправка писем руководителю и сотруднику о согласовании отчета
+                        string address = entity.User.Email;
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, "Бухгалтер принял Ваш авансовый отчёт.", String.Format("Бухгалтер {0} принял Ваш АО №{1}", CurrentUser.Name, entity.Number));
+                        }
+                        address = entity.AcceptManager != null ? entity.AcceptManager.Email : "";
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            SendEmail(address, String.Format("Бухгалтер принял АО №{0} сотрудника {1}", entity.Number, entity.User.Name), String.Format("Бухгалтер {0} принял АО №{1} сотрудника {2}", CurrentUser.Name, entity.Number, entity.User.Name));
+                        }
+                        #endregion
                         entity.AccountantDateAccept = DateTime.Now;
                         entity.AcceptAccountant = UserDao.Load(current.Id);
                         SetMissionTransactionEditable(model, false);
@@ -12427,7 +12472,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
-
+        #region MailList
+        public void SendMail()
+        {
+            var mails = MailListDao.GetMails();
+            foreach (var mail in mails)
+            {
+                var address = mail.To.Email;
+                if(!string.IsNullOrEmpty(address)) 
+                    SendEmail(address, mail.MailSubject, mail.MailText);
+                mail.SendDate = DateTime.Now;
+                MailListDao.SaveAndFlush(mail);
+            }
+        }
+        #endregion
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -12491,16 +12549,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortDescending, showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
         }
-        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId)
+        public AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model)
         {
-            var user = UserDao.Load(userId);
-
-            AnalyticalStatementDetailsModel model = new AnalyticalStatementDetailsModel()
-            {
-                Documents = MissionOrderDao.GetAnalyticalStatementDetails(user.Id)
-            };
+            model.Documents = MissionOrderDao.GetAnalyticalStatementDetails(model.id, model.SortBy, model.SortDescending);
+            var user = UserDao.Load(model.id);
             model.DateCreated = DateTime.Now.ToString("dd.MM.yyyy");
-            model.DocumentNumber = userId.ToString();
+            model.DocumentNumber = model.id.ToString();
             SetUserInfoModel(user, model);
             return model;
         }

@@ -69,9 +69,10 @@ namespace Reports.Core.Dao.Impl
                         when  r.StaffDateAccept is not null and (r.IsColloquyPassed=0 or (r.TestingResult<=2 and r.TestingResult>0))  and r.IsEducationExists is null then N'Отказано'
                         
                         when r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 then N'Собеседование назначено'
-                        when r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 then N'Входное тестирование'
+                        when r.IsColloquyPassed=1 and (r.TestingResult is null or r.TestingResult=0)  and v.AppointmentEducationTypeId=1 and v.Recruter=1 then N'Входное тестирование'
                         when r.IsColloquyPassed=1 and r.TestingResult>2 and r.IsEducationExists is null and v.AppointmentEducationTypeId=1 and v.Recruter=1  then N'Welcome курс'
-                        when r.IsColloquyPassed=1 then N'Собеседование пройдено'
+                        when r.IsColloquyPassed=1 and  v.AppointmentEducationTypeId=2 and v.Recruter=1 then N'Собеседование пройдено'
+                        
                         when r.StaffDateAccept is not null and r.IsEducationExists is null and LessonDate is not null then N'Обучение назначено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =0 then N'Обучение не пройдено'
                         when  r.StaffDateAccept is not null and r.IsEducationExists =1 then N'Обучение пройдено'

@@ -61,11 +61,16 @@
             }
             *@
         }
-
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.ReserveCategory)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategory)<br />
             @Html.EditorFor(m => m.ReserveCategory)
         </div>
+        *@
+        <div class="formfield clear">
+                @Html.LabelFor(m => m.ReserveCategoryId)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategoryId)<br />
+                @Html.DropDownListFor(m => m.ReserveCategoryId, Model.ReserveCategoryes)
+         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.RankId)&nbsp;@Html.ValidationMessageFor(m => m.RankId)<br />
             @Html.DropDownListFor(m => m.RankId, new SelectList(Model.RankItems, "Id", "Name"))
@@ -102,35 +107,6 @@
             <br />
             @Html.LabelFor(m => m.IsReserved)&nbsp;@Html.EditorFor(m => m.IsReserved)
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.MobilizationTicketNumber)&nbsp;@Html.ValidationMessageFor(m => m.MobilizationTicketNumber)<br />
-            @Html.EditorFor(m => m.MobilizationTicketNumber)
-        </div>
-        @*
-        @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename) && !Model.IsValidate)
-        {
-            <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
-            </div>
-        }
-        *@
-        @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
-        {
-            <div class="formfield">
-                <br />Скан мобилизационного талона:
-                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
-                    @Model.MobilizationTicketScanAttachmentFilename
-                </a>
-            </div>
-            @*
-            if (!Model.IsValidate)
-            {
-                <div class="formfield">
-                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" />
-                </div>
-            }
-            *@
-        }
 
         <div class="formfield clear">
         <fieldset class="bordered nomargin">
@@ -146,6 +122,35 @@
             <div class="formfield clear">
                 @Html.LabelFor(m => m.IsAssigned)&nbsp;@Html.EditorFor(m => m.IsAssigned)
             </div>
+            <div class="formfield">
+            @Html.LabelFor(m => m.MobilizationTicketNumber)&nbsp;@Html.ValidationMessageFor(m => m.MobilizationTicketNumber)
+            @Html.EditorFor(m => m.MobilizationTicketNumber)
+            </div>
+            @*
+            @if (string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename) && !Model.IsValidate)
+            {
+                <div class="formfield">
+                    Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
+                </div>
+            }
+            *@
+            @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан мобилизационного талона:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.MobilizationTicketScanAttachmentFilename
+                    </a>
+                </div>
+                @*
+                if (!Model.IsValidate)
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" />
+                    </div>
+                }
+                *@
+            }
             <div class="formfield clear">
                 @Html.LabelFor(m => m.ConscriptionStatus)&nbsp;@Html.ValidationMessageFor(m => m.ConscriptionStatus)<br />
                 @Html.DropDownListFor(m => m.ConscriptionStatus, Model.ConscriptionStatusItems)

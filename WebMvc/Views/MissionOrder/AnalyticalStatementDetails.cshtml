@@ -67,7 +67,8 @@
         <tr>
         <th>№<br />П/П</th>
         <th><a>Наименование</a></th>
-        <th><a>Дата</a></th>
+        <th><div id="sort1" ><a href="#" onclick = "SortChanged(1);">Номер</a></div></th>
+        <th><div id="sort0" ><a href="#" onclick = "SortChanged(0);">Дата</a></div></th>
         <th><a>Сальдо<br />начальное</a></th>
         <th><a>Оплачено за<br /> сотрудника</a></th>
         <th><a>Выдано</a></th>
@@ -102,6 +103,7 @@
                                                                                                                                                  break;
                        }
                    </td>
+                   <td>@el.Number</td>
                    <td>@if (el.Date != DateTime.MinValue)
                        {
                          @el.Date.ToString("dd.MM.yyyy")
@@ -150,8 +152,8 @@
             $("#SortDescending").val('False');
         else
             $("#SortDescending").val('True');
-         setSortFields()
-         GetDocs();
+        setSortFields();
+         document.getElementById("RequestData").submit();
          return false;
     }
    
