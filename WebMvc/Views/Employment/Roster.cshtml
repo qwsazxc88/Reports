@@ -143,7 +143,7 @@
     {
         <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
-    <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала ( согласование  кандидата) " => Инструкция =>   Согласование кандидата  от Руководителя.</label>
+    <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала (добавление кандидата в Прием) " => Инструкция =>   Согласование кандидата  от Руководителя.</label>
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
         {
@@ -211,6 +211,9 @@
         </th>
         <th>
             <div id="sort11"><a href="#" onclick = "SortColumnChanged(11);">Обучение</a></div>
+        </th>
+        <th>
+            <div id="sort23"><a href="#" onclick = "SortColumnChanged(23);">Планируемая<br />дата<br />приема</a></div>
         </th>
         <th>
             <div id="sort12"><a href="#" onclick = "SortColumnChanged(12);">Дата<br />приема</a></div>
@@ -335,6 +338,7 @@
                 <td>
                     &nbsp;@candidate.Training
                 </td>
+                <td>&nbsp;@(candidate.PlanRegistrationDate.HasValue ? candidate.PlanRegistrationDate.Value.ToShortDateString() : string.Empty)</td>
                 <td>
                     &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
                 </td>

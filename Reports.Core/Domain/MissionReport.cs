@@ -17,8 +17,11 @@ namespace Reports.Core.Domain
 
         public virtual int Number { get; set; }
         public virtual string Hotels { get; set; }
-
-
+        public virtual IList<ManualDeduction> ManualDeductions { get; set; }
+        public virtual User StornoAddedBy { get; set; }
+        public virtual decimal StornoSum { get; set; }
+        public virtual string StornoComment { get; set; }
+        public virtual DateTime? StornoAddedDate { get; set; }
         //public virtual MissionType Type { get; set; }
         //public virtual int Kind { get; set; }
 

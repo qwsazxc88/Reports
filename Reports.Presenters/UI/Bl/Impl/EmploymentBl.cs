@@ -813,6 +813,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.MobilizationTicketScan);
                 model.MobilizationTicketScanAttachmentId = attachmentId;
                 model.MobilizationTicketScanAttachmentFilename = attachmentFilename;
+                //model.ReserveCategoryId = entity.ReserveCategoryId != null ? entity.ReserveCategoryId.Value : 0;
+                model.ReserveCategoryId = entity.ReserveCategoryId;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1100,8 +1102,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SendTo1C = entity.Candidate.SendTo1C;
                 //если была выгрузка в 1С, то закрываем эту кнопку для кандидата
                 model.IsPrintButtonAvailable = model.SendTo1C.HasValue ? false : true;
-                //после выгрузки в 1С кнопки удаления прикрепленных сканов доступны только кадровикам
+                //кадровикам удаление доступно всегда
                 model.IsDeleteScanButtonAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.OutsourcingManager) > 0 ? true : (entity.ApprovalDate.HasValue ? false : true);
+                //кадровикам удаление доступно всегда
+                model.IsDeleteScanButtonAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !entity.IsFinal ? true : model.IsDeleteScanButtonAvailable;
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.EmploymentFileScan);
                 model.EmploymentFileId = attachmentId;
                 model.EmploymentFileName = attachmentFilename;
@@ -1370,6 +1374,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+
+            model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
+
             return model;
         }
 
@@ -1722,6 +1729,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
+            model.IsSave = false;
 
             
             return model;
@@ -2694,8 +2702,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
             model.EmployeeName = candidate.User.Name;
             model.PositionName = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
-            //model.DepartmentName = candidate.Managers.Department.Name;
             model.DepartmentName = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
+
+            if (candidate.PersonnelManagers != null)
+            {
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    //model.EmployerRepresentativeName = candidate.PersonnelManagers.Signer.Name;
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+                    //model.EmployerRepresentativePreamblePartyTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
+                            }
+                        }
+                    }
+                }
+            }
 
             return model;
         }
@@ -2829,6 +2858,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.MilitaryValidityCategoryes = EmploymentMilitaryServiceDao.GetMilitaryValidityCategoryes();
             model.MilitaryRelationAccounts = EmploymentMilitaryServiceDao.GetMilitaryRelationAccounts();
             model.SpecialityCategoryes = EmploymentMilitaryServiceDao.GetMilitarySpecialityCategoryes();
+            model.ReserveCategoryes = GetReserveCategoryes();
         }
         public void LoadDictionaries(ExperienceModel model)
         {
@@ -2861,7 +2891,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Schedules = GetSchedules();
             model.ContractPoint1_Items = GetContractPointVariants().Where(x => x.PointTypeId == 1).OrderBy(x => x.PointId).ToList();
             model.ContractPoint2_Items = GetContractPointVariants().Where(x => x.PointTypeId == 2).OrderBy(x => x.PointId).ToList();
-            model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).OrderBy(x => x.PointId).ToList();
+            model.ContractPoint3_Items = GetContractPointVariants().Where(x => x.PointTypeId == 3).ToList();
             model.NorthExperienceTypes = GetNorthExperienceTypes();
             model.ExtraCharges = ExtraChargesDao.LoadAll();
         }
@@ -2933,6 +2963,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Военнообязанный", Value = "1"},
                 new SelectListItem {Text = "Не военнообязанный", Value = "2"},
                 new SelectListItem {Text = "Призывник", Value = "3"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetReserveCategoryes()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "", Value = ""},
+                new SelectListItem {Text = "1", Value = "1"},
+                new SelectListItem {Text = "2", Value = "2"}
             };
         }
 
@@ -3036,9 +3076,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
             cpv.Add(new ContractPointDto { PointId = 6, PointTypeId = 3, PointTypeName = "Вариант 2", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов." });
             cpv.Add(new ContractPointDto { PointId = 7, PointTypeId = 3, PointTypeName = "Вариант 3", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: ненормированный рабочий день." });
-            cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
-            cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
-            cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
+            //побили на две части закомментаренный пункт
+            //cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период (учетный период - квартал, 1 год)." });
+            cpv.Add(new ContractPointDto { PointId = 8, PointTypeId = 3, PointTypeName = "Вариант 4", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал." });
+            cpv.Add(new ContractPointDto { PointId = 12, PointTypeId = 3, PointTypeName = "Вариант 5", PointNamePart_1 = " РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год." });
+            cpv.Add(new ContractPointDto { PointId = 9, PointTypeId = 3, PointTypeName = "Вариант 6", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: суммированный учет рабочего времени (по графику)." });
+            cpv.Add(new ContractPointDto { PointId = 10, PointTypeId = 3, PointTypeName = "Вариант 7", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: (сокращенная продолжительность рабочего времени, неполное рабочее время, другой режим)." });
+            cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 3, PointTypeName = "Вариант 8", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа." });
 
             return cpv;
         }
@@ -3181,6 +3225,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Candidate = candidate,
                 Department = department,
+                PlanRegistrationDate = model.PlanRegistrationDate,
+                RegistrationDate = model.PlanRegistrationDate,
                 IsFront = false,
                 IsLiable = false
             };
@@ -3477,10 +3523,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(model.UserId);
             int candidateId = candidate.Id;
 
-            if (candidate.SendTo1C.HasValue)
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
             {
-                error = "Кандидат выгружен в 1С! Выполнение операции прервано!";
-                return;
+                if (candidate.SendTo1C.HasValue)
+                {
+                    error = "Кандидат выгружен в 1С! Выполнение операции прервано!";
+                    return;
+                }
             }
 
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
@@ -3497,7 +3546,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //сохраняем сканы
             if (model.ApplicationLetterScanFile != null)
             {
-                if ((int)candidate.Status != (int)EmploymentStatus.PENDING_APPLICATION_LETTER)
+                if ((int)candidate.Status < (int)EmploymentStatus.PENDING_APPLICATION_LETTER || (int)candidate.Status == (int)EmploymentStatus.PENDING_PREV_APPROVAL_BY_SECURITY)
                 {
                     error = "Нельзя добавить скан заявления без проверки департамента безопасности!";
                     return;
@@ -3737,11 +3786,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если прицеплен весь указанный перечень, меняем статус у кандидата
             if (EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
             {
-                candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
+                //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
+                if(!candidate.SendTo1C.HasValue)
+                    candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
             }
             else
             {
-                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER && !candidate.SendTo1C.HasValue)
                     candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
             }
 
@@ -4457,6 +4508,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategoryId = viewModel.SpecialityCategoryId;
             entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
+            entity.ReserveCategoryId = viewModel.ReserveCategoryId;
             entity.IsValidate = viewModel.IsValidate;
 
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
@@ -5034,7 +5086,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (PrevApprovalStatus == true)
                         {
                             //entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
-                            entity.Candidate.Status = 0;
+                            //если все вкладки кандидата заполнены до предварительного согласования и сообщения в ДП не было, то проставляем статус для ДП и шлем письмо
+                            if (entity.Candidate.IsScanFinal)
+                            {
+                                if (entity.IsFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
+                                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && 
+                                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
+                                {
+                                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+                                }
+                            }
+                            else
+                                entity.Candidate.Status = 0;
                         }
 
                         if (PrevApprovalStatus == false)
@@ -5054,6 +5117,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         //сообщение тренеру из ДП
                         EmploymentSendEmail(entity.Candidate.User.Id, 4, false);
+                        //если до предварительного согласования анкета была заполнена и поменялся статус на вторую проверку ДБ, шлем письмо.
+                        if(entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
+                            EmploymentSendEmail(entity.Candidate.User.Id, 1, false);
                         return true;
                     }
                     else
@@ -6066,12 +6132,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //так как в данном случае нужно послать сообщение нескольким сотрудникам, то определяем руководителей и подмастерье выше уровнем, собираем ихние адреса в строку
 
                     CurrentLevel = entity.AppointmentCreator.Level.Value;
-                    //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
-                    while (CurrentLevel > 3)
+                    //как показала практика, бывет, что инициатор 2 уровня, он же будет вышестоящим руководством
+                    if (CurrentLevel == 2)
                     {
-                        managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
-                        .Where<User>(x => x.Level == CurrentLevel - 1)
-                        .ToList<User>();
+                        managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true).ToList<User>();
                         foreach (User mu in managers)
                         {
                             if (!string.IsNullOrEmpty(mu.Email))
@@ -6080,11 +6144,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
                             }
                         }
-                        if (managers.Count != 0) break;
-                        CurrentLevel -= 1;
                     }
+                    else  //для смертных
+                    {
+                        //может быть так, что выше уровнем нет никого, по этому нужно идти вверх до 3 уровня (автоматическая привязка), пока не найдем живых
+                        while (CurrentLevel > 3)
+                        {
+                            managers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
+                            .Where<User>(x => x.Level == CurrentLevel - 1)
+                            .ToList<User>();
+                            foreach (User mu in managers)
+                            {
+                                if (!string.IsNullOrEmpty(mu.Email))
+                                {
+                                    //Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + user.Email;//для теста
+                                    Emailaddress += (string.IsNullOrEmpty(Emailaddress) ? "" : ", ") + mu.Email;//рабочая строка
+                                }
+                            }
+                            if (managers.Count != 0) break;
+                            CurrentLevel -= 1;
+                        }
 
-                    
+                    }
 
                     //ручная привязка утверждающего, если нет руководства в автомате и руководитель 3 уровня
                     if (managers.Count == 0)

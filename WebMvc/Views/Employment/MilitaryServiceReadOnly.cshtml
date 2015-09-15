@@ -36,9 +36,15 @@
             </a>
         }
     </div>
+    @*
     <div class="formfield clear">
         @Html.LabelFor(m => m.ReserveCategory)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.ReserveCategory)&nbsp;</span>
+    </div>
+    *@
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.ReserveCategoryId)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.ReserveCategoryId)&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.RankId)<br />
@@ -79,17 +85,7 @@
         <br />
         @Html.LabelFor(m => m.IsReserved)&nbsp;@Html.DisplayFor(m => m.IsReserved)
     </div>
-    <div class="formfield">
-        @Html.LabelFor(m => m.MobilizationTicketNumber)<br />
-        <span class="fakeFormField">@Html.DisplayFor(m => m.MobilizationTicketNumber)&nbsp;</span>
-        @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
-        {
-            <br /><label>Скан мобилизационного талона:</label>
-            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
-                @Model.MobilizationTicketScanAttachmentFilename
-            </a>
-        }
-    </div>
+    
     
     <fieldset class="bordered clear">
     <legend class="level2">Для форм Ф-6 и Ф-18</legend>
@@ -105,6 +101,17 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsAssigned)&nbsp;@Html.DisplayFor(m => m.IsAssigned)
+        </div>
+        <div class="formfield">
+        @Html.LabelFor(m => m.MobilizationTicketNumber)&nbsp;
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MobilizationTicketNumber)&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+        {
+            <br /><label>Скан мобилизационного талона:</label>
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.MobilizationTicketScanAttachmentFilename
+            </a>
+        }
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.ConscriptionStatus)<br />

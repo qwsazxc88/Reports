@@ -35,7 +35,9 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 up.Name as Position,
                                 case when v.CreatorId != v.UserId then crUser.Name else N'' end as ManagerName,
-                                dep.Name as Dep7Name,
+                                case when v.DepartmentId is not null then fDep.Name
+                                    else dep.Name 
+                                end as Dep7Name,
                                 v.Number as RequestNumber,
                                 v.FiredUserName as FiredUserName,
                                 v.FiredUserSurname as FiredUserSurname,
@@ -68,7 +70,9 @@ namespace Reports.Core.Dao.Impl
                                     else N''
                                 end as Status,
                                 v.Address as address,
-                                dep3.Name as Dep3Name,
+                                case when v.DepartmentId is not null then fDep3.Name
+                                    else dep3.Name 
+                                end as Dep3Name,
                                 L.Name as ProdTimeName,
                                 O.Name as PeriodName
                                 from dbo.HelpServiceRequest v
@@ -80,6 +84,8 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 LEFT join dbo.Department dep on u.DepartmentId = dep.Id
                                 inner join dbo.Users currentUser on currentUser.Id = :userId
+                                left join [dbo].[Department] fDep ON v.DepartmentId=fDep.id
+                                left join [dbo].[Department] fDep3 ON fDep.[Path] like fDep3.[Path]+N'%' and fDep3.ItemLevel = 3
                                 LEFT JOIN [dbo].[NoteType] as NT ON v.NoteId=NT.Id
                                 LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
@@ -161,6 +167,21 @@ namespace Reports.Core.Dao.Impl
                 .SetResultTransformer(Transformers.AliasToBean(typeof(HelpServiceRequestDto)))
                 .List<HelpServiceRequestDto>().ToList();
             return documentList;
+        }
+        public virtual string GetDepartmentWhere(string whereString, int departmentId)
+        {
+            if (departmentId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format(@"(exists 
+                    (select d1.ID from dbo.Department d
+                     inner join dbo.Department d1 on d1.Path like d.Path +'%'
+                     and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
+                     and d.Id = {0}) or v.DepartmentId={0})"
+                    , departmentId);
+            }
+            return whereString;
         }
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
                     int sortedBy,
@@ -307,7 +328,8 @@ namespace Reports.Core.Dao.Impl
                                 select distinct employee.Id from Users employee
                                     left join [dbo].[Users] employeeManagerAccount
                                     on (employeeManagerAccount.RoleId & 4) > 0
-                                        and employeeManagerAccount.Login = u.Login+N'R'
+                                        --закомментарил добавление R к логину, так как руководитель уже имеет это в конце своего логина
+                                        and employeeManagerAccount.Login = u.Login--+N'R'
                                         and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                       on employee.DepartmentId = employeeDept.Id

@@ -18,9 +18,11 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using System.Web.Routing;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 namespace WebMvc.Controllers
 {
+    [PreventSpam]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
@@ -78,6 +80,22 @@ namespace WebMvc.Controllers
             if(model.HasErrors)
                 ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
+        }
+
+        public ActionResult MissionOrderFullDepts()
+        {
+            return View();                 
+        }
+        public ContentResult GetFullDepts(int DepartmentId, int Status, string UserName)
+        {
+            var result=RequestBl.GetManualDeductionDocs(DepartmentId, Status, UserName);
+            string  content = JsonConvert.SerializeObject(result);
+            return  Content(content);
+        }
+        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        {
+            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment);
+            return Json(new { status = "Ok" });
         }
         /// <summary>
         /// Гостиницы.
@@ -768,12 +786,12 @@ namespace WebMvc.Controllers
             var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
             return PartialView("AnalyticalStatementsPartial", Docs);
         }
-        [HttpGet] 
+        
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director)]
-        public ActionResult AnalyticalStatementDetails(int id)
+        public ActionResult AnalyticalStatementDetails(AnalyticalStatementDetailsModel model)
         {
-            var model = RequestBl.GetAnalyticalStatementDetails(id);
+            model = RequestBl.GetAnalyticalStatementDetails(model);
             return View(model);
         }
         [HttpGet]

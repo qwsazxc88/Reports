@@ -364,8 +364,24 @@ namespace Reports.Core.Dao.Impl
         #endregion
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
-        } 
-
+        }
+        public IList<TEntity> Find(Func<TEntity, bool> predicate)
+        {
+            var result= Session.Query<TEntity>().Where(predicate);
+            return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
+        }
+        public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
+        {
+            var result = Session.Query<TEntity>().Where(predicate);
+            if (result != null )
+            {
+                foreach (var el in result)
+                {
+                    action(el);
+                    SaveAndFlush(el);
+                }
+            }            
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -774,6 +790,16 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public virtual string GetDismDateWhere(string whereString, string DismDate)
+        {
+            
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format(@"Dism.SendTo1C is null or Dism.SendTo1C >'{0}' "
+                    , DismDate);
+            
+            return whereString;
+        }
         public virtual string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)
@@ -784,7 +810,7 @@ namespace Reports.Core.Dao.Impl
                     (select d1.ID from dbo.Department d
                      inner join dbo.Department d1 on d1.Path like d.Path +'%'
                      and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
-                     and d.Id = {0}) "
+                     and d.Id = {0})"
                     , departmentId);
             }
             return whereString;

@@ -31,6 +31,8 @@ namespace Reports.Core.Dao
     {
         TEntity Load(string id);
         TEntity FindById(string id);
+        void Update(Func<TEntity, bool> predicate, Action<TEntity> action);
+        IList<TEntity> Find(Func<TEntity, bool> predicate);
         IList<TEntity> LoadAll();
         IList<TEntity> LoadAllSorted();
 //        bool IsSameNameEntityExists(Type type,int entityId, string name);

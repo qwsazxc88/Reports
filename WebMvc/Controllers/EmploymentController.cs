@@ -2037,6 +2037,9 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("DateOfBirth", "Некорректная дата рождения.");
             }
 
+            if (!model.PlanRegistrationDate.HasValue)
+                ModelState.AddModelError("PlanRegistrationDate", "Укажите планируемую дату приема!");
+
             return ModelState.IsValid;
         }
 
@@ -2200,6 +2203,13 @@ namespace WebMvc.Controllers
 
             if (!model.IsMSDraft)
             {
+                if (model.IsLiableForMilitaryService)
+                {
+                    if (!model.ReserveCategoryId.HasValue)
+                    {
+                        ModelState.AddModelError("ReserveCategoryId", "Укажите категорию запаса!");
+                    }
+                }
                 //MilitaryServiceModel mt = EmploymentBl.GetMilitaryServiceModel(model.UserId);
                 //if (model.IsLiableForMilitaryService)
                 //{
@@ -2334,13 +2344,21 @@ namespace WebMvc.Controllers
             if (model.PositionId == 0)
                 ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
 
-            if (!model.SalaryMultiplier.HasValue)
-                ModelState.AddModelError("SalaryMultiplier", "Укажите ставку!");
+            if (!model.SalaryBasis.HasValue)
+                ModelState.AddModelError("SalaryBasis", "Укажите должностной оклад!");
+            else
+            {
+                if (model.SalaryBasis.Value <= 0)
+                {
+                    ModelState.AddModelError("SalaryBasis", "Должностной оклад должен иметь значение больше нуля!");
+                }
+            }
+
             if (!model.SalaryMultiplier.HasValue)
                 ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");
             else
             {
-                if (model.SalaryMultiplier.Value == 0)
+                if (model.SalaryMultiplier.Value <= 0)
                     ModelState.AddModelError("SalaryMultiplier", "Ставка должна иметь значение больше нуля!");
                 if (model.SalaryMultiplier.Value > 1)
                     ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
@@ -2355,12 +2373,23 @@ namespace WebMvc.Controllers
                 {
                     if (DateTime.Today >= new DateTime(2015, 8, 1).Date)
                     {
-                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < DateTime.Today)
-                            ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                        if (model.RegistrationDate.Value.Year != DateTime.Today.Year || model.RegistrationDate.Value.Month != DateTime.Today.Month)
+                        {
+                            //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
+                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5)
+                            {
+                                ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
+                            }
+                            else //if (model.RegistrationDate.Value.Year == DateTime.Today.Year && model.RegistrationDate.Value.Month == DateTime.Today.Month)
+                            {
+                                if (model.RegistrationDate.Value < DateTime.Today && (model.RegistrationDate.Value.AddMonths(1).Year != DateTime.Today.Year || model.RegistrationDate.Value.AddMonths(1).Month != DateTime.Today.Month))
+                                    ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
+                            }
+                        }
                     }
                     else
                     {
-                        if (model.RegistrationDate.HasValue && model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
+                        if (model.RegistrationDate.Value < Convert.ToDateTime("01/04/2015") /*< DateTime.Today*/)//на время теста
                             ModelState.AddModelError("RegistrationDate", "Дата оформления не должна быть меньше текущей даты!");
                     }
                 }

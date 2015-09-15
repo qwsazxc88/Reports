@@ -132,6 +132,11 @@ namespace WebMvc.Controllers
             //if(model.ShowStaff)model.Reasons = model.Reasons.Where(x => x.Id != 6).ToList();
             return View(model);
         }
+        public JsonResult CopyAppointmentReport(int AppointmentNumber,int AppointmentReportId)
+        {
+            var res = AppointmentBl.CopyAppointmentReport(AppointmentNumber, AppointmentReportId);
+            return Json(res);
+        }
         public JsonResult CheckUserDismissal(int userId)
         {
             var res=AppointmentBl.CheckUserDismissal(userId);
@@ -244,11 +249,13 @@ namespace WebMvc.Controllers
             int depLevel;
             if (!AppointmentBl.CheckDepartment(model, out depLevel))
             {
-                if(depLevel != AppointmentBl.GetRequeredDepartmentLevel())
-                    ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel, 
+                if (depLevel != AppointmentBl.GetRequeredDepartmentLevel())
+                    ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel,
                         AppointmentBl.GetRequeredDepartmentLevel()));
                 else
+                {
                     ModelState.AddModelError("SelectDepartmentBtn", StrInvalidDepartment);
+                }
             }
             return ModelState.IsValid;
         }
@@ -391,6 +398,10 @@ namespace WebMvc.Controllers
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
+            }
+            else
+            {
+                model = AppointmentBl.GetAppointmentReportEditModel(model.Id);                
             }
             return View(model);
         }

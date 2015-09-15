@@ -567,7 +567,7 @@
         }
          function setTargetBtnState()
         {
-            if($("#IsEditable").val() == "False")
+            if($("#IsEditable").val() == "False" && $("#IsTicketsEditable").val()=="false")
                 $(".targetBtn").hide();
             else
             {
