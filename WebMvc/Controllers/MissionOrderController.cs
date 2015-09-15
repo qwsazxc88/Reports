@@ -786,12 +786,12 @@ namespace WebMvc.Controllers
             var Docs = RequestBl.GetAnalyticalStatements(model.UserName,model.DepartmentId,model.BeginDate,model.EndDate,model.Number,model.SortBy,model.SortDescending);
             return PartialView("AnalyticalStatementsPartial", Docs);
         }
-        [HttpGet] 
+        
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator |
         UserRole.Director)]
-        public ActionResult AnalyticalStatementDetails(int id)
+        public ActionResult AnalyticalStatementDetails(AnalyticalStatementDetailsModel model)
         {
-            var model = RequestBl.GetAnalyticalStatementDetails(id);
+            model = RequestBl.GetAnalyticalStatementDetails(model);
             return View(model);
         }
         [HttpGet]
