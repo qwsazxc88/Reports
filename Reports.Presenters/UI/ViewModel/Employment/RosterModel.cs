@@ -36,6 +36,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
+        [Display(Name = "Период приема с")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EmploymentDateBegin { get; set; }
+        [Display(Name = "по")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EmploymentDateEnd { get; set; }
+
+
         [Display(Name = "Номер заявки")]
         public int? CandidateId { get; set; }
 
