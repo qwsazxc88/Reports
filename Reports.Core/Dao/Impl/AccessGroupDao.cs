@@ -176,34 +176,34 @@ namespace Reports.Core.Dao.Impl
             switch (sortedBy)
             {
                 case 1:
-                    orderBy = "UserName";
+                    orderBy = "ag.UserName";
                     break;
                 case 2:
-                    orderBy = "PositionName";
+                    orderBy = "ag.PositionName";
                     break;
                 case 3:
-                    orderBy = "Dep3Name";
+                    orderBy = "ag.Dep3Name";
                     break;
                 case 4:
-                    orderBy = "Dep7Name";
+                    orderBy = "ag.Dep7Name";
                     break;
                 case 5:
-                    orderBy = "AccessGroupName";
+                    orderBy = "ag.AccessGroupName";
                     break;
                 case 6:
-                    orderBy = "Email";
+                    orderBy = "ag.Email";
                     break;
                 case 7:
-                    orderBy = "EndDate";
+                    orderBy = "ag.EndDate";
                     break;
                 case 8:
-                    orderBy = "Manager6";
+                    orderBy = "ag.Manager6";
                     break;
                 case 9:
-                    orderBy = "Manager5";
+                    orderBy = "ag.Manager5";
                     break;
                 case 10:
-                    orderBy = "Manager4";
+                    orderBy = "ag.Manager4";
                     break;
                 case 11:
                     orderBy = "SaldoPrimary";
@@ -212,10 +212,10 @@ namespace Reports.Core.Dao.Impl
                     orderBy = "SaldoAdditional";
                     break;
                 case 13:
-                    orderBy = "DateAccept";
+                    orderBy = "u.DateAccept";
                     break;
                 default:
-                    orderBy = "UserName";
+                    orderBy = "ag.UserName";
                     break;
             }
 

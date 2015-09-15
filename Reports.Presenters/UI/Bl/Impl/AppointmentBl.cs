@@ -837,12 +837,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             User currUser;
             if ((CurrentUser.UserRole & UserRole.Manager) > 0) currUser = UserDao.Load(CurrentUser.Id);
             else currUser = UserDao.Load(model.UserId);// если еще раз тут будешь, вспомни, что Улькина может создавать за сотрудника
-            
+            if (CurrentUser.UserRole == UserRole.StaffManager) return true;
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
             List<DepartmentDto> departments;
+            
             if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
             switch (currUser.Level)
             {

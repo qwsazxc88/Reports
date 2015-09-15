@@ -3786,11 +3786,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если прицеплен весь указанный перечень, меняем статус у кандидата
             if (EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
             {
-                candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
+                //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
+                if(!candidate.SendTo1C.HasValue)
+                    candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
             }
             else
             {
-                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER && !candidate.SendTo1C.HasValue)
                     candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
             }
 
