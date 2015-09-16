@@ -1162,6 +1162,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult VacationEdit(VacationEditModel model)
          {
+             string source = Newtonsoft.Json.JsonConvert.SerializeObject(Request.Params);
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
@@ -1171,7 +1172,15 @@ namespace WebMvc.Controllers
              {
                  model.IsApproved = false;
                  model.IsApprovedForAll = false;
-                 RequestBl.ReloadDictionariesToModel(model);
+                 try
+                 {
+                     RequestBl.ReloadDictionariesToModel(model);
+                 }
+                 catch(Exception ex)
+                 {
+                     string message = string.Format("{0}{1}{2}", source, Environment.NewLine, ex.Message);
+                     RequestBl.sendEmail("baranov@ruscount.ru", "Ашипка которую ищем", message);
+                 }
                  return View(model);
              }
 
