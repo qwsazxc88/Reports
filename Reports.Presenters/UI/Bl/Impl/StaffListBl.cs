@@ -318,6 +318,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //Управленческие реквизиты
                 model.NameShort = string.Empty;
+                model.DepCode = string.Empty;
+                model.PrevDepCode = string.Empty;
                 model.ReasonId = 0;
                 model.FactAddressId = 0;
                 model.DepStatus = string.Empty;
@@ -427,6 +429,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
                 model.DMDetailId = dmd.Id;
                 model.NameShort = dmd.NameShort;
+                model.DepCode = dmd.DepCode; 
+                model.PrevDepCode = dmd.PrevDepCode;
                 model.ReasonId = dmd.DepartmentReasons != null ? dmd.DepartmentReasons.Id : 0;
                 if (dmd.FactAddress != null)
                 {
