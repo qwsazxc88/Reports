@@ -20,7 +20,7 @@
     <property name="OperationMode" length="400" not-null="false"/>
     <property name="BeginIdleDate" not-null="false"/>
     <property name="EndIdleDate" not-null="false"/>
-    <property name="IsRentPlace" not-null="false"/>
+    <many-to-one name="RentPlace" class="StaffDepartmentRentPlace" column="RentPlaceId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace" index="StaffDepartmentManagerDetails_StaffDepartmentRentPlace" not-null="false"/>
     <property name="AgreementDetails" length="250" not-null="false"/>
     <property name="DivisionArea" not-null="false"/>
     <property name="AmountPayment" not-null="false"/>

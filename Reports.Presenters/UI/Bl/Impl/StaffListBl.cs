@@ -174,6 +174,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentCashDeskAvailableDao); }
             set { staffdepartmentCashDeskAvailableDao = value; }
         }
+
+        protected IStaffDepartmentRentPlaceDao staffdepartmentRentPlaceDao;
+        public IStaffDepartmentRentPlaceDao StaffDepartmentRentPlaceDao
+        {
+            get { return Validate.Dependency(staffdepartmentRentPlaceDao); }
+            set { staffdepartmentRentPlaceDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -336,7 +343,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OperationMode = string.Empty;
                 model.BeginIdleDate = null;
                 model.EndIdleDate = null;
-                model.IsRentPlace = false;
+                model.RentPlaceId = 0;
                 model.AgreementDetails = string.Empty;
                 model.DivisionArea = 0;
                 model.AmountPayment = 0;
@@ -460,7 +467,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OperationMode = dmd.OperationMode;
                 model.BeginIdleDate = dmd.BeginIdleDate;
                 model.EndIdleDate = dmd.EndIdleDate;
-                model.IsRentPlace = dmd.IsRentPlace;
+                model.RentPlaceId = dmd.RentPlace != null ? dmd.RentPlace.Id : 0;
                 model.AgreementDetails = dmd.AgreementDetails;
                 model.DivisionArea = dmd.DivisionArea;
                 model.AmountPayment = dmd.AmountPayment;
@@ -656,7 +663,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.OperationMode = model.OperationMode;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
-                dmd.IsRentPlace = model.IsRentPlace;
+                dmd.RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
                 dmd.AgreementDetails = model.AgreementDetails;
                 dmd.DivisionArea = model.DivisionArea;
                 dmd.AmountPayment = model.AmountPayment;
@@ -952,7 +959,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.OperationMode = model.OperationMode;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
-                dmd.IsRentPlace = model.IsRentPlace;
+                dmd.RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
                 dmd.AgreementDetails = model.AgreementDetails;
                 dmd.DivisionArea = model.DivisionArea;
                 dmd.AmountPayment = model.AmountPayment;
@@ -1107,7 +1114,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
                 entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
                 entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
-                entity.DepartmentManagerDetails[0].IsRentPlace = model.IsRentPlace;
+                entity.DepartmentManagerDetails[0].RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
                 entity.DepartmentManagerDetails[0].AgreementDetails = model.AgreementDetails;
                 entity.DepartmentManagerDetails[0].DivisionArea = model.DivisionArea;
                 entity.DepartmentManagerDetails[0].AmountPayment = model.AmountPayment;
@@ -1885,6 +1892,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
             model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
+            model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

@@ -690,6 +690,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentCashDeskAvailableDao>()
                 .ImplementedBy<StaffDepartmentCashDeskAvailableDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRentPlaceDao>()
+                .ImplementedBy<StaffDepartmentRentPlaceDao>()
+                .LifeStyle.Is(type));
         }
         #endregion
 

@@ -23,7 +23,7 @@ namespace Reports.Core.Domain
         public virtual string OperationMode { get; set; }
         public virtual DateTime? BeginIdleDate { get; set; }
         public virtual DateTime? EndIdleDate { get; set; }
-        public virtual bool IsRentPlace { get; set; }
+        public virtual StaffDepartmentRentPlace RentPlace { get; set; }
         public virtual string AgreementDetails { get; set; }
         public virtual decimal? DivisionArea { get; set; }
         public virtual decimal? AmountPayment { get; set; }

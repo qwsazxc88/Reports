@@ -200,8 +200,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Дата конца простоя")]
         public DateTime? EndIdleDate { get; set; }
 
-        [Display(Name = "Признак арендованного помещения")]
-        public bool IsRentPlace { get; set; }
+        [Display(Name = "Арендованное помещение")]
+        public int? RentPlaceId { get; set; }
+        public IList<IdNameDto> RentPlace { get; set; }
 
         [Display(Name = "Реквизиты договора")]
         public string AgreementDetails { get; set; }

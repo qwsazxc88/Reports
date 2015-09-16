@@ -481,7 +481,7 @@ BEGIN
 																						,OperationMode
 																						,BeginIdleDate
 																						,EndIdleDate
-																						,IsRentPlace
+																						,RentPlaceId
 																						,AgreementDetails
 																						,DivisionArea
 																						,AmountPayment
@@ -509,7 +509,7 @@ BEGIN
 					,A.[Режим_работы_офиса_доступа_к_УС]
 					,A.[Дата_начала_простоя_точки]
 					,A.[Дата_возобновления_работы_точки]
-					,case when A.[Арендованное_помещение] = 'Собственность' then 0 else 1 end
+					,F.Id
 					,A.[Реквизиты_договора]
 					,A.[Площадь_подразделения]
 					,A.[Сумма_ежемесячного_платежа]
@@ -527,6 +527,7 @@ BEGIN
 	LEFT JOIN StaffDepartmentReasons as C ON C.Name = A.[Причины_внесения_в_справочник]
 	LEFT JOIN StaffNetShopIdentification as D ON D.Name = A.[Идентификация_сетевого_магазина]
 	LEFT JOIN StaffDepartmentCashDeskAvailable as E ON E.Name = A.[Наличие_кассы]
+	LEFT JOIN StaffDepartmentRentPlace as F ON F.Name = A.[Арендованное_помещение]
 	WHERE A.Id = @Id
 
 	SET @DMDetailId = @@IDENTITY
