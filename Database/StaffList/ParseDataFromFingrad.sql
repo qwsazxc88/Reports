@@ -488,11 +488,11 @@ BEGIN
 																						,Phone
 																						,IsBlocked
 																						,NetShopId
-																						,IsAvailableCash
 																						,IsLegalEntity
 																						,PlanEPCount
 																						,PlanSalaryFund
 																						,Note
+																						,CDAvailableId
 																						,CreatorId)
 	SELECT 1
 					,@DepRequestId
@@ -516,16 +516,17 @@ BEGIN
 					,A.[№_телефона]
 					,case when A.[Блокировка] = 'Действует' then 0 else 1 end
 					,D.Id
-					,case when isnull(A.[Наличие_кассы], 'нет') like '%нет%' then 0 else 1 end
 					,case when A.[Обслуживание_ЮЛ] = 'да' then 1 else 0 end
 					,0
 					,0
 					,A.[Примечание]
+					,E.Id
 					,@CreatorId
 	FROM #TMP as A
 	LEFT JOIN StaffDepartmentTypes as B ON B.Name = A.[Тип_подразделения]
 	LEFT JOIN StaffDepartmentReasons as C ON C.Name = A.[Причины_внесения_в_справочник]
 	LEFT JOIN StaffNetShopIdentification as D ON D.Name = A.[Идентификация_сетевого_магазина]
+	LEFT JOIN StaffDepartmentCashDeskAvailable as E ON E.Name = A.[Наличие_кассы]
 	WHERE A.Id = @Id
 
 	SET @DMDetailId = @@IDENTITY

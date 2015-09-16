@@ -158,6 +158,10 @@ IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS N
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffNetShopIdentification', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffNetShopIdentification]
 GO
@@ -630,11 +634,11 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[Phone] [nvarchar](200) NULL,
 	[IsBlocked] [bit] NULL,
 	[NetShopId] [int] NULL,
-	[IsAvailableCash] [bit] NULL,
 	[IsLegalEntity] [bit] NULL,
 	[PlanEPCount] [int] NULL,
 	[PlanSalaryFund] [numeric](18, 2) NULL,
 	[Note] [nvarchar](250) NULL,
+	[CDAvailableId] [int] NULL,
 	[CreatorId] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
@@ -861,7 +865,33 @@ GO
 
 
 
+if OBJECT_ID (N'StaffDepartmentCashDeskAvailable', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentCashDeskAvailable]
+GO
+CREATE TABLE [dbo].[StaffDepartmentCashDeskAvailable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](400) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentCashDeskAvailable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentCashDeskAvailable] ADD  CONSTRAINT [DF_StaffDepartmentCashDeskAvailable_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable] FOREIGN KEY([CDAvailableId])
+REFERENCES [dbo].[StaffDepartmentCashDeskAvailable] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable]
+GO
+
 ALTER TABLE [dbo].[StaffNetShopIdentification] ADD  CONSTRAINT [DF_StaffNetShopIdentification_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1429,6 +1459,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCashDeskAvailable', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCashDeskAvailable', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCashDeskAvailable', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов наличия кассы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCashDeskAvailable'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id вида наличия кассы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'CDAvailableId'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffNetShopIdentification', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -1718,9 +1763,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер телефона
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак блокировки подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsBlocked'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак наличия кассы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsAvailableCash'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак обслуживания юридических лиц' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsLegalEntity'
@@ -2354,6 +2396,15 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentCashDeskAvailable
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'-')
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'да')
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'есть касса обслуживания клиентов')
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'нет')
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'нет кассы')
+INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'только касса пересчета')
+
+
 --StaffExtraCharges
 INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'4f4a4697-cc10-11dd-87ea-00304861d218', N'Надбавка за выслугу лет рабочим и служащим#1114')
 INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'4f4a4696-cc10-11dd-87ea-00304861d218', N'Надбавка за квалификацию#1115')
