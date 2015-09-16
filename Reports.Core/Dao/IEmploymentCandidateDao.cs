@@ -7,6 +7,26 @@ namespace Reports.Core.Dao
 {
     public interface IEmploymentCandidateDao : IDao<EmploymentCandidate>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="role"></param>
+        /// <param name="departmentId"></param>
+        /// <param name="statusId"></param>
+        /// <param name="beginDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="CompleteDate"></param>
+        /// <param name="EmploymentDateBegin">Начало периода даты приема</param>
+        /// <param name="EmploymentDateEnd">Конец периода даты приема</param>
+        /// <param name="userName"></param>
+        /// <param name="ContractNumber1C"></param>
+        /// <param name="CandidateId"></param>
+        /// <param name="AppointmentReportNumber"></param>
+        /// <param name="AppointmentNumber"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortDescending"></param>
+        /// <returns></returns>
         IList<CandidateDto> GetCandidates(int userId,
                 UserRole role,
                 int departmentId,
@@ -14,6 +34,8 @@ namespace Reports.Core.Dao
                 DateTime? beginDate,
                 DateTime? endDate,
                 DateTime? CompleteDate,
+                DateTime? EmploymentDateBegin,
+                DateTime? EmploymentDateEnd,
                 string userName,
                 string ContractNumber1C,
                 int CandidateId,
