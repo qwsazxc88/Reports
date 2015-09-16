@@ -158,6 +158,10 @@ IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS N
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable]
 GO
@@ -627,7 +631,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[OperationMode] [nvarchar](400) NULL,
 	[BeginIdleDate] [datetime] NULL,
 	[EndIdleDate] [datetime] NULL,
-	[IsRentPlace] [bit] NULL,
+	[RentPlaceId] [int] NULL,
 	[AgreementDetails] [nvarchar](250) NULL,
 	[DivisionArea] [numeric](18, 2) NULL,
 	[AmountPayment] [numeric](18, 2) NULL,
@@ -881,7 +885,35 @@ CREATE TABLE [dbo].[StaffDepartmentCashDeskAvailable](
 GO
 
 
+
+if OBJECT_ID (N'StaffDepartmentRentPlace', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentRentPlace]
+GO
+CREATE TABLE [dbo].[StaffDepartmentRentPlace](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](400) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentRentPlace] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace] FOREIGN KEY([RentPlaceId])
+REFERENCES [dbo].[StaffDepartmentRentPlace] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRentPlace] ADD  CONSTRAINT [DF_StaffDepartmentRentPlace_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentCashDeskAvailable] ADD  CONSTRAINT [DF_StaffDepartmentCashDeskAvailable_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1459,6 +1491,18 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRentPlace', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRentPlace', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRentPlace', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Арендованное помещение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRentPlace'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentCashDeskAvailable', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -1747,7 +1791,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата конца простоя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'EndIdleDate'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак арендованного помещения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'IsRentPlace'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Арендованное помещение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'RentPlaceId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Реквизиты договора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'AgreementDetails'
@@ -2396,6 +2440,14 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentRentPlace
+INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'-')
+INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'Аренда')
+INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'нет договора (в рамках соглашения с ТСП)')
+INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'нет договора аренды (не требуется)')
+INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'Собственность')
+
+
 --StaffDepartmentCashDeskAvailable
 INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'-')
 INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'да')

@@ -488,19 +488,11 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsRentPlace)
+                            @Html.LabelFor(m => m.RentPlaceId)
                         </td>
                         <td>
-                            <div id="IsRentPlaceContainer">
-                                @Html.RadioButtonFor(m => m.IsRentPlace, true, new { @id = "IsRentPlaceTrue" })<label id="lblIsRentPlaceTrue" for="IsRentPlaceTrue" @if (Model.IsRentPlace)
-                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                    else
-                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsRentPlace, false, new { @id = "IsRentPlaceFalse" })<label id="lblIsRentPlaceFalse" for="IsRentPlaceFalse" @if (!Model.IsRentPlace)
-                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                        else
-                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
+                            @Html.DropDownListFor(model => model.RentPlaceId, new SelectList(Model.RentPlace, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.RentPlaceId)
                         </td>
                     </tr>
                     @*
@@ -816,7 +808,6 @@
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
         $('#IsPlanContainer').buttonset();
-        $('#IsRentPlaceContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
         $('#IsLegalEntityContainer').buttonset();
 
@@ -858,16 +849,6 @@
         $("#IsPlanFalse").click(function () {
             $("#lblIsPlanFalse").css("border-color", "red");
             $("#lblIsPlanTrue").css("border-color", "silver");
-        });
-
-
-        $("#IsRentPlaceTrue").click(function () {
-            $("#lblIsRentPlaceTrue").css("border-color", "red");
-            $("#lblIsRentPlaceFalse").css("border-color", "silver");
-        });
-        $("#IsRentPlaceFalse").click(function () {
-            $("#lblIsRentPlaceFalse").css("border-color", "red");
-            $("#lblIsRentPlaceTrue").css("border-color", "silver");
         });
 
 

@@ -313,6 +313,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentReasonsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRentPlaceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentTaxDetailsDao.cs" />
@@ -337,6 +338,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentReasonsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRentPlaceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRequestDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentRequestTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentTaxDetailsDao.cs" />
@@ -621,6 +623,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentOperationModes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperations.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentReasons.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentRentPlace.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentRequest.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentRequestTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentTaxDetails.cs" />
@@ -1312,6 +1315,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRentPlace.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentCashDeskAvailable.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffNetShopIdentification.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentReasons.hbm.xml" />
