@@ -589,7 +589,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsManagerEditable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsManagerEditable && (model.Id == 0 || (model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false));//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
                     
