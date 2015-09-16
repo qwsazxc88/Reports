@@ -7,7 +7,6 @@
 @using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
 {
     @Html.HiddenFor(m => m.Id)
-    @*<input type="hidden" name="Id" value="@Model.Id" />*@
     @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
@@ -328,8 +327,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>@Html.LabelFor(m => m.DepCode)</td>
+                        <td>@Html.DisplayFor(m => m.DepCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PrevDepCode)</td>
+                        <td>@Html.DisplayFor(m => m.PrevDepCode)</td>
+                    </tr>
+                    <tr>
                         <td>
-                            @Html.LabelFor(m => m.ReasonId):
+                            @Html.LabelFor(m => m.ReasonId)
                         </td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
@@ -361,6 +368,7 @@
                             <label id="FactAddressLabel">@Model.FactAddress</label>
                         </td>
                     </tr>
+                    @*
                     <tr>
                         <td>@Html.LabelFor(m => m.DepStatus)</td>
                         <td>
@@ -368,6 +376,7 @@
                             @Html.ValidationMessageFor(model => model.DepStatus)
                         </td>
                     </tr>
+                    *@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.DepTypeId):
@@ -494,6 +503,7 @@
                             </div>
                         </td>
                     </tr>
+                    @*
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.AgreementDetails)
@@ -503,6 +513,7 @@
                             @Html.ValidationMessageFor(model => model.AgreementDetails)
                         </td>
                     </tr>
+                    *@
                     <tr>
                         <td>@Html.LabelFor(m => m.DivisionArea)</td>
                         <td>

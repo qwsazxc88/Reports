@@ -1,4 +1,7 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
+use WebAppTest
+go
+
 SET NOCOUNT ON
 --select * from Fingrag_csv 
 /*
@@ -546,7 +549,7 @@ BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
 			SELECT 1, @DMDetailId, 3, [Код_Инверсия], @CreatorId FROM #TMP WHERE Id = @Id
 		END
-
+		/*
 		IF (SELECT [Код_ХД] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
@@ -558,17 +561,20 @@ BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
 			SELECT 1, @DMDetailId, 5, [Код_Террасофт], @CreatorId FROM #TMP WHERE Id = @Id
 		END
+		--в в следующих кусках уменьшил на 2 значение id из справочника совместимых программ
+		--если нужно раскомментарить этот кусок, то ниже значение id нужно увеличить на 2
+		*/
 
 		IF (SELECT [Код_ФЕС] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
-			SELECT 1, @DMDetailId, 6, [Код_ФЕС], @CreatorId FROM #TMP WHERE Id = @Id
+			SELECT 1, @DMDetailId, 4, [Код_ФЕС], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		IF (SELECT [СКБ_GE] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
-			SELECT 1, @DMDetailId, 7, [СКБ_GE], @CreatorId FROM #TMP WHERE Id = @Id
+			SELECT 1, @DMDetailId, 5, [СКБ_GE], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		
