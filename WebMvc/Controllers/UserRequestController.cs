@@ -1162,7 +1162,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult VacationEdit(VacationEditModel model)
          {
-             string source = Newtonsoft.Json.JsonConvert.SerializeObject(Request.Params);
+             string source = Newtonsoft.Json.JsonConvert.SerializeObject(model);
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
