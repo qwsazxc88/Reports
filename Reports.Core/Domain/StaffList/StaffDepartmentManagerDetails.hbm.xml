@@ -27,11 +27,11 @@
     <property name="Phone" length="20" not-null="false"/>
     <property name="IsBlocked" not-null="false"/>
     <many-to-one name="NetShopIdentification" class="StaffNetShopIdentification" column="NetShopId" foreign-key="FK_StaffDepartmentManagerDetails_StaffNetShopIdentification" index="StaffDepartmentManagerDetails_StaffNetShopIdentification" not-null="false"/>
-    <property name="IsAvailableCash" not-null="false"/>
     <property name="IsLegalEntity" not-null="false"/>
     <property name="PlanEPCount" not-null="false"/>
     <property name="PlanSalaryFund" precision="19" scale="2" not-null="false"/>
     <property name="Note" length="250" not-null="false"/>
+    <many-to-one name="CashDeskAvailable" class="StaffDepartmentCashDeskAvailable" column="CDAvailableId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" index="StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>

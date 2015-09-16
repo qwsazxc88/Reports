@@ -225,9 +225,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int? NetShopId { get; set; }
         public IList<IdNameDto> NetShopTypes { get; set; }
 
-        [Display(Name = "Признак наличия кассы")]
-        public bool IsAvailableCash { get; set; }
-
         [Display(Name = "Операции")]
         public IList<DepOperationDto> Operations { get; set; }
 
@@ -245,6 +242,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Примечание")]
         public string Note { get; set; }
+
+        [Display(Name = "Наличие кассы")]
+        public int? CDAvailableId { get; set; }
+        public IList<IdNameDto> CashDeskAvailables { get; set; }
         #endregion
 
         #region Служебные поля

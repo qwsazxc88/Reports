@@ -30,11 +30,11 @@ namespace Reports.Core.Domain
         public virtual string Phone { get; set; }
         public virtual bool IsBlocked { get; set; }
         public virtual StaffNetShopIdentification NetShopIdentification { get; set; }
-        public virtual bool IsAvailableCash { get; set; }
         public virtual bool IsLegalEntity { get; set; }
         public virtual int PlanEPCount { get; set; }
         public virtual decimal PlanSalaryFund { get; set; }
         public virtual string Note { get; set; }
+        public virtual StaffDepartmentCashDeskAvailable CashDeskAvailable { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }

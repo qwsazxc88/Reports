@@ -594,19 +594,11 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsAvailableCash)
+                            @Html.LabelFor(m => m.CDAvailableId)
                         </td>
                         <td>
-                            <div id="IsAvailableCashContainer">
-                                @Html.RadioButtonFor(m => m.IsAvailableCash, true, new { @id = "IsAvailableCashTrue" })<label id="lblIsAvailableCashTrue" for="IsAvailableCashTrue" @if (Model.IsAvailableCash)
-                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                                                    else
-                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsAvailableCash, false, new { @id = "IsAvailableCashFalse" })<label id="lblIsAvailableCashFalse" for="IsAvailableCashFalse" @if (!Model.IsAvailableCash)
-                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                                                        else
-                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
+                            @Html.DropDownListFor(model => model.CDAvailableId, new SelectList(Model.CashDeskAvailables, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.CDAvailableId)
                         </td>
                     </tr>
                     <tr>
@@ -826,7 +818,6 @@
         $('#IsPlanContainer').buttonset();
         $('#IsRentPlaceContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
-        $('#IsAvailableCashContainer').buttonset();
         $('#IsLegalEntityContainer').buttonset();
 
 
@@ -887,16 +878,6 @@
         $("#IsBlockedFalse").click(function () {
             $("#lblIsBlockedFalse").css("border-color", "red");
             $("#lblIsBlockedTrue").css("border-color", "silver");
-        });
-
-
-        $("#IsAvailableCashTrue").click(function () {
-            $("#lblIsAvailableCashTrue").css("border-color", "red");
-            $("#lblIsAvailableCashFalse").css("border-color", "silver");
-        });
-        $("#IsAvailableCashFalse").click(function () {
-            $("#lblIsAvailableCashFalse").css("border-color", "red");
-            $("#lblIsAvailableCashTrue").css("border-color", "silver");
         });
 
 

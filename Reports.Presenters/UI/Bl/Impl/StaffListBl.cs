@@ -167,6 +167,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffnetshopIdentificationDao); }
             set { staffnetshopIdentificationDao = value; }
         }
+
+        protected IStaffDepartmentCashDeskAvailableDao staffdepartmentCashDeskAvailableDao;
+        public IStaffDepartmentCashDeskAvailableDao StaffDepartmentCashDeskAvailableDao
+        {
+            get { return Validate.Dependency(staffdepartmentCashDeskAvailableDao); }
+            set { staffdepartmentCashDeskAvailableDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -324,7 +331,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FactAddressId = 0;
                 model.DepStatus = string.Empty;
                 model.DepTypeId = 0;
-
                 model.OpenDate = null;
                 model.CloseDate = null;
                 model.OperationMode = string.Empty;
@@ -335,15 +341,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DivisionArea = 0;
                 model.AmountPayment = 0;
                 model.Phone = string.Empty;
-
                 model.IsBlocked = false;
                 model.NetShopId = 0;
-                model.IsAvailableCash = false;
-
                 model.IsLegalEntity = false;
-
                 model.PlanEPCount = 0;
                 model.PlanSalaryFund = 0; model.Note = string.Empty;
+                model.CDAvailableId = 0;
 
                 LoadDictionaries(model);
 
@@ -464,11 +467,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Phone = dmd.Phone;
                 model.IsBlocked = dmd.IsBlocked;
                 model.NetShopId = dmd.NetShopIdentification != null ? dmd.NetShopIdentification.Id : 0;
-                model.IsAvailableCash = dmd.IsAvailableCash;
                 model.IsLegalEntity = dmd.IsLegalEntity;
                 model.PlanEPCount = dmd.PlanEPCount;
                 model.PlanSalaryFund = dmd.PlanSalaryFund;
                 model.Note = dmd.Note;
+                model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
 
                 LoadDictionaries(model);
 
@@ -660,7 +663,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
                 dmd.NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
-                dmd.IsAvailableCash = model.IsAvailableCash;
+                dmd.CashDeskAvailable = model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
                 dmd.IsLegalEntity = model.IsLegalEntity;
                 dmd.PlanEPCount = model.PlanEPCount;
                 dmd.PlanSalaryFund = model.PlanSalaryFund;
@@ -956,7 +959,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
                 dmd.NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
-                dmd.IsAvailableCash = model.IsAvailableCash;
+                dmd.CashDeskAvailable = model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
                 dmd.IsLegalEntity = model.IsLegalEntity;
                 dmd.PlanEPCount = model.PlanEPCount;
                 dmd.PlanSalaryFund = model.PlanSalaryFund;
@@ -1111,7 +1114,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].Phone = model.Phone;
                 entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
                 entity.DepartmentManagerDetails[0].NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
-                entity.DepartmentManagerDetails[0].IsAvailableCash = model.IsAvailableCash;
+                entity.DepartmentManagerDetails[0].CashDeskAvailable = model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
                 entity.DepartmentManagerDetails[0].IsLegalEntity = model.IsLegalEntity;
                 entity.DepartmentManagerDetails[0].PlanEPCount = model.PlanEPCount;
                 entity.DepartmentManagerDetails[0].PlanSalaryFund = model.PlanSalaryFund;
@@ -1881,6 +1884,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
+            model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

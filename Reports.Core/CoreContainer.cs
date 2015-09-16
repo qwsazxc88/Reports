@@ -681,6 +681,9 @@ namespace Reports.Core
             Register(Component.For<IStaffNetShopIdentificationDao>()
                 .ImplementedBy<StaffNetShopIdentificationDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentCashDeskAvailableDao>()
+                .ImplementedBy<StaffDepartmentCashDeskAvailableDao>()
+                .LifeStyle.Is(type));
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
