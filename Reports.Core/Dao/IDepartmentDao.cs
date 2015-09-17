@@ -34,10 +34,10 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         int DepPositionCount(int Id);
         /// <summary>
-        /// Подразделение с полями из финграда.
+        /// Достаем уровень подразделений с полями из финграда.
         /// </summary>
-        /// <param name="Id">Id подразделения</param>
+        /// <param name="Id">Id родительского подразделения</param>
         /// <returns></returns>
-        StaffListDepartmentDto DepFingradName(int Id);
+        IList<StaffListDepartmentDto> DepFingradName(string Id);
     }
 }
