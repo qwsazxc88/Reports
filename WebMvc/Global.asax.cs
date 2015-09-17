@@ -233,12 +233,8 @@ namespace WebMvc
         protected void Application_Error(object sender, EventArgs e)
         {
             Exception ex = Server.GetLastError();
-            string source = "";
-            using (StreamReader reader = new StreamReader(Request.InputStream))
-            {
-                source += reader.ReadToEnd();
-                reader.Close();                    
-            }
+            string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
+            
             var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
             string usrname = "";
             if (usr != null)

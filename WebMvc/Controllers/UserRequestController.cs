@@ -1157,6 +1157,7 @@ namespace WebMvc.Controllers
          {
              //int? userId = new int?();
              VacationEditModel model = RequestBl.GetVacationEditModel(id,userId);
+             ModelState.Clear();
              return View(model);
          }
          [HttpPost]
@@ -1172,15 +1173,9 @@ namespace WebMvc.Controllers
              {
                  model.IsApproved = false;
                  model.IsApprovedForAll = false;
-                 try
-                 {
+                 
                      RequestBl.ReloadDictionariesToModel(model);
-                 }
-                 catch(Exception ex)
-                 {
-                     string message = string.Format("{0}{1}{2}", source, Environment.NewLine, ex.Message);
-                     RequestBl.sendEmail("baranov@ruscount.ru", "Ашипка которую ищем", message);
-                 }
+                
                  return View(model);
              }
 
@@ -1217,6 +1212,7 @@ namespace WebMvc.Controllers
 
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
+             ModelState.Clear();
              UserRole role = AuthenticationService.CurrentUser.UserRole;
              if (model.Id > 0 && fileDto == null)
              {
