@@ -647,7 +647,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
-                    model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
+                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable & true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки  
                     break;
             }
