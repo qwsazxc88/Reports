@@ -176,15 +176,15 @@ namespace Reports.Core.Dao.Impl
         }
 
         /// <summary>
-        /// Подразделение с полями из финграда.
+        /// Достаем уровень подразделений с полями из финграда.
         /// </summary>
-        /// <param name="Id">Id подразделения</param>
+        /// <param name="Id">Id родительского подразделения</param>
         /// <returns></returns>
-        public StaffListDepartmentDto DepFingradName(int Id)
+        public IList<StaffListDepartmentDto> DepFingradName(string Id)
         {
-            return Session.CreateSQLQuery(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode
+            return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
                                             FROM vwStaffListDepartment as A
-                                            WHERE A.Id = :Id")
+                                            WHERE {0} ORDER BY Priority, Name", (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id)))
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("Code", NHibernateUtil.String)
                 .AddScalar("Name", NHibernateUtil.String)
@@ -197,9 +197,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DepFingradName", NHibernateUtil.String)
                 .AddScalar("DepFingradNameComment", NHibernateUtil.String)
                 .AddScalar("FinDepPointCode", NHibernateUtil.String)
-                .SetInt32("Id", Id)
-                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffListDepartmentDto))).UniqueResult<StaffListDepartmentDto>();
-                //.List<StaffListDepartmentDto>();
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffListDepartmentDto))).List<StaffListDepartmentDto>();
         }
     }
 }
