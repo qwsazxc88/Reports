@@ -585,6 +585,11 @@ namespace Reports.Core
                     .Instance(SessionFactory)
                     .LifeStyle.Is(LifestyleType.Singleton));
 			//Kernel.AddComponentInstance("ISessionFactory", typeof(ISessionFactory), SessionFactory);
+
+            Register(Component.For<IKladrDao>()
+                .ImplementedBy<KladrDao>()
+                .LifeStyle.Is(type));
+
             Register(Component.For(typeof(INoteTypeDao))
                 .ImplementedBy<NoteTypeDao>()
                 .LifeStyle.Is(type));
@@ -687,6 +692,7 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentRentPlaceDao>()
                 .ImplementedBy<StaffDepartmentRentPlaceDao>()
                 .LifeStyle.Is(type));
+
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
