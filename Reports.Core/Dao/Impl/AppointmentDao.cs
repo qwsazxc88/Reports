@@ -740,7 +740,16 @@ namespace Reports.Core.Dao.Impl
                                     where uC.Id = {0}
                                     and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
                                 )
-                                ", currentUser.Id);
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.ManualRoleRecord mrr on  (mrr.UserId = uC.[Id] and mrr.TargetDepartmentId > 0)
+                                    inner join dbo.Department dc on dc.Id = mrr.TargetDepartmentId
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel <= crDep.ItemLevel
+                                )    
+                            ", currentUser.Id);
                             break;
                         case 3:
                             sqlDepQueryPart = string.Format(
