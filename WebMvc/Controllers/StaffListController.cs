@@ -46,6 +46,7 @@ namespace WebMvc.Controllers
             model.Departments = StaffListBl.GetDepartmentListByParent(null);
             return View(model);
         }
+        
         /// <summary>
         /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
         /// </summary>

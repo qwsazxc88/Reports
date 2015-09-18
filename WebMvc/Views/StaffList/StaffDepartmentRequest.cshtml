@@ -387,6 +387,15 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            @Html.LabelFor(m => m.SKB_GE_Id):
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.SKB_GE_Id, new SelectList(Model.SKB_GE, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.SKB_GE_Id)
+                        </td>
+                    </tr>
+                    <tr>
                         <td>@Html.LabelFor(m => m.OpenDate)</td>
                         <td>
                             @Html.TextBoxFor(m => m.OpenDate)

@@ -181,6 +181,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentRentPlaceDao); }
             set { staffdepartmentRentPlaceDao = value; }
         }
+
+        protected IStaffDepartmentSKB_GEDao staffdepartmentSKB_GEDao;
+        public IStaffDepartmentSKB_GEDao StaffDepartmentSKB_GEDao
+        {
+            get { return Validate.Dependency(staffdepartmentSKB_GEDao); }
+            set { staffdepartmentSKB_GEDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -317,6 +324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FactAddressId = 0;
                 model.DepStatus = string.Empty;
                 model.DepTypeId = 0;
+                model.SKB_GE_Id = 0;
                 model.OpenDate = null;
                 model.CloseDate = null;
                 model.OperationMode = string.Empty;
@@ -441,6 +449,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 model.DepStatus = dmd.DepStatus;
                 model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
+                model.SKB_GE_Id = dmd.SKB_GE != null ? dmd.SKB_GE.Id : 0;
                 model.OpenDate = dmd.OpenDate;
                 model.CloseDate = dmd.CloseDate;
                 model.OperationMode = dmd.OperationMode;
@@ -637,6 +646,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 dmd.DepStatus = model.DepStatus;
                 dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.SKB_GE = model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.OperationMode = model.OperationMode;
@@ -933,6 +943,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 dmd.DepStatus = model.DepStatus;
                 dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.SKB_GE = model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.OperationMode = model.OperationMode;
@@ -1088,6 +1099,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 entity.DepartmentManagerDetails[0].DepStatus = model.DepStatus;
                 entity.DepartmentManagerDetails[0].DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                entity.DepartmentManagerDetails[0].SKB_GE = model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
                 entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
                 entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
                 entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
@@ -1872,6 +1884,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
             model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
             model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
+            model.SKB_GE = StaffDepartmentSKB_GEDao.GetSKB_GE();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

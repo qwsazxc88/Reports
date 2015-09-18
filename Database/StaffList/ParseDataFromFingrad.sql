@@ -493,6 +493,7 @@ BEGIN
 																						,PlanSalaryFund
 																						,Note
 																						,CDAvailableId
+																						,SKB_GE_Id
 																						,CreatorId)
 	SELECT 1
 					,@DepRequestId
@@ -521,6 +522,7 @@ BEGIN
 					,0
 					,A.[Примечание]
 					,E.Id
+					,G.Id
 					,@CreatorId
 	FROM #TMP as A
 	LEFT JOIN StaffDepartmentTypes as B ON B.Name = A.[Тип_подразделения]
@@ -528,6 +530,7 @@ BEGIN
 	LEFT JOIN StaffNetShopIdentification as D ON D.Name = A.[Идентификация_сетевого_магазина]
 	LEFT JOIN StaffDepartmentCashDeskAvailable as E ON E.Name = A.[Наличие_кассы]
 	LEFT JOIN StaffDepartmentRentPlace as F ON F.Name = A.[Арендованное_помещение]
+	LEFT JOIN StaffDepartmentSKB_GE as G ON G.Name = A.[СКБ_GE]
 	WHERE A.Id = @Id
 
 	SET @DMDetailId = @@IDENTITY
@@ -545,13 +548,13 @@ BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
 			SELECT 1, @DMDetailId, 2, [Код_РБС], @CreatorId FROM #TMP WHERE Id = @Id
 		END
-
+		/*
 		IF (SELECT [Код_Инверсия] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
 			SELECT 1, @DMDetailId, 3, [Код_Инверсия], @CreatorId FROM #TMP WHERE Id = @Id
 		END
-		/*
+		
 		IF (SELECT [Код_ХД] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
@@ -563,21 +566,19 @@ BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
 			SELECT 1, @DMDetailId, 5, [Код_Террасофт], @CreatorId FROM #TMP WHERE Id = @Id
 		END
-		--в в следующих кусках уменьшил на 2 значение id из справочника совместимых программ
-		--если нужно раскомментарить этот кусок, то ниже значение id нужно увеличить на 2
-		*/
 
 		IF (SELECT [Код_ФЕС] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
-			SELECT 1, @DMDetailId, 4, [Код_ФЕС], @CreatorId FROM #TMP WHERE Id = @Id
+			SELECT 1, @DMDetailId, 6, [Код_ФЕС], @CreatorId FROM #TMP WHERE Id = @Id
 		END
 		
 		IF (SELECT [СКБ_GE] FROM #TMP WHERE Id = @Id) is not null
 		BEGIN
 			INSERT INTO StaffProgramCodes([Version], DMDetailId, ProgramId, Code, CreatorId)
-			SELECT 1, @DMDetailId, 5, [СКБ_GE], @CreatorId FROM #TMP WHERE Id = @Id
+			SELECT 1, @DMDetailId, 7, [СКБ_GE], @CreatorId FROM #TMP WHERE Id = @Id
 		END
+		*/
 		
 		
 		--ориентиры (попытаться навести порядок в данных и закачать их)		

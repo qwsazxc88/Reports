@@ -158,6 +158,10 @@ IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS N
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace]
 GO
@@ -643,6 +647,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[PlanSalaryFund] [numeric](18, 2) NULL,
 	[Note] [nvarchar](250) NULL,
 	[CDAvailableId] [int] NULL,
+	[SKB_GE_Id] [int] NULL,
 	[CreatorId] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
@@ -903,7 +908,35 @@ GO
 
 
 
+if OBJECT_ID (N'StaffDepartmentSKB_GE', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentSKB_GE]
+GO
+CREATE TABLE [dbo].[StaffDepartmentSKB_GE](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](400) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentSKB_GE] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE] FOREIGN KEY([SKB_GE_Id])
+REFERENCES [dbo].[StaffDepartmentSKB_GE] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSKB_GE] ADD  CONSTRAINT [DF_StaffDepartmentSKB_GE_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace] FOREIGN KEY([RentPlaceId])
 REFERENCES [dbo].[StaffDepartmentRentPlace] ([Id])
 GO
@@ -1491,6 +1524,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи в справочнике' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'SKB_GE_Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSKB_GE', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSKB_GE', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSKB_GE', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник СКБ/GE' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSKB_GE'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRentPlace', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -2440,6 +2488,14 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentSKB_GE
+INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'-')
+INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'exGE')
+INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'GE (не переведенные)')
+INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'ICICI')
+INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'СКБ')
+
+
 --StaffDepartmentRentPlace
 INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'-')
 INSERT INTO StaffDepartmentRentPlace(Name) VALUES(N'Аренда')
@@ -2478,11 +2534,11 @@ INSERT INTO StaffLandmarkTypes(Name) VALUES(N'Район города')
 --StaffProgramReference
 INSERT INTO StaffProgramReference(Name) VALUES(N'СВКредит')
 INSERT INTO StaffProgramReference(Name) VALUES(N'РБС')
-INSERT INTO StaffProgramReference(Name) VALUES(N'Инверсия')
+--INSERT INTO StaffProgramReference(Name) VALUES(N'Инверсия')
 --INSERT INTO StaffProgramReference(Name) VALUES(N'ХД')
 --INSERT INTO StaffProgramReference(Name) VALUES(N'Террасофт')
-INSERT INTO StaffProgramReference(Name) VALUES(N'ФЕС')
-INSERT INTO StaffProgramReference(Name) VALUES(N'СКБ/GE')
+--INSERT INTO StaffProgramReference(Name) VALUES(N'ФЕС')
+--INSERT INTO StaffProgramReference(Name) VALUES(N'СКБ/GE')
 
 --StaffDepartmentRequestTypes
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')

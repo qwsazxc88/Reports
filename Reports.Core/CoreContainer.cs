@@ -693,6 +693,10 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentRentPlaceDao>()
                 .ImplementedBy<StaffDepartmentRentPlaceDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSKB_GEDao>()
+                .ImplementedBy<StaffDepartmentSKB_GEDao>()
+                .LifeStyle.Is(type));
+            
         }
         #endregion
 
