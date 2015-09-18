@@ -43,6 +43,7 @@
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
+                        @*<a class="ui-notify-close" href='@Url.Action("StaffList", "StaffList", new { Depid = @item.Code1C })' style="cursor:hand">test</a>*@
                         <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
                     <td></td>

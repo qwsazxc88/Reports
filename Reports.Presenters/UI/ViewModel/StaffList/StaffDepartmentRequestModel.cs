@@ -247,6 +247,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Наличие кассы")]
         public int? CDAvailableId { get; set; }
         public IList<IdNameDto> CashDeskAvailables { get; set; }
+
+        [Display(Name = "СКБ/GE")]
+        public int? SKB_GE_Id { get; set; }
+        public IList<IdNameDto> SKB_GE { get; set; }
         #endregion
 
         #region Служебные поля
