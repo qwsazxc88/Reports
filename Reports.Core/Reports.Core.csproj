@@ -585,6 +585,7 @@
     <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DepartmentDto.cs" />
+    <Compile Include="Dto\Department_TerrapointDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -639,6 +640,7 @@
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
+    <Compile Include="Dto\Terrapoint_DepartmentDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
     <Compile Include="Dto\UploadFileDto.cs" />
