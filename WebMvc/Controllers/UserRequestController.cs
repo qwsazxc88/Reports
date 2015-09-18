@@ -2359,5 +2359,24 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
+
+         public ViewResult TerrapointDepartment()
+         {
+             return View();
+         }
+         public ViewResult DepartmentTerrapoint()
+         {
+             return View();
+         }
+         public ContentResult GetTP_D_list()
+         {
+             var content = RequestBl.GetTP_D_list();
+             return  Content( Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
+         public ContentResult GetD_TP_list()
+         {
+             var content = RequestBl.GetD_TP_list();
+             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
     }        
 }
