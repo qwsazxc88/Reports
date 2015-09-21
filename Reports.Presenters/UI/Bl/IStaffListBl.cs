@@ -86,6 +86,13 @@ namespace Reports.Presenters.UI.Bl
         bool SaveEditEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
         #endregion
 
+        #region Справочник ПО.
+        /// <summary>
+        /// Загрузка модели справочника ПО.
+        /// </summary>
+        /// <returns></returns>
+        StaffDepartmentSoftReferenceModel GetSoftReference();
+        #endregion
         #endregion
 
         #region Штатная расстановка.

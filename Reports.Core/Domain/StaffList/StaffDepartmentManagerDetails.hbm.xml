@@ -33,6 +33,7 @@
     <property name="Note" length="250" not-null="false"/>
     <many-to-one name="CashDeskAvailable" class="StaffDepartmentCashDeskAvailable" column="CDAvailableId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" index="StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" not-null="false"/>
     <many-to-one name="SKB_GE" class="StaffDepartmentSKB_GE" column="SKB_GE_Id" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" index="StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" not-null="false"/>
+    <many-to-one name="SoftGroup" class="StaffDepartmentSoftGroup" column="SoftGroupId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" index="StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>
