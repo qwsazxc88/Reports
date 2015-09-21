@@ -36,6 +36,7 @@ namespace Reports.Core.Domain
         public virtual string Note { get; set; }
         public virtual StaffDepartmentCashDeskAvailable CashDeskAvailable { get; set; }
         public virtual StaffDepartmentSKB_GE SKB_GE { get; set; }
+        public virtual StaffDepartmentSoftGroup SoftGroup { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }

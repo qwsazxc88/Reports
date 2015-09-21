@@ -1,0 +1,98 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentSoftReferenceModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Справочник ПО";
+}
+
+@using (Html.BeginForm("StaffDepartmentSoftReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftReferenceForm" }))
+{
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    @*<legend style="text-align:left;font-size:medium;">Справочник ПО</legend>*@
+    
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs1">Группы ПО</a></li>
+            <li><a href="#tabs2">Связи ПО с группами</a></li>
+            <li><a href="#tabs3">ПО</a></li>
+        </ul>
+
+        <div id="tabs1">
+            <table class="grid" style="width:50%">
+                <tr>
+                    <th>Название</th>
+                </tr>
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var group in Model.SoftGroupList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(m => m.SoftGroupList[i - 1].Id)
+                                @Html.TextBoxFor(m => m.SoftGroupList[i - 1].Name)
+                            </td>
+                            @{i++;}
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tabs2">
+            @Html.LabelFor(m => m.SoftGroupId)
+            @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroupList, "ID", "Name")) 
+            <br /><br />
+            <table class="grid" style="width:50%">
+                <tr>
+                    <th>ПО</th>
+                    <th>Использовать</th>
+                </tr>
+                <tbody>
+                    @{ i = 1; }
+                    @foreach (var link in Model.SoftGroupLink)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(m => m.SoftGroupLink[i - 1].Id)
+                                @Html.HiddenFor(m => m.SoftGroupLink[i - 1].SoftId)
+                                @link.Name
+                            </td>
+                            <td align="center" style="text-align:center;">
+                                @Html.CheckBoxFor(m => m.SoftGroupLink[i - 1].IsUsed)
+                            </td>
+                            @{i++;}
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tabs3">
+            <table class="grid" style="width:50%">
+                <tr>
+                    <th>Название</th>
+                </tr>
+                <tbody>
+                    @{ i = 1; }
+                    @foreach (var soft in Model.SoftList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(m => m.SoftList[i - 1].Id)
+                                @Html.TextBoxFor(m => m.SoftList[i - 1].Name)
+                            </td>
+                            @{i++;}
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSoftReference");
+        $('#tabs').tabs();
+    });
+</script>

@@ -188,6 +188,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentSKB_GEDao); }
             set { staffdepartmentSKB_GEDao = value; }
         }
+
+        protected IStaffDepartmentSoftGroupDao staffdepartmentSoftGroupDao;
+        public IStaffDepartmentSoftGroupDao StaffDepartmentSoftGroupDao
+        {
+            get { return Validate.Dependency(staffdepartmentSoftGroupDao); }
+            set { staffdepartmentSoftGroupDao = value; }
+        }
+
+        protected IStaffDepartmentInstallSoftDao staffdepartmentInstallSoftDao;
+        public IStaffDepartmentInstallSoftDao StaffDepartmentInstallSoftDao
+        {
+            get { return Validate.Dependency(staffdepartmentInstallSoftDao); }
+            set { staffdepartmentInstallSoftDao = value; }
+        }
+
+        protected IStaffDepartmentSoftGroupLinksDao staffdepartmentSoftGroupLinksDao;
+        public IStaffDepartmentSoftGroupLinksDao StaffDepartmentSoftGroupLinksDao
+        {
+            get { return Validate.Dependency(staffdepartmentSoftGroupLinksDao); }
+            set { staffdepartmentSoftGroupLinksDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -467,7 +488,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PlanSalaryFund = dmd.PlanSalaryFund;
                 model.Note = dmd.Note;
                 model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
-
                 LoadDictionaries(model);
 
                 //кнопки
@@ -1822,6 +1842,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return true;
+        }
+        #endregion
+
+        #region Справочник ПО.
+        /// <summary>
+        /// Загрузка модели справочника ПО.
+        /// </summary>
+        /// <returns></returns>
+        public StaffDepartmentSoftReferenceModel GetSoftReference()
+        {
+            StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
+
+            model.SoftGroupList = StaffDepartmentSoftGroupDao.GetSoftGroups();
+            model.SoftGroupLink = StaffDepartmentSoftGroupLinksDao.GetSoftGroupLinks(model.SoftGroupList.Count == 0 ? 0 : model.SoftGroupList[0].Id);
+            model.SoftList = StaffDepartmentInstallSoftDao.GetInstallSoft();
+
+            return model;
         }
         #endregion
 

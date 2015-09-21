@@ -208,6 +208,18 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
+        [HttpGet]
+        public ActionResult StaffDepartmentSoftReference()
+        {
+            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
+        {
+            //StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
+            return View(model);
+        }
         #endregion
 
         #region Заявки для штатных единиц.

@@ -158,6 +158,10 @@ IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS N
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE]
 GO
@@ -285,6 +289,39 @@ GO
 IF OBJECT_ID ('FK_StaffEstablishedPostChargeLinks_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks] DROP CONSTRAINT [FK_StaffEstablishedPostChargeLinks_CreatorUser]
 GO
+
+IF OBJECT_ID ('FK_StaffDepartmentInstallSoft_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentInstallSoft] DROP CONSTRAINT [FK_StaffDepartmentInstallSoft_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentInstallSoft_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentInstallSoft] DROP CONSTRAINT [FK_StaffDepartmentInstallSoft_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroup_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroup] DROP CONSTRAINT [FK_StaffDepartmentSoftGroup_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroup_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroup] DROP CONSTRAINT [FK_StaffDepartmentSoftGroup_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] DROP CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] DROP CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroupLinks_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] DROP CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentSoftGroupLinks_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] DROP CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_CreatorUser]
+GO
+
 
 
 --2. СОЗДАНИЕ ТАБЛИЦ
@@ -648,6 +685,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[Note] [nvarchar](250) NULL,
 	[CDAvailableId] [int] NULL,
 	[SKB_GE_Id] [int] NULL,
+	[SoftGroupId] [int] NULL,
 	[CreatorId] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
@@ -924,9 +962,140 @@ CREATE TABLE [dbo].[StaffDepartmentSKB_GE](
 GO
 
 
+if OBJECT_ID (N'StaffDepartmentInstallSoft', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentInstallSoft]
+GO
+CREATE TABLE [dbo].[StaffDepartmentInstallSoft](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentInstallSoft] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentSoftGroup', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentSoftGroup]
+GO
+CREATE TABLE [dbo].[StaffDepartmentSoftGroup](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentSoftGroup] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentSoftGroupLinks', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentSoftGroupLinks]
+GO
+CREATE TABLE [dbo].[StaffDepartmentSoftGroupLinks](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[SoftId] [int] NULL,
+	[SoftGroupId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentSoftGroupLinks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
 
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup] FOREIGN KEY([SoftGroupId])
+REFERENCES [dbo].[StaffDepartmentSoftGroup] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] ADD  CONSTRAINT [DF_StaffDepartmentSoftGroupLinks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft] FOREIGN KEY([SoftId])
+REFERENCES [dbo].[StaffDepartmentInstallSoft] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup] FOREIGN KEY([SoftGroupId])
+REFERENCES [dbo].[StaffDepartmentSoftGroup] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroup] ADD  CONSTRAINT [DF_StaffDepartmentSoftGroup_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroup_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroup] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroup_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentSoftGroup_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentSoftGroup] CHECK CONSTRAINT [FK_StaffDepartmentSoftGroup_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentInstallSoft] ADD  CONSTRAINT [DF_StaffDepartmentInstallSoft_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentInstallSoft]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentInstallSoft_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentInstallSoft] CHECK CONSTRAINT [FK_StaffDepartmentInstallSoft_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentInstallSoft]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentInstallSoft_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentInstallSoft] CHECK CONSTRAINT [FK_StaffDepartmentInstallSoft_EditorUser]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE] FOREIGN KEY([SKB_GE_Id])
 REFERENCES [dbo].[StaffDepartmentSKB_GE] ([Id])
 GO
@@ -1524,6 +1693,84 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'SoftGroupId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'SoftId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'SoftGroupId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Связи групп и установленного банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название группы ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник групп банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroup'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentInstallSoft'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи в справочнике' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'SKB_GE_Id'
 GO
 
@@ -2488,6 +2735,76 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentInstallSoft
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'*')															--1
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'=')															--2
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'СВК-только ТК')									--3
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'СВК-все продукты')							--4
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'РБС')														--5
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'Внешние системы (ЗК, КТ,СГ)')		--6
+INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'Инверсия')											--7
+
+
+--StaffDepartmentSoftGroup
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 01')	--1
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 02')	--2
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 03')	--3
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 04')	--4
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 05')	--5
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 06')	--6
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 07')	--7
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 08')	--8
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 09')	--9
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 10')	--10
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 11')	--11
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 12')	--12
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 13')	--13
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 14')	--14
+INSERT INTO StaffDepartmentSoftGroup(Version, Name) VALUES(1, N'Группа ПО - 15')	--15
+
+
+--StaffDepartmentSoftGroupLinks
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 1, 1)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 2, 2)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 3, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 4, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 5, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 5, 6)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 6, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 6, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 7, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 7, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 7, 6)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 8, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 8, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 8, 7)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 9, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 9, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 9, 7)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 9, 6)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 10, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 10, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 11, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 11, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 11, 6)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 12, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 12, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 12, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 13, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 13, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 13, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 13, 6)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 14, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 14, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 14, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 14, 7)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 15, 4)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 15, 3)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 15, 5)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 15, 7)
+INSERT INTO StaffDepartmentSoftGroupLinks(Version, SoftGroupId, SoftId) VALUES(1, 15, 6)
+
+
 --StaffDepartmentSKB_GE
 INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'-')
 INSERT INTO StaffDepartmentSKB_GE(Name) VALUES(N'exGE')

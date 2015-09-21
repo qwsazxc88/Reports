@@ -285,6 +285,7 @@
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftReferenceModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffListArrangementModel.cs" />

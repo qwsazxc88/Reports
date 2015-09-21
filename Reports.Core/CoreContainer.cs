@@ -695,6 +695,15 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentSKB_GEDao>()
                 .ImplementedBy<StaffDepartmentSKB_GEDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSoftGroupDao>()
+                .ImplementedBy<StaffDepartmentSoftGroupDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentInstallSoftDao>()
+                .ImplementedBy<StaffDepartmentInstallSoftDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSoftGroupLinksDao>()
+                .ImplementedBy<StaffDepartmentSoftGroupLinksDao>()
+                .LifeStyle.Is(type));
             
 
             #region StaffMovements
