@@ -1849,16 +1849,183 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <summary>
         /// Загрузка модели справочника ПО.
         /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
         /// <returns></returns>
-        public StaffDepartmentSoftReferenceModel GetSoftReference()
+        public StaffDepartmentSoftReferenceModel GetSoftReference(StaffDepartmentSoftReferenceModel model)
         {
-            StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
+            //StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
 
-            model.SoftGroupList = StaffDepartmentSoftGroupDao.GetSoftGroups();
-            model.SoftGroupLink = StaffDepartmentSoftGroupLinksDao.GetSoftGroupLinks(model.SoftGroupList.Count == 0 ? 0 : model.SoftGroupList[0].Id);
+            model.GroupList = StaffDepartmentSoftGroupDao.GetSoftGroups();
+            model.SoftGroupLink = StaffDepartmentSoftGroupLinksDao.GetSoftGroupLinks(model.SoftGroupId != 0 ? model.SoftGroupId : (model.GroupList.Count == 0 ? 0 : model.GroupList[0].Id));
             model.SoftList = StaffDepartmentInstallSoftDao.GetInstallSoft();
 
             return model;
+        }
+
+        /// <summary>
+        /// Создание/Сохранение данных.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="error">Для сообщений.</param>
+        /// <returns></returns>
+        public bool SaveSoftReference(StaffDepartmentSoftReferenceModel model, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            //создание новой группы ПО
+            if (model.TabIndex == 0 && model.SwitchOperation == 1)
+            {
+                if (StaffDepartmentSoftGroupDao.LoadAll().Where(x => x.Name == model.SoftGroupName).Count() != 0)
+                {
+                    error = "В базе данных уже есть такое название группы ПО!";
+                    return false;
+                }
+                else
+                {
+                    StaffDepartmentSoftGroup NewSoftGroup = new StaffDepartmentSoftGroup() { Name = model.SoftGroupName, Creator = curUser, CreateDate = DateTime.Now };
+                    try 
+                    {
+                        StaffDepartmentSoftGroupDao.SaveAndFlush(NewSoftGroup);
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentSoftGroupDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+            }
+
+            //создание нового ПО
+            if (model.TabIndex == 2 && model.SwitchOperation == 4)
+            {
+                if (StaffDepartmentInstallSoftDao.LoadAll().Where(x => x.Name == model.SoftName).Count() != 0)
+                {
+                    error = "В базе данных уже есть такое название ПО!";
+                    return false;
+                }
+                else
+                {
+                    StaffDepartmentInstallSoft NewSoft = new StaffDepartmentInstallSoft() { Name = model.SoftName, Creator = curUser, CreateDate = DateTime.Now };
+                    try
+                    {
+                        StaffDepartmentInstallSoftDao.SaveAndFlush(NewSoft);
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentInstallSoftDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+            }
+
+
+            //редактирование названия группы ПО
+            if (model.TabIndex == 0 && model.SwitchOperation == 2)
+            {
+                StaffDepartmentSoftGroup SoftGroup = StaffDepartmentSoftGroupDao.Get(model.GroupId.HasValue ? model.GroupId.Value : 0);
+                if (SoftGroup == null)
+                {
+                    error = "Нет записи для редактирования!";
+                    return false;
+                }
+                try
+                {
+                    SoftGroup.Name = model.GroupList.Where(x => x.Id == model.GroupId.Value).Single().Name;
+                    SoftGroup.Editor = curUser;
+                    SoftGroup.EditDate = DateTime.Now;
+
+                    StaffDepartmentSoftGroupDao.SaveAndFlush(SoftGroup);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentSoftGroupDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+
+            //редактирование названия ПО
+            if (model.TabIndex == 2 && model.SwitchOperation == 5)
+            {
+                StaffDepartmentInstallSoft Soft = StaffDepartmentInstallSoftDao.Get(model.SoftId.HasValue ? model.SoftId.Value : 0);
+                if (Soft == null)
+                {
+                    error = "Нет записи для редактирования!";
+                    return false;
+                }
+                try
+                {
+                    Soft.Name = model.SoftList.Where(x => x.Id == model.SoftId.Value).Single().Name;
+                    Soft.Editor = curUser;
+                    Soft.EditDate = DateTime.Now;
+
+                    StaffDepartmentInstallSoftDao.SaveAndFlush(Soft);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentInstallSoftDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+            //Редактирование связей ПО с группами
+            if (model.TabIndex == 1)
+            {
+                //цикл по записям связи для данной группы с клиента
+                foreach(var row in model.SoftGroupLink)
+                {
+                    StaffDepartmentSoftGroupLinks sgLink = StaffDepartmentSoftGroupLinksDao.Get(row.Id);
+
+                    //создаем новую запись/связь
+                    if (sgLink == null && row.IsUsed)
+                    {
+                        sgLink = new StaffDepartmentSoftGroupLinks() {
+                            InstallSoft = row.SoftId == 0 ? null : StaffDepartmentInstallSoftDao.Get(row.SoftId),
+                            SoftGroup = model.SoftGroupId == 0 ? null : StaffDepartmentSoftGroupDao.Get(model.SoftGroupId),
+                            IsUsed = true,
+                            Creator = curUser,
+                            CreateDate = DateTime.Now
+                        };
+                    }
+
+                    //редактируем связь
+                    if (sgLink != null)
+                    {
+                        if (sgLink.IsUsed != row.IsUsed)
+                        {
+                            sgLink.InstallSoft = row.SoftId == 0 ? null : StaffDepartmentInstallSoftDao.Get(row.SoftId);
+                            sgLink.SoftGroup = model.SoftGroupId == 0 ? null : StaffDepartmentSoftGroupDao.Get(model.SoftGroupId);
+                            sgLink.IsUsed = row.IsUsed;
+                            sgLink.Editor = curUser;
+                            sgLink.EditDate = DateTime.Now;
+                        }
+                    }
+
+                    try
+                    {
+                        if (sgLink != null)
+                            StaffDepartmentSoftGroupLinksDao.SaveAndFlush(sgLink);
+                        //return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentSoftGroupLinksDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
         #endregion
 

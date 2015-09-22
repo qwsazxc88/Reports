@@ -25,7 +25,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<SoftGroupLinkDto> GetSoftGroupLinks(int GroupId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as SoftId, A.Name, B.Id, cast(case when B.Id is null then 0 else 1 end as bit) as IsUsed
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as SoftId, A.Name, B.Id, cast(case when B.Id is null then 0 else isnull(B.IsUsed, 0) end as bit) as IsUsed
                                                     FROM StaffDepartmentInstallSoft as A
                                                     LEFT JOIN StaffDepartmentSoftGroupLinks as B ON B.SoftId = A.Id and B.SoftGroupId = :GroupId")
                 .AddScalar("Id", NHibernateUtil.Int32)

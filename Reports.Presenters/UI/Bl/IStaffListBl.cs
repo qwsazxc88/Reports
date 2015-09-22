@@ -90,8 +90,16 @@ namespace Reports.Presenters.UI.Bl
         /// <summary>
         /// Загрузка модели справочника ПО.
         /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
         /// <returns></returns>
-        StaffDepartmentSoftReferenceModel GetSoftReference();
+        StaffDepartmentSoftReferenceModel GetSoftReference(StaffDepartmentSoftReferenceModel model);
+        /// <summary>
+        /// Создание/Сохранение данных.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="error">Для сообщений.</param>
+        /// <returns></returns>
+        bool SaveSoftReference(StaffDepartmentSoftReferenceModel model, out string error);
         #endregion
         #endregion
 

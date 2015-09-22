@@ -12,16 +12,20 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class StaffDepartmentSoftReferenceModel
     {
         #region Группы ПО
+        [Display(Name = "Id группы ПО")]
+        public int? GroupId { get; set; }
+
+        [Display(Name = "Наименование группы ПО")]
+        public string SoftGroupName { get; set; }
+
         [Display(Name = "Группы ПО")]
-        public IList<IdNameDto> SoftGroupList { get; set; }
+        public IList<IdNameWithOldNameDto> GroupList { get; set; }
         #endregion
 
         #region Связи ПО с группами
+        
         [Display(Name = "Группы ПО")]
-        public int? SoftGroupId { get; set; }
-
-        [Display(Name = "Установленное ПО")]
-        public int? SoftId { get; set; }
+        public int SoftGroupId { get; set; }
 
         [Display(Name = "Связи ПО с группами")]
         public int? SoftGroupLinkId { get; set; }
@@ -29,12 +33,24 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Установленное ПО
+        [Display(Name = "Id ПО")]
+        public int? SoftId { get; set; }
+
+        [Display(Name = "Наименование ПО")]
+        public string SoftName { get; set; }
+
         [Display(Name = "Установленное ПО")]
-        public IList<IdNameDto> SoftList { get; set; }
+        public IList<IdNameWithOldNameDto> SoftList { get; set; }
         #endregion
 
         #region Служебные поля.
         public string MessageStr { get; set; }
+        /// <summary>
+        /// Операция: 1 - создание новой группы, 2 - редактирование группы, 3 - сохранение связей, 4 - создание новой строки ПО, 5 - редактирование строки ПО
+        /// </summary>
+        public int SwitchOperation { get; set; }
+        public int TabIndex { get; set; }   //для позиционирования на вкладке
+        public bool IsError { get; set; }   
         #endregion
     }
 }

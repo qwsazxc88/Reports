@@ -1010,6 +1010,7 @@ CREATE TABLE [dbo].[StaffDepartmentSoftGroupLinks](
 	[Version] [int] NOT NULL,
 	[SoftId] [int] NULL,
 	[SoftGroupId] [int] NULL,
+	[IsUsed] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1024,6 +1025,9 @@ GO
 
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] ADD  CONSTRAINT [DF_StaffDepartmentSoftGroupLinks_IsUsed]  DEFAULT ((1)) FOR [IsUsed]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup] FOREIGN KEY([SoftGroupId])
 REFERENCES [dbo].[StaffDepartmentSoftGroup] ([Id])
 GO
@@ -1693,6 +1697,9 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'SoftGroupId'
 GO
 
