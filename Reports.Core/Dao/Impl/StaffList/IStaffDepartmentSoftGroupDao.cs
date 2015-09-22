@@ -14,6 +14,6 @@ namespace Reports.Core.Dao
         /// Список признаков арендованных помещений.
         /// </summary>
         /// <returns></returns>
-        IList<IdNameDto> GetSoftGroups();
+        IList<IdNameWithOldNameDto> GetSoftGroups();
     }
 }

@@ -8,6 +8,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Dao;
 using Reports.Presenters.UI.ViewModel.StaffList;
 using System.Web.Script.Serialization;
 
@@ -25,6 +26,20 @@ namespace WebMvc.Controllers
                 stafflistBl = Ioc.Resolve<IStaffListBl>();
                 return Validate.Dependency(stafflistBl);
             }
+        }
+
+        protected IStaffDepartmentSoftGroupDao staffdepartmentSoftGroupDao;
+        public IStaffDepartmentSoftGroupDao StaffDepartmentSoftGroupDao
+        {
+            get { return Validate.Dependency(staffdepartmentSoftGroupDao); }
+            set { staffdepartmentSoftGroupDao = value; }
+        }
+
+        protected IStaffDepartmentInstallSoftDao staffdepartmentInstallSoftDao;
+        public IStaffDepartmentInstallSoftDao StaffDepartmentInstallSoftDao
+        {
+            get { return Validate.Dependency(staffdepartmentInstallSoftDao); }
+            set { staffdepartmentInstallSoftDao = value; }
         }
         #endregion
 
@@ -211,13 +226,37 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult StaffDepartmentSoftReference()
         {
-            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference();
+            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
+            model.TabIndex = 0;
             return View(model);
         }
         [HttpPost]
         public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
         {
-            //StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
+            string error = string.Empty;
+
+            ModelState.Clear();
+            if (model.SwitchOperation == 0)
+            {
+                model.IsError = false;
+                model = StaffListBl.GetSoftReference(model);
+            }
+            else
+            {
+                if (ValidateModel(model))
+                {
+                    if (!StaffListBl.SaveSoftReference(model, out error))
+                    {
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model.IsError = false;
+                        model = StaffListBl.GetSoftReference(model);
+                    }
+                }
+            }
+            
             return View(model);
         }
         #endregion
@@ -407,6 +446,61 @@ namespace WebMvc.Controllers
                     }
                 }
             }
+
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffDepartmentSoftReferenceModel model)
+        {
+            switch (model.TabIndex)
+            {
+                case 0:
+                    if (model.SwitchOperation == 1)//добавление
+                    {
+                        if (string.IsNullOrEmpty(model.SoftGroupName) || string.IsNullOrWhiteSpace(model.SoftGroupName))
+                            ModelState.AddModelError("SoftGroupName", "Введите название группы ПО!");
+                    }
+                    if (model.SwitchOperation == 2)//редактирование
+                    {
+                        for (int i = 0; i < model.GroupList.Count; i++)
+                        {
+                            if (string.IsNullOrEmpty(model.GroupList[i].Name) || string.IsNullOrWhiteSpace(model.GroupList[i].Name))
+                            {
+                                ModelState.AddModelError("GroupList[" + i.ToString() + "].Name", "*");
+                                ModelState.AddModelError("MessageStr", "Введите название группы ПО");
+                            }
+                        }
+                    }
+                    break;
+                case 1:
+                    if (model.SwitchOperation == 3)
+                    {
+                        if (model.SoftGroupLink.Where(x => x.IsUsed).Count() == 0)
+                        {
+                            ModelState.AddModelError("MessageStr", "Группа ПО должна содержать в себе установленное ПО!");
+                        }
+                    }
+                    break;
+                case 2:
+                    if (model.SwitchOperation == 4)//добавление
+                    {
+                        if (string.IsNullOrEmpty(model.SoftName) || string.IsNullOrWhiteSpace(model.SoftName))
+                            ModelState.AddModelError("SoftName", "Введите название ПО!");
+                    }
+                    if (model.SwitchOperation == 5)//редактирование
+                    {
+                        for (int i = 0; i < model.SoftList.Count; i++)
+                        {
+                            if (string.IsNullOrEmpty(model.SoftList[i].Name) || string.IsNullOrWhiteSpace(model.SoftList[i].Name))
+                            {
+                                ModelState.AddModelError("SoftList[" + i.ToString() + "].Name", "*");
+                                ModelState.AddModelError("MessageStr", "Введите название ПО");
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            model.IsError = !ModelState.IsValid;
 
             return ModelState.IsValid;
         }
