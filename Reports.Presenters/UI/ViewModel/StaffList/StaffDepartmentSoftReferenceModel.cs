@@ -50,7 +50,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         /// </summary>
         public int SwitchOperation { get; set; }
         public int TabIndex { get; set; }   //для позиционирования на вкладке
-        public bool IsError { get; set; }   
+        public bool IsError { get; set; }
+        public bool IsModal { get; set; }   //модальная/обычная загрузка
         #endregion
     }
 }

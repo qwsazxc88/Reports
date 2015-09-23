@@ -27,20 +27,6 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(stafflistBl);
             }
         }
-
-        protected IStaffDepartmentSoftGroupDao staffdepartmentSoftGroupDao;
-        public IStaffDepartmentSoftGroupDao StaffDepartmentSoftGroupDao
-        {
-            get { return Validate.Dependency(staffdepartmentSoftGroupDao); }
-            set { staffdepartmentSoftGroupDao = value; }
-        }
-
-        protected IStaffDepartmentInstallSoftDao staffdepartmentInstallSoftDao;
-        public IStaffDepartmentInstallSoftDao StaffDepartmentInstallSoftDao
-        {
-            get { return Validate.Dependency(staffdepartmentInstallSoftDao); }
-            set { staffdepartmentInstallSoftDao = value; }
-        }
         #endregion
 
         public ActionResult Index()
@@ -223,13 +209,32 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
+        /// <summary>
+        /// Загрузка справочника ПО.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentSoftReference()
+        public ActionResult StaffDepartmentSoftReference(bool? IsModal)
         {
+            /*
+             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
+             * не доработал
+             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
+             * 
+             */
             StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
             model.TabIndex = 0;
-            return View(model);
+            model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            if (model.IsModal)
+                return PartialView(model);
+            else
+                return View(model);
         }
+        /// <summary>
+        /// Сохранение данных в справочнике ПО.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
         {
@@ -256,8 +261,11 @@ namespace WebMvc.Controllers
                     }
                 }
             }
-            
-            return View(model);
+
+            if (model.IsModal)
+                return PartialView(model);
+            else
+                return View(model);
         }
         #endregion
 

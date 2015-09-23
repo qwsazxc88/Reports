@@ -2089,6 +2089,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
             model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
             model.SKB_GE = StaffDepartmentSKB_GEDao.GetSKB_GE();
+            model.SoftGroups = StaffDepartmentSoftGroupDao.GetSoftGroups();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

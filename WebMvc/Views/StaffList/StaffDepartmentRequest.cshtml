@@ -568,6 +568,15 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>@Html.LabelFor(m => m.SoftGroupId)</td>
+                        <td>
+                            @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroups, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.SoftGroupId)
+                            <button type="button" title="Обновить">Обновить</button>
+                            <button type="button" title="Показать справочник" onclick="CreateSoftReferenceDialog();">Справочник</button>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>
                             @Html.LabelFor(m => m.IsBlocked)
                         </td>
@@ -733,11 +742,11 @@
 
     $(document).ready(function () {
         setActiveMenuItem("moDepRequest");
-
+        $(document).tooltip({ track: true });
         ShowFlash(true);
         ShowFlash(false);
 
-        $(document).tooltip({ track: true });
+        
         $(":button").button();
 
         $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
@@ -812,7 +821,7 @@
         $("#EndIdleDate").datepicker({ changeYear: true, changeMonth: true });
         $(".hasDatepicker").width("85px");
 
-
+        
         $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
@@ -1043,6 +1052,57 @@
     }
 
 
+    function CreateSoftReferenceDialog() {
+        var title = "Справочник ПО";
+        var newElement = document.createElement('div');
+        newElement.id = "divSoftReferenceDialog";
+        var SoftRefDiv = $(newElement);
+
+        var actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentSoftReference", "StaffList")";
+        actionSoftReferenceDialogUrl += "?IsModal=true#StaffDepartmentSoftReferenceForm";
+
+        $(SoftRefDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(SoftRefDiv).load(actionSoftReferenceDialogUrl
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(SoftRefDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+
+        $(SoftRefDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,     
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 450,
+            closeOnEscape: true,
+            close: function (event, ui) {
+                $(this).dialog("close");
+            },
+            buttons:
+            {
+                "OK": function () {
+                    $(SoftRefDiv).dialog("close");
+                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(SoftRefDiv).dialog("open");
+
+    }
+
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
         if (!IsShow) {
@@ -1071,6 +1131,22 @@
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
         }
+    }
+
+
+    function AjaxFormRequest(result_id,form_id,url) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type:     "POST", //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
     }
 </script>
 
