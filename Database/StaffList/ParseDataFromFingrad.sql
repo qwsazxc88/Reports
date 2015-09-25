@@ -1,13 +1,32 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
+--ЕСЛИ ОБНОВИЛАСЬ БАЗА ИЛИ СПРАВОЧНИК ТОЧЕК ДЛЯ ГРАФИКОВ, СПРАВОЧНИК ПОДРАЗДЕЛЕНИЙ, ТО ИЗ СПРАВОЧНИКА ПОДРАЗДЕЛЕНИЙ ВОЗМОЖНО НУЖНО УДАЛИТЬ ЗАПИСИ С ЗНАЧЕНИЕМ 4 В ПОЛЕ BFGId
+
 use WebAppTest
 go
 
 SET NOCOUNT ON
---select * from Fingrag_csv 
-/*
-DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
-				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max)
-*/
+
+--анализируем и формируем данные для закачки в структуру штатного расписания
+--берем данные из графиков открытые и закрытые точки, дата закрытия не старше 30 дней относительно текущей даты
+--если точка связана с нашей структурой подразделения, то в наш справочник проставляем ее код
+UPDATE Department SET FingradCode = B.Code
+FROM Department as A
+INNER JOIN TerraPoint as B ON B.PossibleDepartmentId = A.Id and B.ItemLevel = 3 and (B.EndDate is null or (B.EndDate is not null and DATEDIFF(dd, B.EndDate, getdate()) <= 30))
+INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.Code
+WHERE A.ItemLevel = 7
+
+--если точка несвязана с нашей структурой подразделения
+SELECT * INTO #TP FROM TerraPoint 
+WHERE ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30)) and PossibleDepartmentId is null
+
+--пытаемся по РП-коду уже занесенных в наш справочник данных определить родителя 6 уровня и занести запись 7 уровня к нам в справочник
+--если не получается определить родителя 6 уровня, то обращаемся к справочнику кодировки для определения ветки 5 уровня
+	--по коду бизнес-группы определяем родительскую ветку 5 уровня в нашей структуре
+	--если для определенной ветки 5 уровня нет ветки 6 уровня с названием "Не связанные подразделения", то создаем ее
+	--если ранее не была занесена запись с таким кодом точки, то заносим ее в ветку с названием "Не связанные подразделения" и проставляем значение 4 в поле BFGId
+		
+
+
 --находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
 SELECT A.Id, A.ParentId, B.FinDepName, B.FinDepNameShort,  C.* INTO #TMP
 FROM Department as A
@@ -370,6 +389,7 @@ BEGIN
 	--так как их может быть несколько, то берем по уровню наименьшего
 	SELECT top 1 @CreatorId = UserId FROM #TMP5 as A
 	INNER JOIN Users as B ON B.Id = A.UserId
+	WHERE A.Id = @Id
 	ORDER BY B.Level desc
 
 
@@ -709,5 +729,5 @@ drop table #TMP2
 drop table #TMP3
 drop table #TMP4
 drop table #TMP5
-
+drop table #TP
 
