@@ -1157,11 +1157,13 @@ namespace WebMvc.Controllers
          {
              //int? userId = new int?();
              VacationEditModel model = RequestBl.GetVacationEditModel(id,userId);
+             ModelState.Clear();
              return View(model);
          }
          [HttpPost]
          public ActionResult VacationEdit(VacationEditModel model)
          {
+             string source = Newtonsoft.Json.JsonConvert.SerializeObject(model);
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
@@ -1171,7 +1173,9 @@ namespace WebMvc.Controllers
              {
                  model.IsApproved = false;
                  model.IsApprovedForAll = false;
-                 RequestBl.ReloadDictionariesToModel(model);
+                 
+                     RequestBl.ReloadDictionariesToModel(model);
+                
                  return View(model);
              }
 
@@ -1208,6 +1212,7 @@ namespace WebMvc.Controllers
 
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
+             ModelState.Clear();
              UserRole role = AuthenticationService.CurrentUser.UserRole;
              if (model.Id > 0 && fileDto == null)
              {
@@ -2354,5 +2359,24 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
+
+         public ViewResult TerrapointDepartment()
+         {
+             return View();
+         }
+         public ViewResult DepartmentTerrapoint()
+         {
+             return View();
+         }
+         public ContentResult GetTP_D_list()
+         {
+             var content = RequestBl.GetTP_D_list();
+             return  Content( Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
+         public ContentResult GetD_TP_list()
+         {
+             var content = RequestBl.GetD_TP_list();
+             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
     }        
 }

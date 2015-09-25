@@ -221,5 +221,7 @@ namespace Reports.Presenters.UI.Bl
         void SetDocumentsToModel(SurchargeNoteListModel model);
         void GetDictionaries(SurchargeNoteEditModel model);
         bool CheckDepartmentLevel(int id, int level);
+        IList<Terrapoint_DepartmentDto> GetTP_D_list();
+        IList<Department_TerrapointDto> GetD_TP_list();
     }
 }
