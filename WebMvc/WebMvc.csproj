@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -840,10 +840,10 @@
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
-    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
-    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsList.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsEdit.cshtml" />
+    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
+    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml">
       <SubType>Code</SubType>    
@@ -854,6 +854,10 @@
     <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />
     <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
+
+    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
+    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
+
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
     <Content Include="Views\StaffList\StaffEstablishedPostRequest.cshtml" />

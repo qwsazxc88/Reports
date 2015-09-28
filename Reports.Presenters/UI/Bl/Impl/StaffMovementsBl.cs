@@ -199,7 +199,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TargetDepartmentName = entity.TargetDepartment.Name;
                 model.TargetManager = new StandartUserDto { Id = entity.TargetManager.Id };
                 LoadUserData(model.TargetManager);
-                model.SourceManager = new StandartUserDto { Id = entity.TargetManager.Id };
+                model.SourceManager = new StandartUserDto { Id = entity.SourceManager.Id };
                 LoadUserData(model.SourceManager);
                 #endregion
                 #region Для руководителей
@@ -647,7 +647,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
-                    model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
+                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable & true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки  
                     break;
             }
@@ -729,13 +729,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsDepartmentEditable)
             {
                 if (entity.TargetDepartment != null && entity.TargetDepartment.Id != model.TargetDepartmentId)
-                {
-                    entity.TargetDepartment = DepartmentDao.Load(model.TargetDepartmentId);
-                    entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
+                {                    
                     entity.TargetManagerAccept = null;
                     entity.TargetChief = null;
                     entity.TargetChiefAccept = null;
                 }
+                entity.TargetDepartment = DepartmentDao.Load(model.TargetDepartmentId);
+                entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             }
             if (model.IsPositionEditable)
             {
@@ -1111,7 +1111,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id);
+            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
             if (res != null && res.Any())
                 return true;
             else return false;
