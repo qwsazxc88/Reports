@@ -834,6 +834,8 @@
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
+    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
+    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

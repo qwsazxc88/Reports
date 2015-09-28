@@ -13,5 +13,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsManagersAvailable { get; set; }
         public bool IsPersonalManagersAvailable { get; set; }
         public int TabIndex { get; set; }
+        public string CandidateName { get; set; }
     }
 }
