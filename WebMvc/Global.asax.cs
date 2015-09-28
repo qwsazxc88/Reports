@@ -233,9 +233,8 @@ namespace WebMvc
         protected void Application_Error(object sender, EventArgs e)
         {
             Exception ex = Server.GetLastError();
-<<<<<<< HEAD
+
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
-=======
             string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
             
             var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
@@ -248,7 +247,6 @@ namespace WebMvc
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
             if (requbl==null) return;
             requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));
->>>>>>> master
             /*HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;

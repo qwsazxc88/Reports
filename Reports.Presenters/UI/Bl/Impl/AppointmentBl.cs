@@ -842,16 +842,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
             List<DepartmentDto> departments;
-<<<<<<< HEAD
-            
-=======
+
             try//ЗАПЛАТКА
             {
                 var mr=ManualRoleRecordDao.Find(x => x.User.Id == CurrentUser.Id && dep.Path.Contains(x.TargetDepartment.Path));
                 if (mr != null && mr.Any()) return true;
             }
             catch (Exception e) { }
->>>>>>> master
+
             if (currUser.Department != null && dep.Path.StartsWith(currUser.Department.Path)) return true;
             switch (currUser.Level)
             {
