@@ -1111,7 +1111,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id);
+            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
             if (res != null && res.Any())
                 return true;
             else return false;

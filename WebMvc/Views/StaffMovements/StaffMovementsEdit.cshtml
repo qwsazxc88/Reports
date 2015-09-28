@@ -780,6 +780,17 @@ label { font-size:1.1em; }
                 },
               async:false
             });  
+        @if (Model.MovementNoteDto == null || string.IsNullOrEmpty(Model.MovementNoteDto.FileName))
+        {<text>
+        clearControlErrors($("input[name=MovementNote]"));
+        var imgVal = $('input[name=MovementNote]').val();
+        if(imgVal=='')
+        {
+           addControlError($("input[name=MovementNote]"),'Необходимо заявление о переводе.');
+            result = false;
+        }
+         </text>
+        }
         if($("#TargteDepartmentId").val() == 0)
         {
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
@@ -809,14 +820,14 @@ label { font-size:1.1em; }
                 result = false;
             }
             clearControlErrors($("#TargetSalary"));
-            if($("#TargetSalary").val() == '')
+            if($("#TargetSalary").val() == '' || $("#TargetSalary").val() <= 0)
             {
                 addControlError($("#TargetSalary"),'Необходимо заполнить ставку');
                 addControlError($("#JSError"),'Необходимо заполнить ставку');
                 result = false;
             }
             clearControlErrors($("#TargetCasing"));
-            if($("#TargetCasing").val() == '')
+            if($("#TargetCasing").val() == '' || $("#TargetCasing").val() <= 0)
             {
                 addControlError($("#TargetCasing"),'Необходимо заполнить оклад');
                 addControlError($("#JSError"),'Необходимо заполнить оклад');
