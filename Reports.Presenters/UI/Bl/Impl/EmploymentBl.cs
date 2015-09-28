@@ -1879,6 +1879,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model)
+        {
+            EmploymentCandidate entity = GetCandidate(model.CandidateID);
+            model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
+            return model;
+        }
+
         public RosterModel GetRosterModel(RosterFiltersModel filters)
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -1928,6 +1935,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -1943,6 +1952,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate = filters.BeginDate;
                 model.EndDate = filters.EndDate;
                 model.CompleteDate = filters.CompleteDate;
+                model.EmploymentDateBegin = filters.EmploymentDateBegin;
+                model.EmploymentDateEnd = filters.EmploymentDateEnd;
                 model.UserName = filters.UserName;
                 model.ContractNumber1C = filters.ContractNumber1C;
                 model.CandidateId = filters.CandidateId;
@@ -2814,6 +2825,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -3130,7 +3143,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Отсутствуют права на выбранное подразделение.";
                 return null;
             }
-            
+
+            if (string.IsNullOrEmpty(model.Surname) || string.IsNullOrWhiteSpace(model.Surname))
+            {
+                error = "Заполните ФИО кандидата!";
+                return null;
+            }
+            else
+            {
+                if (model.Surname.Trim().Length == 0)
+                {
+                    error = "Заполните ФИО кандидата!";
+                    return null;
+                }
+            }
+
             User newUser = new User
             {
                 Login = string.Empty,

@@ -90,8 +90,8 @@ namespace WebMvc.Controllers
 
             if (!string.IsNullOrEmpty(error))
             {
-                //ViewBag.Error = error;
-                ModelState.AddModelError("DepartmentId", error);
+                ViewBag.Error = error;
+                //ModelState.AddModelError("DepartmentId", error);
             }
 
             if (ModelState.Count != 0)
@@ -1780,6 +1780,7 @@ namespace WebMvc.Controllers
             model.IsManagersAvailable = IsManagersAvailable;
             model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
             model.TabIndex = TabIndex;
+            model = EmploymentBl.GetPersonnelInfoModel(model);
             return View(model);
         }
 
