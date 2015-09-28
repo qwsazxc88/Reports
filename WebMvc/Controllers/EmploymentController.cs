@@ -90,8 +90,8 @@ namespace WebMvc.Controllers
 
             if (!string.IsNullOrEmpty(error))
             {
-                //ViewBag.Error = error;
-                ModelState.AddModelError("DepartmentId", error);
+                ViewBag.Error = error;
+                //ModelState.AddModelError("DepartmentId", error);
             }
 
             if (ModelState.Count != 0)
