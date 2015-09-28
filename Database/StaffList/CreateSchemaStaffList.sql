@@ -3303,7 +3303,63 @@ INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, Dep
 INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-03-2', N'ЮД-Управление по Краснодарскому краю (+Ставропольский кр., +Респ. Адыгея)', 13, 10036)	--есть еще вариант 5758 = Управление по Краснодарскому краю (Юг)
 INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-03-1', N'ЮД-Управление по Ростовской области (+Север Краснодарского кр.)', 13, 10035)
 
+/*
+так выявил точки, которые не удалось связать вообще
+select distinct b.Бизнес_группа_ID_Бизнес_группа into #tmp from TerraPoint as a 
+inner join Fingrag_csv as b on b.Код_подразделения = a.code
+where a.PossibleDepartmentId is not null and a.ItemLevel = 3 and (a.EndDate is null or (a.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30))
+
+
+
+select b.Бизнес_группа_ID_Бизнес_группа, b.Код_подразделения, b.Сокращенное_наименование from TerraPoint as a 
+inner join Fingrag_csv as b on b.Код_подразделения = a.code
+where a.PossibleDepartmentId is null and a.ItemLevel = 3 and (a.EndDate is null or (a.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30))
+and not exists (select * from #tmp where Бизнес_группа_ID_Бизнес_группа = b.Бизнес_группа_ID_Бизнес_группа)
+--1303
+
+
+drop table #tmp
+
+
+--заготовка для связи БГ
+select REPLACE(d.name, 'бизнес-группа', ''), d.id, d.ItemLevel,d.name, c.id, c.ItemLevel,c.name, b.id,b.Name, a.Name
+from Department as a
+inner join Department as b on b.ParentId = a.code and b.ItemLevel = 3 and (b.name not like '%ЛИКВИДИРОВАНО%' and b.name not like '%гпд%' and b.name not like '%ЛИКВИДИРОВАНнО%' and b.name not like '%ауп%')
+inner join Department as c on c.ParentId = b.code and c.ItemLevel = 4 and (c.name not like '%ЛИКВИДИРОВАНО%' and c.name not like '%гпд%' and c.name not like '%ЛИКВИДИРОВАНнО%' and c.name not like '%ауп%')
+inner join Department as d on d.ParentId = c.code and d.ItemLevel = 5 and (d.name not like '%ЛИКВИДИРОВАНО%' and d.name not like '%гпд%' and d.name not like '%ЛИКВИДИРОВАНнО%' and d.name not like '%ауп%')
+where a.ItemLevel = 2 and a.id not in (4130, 4205)
+order by b.name, c.Name
+*/
+
 --StaffDepartmentBusinessGroup
+--алгоритм связи бизнес-групп
+/*
+--заготовка запроса, которым нужно взять интересующие нас связанные записи из графиков
+SELECT FROM TerraPoint where PossibleDepartmentId is not null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
+
+--заготовка запроса, которым нужно взять интересующие нас несвязанные записи из графиков
+SELECT FROM TerraPoint where PossibleDepartmentId is null null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
+
+--заготовка запроса, которым нужно взять интересующие нас связанные записи из графиков
+UPDATE Department SET FingradCode = B.Code
+FROM Department as A
+INNER JOIN TerraPoint as B ON B.PossibleDepartmentId = A.Id and B.ItemLevel = 3 and (B.EndDate is null or (B.EndDate is not null and DATEDIFF(dd, B.EndDate, getdate()) <= 30))
+INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.Code
+WHERE A.ItemLevel = 7
+
+закачал справочник бизнес-групп в таблицу DepFinBG
+связать с справочником дирекций и управлений просто, на основе данных введенных в справочникик выше
+
+записи в таблице для графиков, где были проставлены наши id для точек, содержат почти весь перечень бизнес-групп, которые находятся в несвязанных с нашим справочником подразделений точек 
+по этому связь с нашими бизнес-группами нужно сделать следующим образом
+1. взять связанные с нашим справочником записи из графиков, 
+	- определить для них id бизнес-группы
+	- связать их с точками финграда (Fingrag_csv)
+	- взять коды БГ
+	- проставить для найденных кодов наши id
+
+*/
+
 --StaffDepartmentRPLink
 
 
