@@ -3143,7 +3143,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Отсутствуют права на выбранное подразделение.";
                 return null;
             }
-            
+
+            if (string.IsNullOrEmpty(model.Surname) || string.IsNullOrWhiteSpace(model.Surname))
+            {
+                error = "Заполните ФИО кандидата!";
+                return null;
+            }
+            else
+            {
+                if (model.Surname.Trim().Length == 0)
+                {
+                    error = "Заполните ФИО кандидата!";
+                    return null;
+                }
+            }
+
             User newUser = new User
             {
                 Login = string.Empty,
