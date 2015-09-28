@@ -233,6 +233,8 @@ namespace WebMvc
         protected void Application_Error(object sender, EventArgs e)
         {
             Exception ex = Server.GetLastError();
+
+            log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
             string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
             
             var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
