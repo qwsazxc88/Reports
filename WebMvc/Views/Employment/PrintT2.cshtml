@@ -366,10 +366,10 @@ td { padding: 0px; padding-left: 2px; overflow:hidden; }
 <TD CLASS="R2C0"><SPAN></SPAN></TD>
 <TD CLASS="R2C0"><SPAN></SPAN></TD>
 <TD CLASS="R2C0"><SPAN></SPAN></TD>
-<TD CLASS="R2C0" COLSPAN=2><SPAN></SPAN></TD>
-<TD CLASS="R3C11"><SPAN STYLE="white-space:nowrap;">Трудовой&nbsp;договор</SPAN></TD>
+<TD CLASS="R2C0"><SPAN></SPAN></TD>
+<TD CLASS="R3C11" COLSPAN=2><SPAN STYLE="white-space:nowrap;">Трудовой&nbsp;договор</SPAN></TD>
 <TD CLASS="R14C11"><SPAN STYLE="white-space:nowrap;">номер</SPAN></TD>
-<TD CLASS="R14C12"><SPAN STYLE="white-space:nowrap;">1129</SPAN></TD>
+<TD CLASS="R14C12"><SPAN STYLE="white-space:nowrap;">@Model.ContractNumber</SPAN></TD>
 <TD></TD>
 </TR>
 <TR CLASS=R2>
@@ -385,16 +385,16 @@ td { padding: 0px; padding-left: 2px; overflow:hidden; }
 <TD CLASS="R2C0"><SPAN></SPAN></TD>
 <TD CLASS="R2C0"><SPAN></SPAN></TD>
 <TD CLASS="R15C11"><SPAN STYLE="white-space:nowrap;">дата</SPAN></TD>
-<TD CLASS="R15C12"><SPAN STYLE="white-space:nowrap;">01.10.2014</SPAN></TD>
+<TD CLASS="R15C12"><SPAN STYLE="white-space:nowrap;">@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "")</SPAN></TD>
 <TD></TD>
 </TR>
 <TR CLASS=R4>
 <TD CLASS="R16C0" STYLE=" border-left-style: none;"><SPAN STYLE="white-space:nowrap;">1.&nbsp;Фамилия</SPAN></TD>
-<TD CLASS="R16C1" COLSPAN=4>Авакян</TD>
+<TD CLASS="R16C1" COLSPAN=4>@Model.LastName</TD>
 <TD CLASS="R16C5"><SPAN STYLE="white-space:nowrap;">Имя</SPAN></TD>
-<TD CLASS="R16C1" COLSPAN=3>Геворг</TD>
+<TD CLASS="R16C1" COLSPAN=3>@Model.FirstName</TD>
 <TD CLASS="R16C5"><SPAN STYLE="white-space:nowrap;">Отчество</SPAN></TD>
-<TD CLASS="R16C1" COLSPAN=3>Игоревич</TD>
+<TD CLASS="R16C1" COLSPAN=3>@Model.Patronymic</TD>
 <TD></TD>
 </TR>
 <TR CLASS=R2>
@@ -415,7 +415,7 @@ td { padding: 0px; padding-left: 2px; overflow:hidden; }
 </TR>
 <TR CLASS=R2>
 <TD CLASS="R2C0" COLSPAN=2 STYLE=" border-left-style: none;"><SPAN STYLE="white-space:nowrap;">2.&nbsp;Дата&nbsp;рождения</SPAN></TD>
-<TD CLASS="R18C2" COLSPAN=9><SPAN STYLE="white-space:nowrap;">16&nbsp;марта&nbsp;1992 г.</SPAN></TD>
+<TD CLASS="R18C2" COLSPAN=9><SPAN STYLE="white-space:nowrap;">@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToLongDateString() : "")</SPAN></TD>
 <TD><SPAN></SPAN></TD>
 <TD CLASS="R3C12"><SPAN></SPAN></TD>
 <TD></TD>
