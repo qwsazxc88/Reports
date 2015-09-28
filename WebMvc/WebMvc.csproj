@@ -834,8 +834,6 @@
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
-<<<<<<< HEAD
-=======
     <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
     <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
 >>>>>>> master
