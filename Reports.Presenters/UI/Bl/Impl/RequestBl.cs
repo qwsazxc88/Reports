@@ -13034,5 +13034,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return index;
             return null;
         }
+        public IList<Terrapoint_DepartmentDto> GetTP_D_list()
+        {
+            return DepartmentDao.GetTP_D_list();
+        }
+        public IList<Department_TerrapointDto> GetD_TP_list()
+        {
+            return DepartmentDao.GetD_TP_list();
+        }
     }
 }
