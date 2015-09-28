@@ -1174,7 +1174,7 @@ GO
 CREATE TABLE [dbo].[StaffDepartmentBusinessGroup](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[Code] [nvarchar](10) NULL,
+	[Code] [nvarchar](11) NULL,
 	[Name] [nvarchar](150) NULL,
 	[AdminId] [int] NULL,
 	[DepartmentId] [int] NULL,
@@ -3332,7 +3332,30 @@ order by b.name, c.Name
 */
 
 --StaffDepartmentBusinessGroup
+INSERT INTO StaffDepartmentBusinessGroup (Version, Code, Name, AdminId, DepartmentId)
+SELECT 1, A.[ID Бизнес-группа], A.[Бизнес-группа], B.Id, C.Id
+FROM DepFinBG as a
+LEFT JOIN StaffDepartmentAdministration as B ON B.Name = A.[Управление Дирекции]
+LEFT JOIN (SELECT distinct C.[ID_Бизнес_группа_Бизнес_группа], D.Id
+					FROM TerraPoint as A
+					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+					INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = A.Code
+					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 5
+					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+								and A.ParentId <> '') as C ON C.ID_Бизнес_группа_Бизнес_группа = A.[ID Бизнес-группа]
 --алгоритм связи бизнес-групп
+/*
+записи в таблице для графиков, где были проставлены наши id для точек, содержат почти весь перечень бизнес-групп, которые находятся в несвязанных с нашим справочником подразделений точек 
+по этому связь с нашими бизнес-группами нужно сделать следующим образом
+1. взять связанные с нашим справочником записи из графиков, 
+	- определить для них id бизнес-группы
+	- связать их с точками финграда (Fingrag_csv)
+	- взять коды БГ
+	- проставить для найденных кодов наши id
+*/
+
+
+
 /*
 --заготовка запроса, которым нужно взять интересующие нас связанные записи из графиков
 SELECT FROM TerraPoint where PossibleDepartmentId is not null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
