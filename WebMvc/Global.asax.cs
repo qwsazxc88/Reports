@@ -13,7 +13,7 @@ using Reports.Core;
 using Reports.Presenters;
 using Reports.Presenters.Services;
 using Reports.Presenters.Services.Impl;
-
+using System.IO;
 
 namespace WebMvc
 {
@@ -233,7 +233,18 @@ namespace WebMvc
         protected void Application_Error(object sender, EventArgs e)
         {
             Exception ex = Server.GetLastError();
-            log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
+            string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
+            
+            var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+            string usrname = "";
+            if (usr != null)
+            {
+                usrname = String.Format("{0} {1} {2} {3}", usr.Id, usr.Login, usr.Name, usr.UserRole);
+            }
+            log4net.LogManager.GetLogger(GetType()).Error(String.Format("Error occured: request.params: {0} {1} ", source, Environment.NewLine),ex);
+            var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
+            if (requbl==null) return;
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));
             /*HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;
