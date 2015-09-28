@@ -185,6 +185,8 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 DateTime? CompleteDate,
+                DateTime? EmploymentDateBegin,
+                DateTime? EmploymentDateEnd,
                 string userName,
                 string ContractNumber1C,
                 int CandidateId,
@@ -197,7 +199,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, currentId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetCandidateIdWhere(whereString, CandidateId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate, CompleteDate);
+            whereString = GetDatesWhere(whereString, beginDate, endDate, CompleteDate, EmploymentDateBegin, EmploymentDateEnd);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
@@ -206,7 +208,7 @@ namespace Reports.Core.Dao.Impl
 
             IQuery query = CreateQuery(sqlQuery);
 
-            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate, AppointmentReportNumber, AppointmentNumber);
+            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate, AppointmentReportNumber, AppointmentNumber, EmploymentDateBegin, EmploymentDateEnd);
 
             //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
@@ -337,7 +339,7 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        public string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate, DateTime? CompleteDate)
+        public string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate, DateTime? CompleteDate, DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
         {
             if (beginDate.HasValue)
             {
@@ -356,6 +358,18 @@ namespace Reports.Core.Dao.Impl
                 whereString = string.Format(@"{0} personnelManagers.CompleteDate = :CompleteDate",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
+
+            if (EmploymentDateBegin.HasValue)
+            {
+                whereString = string.Format(@"{0} cast(personnelManagers.EmploymentDate as date) >= :EmploymentDateBegin",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+            if (EmploymentDateEnd.HasValue)
+            {
+                whereString = string.Format(@"{0} cast(personnelManagers.EmploymentDate as date) <= :EmploymentDateEnd",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
             return whereString;
         }
 
@@ -560,7 +574,8 @@ namespace Reports.Core.Dao.Impl
             return query;
         }
 
-        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate, string AppointmentReportNumber, int AppointmentNumber)
+        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate, string AppointmentReportNumber, int AppointmentNumber,
+            DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
         {
             query.SetInt32("currentId", currentId);
             if (beginDate.HasValue)
@@ -574,6 +589,15 @@ namespace Reports.Core.Dao.Impl
 
             if (CompleteDate.HasValue)
                 query.SetDateTime("CompleteDate", CompleteDate.Value);
+
+            if (EmploymentDateBegin.HasValue)
+            {
+                query.SetDateTime("EmploymentDateBegin", EmploymentDateBegin.Value);
+            }
+            if (EmploymentDateEnd.HasValue)
+            {
+                query.SetDateTime("EmploymentDateEnd", EmploymentDateEnd.HasValue ? EmploymentDateEnd.Value : DateTime.Now);
+            }
 
             if (!string.IsNullOrEmpty(userName))
             {

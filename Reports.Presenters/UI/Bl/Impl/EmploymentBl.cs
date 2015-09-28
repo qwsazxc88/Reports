@@ -1879,6 +1879,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model)
+        {
+            EmploymentCandidate entity = GetCandidate(model.CandidateID);
+            model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
+            return model;
+        }
+
         public RosterModel GetRosterModel(RosterFiltersModel filters)
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -1928,6 +1935,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -1943,6 +1952,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate = filters.BeginDate;
                 model.EndDate = filters.EndDate;
                 model.CompleteDate = filters.CompleteDate;
+                model.EmploymentDateBegin = filters.EmploymentDateBegin;
+                model.EmploymentDateEnd = filters.EmploymentDateEnd;
                 model.UserName = filters.UserName;
                 model.ContractNumber1C = filters.ContractNumber1C;
                 model.CandidateId = filters.CandidateId;
@@ -2814,6 +2825,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
@@ -3786,11 +3799,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если прицеплен весь указанный перечень, меняем статус у кандидата
             if (EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
             {
-                candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
+                //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
+                if(!candidate.SendTo1C.HasValue)
+                    candidate.Status = EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE;
             }
             else
             {
-                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if ((int)candidate.Status == (int)EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER && !candidate.SendTo1C.HasValue)
                     candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
             }
 

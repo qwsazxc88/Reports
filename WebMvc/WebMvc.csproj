@@ -841,6 +841,8 @@
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsList.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsEdit.cshtml" />
+    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
+    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />

@@ -55,7 +55,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
         AnalyticalStatementModel GetAnalyticalStatementModel();
-        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(int userId);
+        AnalyticalStatementDetailsModel GetAnalyticalStatementDetails(AnalyticalStatementDetailsModel model);
         IList<AnalyticalStatementDto> GetAnalyticalStatements(string name,int departamentId, DateTime? beginDate, DateTime? endDate, string Number, int sortBy, bool? SortDescending);
         MissionListModel GetMissionListModel();
         void SetMissionListModel(MissionListModel model, bool hasError);
@@ -221,5 +221,7 @@ namespace Reports.Presenters.UI.Bl
         void SetDocumentsToModel(SurchargeNoteListModel model);
         void GetDictionaries(SurchargeNoteEditModel model);
         bool CheckDepartmentLevel(int id, int level);
+        IList<Terrapoint_DepartmentDto> GetTP_D_list();
+        IList<Department_TerrapointDto> GetD_TP_list();
     }
 }
