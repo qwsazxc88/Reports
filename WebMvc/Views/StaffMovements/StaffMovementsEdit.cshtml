@@ -596,10 +596,10 @@
                               <td>@Html.CheckBoxFor(m => m.ServiceOrderDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
                           </table>
-                          @if (Model.IsDocsEditable && Model.Id > 0)
+                          @*if (Model.IsDocsEditable && Model.Id > 0)
                           {
                             <input type="button" onclick="SaveDocs()" value="Сохранить требования к документам" />
-                          }
+                          }*@
                           </fieldset>
                           </div>
                           }

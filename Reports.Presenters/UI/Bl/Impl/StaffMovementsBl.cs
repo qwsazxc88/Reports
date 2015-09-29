@@ -520,12 +520,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsDocsAddAvailable = true;
+                    model.IsDocsEditable = true;
                     model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 9://Документы подписаны
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsConfirmButtonAvailable = true;
+                    model.IsDocsEditable = true;
                     model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 10://Перевод оформлен
@@ -962,6 +964,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(accept) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.DocsApproved);
                     break;
                 case 9:
+                    //Проверяем все документы, если у обязательного документа нет вложения - нужно вернутся обратно
+                    bool accept_ = true;
+                    foreach (var doc in entity.Docs)
+                    {
+                        if (doc.IsRequired && doc.Attachment == null) accept_ = false;
+                    }
+                    if (!accept_) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.ChiefControl);
                     if (model.ISRejectAvailable && model.IsRejectButtonPressed)
                     {
                         //Если нажали кнопку отказа, то отказ и всё поезд ушёл.
@@ -976,7 +985,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Заявка подтверждена. все щасливы, ждём выгрузки в одноэс
                         entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.ChiefControl);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
                     }
                     break;
                 case 10:
