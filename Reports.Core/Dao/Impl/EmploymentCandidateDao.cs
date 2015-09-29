@@ -210,7 +210,7 @@ namespace Reports.Core.Dao.Impl
 
             IQuery query = CreateQuery(sqlQuery);
 
-            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate, AppointmentReportNumber, AppointmentNumber, PersonnelId, EmploymentDateBegin, EmploymentDateEnd);
+            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName, ContractNumber1C, CompleteDate, AppointmentReportNumber, AppointmentNumber, EmploymentDateBegin, EmploymentDateEnd);
 
             //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
@@ -404,7 +404,7 @@ namespace Reports.Core.Dao.Impl
         {
             if (PersonnelId != 0)
             {
-                whereString = string.Format(@"{0} candidate.PersonnelId = :PersonnelId",
+                whereString = string.Format(@"{0} candidate.PersonnelId = " + PersonnelId.ToString(),
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 
@@ -588,10 +588,9 @@ namespace Reports.Core.Dao.Impl
         }
 
         private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName, string ContractNumber1C, DateTime? CompleteDate, string AppointmentReportNumber, int AppointmentNumber,
-            int PersonnelId, DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
+            DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
         {
             query.SetInt32("currentId", currentId);
-            query.SetInt32("PersonnelId", PersonnelId);
 
             if (beginDate.HasValue)
             {
