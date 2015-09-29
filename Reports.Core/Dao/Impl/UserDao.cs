@@ -1141,9 +1141,13 @@ namespace Reports.Core.Dao.Impl
                 .Take(PageSize);
             return userList.ToList();
         }
-        public IList<User> GetUsersForPersonnel(int persId)
+        public IList<Reports.Core.Domain.User> GetUsersForPersonnel(int persId)
         {
-            return Session.Query<User>().Where(x => (x.UserRole & UserRole.Employee)>0 && x.Personnels.Any(y => y.Id == persId)).ToList();
+            var users =  Session.Query<User>().Where(x => x.Personnels.Any(y => y.Id == persId)).ToList();
+            var result = new List<User>();
+            if(users!=null && users.Any())
+                result = users.Where(x => (x.UserRole & UserRole.Employee) > 0).ToList();
+            return result;
         }
         public IList<User> GetUsersForPersonnel(string userName,int personnelId,ref int currentPage, out int numberOfPages)
         {
