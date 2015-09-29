@@ -192,6 +192,7 @@ namespace Reports.Core.Dao.Impl
                 int CandidateId,
                 string AppointmentReportNumber,
                 int AppointmentNumber,
+                int PersonnelId,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -202,6 +203,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDatesWhere(whereString, beginDate, endDate, CompleteDate, EmploymentDateBegin, EmploymentDateEnd);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetPersonnelWhere(whereString, PersonnelId);
             whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
             whereString = GetAppointmentWhere(whereString, AppointmentReportNumber, AppointmentNumber);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -398,6 +400,17 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
+        public string GetPersonnelWhere(string whereString, int PersonnelId)
+        {
+            if (PersonnelId != 0)
+            {
+                whereString = string.Format(@"{0} candidate.PersonnelId = " + PersonnelId.ToString(),
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            return whereString;
+        }
+
         public string GetContractNumber1CWhere(string whereString, string ContractNumber1C)
         {
             if (!string.IsNullOrEmpty(ContractNumber1C))
@@ -578,6 +591,7 @@ namespace Reports.Core.Dao.Impl
             DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
         {
             query.SetInt32("currentId", currentId);
+
             if (beginDate.HasValue)
             {
                 query.SetDateTime("beginDate", beginDate.Value);

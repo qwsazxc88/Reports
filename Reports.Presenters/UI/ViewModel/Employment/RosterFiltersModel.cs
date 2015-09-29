@@ -21,5 +21,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? CompleteDate { get; set; }
         public string AppointmentReportNumber { get; set; }
         public int? AppointmentNumber { get; set; }
+        public int PersonnelId { get; set; }
     }
 }
