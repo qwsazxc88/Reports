@@ -21,6 +21,8 @@ namespace Reports.Core.Dto
       public string Dhouse {get;set;}
       public string TPcode {get;set;}
       public string TPName {get;set;}
+      public string TP1Name { get; set; }
+      public string TP2Name { get; set; }
       public string TPcity {get;set;}
       public string TPstreet { get; set; }
     }
