@@ -119,6 +119,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.PersonnelId):
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(model => model.PersonnelId, new SelectList(Model.Personnels, "Id", "Name"))
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td colspan="2">
                                                     @Html.LabelFor(m => m.BeginDate):
                                                     @Html.EditorFor(model => model.BeginDate) 
