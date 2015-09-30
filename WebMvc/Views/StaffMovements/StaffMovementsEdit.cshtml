@@ -525,7 +525,7 @@
                                     <input type="file" name="AdditionalAgreementDoc" />                               
                                 }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.AdditionalAgreementDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.AdditionalAgreementDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                               <td>
@@ -542,7 +542,7 @@
                                     <input type="file" name="MovementOrderDoc" />
                                 }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.MovementOrderDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.MovementOrderDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                               <td>
@@ -559,7 +559,7 @@
                                     <input type="file" name="MaterialLiabilityDoc" />
                                 }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.MaterialLiabilityDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.MaterialLiabilityDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
                           <tr>
                               <td>
@@ -576,7 +576,7 @@
                                     <input type="file" name="RequirementsOrderDoc" />
                                   }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.RequirementsOrderDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.RequirementsOrderDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
                           <tr>
                               <td>
@@ -593,7 +593,7 @@
                                         <input type="file" name="ServiceOrderDoc" />
                                     }
                               </td>
-                              <td>@Html.CheckBoxFor(m => m.ServiceOrderDocIsRequired, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                              <td>@Html.CheckBoxFor(m => m.ServiceOrderDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
                           </table>
                           @*if (Model.IsDocsEditable && Model.Id > 0)
@@ -707,6 +707,10 @@
                         @if (Model.IsSaveAvailable)
                         {
                             <input type="submit"  onclick="return ValidateForm();" value="Сохранить" />
+                        }
+                        @if (Model.IsConfirmButtonAvailable)
+                        {
+                            <input type="submit"  onclick="return ButtonPressed('Confirm');" value="Утвердить" />
                         }
                         @if (Model.IsStopButtonAvailable)
                         {
