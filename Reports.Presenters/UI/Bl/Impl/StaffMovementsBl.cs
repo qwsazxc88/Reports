@@ -649,7 +649,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
-                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable & true;//Кнопка утверждения документов                   
+                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable && true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки  
                     break;
             }
@@ -983,8 +983,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsConfirmButtonAvailable && model.IsConfirmButtonPressed)
                     {
                         //Заявка подтверждена. все щасливы, ждём выгрузки в одноэс
-                        entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
-                        entity.PersonnelManagerAccept = DateTime.Now;
+                        //entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
+                        //entity.PersonnelManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
                     }
                     break;
