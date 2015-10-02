@@ -1779,6 +1779,7 @@ legend {
      display:block;
      position:relative;
      padding:10px;
+     margin:5px;
      background-color: #FADEDE;
      color: #A80707;
         border: 1px solid #D9CACA;
@@ -1865,7 +1866,8 @@ legend {
 
 }
  #toolbar {
-    padding: 4px;
+    padding: 10px;
+    width:100%;
     display: inline-block;
   }
   /* support: IE7 */

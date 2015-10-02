@@ -136,8 +136,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = x.Creator!=null?x.Creator.Name:"",
                     Dep3Name = x.SourceDepartment!=null?((x.SourceDepartment.Dep3 != null && x.SourceDepartment.Dep3.Any()) ? x.SourceDepartment.Dep3.First().Name : ""):"",
                     Dep7Name = x.SourceDepartment!=null?x.SourceDepartment.Name:"",
-                    TargetManagerName = x.TargetManager!=null?x.TargetManager.Name:"",
-                    SourceMangerName = x.SourceManager != null ? x.SourceManager.Name : "",
+                    TargetManagerName = x.TargetManager!=null ? x.TargetManager.Name:"",
+                    SourceManagerName = x.SourceManager != null ? x.SourceManager.Name : "",
                     Status =x.Status!=null? (x.Status.Id==3 && x.Type.Id!=2)?"Отправлена на согласование руководителю": x.Status.Name:"",
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
@@ -146,8 +146,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
                     PositionTarget = x.TargetPosition != null ? x.TargetPosition.Name : "",
-                    TargetDep7Name = x.TargetDepartment!=null?x.TargetDepartment.Name:"",
-                    TargetDep3Name = x.TargetDepartment!=null?((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
+                    TargetDep7Name = x.TargetDepartment!=null ? x.TargetDepartment.Name:"",
+                    TargetDep3Name = x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }

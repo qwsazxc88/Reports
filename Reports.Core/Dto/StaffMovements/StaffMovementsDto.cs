@@ -20,7 +20,7 @@ namespace Reports.Core.Dto
         public int PositionCurrentId { get; set; }
         public string PositionTarget { get; set; }
         public int PositionTargetId { get; set; }
-        public string SourceMangerName { get; set; }
+        public string SourceManagerName { get; set; }
         public int SourceManagerId { get; set; }
         public string TargetManagerName { get; set; }
         public int TargetManagerId { get; set; }
