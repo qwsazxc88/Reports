@@ -443,14 +443,28 @@
                     &nbsp;@candidate.MentorName
                 </td>
                 <td class="centered">
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { disabled = "disabled" })
+                    }
                     <br />
-                    @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TKReceivedDate" ;}
+                    @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TKReceivedDate";}
                     <label id=@ln>@(candidate.TKReceivedDate.HasValue ? candidate.TKReceivedDate.Value.ToShortDateString() : "")</label>
                     
                 </td>
                 <td class="centered">
-                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { disabled = "disabled" })
+                    }
                     <br />
                     @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TDReceivedDate";}
                     <label id=@ln>@candidate.TDReceivedDate</label>
