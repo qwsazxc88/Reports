@@ -97,6 +97,11 @@ namespace Reports.Core.Dto.Employment2
         public string MentorName { get; set; }
         public DateTime? PlanRegistrationDate { get; set; }
 
+        public bool IsTKReceived { get; set; }
+        public DateTime? TKReceivedDate { get; set; }
+        public bool IsTDReceived { get; set; }
+        public DateTime? TDReceivedDate { get; set; }
+
         /*
         [Display(Name = "Паспортные данные"),
             StringLength(500, ErrorMessage = "Не более 500 знаков."),
@@ -152,5 +157,12 @@ namespace Reports.Core.Dto.Employment2
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+    public class CandidateDocRecievedDto
+    {
+        public int Id { get; set; }
+        public bool IsTKReceived { get; set; }
+        public bool IsTDReceived { get; set; }
+        public string ReceivedDate { get; set; }
     }
 }
