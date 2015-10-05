@@ -8,7 +8,7 @@
     ViewBag.Title = "Начисления";
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.PlaceId = Model.Id;
-    ViewBag.PlaceTypeId = 1; 
+    ViewBag.PlaceTypeId = (int) Reports.Core.Enum.CommentsPlaceTypes.SurchargeNote; 
 }
 <form action="/SurchargeNote/SurchargeNoteEdit" method="post" enctype = "multipart/form-data"> 
     @Html.HiddenFor(m => m.NoteType)

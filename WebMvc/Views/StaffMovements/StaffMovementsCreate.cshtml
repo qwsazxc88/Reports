@@ -1,0 +1,123 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@model Reports.Presenters.UI.ViewModel.StaffMovementsEditModel
+@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if (dto.UserRole == UserRole.Employee) {Model.User.Id = dto.Id;}
+    ViewBag.Title = "Создание заявки на перемещение";
+    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+}
+@using (Html.BeginForm("Edit","StaffMovements"))
+{
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table>
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                        </td>
+                </tr>                
+                <tr>
+                    <td colspan="2">
+                    @Html.ValidationSummary(false, "")
+                    <div id="Error" visible="false" style="color:Red"/>
+                    </td>
+                </tr>
+                <tr>
+                <td>Тип заявки:</td>
+                <td>@Html.DropDownListFor(m=>m.RequestType,new SelectList(Model.RequestTypes,"Id","Name"))</td>
+                </tr>
+                @if (dto.UserRole != UserRole.Employee)
+                {
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.User.Name):
+                    </td>
+                    <td>    
+                     @Html.TextBoxFor(m => m.User.Name, new { placeholder = "Введите начальные буквы фио сотрудника", style = "width:600px" })                   
+                     @Html.HiddenFor(m => m.User.Id)
+                    </td>
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                    <td>
+                    @Html.HiddenFor(m => m.User.Id)
+                    </td>
+                    </tr>
+                }
+        </table>
+        </div>                          
+      </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+                <table>
+                     <tr>
+                        <td colspan="2">
+                            <input type="submit"  onclick="return ValidateForm();" value="Создать заявку @(dto.UserRole != UserRole.Employee ? " за сотрудника" : "")"/>
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </td>
+    </tr> 
+    </table>
+}
+
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        setActiveMenuItem("StaffMovements");
+        $(':button, :input[type=button], :input[type=submit]').button();
+        @if(dto.UserRole != UserRole.Employee)
+        {<text>
+        $("#Surname").change(function () {
+            if ($("#User_Name").val() == "") {
+                $("#User_Id").val(0);
+            }
+        });
+
+        //автозаполнение сотруников
+        $(function () {
+            $("#User_Name").each(
+                function () {
+                    var target = $(this);
+                    target.autocomplete({ source: "/Help/AutocompletePersonSearch",
+                        select: function (event, ui) {
+                            //для физиков
+                            if (ui.item.Id != null) {
+                                $("#User_Name").val(ui.item.Name);
+                                $("#User_Id").val(ui.item.Id);
+                            }
+                            return true;
+                        }
+                    });
+                });
+        });
+        </text>
+        }
+    });
+    
+    function addUsersSelError(value) {
+        $("#Error").text(value);
+        $("#Error").show();
+    }
+    function clearUsersSelErrors() {
+        $("#Error").text("");
+        $("#Error").hide();
+    }
+    function ValidateForm() {
+        if ($("#User_Id").val() == undefined || $("#User_Id").val() == 0) {
+            addUsersSelError("Не выбран пользователь");
+            return false;
+        }
+        return true;
+    }
+ </script>
+
+
