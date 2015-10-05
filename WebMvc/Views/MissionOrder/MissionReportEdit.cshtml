@@ -21,7 +21,7 @@
  <input type="text" id="SurchargeSum" />
  <input type="button" value="Создать" onclick="AddSurcharge();" />
 </div>
-<div id="StornoDialog" title="Сторно выданной суммы" > 
+<div id="StornoDialog" title="Ручное удержание" > 
      <div>
      <p>Введите сумму:</p>
      <input type="text" id="StornoSum" />
@@ -33,7 +33,7 @@
      </div>
      <br />
      <div>
-     <p>Причина сторнирования:</p>
+     <p>Причина :</p>
      <input type="text" id="StornoComment" />   
      </div>
      <hr />
@@ -126,7 +126,7 @@
         </tr>
         @if (Model.StornoAddedDate.HasValue)
         {
-            <tr style="color:Red"><td>Сторно:</td>
+            <tr style="color:Red"><td>Ручное удержание:</td>
             <td>
             @Html.HiddenFor(m=>m.StornoAddedDate)
             @Html.HiddenFor(m=>m.StornoSum)
@@ -303,7 +303,7 @@
             }
             @if ((dto.UserRole & UserRole.Accountant) > 0 && !Model.StornoAddedDate.HasValue && !(Model.ManualDeductions!=null && Model.ManualDeductions.Any()))
             {
-                <input type="button" id="StornoButton" value="Сторно выданной суммы" onclick="$('#StornoDialog').dialog('open');" /> 
+                <input type="button" id="StornoButton" value="Ручное удержание" onclick="$('#StornoDialog').dialog('open');" /> 
             }
             @if (Model.Id > 0)
             {
