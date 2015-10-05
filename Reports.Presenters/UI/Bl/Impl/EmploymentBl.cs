@@ -1967,6 +1967,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
             model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Manager || AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+                model.IsMarkDocOriginal = true;
+            else
+                model.IsMarkDocOriginal = false;
                                     
             return model;
         }
