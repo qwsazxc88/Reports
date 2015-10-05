@@ -187,6 +187,8 @@
         @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
         {
             <button type="button" id="btnSaveTechDissmiss">Сохранить техн. увольнения</button>
+            <button type="button" id="btnSaveTK">Сохранить данные о получении оригинала ТК</button>
+            <button type="button" id="btnSaveTD">Сохранить данные о получении оригинала ТД</button>
         }
     </div>
     
@@ -289,6 +291,12 @@
         <th>
             <div id="sort22"><a href="#" onclick="SortColumnChanged(22);">ФИО<br />Наставника</a></div>
         </th>
+        <th>
+            <div id="sort24"><a href="#" onclick="SortColumnChanged(24);">Оригинал ТК<br />получен</a></div>
+        </th>
+        <th>
+            <div id="sort25"><a href="#" onclick="SortColumnChanged(25);">Оригинал ТД<br />получен</a></div>
+        </th>
         @*
         <th>
             Анкета
@@ -315,6 +323,7 @@
     </tr>
     <tbody id="tblBody">
         @{ int i = 1; }
+        @{string ln = string.Empty;}
 
         @foreach (var candidate in Model.Roster)
         {
@@ -427,10 +436,24 @@
                     }
                 </td>
                 <td>
-                    @if(candidate.DismissalDate.HasValue) {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
+                    @if (candidate.DismissalDate.HasValue)
+                    {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
                 </td>
                 <td>
                     &nbsp;@candidate.MentorName
+                </td>
+                <td class="centered">
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    <br />
+                    @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TKReceivedDate" ;}
+                    <label id=@ln>@(candidate.TKReceivedDate.HasValue ? candidate.TKReceivedDate.Value.ToShortDateString() : "")</label>
+                    
+                </td>
+                <td class="centered">
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                    <br />
+                    @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TDReceivedDate";}
+                    <label id=@ln>@candidate.TDReceivedDate</label>
                 </td>
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
@@ -582,6 +605,52 @@
                 function (data) {
                     if (data.ok == true) {
                         alert("Пометки о техническом увольнени сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
+
+        $("#btnSaveTK").click(function () {
+            var url="@Url.Action("CandidateSaveTKRecieved", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        for (var i = 0; i < data.roster.length; i++)
+                        {
+                            $("#" + "Roster_" + i + "__TKReceivedDate").text(data.roster[i].ReceivedDate);
+                        }
+
+                        alert("Пометки о получении оригинала ТК сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
+
+        $("#btnSaveTD").click(function () {
+            var url="@Url.Action("CandidateSaveTDRecieved", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        for (var i = 0; i < data.roster.length; i++)
+                        {
+                            $("#" + "Roster_" + i + "__TDReceivedDate").text(data.roster[i].ReceivedDate);
+                        }
+
+                        alert("Пометки о получении оригинала ТД сохранены!.");
                     }
                     else {
                         alert("Ошибка при сохранении данных!.");
