@@ -7834,6 +7834,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = deduction.Number.ToString();
                 if (deduction.MissionReport != null && deduction.MissionReport.Any())
                     model.MissionReportNumber = deduction.MissionReport.First().Number;
+                else
+                {
+                    try
+                    {
+                        var storno = MissionReportDao.Find(x =>x.StornoDeduction!=null && x.StornoDeduction.Id == deduction.Id);
+                        if (storno != null && storno.Any())
+                            model.MissionReportNumber = storno.First().Number;
+                    }
+                    catch (Exception ex) { }
+                }
                 if (deduction.Type.Id != (int)DeductionTypeEnum.Deduction)
                 {
                     model.DismissalDate = deduction.DismissalDate;
@@ -11118,9 +11128,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetMrStatuses();
         }
-        public void AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        public Result AddStorno(int MissionReportId, decimal StornoSum, string StornoComment, int StornoDeductionNumber)
         {
+            
             var mr=MissionReportDao.Load(MissionReportId);
+            var deductions = DeductionDao.Find(x => x.Number == StornoDeductionNumber);
+            if (deductions == null || !deductions.Any())
+            {
+                return new Result(false, "Не найдено удержание");
+            }
+            mr.StornoDeduction = deductions.First();
             mr.StornoAddedBy = UserDao.Load(CurrentUser.Id);
             mr.StornoSum = StornoSum;
             mr.StornoAddedDate = DateTime.Now;
@@ -11141,6 +11158,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+            return new Result(true,"Готово.");
         }
         public List<IdNameDto> GetMrStatuses()
         {
