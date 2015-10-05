@@ -4978,7 +4978,62 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+        /// <summary>
+        /// Сохраняем признаки получения оригиналов ТК/ТД
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список</param>
+        /// <param name="IsTK">Переключатель типа документов.</param>
+        /// <returns></returns>
+        public bool SaveCandidateDocRecieved(IList<CandidateDocRecievedDto> roster, bool IsTK)
+        {
+            try
+            {
+                User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
 
+                    if (IsTK)
+                    {
+                        if (entity.IsTKReceived != item.IsTKReceived)
+                        {
+                            entity.IsTKReceived = item.IsTKReceived;
+
+                            if (entity.IsTKReceived)
+                                entity.TKReceivedDate = DateTime.Now;
+                            else
+                                entity.TKReceivedDate = null;
+
+                            item.ReceivedDate = entity.TKReceivedDate.HasValue ? entity.TKReceivedDate.Value.ToShortDateString() : "";
+                            entity.TKMarkUser = curUser;
+                        }
+                    }
+                    else
+                    {
+                        if (entity.IsTDReceived != item.IsTDReceived)
+                        {
+                            entity.IsTDReceived = item.IsTDReceived;
+                            if (entity.IsTDReceived)
+                                entity.TDReceivedDate = DateTime.Now;
+                            else
+                                entity.TDReceivedDate = null;
+
+                            item.ReceivedDate = entity.TDReceivedDate.HasValue ? entity.TDReceivedDate.Value.ToShortDateString() : "";
+                            entity.TDMarkUser = curUser;
+                        }
+                    }
+
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
         #endregion
 
         #region SetEntityHelpers

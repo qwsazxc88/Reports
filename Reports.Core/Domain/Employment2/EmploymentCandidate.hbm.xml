@@ -46,5 +46,15 @@
     <property name="IsPersonnelManagerToManagerSendEmail" not-null="false"/>
     <property name="PersonnelManagerToManagerSendEmailDate" not-null="false"/>
 
+
+    <property name="IsTKReceived" not-null="false"/>
+    <property name="TKReceivedDate" not-null="false"/>
+    <many-to-one name="TKMarkUser" class="User" column="TKMarkUserId" foreign-key="FK_EmploymentCandidate_TKMarkUser" index="EmploymentCandidate_TKMarkUser"  not-null="false" cascade="save-update" />
+    
+    <property name="IsTDReceived" not-null="false"/>
+    <property name="TDReceivedDate" not-null="false"/>
+    <many-to-one name="TDMarkUser" class="User" column="TDMarkUserId" foreign-key="FK_EmploymentCandidate_TDMarkUser" index="EmploymentCandidate_TDMarkUser"  not-null="false" cascade="save-update" />
+    
+
   </class>
 </hibernate-mapping>
