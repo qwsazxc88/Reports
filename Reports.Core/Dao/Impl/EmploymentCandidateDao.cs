@@ -124,6 +124,10 @@ namespace Reports.Core.Dao.Impl
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
                 ,managers.MentorName
                 ,managers.PlanRegistrationDate
+                ,isnull(candidate.IsTKReceived, 0) as IsTKReceived
+                ,candidate.TKReceivedDate
+                ,isnull(candidate.IsTDReceived, 0) as IsTDReceived
+                ,candidate.TDReceivedDate
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -520,6 +524,12 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = "PlanRegistrationDate";
                     break;
+                case 24:
+                    orderBy = "TKReceivedDate";
+                    break;
+                case 25:
+                    orderBy = "TDReceivedDate";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -582,6 +592,10 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DismissalDate", NHibernateUtil.DateTime)
                 .AddScalar("MentorName", NHibernateUtil.String)
                 .AddScalar("PlanRegistrationDate", NHibernateUtil.DateTime)
+                .AddScalar("IsTKReceived", NHibernateUtil.Boolean)
+                .AddScalar("TKReceivedDate", NHibernateUtil.DateTime)
+                .AddScalar("IsTDReceived", NHibernateUtil.Boolean)
+                .AddScalar("TDReceivedDate", NHibernateUtil.DateTime)
                 ;
 
             return query;
