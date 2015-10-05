@@ -30,12 +30,12 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Creators]
 GO
 
-IF OBJECT_ID ('FK_StaffDepartmentRPLink_StaffDepartmentManagement', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentManagement]
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_Department]
 GO
 
-IF OBJECT_ID ('FK_StaffDepartmentRPLink_StaffDepartmentBranch', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBranch]
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRPLink_EditorUser', 'F') IS NOT NULL
@@ -1197,10 +1197,10 @@ GO
 CREATE TABLE [dbo].[StaffDepartmentRPLink](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[Code] [nvarchar](12) NULL,
-	[Name] [nvarchar](150) NULL,
-	[BranchId] [int] NULL,
-	[ManagementId] [int] NULL,
+	[Code] [nvarchar](15) NULL,
+	[Name] [nvarchar](250) NULL,
+	[BGId] [int] NULL,
+	[DepartmentId] [int] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1231,18 +1231,18 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_EditorUser]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBranch] FOREIGN KEY([BranchId])
-REFERENCES [dbo].[StaffDepartmentBranch] ([Id])
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup] FOREIGN KEY([BGId])
+REFERENCES [dbo].[StaffDepartmentBusinessGroup] ([Id])
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBranch]
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentManagement] FOREIGN KEY([ManagementId])
-REFERENCES [dbo].[StaffDepartmentManagement] ([Id])
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_Department] FOREIGN KEY(DepartmentId)
+REFERENCES [dbo].[Department] ([Id])
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentManagement]
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_Department]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] ADD  CONSTRAINT [DF_StaffDepartmentBusinessGroup_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -2046,10 +2046,10 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название РП-привязки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id филиала' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'BranchId'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Бизнес-группы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'BGId'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id дирекции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'ManagementId'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 6 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'DepartmentId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'CreatorID'
@@ -3232,159 +3232,107 @@ GO
 --состояние заполнения анкет
 CREATE VIEW [dbo].[vwStaffListDepartment]
 AS
-SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, C.NameShort as DepFingradName, C.NameComment as DepFingradNameComment, C.DepCode as FinDepPointCode
+SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, 
+			 case when A.ItemLevel = 2 then D.Name 
+						when A.ItemLevel = 3 then E.Name 
+						when A.ItemLevel = 4 then F.Name 
+						when A.ItemLevel = 5 then G.Name 
+						when A.ItemLevel = 6 then H.Name
+						else C.NameShort end as DepFingradName, 
+			 --C.NameComment as DepFingradNameComment, 
+			 case A.BFGId when 1 then 'Бэк'
+										when 2 then 'Фронт'
+										when 3 then 'ГПД'
+										when 4 then 'Управленческое' end as DepFingradNameComment,
+			 C.DepCode as FinDepPointCode
 FROM Department as A
 LEFT JOIN StaffDepartmentRequest as B ON B.DepartmentId = A.Id and B.IsUsed = 1 
 LEFT JOIN StaffDepartmentManagerDetails as C ON C.DepRequestId = B.Id
---INNER JOIN Department as C ON C.id = A.DepartmentId
+--далее линкуются таблицы справочника кодировок
+LEFT JOIN StaffDepartmentBranch as D ON D.DepartmentId = A.Id
+LEFT JOIN StaffDepartmentManagement as E ON E.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentAdministration as F ON F.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentBusinessGroup as G ON G.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentRPLink as H ON H.DepartmentId = A.Id 
 GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
 --StaffDepartmentBranch
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'01', N'ГОЛОВНОЙ БАНК', 4129)				--1
-INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'03', N'МОСКОВСКИЙ ФИЛИАЛ', 4131)		--2
-INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'04', N'ЦЕНТРАЛЬНЫЙ ФИЛИАЛ', 4132)	--3
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'02', N'Вологодский Филиал (закрыт)', null)				--2
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'03', N'МОСКОВСКИЙ ФИЛИАЛ', 4131)		--3
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'04', N'ЦЕНТРАЛЬНЫЙ ФИЛИАЛ', 4132)	--4
+--INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--4
 
 --StaffDepartmentManagement
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'401', N'Алтайская Дирекция (не использовать)', 3, null)							--1
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'404', N'Восточно-Сибирская Дирекция', 3, 4188)												--2
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'402', N'Дальневосточная Дирекция', 3, 4189)													--3
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'302', N'Дирекция Южный ЦФО (не использовать)', 2, null)							--4
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'101', N'Западная Дирекция', 1, 11327)																--5
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'405', N'Западно-Сибирская Дирекция', 3, 4202)												--6
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'300', N'Московская Дирекция', 2, 4152)																--7
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'406', N'Приволжская Дирекция', 3, 8649)															--8
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'400', N'УК-Бердск', 3, null)																					--9
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'104', N'УК-Кострома', 1, null)																				--10
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'301', N'УК-Москва', 2, null)																					--11
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'407', N'Центрально-Сибирская Дирекция (не использовать)', 3, null)		--12
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'403', N'Южная Дирекция', 3, 4135)																		--13
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'105', N'УК-Казань', 1, null)																					--14
-INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId) VALUES(1, N'409', N'Уральская Дирекция', 3, 8581)																--15
+INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId)
+SELECT 1 as Version, A.[Id дирекции], A.[Дирекция], B.Id as dep2id, d.id as dep3id
+FROM DepFinManager as A
+LEFT JOIN StaffDepartmentBranch as B on SUBSTRING(B.Code, 2, 1) = substring(cast(A.[ID Дирекции] as varchar(3)), 1, 1)
+LEFT JOIN Department as C ON C.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[ID_Дирекции], D.Id, D.Name
+						FROM TerraPoint as A
+						INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+						INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 3 and (D.Name not like '%ауп%' and D.Name not like '%управление%' and D.Name not like '%ликвидирован%')
+						WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+									and A.ParentId <> '') as D ON  D.[ID_Дирекции] = A.[Id дирекции]
 
---SELECT * FROM Department where ItemLevel = 2 order by Priority
-/*
-select c.id, c.ItemLevel,c.name, b.Name, a.Name
-from Department as a
-inner join Department as b on b.ParentId = a.code and b.ItemLevel = 3 and (b.name not like '%ЛИКВИДИРОВАНО%' and b.name not like '%гпд%' and b.name not like '%ЛИКВИДИРОВАНнО%' and b.name not like '%ауп%')
-inner join Department as c on c.ParentId = b.code and c.ItemLevel = 4 and (c.name not like '%ЛИКВИДИРОВАНО%' and c.name not like '%гпд%' and c.name not like '%ЛИКВИДИРОВАНнО%' and c.name not like '%ауп%')
-where a.ItemLevel = 2 and a.id not in (4130, 4205)
-order by b.name, c.Name
-*/
+--руками перепривязываю дирекцию
+UPDATE StaffDepartmentManagement SET DepartmentId = 4175 WHERE Code = '301'
+
 --StaffDepartmentAdministration
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-04-3', N'ВСД-Восточно-Саянское Управление', 2, 7976)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-04-1', N'ВСД-Управление по Иркутской области (+Респ.Бурятия)', 2, 5264)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-07-2', N'ВСД-Управление по Кемеровской области', 2, 5256)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-04-2', N'ВСД-Управление по Красноярскому краю (кроме Юго-Востока)', 2, 5262)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-02-2', N'ДВ-Приморское Управление Север (+Сахалинская область)', 3, 6120)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-02-1', N'ДВ-Приморское Управление Юг (+Камчатский край)', 3, 6121)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-02-3', N'ДВ-Управление по Амурской области (+Забайкальский край, +Республика Саха (Якутия))', 3, 6180)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-02-4', N'ДВ-Управление по Хабаровскому краю (+Еврейская АО, +Магадан)', 3, 6181)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'01-02-1', N'ЗД-Управление по Владимирской и Нижегородской областям', 5, 11330)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-08-1', N'ЗД-Управление по г. Санкт-Петербургу и Ленинградской области', 5, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'01-02-2', N'ЗД-Управление по Костромской и Ивановской областям', 5, 11329)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'01-02-3', N'ЗД-Управление по Ярославской и Вологодской областям', 5, 11331)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-05-4', N'Закрыто_ЗСД-Управление по Тюменской области (+Стрежевой)', 6, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-07-1', N'ЗСД-Управление по Алтайскому краю и Республике Алтай', 6, 5255)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-05-1', N'ЗСД-Управление по Новосибирской области (+Алт.край)', 6, 4314)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-05-2', N'ЗСД-Управление по Омской области', 6, 4347)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-05-3', N'ЗСД-Управление по Томской области (-Стрежевой)', 6, 4485)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-00-2', N'Закрыто_МД-Управление "Восток"', 7, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-00-4', N'МД-Восточное управление', 7, 10397)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-00-3', N'МД-Западное управление', 7, 10396)	-- есть еще вариант 6064 = Управление "Запад"
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-06-1', N'ПД-Управление по Оренбургской области и Башкортостану', 8, 8803)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-06-2', N'ПД-Управление по Самарской области и Республике Татарстан (+Ульяновская и Пензенская обл., +Респ. Чувашия)', 8, 10450)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-01-1', N'МФ-Московский филиал', 11, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-05-4', N'УД-Управление по Тюменской области (+Стрежевой)', 15, 11367)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-06-3', N'УД-Управление по Челябинской и Свердловской областям (+Абзелиловский р-н Башкортостана)', 15, 8582)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-02-1', N'Закрыто_ЮД-Управление по Воронежской области', 13, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'03-02-2', N'ЮД-Управление по Воронежской и Липецкой областям', 13, null)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-03-2', N'ЮД-Управление по Краснодарскому краю (+Ставропольский кр., +Респ. Адыгея)', 13, 10036)	--есть еще вариант 5758 = Управление по Краснодарскому краю (Юг)
-INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId) VALUES(1, N'04-03-1', N'ЮД-Управление по Ростовской области (+Север Краснодарского кр.)', 13, 10035)
+INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId)
+SELECT 1 as [Version], A.[ID Управление Дирекции], A.[Управление Дирекции], B.Id, D.Id
+FROM DepFinAdmin as A
+LEFT JOIN StaffDepartmentManagement as B ON B.Name = A.[Дирекция]
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[ID_Управления_Дирекции_Управление_Дирекции], D.Id, D.Name, D.ParentId
+						FROM TerraPoint as A
+						INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+						INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 4
+						WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+									and A.ParentId <> '') as D ON D.[ID_Управления_Дирекции_Управление_Дирекции] = A.[ID Управление Дирекции] 
+									and D.ParentId = E.Code1C
 
-/*
-так выявил точки, которые не удалось связать вообще
-select distinct b.Бизнес_группа_ID_Бизнес_группа into #tmp from TerraPoint as a 
-inner join Fingrag_csv as b on b.Код_подразделения = a.code
-where a.PossibleDepartmentId is not null and a.ItemLevel = 3 and (a.EndDate is null or (a.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30))
-
-
-
-select b.Бизнес_группа_ID_Бизнес_группа, b.Код_подразделения, b.Сокращенное_наименование from TerraPoint as a 
-inner join Fingrag_csv as b on b.Код_подразделения = a.code
-where a.PossibleDepartmentId is null and a.ItemLevel = 3 and (a.EndDate is null or (a.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30))
-and not exists (select * from #tmp where Бизнес_группа_ID_Бизнес_группа = b.Бизнес_группа_ID_Бизнес_группа)
---1303
-
-
-drop table #tmp
-
-
---заготовка для связи БГ
-select REPLACE(d.name, 'бизнес-группа', ''), d.id, d.ItemLevel,d.name, c.id, c.ItemLevel,c.name, b.id,b.Name, a.Name
-from Department as a
-inner join Department as b on b.ParentId = a.code and b.ItemLevel = 3 and (b.name not like '%ЛИКВИДИРОВАНО%' and b.name not like '%гпд%' and b.name not like '%ЛИКВИДИРОВАНнО%' and b.name not like '%ауп%')
-inner join Department as c on c.ParentId = b.code and c.ItemLevel = 4 and (c.name not like '%ЛИКВИДИРОВАНО%' and c.name not like '%гпд%' and c.name not like '%ЛИКВИДИРОВАНнО%' and c.name not like '%ауп%')
-inner join Department as d on d.ParentId = c.code and d.ItemLevel = 5 and (d.name not like '%ЛИКВИДИРОВАНО%' and d.name not like '%гпд%' and d.name not like '%ЛИКВИДИРОВАНнО%' and d.name not like '%ауп%')
-where a.ItemLevel = 2 and a.id not in (4130, 4205)
-order by b.name, c.Name
-*/
+--у помеченных, как закрытые удаляем связи с нашим справочником
+UPDATE StaffDepartmentAdministration SET DepartmentId = null WHERE Name like '%закрыто%'
 
 --StaffDepartmentBusinessGroup
+--записей больше, чем в справочнике бизнес-групп Финграда, потому что в СКД есть подразделения в разных ветках, а принадлежат к одной бизнес группе
 INSERT INTO StaffDepartmentBusinessGroup (Version, Code, Name, AdminId, DepartmentId)
 SELECT 1, A.[ID Бизнес-группа], A.[Бизнес-группа], B.Id, C.Id
 FROM DepFinBG as a
 LEFT JOIN StaffDepartmentAdministration as B ON B.Name = A.[Управление Дирекции]
-LEFT JOIN (SELECT distinct C.[ID_Бизнес_группа_Бизнес_группа], D.Id
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[Бизнес_группа_ID_Бизнес_группа], D.Id, D.ParentId
 					FROM TerraPoint as A
 					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
-					INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = A.Code
+					INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
 					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 5
 					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
-								and A.ParentId <> '') as C ON C.ID_Бизнес_группа_Бизнес_группа = A.[ID Бизнес-группа]
---алгоритм связи бизнес-групп
-/*
-записи в таблице для графиков, где были проставлены наши id для точек, содержат почти весь перечень бизнес-групп, которые находятся в несвязанных с нашим справочником подразделений точек 
-по этому связь с нашими бизнес-группами нужно сделать следующим образом
-1. взять связанные с нашим справочником записи из графиков, 
-	- определить для них id бизнес-группы
-	- связать их с точками финграда (Fingrag_csv)
-	- взять коды БГ
-	- проставить для найденных кодов наши id
-*/
+								and A.ParentId <> '') as C ON C.Бизнес_группа_ID_Бизнес_группа = A.[ID Бизнес-группа]
+								and C.ParentId = E.Code1C
 
 
 
-/*
---заготовка запроса, которым нужно взять интересующие нас связанные записи из графиков
-SELECT FROM TerraPoint where PossibleDepartmentId is not null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
-
---заготовка запроса, которым нужно взять интересующие нас несвязанные записи из графиков
-SELECT FROM TerraPoint where PossibleDepartmentId is null null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
-
---заготовка запроса, которым нужно взять интересующие нас связанные записи из графиков
-UPDATE Department SET FingradCode = B.Code
-FROM Department as A
-INNER JOIN TerraPoint as B ON B.PossibleDepartmentId = A.Id and B.ItemLevel = 3 and (B.EndDate is null or (B.EndDate is not null and DATEDIFF(dd, B.EndDate, getdate()) <= 30))
-INNER JOIN Fingrag_csv as C ON C.[Код_подразделения] = B.Code
-WHERE A.ItemLevel = 7
-
-закачал справочник бизнес-групп в таблицу DepFinBG
-связать с справочником дирекций и управлений просто, на основе данных введенных в справочникик выше
-
-записи в таблице для графиков, где были проставлены наши id для точек, содержат почти весь перечень бизнес-групп, которые находятся в несвязанных с нашим справочником подразделений точек 
-по этому связь с нашими бизнес-группами нужно сделать следующим образом
-1. взять связанные с нашим справочником записи из графиков, 
-	- определить для них id бизнес-группы
-	- связать их с точками финграда (Fingrag_csv)
-	- взять коды БГ
-	- проставить для найденных кодов наши id
-
-*/
 
 --StaffDepartmentRPLink
-
+INSERT INTO StaffDepartmentRPLink(Version, Code, Name, BGId, DepartmentId)
+SELECT 1, A.[Код РП в финград], A.[РП-привязка], B.Id, C.Id
+FROM DepFinRP as a
+LEFT JOIN StaffDepartmentBusinessGroup as B ON B.Name = A.[Код РП в финград#Бизнес-группа]
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[РП_привязка_Код_РП_в_финград], D.Id, D.Name, D.ParentId
+					FROM TerraPoint as A
+					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+					INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 6
+					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+								and A.ParentId <> '') as C ON C.[РП_привязка_Код_РП_в_финград] = A.[Код РП в финград]
+								and C.ParentId = E.Code1C
 
 
 --StaffDepartmentInstallSoft

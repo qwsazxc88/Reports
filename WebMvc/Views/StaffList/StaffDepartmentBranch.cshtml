@@ -1,0 +1,81 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBranchModel
+@{
+    ViewBag.Title = "Справочник филиалов";
+}
+
+@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm" }))
+{
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    @*<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>*@
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        //$.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        ShowFlash(true);
+        ShowFlash(false);
+        $(":button").button();
+    });
+
+
+
+
+//    function ShowFlash(IsShow)  //показываем индикатор загрузки
+//    {
+//        if (!IsShow) {
+//            $("#LoadingIndicator2").removeClass("loading2");
+//            $("#DivIndicator").dialog("close");
+//            $("#DivIndicator").hide();
+//        }
+//        else {
+//            $("#LoadingIndicator2").addClass("loading2");
+//            $("#DivIndicator").show();
+//            $("#DivIndicator").dialog(
+//            { // initialize dialog box
+//                autoOpen: true,
+//                modal: true,
+//                // fix IE6  
+//                bgiframe: true,
+//                draggable: false,
+//                resizable: false,
+//                width: 300,
+//                height: 60,
+//                closeOnEscape: false,
+//                close: function (event, ui) {
+//                    //$(this).dialog("destroy").remove();
+//                }
+//            });
+//            $(".ui-dialog-titlebar").hide();
+//            $(".ui-dialog-titlebar-close").hide();
+//        }
+//    }
+
+    //функция отправки и получения ajax-запроса
+    function AjaxFormRequest(result_id, form_id, url, TypePost) {
+        jQuery.ajax({
+            url: url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#" + form_id).serialize(),
+            success: function (response) { //Если все нормально
+                document.getElementById(result_id).innerHTML = response;
+            },
+            error: function (response) { //Если ошибка
+                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+            }
+        });
+    }
+</script>
+
