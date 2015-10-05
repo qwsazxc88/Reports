@@ -62,7 +62,7 @@
   <property name="ArchiveDate" not-null="false"/>
   <property name="ArchiveNumber" length="128" not-null="false"/>
   <many-to-one name="Archivist" class="User" column="Archivist" foreign-key="FK_MissionReport_Archivist" index="IX_MissionReport_Archivist"  not-null="false"/>
-
+    <many-to-one name="StornoDeduction" class="Deduction" column="autoDeductionId" foreign-key="FK_MissionReport_StornoDeduction" not-null="false"/>
     <bag name="ManualDeductions" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="MissionReportId" foreign-key="FK_ManualDeduction_MissionReport"/>
       <one-to-many class="ManualDeduction"/>
