@@ -42,6 +42,14 @@ GO
 		--SupplementaryAgreement
 
 --1. УДАЛЕНИЕ ССЫЛОК
+	IF OBJECT_ID ('FK_EmploymentCandidate_TKMarkUser', 'F') IS NOT NULL
+		ALTER TABLE [dbo].[EmploymentCandidate] DROP CONSTRAINT [FK_EmploymentCandidate_TKMarkUser]
+	GO
+
+	IF OBJECT_ID ('FK_EmploymentCandidate_TDMarkUser', 'F') IS NOT NULL
+		ALTER TABLE [dbo].[EmploymentCandidate] DROP CONSTRAINT [FK_EmploymentCandidate_TDMarkUser]
+	GO
+
 	IF OBJECT_ID ('FK_EmploymentCandidate_Users', 'F') IS NOT NULL
 		ALTER TABLE [dbo].[EmploymentCandidate] DROP CONSTRAINT [FK_EmploymentCandidate_Users]
 	GO
@@ -364,6 +372,12 @@ GO
 		[AppointmentId] [int] NULL,
 		[IsTechDissmiss] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsTechDissmiss]  DEFAULT ((0)),
 		[IsScanFinal] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsScanFinal]  DEFAULT ((0)),
+		[IsTKReceived] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsTKReceived]  DEFAULT ((0)),
+		[TKReceivedDate] [datetime] NULL,
+		[TKMarkUserId] [int] NULL,
+		[IsTDReceived] [bit] NULL CONSTRAINT [DF_EmploymentCandidate_IsTDReceived]  DEFAULT ((0)),
+		[TDReceivedDate] [datetime] NULL,
+		[TDMarkUserId] [int] NULL,
 	 CONSTRAINT [PK_EmploymentCandidate] PRIMARY KEY CLUSTERED 
 	(
 		[Id] ASC
@@ -1245,6 +1259,20 @@ GO
 
 
 --3.СОЗДАНИЕ ССЫЛОК
+	ALTER TABLE [dbo].[EmploymentCandidate]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidate_TDMarkUser] FOREIGN KEY([TDMarkUserId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidate] CHECK CONSTRAINT [FK_EmploymentCandidate_TDMarkUser]
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidate]  WITH CHECK ADD  CONSTRAINT [FK_EmploymentCandidate_TKMarkUser] FOREIGN KEY([TKMarkUserId])
+	REFERENCES [dbo].[Users] ([Id])
+	GO
+
+	ALTER TABLE [dbo].[EmploymentCandidate] CHECK CONSTRAINT [FK_EmploymentCandidate_TKMarkUser]
+	GO
+
 	ALTER TABLE [dbo].[EmploymentCandidate]  WITH CHECK ADD  CONSTRAINT [FK_Candidate_AppointmentCreator] FOREIGN KEY([AppointmentCreatorId])
 	REFERENCES [dbo].[Users] ([Id])
 	GO
@@ -1730,6 +1758,24 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ К ТАБЛИЦАМ/ПОЛЯМ
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак получения оригинала трудовой книжки кадровиком' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsTKReceived'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата получения кадровиком оригинала трудовой книжки кандидата' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'TKReceivedDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id пользователя сделавшего отметку о ТК' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'TKMarkUserId'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак получения оригинала трудовой договора кадровиком' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'IsTDReceived'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата получения кадровиком оригинала трудового договора кандидата' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'TDReceivedDate'
+	GO
+
+	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id пользователя сделавшего отметку о ТД' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'TDMarkUserId'
+	GO
+
 	EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер документа приема на работу из 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'EmploymentCandidate', @level2type=N'COLUMN',@level2name=N'ContractNumber1C'
 	GO
 
