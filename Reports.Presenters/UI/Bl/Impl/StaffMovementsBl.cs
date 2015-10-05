@@ -136,8 +136,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Creator = x.Creator!=null?x.Creator.Name:"",
                     Dep3Name = x.SourceDepartment!=null?((x.SourceDepartment.Dep3 != null && x.SourceDepartment.Dep3.Any()) ? x.SourceDepartment.Dep3.First().Name : ""):"",
                     Dep7Name = x.SourceDepartment!=null?x.SourceDepartment.Name:"",
-                    TargetManagerName = x.TargetManager!=null?x.TargetManager.Name:"",
-                    SourceMangerName = x.SourceManager != null ? x.SourceManager.Name : "",
+                    TargetManagerName = x.TargetManager!=null ? x.TargetManager.Name:"",
+                    SourceManagerName = x.SourceManager != null ? x.SourceManager.Name : "",
                     Status =x.Status!=null? (x.Status.Id==3 && x.Type.Id!=2)?"Отправлена на согласование руководителю": x.Status.Name:"",
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
@@ -146,8 +146,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
                     PositionTarget = x.TargetPosition != null ? x.TargetPosition.Name : "",
-                    TargetDep7Name = x.TargetDepartment!=null?x.TargetDepartment.Name:"",
-                    TargetDep3Name = x.TargetDepartment!=null?((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
+                    TargetDep7Name = x.TargetDepartment!=null ? x.TargetDepartment.Name:"",
+                    TargetDep3Name = x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }
@@ -520,12 +520,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsDocsAddAvailable = true;
+                    model.IsDocsEditable = true;
                     model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 9://Документы подписаны
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsConfirmButtonAvailable = true;
+                    model.IsDocsEditable = true;
                     model.IsTargetManagerAcceptAvailable = false;
                     break;
                 case 10://Перевод оформлен
@@ -647,7 +649,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
-                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable & true;//Кнопка утверждения документов                   
+                    model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable && true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки  
                     break;
             }
@@ -962,6 +964,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(accept) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.DocsApproved);
                     break;
                 case 9:
+                    //Проверяем все документы, если у обязательного документа нет вложения - нужно вернутся обратно
+                    bool accept_ = true;
+                    foreach (var doc in entity.Docs)
+                    {
+                        if (doc.IsRequired && doc.Attachment == null) accept_ = false;
+                    }
+                    if (!accept_) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.ChiefControl);
                     if (model.ISRejectAvailable && model.IsRejectButtonPressed)
                     {
                         //Если нажали кнопку отказа, то отказ и всё поезд ушёл.
@@ -974,9 +983,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsConfirmButtonAvailable && model.IsConfirmButtonPressed)
                     {
                         //Заявка подтверждена. все щасливы, ждём выгрузки в одноэс
-                        entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
-                        entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.ChiefControl);
+                        //entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
+                        //entity.PersonnelManagerAccept = DateTime.Now;
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
                     }
                     break;
                 case 10:

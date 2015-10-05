@@ -8,6 +8,8 @@ namespace Reports.Core.Dto
     public class Terrapoint_DepartmentDto
     {
       public string TPCode {get;set;}
+      public string TP1Name { get; set; }
+      public string TP2Name { get; set; }
       public string TPName {get;set;}
       public string TPCity {get;set;}
       public string TPStreet {get;set;}
