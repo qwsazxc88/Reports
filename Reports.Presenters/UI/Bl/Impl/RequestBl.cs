@@ -4029,6 +4029,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #region Сохранение существующего БЛ
                 {
                     sicklist = SicklistDao.Load(model.Id);
+
+                    if (sicklist.SendTo1C.HasValue)
+                    {
+                        error = "Редактирование заявки запрещено, так как она выгружена в 1С!";
+                        return false;
+                    }
+
                     string fileName;
                     int? attachmentId = SaveAttachment(sicklist.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Sicklist, out fileName);
                     if (attachmentId.HasValue)
@@ -4188,6 +4195,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            #endregion
+
+            #region Согласование консультантом за всех
+            if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+            {
+                if (!entity.UserDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.UserDateAccept = DateTime.Now;
+                }
+                if (!entity.ManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
+                }
+                if (!entity.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
+                }
+            }
             #endregion
 
             #region Date edits
@@ -4420,6 +4445,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedEnable = true;
                         model.IsApprovedForAllEnable = true;                        
                     }*/
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    if (!entity.SendTo1C.HasValue && ((!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue) || (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue) || !entity.PersonnelManagerDateAccept.HasValue))
+                        model.IsApproveForAllByConsultantEnable = true;
                     break;
                 case UserRole.PersonnelManager:
                     // Разрешить согласование для кадровиков банка и расчетчиков аутсорсинга
@@ -4798,6 +4827,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.ConsultantOutsourcing:
+                    if ((!absence.UserDateAccept.HasValue && !absence.DeleteDate.HasValue) || (!absence.ManagerDateAccept.HasValue && !absence.DeleteDate.HasValue) || !absence.PersonnelManagerDateAccept.HasValue)
+                        model.IsApproveForAllByConsultantEnable = true;
+                    break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
@@ -4954,6 +4987,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #region Сохранение существующей неявки
                 {
                     absence = AbsenceDao.Load(model.Id);
+                    if (absence.SendTo1C.HasValue)
+                    {
+                        error = "Редактирование заявки запрещено, так как она выгружена в 1С!";
+                        return false;
+                    }
                     if (absence.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -5016,6 +5054,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                             if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
                                 absence.ManagerDateAccept = DateTime.Now;
+                        }
+                        #endregion
+
+                        #region Согласование консультантом за всех
+                        if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+                        {
+                            if (!absence.UserDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                            {
+                                absence.UserDateAccept = DateTime.Now;
+                            }
+                            if (!absence.ManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                            {
+                                absence.ManagerDateAccept = DateTime.Now;
+                            }
+                            if (!absence.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                            {
+                                absence.PersonnelManagerDateAccept = DateTime.Now;
+                            }
                         }
                         #endregion
 
@@ -5395,6 +5451,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     #endregion
 
+                    #region Согласование консультантом за всех
+                    if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+                    {
+                        if (!vacation.UserDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                        {
+                            vacation.UserDateAccept = DateTime.Now;
+                        }
+                        if (!vacation.ManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                        {
+                            vacation.ManagerDateAccept = DateTime.Now;
+                        }
+                        if (!vacation.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                        {
+                            vacation.PersonnelManagerDateAccept = DateTime.Now;
+                        }
+                    }
+                    #endregion
+
                     VacationDao.SaveAndFlush(vacation);
                     model.Id = vacation.Id;
                 }
@@ -5403,6 +5477,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #region Сохранение существующего отпуска
                 {
                     vacation = VacationDao.Load(model.Id);
+                    if (vacation.SendTo1C.HasValue)
+                    {
+                        error = "Редактирование заявки запрещено, так как она выгружена в 1С!";
+                        return false;
+                    }
+
                     string fileName;
                     int? attachmentId = SaveAttachment(vacation.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Vacation, out fileName);
                     if (attachmentId.HasValue)
@@ -5510,6 +5590,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 vacation.ManagerDateAccept = DateTime.Now;
 
                         }
+                        #endregion
+
+                        #region Согласование консультантом за всех
+                        //if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+                        //{
+                        //    vacation.UserDateAccept = DateTime.Now;
+                        //    SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                        //        vacation.Number, RequestTypeEnum.Vacation, false);
+                        //}
                         #endregion
 
                         if (model.IsVacationTypeEditable)
@@ -5839,6 +5928,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.OutsourcingManager:
                     if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    if ((!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue) || (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue) || !vacation.PersonnelManagerDateAccept.HasValue)
+                        model.IsApproveForAllByConsultantEnable = true;
                     break;
             }
             model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable;
@@ -6252,6 +6345,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
 
                     break;
+                case UserRole.ConsultantOutsourcing:
+                    if ((!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue) || (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue) || !vacation.PersonnelManagerDateAccept.HasValue)
+                        model.IsApproveForAllByConsultantEnable = true;
+                    break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
                     if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
@@ -6356,6 +6453,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #region Сохранение существующего ОУЗР
                 {
                     childVacation = ChildVacationDao.Load(model.Id);
+                    if (childVacation.SendTo1C.HasValue)
+                    {
+                        error = "Редактирование заявки запрещено, так как она выгружена в 1С!";
+                        return false;
+                    }
                     string fileName;
                     int? attachmentId = SaveAttachment(childVacation.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.ChildVacation, out fileName);
                     if (attachmentId.HasValue)
@@ -6494,6 +6596,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
                         entity.ManagerDateAccept = DateTime.Now;
+                }
+            }
+            #endregion
+
+            #region Согласование консультантом за всех
+            if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+            {
+                if (!entity.UserDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.UserDateAccept = DateTime.Now;
+                }
+                if (!entity.ManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
+                }
+                if (!entity.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
+                {
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
                 }
             }
             #endregion

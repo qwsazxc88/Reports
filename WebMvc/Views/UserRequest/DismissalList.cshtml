@@ -139,7 +139,8 @@
                             ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantPersonnel &&
                             ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief &&
-                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.DismissedEmployee)
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.DismissedEmployee &&
+                            ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.ConsultantOutsourcing)
                         {
                             if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                             {
