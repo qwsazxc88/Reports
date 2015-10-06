@@ -608,13 +608,13 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=0 ";
                         break;
                     case 8://Welcome 
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.IsEducationExists is null and r.TestingResult>2   and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 9://собеседование назначено
-                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 10://входное тестирование
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 11:
                         statusWhere = @" r.CandidateRejectDate is not null ";

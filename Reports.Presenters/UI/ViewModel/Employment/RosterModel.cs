@@ -72,7 +72,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         // Согласование списком для вышестоящего руководителя
         public bool IsBulkApproveByHigherManagerAvailable { get; set; }
-
+        //Метки для оригиналов документов
+        public bool IsMarkDocOriginal { get; set; }
         
         public RosterModel()
         {
