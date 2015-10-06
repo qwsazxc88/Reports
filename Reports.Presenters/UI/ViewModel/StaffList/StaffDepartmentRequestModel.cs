@@ -219,7 +219,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Коды совместимости программ")]
         public IList<ProgramCodeDto> ProgramCodes { get; set; }
 
-        //[Display(Name = "Установленное ПО")]
+        [Display(Name = "Установленное ПО")]
+        public int SoftGroupId { get; set; }
+        public IList<IdNameWithOldNameDto> SoftGroups { get; set; }
 
         [Display(Name = "Признак блокировки подразделения")]
         public bool IsBlocked { get; set; }

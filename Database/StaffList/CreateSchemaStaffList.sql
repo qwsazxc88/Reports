@@ -30,6 +30,82 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Creators]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentRPLink_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBusinessGroup_StaffDepartmentAdministration', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] DROP CONSTRAINT [FK_StaffDepartmentBusinessGroup_StaffDepartmentAdministration]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBusinessGroup_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] DROP CONSTRAINT [FK_StaffDepartmentBusinessGroup_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBusinessGroup_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] DROP CONSTRAINT [FK_StaffDepartmentBusinessGroup_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBusinessGroup_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] DROP CONSTRAINT [FK_StaffDepartmentBusinessGroup_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentAdministration_StaffDepartmentManagement', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentAdministration] DROP CONSTRAINT [FK_StaffDepartmentAdministration_StaffDepartmentManagement]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentAdministration_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentAdministration] DROP CONSTRAINT [FK_StaffDepartmentAdministration_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentAdministration_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentAdministration] DROP CONSTRAINT [FK_StaffDepartmentAdministration_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentAdministration_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentAdministration] DROP CONSTRAINT [FK_StaffDepartmentAdministration_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagement_StaffDepartmentBranch', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagement] DROP CONSTRAINT [FK_StaffDepartmentManagement_StaffDepartmentBranch]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagement_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagement] DROP CONSTRAINT [FK_StaffDepartmentManagement_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagement_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagement] DROP CONSTRAINT [FK_StaffDepartmentManagement_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagement_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagement] DROP CONSTRAINT [FK_StaffDepartmentManagement_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBranch_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBranch] DROP CONSTRAINT [FK_StaffDepartmentBranch_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBranch_Department', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBranch] DROP CONSTRAINT [FK_StaffDepartmentBranch_Department]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentBranch_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentBranch] DROP CONSTRAINT [FK_StaffDepartmentBranch_CreatorUser]
+GO
+
 IF OBJECT_ID ('FK_StaffProgramCodes_StaffProgramReference', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffProgramCodes] DROP CONSTRAINT [FK_StaffProgramCodes_StaffProgramReference]
 GO
@@ -1024,7 +1100,268 @@ CREATE TABLE [dbo].[StaffDepartmentSoftGroupLinks](
 GO
 
 
+if OBJECT_ID (N'StaffDepartmentBranch', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentBranch]
+GO
+CREATE TABLE [dbo].[StaffDepartmentBranch](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Code] [nvarchar](2) NULL,
+	[Name] [nvarchar](50) NULL,
+	[DepartmentId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentBranch] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentManagement', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentManagement]
+GO
+CREATE TABLE [dbo].[StaffDepartmentManagement](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Code] [nvarchar](3) NULL,
+	[Name] [nvarchar](50) NULL,
+	[BranchId] [int] NULL,
+	[DepartmentId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentManagement] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentAdministration', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentAdministration]
+GO
+CREATE TABLE [dbo].[StaffDepartmentAdministration](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Code] [nvarchar](7) NULL,
+	[Name] [nvarchar](150) NULL,
+	[ManagementId] [int] NULL,
+	[DepartmentId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentAdministration] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentBusinessGroup', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentBusinessGroup]
+GO
+CREATE TABLE [dbo].[StaffDepartmentBusinessGroup](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Code] [nvarchar](11) NULL,
+	[Name] [nvarchar](150) NULL,
+	[AdminId] [int] NULL,
+	[DepartmentId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentBusinessGroup] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffDepartmentRPLink', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentRPLink]
+GO
+CREATE TABLE [dbo].[StaffDepartmentRPLink](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Code] [nvarchar](15) NULL,
+	[Name] [nvarchar](250) NULL,
+	[BGId] [int] NULL,
+	[DepartmentId] [int] NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentRPLink] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentRPLink] ADD  CONSTRAINT [DF_StaffDepartmentRPLink_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup] FOREIGN KEY([BGId])
+REFERENCES [dbo].[StaffDepartmentBusinessGroup] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_StaffDepartmentBusinessGroup]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRPLink_Department] FOREIGN KEY(DepartmentId)
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRPLink] CHECK CONSTRAINT [FK_StaffDepartmentRPLink_Department]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] ADD  CONSTRAINT [DF_StaffDepartmentBusinessGroup_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBusinessGroup_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] CHECK CONSTRAINT [FK_StaffDepartmentBusinessGroup_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBusinessGroup_Department] FOREIGN KEY([DepartmentId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] CHECK CONSTRAINT [FK_StaffDepartmentBusinessGroup_Department]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBusinessGroup_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] CHECK CONSTRAINT [FK_StaffDepartmentBusinessGroup_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBusinessGroup_StaffDepartmentAdministration] FOREIGN KEY([AdminId])
+REFERENCES [dbo].[StaffDepartmentAdministration] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBusinessGroup] CHECK CONSTRAINT [FK_StaffDepartmentBusinessGroup_StaffDepartmentAdministration]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration] ADD  CONSTRAINT [DF_StaffDepartmentAdministration_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentAdministration_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration] CHECK CONSTRAINT [FK_StaffDepartmentAdministration_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentAdministration_Department] FOREIGN KEY([DepartmentId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration] CHECK CONSTRAINT [FK_StaffDepartmentAdministration_Department]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentAdministration_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration] CHECK CONSTRAINT [FK_StaffDepartmentAdministration_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentAdministration_StaffDepartmentManagement] FOREIGN KEY([ManagementId])
+REFERENCES [dbo].[StaffDepartmentManagement] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentAdministration] CHECK CONSTRAINT [FK_StaffDepartmentAdministration_StaffDepartmentManagement]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement] ADD  CONSTRAINT [DF_StaffDepartmentManagement_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagement_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement] CHECK CONSTRAINT [FK_StaffDepartmentManagement_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagement_Department] FOREIGN KEY([DepartmentId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement] CHECK CONSTRAINT [FK_StaffDepartmentManagement_Department]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagement_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement] CHECK CONSTRAINT [FK_StaffDepartmentManagement_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagement_StaffDepartmentBranch] FOREIGN KEY([BranchId])
+REFERENCES [dbo].[StaffDepartmentBranch] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagement] CHECK CONSTRAINT [FK_StaffDepartmentManagement_StaffDepartmentBranch]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch] ADD  CONSTRAINT [DF_StaffDepartmentBranch_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBranch_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch] CHECK CONSTRAINT [FK_StaffDepartmentBranch_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBranch_Department] FOREIGN KEY([DepartmentId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch] CHECK CONSTRAINT [FK_StaffDepartmentBranch_Department]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentBranch_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentBranch] CHECK CONSTRAINT [FK_StaffDepartmentBranch_EditorUser]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] ADD  CONSTRAINT [DF_StaffDepartmentSoftGroupLinks_IsUsed]  DEFAULT ((1)) FOR [IsUsed]
 GO
 
@@ -1697,6 +2034,168 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код РП-привязки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название РП-привязки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Бизнес-группы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'BGId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 6 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'DepartmentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник РП-привязок' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код бизнес-группы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название бизнес-группы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id управления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'AdminId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 5 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'DepartmentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник бизнес-групп' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBusinessGroup'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код управления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название управления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id дирекции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'ManagementId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 4 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'DepartmentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник управлений' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAdministration'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код дирекции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название дирекции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id филиала' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'BranchId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 3 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'DepartmentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник дирекций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagement'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код филиала' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название филиала' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения 2 уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'DepartmentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник филиалов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentBranch'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
@@ -2733,15 +3232,109 @@ GO
 --состояние заполнения анкет
 CREATE VIEW [dbo].[vwStaffListDepartment]
 AS
-SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, C.NameShort as DepFingradName, C.NameComment as DepFingradNameComment, C.DepCode as FinDepPointCode
+SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, 
+			 case when A.ItemLevel = 2 then D.Name 
+						when A.ItemLevel = 3 then E.Name 
+						when A.ItemLevel = 4 then F.Name 
+						when A.ItemLevel = 5 then G.Name 
+						when A.ItemLevel = 6 then H.Name
+						else C.NameShort end as DepFingradName, 
+			 --C.NameComment as DepFingradNameComment, 
+			 case A.BFGId when 1 then 'Бэк'
+										when 2 then 'Фронт'
+										when 3 then 'ГПД'
+										when 4 then 'Управленческое' end as DepFingradNameComment,
+			 C.DepCode as FinDepPointCode
 FROM Department as A
 LEFT JOIN StaffDepartmentRequest as B ON B.DepartmentId = A.Id and B.IsUsed = 1 
 LEFT JOIN StaffDepartmentManagerDetails as C ON C.DepRequestId = B.Id
---INNER JOIN Department as C ON C.id = A.DepartmentId
+--далее линкуются таблицы справочника кодировок
+LEFT JOIN StaffDepartmentBranch as D ON D.DepartmentId = A.Id
+LEFT JOIN StaffDepartmentManagement as E ON E.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentAdministration as F ON F.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentBusinessGroup as G ON G.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentRPLink as H ON H.DepartmentId = A.Id 
 GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentBranch
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'01', N'ГОЛОВНОЙ БАНК', 4129)				--1
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'02', N'Вологодский Филиал (закрыт)', null)				--2
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'03', N'МОСКОВСКИЙ ФИЛИАЛ', 4131)		--3
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'04', N'ЦЕНТРАЛЬНЫЙ ФИЛИАЛ', 4132)	--4
+--INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--4
+
+--StaffDepartmentManagement
+INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId)
+SELECT 1 as Version, A.[Id дирекции], A.[Дирекция], B.Id as dep2id, d.id as dep3id
+FROM DepFinManager as A
+LEFT JOIN StaffDepartmentBranch as B on SUBSTRING(B.Code, 2, 1) = substring(cast(A.[ID Дирекции] as varchar(3)), 1, 1)
+LEFT JOIN Department as C ON C.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[ID_Дирекции], D.Id, D.Name
+						FROM TerraPoint as A
+						INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+						INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 3 and (D.Name not like '%ауп%' and D.Name not like '%управление%' and D.Name not like '%ликвидирован%')
+						WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+									and A.ParentId <> '') as D ON  D.[ID_Дирекции] = A.[Id дирекции]
+
+--руками перепривязываю дирекцию
+UPDATE StaffDepartmentManagement SET DepartmentId = 4175 WHERE Code = '301'
+
+--StaffDepartmentAdministration
+INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId)
+SELECT 1 as [Version], A.[ID Управление Дирекции], A.[Управление Дирекции], B.Id, D.Id
+FROM DepFinAdmin as A
+LEFT JOIN StaffDepartmentManagement as B ON B.Name = A.[Дирекция]
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[ID_Управления_Дирекции_Управление_Дирекции], D.Id, D.Name, D.ParentId
+						FROM TerraPoint as A
+						INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+						INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 4
+						WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+									and A.ParentId <> '') as D ON D.[ID_Управления_Дирекции_Управление_Дирекции] = A.[ID Управление Дирекции] 
+									and D.ParentId = E.Code1C
+
+--у помеченных, как закрытые удаляем связи с нашим справочником
+UPDATE StaffDepartmentAdministration SET DepartmentId = null WHERE Name like '%закрыто%'
+
+--StaffDepartmentBusinessGroup
+--записей больше, чем в справочнике бизнес-групп Финграда, потому что в СКД есть подразделения в разных ветках, а принадлежат к одной бизнес группе
+INSERT INTO StaffDepartmentBusinessGroup (Version, Code, Name, AdminId, DepartmentId)
+SELECT 1, A.[ID Бизнес-группа], A.[Бизнес-группа], B.Id, C.Id
+FROM DepFinBG as a
+LEFT JOIN StaffDepartmentAdministration as B ON B.Name = A.[Управление Дирекции]
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[Бизнес_группа_ID_Бизнес_группа], D.Id, D.ParentId
+					FROM TerraPoint as A
+					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+					INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 5
+					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+								and A.ParentId <> '') as C ON C.Бизнес_группа_ID_Бизнес_группа = A.[ID Бизнес-группа]
+								and C.ParentId = E.Code1C
+
+
+
+
+--StaffDepartmentRPLink
+INSERT INTO StaffDepartmentRPLink(Version, Code, Name, BGId, DepartmentId)
+SELECT 1, A.[Код РП в финград], A.[РП-привязка], B.Id, C.Id
+FROM DepFinRP as a
+LEFT JOIN StaffDepartmentBusinessGroup as B ON B.Name = A.[Код РП в финград#Бизнес-группа]
+LEFT JOIN Department as E ON E.Id = B.DepartmentId
+LEFT JOIN (SELECT distinct C.[РП_привязка_Код_РП_в_финград], D.Id, D.Name, D.ParentId
+					FROM TerraPoint as A
+					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
+					INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
+					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 6
+					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
+								and A.ParentId <> '') as C ON C.[РП_привязка_Код_РП_в_финград] = A.[Код РП в финград]
+								and C.ParentId = E.Code1C
+
+
 --StaffDepartmentInstallSoft
 INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'*')															--1
 INSERT INTO StaffDepartmentInstallSoft(Version, Name) VALUES(1, N'=')															--2

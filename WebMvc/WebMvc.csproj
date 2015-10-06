@@ -865,6 +865,8 @@
     <Content Include="Views\StaffList\StaffListArrangement.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentSoftReference.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentEncoding.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentBranch.cshtml" />
     <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
     <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />

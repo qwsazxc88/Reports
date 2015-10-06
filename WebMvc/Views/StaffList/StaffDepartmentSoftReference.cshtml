@@ -1,10 +1,15 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentSoftReferenceModel
 @{
-    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "Справочник ПО";
+    if (!Model.IsModal)
+    {
+        Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+        ViewBag.Title = "Справочник ПО";        
+    }
+
 }
 
-@using (Html.BeginForm("StaffDepartmentSoftReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftReferenceForm" }))
+
+@using (Html.BeginForm("StaffDepartmentSoftReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftReferenceForm", target = "divSoftReferenceDialog" }))
 {
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
     @Html.HiddenFor(m => m.SwitchOperation)
@@ -12,6 +17,7 @@
     @Html.HiddenFor(m => m.SoftId)
     @Html.HiddenFor(m => m.GroupId)
     @Html.HiddenFor(m => m.IsError)
+    @Html.HiddenFor(m => m.IsModal)
 
     <div id="tabs">
         <ul>
@@ -151,11 +157,18 @@
     
 }
 
+@*
+<link href="@Url.Content("~/Content/themes/base/jquery-ui-1.10.4.custom.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.10.4.custom.min.js")" type="text/javascript"></script>
+ *@   
 <script type="text/javascript">
-//    var actionUrl = "@Url.Action("StaffDepartmentSoftReference", "StaffList")";
-
     $(document).ready(function () {
-        setActiveMenuItem("moSoftReference");
+        if ($("#IsModal").val() == "False") {
+            setActiveMenuItem("moSoftReference");
+        }
+
         $.ajaxSetup({ cache: false });
         $('#tabs').tabs({ active: $("#TabIndex").val() });
         $(document).tooltip({ track: true });
@@ -164,24 +177,44 @@
         $("#btnNewGroup").click(function () {
             $("#SwitchOperation").val(1);
             $("#TabIndex").val(0);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         })
 
         $("#btnSaveLink").click(function () {
             $("#SwitchOperation").val(3);
             $("#TabIndex").val(1);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         })
 
         $("#btnNewSoft").click(function () {
             $("#SwitchOperation").val(4);
             $("#TabIndex").val(2);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         })
 
         $("#SoftGroupId").change(function () {
             $("#TabIndex").val(1);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         });
 
         if ($("#IsError").val() == "True") {
@@ -218,7 +251,12 @@
             $("#lbl" + TypeName + (RowIndex + 1)).text($("#" + TypeName + "List_" + RowIndex + "__Name").val());
             $("#SwitchOperation").val(Type == 1 ? "2" : "5");
             $("#TabIndex").val(Type == 1 ? 0 : 2);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         }
 
         //отмена редактирования
@@ -235,7 +273,12 @@
 
             $("#TabIndex").val(Type == 1 ? 0 : 2);
             $("#SwitchOperation").val(0);
-            $("#StaffDepartmentSoftReferenceForm").submit();
+            if ($("#IsModal").val() == "False") {
+                $("#StaffDepartmentSoftReferenceForm").submit();
+            }
+            else {
+                AjaxFormRequest('divSoftReferenceDialog', 'StaffDepartmentSoftReferenceForm', '/StaffList/StaffDepartmentSoftReference')
+            }
         }
     }
 

@@ -1,0 +1,198 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBranchModel
+@{
+    ViewBag.Title = "Справочник филиалов";
+}
+
+@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm" }))
+{
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tbl" class="grid">
+            <thead>
+                <tr>
+                    <th colspan="2">Финград</th>
+                    <th rowspan="2">Название филиала в СКД</th>
+                    <th rowspan="2" class="tdBtn">Редактировать</th>
+                    <th rowspan="2" class="tdBtn">Удалить</th>
+                </tr>    
+                <tr>
+                    <th>Название филиала</th>
+                    <th>Код филиала</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 1; }
+                @{string ln = "";}
+                @{string bn = "";}
+                @{string dn = "";}
+
+                @foreach (var item in Model.Branches)
+                {
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.Branches[i - 1].Id)
+                            @Html.TextBoxFor(m => m.Branches[i - 1].Name, new { style = "display:none;width:99%", maxlength = "50" })
+
+                            @{ln = "lblName_" + @Convert.ToString(i - 1);}
+                            <label id=@ln>@item.Name</label>
+                            @Html.ValidationMessageFor(m => m.Branches[i - 1].Name)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Branches[i - 1].Code, new { style = "display:none;width:25px", maxlength = "2" })
+
+                            @{ln = "lblCode_" + @Convert.ToString(i - 1);}
+                            <label id=@ln>@item.Code</label>
+                            @Html.ValidationMessageFor(m => m.Branches[i - 1].Code)
+                        </td>
+                        <td>
+                            @{ln = "lblDepName_" + @Convert.ToString(i - 1);}
+                            <label id=@ln>@(item.DepName != null ? item.DepName : "")</label>
+
+                            @{dn = "dropdown_" + @Convert.ToString(i - 1);}
+                            @Html.DropDownListFor(m => m.Branches[i - 1].DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"), new { id = @dn, style = "width:99%;display:none;", onchange = "SetDepartmentValue(" + @i +"-1);" }) 
+                            @Html.HiddenFor(m => m.Branches[i - 1].DepartmentId)
+                            @Html.HiddenFor(m => m.Branches[i - 1].OldDepartmentId)
+                            @Html.HiddenFor(m => m.Branches[i - 1].OldDepName)
+                        </td>
+                        <td class="tdBtn">
+                            @{bn = "btnEdit_" + @Convert.ToString(i - 1);}
+                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -45px -82px;" title="Редактировать" onclick="EditModeOnOff(@i-1, true);"></button>
+                            @{bn = "btnCancel_" + @Convert.ToString(i - 1);}
+                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: 4px -178px;display:none" title="Отменить" onclick="EditModeOnOff(@i-1, false);"></button>
+                            @{bn = "btnSave_" + @Convert.ToString(i - 1);}
+                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;display:none" title="Сохранить" onclick="SaveChange();"></button>
+                        </td>
+                        <td class="tdBtn">
+                            <button type="button" class="btnDepDelete" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -77px -131px;" title="Удалить" onclick="DeleteLink(@item.Id);"></button>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+    @*<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>*@
+}
+
+<script type="text/javascript">
+    var EditModeOn = false;
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        //$.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        //ShowFlash(true);
+        //ShowFlash(false);
+        $(":button").button();
+    });
+
+    //вкл/выкл режима редактирования
+    function EditModeOnOff(IndexRow, IsOn) {
+        if (IsOn == true) {
+            if (EditModeOn) { return; }
+            EditModeOn = IsOn;
+
+            $("#lblName_" + IndexRow).hide();
+            $("#Branches_" + IndexRow + "__Name").show();
+            $("#lblCode_" + IndexRow).hide();
+            $("#Branches_" + IndexRow + "__Code").show();
+            $("#lblDepName_" + IndexRow).hide();
+            $("#dropdown_" + IndexRow).show();
+            $("#dropdown_" + IndexRow).val($("#Branches_" + IndexRow + "__DepartmentId").val());
+            $("#btnEdit_" + IndexRow).hide();
+            $("#btnSave_" + IndexRow).show();
+            $("#btnCancel_" + IndexRow).show();
+        }
+        else {
+            EditModeOn = IsOn;
+            $("#lblName_" + IndexRow).show();
+            $("#Branches_" + IndexRow + "__Name").hide();
+            $("#lblCode_" + IndexRow).show();
+            $("#Branches_" + IndexRow + "__Code").hide();
+            $("#lblDepName_" + IndexRow).show();
+            $("#dropdown_" + IndexRow).hide();
+            $("#btnEdit_" + IndexRow).show();
+            $("#btnSave_" + IndexRow).hide();
+            $("#btnCancel_" + IndexRow).hide();
+            //возвращаем старые значения
+            $("#Branches_" + IndexRow + "__DepartmentId").val($("#Branches_" + IndexRow + "__OldDepartmentId").val());
+            $("#lblDepName_" + IndexRow).text($("#Branches_" + IndexRow + "__OldDepName").val());
+        }
+    }
+
+    //присваиваем новое значение выбранное в выпадающем списке
+    function SetDepartmentValue(IndexRow) {
+        $("#Branches_" + IndexRow + "__Department_Id").val($("#dropdown_" + IndexRow).val());
+        $("#lblDepName_" + IndexRow).text($("#dropdown_" + IndexRow + " option:selected").text());
+    }
+
+
+    function SaveChange() {
+        $("#StaffDepartmentBranchForm").submit();
+    }
+
+
+    function DeleteLink(Id) {
+        if (!EditModeOn) {
+            $("#StaffDepartmentBranchForm").submit();
+        }
+    }
+
+//    function ShowFlash(IsShow)  //показываем индикатор загрузки
+//    {
+//        if (!IsShow) {
+//            $("#LoadingIndicator2").removeClass("loading2");
+//            $("#DivIndicator").dialog("close");
+//            $("#DivIndicator").hide();
+//        }
+//        else {
+//            $("#LoadingIndicator2").addClass("loading2");
+//            $("#DivIndicator").show();
+//            $("#DivIndicator").dialog(
+//            { // initialize dialog box
+//                autoOpen: true,
+//                modal: true,
+//                // fix IE6  
+//                bgiframe: true,
+//                draggable: false,
+//                resizable: false,
+//                width: 300,
+//                height: 60,
+//                closeOnEscape: false,
+//                close: function (event, ui) {
+//                    //$(this).dialog("destroy").remove();
+//                }
+//            });
+//            $(".ui-dialog-titlebar").hide();
+//            $(".ui-dialog-titlebar-close").hide();
+//        }
+//    }
+
+    //функция отправки и получения ajax-запроса
+    function AjaxFormRequest(result_id, form_id, url, TypePost) {
+        jQuery.ajax({
+            url: url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#" + form_id).serialize(),
+            success: function (response) { //Если все нормально
+                document.getElementById(result_id).innerHTML = response;
+            },
+            error: function (response) { //Если ошибка
+                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+            }
+        });
+    }
+</script>
+

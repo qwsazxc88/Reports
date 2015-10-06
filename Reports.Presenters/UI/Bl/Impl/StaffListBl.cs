@@ -209,6 +209,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentSoftGroupLinksDao); }
             set { staffdepartmentSoftGroupLinksDao = value; }
         }
+
+        protected IStaffDepartmentBranchDao staffdepartmentBranchDao;
+        public IStaffDepartmentBranchDao StaffDepartmentBranchDao
+        {
+            get { return Validate.Dependency(staffdepartmentBranchDao); }
+            set { staffdepartmentBranchDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -2029,6 +2036,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region Справочник кодировок
+        /// <summary>
+        /// Загрузка справочник кодировок филиалов.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
+        /// <param name="error">Для сообщений</param>
+        /// <returns></returns>
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error)
+        {
+            error = string.Empty;
+            if (IsFull)
+            {
+                model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            }
+            model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
+            return model;
+        }
+        #endregion
+
         #endregion
 
         #region Штатная расстановка.
@@ -2089,6 +2116,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
             model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
             model.SKB_GE = StaffDepartmentSKB_GEDao.GetSKB_GE();
+            model.SoftGroups = StaffDepartmentSoftGroupDao.GetSoftGroups();
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.
@@ -2421,7 +2449,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
             {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2)
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2
+                    || AuthenticationService.CurrentUser.Id == 6638 || AuthenticationService.CurrentUser.Id == 22821)//временно открыт доступ 2 сотрудникам к всей структуре
                 {
                     //DepId = "9900424";
                     //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();

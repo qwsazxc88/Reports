@@ -27,20 +27,6 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(stafflistBl);
             }
         }
-
-        protected IStaffDepartmentSoftGroupDao staffdepartmentSoftGroupDao;
-        public IStaffDepartmentSoftGroupDao StaffDepartmentSoftGroupDao
-        {
-            get { return Validate.Dependency(staffdepartmentSoftGroupDao); }
-            set { staffdepartmentSoftGroupDao = value; }
-        }
-
-        protected IStaffDepartmentInstallSoftDao staffdepartmentInstallSoftDao;
-        public IStaffDepartmentInstallSoftDao StaffDepartmentInstallSoftDao
-        {
-            get { return Validate.Dependency(staffdepartmentInstallSoftDao); }
-            set { staffdepartmentInstallSoftDao = value; }
-        }
         #endregion
 
         public ActionResult Index()
@@ -223,42 +209,6 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
-        [HttpGet]
-        public ActionResult StaffDepartmentSoftReference()
-        {
-            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            model.TabIndex = 0;
-            return View(model);
-        }
-        [HttpPost]
-        public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
-        {
-            string error = string.Empty;
-
-            ModelState.Clear();
-            if (model.SwitchOperation == 0)
-            {
-                model.IsError = false;
-                model = StaffListBl.GetSoftReference(model);
-            }
-            else
-            {
-                if (ValidateModel(model))
-                {
-                    if (!StaffListBl.SaveSoftReference(model, out error))
-                    {
-                        ModelState.AddModelError("MessageStr", error);
-                    }
-                    else
-                    {
-                        model.IsError = false;
-                        model = StaffListBl.GetSoftReference(model);
-                    }
-                }
-            }
-            
-            return View(model);
-        }
         #endregion
 
         #region Заявки для штатных единиц.
@@ -414,6 +364,182 @@ namespace WebMvc.Controllers
         }
         #endregion
 
+        #region Справочники
+        #region Справочник ПО
+        /// <summary>
+        /// Загрузка справочника ПО.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentSoftReference(bool? IsModal)
+        {
+            /*
+             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
+             * не доработал
+             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
+             * 
+             */
+            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
+            model.TabIndex = 0;
+            model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            if (model.IsModal)
+                return PartialView(model);
+            else
+                return View(model);
+        }
+        /// <summary>
+        /// Сохранение данных в справочнике ПО.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
+        {
+            string error = string.Empty;
+
+            ModelState.Clear();
+            if (model.SwitchOperation == 0)
+            {
+                model.IsError = false;
+                model = StaffListBl.GetSoftReference(model);
+            }
+            else
+            {
+                if (ValidateModel(model))
+                {
+                    if (!StaffListBl.SaveSoftReference(model, out error))
+                    {
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model.IsError = false;
+                        model = StaffListBl.GetSoftReference(model);
+                    }
+                }
+            }
+
+            if (model.IsModal)
+                return PartialView(model);
+            else
+                return View(model);
+        }
+        #endregion
+
+        #region Cправочник кодировок
+        /// <summary>
+        /// Загрузка справочника ПО.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentEncoding(bool? IsModal)
+        {
+            /*
+             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
+             * не доработал
+             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
+             * 
+             */
+            StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();//StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
+            model.CandidateID = 1904;
+            model.TabIndex = 0;
+            //model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            //if (model.IsModal)
+            //    return PartialView(model);
+            //else
+                return View(model);
+        }
+        /// <summary>
+        /// Сохранение данных в справочнике ПО.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentEncoding(StaffDepartmentEncodingModel model)
+        {
+            string error = string.Empty;
+
+            //ModelState.Clear();
+            //if (model.SwitchOperation == 0)
+            //{
+            //    model.IsError = false;
+            //    model = StaffListBl.GetSoftReference(model);
+            //}
+            //else
+            //{
+            //    if (ValidateModel(model))
+            //    {
+            //        if (!StaffListBl.SaveSoftReference(model, out error))
+            //        {
+            //            ModelState.AddModelError("MessageStr", error);
+            //        }
+            //        else
+            //        {
+            //            model.IsError = false;
+            //            model = StaffListBl.GetSoftReference(model);
+            //        }
+            //    }
+            //}
+
+            //if (model.IsModal)
+            //    return PartialView(model);
+            //else
+                return View(model);
+        }
+        /// <summary>
+        /// Загрузка справочника ПО.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentBranch()
+        {
+            string error = string.Empty;
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+            return PartialView(model);
+        }
+        /// <summary>
+        /// Сохранение данных в справочнике ПО.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentBranch(StaffDepartmentBranchModel model)
+        {
+            string error = string.Empty;
+
+            //ModelState.Clear();
+            ValidateModel(model);
+            //if (!ValidateModel(model))
+                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+            //if (model.SwitchOperation == 0)
+            //{
+            //    model.IsError = false;
+            //    model = StaffListBl.GetSoftReference(model);
+            //}
+            //else
+            //{
+            //    if (ValidateModel(model))
+            //    {
+            //        if (!StaffListBl.SaveSoftReference(model, out error))
+            //        {
+            //            ModelState.AddModelError("MessageStr", error);
+            //        }
+            //        else
+            //        {
+            //            model.IsError = false;
+            //            model = StaffListBl.GetSoftReference(model);
+            //        }
+            //    }
+            //}
+
+            //if (model.IsModal)
+            //    return PartialView(model);
+            //else
+            return View(model);
+        }
+        #endregion
+        #endregion
+
         #region Валидация
         protected bool ValidateModel(StaffDepartmentRequestListModel model)
         {
@@ -502,6 +628,26 @@ namespace WebMvc.Controllers
 
             model.IsError = !ModelState.IsValid;
 
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffDepartmentBranchModel model)
+        {
+            int i = 0;
+            foreach (var item in model.Branches)
+            {
+                if (string.IsNullOrEmpty(item.Name) || string.IsNullOrWhiteSpace(item.Name))
+                {
+                    ModelState.AddModelError("Branches[" + i.ToString() + "].Name", "*");
+                }
+                if (string.IsNullOrEmpty(item.Code) || string.IsNullOrWhiteSpace(item.Code))
+                {
+                    ModelState.AddModelError("Branches[" + i.ToString() + "].Code", "*");
+                }
+                i++;
+            }
+            
+            if (!ModelState.IsValid)
+                ModelState.AddModelError("MessageStr", "Проверьте правильность заполнения полей!");
             return ModelState.IsValid;
         }
         #endregion
