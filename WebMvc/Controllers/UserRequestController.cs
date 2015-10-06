@@ -2220,7 +2220,7 @@ namespace WebMvc.Controllers
                 return;
             DateTime beginDate = date.Value;
             DateTime current = DateTime.Today;
-            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : 1;
+            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? 30 : 1);
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
             if ((current.Day > limitDate) && monthBegin > beginDate)
             {
