@@ -106,10 +106,11 @@ namespace Reports.Presenters.UI.Bl
         /// <summary>
         /// Загрузка справочник кодировок филиалов.
         /// </summary>
-        /// <param name="model"></param>
-        /// <param name="error"></param>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
+        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error);
+        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error);
         #endregion
         #endregion
 

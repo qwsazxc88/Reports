@@ -494,7 +494,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffDepartmentBranch()
         {
             string error = string.Empty;
-            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), out error);
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
             return PartialView(model);
         }
         /// <summary>
@@ -508,6 +508,9 @@ namespace WebMvc.Controllers
             string error = string.Empty;
 
             //ModelState.Clear();
+            ValidateModel(model);
+            //if (!ValidateModel(model))
+                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
             //if (model.SwitchOperation == 0)
             //{
             //    model.IsError = false;
@@ -625,6 +628,26 @@ namespace WebMvc.Controllers
 
             model.IsError = !ModelState.IsValid;
 
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffDepartmentBranchModel model)
+        {
+            int i = 0;
+            foreach (var item in model.Branches)
+            {
+                if (string.IsNullOrEmpty(item.Name) || string.IsNullOrWhiteSpace(item.Name))
+                {
+                    ModelState.AddModelError("Branches[" + i.ToString() + "].Name", "*");
+                }
+                if (string.IsNullOrEmpty(item.Code) || string.IsNullOrWhiteSpace(item.Code))
+                {
+                    ModelState.AddModelError("Branches[" + i.ToString() + "].Code", "*");
+                }
+                i++;
+            }
+            
+            if (!ModelState.IsValid)
+                ModelState.AddModelError("MessageStr", "Проверьте правильность заполнения полей!");
             return ModelState.IsValid;
         }
         #endregion
