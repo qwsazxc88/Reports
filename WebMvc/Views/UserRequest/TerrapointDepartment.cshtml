@@ -19,6 +19,14 @@
                        <a>Код точки</a>
                        <span class="sortorder" ng-show="predicate === 'TPCode'" ng-class="{reverse:reverse}"></span>
                     </th>
+                    <th ng-click="Sort('TP1Name')">
+                        <a>1ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TP1Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TP2Name')">
+                        <a>2ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TP2Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
                     <th ng-click="Sort('TPName')">
                         <a>Название точки</a>
                         <span class="sortorder" ng-show="predicate === 'TPName'" ng-class="{reverse:reverse}"></span>
@@ -106,6 +114,8 @@
                 </tr>
                 <tr id="FiltrRow" class="noExl">
                 <td><input ng-model="search.TPCode" class="filterinput" /></td>
+                <td><input ng-model="search.TP1Name" class="filterinput"  /></td>
+                <td><input ng-model="search.TP2Name" class="filterinput"  /></td>
                 <td><input ng-model="search.TPName" class="filterinput"  /></td>
                 <td><input ng-model="search.TPCity" class="filterinput"  /></td>
                 <td><input ng-model="search.TPStreet" class="filterinput"  /></td>
@@ -132,6 +142,8 @@
                 <tbody>
                 <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
 			        <td>{{row.TPCode}}</td>
+                    <td>{{row.TP1Name}}</td>
+                    <td>{{row.TP2Name}}</td>
                     <td>{{row.TPName}}</td>
                     <td>{{row.TPCity}}</td>
                     <td>{{row.TPStreet}}</td>
