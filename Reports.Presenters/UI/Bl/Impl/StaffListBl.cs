@@ -209,6 +209,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentSoftGroupLinksDao); }
             set { staffdepartmentSoftGroupLinksDao = value; }
         }
+
+        protected IStaffDepartmentBranchDao staffdepartmentBranchDao;
+        public IStaffDepartmentBranchDao StaffDepartmentBranchDao
+        {
+            get { return Validate.Dependency(staffdepartmentBranchDao); }
+            set { staffdepartmentBranchDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -2026,6 +2033,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return true;
+        }
+        #endregion
+
+        #region Справочник кодировок
+        /// <summary>
+        /// Загрузка справочник кодировок филиалов.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error)
+        {
+            error = string.Empty;
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
+            return model;
         }
         #endregion
 

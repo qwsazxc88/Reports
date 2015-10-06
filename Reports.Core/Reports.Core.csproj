@@ -294,6 +294,7 @@
     <Compile Include="Dao\Impl\StaffList\IDepartmentArchiveDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\DepartmentArchiveDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\RefAddressesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentBranchDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentCashDeskAvailableDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentCBDetailsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentInstallSoftDao.cs" />
@@ -323,6 +324,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramCodesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffProgramReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IRefAddressesDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentBranchDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentCashDeskAvailableDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentCBDetailsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentInstallSoftDao.cs" />
@@ -603,6 +605,7 @@
     <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
     <Compile Include="Domain\StaffList\RefAddresses.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentBranch.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentCashDeskAvailable.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentCBDetails.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentInstallSoft.cs" />
@@ -737,6 +740,7 @@
     <Compile Include="Dto\StaffList\EstablishedPostRequestDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
     <Compile Include="Dto\StaffList\SoftGroupLinkDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentBranchDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostChargeLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
     <Compile Include="Dto\StaffList\StaffListDepartmentDto.cs" />
@@ -1303,6 +1307,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentBranch.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentSoftGroupLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentSoftGroup.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentInstallSoft.hbm.xml" />

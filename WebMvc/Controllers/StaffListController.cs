@@ -493,13 +493,8 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult StaffDepartmentBranch()
         {
-            StaffDepartmentBranchModel model = new StaffDepartmentBranchModel();//StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            //model.CandidateID = 1904;
-            //model.TabIndex = 0;
-            //model.IsModal = IsModal.HasValue ? IsModal.Value : false;
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
+            string error = string.Empty;
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), out error);
             return PartialView(model);
         }
         /// <summary>

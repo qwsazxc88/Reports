@@ -705,6 +705,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentSoftGroupLinksDao>()
                 .ImplementedBy<StaffDepartmentSoftGroupLinksDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentBranchDao>()
+                .ImplementedBy<StaffDepartmentBranchDao>()
+                .LifeStyle.Is(type));
             
         }
         #endregion

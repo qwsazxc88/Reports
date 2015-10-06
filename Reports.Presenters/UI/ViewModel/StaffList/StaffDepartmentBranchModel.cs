@@ -11,6 +11,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     /// </summary>
     public class StaffDepartmentBranchModel
     {
+        public IList<StaffDepartmentBranchDto> Branches { get; set; }
+        public IList<Department> TwoLevelDeps { get; set; }
         #region Служебные поля.
         public string MessageStr { get; set; }
         //public int SwitchOperation { get; set; }

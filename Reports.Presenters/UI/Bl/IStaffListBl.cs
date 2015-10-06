@@ -101,6 +101,16 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         bool SaveSoftReference(StaffDepartmentSoftReferenceModel model, out string error);
         #endregion
+
+        #region Справочник кодировок
+        /// <summary>
+        /// Загрузка справочник кодировок филиалов.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error);
+        #endregion
         #endregion
 
         #region Штатная расстановка.
