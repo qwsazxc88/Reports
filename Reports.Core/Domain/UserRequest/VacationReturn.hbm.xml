@@ -1,0 +1,31 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="VacationReturn">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    
+    <property name="CreateDate" not-null="true"/>
+    <property name="SendDate" not-null="false"/>
+    
+    <property name="ReturnDate" not-null="false"/>
+    <property name="ContinueDate" not-null="false"/>
+    <property name="ReturnReason" not-null="false"/>
+    <property name="ManagerDateAccept" not-null="false"/>
+    <property name="PersonnelManagerDateAccept" not-null="false"/>
+    <property name="ChiefDateAccept" not-null="false"/>
+    <property name="VacationStartDate" not-null="false"/>
+    <property name="VacationEndDate" not-null="false"/>
+    <property name="DaysNotUsedCount" not-null="false"/>
+
+    <many-to-one name="Status" class="refVacationReturnStatus" column="StatusId" foreign-key="FK_VactaionReturn_Status" not-null="false"/>
+    <many-to-one name="ReturnType" class="refVacationReturnType" foreign-key="FK_VactaionReturn_Type" not-null="false"/>
+    <many-to-one name="Vacation" class="Vacation" foreign-key="FK_VacationReturn_Vacation" not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_VacationReturn_User" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_VacationReturn_Creator" not-null="true"/>
+    <many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_VacationReturn_Manager" not-null="true"/>
+    <many-to-one name="Chief" class="User" column="ChiefId" foreign-key="FK_VacationReturn_Chief" not-null="true"/>
+    <many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_VacationReturn_PersonnelManager" not-null="true"/>
+  </class>
+</hibernate-mapping>

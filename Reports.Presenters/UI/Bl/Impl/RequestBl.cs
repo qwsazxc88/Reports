@@ -38,6 +38,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region DAOs
 
+        protected IVacationReturnDao vacationReturnDao;
+        protected IrefVacationReturnStatusDao refVacationReturnStatusDao;
+        protected IrefVacationReturnTypesDao refVacationReturnTypesDao;
         protected IVacationTypeDao vacationTypeDao;
         protected IAdditionalVacationTypeDao additionalVacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
@@ -105,6 +108,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IVacationReturnDao VacationReturnDao
+        {
+            get { return Validate.Dependency(vacationReturnDao); }
+            set { vacationReturnDao = value; }
+        }
+        public IrefVacationReturnTypesDao RefVacationReturnTypesDao
+        {
+            get { return Validate.Dependency(refVacationReturnTypesDao); }
+            set { refVacationReturnTypesDao = value; }
+        }
+        public IrefVacationReturnStatusDao RefVacationReturnStatusDao
+        {
+            get { return Validate.Dependency(refVacationReturnStatusDao); }
+            set { refVacationReturnStatusDao = value; }
+        }
         public IMailListDao MailListDao
         {
             get { return Validate.Dependency(maillistDao); }
@@ -6021,6 +6039,90 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        #endregion
+        #region VacationReturn
+        public VacationReturnCreateViewModel GetCreateModel()
+        {
+            VacationReturnCreateViewModel model = new VacationReturnCreateViewModel();
+            model.Users = UserDao.LoadAll().Select(x=>new IdNameDto {Name = x.Name, Id = x.Id}).ToList();
+            return model;
+        }
+        private void SetFlagState(VacationReturnViewModel model)
+        {
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.Employee:
+                    model.IsEditable = false;
+                    break;
+                case UserRole.Manager:
+                    model.IsEditable = true;
+                    break;
+                case UserRole.PersonnelManager:
+                    model.IsEditable = true;
+                    break;
+                default:
+                    throw new Exception("Нет доступа к заявке.");
+            }
+            model.ReturnReason.IsEditable = model.IsEditable;
+            model.ReturnDate.IsEditable = model.IsEditable;
+            model.ContinueDate.IsEditable = model.IsEditable;
+            
+            model.IsSaveAvailable = model.IsEditable ;
+        }
+        private void LoadDictionaries(VacationReturnViewModel model)
+        {
+            model.ReturnTypes = RefVacationReturnTypesDao.FindAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Statuses = RefVacationReturnStatusDao.FindAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+        }
+        private void SetModel(VacationReturnViewModel model, VacationReturn entity)
+        {
+            if (entity != null)
+            {
+                model.Id = entity.Id;                
+                model.User.Id = entity.User.Id;                
+                model.Creator.Id = entity.Creator.Id;
+                model.ReturnType = entity.ReturnType.Id;
+                model.StatusId = entity.Status.Id;                
+                model.ReturnDate.Value = entity.ReturnDate;                
+                model.ContinueDate.Value = entity.ContinueDate;                
+                model.ReturnReason.Value = entity.ReturnReason;
+                model.VacationStartDate = entity.Vacation.BeginDate;
+                model.VacationEndDate = entity.Vacation.EndDate;
+            }
+            LoadUserData(model.Creator);
+            LoadUserData(model.User);
+            LoadDictionaries(model);
+            SetFlagState(model);
+        }
+        public VacationReturnViewModel GetNewVacationReturnViewModel(int UserId)
+        {
+            VacationReturnViewModel model = new VacationReturnViewModel();
+            model.Creator.Id = CurrentUser.Id;
+            model.User.Id = UserId;
+            SetModel(model, null);
+            return model;
+        }
+        public Result<VacationReturnViewModel> GetVacationReturnEditModel(int id)
+        {
+            Result<VacationReturnViewModel> result;
+            VacationReturnViewModel model = new VacationReturnViewModel();
+            if (id == 0)
+            {
+                result = new Result<VacationReturnViewModel>(false, "Не корректно указан идентификатор", null);
+            }
+            else
+            {
+                var entity = VacationReturnDao.Load(id);
+                SetModel(model, entity);
+                result = new Result<VacationReturnViewModel>(true, "Ok", model);
+            }
+            return result;
+        }
+        public Result<VacationReturnViewModel> SaveVacationReturnEditModel(VacationReturnViewModel model)
+        {
+            Result<VacationReturnViewModel> result = new Result<VacationReturnViewModel>(true,"Ok",model);
+            return result;
+        }
         #endregion
 
         #region Child Vacation

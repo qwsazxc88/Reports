@@ -1,0 +1,33 @@
+﻿@using Reports.Presenters.UI.ViewModel;
+@using WebMvc.Helpers
+@model VacationReturnViewModel
+@{
+    ViewBag.Title = "Заявка на отзыв из отпуска";
+}
+@using(Html.BeginForm())
+{
+    <div>
+    @Html.Partial("Shared/EditorTemplates/UserInfo", Model.User)
+    <div class="formfield clear">
+    @if (Model.IsAdminEditable)
+    {
+        @Html.LabelFor(m => m.Status)
+        @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.Statuses), Model.IsEditable ? null : new { disabled = "disabled" })
+    }
+    else
+    {
+        @Html.LabelFor(m => m.Status)
+        @Html.DisplayFor(m => m.Status)        
+    }
+    </div>
+    
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.ReturnType)
+        @Html.DropDownListFor(m => m.ReturnType, new SelectList(Model.ReturnTypes), Model.IsEditable ? null : new { disabled = "disabled" })
+    </div>    
+    @Html.CreateField(m=>m.ReturnReason)
+    @Html.CreateField(m=>m.ReturnDate)
+    @Html.CreateField(m=>m.ContinueDate)
+    
+    </div>
+}

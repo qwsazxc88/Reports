@@ -272,6 +272,9 @@
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
     <Compile Include="UI\ViewModel\SettingsModel.cs" />
+    <Compile Include="UI\ViewModel\Shared\ApprovalViewModel.cs" />
+    <Compile Include="UI\ViewModel\Shared\DateFieldViewModel.cs" />
+    <Compile Include="UI\ViewModel\Shared\FieldViewModel.cs" />
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
@@ -295,6 +298,8 @@
     <Compile Include="UI\ViewModel\UserInfoModel.cs" />
     <Compile Include="UI\ViewModel\UserListModel.cs" />
     <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="UI\ViewModel\UserRequest\VacationReturnCreateViewModel.cs" />
+    <Compile Include="UI\ViewModel\UserRequest\VacationReturnViewModel.cs" />
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="UI\ViewModel\VacationPrintModel.cs" />

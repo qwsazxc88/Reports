@@ -7,6 +7,7 @@ namespace Reports.Core.Dto
 {
     public class StandartUserDto
     {
+        public string Label { get; set; }
         [Display(Name = "ФИО сотрудника")]
         public string Name { get; set; }
         public int Id { get; set; }

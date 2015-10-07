@@ -122,6 +122,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ConvertHelper.cs" />
+    <Compile Include="Helpers\FieldHelper.cs" />
     <Compile Include="Helpers\ObjectExtension.cs" />
     <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -846,6 +847,9 @@
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
+    <Content Include="Views\UserRequest\VacationReturnEdit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Approval.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
