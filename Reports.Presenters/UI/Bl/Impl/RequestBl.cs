@@ -5980,6 +5980,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if ((!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue) || (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue) || !vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         model.IsApproveForAllByConsultantEnable = true;
+
+                        if (!vacation.ManagerDateAccept.HasValue)
+                        {
+                            if (IsAdditionalVacationTypeNecessary(model))
+                                model.IsAdditionalVacationTypeEditable = true;
+                        }
+
                         //дальше все как у кадровиков
                         model.IsUnsignedConfirmationAllowed = true;
                         if (!vacation.PersonnelManagerDateAccept.HasValue && (!superPersonnelId.HasValue || AuthenticationService.CurrentUser.Id != superPersonnelId.Value))
