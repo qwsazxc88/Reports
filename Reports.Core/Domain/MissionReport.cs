@@ -79,7 +79,7 @@ namespace Reports.Core.Domain
         public virtual MissionOrder AdditionalMissionOrder { get; set; }
 
         public virtual Deduction Deduction { get; set; }
-
+        public virtual Deduction StornoDeduction { get; set; }
         public virtual IList<MissionReportCost> Costs { get; set; }
 
         public virtual IList<MissionReportComment> Comments { get; set; }
