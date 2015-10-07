@@ -11,7 +11,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     /// </summary>
     public class StaffDepartmentEncodingModel
     {
-        public int CandidateID { get; set; }
         #region Служебные поля.
         public string MessageStr { get; set; }
         ///// <summary>

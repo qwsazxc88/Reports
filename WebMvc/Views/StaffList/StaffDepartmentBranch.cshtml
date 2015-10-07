@@ -3,12 +3,12 @@
     ViewBag.Title = "Справочник филиалов";
 }
 
-@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm" }))
+@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm", target = "tab1" }))
 {
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
     
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
-        <table id="tbl" class="grid">
+        <table id="tblBranch" class="grid">
             <thead>
                 <tr>
                     <th colspan="2">Финград</th>
@@ -21,7 +21,7 @@
                     <th>Код филиала</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tblBranchRows">
                 @{ int i = 1; }
                 @{string ln = "";}
                 @{string bn = "";}
@@ -50,7 +50,7 @@
                             <label id=@ln>@(item.DepName != null ? item.DepName : "")</label>
 
                             @{dn = "dropdown_" + @Convert.ToString(i - 1);}
-                            @Html.DropDownListFor(m => m.Branches[i - 1].DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"), new { id = @dn, style = "width:99%;display:none;", onchange = "SetDepartmentValue(" + @i +"-1);" }) 
+                            @Html.DropDownListFor(m => m.Branches[i - 1].DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"), new { id = @dn, style = "width:99%;display:none;", onchange = "SetDepartmentValue(" + @i + "-1);" }) 
                             @Html.HiddenFor(m => m.Branches[i - 1].DepartmentId)
                             @Html.HiddenFor(m => m.Branches[i - 1].OldDepartmentId)
                             @Html.HiddenFor(m => m.Branches[i - 1].OldDepName)
@@ -73,6 +73,7 @@
             </tbody>
         </table>
     </div>
+    
     @*<div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -82,6 +83,28 @@
         </table>
     </div>*@
 }
+
+<div id="AddEditRow" style="display:none;">
+    @using (Html.BeginForm("TestStaffDepartmentBranch", "StaffList", FormMethod.Post))
+    {
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.Id)
+                <td>@Html.LabelFor(m => m.Name)</td>
+                <td>@Html.TextBoxFor(m => m.Name) @Html.ValidationMessageFor(m => m.Name)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Code)</td>
+                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:25px", maxlength = "2" }) @Html.ValidationMessageFor(m => m.Code)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+        
+</div>
 
 <script type="text/javascript">
     var EditModeOn = false;
@@ -99,36 +122,44 @@
 
     //вкл/выкл режима редактирования
     function EditModeOnOff(IndexRow, IsOn) {
-        if (IsOn == true) {
-            if (EditModeOn) { return; }
-            EditModeOn = IsOn;
 
-            $("#lblName_" + IndexRow).hide();
-            $("#Branches_" + IndexRow + "__Name").show();
-            $("#lblCode_" + IndexRow).hide();
-            $("#Branches_" + IndexRow + "__Code").show();
-            $("#lblDepName_" + IndexRow).hide();
-            $("#dropdown_" + IndexRow).show();
-            $("#dropdown_" + IndexRow).val($("#Branches_" + IndexRow + "__DepartmentId").val());
-            $("#btnEdit_" + IndexRow).hide();
-            $("#btnSave_" + IndexRow).show();
-            $("#btnCancel_" + IndexRow).show();
-        }
-        else {
-            EditModeOn = IsOn;
-            $("#lblName_" + IndexRow).show();
-            $("#Branches_" + IndexRow + "__Name").hide();
-            $("#lblCode_" + IndexRow).show();
-            $("#Branches_" + IndexRow + "__Code").hide();
-            $("#lblDepName_" + IndexRow).show();
-            $("#dropdown_" + IndexRow).hide();
-            $("#btnEdit_" + IndexRow).show();
-            $("#btnSave_" + IndexRow).hide();
-            $("#btnCancel_" + IndexRow).hide();
-            //возвращаем старые значения
-            $("#Branches_" + IndexRow + "__DepartmentId").val($("#Branches_" + IndexRow + "__OldDepartmentId").val());
-            $("#lblDepName_" + IndexRow).text($("#Branches_" + IndexRow + "__OldDepName").val());
-        }
+        $("#Id").val($("#Branches_" + IndexRow + "__Id").val());
+        $("#Name").val($("#Branches_" + IndexRow + "__Name").val());
+        $("#Code").val($("#Branches_" + IndexRow + "__Code").val());
+        $("#DepartmentId").val($("#Branches_" + IndexRow + "__DepartmentId").val());
+
+
+        CreateEdtRowDialog(true);
+//        if (IsOn == true) {
+//            if (EditModeOn) { return; }
+//            EditModeOn = IsOn;
+
+//            $("#lblName_" + IndexRow).hide();
+//            $("#Branches_" + IndexRow + "__Name").show();
+//            $("#lblCode_" + IndexRow).hide();
+//            $("#Branches_" + IndexRow + "__Code").show();
+//            $("#lblDepName_" + IndexRow).hide();
+//            $("#dropdown_" + IndexRow).show();
+//            $("#dropdown_" + IndexRow).val($("#Branches_" + IndexRow + "__DepartmentId").val());
+//            $("#btnEdit_" + IndexRow).hide();
+//            $("#btnSave_" + IndexRow).show();
+//            $("#btnCancel_" + IndexRow).show();
+//        }
+//        else {
+//            EditModeOn = IsOn;
+//            $("#lblName_" + IndexRow).show();
+//            $("#Branches_" + IndexRow + "__Name").hide();
+//            $("#lblCode_" + IndexRow).show();
+//            $("#Branches_" + IndexRow + "__Code").hide();
+//            $("#lblDepName_" + IndexRow).show();
+//            $("#dropdown_" + IndexRow).hide();
+//            $("#btnEdit_" + IndexRow).show();
+//            $("#btnSave_" + IndexRow).hide();
+//            $("#btnCancel_" + IndexRow).hide();
+//            //возвращаем старые значения
+//            $("#Branches_" + IndexRow + "__DepartmentId").val($("#Branches_" + IndexRow + "__OldDepartmentId").val());
+//            $("#lblDepName_" + IndexRow).text($("#Branches_" + IndexRow + "__OldDepName").val());
+//        }
     }
 
     //присваиваем новое значение выбранное в выпадающем списке
@@ -139,7 +170,8 @@
 
 
     function SaveChange() {
-        $("#StaffDepartmentBranchForm").submit();
+        //$("#StaffDepartmentBranchForm").submit();
+        AjaxFormRequest("tab1", "StaffDepartmentBranchForm", "/StaffList/StaffDepartmentBranch", "POST");
     }
 
 
@@ -148,6 +180,78 @@
             $("#StaffDepartmentBranchForm").submit();
         }
     }
+
+    function CreateEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditRow').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditRow();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $('#AddEditRow').dialog("open");
+    }
+
+    var processAddEditRow = function()
+    {
+        var url = "@Url.Action("TestStaffDepartmentBranch", "StaffList")";
+        var dataToSend = $("#AddEditRow form").serialize();
+        $.post(url, dataToSend, function(dataReceived){
+            var $table = $("#tblBranch");
+            var $rows = $("#tblBranchRows");
+            $rows.remove();
+            for (var i = 0; i < dataReceived.length; i++)
+            {
+                $table.append(
+                    "<tr class=\"tblBranchRows\"><td>" +
+                    (dataReceived[i].Name ? dataReceived[i].Name : "") + "</td><td>" +
+                    (dataReceived[i].Code ? dataReceived[i].Code : "") + "</td><td>" +
+                    (dataReceived[i].DepName ? dataReceived[i].DepName : "") + "</td>" +
+                    "<td></td>" + 
+                    "<td></td>"
+                    //"<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                );
+            }
+        }, "json");
+    };
+
+//    function DeleteRow(Id){
+//        var actionUrl="@Url.Action("TestStaffDepartmentBranch", "StaffList")";
+//        var url = actionUrl + "?NameID=" + Id;
+
+//        var dataToSend = $("#add-name-change-dialog form").serialize();
+//            $.post(url, dataToSend, function(dataReceived){
+//                var $table = $("#name-changes-container>table");
+//                var $rows = $("#name-changes-container>table .name-change-row");
+//                $rows.remove();
+//                for (var i = 0; i < dataReceived.length; i++)
+//                {
+//                    $table.append(
+//                        "<tr class=\"name-change-row\"><td>" +
+//                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+//                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+//                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+//                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+//                    );
+//                }
+//            }, "json");
+//    }
+
 
 //    function ShowFlash(IsShow)  //показываем индикатор загрузки
 //    {
@@ -179,20 +283,20 @@
 //        }
 //    }
 
-    //функция отправки и получения ajax-запроса
-    function AjaxFormRequest(result_id, form_id, url, TypePost) {
-        jQuery.ajax({
-            url: url, //Адрес подгружаемой страницы
-            type: TypePost, //Тип запроса
-            dataType: "html", //Тип данных
-            data: jQuery("#" + form_id).serialize(),
-            success: function (response) { //Если все нормально
-                document.getElementById(result_id).innerHTML = response;
-            },
-            error: function (response) { //Если ошибка
-                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
-            }
-        });
-    }
+//    //функция отправки и получения ajax-запроса
+//    function AjaxFormRequest(result_id, form_id, url, TypePost) {
+//        jQuery.ajax({
+//            url: url, //Адрес подгружаемой страницы
+//            type: TypePost, //Тип запроса
+//            dataType: "html", //Тип данных
+//            data: jQuery("#" + form_id).serialize(),
+//            success: function (response) { //Если все нормально
+//                document.getElementById(result_id).innerHTML = response;
+//            },
+//            error: function (response) { //Если ошибка
+//                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+//            }
+//        });
+//    }
 </script>
 

@@ -14,7 +14,7 @@ using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
-    public class StaffListController : Controller
+    public class StaffListController : BaseController
     {
         #region Dependencies
         protected IStaffListBl stafflistBl;
@@ -432,7 +432,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentEncoding(bool? IsModal)
+        public ActionResult StaffDepartmentEncoding(int? TabIndex)
         {
             /*
              входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
@@ -441,8 +441,7 @@ namespace WebMvc.Controllers
              * 
              */
             StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();//StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            model.CandidateID = 1904;
-            model.TabIndex = 0;
+            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
             //model.IsModal = IsModal.HasValue ? IsModal.Value : false;
             //if (model.IsModal)
             //    return PartialView(model);
@@ -495,6 +494,7 @@ namespace WebMvc.Controllers
         {
             string error = string.Empty;
             StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+
             return PartialView(model);
         }
         /// <summary>
@@ -535,7 +535,24 @@ namespace WebMvc.Controllers
             //if (model.IsModal)
             //    return PartialView(model);
             //else
-            return View(model);
+
+
+                return PartialView(model);
+        }
+        [HttpPost]
+        public ActionResult TestStaffDepartmentBranch(StaffDepartmentBranchDto itemToAdd)
+        {
+            string error = String.Empty;
+
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+            model.Branches.Add(itemToAdd);
+
+            //EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
+
+            //model = EmploymentBl.GetGeneralInfoModel(CandidateId);
+
+            return Json(model.Branches);
         }
         #endregion
         #endregion
