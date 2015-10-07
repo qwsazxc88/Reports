@@ -493,66 +493,53 @@ namespace WebMvc.Controllers
         public ActionResult StaffDepartmentBranch()
         {
             string error = string.Empty;
-            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), out error);
 
             return PartialView(model);
         }
         /// <summary>
-        /// Сохранение данных в справочнике ПО.
+        /// Сохраняем данные.
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult StaffDepartmentBranch(StaffDepartmentBranchModel model)
-        {
-            string error = string.Empty;
-
-            //ModelState.Clear();
-            ValidateModel(model);
-            //if (!ValidateModel(model))
-                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
-            //if (model.SwitchOperation == 0)
-            //{
-            //    model.IsError = false;
-            //    model = StaffListBl.GetSoftReference(model);
-            //}
-            //else
-            //{
-            //    if (ValidateModel(model))
-            //    {
-            //        if (!StaffListBl.SaveSoftReference(model, out error))
-            //        {
-            //            ModelState.AddModelError("MessageStr", error);
-            //        }
-            //        else
-            //        {
-            //            model.IsError = false;
-            //            model = StaffListBl.GetSoftReference(model);
-            //        }
-            //    }
-            //}
-
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
-
-
-                return PartialView(model);
-        }
-        [HttpPost]
-        public ActionResult TestStaffDepartmentBranch(StaffDepartmentBranchDto itemToAdd)
+        public ActionResult AddEditStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit)
         {
             string error = String.Empty;
+            bool result = false;
+            StaffDepartmentBranchModel model = null;
 
-            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
-            model.Branches.Add(itemToAdd);
+            if (StaffListBl.SaveStaffDepartmentBranch(itemToAddEdit, out error))
+            {
+                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), out error);
+                result = true;
+            }
 
-            //EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
+          
+            return Json(new { ok = result, msg = error, model.Branches });
+        }
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentBranch(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+            StaffDepartmentBranchModel model = null;
+
+            if (StaffListBl.DeleteStaffDepartmentBranch(Id, out error))
+            {
+                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), out error);
+                result = true;
+            }
+
             ViewBag.Error = error;
 
-            //model = EmploymentBl.GetGeneralInfoModel(CandidateId);
-
-            return Json(model.Branches);
+            return Json(new { ok = result, msg = error, model.Branches });
         }
         #endregion
         #endregion

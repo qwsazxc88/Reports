@@ -2038,21 +2038,91 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Справочник кодировок
         /// <summary>
-        /// Загрузка справочник кодировок филиалов.
+        /// Загрузка справочника кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
         /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error)
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error)
         {
             error = string.Empty;
-            if (IsFull)
-            {
-                model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
-            }
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
             return model;
+        }
+        /// <summary>
+        /// Сохраняем данные справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(itemToAddEdit.Id);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentBranch()
+                {
+                    Code = itemToAddEdit.Code,
+                    Name = itemToAddEdit.Name,
+                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.Code;
+                entity.Name = itemToAddEdit.Name;
+                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentBranchDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentBranchDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок филиалов.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentBranch(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(Id);
+            if (entity != null)
+            {
+                try
+                {
+                    StaffDepartmentBranchDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentBranchDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }    
+            }
+
+            return false;
         }
         #endregion
 

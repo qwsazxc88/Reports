@@ -107,10 +107,23 @@ namespace Reports.Presenters.UI.Bl
         /// Загрузка справочник кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
         /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error);
+        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок филиалов.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentBranch(int Id, out string error);
         #endregion
         #endregion
 
