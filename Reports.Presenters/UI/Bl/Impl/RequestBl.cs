@@ -4207,10 +4207,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!entity.ManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
                 {
                     entity.ManagerDateAccept = DateTime.Now;
+                    entity.ApprovedByManager = UserDao.Load(current.Id);
                 }
                 if (!entity.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
                 {
+                    if (model.IsPersonnelFieldsEditable)
+                        SetPersonnelDataFromModel(entity, model);
+
                     entity.PersonnelManagerDateAccept = DateTime.Now;
+                    entity.ApprovedByPersonnelManager = UserDao.Load(current.Id);
                 }
             }
             #endregion
@@ -4354,6 +4359,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         model.IsTypeEditable = true;
                         break;
+                    
                 }
                 if ((currentUserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager
                     || (currentUserRole & UserRole.Manager) == UserRole.Manager
@@ -4448,7 +4454,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if (!entity.SendTo1C.HasValue && ((!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue) || (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue) || !entity.PersonnelManagerDateAccept.HasValue))
+                    {
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                            // Разрешение редактирования стажа только для кадровиков банка
+                            if (!isSuperPersonnelManager)
+                            {
+                                model.IsExperienceEditable = true;
+                            }
+                            model.IsDatesEditable = true;
+                        }
                         model.IsApproveForAllByConsultantEnable = true;
+                    }
                     break;
                 case UserRole.PersonnelManager:
                     // Разрешить согласование для кадровиков банка и расчетчиков аутсорсинга
@@ -4829,7 +4849,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if ((!absence.UserDateAccept.HasValue && !absence.DeleteDate.HasValue) || (!absence.ManagerDateAccept.HasValue && !absence.DeleteDate.HasValue) || !absence.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (!absence.PersonnelManagerDateAccept.HasValue)
+                        {
+                            //model.IsApprovedByPersonnelManagerEnable = true;
+                            model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                            if (!absence.SendTo1C.HasValue)
+                            {
+                                model.IsAbsenceTypeEditable = true;
+                                model.IsTimesheetStatusEditable = true;
+                            }
+                        }
                         model.IsApproveForAllByConsultantEnable = true;
+                    }
                     break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
@@ -5060,6 +5093,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         #region Согласование консультантом за всех
                         if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
                         {
+                            absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                             if (!absence.UserDateAccept.HasValue && model.IsApproveForAllByConsultant)
                             {
                                 absence.UserDateAccept = DateTime.Now;
@@ -5593,12 +5627,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                         #endregion
 
                         #region Согласование консультантом за всех
-                        //if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
-                        //{
-                        //    vacation.UserDateAccept = DateTime.Now;
-                        //    SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
-                        //        vacation.Number, RequestTypeEnum.Vacation, false);
-                        //}
+                        if ((current.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing && model.IsApproveForAllByConsultant)
+                        {
+                            if (!vacation.UserDateAccept.HasValue)
+                            {
+                                vacation.UserDateAccept = DateTime.Now;
+                            }
+
+                            if (!vacation.ManagerDateAccept.HasValue)
+                            {
+                                vacation.ManagerDateAccept = DateTime.Now;
+                            }
+
+                            if (!vacation.PersonnelManagerDateAccept.HasValue)
+                            {
+                                vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                                vacation.PrincipalVacationDaysLeft = model.PrincipalVacationDaysLeft;
+                                vacation.AdditionalVacationDaysLeft = model.AdditionalVacationDaysLeft;
+                            }
+                        }
                         #endregion
 
                         if (model.IsVacationTypeEditable)
@@ -5931,7 +5978,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if ((!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue) || (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue) || !vacation.PersonnelManagerDateAccept.HasValue)
+                    {
                         model.IsApproveForAllByConsultantEnable = true;
+                        //дальше все как у кадровиков
+                        model.IsUnsignedConfirmationAllowed = true;
+                        if (!vacation.PersonnelManagerDateAccept.HasValue && (!superPersonnelId.HasValue || AuthenticationService.CurrentUser.Id != superPersonnelId.Value))
+                        {
+                            if (model.AttachmentId > 0)
+                            {
+                                model.IsApprovedEnable = true;
+                                model.IsApprovedForAllEnable = true;
+
+                                // расчетчики
+                                if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
+                                {
+                                    // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                                    if (vacation.UserDateAccept != null && vacation.SendTo1C == null)
+                                    {
+                                        model.IsErrorNotificationAvailable = true;
+                                    }
+                                }
+                            }
+                            if (!vacation.SendTo1C.HasValue)
+                            {
+                                model.IsVacationTypeEditable = true;
+                                model.IsTimesheetStatusEditable = true;
+                            }
+                            model.IsDaysLeftEditable = true;
+                        }
+                        else if (!vacation.SendTo1C.HasValue &&
+                                 !vacation.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
+                    }
                     break;
             }
             model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable;
@@ -6347,7 +6425,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if ((!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue) || (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue) || !vacation.PersonnelManagerDateAccept.HasValue)
+                    {
                         model.IsApproveForAllByConsultantEnable = true;
+
+                        //условия кадровика
+                        if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
+                        {
+                            model.IsConfirmationAllowed = true;
+                        }
+                        if (!vacation.PersonnelManagerDateAccept.HasValue)
+                        {
+                            if (model.AttachmentId > 0)
+                            {
+                                model.IsApprovedEnable = true;
+                                model.IsApprovedForAllEnable = true;
+                            }
+                            if (!vacation.SendTo1C.HasValue)
+                            {
+                                model.IsPersonnelFieldsEditable = true;
+                                model.IsVacationDatesEditable = true;
+                                //model.IsTimesheetStatusEditable = true;
+                            }
+                        }
+                        else if (!vacation.SendTo1C.HasValue &&
+                                 !vacation.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
+                    }
                     break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
@@ -6613,6 +6716,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (!entity.PersonnelManagerDateAccept.HasValue && model.IsApproveForAllByConsultant)
                 {
+                    if (model.IsPersonnelFieldsEditable)
+                        SetPersonnelDataFromModel(entity, model);
+
                     entity.PersonnelManagerDateAccept = DateTime.Now;
                 }
             }
