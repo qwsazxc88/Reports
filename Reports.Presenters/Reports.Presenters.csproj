@@ -280,6 +280,7 @@
     <Compile Include="UI\ViewModel\StaffList\DepStructureFingradPointsModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentBranchModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentEncodingModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentManagementModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftReferenceModel.cs" />

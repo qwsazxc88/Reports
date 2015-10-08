@@ -1,0 +1,219 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentManagementModel
+@{
+    ViewBag.Title = "Справочник дирекций";
+}
+
+@using (Html.BeginForm("StaffDepartmentManagement", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentManagementForm", target = "tab2" }))
+{
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
+    
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblManagement" class="grid">
+            <thead>
+                <tr>
+                    <th colspan="3">Финград</th>
+                    <th rowspan="2">Название дирекции в СКД</th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditManagementRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
+                </tr>    
+                <tr>
+                    <th>Название дирекции</th>
+                    <th>Код дирекции</th>
+                    <th>Филиал</th>
+                </tr>
+            </thead>
+            
+            <tbody class="tblManagementRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.Managements)
+                {
+                    <tr class="tblManagementRow">
+                        <td>
+                            @Html.HiddenFor(m => m.Managements[i - 1].Id)
+                            @Html.HiddenFor(m => m.Managements[i - 1].Name)
+                            @Html.DisplayFor(m => m.Managements[i - 1].Name)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.Managements[i - 1].Code)
+                            @Html.DisplayFor(m => m.Managements[i - 1].Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.Managements[i - 1].BranchName)
+                            @Html.HiddenFor(m => m.Managements[i - 1].BranchId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.Managements[i - 1].DepName)
+                            @Html.HiddenFor(m => m.Managements[i - 1].DepartmentId)
+                        </td>
+                        <td class="tdBtn">
+                            <a onclick="AddEditManagementRow(@i-1);" href="#" >Редактировать</a>
+                        </td>
+                        <td class="tdBtn">
+                            <a onclick="DeleteManagementRow(@item.Id);" href="#" >Удалить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div id="AddEditManagementDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentMenegmentDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.Id)
+                <td>@Html.LabelFor(m => m.Name)</td>
+                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:400px", maxlength = "50" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Code)</td>
+                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:35px", maxlength = "3" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.BranchId)</td>
+                <td>@Html.DropDownListFor(m => m.BranchId, new SelectList(Model.Branches, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.ThreeLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditManagementRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#Id").val($("#Managements_" + IndexRow + "__Id").val());
+            $("#Name").val($("#Managements_" + IndexRow + "__Name").val());
+            $("#Code").val($("#Managements_" + IndexRow + "__Code").val());
+            $("#BranchId").val($("#Managements_" + IndexRow + "__BranchId").val());
+            $("#DepartmentId").val($("#Managements_" + IndexRow + "__DepartmentId").val());
+        }
+        else{
+            $("#Id").val(0);
+            $("#Name").val("");
+            $("#Code").val("");
+            $("#BranchId").val(0);
+            $("#DepartmentId").val(0);
+        }
+
+        $("#lblMsg").text("");
+        $("#MessageStr").text("");
+
+        CreateManagementEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateManagementEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditManagementDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditManagementRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditManagementDialog').dialog("open");
+    }
+
+    function processAddEditManagementRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentMenegment", "StaffList")";
+        var dataToSend = $("#AddEditManagementDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditManagementDialog').dialog("close");
+                $("#MessageStr").text(data.msg);
+                var $table = $("#tblManagement");
+                var $rows = $("#tblManagement .tblManagementRow");
+                $rows.remove();
+                FillManagementTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#lblMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function DeleteManagementRow(Id){
+        var result = confirm("Подтвердите удаление выбранной записи!");
+        if (!result) {return;}
+
+        var actionUrl="@Url.Action("DeleteStaffDepartmentMenegment", "StaffList")";
+        var url = actionUrl + "?Id=" + Id;
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentMenegmentForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#MessageStr").text(data.msg);
+                    var $table = $("#tblManagement");
+                    var $rows = $("#tblManagement .tblManagementRow");
+                    $rows.remove();
+                    FillManagementTableData(data);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#MessageStr").text(data.msg);
+                }
+            }, "json");
+    }
+
+    function FillManagementTableData(data){
+        for (var i = 0; i < data.Managements.length; i++)
+        {
+            $("#tblManagement").append(
+                
+                "<tr class=\"tblManagementRow\">" +
+                    "<td><input id='Managements_" + i + "__Id' name='Managements[" + i + "].Id' value='" + data.Managements[i].Id + "' type='hidden'>" +
+                        "<input id='Managements_" + i + "__Name' name='Managements[" + i + "].Name' value='" + data.Managements[i].Name + "' type='hidden'>" + (data.Managements[i].Name ? data.Managements[i].Name : "") + "</td>" +
+                    "<td><input id='Managements_" + i + "__Code' name='Managements[" + i + "].Code' value='" + data.Managements[i].Code + "' type='hidden'>" + (data.Managements[i].Code ? data.Managements[i].Code : "") + "</td>" +
+                    "<td><input id='Managements_" + i + "__BranchId' name='Managements[" + i + "].BranchId' value='" + data.Managements[i].BranchId + "' type='hidden'>" + (data.Managements[i].BranchName ? data.Managements[i].BranchName : "") + "</td>" +
+                    "<td><input id='Managements_" + i + "__DepartmentId' name='Managements[" + i + "].DepartmentId' value='" + data.Managements[i].DepartmentId + "' type='hidden'>" + (data.Managements[i].DepName ? data.Managements[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a onclick='AddEditManagementRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.Managements[i].Id + ");' href='#' >Удалить</a></td>" +
+                "</tr>"
+            );
+        }
+    }
+
+</script>

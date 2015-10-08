@@ -10,7 +10,7 @@ namespace Reports.Core.Dao
     public interface IStaffDepartmentBranchDao : IDao<StaffDepartmentBranch>
     {
         /// </summary>
-        /// Список причин занесения в справочник подразделений.
+        /// Филиалы.
         /// </summary>
         /// <returns></returns>
         IList<StaffDepartmentBranchDto> GetDepartmentBranches();

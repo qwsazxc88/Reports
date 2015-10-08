@@ -7,14 +7,14 @@
 {
 
     <label id="MessageStr" style="color:Red;font-size:medium;"></label>
-    
+    <br /><br />
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <table id="tblBranch" class="grid">
             <thead>
                 <tr>
                     <th colspan="2">Финград</th>
                     <th rowspan="2">Название филиала в СКД</th>
-                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditRow(-1);">Создать</button></th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditBranchRow(-1);">Создать</button></th>
                     @*<th rowspan="2" class="tdBtn"></th>*@
                 </tr>    
                 <tr>
@@ -42,12 +42,10 @@
                             @Html.HiddenFor(m => m.Branches[i - 1].DepartmentId)
                         </td>
                         <td class="tdBtn">
-                            @*<button type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;" title="Сохранить" onclick="AddEditRow(@i-1);"></button>*@
-                            <a onclick="AddEditRow(@i-1);" href="#" >Редактировать</a>
+                            <a onclick="AddEditBranchRow(@i-1);" href="#" >Редактировать</a>
                         </td>
                         <td class="tdBtn">
-                            @*<button type="button" class="btnDepDelete" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -77px -131px;" title="Удалить" onclick="DeleteRow(@item.Id);"></button>*@
-                            <a onclick="DeleteRow(@item.Id);" href="#" >Удалить</a>
+                            <a onclick="DeleteBranchRow(@item.Id);" href="#" >Удалить</a>
                         </td>
                         @{ i++; }
                     </tr>
@@ -56,19 +54,11 @@
             </tbody>
         </table>
     </div>
-    
-    @*<div id="DivIndicator" style="display:none;">
-        <table>
-            <tr>
-                <td><span id="LoadingIndicator2"></span></td>
-                <td><label>Идет загрузка данных...</label></td>
-            </tr>
-        </table>
-    </div>*@
+   
 }
 
-<div id="AddEditRow" style="display:none;">
-    @using (Html.BeginForm("TestStaffDepartmentBranch", "StaffList", FormMethod.Post))
+<div id="AddEditBranchRowDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentBranchDialog", "StaffList", FormMethod.Post))
     {
         <label id="lblMsg" style="color:Red;font-size:medium;"></label>
         <table>
@@ -98,13 +88,11 @@
         
         $(document).tooltip({ track: false });
 
-        //ShowFlash(true);
-        //ShowFlash(false);
         $(":button").button();
     });
 
     //вкл/выкл режима редактирования
-    function AddEditRow(IndexRow) {
+    function AddEditBranchRow(IndexRow) {
         if(IndexRow >= 0){
             $("#Id").val($("#Branches_" + IndexRow + "__Id").val());
             $("#Name").val($("#Branches_" + IndexRow + "__Name").val());
@@ -121,13 +109,13 @@
         $("#lblMsg").text("");
         $("#MessageStr").text("");
 
-        CreateEdtRowDialog(true);
+        CreateBranchEdtRowDialog(IndexRow >= 0 ? true : false);
     }
 
 
-    function CreateEdtRowDialog(flgEdit) {
+    function CreateBranchEdtRowDialog(flgEdit) {
         var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
-        $('#AddEditRow').dialog(
+        $('#AddEditBranchRowDialog').dialog(
         {
             autoOpen: false,
             modal: true,
@@ -138,7 +126,7 @@
             buttons:
             {
                 "OK": function () {
-                    processAddEditRow();
+                    processAddEditBranchRow();
                     //$(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -150,23 +138,23 @@
         $(".ui-dialog-titlebar").show();
         $(".ui-dialog-titlebar-close").show();
 
-        $('#AddEditRow').dialog("open");
+        $('#AddEditBranchRowDialog').dialog("open");
     }
 
-    function processAddEditRow()
+    function processAddEditBranchRow()
     {
     
         var url = "@Url.Action("AddEditStaffDepartmentBranch", "StaffList")";
-        var dataToSend = $("#AddEditRow form").serialize();
-        ShowFlash(true);
+        var dataToSend = $("#AddEditBranchRowDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
-                $('#AddEditRow').dialog("close");
-                $("#lblMsg").text("");
+                $('#AddEditBranchRowDialog').dialog("close");
+                $("#MessageStr").text(data.msg);
                 var $table = $("#tblBranch");
                 var $rows = $("#tblBranch .tblBranchRow");
                 $rows.remove();
-                FillTableData(data);
+                FillBranchTableData(data);
                 
                 ShowFlash(false);
             }
@@ -177,7 +165,7 @@
         }, "json");
     };
 
-    function DeleteRow(Id){
+    function DeleteBranchRow(Id){
         var result = confirm("Подтвердите удаление выбранной записи!");
         if (!result) {return;}
 
@@ -191,7 +179,7 @@
                     var $table = $("#tblBranch");
                     var $rows = $("#tblBranch .tblBranchRow");
                     $rows.remove();
-                    FillTableData(data);
+                    FillBranchTableData(data);
                     ShowFlash(false);
                 }
                 else{
@@ -201,41 +189,22 @@
             }, "json");
     }
 
-    function FillTableData(data){
+    function FillBranchTableData(data){
         for (var i = 0; i < data.Branches.length; i++)
         {
             $("#tblBranch").append(
                 
-                "<tr class=\"tblBranchRow\"><td>" +
-                "<input id='Branches_" + i + "__Id' name='Branches[" + i + "].Id' value='" + data.Branches[i].Id + "' type='hidden'>" +
-                "<input id='Branches_" + i + "__Name' name='Branches[" + i + "].Name' value='" + data.Branches[i].Name + "' type='hidden'>" +
-                (data.Branches[i].Name ? data.Branches[i].Name : "") + "</td><td>" +
-                "<input id='Branches_" + i + "__Code' name='Branches[" + i + "].Code' value='" + data.Branches[i].Code + "' type='hidden'>" +
-                (data.Branches[i].Code ? data.Branches[i].Code : "") + "</td><td>" +
-                "<input id='Branches_" + i + "__DepartmentId' name='Branches[" + i + "].DepartmentId' value='" + data.Branches[i].DepartmentId + "' type='hidden'>" +
-                (data.Branches[i].DepName ? data.Branches[i].DepName : "") + "</td>" +
-                "<td class='tdBtn'><a onclick='AddEditRow(" + i + ");' href='#' >Редактировать</a></td>" + 
-                //"<td class='tdBtn'><button type='button' class='btnDepEdit' style=\"background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;\" title='Сохранить' onclick='AddEditRow(" + data.Branches[i].Id + ");'></button></td>" +
-                "<td class='tdBtn'><a onclick='DeleteRow(" + data.Branches[i].Id + ");' href='#' >Удалить</a></td></tr>" 
+                "<tr class=\"tblBranchRow\">" +
+                    "<td><input id='Branches_" + i + "__Id' name='Branches[" + i + "].Id' value='" + data.Branches[i].Id + "' type='hidden'>" +
+                        "<input id='Branches_" + i + "__Name' name='Branches[" + i + "].Name' value='" + data.Branches[i].Name + "' type='hidden'>" + (data.Branches[i].Name ? data.Branches[i].Name : "") + "</td>" +
+                    "<td><input id='Branches_" + i + "__Code' name='Branches[" + i + "].Code' value='" + data.Branches[i].Code + "' type='hidden'>" + (data.Branches[i].Code ? data.Branches[i].Code : "") + "</td>" +
+                    "<td><input id='Branches_" + i + "__DepartmentId' name='Branches[" + i + "].DepartmentId' value='" + data.Branches[i].DepartmentId + "' type='hidden'>" + (data.Branches[i].DepName ? data.Branches[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a onclick='AddEditBranchRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.Branches[i].Id + ");' href='#' >Удалить</a></td>" +
+                "</tr>"
             );
         }
     }
 
-
-//    //функция отправки и получения ajax-запроса
-//    function AjaxFormRequest(result_id, form_id, url, TypePost) {
-//        jQuery.ajax({
-//            url: url, //Адрес подгружаемой страницы
-//            type: TypePost, //Тип запроса
-//            dataType: "html", //Тип данных
-//            data: jQuery("#" + form_id).serialize(),
-//            success: function (response) { //Если все нормально
-//                document.getElementById(result_id).innerHTML = response;
-//            },
-//            error: function (response) { //Если ошибка
-//                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
-//            }
-//        });
-//    }
 </script>
 

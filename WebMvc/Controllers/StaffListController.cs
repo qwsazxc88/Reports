@@ -434,23 +434,13 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult StaffDepartmentEncoding(int? TabIndex)
         {
-            /*
-             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
-             * не доработал
-             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
-             * 
-             */
-            StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();//StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
-            //model.IsModal = IsModal.HasValue ? IsModal.Value : false;
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
-                return View(model);
+            StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();
+            model.TabIndex = 1;//TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
+            return View(model);
         }
-        
+        #region Справочник филиалов
         /// <summary>
-        /// Загрузка справочника ПО.
+        /// Загрузка справочника филиалов.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -459,6 +449,7 @@ namespace WebMvc.Controllers
             StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
             return PartialView(model);
         }
+
         /// <summary>
         /// Сохраняем данные.
         /// </summary>
@@ -483,6 +474,7 @@ namespace WebMvc.Controllers
           
             return Json(new { ok = result, msg = error, model.Branches });
         }
+
         /// <summary>
         /// Удаляем данные.
         /// </summary>
@@ -503,6 +495,66 @@ namespace WebMvc.Controllers
 
             return Json(new { ok = result, msg = error, model.Branches });
         }
+        #endregion
+
+        #region Справочник дирекций
+        /// <summary>
+        /// Загрузка справочника дирекций.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentManagement()
+        {
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentMenegment(StaffDepartmentManagementDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+            StaffDepartmentManagementModel model = null;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentManagement(itemToAddEdit, out error))
+                    result = true;
+            }
+
+
+            model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Managements });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentMenegment(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+            StaffDepartmentManagementModel model = null;
+
+            if (StaffListBl.DeleteStaffDepartmentManagement(Id, out error))
+                result = true;
+
+            model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Managements });
+        }
+        #endregion
         #endregion
         #endregion
 
@@ -600,6 +652,11 @@ namespace WebMvc.Controllers
         {
             error = string.Empty;
             return StaffListBl.ValidateDepartmentBranchRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentManagementDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentManagementRow(EditRow, out error);
         }
         #endregion
 
