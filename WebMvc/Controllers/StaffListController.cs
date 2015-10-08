@@ -435,7 +435,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffDepartmentEncoding(int? TabIndex)
         {
             StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();
-            model.TabIndex = 1;//TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
+            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
             return View(model);
         }
         #region Справочник филиалов
