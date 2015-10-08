@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
         {
         }
         /// </summary>
-        /// Список причин занесения в справочник подразделений.
+        /// Филиалы.
         /// </summary>
         /// <returns></returns>
         public IList<StaffDepartmentBranchDto> GetDepartmentBranches()

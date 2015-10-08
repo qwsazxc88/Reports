@@ -132,6 +132,37 @@ namespace Reports.Presenters.UI.Bl
         /// <returns></returns>
         bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error);
         #endregion
+
+        #region Справочник дирекций
+        /// <summary>
+        /// Загрузка справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentManagement(StaffDepartmentManagementDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок дирекций.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentManagement(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentManagementRow(StaffDepartmentManagementDto Row, out string error);
+        #endregion
+
         #endregion
         #endregion
 

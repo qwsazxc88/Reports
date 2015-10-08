@@ -707,6 +707,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentBranchDao>()
                 .ImplementedBy<StaffDepartmentBranchDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentManagementDao>()
+                .ImplementedBy<StaffDepartmentManagementDao>()
+                .LifeStyle.Is(type));
             
 
             #region StaffMovements
