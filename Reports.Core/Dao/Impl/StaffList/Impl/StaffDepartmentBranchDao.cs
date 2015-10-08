@@ -23,16 +23,14 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffDepartmentBranchDto> GetDepartmentBranches()
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id, A.Code, A.Name, A.DepartmentId, A.DepartmentId as OldDepartmentId, B.Name as DepName, B.Name as OldDepName
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id, A.Code, A.Name, A.DepartmentId, B.Name as DepName
                                                    FROM StaffDepartmentBranch as A
                                                    LEFT JOIN Department as B ON B.Id = A.DepartmentId")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("Code", NHibernateUtil.String)
                 .AddScalar("Name", NHibernateUtil.String)
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
-                .AddScalar("OldDepartmentId", NHibernateUtil.Int32)
-                .AddScalar("DepName", NHibernateUtil.String)
-                .AddScalar("OldDepName", NHibernateUtil.String);
+                .AddScalar("DepName", NHibernateUtil.String);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentBranchDto>()).List<StaffDepartmentBranchDto>();
         }

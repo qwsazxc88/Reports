@@ -427,7 +427,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //налоговые реквизиты
                 if (entity.Department != null)
                 {
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
+                    //entity.Department
+                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.GetDetailsByDepartmentId(entity.Department);
                     model.KPP = dt != null ? dt.KPP : string.Empty;
                     model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
                     model.OKATO = dt != null ? dt.OKATO : string.Empty;
@@ -2038,21 +2039,141 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Справочник кодировок
         /// <summary>
-        /// Загрузка справочник кодировок филиалов.
+        /// Загрузка справочника кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
-        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error)
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model)
         {
-            error = string.Empty;
-            if (IsFull)
-            {
-                model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
-            }
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
             return model;
+        }
+        /// <summary>
+        /// Сохраняем данные справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentBranch entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentBranchDao.Load(itemToAddEdit.Id);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentBranch()
+                {
+                    Code = itemToAddEdit.Code,
+                    Name = itemToAddEdit.Name,
+                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.Code;
+                entity.Name = itemToAddEdit.Name;
+                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentBranchDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentBranchDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок филиалов.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentBranch(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(Id);
+            if (entity != null)
+            {
+                try
+                {
+                    StaffDepartmentBranchDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentBranchDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }    
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+            IList<StaffDepartmentBranch> db = StaffDepartmentBranchDao.LoadAll();
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            {
+                error = "Поля Название и Код филиала должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.Code.Trim().Length != 2)
+            {
+                error = "Код филиала должен состоять из двух символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким название филиала уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+            }
+                        
+            return true;
         }
         #endregion
 

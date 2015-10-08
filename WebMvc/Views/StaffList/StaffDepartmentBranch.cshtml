@@ -3,68 +3,51 @@
     ViewBag.Title = "Справочник филиалов";
 }
 
-@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm" }))
+@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm", target = "tab1" }))
 {
-    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
     
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
-        <table id="tbl" class="grid">
+        <table id="tblBranch" class="grid">
             <thead>
                 <tr>
                     <th colspan="2">Финград</th>
                     <th rowspan="2">Название филиала в СКД</th>
-                    <th rowspan="2" class="tdBtn">Редактировать</th>
-                    <th rowspan="2" class="tdBtn">Удалить</th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
                 </tr>    
                 <tr>
                     <th>Название филиала</th>
                     <th>Код филиала</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tblBranchRows">
                 @{ int i = 1; }
-                @{string ln = "";}
-                @{string bn = "";}
-                @{string dn = "";}
 
                 @foreach (var item in Model.Branches)
                 {
-                    <tr>
+                    <tr class="tblBranchRow">
                         <td>
                             @Html.HiddenFor(m => m.Branches[i - 1].Id)
-                            @Html.TextBoxFor(m => m.Branches[i - 1].Name, new { style = "display:none;width:99%", maxlength = "50" })
-
-                            @{ln = "lblName_" + @Convert.ToString(i - 1);}
-                            <label id=@ln>@item.Name</label>
-                            @Html.ValidationMessageFor(m => m.Branches[i - 1].Name)
+                            @Html.HiddenFor(m => m.Branches[i - 1].Name)
+                            @Html.DisplayFor(m => m.Branches[i - 1].Name)
                         </td>
                         <td>
-                            @Html.TextBoxFor(m => m.Branches[i - 1].Code, new { style = "display:none;width:25px", maxlength = "2" })
-
-                            @{ln = "lblCode_" + @Convert.ToString(i - 1);}
-                            <label id=@ln>@item.Code</label>
-                            @Html.ValidationMessageFor(m => m.Branches[i - 1].Code)
+                            @Html.HiddenFor(m => m.Branches[i - 1].Code)
+                            @Html.DisplayFor(m => m.Branches[i - 1].Code)
                         </td>
                         <td>
-                            @{ln = "lblDepName_" + @Convert.ToString(i - 1);}
-                            <label id=@ln>@(item.DepName != null ? item.DepName : "")</label>
-
-                            @{dn = "dropdown_" + @Convert.ToString(i - 1);}
-                            @Html.DropDownListFor(m => m.Branches[i - 1].DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"), new { id = @dn, style = "width:99%;display:none;", onchange = "SetDepartmentValue(" + @i +"-1);" }) 
+                            @Html.DisplayFor(m => m.Branches[i - 1].DepName)
                             @Html.HiddenFor(m => m.Branches[i - 1].DepartmentId)
-                            @Html.HiddenFor(m => m.Branches[i - 1].OldDepartmentId)
-                            @Html.HiddenFor(m => m.Branches[i - 1].OldDepName)
                         </td>
                         <td class="tdBtn">
-                            @{bn = "btnEdit_" + @Convert.ToString(i - 1);}
-                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -45px -82px;" title="Редактировать" onclick="EditModeOnOff(@i-1, true);"></button>
-                            @{bn = "btnCancel_" + @Convert.ToString(i - 1);}
-                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: 4px -178px;display:none" title="Отменить" onclick="EditModeOnOff(@i-1, false);"></button>
-                            @{bn = "btnSave_" + @Convert.ToString(i - 1);}
-                            <button id=@bn type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;display:none" title="Сохранить" onclick="SaveChange();"></button>
+                            @*<button type="button" class="btnDepEdit" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;" title="Сохранить" onclick="AddEditRow(@i-1);"></button>*@
+                            <a onclick="AddEditRow(@i-1);" href="#" >Редактировать</a>
                         </td>
                         <td class="tdBtn">
-                            <button type="button" class="btnDepDelete" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -77px -131px;" title="Удалить" onclick="DeleteLink(@item.Id);"></button>
+                            @*<button type="button" class="btnDepDelete" style="background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -77px -131px;" title="Удалить" onclick="DeleteRow(@item.Id);"></button>*@
+                            <a onclick="DeleteRow(@item.Id);" href="#" >Удалить</a>
                         </td>
                         @{ i++; }
                     </tr>
@@ -73,6 +56,7 @@
             </tbody>
         </table>
     </div>
+    
     @*<div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -83,12 +67,34 @@
     </div>*@
 }
 
+<div id="AddEditRow" style="display:none;">
+    @using (Html.BeginForm("TestStaffDepartmentBranch", "StaffList", FormMethod.Post))
+    {
+        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.Id)
+                <td>@Html.LabelFor(m => m.Name)</td>
+                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:300px", maxlength = "50" }) @Html.ValidationMessageFor(m => m.Name)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Code)</td>
+                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:25px", maxlength = "2" }) @Html.ValidationMessageFor(m => m.Code)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
 <script type="text/javascript">
-    var EditModeOn = false;
     $(document).ready(function () {
         setActiveMenuItem("moDepEncoding");
 
-        //$.ajaxSetup({ cache: false });
+        $.ajaxSetup({ cache: false });
         
         $(document).tooltip({ track: false });
 
@@ -98,101 +104,138 @@
     });
 
     //вкл/выкл режима редактирования
-    function EditModeOnOff(IndexRow, IsOn) {
-        if (IsOn == true) {
-            if (EditModeOn) { return; }
-            EditModeOn = IsOn;
-
-            $("#lblName_" + IndexRow).hide();
-            $("#Branches_" + IndexRow + "__Name").show();
-            $("#lblCode_" + IndexRow).hide();
-            $("#Branches_" + IndexRow + "__Code").show();
-            $("#lblDepName_" + IndexRow).hide();
-            $("#dropdown_" + IndexRow).show();
-            $("#dropdown_" + IndexRow).val($("#Branches_" + IndexRow + "__DepartmentId").val());
-            $("#btnEdit_" + IndexRow).hide();
-            $("#btnSave_" + IndexRow).show();
-            $("#btnCancel_" + IndexRow).show();
+    function AddEditRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#Id").val($("#Branches_" + IndexRow + "__Id").val());
+            $("#Name").val($("#Branches_" + IndexRow + "__Name").val());
+            $("#Code").val($("#Branches_" + IndexRow + "__Code").val());
+            $("#DepartmentId").val($("#Branches_" + IndexRow + "__DepartmentId").val());
         }
-        else {
-            EditModeOn = IsOn;
-            $("#lblName_" + IndexRow).show();
-            $("#Branches_" + IndexRow + "__Name").hide();
-            $("#lblCode_" + IndexRow).show();
-            $("#Branches_" + IndexRow + "__Code").hide();
-            $("#lblDepName_" + IndexRow).show();
-            $("#dropdown_" + IndexRow).hide();
-            $("#btnEdit_" + IndexRow).show();
-            $("#btnSave_" + IndexRow).hide();
-            $("#btnCancel_" + IndexRow).hide();
-            //возвращаем старые значения
-            $("#Branches_" + IndexRow + "__DepartmentId").val($("#Branches_" + IndexRow + "__OldDepartmentId").val());
-            $("#lblDepName_" + IndexRow).text($("#Branches_" + IndexRow + "__OldDepName").val());
+        else{
+            $("#Id").val(0);
+            $("#Name").val("");
+            $("#Code").val("");
+            $("#DepartmentId").val(0);
         }
-    }
 
-    //присваиваем новое значение выбранное в выпадающем списке
-    function SetDepartmentValue(IndexRow) {
-        $("#Branches_" + IndexRow + "__Department_Id").val($("#dropdown_" + IndexRow).val());
-        $("#lblDepName_" + IndexRow).text($("#dropdown_" + IndexRow + " option:selected").text());
-    }
+        $("#lblMsg").text("");
+        $("#MessageStr").text("");
 
-
-    function SaveChange() {
-        $("#StaffDepartmentBranchForm").submit();
+        CreateEdtRowDialog(true);
     }
 
 
-    function DeleteLink(Id) {
-        if (!EditModeOn) {
-            $("#StaffDepartmentBranchForm").submit();
-        }
-    }
-
-//    function ShowFlash(IsShow)  //показываем индикатор загрузки
-//    {
-//        if (!IsShow) {
-//            $("#LoadingIndicator2").removeClass("loading2");
-//            $("#DivIndicator").dialog("close");
-//            $("#DivIndicator").hide();
-//        }
-//        else {
-//            $("#LoadingIndicator2").addClass("loading2");
-//            $("#DivIndicator").show();
-//            $("#DivIndicator").dialog(
-//            { // initialize dialog box
-//                autoOpen: true,
-//                modal: true,
-//                // fix IE6  
-//                bgiframe: true,
-//                draggable: false,
-//                resizable: false,
-//                width: 300,
-//                height: 60,
-//                closeOnEscape: false,
-//                close: function (event, ui) {
-//                    //$(this).dialog("destroy").remove();
-//                }
-//            });
-//            $(".ui-dialog-titlebar").hide();
-//            $(".ui-dialog-titlebar-close").hide();
-//        }
-//    }
-
-    //функция отправки и получения ajax-запроса
-    function AjaxFormRequest(result_id, form_id, url, TypePost) {
-        jQuery.ajax({
-            url: url, //Адрес подгружаемой страницы
-            type: TypePost, //Тип запроса
-            dataType: "html", //Тип данных
-            data: jQuery("#" + form_id).serialize(),
-            success: function (response) { //Если все нормально
-                document.getElementById(result_id).innerHTML = response;
-            },
-            error: function (response) { //Если ошибка
-                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+    function CreateEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditRow').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
             }
         });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditRow').dialog("open");
     }
+
+    function processAddEditRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentBranch", "StaffList")";
+        var dataToSend = $("#AddEditRow form").serialize();
+        ShowFlash(true);
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditRow').dialog("close");
+                $("#lblMsg").text("");
+                var $table = $("#tblBranch");
+                var $rows = $("#tblBranch .tblBranchRow");
+                $rows.remove();
+                FillTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#lblMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function DeleteRow(Id){
+        var result = confirm("Подтвердите удаление выбранной записи!");
+        if (!result) {return;}
+
+        var actionUrl="@Url.Action("DeleteStaffDepartmentBranch", "StaffList")";
+        var url = actionUrl + "?Id=" + Id;
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentBranchForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#MessageStr").text(data.msg);
+                    var $table = $("#tblBranch");
+                    var $rows = $("#tblBranch .tblBranchRow");
+                    $rows.remove();
+                    FillTableData(data);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#MessageStr").text(data.msg);
+                }
+            }, "json");
+    }
+
+    function FillTableData(data){
+        for (var i = 0; i < data.Branches.length; i++)
+        {
+            $("#tblBranch").append(
+                
+                "<tr class=\"tblBranchRow\"><td>" +
+                "<input id='Branches_" + i + "__Id' name='Branches[" + i + "].Id' value='" + data.Branches[i].Id + "' type='hidden'>" +
+                "<input id='Branches_" + i + "__Name' name='Branches[" + i + "].Name' value='" + data.Branches[i].Name + "' type='hidden'>" +
+                (data.Branches[i].Name ? data.Branches[i].Name : "") + "</td><td>" +
+                "<input id='Branches_" + i + "__Code' name='Branches[" + i + "].Code' value='" + data.Branches[i].Code + "' type='hidden'>" +
+                (data.Branches[i].Code ? data.Branches[i].Code : "") + "</td><td>" +
+                "<input id='Branches_" + i + "__DepartmentId' name='Branches[" + i + "].DepartmentId' value='" + data.Branches[i].DepartmentId + "' type='hidden'>" +
+                (data.Branches[i].DepName ? data.Branches[i].DepName : "") + "</td>" +
+                "<td class='tdBtn'><a onclick='AddEditRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                //"<td class='tdBtn'><button type='button' class='btnDepEdit' style=\"background-image: url('../../Content/themes/base/ui-icons_454545_256x240.png');background-position: -61px -115px;\" title='Сохранить' onclick='AddEditRow(" + data.Branches[i].Id + ");'></button></td>" +
+                "<td class='tdBtn'><a onclick='DeleteRow(" + data.Branches[i].Id + ");' href='#' >Удалить</a></td></tr>" 
+            );
+        }
+    }
+
+
+//    //функция отправки и получения ajax-запроса
+//    function AjaxFormRequest(result_id, form_id, url, TypePost) {
+//        jQuery.ajax({
+//            url: url, //Адрес подгружаемой страницы
+//            type: TypePost, //Тип запроса
+//            dataType: "html", //Тип данных
+//            data: jQuery("#" + form_id).serialize(),
+//            success: function (response) { //Если все нормально
+//                document.getElementById(result_id).innerHTML = response;
+//            },
+//            error: function (response) { //Если ошибка
+//                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+//            }
+//        });
+//    }
 </script>
 
