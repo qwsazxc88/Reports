@@ -103,13 +103,13 @@ namespace Reports.Presenters.UI.Bl
         #endregion
 
         #region Справочник кодировок
+        #region Справочник филиалов
         /// <summary>
         /// Загрузка справочник кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error);
+        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model);
         /// <summary>
         /// Сохраняем данные справочника кодировок филиалов.
         /// </summary>
@@ -124,6 +124,14 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="error"></param>
         /// <returns></returns>
         bool DeleteStaffDepartmentBranch(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error);
+        #endregion
         #endregion
         #endregion
 

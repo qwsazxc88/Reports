@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         #region Поля для модального окна
         public int Id { get; set; }
+
         [Display(Name = "Название филиала"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "*")]

@@ -10,8 +10,8 @@ namespace Reports.Core.Dao
         /// <summary>
         /// Достаем налоговые реквизиты по идентификатору подразделения.
         /// </summary>
-        /// <param name="DepartmentId">Id подразделения.</param>
+        /// <param name="Dep">Подразделение.</param>
         /// <returns></returns>
-        StaffDepartmentTaxDetails GetDetailsByDepartmentId(int DepartmentId);
+        StaffDepartmentTaxDetails GetDetailsByDepartmentId(Department dep);
     }
 }

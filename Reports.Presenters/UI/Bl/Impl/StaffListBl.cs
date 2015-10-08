@@ -427,7 +427,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //налоговые реквизиты
                 if (entity.Department != null)
                 {
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
+                    //entity.Department
+                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.GetDetailsByDepartmentId(entity.Department);
                     model.KPP = dt != null ? dt.KPP : string.Empty;
                     model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
                     model.OKATO = dt != null ? dt.OKATO : string.Empty;
@@ -2041,11 +2042,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загрузка справочника кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, out string error)
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model)
         {
-            error = string.Empty;
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
             return model;
@@ -2061,7 +2060,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(itemToAddEdit.Id);
+            StaffDepartmentBranch entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentBranchDao.Load(itemToAddEdit.Id);
             if (entity == null)
             {
                 entity = new StaffDepartmentBranch()
@@ -2113,6 +2112,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffDepartmentBranchDao.DeleteAndFlush(entity);
                     error = "Запись удалена!";
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -2123,6 +2123,57 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return false;
+        }
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+            IList<StaffDepartmentBranch> db = StaffDepartmentBranchDao.LoadAll();
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            {
+                error = "Поля Название и Код филиала должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.Code.Trim().Length != 2)
+            {
+                error = "Код филиала должен состоять из двух символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким название филиала уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+            }
+                        
+            return true;
         }
         #endregion
 

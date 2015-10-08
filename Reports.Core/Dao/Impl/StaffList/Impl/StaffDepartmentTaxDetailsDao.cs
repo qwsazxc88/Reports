@@ -18,12 +18,12 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Достаем налоговые реквизиты по идентификатору подразделения.
         /// </summary>
-        /// <param name="DepartmentId">Id подразделения.</param>
+        /// <param name="Dep">Подразделение.</param>
         /// <returns></returns>
-        public StaffDepartmentTaxDetails GetDetailsByDepartmentId(int DepartmentId)
+        public StaffDepartmentTaxDetails GetDetailsByDepartmentId(Department dep)
         {
             return (StaffDepartmentTaxDetails)Session.CreateCriteria(typeof(StaffDepartmentTaxDetails))
-                   .Add(Restrictions.Eq("DepartmentId", DepartmentId)).UniqueResult();
+                   .Add(Restrictions.Eq("Department", dep)).UniqueResult();
         }
     }
 }

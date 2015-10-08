@@ -68,6 +68,8 @@
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
         if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
             $("#LoadingIndicator2").removeClass("loading2");
             $("#DivIndicator").dialog("close");
             $("#DivIndicator").hide();
@@ -92,6 +94,7 @@
             });
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicator").dialog("open");
         }
     }
 
