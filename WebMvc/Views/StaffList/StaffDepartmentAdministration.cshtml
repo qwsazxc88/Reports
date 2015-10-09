@@ -5,16 +5,16 @@
 
 @using (Html.BeginForm("StaffDepartmentAdministration", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentAdministrationForm", target = "tab3" }))
 {
-    <b>Автоматическое формирование кода управления в разработке!</b><br /><br />
-    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
-    
+    <b>Автоматическое формирование кода управления в разработке!</b><br />
+    <label id="aMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <table id="tblAdministration" class="grid">
             <thead>
                 <tr>
                     <th colspan="3">Финград</th>
                     <th rowspan="2">Название управления в СКД</th>
-                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditAdministrationtRow(-1);">Создать</button></th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditAdministrationRow(-1);">Создать</button></th>
                     @*<th rowspan="2" class="tdBtn"></th>*@
                 </tr>    
                 <tr>
@@ -31,13 +31,13 @@
                 {
                     <tr class="tblAdministrationRow">
                         <td>
-                            @Html.HiddenFor(m => m.Administrations[i - 1].Id)
-                            @Html.HiddenFor(m => m.Administrations[i - 1].Name)
-                            @Html.DisplayFor(m => m.Administrations[i - 1].Name)
+                            @Html.HiddenFor(m => m.Administrations[i - 1].aId)
+                            @Html.HiddenFor(m => m.Administrations[i - 1].aName)
+                            @Html.DisplayFor(m => m.Administrations[i - 1].aName)
                         </td>
                         <td>
-                            @Html.HiddenFor(m => m.Administrations[i - 1].Code)
-                            @Html.DisplayFor(m => m.Administrations[i - 1].Code)
+                            @Html.HiddenFor(m => m.Administrations[i - 1].aCode)
+                            @Html.DisplayFor(m => m.Administrations[i - 1].aCode)
                         </td>
                         <td>
                             @Html.DisplayFor(m => m.Administrations[i - 1].ManagementName)
@@ -45,13 +45,13 @@
                         </td>
                         <td>
                             @Html.DisplayFor(m => m.Administrations[i - 1].DepName)
-                            @Html.HiddenFor(m => m.Administrations[i - 1].DepartmentId)
+                            @Html.HiddenFor(m => m.Administrations[i - 1].aDepartmentId)
                         </td>
                         <td class="tdBtn">
-                            <a class="CallModal" onclick="AddEditAdministrationtRow(@i-1);" href="#" >Редактировать</a>
+                            <a class="CallModal" onclick="AddEditAdministrationRow(@i-1);" href="#" >Редактировать</a>
                         </td>
                         <td class="tdBtn">
-                            <a onclick="DeleteManagementRow(@item.Id);" href="#" >Удалить</a>
+                            <a onclick="DeleteAdministrationRow(@item.aId);" href="#" >Удалить</a>
                         </td>
                         @{ i++; }
                     </tr>
@@ -64,24 +64,24 @@
 <div id="AddEditAdministrationDialog" style="display:none;">
     @using (Html.BeginForm("StaffDepartmentAdministrationDialog", "StaffList", FormMethod.Post))
     {
-        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <label id="aMsg" style="color:Red;font-size:medium;"></label>
         <table>
             <tr>
-                @Html.HiddenFor(m => m.Id)
-                <td>@Html.LabelFor(m => m.Name)</td>
-                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:500px", maxlength = "150" }) </td>
+                @Html.HiddenFor(m => m.aId)
+                <td>@Html.LabelFor(m => m.aName)</td>
+                <td>@Html.TextBoxFor(m => m.aName, new { style = "width:500px", maxlength = "150" }) </td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.Code)</td>
-                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:60px", maxlength = "7" }) </td>
+                <td>@Html.LabelFor(m => m.aCode)</td>
+                <td>@Html.TextBoxFor(m => m.aCode, new { style = "width:60px", maxlength = "7" }) </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.ManagementId)</td>
-                <td>@Html.DropDownListFor(m => m.ManagementId, new SelectList(Model.Managements, "Id", "Name"))</td>
+                <td>@Html.DropDownListFor(m => m.ManagementId, new SelectList(Model.Managements, "mId", "mName"))</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.DepartmentId)</td>
-                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.FourLevelDeps, "Id", "Name"))</td>
+                <td>@Html.LabelFor(m => m.aDepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.aDepartmentId, new SelectList(Model.FourLevelDeps, "Id", "Name"))</td>
             </tr>
         </table>
     }
@@ -102,30 +102,30 @@
     });
 
     //вкл/выкл режима редактирования
-    function AddEditAdministrationtRow(IndexRow) {
+    function AddEditAdministrationRow(IndexRow) {
         if(IndexRow >= 0){
-            $("#Id").val($("#Administrations_" + IndexRow + "__Id").val());
-            $("#Name").val($("#Administrations_" + IndexRow + "__Name").val());
-            $("#Code").val($("#Administrations_" + IndexRow + "__Code").val());
+            $("#aId").val($("#Administrations_" + IndexRow + "__aId").val());
+            $("#aName").val($("#Administrations_" + IndexRow + "__aName").val());
+            $("#aCode").val($("#Administrations_" + IndexRow + "__aCode").val());
             $("#ManagementId").val($("#Administrations_" + IndexRow + "__ManagementId").val());
-            $("#DepartmentId").val($("#Administrations_" + IndexRow + "__DepartmentId").val());
+            $("#aDepartmentId").val($("#Administrations_" + IndexRow + "__aDepartmentId").val());
         }
         else{
-            $("#Id").val(0);
-            $("#Name").val("");
-            $("#Code").val("");
+            $("#aId").val(0);
+            $("#aName").val("");
+            $("#aCode").val("");
             $("#ManagementId").val(0);
-            $("#DepartmentId").val(0);
+            $("#aDepartmentId").val(0);
         }
 
-        $("#lblMsg").text("");
-        $("#MessageStr").text("");
+        $("#aMsg").text("");
+        $("#aMessageStr").text("");
 
-        CreateManagementEdtRowDialog(IndexRow >= 0 ? true : false);
+        CreateAdministrationEdtRowDialog(IndexRow >= 0 ? true : false);
     }
 
 
-    function CreateManagementEdtRowDialog(flgEdit) {
+    function CreateAdministrationEdtRowDialog(flgEdit) {
         var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
         $('#AddEditAdministrationDialog').dialog(
         {
@@ -139,7 +139,7 @@
             buttons:
             {
                 "OK": function () {
-                    processAddEditAdministrationtRow();
+                    processAddEditAdministrationRow();
                     //$(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -154,7 +154,7 @@
         $('#AddEditAdministrationDialog').dialog("open");
     }
 
-    function processAddEditAdministrationtRow()
+    function processAddEditAdministrationRow()
     {
     
         var url = "@Url.Action("AddEditStaffDepartmentAdministration", "StaffList")";
@@ -163,22 +163,22 @@
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditAdministrationDialog').dialog("close");
-                $("#MessageStr").text(data.msg);
+                $("#aMessageStr").text(data.msg);
                 var $table = $("#tblAdministration");
                 var $rows = $("#tblAdministration .tblAdministrationRow");
                 $rows.remove();
-                FillManagementTableData(data);
+                FillAdministrationTableData(data);
                 
                 ShowFlash(false);
             }
             else{
                 ShowFlash(false);
-                $("#lblMsg").text(data.msg);
+                $("#aMsg").text(data.msg);
             }
         }, "json");
     };
 
-    function DeleteManagementRow(Id){
+    function DeleteAdministrationRow(Id){
         var result = confirm("Подтвердите удаление выбранной записи!");
         if (!result) {return;}
 
@@ -188,33 +188,34 @@
         var dataToSend = $("#StaffDepartmentMenegmentForm").serialize();
             $.post(url, dataToSend, function(data){
                 if (data.ok == true){
-                    $("#MessageStr").text(data.msg);
+                    $("#aMessageStr").text(data.msg);
                     var $table = $("#tblAdministration");
                     var $rows = $("#tblAdministration .tblAdministrationRow");
                     $rows.remove();
-                    FillManagementTableData(data);
+                    FillAdministrationTableData(data);
                     ShowFlash(false);
                 }
                 else{
                     ShowFlash(false);
-                    $("#MessageStr").text(data.msg);
+                    $("#aMessageStr").text(data.msg);
+                    alert(data.msg);
                 }
             }, "json");
     }
 
-    function FillManagementTableData(data){
+    function FillAdministrationTableData(data){
         for (var i = 0; i < data.Administrations.length; i++)
         {
             $("#tblAdministration").append(
                 
                 "<tr class=\"tblAdministrationRow\">" +
-                    "<td><input id='Administrations_" + i + "__Id' name='Administrations[" + i + "].Id' value='" + data.Administrations[i].Id + "' type='hidden'>" +
-                        "<input id='Administrations_" + i + "__Name' name='Administrations[" + i + "].Name' value='" + data.Administrations[i].Name + "' type='hidden'>" + (data.Administrations[i].Name ? data.Administrations[i].Name : "") + "</td>" +
-                    "<td><input id='Administrations_" + i + "__Code' name='Administrations[" + i + "].Code' value='" + data.Administrations[i].Code + "' type='hidden'>" + (data.Administrations[i].Code ? data.Administrations[i].Code : "") + "</td>" +
+                    "<td><input id='Administrations_" + i + "__aId' name='Administrations[" + i + "].aId' value='" + data.Administrations[i].aId + "' type='hidden'>" +
+                        "<input id='Administrations_" + i + "__aName' name='Administrations[" + i + "].aName' value='" + data.Administrations[i].aName + "' type='hidden'>" + (data.Administrations[i].aName ? data.Administrations[i].aName : "") + "</td>" +
+                    "<td><input id='Administrations_" + i + "__aCode' name='Administrations[" + i + "].aCode' value='" + data.Administrations[i].aCode + "' type='hidden'>" + (data.Administrations[i].aCode ? data.Administrations[i].aCode : "") + "</td>" +
                     "<td><input id='Administrations_" + i + "__ManagementId' name='Administrations[" + i + "].ManagementId' value='" + data.Administrations[i].ManagementId + "' type='hidden'>" + (data.Administrations[i].ManagementName ? data.Administrations[i].ManagementName : "") + "</td>" +
-                    "<td><input id='Administrations_" + i + "__DepartmentId' name='Administrations[" + i + "].DepartmentId' value='" + data.Administrations[i].DepartmentId + "' type='hidden'>" + (data.Administrations[i].DepName ? data.Administrations[i].DepName : "") + "</td>" +
-                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditAdministrationtRow(" + i + ");' href='#' >Редактировать</a></td>" + 
-                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.Administrations[i].Id + ");' href='#' >Удалить</a></td>" +
+                    "<td><input id='Administrations_" + i + "__aDepartmentId' name='Administrations[" + i + "].aDepartmentId' value='" + data.Administrations[i].aDepartmentId + "' type='hidden'>" + (data.Administrations[i].DepName ? data.Administrations[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditAdministrationRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteAdministrationRow(" + data.Administrations[i].aId + ");' href='#' >Удалить</a></td>" +
                 "</tr>"
             );
             

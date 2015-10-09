@@ -1,4 +1,4 @@
-﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBranchModel
+﻿    @model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBranchModel
 @{
     ViewBag.Title = "Справочник филиалов";
 }
@@ -187,6 +187,7 @@
                 else{
                     ShowFlash(false);
                     $("#MessageStr").text(data.msg);
+                    alert(data.msg);
                 }
             }, "json");
     }
