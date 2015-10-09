@@ -1,0 +1,227 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentRPLinkModel
+@{
+    ViewBag.Title = "Справочник РП-привязок";
+}
+
+@using (Html.BeginForm("StaffDepartmentRPLink", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRPLinkForm", target = "tab5" }))
+{
+    <b>Автоматическое формирование кода РП-привязки в разработке!</b><br /><br />
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
+    
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblRPLink" class="grid">
+            <thead>
+                <tr>
+                    <th colspan="3">Финград</th>
+                    <th rowspan="2">Название РП-привязки в СКД</th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditRPLinktRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
+                </tr>    
+                <tr>
+                    <th>Название РП-привязки</th>
+                    <th>Код РП-привязки</th>
+                    <th>Бизнес-группа</th>
+                </tr>
+            </thead>
+            
+            <tbody class="tblRPLinkRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.RPLinks)
+                {
+                    <tr class="tblRPLinkRow">
+                        <td>
+                            @Html.HiddenFor(m => m.RPLinks[i - 1].Id)
+                            @Html.HiddenFor(m => m.RPLinks[i - 1].Name)
+                            @Html.DisplayFor(m => m.RPLinks[i - 1].Name)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.RPLinks[i - 1].Code)
+                            @Html.DisplayFor(m => m.RPLinks[i - 1].Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.RPLinks[i - 1].BGName)
+                            @Html.HiddenFor(m => m.RPLinks[i - 1].BGId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.RPLinks[i - 1].DepName)
+                            @Html.HiddenFor(m => m.RPLinks[i - 1].DepartmentId)
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditRPLinktRow(@i-1);" href="#" >Редактировать</a>
+                        </td>
+                        <td class="tdBtn">
+                            <a onclick="DeleteManagementRow(@item.Id);" href="#" >Удалить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div id="AddEditRPLinkDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentRPLinkDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.Id)
+                <td>@Html.LabelFor(m => m.Name)</td>
+                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:600px", maxlength = "250" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Code)</td>
+                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:110px", maxlength = "12" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.BGId)</td>
+                <td>@Html.DropDownListFor(m => m.BGId, new SelectList(Model.BusinessGroups, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.SixLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditRPLinktRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#Id").val($("#RPLinks_" + IndexRow + "__Id").val());
+            $("#Name").val($("#RPLinks_" + IndexRow + "__Name").val());
+            $("#Code").val($("#RPLinks_" + IndexRow + "__Code").val());
+            $("#BGId").val($("#RPLinks_" + IndexRow + "__BGId").val());
+            $("#DepartmentId").val($("#RPLinks_" + IndexRow + "__DepartmentId").val());
+        }
+        else{
+            $("#Id").val(0);
+            $("#Name").val("");
+            $("#Code").val("");
+            $("#BGId").val(0);
+            $("#DepartmentId").val(0);
+        }
+
+        $("#lblMsg").text("");
+        $("#MessageStr").text("");
+
+        CreateManagementEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateManagementEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditRPLinkDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            //position: "center",
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditRPLinktRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditRPLinkDialog').dialog("open");
+    }
+
+    function processAddEditRPLinktRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentRPLink", "StaffList")";
+        var dataToSend = $("#AddEditRPLinkDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditRPLinkDialog').dialog("close");
+                $("#MessageStr").text(data.msg);
+                var $table = $("#tblRPLink");
+                var $rows = $("#tblRPLink .tblRPLinkRow");
+                $rows.remove();
+                FillManagementTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#lblMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function DeleteManagementRow(Id){
+        var result = confirm("Подтвердите удаление выбранной записи!");
+        if (!result) {return;}
+
+        var actionUrl="@Url.Action("DeleteStaffDepartmentRPLink", "StaffList")";
+        var url = actionUrl + "?Id=" + Id;
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentMenegmentForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#MessageStr").text(data.msg);
+                    var $table = $("#tblRPLink");
+                    var $rows = $("#tblRPLink .tblRPLinkRow");
+                    $rows.remove();
+                    FillManagementTableData(data);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#MessageStr").text(data.msg);
+                }
+            }, "json");
+    }
+
+    function FillManagementTableData(data){
+        for (var i = 0; i < data.RPLinks.length; i++)
+        {
+            $("#tblRPLink").append(
+                
+                "<tr class=\"tblRPLinkRow\">" +
+                    "<td><input id='RPLinks_" + i + "__Id' name='RPLinks[" + i + "].Id' value='" + data.RPLinks[i].Id + "' type='hidden'>" +
+                        "<input id='RPLinks_" + i + "__Name' name='RPLinks[" + i + "].Name' value='" + data.RPLinks[i].Name + "' type='hidden'>" + (data.RPLinks[i].Name ? data.RPLinks[i].Name : "") + "</td>" +
+                    "<td><input id='RPLinks_" + i + "__Code' name='RPLinks[" + i + "].Code' value='" + data.RPLinks[i].Code + "' type='hidden'>" + (data.RPLinks[i].Code ? data.RPLinks[i].Code : "") + "</td>" +
+                    "<td><input id='RPLinks_" + i + "__BGId' name='RPLinks[" + i + "].BGId' value='" + data.RPLinks[i].BGId + "' type='hidden'>" + (data.RPLinks[i].BGName ? data.RPLinks[i].BGName : "") + "</td>" +
+                    "<td><input id='RPLinks_" + i + "__DepartmentId' name='RPLinks[" + i + "].DepartmentId' value='" + data.RPLinks[i].DepartmentId + "' type='hidden'>" + (data.RPLinks[i].DepName ? data.RPLinks[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditRPLinktRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.RPLinks[i].Id + ");' href='#' >Удалить</a></td>" +
+                "</tr>"
+            );
+            
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+</script>
+

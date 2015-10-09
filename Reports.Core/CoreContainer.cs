@@ -711,6 +711,15 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentManagementDao>()
                 .ImplementedBy<StaffDepartmentManagementDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentAdministrationDao>()
+                .ImplementedBy<StaffDepartmentAdministrationDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentBusinessGroupDao>()
+                .ImplementedBy<StaffDepartmentBusinessGroupDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRPLinkDao>()
+                .ImplementedBy<StaffDepartmentRPLinkDao>()
+                .LifeStyle.Is(type));
             
         }
         #endregion

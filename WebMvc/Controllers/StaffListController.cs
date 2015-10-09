@@ -438,6 +438,7 @@ namespace WebMvc.Controllers
             model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
             return View(model);
         }
+
         #region Справочник филиалов
         /// <summary>
         /// Загрузка справочника филиалов.
@@ -460,7 +461,6 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
             bool result = false;
-            StaffDepartmentBranchModel model = null;
 
             if (ValidateModel(itemToAddEdit, out error))
             {
@@ -469,7 +469,7 @@ namespace WebMvc.Controllers
             }
 
 
-            model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
             ViewBag.Error = error;
           
             return Json(new { ok = result, msg = error, model.Branches });
@@ -485,12 +485,11 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
             bool result = false;
-            StaffDepartmentBranchModel model = null;
 
             if (StaffListBl.DeleteStaffDepartmentBranch(Id, out error))
                 result = true;
 
-            model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.Branches });
@@ -519,7 +518,6 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
             bool result = false;
-            StaffDepartmentManagementModel model = null;
 
             if (ValidateModel(itemToAddEdit, out error))
             {
@@ -528,7 +526,7 @@ namespace WebMvc.Controllers
             }
 
 
-            model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.Managements });
@@ -544,15 +542,182 @@ namespace WebMvc.Controllers
         {
             string error = String.Empty;
             bool result = false;
-            StaffDepartmentManagementModel model = null;
 
             if (StaffListBl.DeleteStaffDepartmentManagement(Id, out error))
                 result = true;
 
-            model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.Managements });
+        }
+        #endregion
+
+        #region Справочник управлений
+        /// <summary>
+        /// Загрузка справочника управлений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentAdministration()
+        {
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentAdministration(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Administrations });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentAdministration(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentAdministration(Id, out error))
+                result = true;
+
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Administrations });
+        }
+        #endregion
+
+        #region Справочник бизнес-групп
+        /// <summary>
+        /// Загрузка справочника бизнес-групп.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentBusinessGroup()
+        {
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentBusinessGroup(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.BusinessGroups });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentBusinessGroup(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentBusinessGroup(Id, out error))
+                result = true;
+
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.BusinessGroups });
+        }
+        #endregion
+
+        #region Справочник РП-привязок
+        /// <summary>
+        /// Загрузка справочника РП-привязок.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentRPLink()
+        {
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentRPLink(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.RPLinks });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentRPLink(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentRPLink(Id, out error))
+                result = true;
+
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.RPLinks });
         }
         #endregion
         #endregion
@@ -657,6 +822,21 @@ namespace WebMvc.Controllers
         {
             error = string.Empty;
             return StaffListBl.ValidateDepartmentManagementRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentAdministrationDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentAdministrationRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentBusinessGroupDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentBusinessGroupRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentRPLinkDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentRPLinkRow(EditRow, out error);
         }
         #endregion
 
