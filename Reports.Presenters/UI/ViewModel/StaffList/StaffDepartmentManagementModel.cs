@@ -14,24 +14,24 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffDepartmentManagementDto> Managements { get; set; }
 
         #region Поля для модального окна
-        public int Id { get; set; }
+        public int mId { get; set; }
 
         [Display(Name = "Название дирекции"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "*")]
-        public string Name { get; set; }
+        public string mName { get; set; }
 
         [Display(Name = "Код дирекции"),
             StringLength(3, ErrorMessage = "Не более 3 знаков."),
             Required(ErrorMessage = "*")]
-        public string Code { get; set; }
+        public string mCode { get; set; }
 
         [Display(Name = "Филиал")]
         public int BranchId { get; set; }
         public IList<StaffDepartmentBranchDto> Branches { get; set; }
 
         [Display(Name = "Подразделение в СКД")]
-        public int DepartmentId { get; set; }
+        public int mDepartmentId { get; set; }
         public IList<Department> ThreeLevelDeps { get; set; }
 
 

@@ -34,5 +34,17 @@ namespace Reports.Core.Dao.Impl
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentBranchDto>()).List<StaffDepartmentBranchDto>();
         }
+
+        /// <summary>
+        /// Проверка на доступность удаления данной строки.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <returns></returns>
+        public bool IsEnableDelete(int Id)
+        {
+            IQuery query = Session.CreateSQLQuery("SELECT cast(case when count(*) > 0 then 0 else 1 end as bit) IsExists FROM dbo.StaffDepartmentManagement WHERE BranchId = " + Id.ToString())
+            .AddScalar("IsExists", NHibernateUtil.Boolean);
+            return query.UniqueResult<bool>();
+        }
     }
 }

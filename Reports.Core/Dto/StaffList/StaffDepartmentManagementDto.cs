@@ -5,12 +5,12 @@ namespace Reports.Core.Dto
 {
     public class StaffDepartmentManagementDto
     {
-        public int Id { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public int mId { get; set; }
+        public string mCode { get; set; }
+        public string mName { get; set; }
         public int BranchId { get; set; }
         public string BranchName { get; set; }
-        public int DepartmentId { get; set; }
+        public int mDepartmentId { get; set; }
         public string DepName { get; set; }
     }
 }

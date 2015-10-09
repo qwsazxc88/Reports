@@ -5,9 +5,9 @@
 
 @using (Html.BeginForm("StaffDepartmentBusinessGroup", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBusinessGroupForm", target = "tab4" }))
 {
-    <b>Автоматическое формирование кода бизнес-группы в разработке!</b><br /><br />
-    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
-    
+    <b>Автоматическое формирование кода бизнес-группы в разработке!</b><br />
+    <label id="bMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         <table id="tblBusinessGroup" class="grid">
             <thead>
@@ -31,13 +31,13 @@
                 {
                     <tr class="tblBusinessGroupRow">
                         <td>
-                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].Id)
-                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].Name)
-                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].Name)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bId)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bName)
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].bName)
                         </td>
                         <td>
-                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].Code)
-                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].Code)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bCode)
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].bCode)
                         </td>
                         <td>
                             @Html.DisplayFor(m => m.BusinessGroups[i - 1].AdminName)
@@ -45,13 +45,13 @@
                         </td>
                         <td>
                             @Html.DisplayFor(m => m.BusinessGroups[i - 1].DepName)
-                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].DepartmentId)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bDepartmentId)
                         </td>
                         <td class="tdBtn">
                             <a class="CallModal" onclick="AddEditBusinessGrouptRow(@i-1);" href="#" >Редактировать</a>
                         </td>
                         <td class="tdBtn">
-                            <a onclick="DeleteManagementRow(@item.Id);" href="#" >Удалить</a>
+                            <a onclick="DeleteBusinessGroupsRow(@item.bId);" href="#" >Удалить</a>
                         </td>
                         @{ i++; }
                     </tr>
@@ -64,24 +64,24 @@
 <div id="AddEditBusinessGroupDialog" style="display:none;">
     @using (Html.BeginForm("StaffDepartmentBusinessGroupDialog", "StaffList", FormMethod.Post))
     {
-        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <label id="bMsg" style="color:Red;font-size:medium;"></label>
         <table>
             <tr>
-                @Html.HiddenFor(m => m.Id)
-                <td>@Html.LabelFor(m => m.Name)</td>
-                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:500px", maxlength = "150" }) </td>
+                @Html.HiddenFor(m => m.bId)
+                <td>@Html.LabelFor(m => m.bName)</td>
+                <td>@Html.TextBoxFor(m => m.bName, new { style = "width:500px", maxlength = "150" }) </td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.Code)</td>
-                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:100px", maxlength = "11" }) </td>
+                <td>@Html.LabelFor(m => m.bCode)</td>
+                <td>@Html.TextBoxFor(m => m.bCode, new { style = "width:100px", maxlength = "11" }) </td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.AdminId)</td>
-                <td>@Html.DropDownListFor(m => m.AdminId, new SelectList(Model.Administrations, "Id", "Name"))</td>
+                <td>@Html.DropDownListFor(m => m.AdminId, new SelectList(Model.Administrations, "aId", "aName"))</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.DepartmentId)</td>
-                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.FiveLevelDeps, "Id", "Name"))</td>
+                <td>@Html.LabelFor(m => m.bDepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.bDepartmentId, new SelectList(Model.FiveLevelDeps, "Id", "Name"))</td>
             </tr>
         </table>
     }
@@ -104,28 +104,28 @@
     //вкл/выкл режима редактирования
     function AddEditBusinessGrouptRow(IndexRow) {
         if(IndexRow >= 0){
-            $("#Id").val($("#BusinessGroups_" + IndexRow + "__Id").val());
-            $("#Name").val($("#BusinessGroups_" + IndexRow + "__Name").val());
-            $("#Code").val($("#BusinessGroups_" + IndexRow + "__Code").val());
+            $("#bId").val($("#BusinessGroups_" + IndexRow + "__bId").val());
+            $("#bName").val($("#BusinessGroups_" + IndexRow + "__bName").val());
+            $("#bCode").val($("#BusinessGroups_" + IndexRow + "__bCode").val());
             $("#AdminId").val($("#BusinessGroups_" + IndexRow + "__AdminId").val());
-            $("#DepartmentId").val($("#BusinessGroups_" + IndexRow + "__DepartmentId").val());
+            $("#bDepartmentId").val($("#BusinessGroups_" + IndexRow + "__bDepartmentId").val());
         }
         else{
-            $("#Id").val(0);
-            $("#Name").val("");
-            $("#Code").val("");
+            $("#bId").val(0);
+            $("#bName").val("");
+            $("#bCode").val("");
             $("#AdminId").val(0);
-            $("#DepartmentId").val(0);
+            $("#bDepartmentId").val(0);
         }
 
-        $("#lblMsg").text("");
-        $("#MessageStr").text("");
+        $("#bMsg").text("");
+        $("#bMessageStr").text("");
 
-        CreateManagementEdtRowDialog(IndexRow >= 0 ? true : false);
+        CreateBusinessGroupsEdtRowDialog(IndexRow >= 0 ? true : false);
     }
 
 
-    function CreateManagementEdtRowDialog(flgEdit) {
+    function CreateBusinessGroupsEdtRowDialog(flgEdit) {
         var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
         $('#AddEditBusinessGroupDialog').dialog(
         {
@@ -163,22 +163,22 @@
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditBusinessGroupDialog').dialog("close");
-                $("#MessageStr").text(data.msg);
+                $("#bMessageStr").text(data.msg);
                 var $table = $("#tblBusinessGroup");
                 var $rows = $("#tblBusinessGroup .tblBusinessGroupRow");
                 $rows.remove();
-                FillManagementTableData(data);
+                FillBusinessGroupsTableData(data);
                 
                 ShowFlash(false);
             }
             else{
                 ShowFlash(false);
-                $("#lblMsg").text(data.msg);
+                $("#bMsg").text(data.msg);
             }
         }, "json");
     };
 
-    function DeleteManagementRow(Id){
+    function DeleteBusinessGroupsRow(Id){
         var result = confirm("Подтвердите удаление выбранной записи!");
         if (!result) {return;}
 
@@ -188,33 +188,35 @@
         var dataToSend = $("#StaffDepartmentMenegmentForm").serialize();
             $.post(url, dataToSend, function(data){
                 if (data.ok == true){
-                    $("#MessageStr").text(data.msg);
+                    $("#bMessageStr").text(data.msg);
                     var $table = $("#tblBusinessGroup");
                     var $rows = $("#tblBusinessGroup .tblBusinessGroupRow");
                     $rows.remove();
-                    FillManagementTableData(data);
+                    FillBusinessGroupsTableData(data);
+                    $("#bMessageStr").text(data.msg);
                     ShowFlash(false);
                 }
                 else{
                     ShowFlash(false);
-                    $("#MessageStr").text(data.msg);
+                    $("#bMessageStr").text(data.msg);
+                    alert(data.msg);
                 }
             }, "json");
     }
 
-    function FillManagementTableData(data){
+    function FillBusinessGroupsTableData(data){
         for (var i = 0; i < data.BusinessGroups.length; i++)
         {
             $("#tblBusinessGroup").append(
                 
                 "<tr class=\"tblBusinessGroupRow\">" +
-                    "<td><input id='BusinessGroups_" + i + "__Id' name='BusinessGroups[" + i + "].Id' value='" + data.BusinessGroups[i].Id + "' type='hidden'>" +
-                        "<input id='BusinessGroups_" + i + "__Name' name='BusinessGroups[" + i + "].Name' value='" + data.BusinessGroups[i].Name + "' type='hidden'>" + (data.BusinessGroups[i].Name ? data.BusinessGroups[i].Name : "") + "</td>" +
-                    "<td><input id='BusinessGroups_" + i + "__Code' name='BusinessGroups[" + i + "].Code' value='" + data.BusinessGroups[i].Code + "' type='hidden'>" + (data.BusinessGroups[i].Code ? data.BusinessGroups[i].Code : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__bId' name='BusinessGroups[" + i + "].bId' value='" + data.BusinessGroups[i].bId + "' type='hidden'>" +
+                        "<input id='BusinessGroups_" + i + "__bName' name='BusinessGroups[" + i + "].bName' value='" + data.BusinessGroups[i].bName + "' type='hidden'>" + (data.BusinessGroups[i].bName ? data.BusinessGroups[i].bName : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__bCode' name='BusinessGroups[" + i + "].bCode' value='" + data.BusinessGroups[i].bCode + "' type='hidden'>" + (data.BusinessGroups[i].bCode ? data.BusinessGroups[i].bCode : "") + "</td>" +
                     "<td><input id='BusinessGroups_" + i + "__AdminId' name='BusinessGroups[" + i + "].AdminId' value='" + data.BusinessGroups[i].AdminId + "' type='hidden'>" + (data.BusinessGroups[i].AdminName ? data.BusinessGroups[i].AdminName : "") + "</td>" +
-                    "<td><input id='BusinessGroups_" + i + "__DepartmentId' name='BusinessGroups[" + i + "].DepartmentId' value='" + data.BusinessGroups[i].DepartmentId + "' type='hidden'>" + (data.BusinessGroups[i].DepName ? data.BusinessGroups[i].DepName : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__bDepartmentId' name='BusinessGroups[" + i + "].bDepartmentId' value='" + data.BusinessGroups[i].bDepartmentId + "' type='hidden'>" + (data.BusinessGroups[i].DepName ? data.BusinessGroups[i].DepName : "") + "</td>" +
                     "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditBusinessGrouptRow(" + i + ");' href='#' >Редактировать</a></td>" + 
-                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.BusinessGroups[i].Id + ");' href='#' >Удалить</a></td>" +
+                    "<td class='tdBtn'><a onclick='DeleteBusinessGroupsRow(" + data.BusinessGroups[i].bId + ");' href='#' >Удалить</a></td>" +
                 "</tr>"
             );
             

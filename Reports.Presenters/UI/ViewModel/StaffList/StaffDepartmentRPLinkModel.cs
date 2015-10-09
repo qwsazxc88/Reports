@@ -14,24 +14,24 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffDepartmentRPLinkDto> RPLinks { get; set; }
 
         #region Поля для модального окна
-        public int Id { get; set; }
+        public int rId { get; set; }
 
         [Display(Name = "Название РП-привязки"),
-            StringLength(150, ErrorMessage = "Не более 150 знаков."),
+            StringLength(250, ErrorMessage = "Не более 250 знаков."),
             Required(ErrorMessage = "*")]
-        public string Name { get; set; }
+        public string rName { get; set; }
 
         [Display(Name = "Код РП-привязки"),
-            StringLength(7, ErrorMessage = "Не более 7 знаков."),
+            StringLength(12, ErrorMessage = "Не более 12 знаков."),
             Required(ErrorMessage = "*")]
-        public string Code { get; set; }
+        public string rCode { get; set; }
 
         [Display(Name = "Бизнес-группа")]
         public int BGId { get; set; }
         public IList<StaffDepartmentBusinessGroupDto> BusinessGroups { get; set; }
 
         [Display(Name = "Подразделение в СКД")]
-        public int DepartmentId { get; set; }
+        public int rDepartmentId { get; set; }
         public IList<Department> SixLevelDeps { get; set; }
 
 

@@ -2139,6 +2139,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(Id);
             if (entity != null)
             {
+                if (!StaffDepartmentBranchDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
                 try
                 {
                     StaffDepartmentBranchDao.DeleteAndFlush(entity);
@@ -2235,25 +2241,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            StaffDepartmentManagement entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentManagementDao.Load(itemToAddEdit.Id);
+            StaffDepartmentManagement entity = itemToAddEdit.mId == 0 ? null : StaffDepartmentManagementDao.Load(itemToAddEdit.mId);
             if (entity == null)
             {
                 entity = new StaffDepartmentManagement()
                 {
-                    Code = itemToAddEdit.Code,
-                    Name = itemToAddEdit.Name,
+                    Code = itemToAddEdit.mCode,
+                    Name = itemToAddEdit.mName,
                     DepartmentBranch = itemToAddEdit.BranchId == 0 ? null : StaffDepartmentBranchDao.Get(itemToAddEdit.BranchId),
-                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Department = itemToAddEdit.mDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.mDepartmentId),
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
             }
             else
             {
-                entity.Code = itemToAddEdit.Code;
-                entity.Name = itemToAddEdit.Name;
+                entity.Code = itemToAddEdit.mCode;
+                entity.Name = itemToAddEdit.mName;
                 entity.DepartmentBranch = itemToAddEdit.BranchId == 0 ? null : StaffDepartmentBranchDao.Get(itemToAddEdit.BranchId);
-                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Department = itemToAddEdit.mDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.mDepartmentId);
                 entity.Editor = curUser;
                 entity.EditDate = DateTime.Now;
             }
@@ -2286,6 +2292,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffDepartmentManagement entity = StaffDepartmentManagementDao.Load(Id);
             if (entity != null)
             {
+                if (!StaffDepartmentManagementDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
                 try
                 {
                     StaffDepartmentManagementDao.DeleteAndFlush(entity);
@@ -2316,14 +2328,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             
             //проверка на заполнение полей
-            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            if (string.IsNullOrEmpty(Row.mName) || string.IsNullOrWhiteSpace(Row.mName) || string.IsNullOrEmpty(Row.mCode) || string.IsNullOrWhiteSpace(Row.mCode))
             {
                 error = "Поля Название и Код дирекции должны быть заполнены!";
                 return false;
             }
 
             //проверка на правильное заполнение поля с кодом
-            if (Row.Code.Trim().Length != 3)
+            if (Row.mCode.Trim().Length != 3)
             {
                 error = "Код дирекции должен состоять из трех символов!";
                 return false;
@@ -2333,13 +2345,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<StaffDepartmentManagement> db = StaffDepartmentManagementDao.LoadAll();
             if (db != null && db.Count != 0)
             {
-                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Name == Row.mName && x.Id != Row.mId).Count() > 0)
                 {
                     error = "Строка с таким названием филиала уже существует!";
                     return false;
                 }
 
-                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Code == Row.mCode && x.Id != Row.mId).Count() > 0)
                 {
                     error = "Строка с таким кодом филиала уже существует!";
                     return false;
@@ -2347,7 +2359,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //проверка на вторичную привязку к подразделениям СКД
                 if (db.Where(x => x.Department != null)
-                    .Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id)
+                    .Where(x => x.Department.Id == Row.mDepartmentId && x.Id != Row.mId)
                     .Count() > 0)
                 {
                     error = "Это подразделение из СКД уже привязано к другой дирекции Финграда!";
@@ -2384,25 +2396,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            StaffDepartmentAdministration entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentAdministrationDao.Load(itemToAddEdit.Id);
+            StaffDepartmentAdministration entity = itemToAddEdit.aId == 0 ? null : StaffDepartmentAdministrationDao.Load(itemToAddEdit.aId);
             if (entity == null)
             {
                 entity = new StaffDepartmentAdministration()
                 {
-                    Code = itemToAddEdit.Code,
-                    Name = itemToAddEdit.Name,
+                    Code = itemToAddEdit.aCode,
+                    Name = itemToAddEdit.aName,
                     DepartmentManagement = itemToAddEdit.ManagementId == 0 ? null : StaffDepartmentManagementDao.Get(itemToAddEdit.ManagementId),
-                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Department = itemToAddEdit.aDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.aDepartmentId),
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
             }
             else
             {
-                entity.Code = itemToAddEdit.Code;
-                entity.Name = itemToAddEdit.Name;
+                entity.Code = itemToAddEdit.aCode;
+                entity.Name = itemToAddEdit.aName;
                 entity.DepartmentManagement = itemToAddEdit.ManagementId == 0 ? null : StaffDepartmentManagementDao.Get(itemToAddEdit.ManagementId);
-                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Department = itemToAddEdit.aDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.aDepartmentId);
                 entity.Editor = curUser;
                 entity.EditDate = DateTime.Now;
             }
@@ -2435,6 +2447,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffDepartmentAdministration entity = StaffDepartmentAdministrationDao.Load(Id);
             if (entity != null)
             {
+                if (!StaffDepartmentAdministrationDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
                 try
                 {
                     StaffDepartmentAdministrationDao.DeleteAndFlush(entity);
@@ -2465,14 +2483,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             //проверка на заполнение полей
-            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            if (string.IsNullOrEmpty(Row.aName) || string.IsNullOrWhiteSpace(Row.aName) || string.IsNullOrEmpty(Row.aCode) || string.IsNullOrWhiteSpace(Row.aCode))
             {
                 error = "Поля Название и Код управления должны быть заполнены!";
                 return false;
             }
 
             //проверка на правильное заполнение поля с кодом
-            if (Row.Code.Trim().Length != 7)
+            if (Row.aCode.Trim().Length != 7)
             {
                 error = "Код управления должен состоять из 7 символов!";
                 return false;
@@ -2482,13 +2500,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<StaffDepartmentAdministration> db = StaffDepartmentAdministrationDao.LoadAll();
             if (db != null && db.Count != 0)
             {
-                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Name == Row.aName && x.Id != Row.aId).Count() > 0)
                 {
                     error = "Строка с таким названием управления уже существует!";
                     return false;
                 }
 
-                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Code == Row.aCode && x.Id != Row.aId).Count() > 0)
                 {
                     error = "Строка с таким кодом управления уже существует!";
                     return false;
@@ -2496,7 +2514,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //проверка на вторичную привязку к подразделениям СКД
                 if (db.Where(x => x.Department != null)
-                    .Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id)
+                    .Where(x => x.Department.Id == Row.aDepartmentId && x.Id != Row.aId)
                     .Count() > 0)
                 {
                     error = "Это подразделение из СКД уже привязано к другому управлению Финграда!";
@@ -2538,25 +2556,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            StaffDepartmentBusinessGroup entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentBusinessGroupDao.Load(itemToAddEdit.Id);
+            StaffDepartmentBusinessGroup entity = itemToAddEdit.bId == 0 ? null : StaffDepartmentBusinessGroupDao.Load(itemToAddEdit.bId);
             if (entity == null)
             {
                 entity = new StaffDepartmentBusinessGroup()
                 {
-                    Code = itemToAddEdit.Code,
-                    Name = itemToAddEdit.Name,
+                    Code = itemToAddEdit.bCode,
+                    Name = itemToAddEdit.bName,
                     DepartmentAdministration = itemToAddEdit.AdminId == 0 ? null : StaffDepartmentAdministrationDao.Get(itemToAddEdit.AdminId),
-                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Department = itemToAddEdit.bDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.bDepartmentId),
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
             }
             else
             {
-                entity.Code = itemToAddEdit.Code;
-                entity.Name = itemToAddEdit.Name;
+                entity.Code = itemToAddEdit.bCode;
+                entity.Name = itemToAddEdit.bName;
                 entity.DepartmentAdministration = itemToAddEdit.AdminId == 0 ? null : StaffDepartmentAdministrationDao.Get(itemToAddEdit.AdminId);
-                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Department = itemToAddEdit.bDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.bDepartmentId);
                 entity.Editor = curUser;
                 entity.EditDate = DateTime.Now;
             }
@@ -2587,8 +2605,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             StaffDepartmentBusinessGroup entity = StaffDepartmentBusinessGroupDao.Load(Id);
+            
             if (entity != null)
             {
+                if (!StaffDepartmentBusinessGroupDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
                 try
                 {
                     StaffDepartmentBusinessGroupDao.DeleteAndFlush(entity);
@@ -2619,14 +2644,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             //проверка на заполнение полей
-            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            if (string.IsNullOrEmpty(Row.bName) || string.IsNullOrWhiteSpace(Row.bName) || string.IsNullOrEmpty(Row.bCode) || string.IsNullOrWhiteSpace(Row.bCode))
             {
                 error = "Поля Название и Код бизнес-группы должны быть заполнены!";
                 return false;
             }
 
             //проверка на правильное заполнение поля с кодом
-            if (Row.Code.Trim().Length != 11)
+            if (Row.bCode.Trim().Length != 11)
             {
                 error = "Код бизнес-группы должен состоять из 11 символов!";
                 return false;
@@ -2636,13 +2661,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<StaffDepartmentBusinessGroup> db = StaffDepartmentBusinessGroupDao.LoadAll();
             if (db != null && db.Count != 0)
             {
-                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Name == Row.bName && x.Id != Row.bId).Count() > 0)
                 {
                     error = "Строка с таким названием бизнес-группы уже существует!";
                     return false;
                 }
 
-                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Code == Row.bCode && x.Id != Row.bId).Count() > 0)
                 {
                     error = "Строка с таким кодом бизнес-группы уже существует!";
                     return false;
@@ -2650,7 +2675,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //проверка на вторичную привязку к подразделениям СКД
                 if (db.Where(x => x.Department != null)
-                    .Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id)
+                    .Where(x => x.Department.Id == Row.bDepartmentId && x.Id != Row.bId)
                     .Count() > 0)
                 {
                     error = "Эта подразделение из СКД уже привязано к другой бизнес-группе Финграда!";
@@ -2692,25 +2717,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            StaffDepartmentRPLink entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentRPLinkDao.Load(itemToAddEdit.Id);
+            StaffDepartmentRPLink entity = itemToAddEdit.rId == 0 ? null : StaffDepartmentRPLinkDao.Load(itemToAddEdit.rId);
             if (entity == null)
             {
                 entity = new StaffDepartmentRPLink()
                 {
-                    Code = itemToAddEdit.Code,
-                    Name = itemToAddEdit.Name,
+                    Code = itemToAddEdit.rCode,
+                    Name = itemToAddEdit.rName,
                     DepartmentBG = itemToAddEdit.BGId == 0 ? null : StaffDepartmentBusinessGroupDao.Get(itemToAddEdit.BGId),
-                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Department = itemToAddEdit.rDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.rDepartmentId),
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
             }
             else
             {
-                entity.Code = itemToAddEdit.Code;
-                entity.Name = itemToAddEdit.Name;
+                entity.Code = itemToAddEdit.rCode;
+                entity.Name = itemToAddEdit.rName;
                 entity.DepartmentBG = itemToAddEdit.BGId == 0 ? null : StaffDepartmentBusinessGroupDao.Get(itemToAddEdit.BGId);
-                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Department = itemToAddEdit.rDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.rDepartmentId);
                 entity.Editor = curUser;
                 entity.EditDate = DateTime.Now;
             }
@@ -2743,6 +2768,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffDepartmentRPLink entity = StaffDepartmentRPLinkDao.Load(Id);
             if (entity != null)
             {
+                if (!StaffDepartmentRPLinkDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
                 try
                 {
                     StaffDepartmentRPLinkDao.DeleteAndFlush(entity);
@@ -2773,14 +2804,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             //проверка на заполнение полей
-            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            if (string.IsNullOrEmpty(Row.rName) || string.IsNullOrWhiteSpace(Row.rName) || string.IsNullOrEmpty(Row.rCode) || string.IsNullOrWhiteSpace(Row.rCode))
             {
                 error = "Поля Название и Код РП-привязки должны быть заполнены!";
                 return false;
             }
 
             //проверка на правильное заполнение поля с кодом
-            if (Row.Code.Trim().Length != 12)
+            if (Row.rCode.Trim().Length != 12)
             {
                 error = "Код РП-привязи должен состоять из 12 символов!";
                 return false;
@@ -2790,13 +2821,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<StaffDepartmentRPLink> db = StaffDepartmentRPLinkDao.LoadAll();
             if (db != null && db.Count != 0)
             {
-                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Name == Row.rName && x.Id != Row.rId).Count() > 0)
                 {
                     error = "Строка с таким названием РП-привязки уже существует!";
                     return false;
                 }
 
-                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                if (db.Where(x => x.Code == Row.rCode && x.Id != Row.rId).Count() > 0)
                 {
                     error = "Строка с таким кодом РП-привязки уже существует!";
                     return false;
@@ -2804,7 +2835,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //проверка на вторичную привязку к подразделениям СКД
                 if (db.Where(x => x.Department != null)
-                    .Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id)
+                    .Where(x => x.Department.Id == Row.rDepartmentId && x.Id != Row.rId)
                     .Count() > 0)
                 {
                     error = "Эта подразделение из СКД уже привязано к другой РП-привязке Финграда!";
