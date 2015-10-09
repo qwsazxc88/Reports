@@ -280,7 +280,9 @@
     <Compile Include="UI\ViewModel\StaffList\AddressModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepRequestInfoModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepStructureFingradPointsModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentAdministrationModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentBranchModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentBusinessGroupModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentEncodingModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentManagementModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestListModel.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRPLinkModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftReferenceModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
