@@ -664,6 +664,9 @@ namespace Reports.Core.Dao.Impl
                     return string.Empty;
                 #endregion
 
+                case UserRole.ConsultantOutsourcing:
+                    return string.Empty;
+
                 #region ConsultantOutsorsingManager
                 /*case UserRole.ConsultantOutsorsingManager:
                     return string.Empty;*/

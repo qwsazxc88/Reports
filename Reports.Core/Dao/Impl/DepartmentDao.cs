@@ -92,6 +92,8 @@ namespace Reports.Core.Dao.Impl
             var querystr = "SELECT * FROM vwTerrapoint_Department";
             var query = Session.CreateSQLQuery(querystr)
                   .AddScalar("TPCode", NHibernateUtil.String)
+                  .AddScalar("TP1Name", NHibernateUtil.String)
+                  .AddScalar("TP2Name", NHibernateUtil.String)
                   .AddScalar("TPName", NHibernateUtil.String)
                   .AddScalar("TPCity", NHibernateUtil.String)
                   .AddScalar("TPStreet", NHibernateUtil.String)
@@ -132,6 +134,8 @@ namespace Reports.Core.Dao.Impl
               .AddScalar("Dstreet", NHibernateUtil.String)
               .AddScalar("Dhouse", NHibernateUtil.String)
               .AddScalar("TPcode", NHibernateUtil.String)
+              .AddScalar("TP1Name", NHibernateUtil.String)
+              .AddScalar("TP2Name", NHibernateUtil.String)
               .AddScalar("TPName", NHibernateUtil.String)
               .AddScalar("TPcity", NHibernateUtil.String)
               .AddScalar("TPstreet", NHibernateUtil.String);
