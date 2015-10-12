@@ -2536,11 +2536,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загрузка справочника кодировок бизнес-групп.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model)
+        public StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups();
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+
             model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations();
+            model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
+
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
+
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.Branches.Insert(0, new StaffDepartmentBranchDto() { Id = 0, Name = "" });
+
             model.FiveLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 5 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
         }
@@ -2701,7 +2713,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model)
         {
             model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks();
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups();
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(0, 0, 0);
             model.SixLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 6 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
         }
