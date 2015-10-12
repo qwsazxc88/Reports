@@ -198,8 +198,11 @@ namespace Reports.Presenters.UI.Bl
         /// Загрузка справочника кодировок бизнес-групп.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model);
+        StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Сохраняем данные справочника кодировок бизнес-групп.
         /// </summary>

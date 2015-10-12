@@ -38,29 +38,36 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("moDepEncoding");
+        ShowFlash(true);
+        ShowFlash(false);
 
         $.ajaxSetup({ cache: false });
         //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
         $("#tabs").tabs({
+            spinner: "<em>Загрузка...</em>",
             beforeLoad: function (event, ui) {
                 ui.jqXHR.fail(function () {
                     ui.panel.html("Возникла ошибка при загрузке страницы!");
                 });
             },
+            collapsible: true,
             cache: false,
-            ajaxOption: { cache: false },
-            spinner: "Загрузка...",
-            active: $("#TabIndex").val()
+            ajaxOptions: { cache: false },
+            load: function (event, ui) { /*ShowFlash(true);ui.panel.html("Загрузка данных...!");*/
+                //ui.jqXHR.done(function () { ShowFlash(false); })
+                ShowFlash(false);
+            },
+            active: $("#TabIndex").val(),
+            activate: function () { ShowFlash(true); }
         });
 
 
         $(document).tooltip({ track: false });
 
-        //ShowFlash(true);
-        //ShowFlash(false);
+
         $(":button").button();
 
-        
+
     });
 
 
@@ -87,7 +94,7 @@
                 draggable: false,
                 resizable: false,
                 width: 300,
-                height: 60,
+                height: 100,
                 closeOnEscape: false,
                 close: function (event, ui) {
                     //$(this).dialog("destroy").remove();

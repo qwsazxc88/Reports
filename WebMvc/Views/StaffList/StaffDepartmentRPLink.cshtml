@@ -48,7 +48,7 @@
                             @Html.HiddenFor(m => m.RPLinks[i - 1].rDepartmentId)
                         </td>
                         <td class="tdBtn">
-                            <a class="CallModal" onclick="AddEditRPLinkRow(@i-1);" href="#" >Редактировать</a>
+                            <a class="CallModal" onclick="AddEditRPLinkRow(@i-1);" href="#" >Изменить</a>
                         </td>
                         <td class="tdBtn">
                             <a onclick="DeleteRPLinkRow(@item.rId);" href="#" >Удалить</a>
@@ -214,7 +214,7 @@
                     "<td><input id='RPLinks_" + i + "__rCode' name='RPLinks[" + i + "].rCode' value='" + data.RPLinks[i].rCode + "' type='hidden'>" + (data.RPLinks[i].rCode ? data.RPLinks[i].rCode : "") + "</td>" +
                     "<td><input id='RPLinks_" + i + "__BGId' name='RPLinks[" + i + "].BGId' value='" + data.RPLinks[i].BGId + "' type='hidden'>" + (data.RPLinks[i].BGName ? data.RPLinks[i].BGName : "") + "</td>" +
                     "<td><input id='RPLinks_" + i + "__rDepartmentId' name='RPLinks[" + i + "].rDepartmentId' value='" + data.RPLinks[i].rDepartmentId + "' type='hidden'>" + (data.RPLinks[i].DepName ? data.RPLinks[i].DepName : "") + "</td>" +
-                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditRPLinkRow(" + i + ");' href='#' >Редактировать</a></td>" + 
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditRPLinkRow(" + i + ");' href='#' >Изменить</a></td>" + 
                     "<td class='tdBtn'><a onclick='DeleteRPLinkRow(" + data.RPLinks[i].rId + ");' href='#' >Удалить</a></td>" +
                 "</tr>"
             );

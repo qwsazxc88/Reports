@@ -12,5 +12,7 @@ namespace Reports.Core.Dto
         public string AdminName { get; set; }
         public int bDepartmentId { get; set; }
         public string DepName { get; set; }
+        public string ManagementName { get; set; }
+        public string BranchName { get; set; }
     }
 }
