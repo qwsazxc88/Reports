@@ -9,11 +9,6 @@ namespace Reports.Core.Dao
     /// </summary>
     public interface IStaffDepartmentOperationLinksDao : IDao<StaffDepartmentOperationLinks>
     {
-        /// <summary>
-        /// Достаем список операций для подразделения по заявке.
-        /// </summary>
-        /// <param name="DMDetailId">Id управленческих реквизитов текущей заявки.</param>
-        /// <returns></returns>
-        IList<DepOperationDto> GetDepartmentOperationLinks(int DMDetailId);
+        
     }
 }

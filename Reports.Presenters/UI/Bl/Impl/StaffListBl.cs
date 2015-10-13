@@ -244,6 +244,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentRPLinkDao); }
             set { staffdepartmentRPLinkDao = value; }
         }
+
+        protected IStaffDepartmentOperationGroupsDao staffdepartmentOperationGroupsDao;
+        public IStaffDepartmentOperationGroupsDao StaffDepartmentOperationGroupsDao
+        {
+            get { return Validate.Dependency(staffdepartmentOperationGroupsDao); }
+            set { staffdepartmentOperationGroupsDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -524,6 +531,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PlanSalaryFund = dmd.PlanSalaryFund;
                 model.Note = dmd.Note;
                 model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
+                model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 LoadDictionaries(model);
 
                 //кнопки
@@ -742,16 +750,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
-                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
-                {
-                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { 
-                        DepartmentManagerDetail = dmd, 
-                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), 
-                        Creator = curUser, 
-                        CreateDate = DateTime.Now 
-                    });
-                }
+                dmd.DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                //{
+                //    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { 
+                //        DepartmentManagerDetail = dmd, 
+                //        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), 
+                //        Creator = curUser, 
+                //        CreateDate = DateTime.Now 
+                //    });
+                //}
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
@@ -1038,17 +1046,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
-                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
-                {
-                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
-                    {
-                        DepartmentManagerDetail = dmd,
-                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
-                        Creator = curUser,
-                        CreateDate = DateTime.Now
-                    });
-                }
+                dmd.DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
+                //foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                //{
+                //    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
+                //    {
+                //        DepartmentManagerDetail = dmd,
+                //        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
+                //        Creator = curUser,
+                //        CreateDate = DateTime.Now
+                //    });
+                //}
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
@@ -1212,30 +1221,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                if (entity.DepartmentManagerDetails[0].DepOperations == null)
-                    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+                entity.DepartmentManagerDetails[0].DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //if (entity.DepartmentManagerDetails[0].DepOperations == null)
+                //    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
 
-                foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
-                {
-                    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
+                //foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
+                //{
+                //    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
 
-                    //если была операция, но сняли птицу, то удаляем
-                    if (item.Id != 0 && !item.IsUsed)
-                    {
-                        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
-                        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
-                    }
+                //    //если была операция, но сняли птицу, то удаляем
+                //    if (item.Id != 0 && !item.IsUsed)
+                //    {
+                //        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
+                //        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
+                //    }
                     
-                    //если не было и поставили птицу
-                    if (item.Id == 0 && item.IsUsed)
-                    {
-                        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
-                        oper.Creator = curUser;
-                        oper.CreateDate = DateTime.Now;
-                        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
-                    }
-                }
+                //    //если не было и поставили птицу
+                //    if (item.Id == 0 && item.IsUsed)
+                //    {
+                //        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                //        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
+                //        oper.Creator = curUser;
+                //        oper.CreateDate = DateTime.Now;
+                //        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
+                //    }
+                //}
 
                 //коды программ
                 if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
@@ -2918,7 +2928,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
-            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
+            model.OperationGroups = staffdepartmentOperationGroupsDao.LoadAll();
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();

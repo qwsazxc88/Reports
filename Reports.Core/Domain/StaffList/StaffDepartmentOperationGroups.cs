@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Справочник операций подразделений.
+    /// Справочник групп операций.
     /// </summary>
-    public class StaffDepartmentOperations : AbstractEntityWithVersion
+    public class StaffDepartmentOperationGroups : AbstractEntityWithVersion
     {
         public virtual string Name { get; set; }
         public virtual User Creator { get; set; }

@@ -8,10 +8,10 @@
 
     <many-to-one name="DepRequest" class="StaffDepartmentRequest" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>
     <property name="DepCode" length="20" not-null="false"/>
+    <property name="PrevDepCode" length="20" not-null="false"/>
     <property name="NameShort" length="100" not-null="false"/>
     <property name="NameComment" length="50" not-null="false"/>
     <many-to-one name="DepartmentReasons" class="StaffDepartmentReasons" column="ReasonId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentReasons" index="StaffDepartmentManagerDetails_StaffDepartmentReasons" not-null="false"/>
-    <property name="PrevDepCode" length="20" not-null="false"/>
     <many-to-one name="FactAddress" class="RefAddresses" column="FactAddressId" foreign-key="FK_StaffDepartmentManagerDetails_RefAddresses" index="StaffDepartmentManagerDetails_RefAddresses" not-null="false"/>
     <property name="DepStatus" length="50" not-null="false"/>
     <many-to-one name="DepartmentType" class="StaffDepartmentTypes" column="DepTypeId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentTypes" index="StaffDepartmentManagerDetails_StaffDepartmentTypes" not-null="false"/>
@@ -34,21 +34,18 @@
     <many-to-one name="CashDeskAvailable" class="StaffDepartmentCashDeskAvailable" column="CDAvailableId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" index="StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" not-null="false"/>
     <many-to-one name="SKB_GE" class="StaffDepartmentSKB_GE" column="SKB_GE_Id" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" index="StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" not-null="false"/>
     <many-to-one name="SoftGroup" class="StaffDepartmentSoftGroup" column="SoftGroupId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" index="StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" not-null="false"/>
+    <many-to-one name="DepartmentOperationGroup" class="StaffDepartmentOperationGroups" column="OperGroupId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups" index="StaffDepartmentManagerDetails_StaffDepartmentOperationGroups" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
+    
 
     <bag name="DepOperationModes" lazy="true" cascade="all-delete-orphan">
       <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails"/>
       <one-to-many class="StaffDepartmentOperationModes"/>
     </bag>
     
-    <bag name="DepOperations" lazy="true" cascade="all-delete-orphan">
-      <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails"/>
-      <one-to-many class="StaffDepartmentOperationLinks"/>
-    </bag>
-
     <bag name="ProgramCodes" lazy="true" cascade="all-delete-orphan">
       <key column="DMDetailId" foreign-key="FK_StaffProgramCodes_StaffDepartmentManagerDetails"/>
       <one-to-many class="StaffProgramCodes"/>

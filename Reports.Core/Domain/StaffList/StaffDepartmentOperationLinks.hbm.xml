@@ -6,7 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="DepartmentManagerDetail" class="StaffDepartmentManagerDetails" column="DMDetailId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails" index="StaffDepartmentOperationLinks_StaffDepartmentManagerDetails" not-null="false"/>
+    <many-to-one name="DepartmentOperationGroup" class="StaffDepartmentOperationGroups" column="OperGroupId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups" index="StaffDepartmentOperationLinks_StaffDepartmentOperationGroups" not-null="false"/>
     <many-to-one name="DepartmentOperation" class="StaffDepartmentOperations" column="OperationId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentOperations" index="StaffDepartmentOperationLinks_StaffDepartmentOperations" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentOperationLinks_CreatorUser" index="StaffDepartmentOperationLinks_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>

@@ -719,6 +719,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentRPLinkDao>()
                 .ImplementedBy<StaffDepartmentRPLinkDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentOperationGroupsDao>()
+                .ImplementedBy<StaffDepartmentOperationGroupsDao>()
+                .LifeStyle.Is(type));
             
 
             #region StaffMovements

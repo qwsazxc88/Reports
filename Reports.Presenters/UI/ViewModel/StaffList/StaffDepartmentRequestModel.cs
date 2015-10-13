@@ -231,7 +231,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<IdNameDto> NetShopTypes { get; set; }
 
         [Display(Name = "Операции")]
-        public IList<DepOperationDto> Operations { get; set; }
+        public int OperGroupId { get; set; }
+        public IList<StaffDepartmentOperationGroups> OperationGroups { get; set; }
 
         [Display(Name = "Признак обслуживания юридических лиц")]
         public bool IsLegalEntity { get; set; }
