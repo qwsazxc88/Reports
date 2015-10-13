@@ -114,6 +114,7 @@
     <Compile Include="Controllers\MailListController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
     <Compile Include="Controllers\StaffListController.cs" />
+    <Compile Include="Controllers\StaffMovementsController.cs" />
     <Compile Include="Controllers\SurchargeController.cs" />
     <Compile Include="Controllers\SurchargeNoteController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
@@ -218,6 +219,7 @@
     <Content Include="Scripts\jquery.maskedinput-1.2.2.js" />
     <Content Include="Scripts\jquery.ui.datepicker-ru.js" />
     <Content Include="Scripts\jquery.upload-1.0.2.min.js" />
+    <Content Include="Scripts\jquery.validate_new.min.js" />
     <Content Include="Scripts\json2.js" />
     <Content Include="Scripts\localization\messages_ru.js" />
     <Content Include="Scripts\mustache.js" />
@@ -846,8 +848,13 @@
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsList.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsEdit.cshtml" />
     <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
     <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
+    <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
     <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
     <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
