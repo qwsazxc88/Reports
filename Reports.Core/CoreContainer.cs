@@ -614,24 +614,6 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
 
 
-
-            Register(Component.For<IDepartmentArchiveDao>()
-                .ImplementedBy<DepartmentArchiveDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffEstablishedPostArchiveDao>()
-                .ImplementedBy<StaffEstablishedPostArchiveDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffPostChargeLinksDao>()
-                .ImplementedBy<StaffPostChargeLinksDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffEstablishedPostRequestDao>()
-                .ImplementedBy<StaffEstablishedPostRequestDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IRefAddressesDao>()
-                .ImplementedBy<RefAddressesDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffProgramReferenceDao>()
-                .ImplementedBy<StaffProgramReferenceDao>()
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
@@ -652,6 +634,25 @@ namespace Reports.Core
                 .ImplementedBy<StaffMovementsDataDao>()
                 .LifeStyle.Is(type));
             #endregion
+
+            #region Штатное расписание
+            Register(Component.For<IDepartmentArchiveDao>()
+                .ImplementedBy<DepartmentArchiveDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostArchiveDao>()
+                .ImplementedBy<StaffEstablishedPostArchiveDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffPostChargeLinksDao>()
+                .ImplementedBy<StaffPostChargeLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostRequestDao>()
+                .ImplementedBy<StaffEstablishedPostRequestDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IRefAddressesDao>()
+                .ImplementedBy<RefAddressesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffProgramReferenceDao>()
+                .ImplementedBy<StaffProgramReferenceDao>()
                 .LifeStyle.Is(type));
             Register(Component.For<IStaffProgramCodesDao>()
                 .ImplementedBy<StaffProgramCodesDao>()
@@ -743,6 +744,8 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentOperationGroupsDao>()
                 .ImplementedBy<StaffDepartmentOperationGroupsDao>()
                 .LifeStyle.Is(type));
+            #endregion
+            
             
         }
         #endregion
