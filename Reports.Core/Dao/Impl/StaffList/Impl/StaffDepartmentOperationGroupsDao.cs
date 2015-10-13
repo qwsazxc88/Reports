@@ -6,14 +6,15 @@ using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
 
+
 namespace Reports.Core.Dao.Impl
 {
     /// <summary>
-    /// Операции проводимые подразделением.
+    /// Справочник групп операций
     /// </summary>
-    public class StaffDepartmentOperationLinksDao : DefaultDao<StaffDepartmentOperationLinks>, IStaffDepartmentOperationLinksDao
+    public class StaffDepartmentOperationGroupsDao : DefaultDao<StaffDepartmentOperationGroups>, IStaffDepartmentOperationGroupsDao
     {
-        public StaffDepartmentOperationLinksDao(ISessionManager sessionManager)
+        public StaffDepartmentOperationGroupsDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
         }

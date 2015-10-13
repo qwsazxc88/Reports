@@ -303,6 +303,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentLandmarksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentManagementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentManagerDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationGroupsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentOperationsDao.cs" />
@@ -337,6 +338,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentLandmarksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentManagementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentManagerDetailsDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationGroupsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationModesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentOperationsDao.cs" />
@@ -622,6 +624,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentLandmarks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagement.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagerDetails.cs" />
+    <Compile Include="Domain\StaffList\StaffDepartmentOperationGroups.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperationLinks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperationModes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentOperations.cs" />
@@ -1323,6 +1326,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationGroups.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRPLink.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentBusinessGroup.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentAdministration.hbm.xml" />

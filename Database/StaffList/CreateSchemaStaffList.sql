@@ -30,6 +30,22 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Creators]
 GO
 
+IF OBJECT_ID ('FK_StaffDepartmentOperations_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperations] DROP CONSTRAINT [FK_StaffDepartmentOperations_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperations_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperations] DROP CONSTRAINT [FK_StaffDepartmentOperations_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperationGroups_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationGroups] DROP CONSTRAINT [FK_StaffDepartmentOperationGroups_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentOperationGroups_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationGroups] DROP CONSTRAINT [FK_StaffDepartmentOperationGroups_CreatorUser]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentRPLink_Department', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentRPLink] DROP CONSTRAINT [FK_StaffDepartmentRPLink_Department]
 GO
@@ -218,8 +234,8 @@ IF OBJECT_ID ('FK_StaffDepartmentOperationLinks_StaffDepartmentOperations', 'F')
 	ALTER TABLE [dbo].[StaffDepartmentOperationLinks] DROP CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperations]
 GO
 
-IF OBJECT_ID ('FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentOperationLinks] DROP CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails]
+IF OBJECT_ID ('FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentOperationLinks] DROP CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentOperationLinks_EditorUser', 'F') IS NOT NULL
@@ -232,6 +248,10 @@ GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentTypes', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentManagerDetails] DROP CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup', 'F') IS NOT NULL
@@ -696,8 +716,11 @@ GO
 CREATE TABLE [dbo].[StaffDepartmentOperations](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[Name] [nvarchar](400) NULL,
+	[Name] [nvarchar](250) NULL,
+	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
  CONSTRAINT [PK_StaffDepartmentOperations] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -713,7 +736,7 @@ GO
 CREATE TABLE [dbo].[StaffDepartmentOperationLinks](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
-	[DMDetailId] [int] NULL,
+	[OperGroupId] [int] NULL,
 	[OperationId] [int] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
@@ -736,10 +759,10 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[Version] [int] NOT NULL,
 	[DepRequestId] [int] NULL,
 	[DepCode] [nvarchar](20) NULL,
+	[PrevDepCode] [nvarchar](20) NULL,
 	[NameShort] [nvarchar](100) NULL,
 	[NameComment] [nvarchar](50) NULL,
 	[ReasonId] [int] NULL,
-	[PrevDepCode] [nvarchar](20) NULL,
 	[FactAddressId] [int] NULL,
 	[DepStatus] [nvarchar](50) NULL,
 	[DepTypeId] [int] NULL,
@@ -762,6 +785,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[CDAvailableId] [int] NULL,
 	[SKB_GE_Id] [int] NULL,
 	[SoftGroupId] [int] NULL,
+	[OperGroupId] [int] NULL,
 	[CreatorId] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[EditorId] [int] NULL,
@@ -1213,7 +1237,46 @@ CREATE TABLE [dbo].[StaffDepartmentRPLink](
 
 GO
 
+
+if OBJECT_ID (N'StaffDepartmentOperationGroups', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentOperationGroups]
+GO
+CREATE TABLE [dbo].[StaffDepartmentOperationGroups](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreatorID] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffDepartmentOperationGroups] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffDepartmentOperationGroups] ADD  CONSTRAINT [DF_StaffDepartmentOperationGroups_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationGroups]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationGroups_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationGroups] CHECK CONSTRAINT [FK_StaffDepartmentOperationGroups_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationGroups]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationGroups_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationGroups] CHECK CONSTRAINT [FK_StaffDepartmentOperationGroups_EditorUser]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentRPLink] ADD  CONSTRAINT [DF_StaffDepartmentRPLink_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1370,6 +1433,13 @@ REFERENCES [dbo].[StaffDepartmentSoftGroup] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups] FOREIGN KEY([OperGroupId])
+REFERENCES [dbo].[StaffDepartmentOperationGroups] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentManagerDetails] CHECK CONSTRAINT [FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentSoftGroupLinks] ADD  CONSTRAINT [DF_StaffDepartmentSoftGroupLinks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -1734,13 +1804,6 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentOperationLinks] CHECK CONSTRAINT [FK_StaffDepartmentOperationLinks_EditorUser]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentOperationLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails] FOREIGN KEY([DMDetailId])
-REFERENCES [dbo].[StaffDepartmentManagerDetails] ([Id])
-GO
-
-ALTER TABLE [dbo].[StaffDepartmentOperationLinks] CHECK CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentManagerDetails]
-GO
-
 ALTER TABLE [dbo].[StaffDepartmentOperationLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperations] FOREIGN KEY([OperationId])
 REFERENCES [dbo].[StaffDepartmentOperations] ([Id])
 GO
@@ -1748,7 +1811,28 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentOperationLinks] CHECK CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperations]
 GO
 
+ALTER TABLE [dbo].[StaffDepartmentOperationLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups] FOREIGN KEY([OperGroupId])
+REFERENCES [dbo].[StaffDepartmentOperationGroups] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperationLinks] CHECK CONSTRAINT [FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentOperations] ADD  CONSTRAINT [DF_StaffDepartmentOperations_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperations]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperations_CreatorUser] FOREIGN KEY([CreatorID])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperations] CHECK CONSTRAINT [FK_StaffDepartmentOperations_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperations]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentOperations_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentOperations] CHECK CONSTRAINT [FK_StaffDepartmentOperations_EditorUser]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentRequest] ADD  CONSTRAINT [DF_StaffDepartmentRequest_IsBack]  DEFAULT ((0)) FOR [IsBack]
@@ -2034,6 +2118,30 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название группы операций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Группы операций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRPLink', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -2200,6 +2308,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак исполь
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы банковского ПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'SoftGroupId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы операций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperGroupId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentSoftGroupLinks', @level2type=N'COLUMN',@level2name=N'Id'
@@ -2643,7 +2754,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'Version'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id управленческих реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'DMDetailId'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id группы операций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'OperGroupId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id операции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'OperationId'
@@ -2673,7 +2784,16 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник операций подразделений' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations'
@@ -3292,10 +3412,14 @@ LEFT JOIN (SELECT distinct C.[ID_Управления_Дирекции_Управление_Дирекции], D.Id,
 						FROM TerraPoint as A
 						INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
 						INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
-						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 4
+						INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 4 and D.Name not like '%ликвидиров%' --and D.Id not in (10397)
 						WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
 									and A.ParentId <> '') as D ON D.[ID_Управления_Дирекции_Управление_Дирекции] = A.[ID Управление Дирекции] 
 									and D.ParentId = E.Code1C
+									--руками исключаю не правильные линковки, потому что данные кривые
+									and not (A.[ID Управление Дирекции] = '04-03-2' and D.Id = 10035)
+									and not (A.[ID Управление Дирекции] = '04-07-1' and D.Id = 4314)
+									and not (A.[ID Управление Дирекции] = '03-00-3' and D.Id = 10397)
 
 --у помеченных, как закрытые удаляем связи с нашим справочником
 UPDATE StaffDepartmentAdministration SET DepartmentId = null WHERE Name like '%закрыто%'
@@ -3307,21 +3431,23 @@ SELECT 1, A.[ID Бизнес-группа], A.[Бизнес-группа], B.Id, C.Id
 FROM DepFinBG as a
 LEFT JOIN StaffDepartmentAdministration as B ON B.Name = A.[Управление Дирекции]
 LEFT JOIN Department as E ON E.Id = B.DepartmentId
-LEFT JOIN (SELECT distinct C.[Бизнес_группа_ID_Бизнес_группа], D.Id, D.ParentId
+LEFT JOIN (SELECT distinct C.[Бизнес_группа_ID_Бизнес_группа], D.Id, D.ParentId, D.Name
 					FROM TerraPoint as A
 					INNER JOIN Department as B ON B.Id = A.PossibleDepartmentId and B.ItemLevel = 7 --and isnull(B.BFGId, 2) = 2
 					INNER JOIN Fingrad_csv as C ON C.[Код_подразделения] = A.Code
 					INNER JOIN Department as D ON B.Path like D.Path + N'%' and D.ItemLevel = 5
 					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
 								and A.ParentId <> '') as C ON C.Бизнес_группа_ID_Бизнес_группа = A.[ID Бизнес-группа]
-								and C.ParentId = E.Code1C
+								and C.ParentId = E.Code1C 
+								--совпадение по фрагменту названий
+								and A.[Бизнес-группа] like '%' + substring(c.Name, charindex('"', c.Name), len(c.Name)) + '%'
 
 
 
 
 --StaffDepartmentRPLink
 INSERT INTO StaffDepartmentRPLink(Version, Code, Name, BGId, DepartmentId)
-SELECT 1, A.[Код РП в финград], A.[РП-привязка], B.Id, C.Id
+SELECT 1, A.[Код РП в финград], A.[РП-привязка], B.Id, C.Id--, C.Name
 FROM DepFinRP as a
 LEFT JOIN StaffDepartmentBusinessGroup as B ON B.Name = A.[Код РП в финград#Бизнес-группа]
 LEFT JOIN Department as E ON E.Id = B.DepartmentId
@@ -3333,6 +3459,8 @@ LEFT JOIN (SELECT distinct C.[РП_привязка_Код_РП_в_финград], D.Id, D.Name, D.Par
 					WHERE A.PossibleDepartmentId is not null and A.ItemLevel = 3 and (A.EndDate is null or (A.EndDate is not null and DATEDIFF(dd, a.EndDate, getdate()) <= 30)) 
 								and A.ParentId <> '') as C ON C.[РП_привязка_Код_РП_в_финград] = A.[Код РП в финград]
 								and C.ParentId = E.Code1C
+								--совпадение по фрагменту названий
+								and A.[РП-привязка] like '%' + substring(c.Name, charindex('"', c.Name), len(c.Name)) + '%'
 
 
 --StaffDepartmentInstallSoft

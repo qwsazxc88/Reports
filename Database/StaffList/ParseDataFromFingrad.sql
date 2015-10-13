@@ -10,7 +10,7 @@ SET NOCOUNT ON
 
 DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
 				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max), @CreatorId int,
-				@DepartmentID int, @DepTmpId int, @DepNewId int, @Code varchar(15)
+				@DepartmentID int, @DepTmpId int, @DepNewId int, @Code varchar(15), @OperGroupId int
 
 --удаляем искуственно созданные записи, которые не удалось связать (пока у добавляемых записей будет проставляться признак 4, потом может изменится)
 DELETE DepartmentArchive
@@ -191,6 +191,10 @@ INNER JOIN TerraPoint as B ON B.Code = A.FingradCode and B.ItemLevel = 3 and (B.
 --INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
 LEFT JOIN Fingrad_csv as C ON C.[Код_подразделения] = B.Code
 WHERE A.ItemLevel = 7 and A.BFGId = 4 and A.FingradCode is not null
+
+--добавляем колонку для группы операций
+ALTER TABLE #TMP ADD OperGroupId int null
+
 
 --приводим данные в порядок
 UPDATE #TMP SET --[Дата_процедуры] = case when year([Дата_процедуры]) = 1900 then null else [Дата_процедуры] end
@@ -374,6 +378,9 @@ order by a.Operation
 
 DELETE FROM #TMP1 WHERE Operation  = 'Значимые объекты: Аптека'
 
+--копия операций для формирования групп операций
+SELECT * INTO #TMP1_1 FROM #TMP1
+
 --таблица для операций подразделений
 CREATE TABLE #TMP2 (id int, [Description] varchar(400))
 
@@ -521,7 +528,29 @@ SELECT distinct 1, [Description] FROM #TMP2
 
 --теперь пытаемся закачать данные в новую структуру
 
+--формируем групп операций
+WHILE EXISTS(SELECT * FROM #TMP1_1)
+BEGIN
+	SELECT top 1 @RowId = RowId, @Oper = Operation FROM #tmp1_1 ORDER BY RowId
 
+	INSERT INTO StaffDepartmentOperationGroups ([Version], Name) values(1, 'Группа опеаций ' + cast(@RowId as varchar))
+
+	SET @OperGroupId = @@IDENTITY
+
+	UPDATE #TMP SET OperGroupId = @OperGroupId WHERE [Операции] = @Oper
+
+	SET @Id = 0
+	WHILE EXISTS (SELECT * FROM StaffDepartmentOperations WHERE Id > @Id)
+	BEGIN
+		SELECT top 1 @Id = Id, @aa = Name FROM StaffDepartmentOperations WHERE Id > @Id ORDER BY Id
+
+		IF @Oper like '%' + @aa + '%'
+			INSERT INTO  StaffDepartmentOperationLinks([Version], OperGroupId, OperationId) VALUES(1, @OperGroupId, @Id)
+
+	END
+
+	DELETE FROM #TMP1_1 WHERE RowId = @rowid
+END
 
 
 /*
@@ -532,7 +561,7 @@ SELECT distinct 1, [Description] FROM #TMP2
 */
 
 
-
+	
 --цикл по полученным данным
 WHILE EXISTS(SELECT * FROM #TMP)
 BEGIN
@@ -547,6 +576,7 @@ BEGIN
 	WHERE A.Id = @Id
 	ORDER BY B.Level desc
 
+	SET @CreatorId = isnull(@CreatorId, 5)	--бывает, что не определен руководитель
 
 	--оба адреса делаем одинаковыми
 	--заносим адрес
@@ -670,6 +700,7 @@ BEGIN
 																						,CDAvailableId
 																						,SKB_GE_Id
 																						,SoftGroupId
+																						,OperGroupId
 																						,CreatorId)
 	SELECT 1
 					,@DepRequestId
@@ -715,6 +746,7 @@ BEGIN
 								when A.[Установленное_ПО_в_ВСП] =  N'СВК-все продукты; ; ; ;' then 4
 								when A.[Установленное_ПО_в_ВСП] =  N'; СВК-только ТК; ; ;' then 3
 					end as SoftGroupId
+					,A.OperGroupId
 					,@CreatorId
 	FROM #TMP as A
 	LEFT JOIN StaffDepartmentTypes as B ON B.Name = A.[Тип_подразделения]
@@ -875,7 +907,7 @@ BEGIN
 			END	
 		END
 
-
+		/*
 		--операции
 		SELECT @Oper = [Операции] FROM #TMP WHERE Id = @Id
 		SET @RowId = 1
@@ -895,7 +927,7 @@ BEGIN
 				SET @RowId += 1
 			END
 		END
-
+		*/
 
 	DELETE FROM #TMP WHERE Id = @Id
 END
@@ -903,6 +935,7 @@ END
 
 drop table #TMP
 drop table #TMP1
+drop table #TMP1_1
 drop table #TMP2
 drop table #TMP3
 drop table #TMP4

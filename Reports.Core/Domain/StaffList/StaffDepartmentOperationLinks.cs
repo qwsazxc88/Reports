@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     /// </summary>
     public class StaffDepartmentOperationLinks : AbstractEntityWithVersion
     {
-        public virtual StaffDepartmentManagerDetails DepartmentManagerDetail { get; set; }
+        public virtual StaffDepartmentOperationGroups DepartmentOperationGroup { get; set; }
         public virtual StaffDepartmentOperations DepartmentOperation { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
