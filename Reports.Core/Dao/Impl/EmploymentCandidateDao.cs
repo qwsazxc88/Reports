@@ -124,6 +124,10 @@ namespace Reports.Core.Dao.Impl
                 ,cast(case when candidate.Status < 5 and isnull(N.IsBlocked, 0) = 1 then 1 else 0 end as bit) as IsBlocked
                 ,managers.MentorName
                 ,managers.PlanRegistrationDate
+                ,isnull(candidate.IsTKReceived, 0) as IsTKReceived
+                ,candidate.TKReceivedDate
+                ,isnull(candidate.IsTDReceived, 0) as IsTDReceived
+                ,candidate.TDReceivedDate
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -192,6 +196,7 @@ namespace Reports.Core.Dao.Impl
                 int CandidateId,
                 string AppointmentReportNumber,
                 int AppointmentNumber,
+                int PersonnelId,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -202,6 +207,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDatesWhere(whereString, beginDate, endDate, CompleteDate, EmploymentDateBegin, EmploymentDateEnd);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetPersonnelWhere(whereString, PersonnelId);
             whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
             whereString = GetAppointmentWhere(whereString, AppointmentReportNumber, AppointmentNumber);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -355,7 +361,7 @@ namespace Reports.Core.Dao.Impl
 
             if (CompleteDate.HasValue)
             {
-                whereString = string.Format(@"{0} personnelManagers.CompleteDate = :CompleteDate",
+                whereString = string.Format(@"{0} cast(personnelManagers.CompleteDate as date) = :CompleteDate",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 
@@ -392,6 +398,17 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(userName))
             {
                 whereString = string.Format(@"{0} (generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic) like N'%' + :userName + N'%'",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            return whereString;
+        }
+
+        public string GetPersonnelWhere(string whereString, int PersonnelId)
+        {
+            if (PersonnelId != 0)
+            {
+                whereString = string.Format(@"{0} candidate.PersonnelId = " + PersonnelId.ToString(),
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 
@@ -507,6 +524,12 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = "PlanRegistrationDate";
                     break;
+                case 24:
+                    orderBy = "TKReceivedDate";
+                    break;
+                case 25:
+                    orderBy = "TDReceivedDate";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -569,6 +592,10 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DismissalDate", NHibernateUtil.DateTime)
                 .AddScalar("MentorName", NHibernateUtil.String)
                 .AddScalar("PlanRegistrationDate", NHibernateUtil.DateTime)
+                .AddScalar("IsTKReceived", NHibernateUtil.Boolean)
+                .AddScalar("TKReceivedDate", NHibernateUtil.DateTime)
+                .AddScalar("IsTDReceived", NHibernateUtil.Boolean)
+                .AddScalar("TDReceivedDate", NHibernateUtil.DateTime)
                 ;
 
             return query;
@@ -578,6 +605,7 @@ namespace Reports.Core.Dao.Impl
             DateTime? EmploymentDateBegin, DateTime? EmploymentDateEnd)
         {
             query.SetInt32("currentId", currentId);
+
             if (beginDate.HasValue)
             {
                 query.SetDateTime("beginDate", beginDate.Value);

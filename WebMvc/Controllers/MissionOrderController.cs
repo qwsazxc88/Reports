@@ -92,10 +92,13 @@ namespace WebMvc.Controllers
             string  content = JsonConvert.SerializeObject(result);
             return  Content(content);
         }
-        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment)
+        public JsonResult AddStorno(int MissionReportId, decimal StornoSum, string StornoComment, int StornoDeductionNumber)
         {
-            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment);
-            return Json(new { status = "Ok" });
+            JsonResult result=Json(new { status = "Fail" });
+            RequestBl.AddStorno(MissionReportId, StornoSum, StornoComment, StornoDeductionNumber)
+                .OnSuccess((x) => result = Json(new { status = "Ok" }))
+                .OnError((x)=>result = Json(new {status = "Fail", message = x.Message}));
+            return result;                
         }
         /// <summary>
         /// Гостиницы.
