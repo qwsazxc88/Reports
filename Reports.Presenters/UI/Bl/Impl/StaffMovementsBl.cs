@@ -79,11 +79,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffMovementsStatusDao); }
             set { staffMovementsStatusDao = value; }
         }
-        protected IEmploymentHoursTypeDao employmentHoursTypeDao;
-        public IEmploymentHoursTypeDao EmploymentHoursTypeDao
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
         {
-            get { return Validate.Dependency(employmentHoursTypeDao); }
-            set { employmentHoursTypeDao = value; }
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
         }
         protected IAccessGroupDao accessGroupDao;
         public IAccessGroupDao AccessGroupDao
@@ -328,7 +328,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             }
-            var HoursTypes = EmploymentHoursTypeDao.LoadAll();
+            var HoursTypes = ScheduleDao.LoadAll();
             if(HoursTypes!=null && HoursTypes.Any())
             {
                 model.HoursTypes = HoursTypes.Select(x => new IdNameDto { Id=x.Id,Name=x.Name}).ToList();
@@ -782,7 +782,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionFront = model.AdditionFront;//Надбавка за работу в фронтофисе
                 entity.Data.AdditionFrontTo = model.AdditionFrontTo;//Надбавка за работу в фронтофисе до
                 entity.Data.Grade = model.Grade;//Грейд
-                entity.Data.HoursType = EmploymentHoursTypeDao.Load(model.HoursType);//График работы
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
                 entity.Data.NorthFactorAddition = model.NorthFactorAddition;
                 entity.Data.NorthFactorYear = model.NorthFactorYear;
