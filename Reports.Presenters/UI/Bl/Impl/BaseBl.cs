@@ -774,10 +774,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             var user = UserDao.Load(model.Id);
             if (user == null) return;
             model.Name = user.Name;
-            if (user.Organization != null)
-            {
-                model.Organization = user.Organization.Name;
-            }
             if (user.Position != null)
             {
                 model.PositionId = user.Position.Id;

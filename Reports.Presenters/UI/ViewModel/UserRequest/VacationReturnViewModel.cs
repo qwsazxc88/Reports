@@ -23,7 +23,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Required(ErrorMessage = "Обязательное поле")]
         public DateTime? ContinueDate { get; set; }
 
-        [Display(Name = "Количество неиспользованных дней отпуска в связи с отзывом")]
+        [Display(Name = "Кол-во неиспользованных дней отпуска в связи с отзывом")]
         public int DaysCount { get; set; }
 
         [Display(Name = "Руководитель")]
