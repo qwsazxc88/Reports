@@ -10,6 +10,8 @@ namespace Reports.Core.Dto
         public string Label { get; set; }
         [Display(Name = "ФИО сотрудника")]
         public string Name { get; set; }
+        [Display(Name="Организация")]
+        public string Organization { get; set; }
         public int Id { get; set; }
         [Display(Name = "Дирекция 3 ур.")]
         public string Dep3Name { get; set; }
