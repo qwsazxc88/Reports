@@ -1,8 +1,0 @@
-﻿@model Reports.Presenters.UI.ViewModel.ApprovalViewModel
-<div class="formfield clear">
-<span>@Model.Label :</span><span>@Html.CheckBoxFor(m => m.IsChecked, Model.IsEditable ? null : new { disabled="disabled"})</span><span>&nbsp;@(Model.CheckDate.HasValue?Model.CheckDate.Value.ToString("dd.MM.yyyy"):"")</span><span>&nbsp;@Model.Name</span>
-@if (!Model.IsEditable)
-{
-    Html.HiddenFor(m => m.IsChecked);
-}
-</div>

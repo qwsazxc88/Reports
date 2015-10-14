@@ -677,6 +677,7 @@
     <Compile Include="Dto\UploadFileDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
+    <Compile Include="Dto\UserRequest\VacationReturnDto.cs" />
     <Compile Include="Dto\UserRolesDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
@@ -711,6 +712,7 @@
     <Compile Include="Services\ISessionManager.cs" />
     <Compile Include="Services\IStartupService.cs" />
     <Compile Include="StringHelper.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IncorrectDatabaseVersionException.cs" />
     <Compile Include="Utils\PasswordManager.cs" />
     <Compile Include="Utils\Result.cs" />

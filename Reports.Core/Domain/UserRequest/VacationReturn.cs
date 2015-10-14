@@ -20,7 +20,7 @@ namespace Reports.Core.Domain
     
     public virtual AbstractReferencyBookEntity ReturnType {get;set;}
     public virtual Vacation Vacation {get;set;}
-    
+    public virtual ChildVacation ChildVacation { get; set; }
     public virtual User Manager {get;set;}
     public virtual User Chief {get;set;}
     public virtual User PersonnelManager { get; set; }

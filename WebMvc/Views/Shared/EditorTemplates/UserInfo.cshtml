@@ -1,5 +1,9 @@
 ﻿@model Reports.Core.Dto.StandartUserDto
-<fieldset>           
+<fieldset class="bordered doc-wrap-blue panel"> 
+@if (!String.IsNullOrEmpty(Model.Label))
+{
+    <legend title='@Model.Label'></legend>
+}          
 <table>
     <tr>
         <td>@Html.LabelFor(m => m.Name)</td>

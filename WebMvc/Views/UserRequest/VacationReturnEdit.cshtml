@@ -4,30 +4,41 @@
 @{
     ViewBag.Title = "Заявка на отзыв из отпуска";
 }
-@using(Html.BeginForm())
-{
-    <div>
-    @Html.Partial("Shared/EditorTemplates/UserInfo", Model.User)
-    <div class="formfield clear">
-    @if (Model.IsAdminEditable)
+@using(Html.BeginForm("VacationReturnEdit","UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{    
+    @Html.HiddenFor(m=>m.Id)
+    @Html.HiddenFor(m => m.User.Id)
+    @Html.HiddenFor(m=> m.IsRejected)
+    using (Html.BeginBlock("filter-wrap"))
     {
-        @Html.LabelFor(m => m.Status)
-        @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.Statuses), Model.IsEditable ? null : new { disabled = "disabled" })
+        @Html.Partial("EditorTemplates/UserInfo", Model.User)    
+        @Html.CreateDisplay(m => m.Status)     
+        @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes,"Id","Name"), Model.IsEditable)
+        @Html.CreateField(m => m.ReturnReason, Model.IsEditable)
+        @Html.CreateField(m => m.ReturnDate, Model.IsEditable)
+        @Html.CreateField(m => m.ContinueDate, Model.IsEditable)
+        if (Model.ScanAddAvailable)
+        {    
+            @Html.CreateFileInput(m => m.File)    
+        }
+        if(Model.IsScanVisible)
+        {
+            @Html.LabelFor(m => m.File)
+            @Html.ActionLink(Model.FileName, "ViewAttachment", new { Id = Model.FileId })
+        }
     }
-    else
+    using (Html.BeginBlock("filter-wrap"))
     {
-        @Html.LabelFor(m => m.Status)
-        @Html.DisplayFor(m => m.Status)        
+        @Html.CreateApprove(x => x.Manager);
+        @Html.CreateApprove(x => x.Chief)
+        @Html.CreateApprove(x => x.PersonnelManager)
     }
-    </div>
-    
-    <div class="formfield clear">
-        @Html.LabelFor(m => m.ReturnType)
-        @Html.DropDownListFor(m => m.ReturnType, new SelectList(Model.ReturnTypes), Model.IsEditable ? null : new { disabled = "disabled" })
-    </div>    
-    @Html.CreateField(m=>m.ReturnReason)
-    @Html.CreateField(m=>m.ReturnDate)
-    @Html.CreateField(m=>m.ContinueDate)
-    
-    </div>
+    using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+    {
+        @Html.CreateButton(true, Model.IsSaveAvailable, "Сохранить");
+        @Html.CreateButton(true, Model.IsCancelAvailable, "Отменить","return Reject()");
+    }
 }
+
+<script src="@Url.Content("~/Scripts/UserRequest/VacationReturn/VacationReturnEdit.js")" type="text/javascript"></script>
+

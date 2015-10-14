@@ -705,6 +705,7 @@ div#title
  
 .filter-wrap  
 {
+    margin-bottom:5px;
     background-color: #F6F6F6;
     padding: 10px;
     border-radius: 4px 4px 4px 4px;
@@ -1865,12 +1866,17 @@ legend {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
 
 }
- #toolbar {
+ .toolbar {
     padding: 10px;
-    width:100%;
     display: inline-block;
   }
   /* support: IE7 */
-  *+html #toolbar {
+  *+html .toolbar {
     display: inline;
+  }
+  .field-wrap
+  {
+      margin-bottom:2px;
+      margin-top:2px;
+      width:100%;
   }

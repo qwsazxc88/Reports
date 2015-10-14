@@ -20,12 +20,13 @@
     <property name="DaysNotUsedCount" not-null="false"/>
 
     <many-to-one name="Status" class="refVacationReturnStatus" column="StatusId" foreign-key="FK_VactaionReturn_Status" not-null="false"/>
-    <many-to-one name="ReturnType" class="refVacationReturnType" foreign-key="FK_VactaionReturn_Type" not-null="false"/>
-    <many-to-one name="Vacation" class="Vacation" foreign-key="FK_VacationReturn_Vacation" not-null="false"/>
+    <many-to-one name="ReturnType" class="refVacationReturnTypes" foreign-key="FK_VactaionReturn_Type" not-null="false"/>
+    <many-to-one name="Vacation" class="Vacation" column="VacationId" foreign-key="FK_VacationReturn_Vacation" not-null="false"/>
+    <many-to-one name="ChildVacation" class="ChildVacation" foreign-key="FK_VacationReturn_ChildVacation" not-null="false"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_VacationReturn_User" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_VacationReturn_Creator" not-null="true"/>
-    <many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_VacationReturn_Manager" not-null="true"/>
-    <many-to-one name="Chief" class="User" column="ChiefId" foreign-key="FK_VacationReturn_Chief" not-null="true"/>
-    <many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_VacationReturn_PersonnelManager" not-null="true"/>
+    <many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_VacationReturn_Manager" not-null="false"/>
+    <many-to-one name="Chief" class="User" column="ChiefId" foreign-key="FK_VacationReturn_Chief" not-null="false"/>
+    <many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_VacationReturn_PersonnelManager" not-null="false"/>
   </class>
 </hibernate-mapping>
