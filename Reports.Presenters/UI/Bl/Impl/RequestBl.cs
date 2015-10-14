@@ -6221,9 +6221,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var currentuser = UserDao.Load(CurrentUser.Id);
             Expression<Func<VacationReturn,bool>> query = QueryCreator.Create<VacationReturn, VacationReturnListModel>(model,currentuser);
-            
+            int npp = 1;
             var result = VacationReturnDao.Find(query.Compile()).Select(x => new VacationReturnDto 
             { 
+                NPP = npp++,
                 Id= x.Id,
                 CreateDate = x.CreateDate,
                 Manager = x.Manager.Name,
@@ -6231,6 +6232,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Dep3Name = x.User.Department!=null?(x.User.Department.Dep3!=null && x.User.Department.Dep3.Any())?x.User.Department.Dep3.First().Name:"":"",
                 Dep7Name = x.User.Department!=null? x.User.Department.Name:"",
                 Position = x.User.Position!=null?x.User.Position.Name:"",
+                ReturnType = x.ReturnType.Name,
+                Vacation = x.Vacation!=null?"Отпуск №"+x.Vacation.Number: x.ChildVacation!=null? "Отпуск по уходу за ребенком №"+x.ChildVacation.Number:"",
                 ReturnDate = x.ReturnDate.Value,
                 ContinueDate = x.ContinueDate.Value,
                 Type = x.ReturnType.Name,
@@ -6243,7 +6246,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             VacationReturnListModel result = new VacationReturnListModel();
             result.IsCreateAvailable = (CurrentUser.UserRole & UserRole.Manager) > 0;
             result.Statuses = RefVacationReturnStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
-            result.Statuses.Add(new IdNameDto { Id = 0, Name = "" });
+            result.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
+            result.Statuses.Add(new IdNameDto { Id = 1, Name = "Не одобрено руководителем" });
+            result.Statuses.Add(new IdNameDto { Id = 2, Name = "Не одобрено вышестоящим руководителем" });
+            result.Statuses.Add(new IdNameDto { Id = 3, Name = "Не одобрено кадровиком" });
             result.BeginDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             
             return result;
@@ -6256,10 +6262,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             var users = UserDao.GetUsersForManager(CurrentUser.Id, UserRole.Manager, user.Department.Id).Select(x=>x.Id).ToList();
             //Отпуска        
 
-            model.Users = VacationDao.Find(GetVacationSearchExpression<Vacation>(users).Compile()).Select(x=>new IdNameDto{ Id = x.User.Id, Name=x.User.Name}).ToList();
+            model.Users = VacationDao.Find(GetVacationSearchExpression<Vacation>(users).Compile()).Select(x=>new IdNameDto{ Id = x.User.Id, Name=x.User.Name + " Отпуск №"+x.Number}).ToList();
             //Отпуск по уходу за ребенком
 
-            model.Users.AddRange(ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(users).Compile()).Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name }).ToList());
+            model.Users.AddRange(ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(users).Compile()).Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name + " Отпуск по уходу за ребенком №" + x.Number }).ToList());
             return model;
         }
         private void SetFlagState(VacationReturnViewModel model,VacationReturn entity)
@@ -6317,6 +6323,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.Id = entity.Id;
+                model.Number = entity.Id.ToString();
+                model.CreateDate = entity.CreateDate;
                 model.User.Id = entity.User.Id;
                 model.Creator.Id = entity.Creator.Id;
                 model.ReturnType = entity.ReturnType.Id;
@@ -6327,6 +6335,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReturnReason = entity.ReturnReason;
                 model.VacationStartDate = entity.Vacation != null ? entity.Vacation.BeginDate : entity.ChildVacation.BeginDate;
                 model.VacationEndDate = entity.Vacation != null ? entity.Vacation.EndDate : entity.ChildVacation.EndDate;
+                model.DaysCount = entity.DaysNotUsedCount;
                 if (entity.ManagerDateAccept.HasValue)
                 {
                     model.Manager.IsChecked = true;
@@ -6377,9 +6386,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             var now = ConstantExpression.Constant(DateTime.Now);
             var begin = param.GetProperty("BeginDate");
             var end = param.GetProperty("EndDate");
+            var deletedate = param.GetProperty("DeleteDate");
             var user = param.GetProperty("User.Id");
             var searcher = Expression.And(Expression.LessThanOrEqual(begin,now),Expression.GreaterThanOrEqual(end,now));
-            
+            searcher = Expression.And(searcher, Expression.Equal(deletedate, Expression.Constant(null)));
             Expression sub = Expression.Constant(false);
             foreach (var u in users)
             {
@@ -6437,11 +6447,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         private void ChangeEntityProperties(VacationReturn entity, VacationReturnViewModel model)
         {
-            //Сохраняем поля заявки
+            //Сохраняем поля заявки            
             entity.ReturnType = RefVacationReturnTypesDao.Load(model.ReturnType);
             entity.ReturnReason = model.ReturnReason;
             entity.ReturnDate = model.ReturnDate;
             entity.ContinueDate = model.ContinueDate;
+            TimeSpan vacationdays = (entity.VacationEndDate.Value - entity.VacationStartDate.Value);
+            TimeSpan returndays = (entity.ReturnDate.Value - entity.ContinueDate.Value);
+            entity.DaysNotUsedCount = vacationdays.Days - returndays.Days;
         }
         public Result<VacationReturnViewModel> SaveVacationReturnEditModel(VacationReturnViewModel model)
         {

@@ -12,11 +12,13 @@
     using (Html.BeginBlock("filter-wrap"))
     {
         @Html.Partial("EditorTemplates/UserInfo", Model.User)    
-        @Html.CreateDisplay(m => m.Status)     
+        @Html.CreateDisplay(m=>m.CreateDate)
+        @Html.CreateDisplay(m=>m.Number) 
         @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes,"Id","Name"), Model.IsEditable)
         @Html.CreateField(m => m.ReturnReason, Model.IsEditable)
         @Html.CreateField(m => m.ReturnDate, Model.IsEditable)
         @Html.CreateField(m => m.ContinueDate, Model.IsEditable)
+        @Html.CreateDisplay(m => m.DaysCount)
         if (Model.ScanAddAvailable)
         {    
             @Html.CreateFileInput(m => m.File)    

@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name="Статус")]
         public int StatusId { get; set; }
         [SearchField(Comparer = ComparerEnum.EqualsOrGreatar, ModelParam = "ReturnDate")]
-        [Display(Name = "Дата с")]
+        [Display(Name = "Период с")]
         public DateTime? BeginDate { get; set; }
         [SearchField(Comparer = ComparerEnum.EqualsOrLess, ModelParam = "ContinueDate")]
         [Display(Name = "по")]
