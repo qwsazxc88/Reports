@@ -14,7 +14,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffDepartmentBusinessGroupDto> BusinessGroups { get; set; }
 
         #region Справочники для фильтров
-        [Display(Name = "Фильтр по управлдению")]
+        [Display(Name = "Фильтр по управлению")]
         public int AdminFilterId { get; set; }
 
         [Display(Name = "Фильтр по дирекции")]
@@ -26,7 +26,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffDepartmentBranchDto> Branches { get; set; }
         #endregion
         
-
         #region Поля для модального окна
         public int bId { get; set; }
 

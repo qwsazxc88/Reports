@@ -7,6 +7,7 @@
     <version name="Version" column= "Version"/>
 
     <property name="Name" length="250" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentOperations_CreatorUser" index="StaffDepartmentOperations_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentOperations_EditorUser" index="StaffDepartmentOperations_EditorUser" not-null="false"/>

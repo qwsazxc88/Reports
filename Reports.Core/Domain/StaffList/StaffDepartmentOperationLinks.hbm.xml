@@ -8,6 +8,7 @@
 
     <many-to-one name="DepartmentOperationGroup" class="StaffDepartmentOperationGroups" column="OperGroupId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentOperationGroups" index="StaffDepartmentOperationLinks_StaffDepartmentOperationGroups" not-null="false"/>
     <many-to-one name="DepartmentOperation" class="StaffDepartmentOperations" column="OperationId" foreign-key="FK_StaffDepartmentOperationLinks_StaffDepartmentOperations" index="StaffDepartmentOperationLinks_StaffDepartmentOperations" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentOperationLinks_CreatorUser" index="StaffDepartmentOperationLinks_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentOperationLinks_EditorUser" index="StaffDepartmentOperationLinks_EditorUser" not-null="false"/>

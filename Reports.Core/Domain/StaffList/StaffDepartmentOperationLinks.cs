@@ -10,6 +10,7 @@ namespace Reports.Core.Domain
     {
         public virtual StaffDepartmentOperationGroups DepartmentOperationGroup { get; set; }
         public virtual StaffDepartmentOperations DepartmentOperation { get; set; }
+        public virtual bool IsUsed { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }

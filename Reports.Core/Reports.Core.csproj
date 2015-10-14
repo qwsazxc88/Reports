@@ -768,11 +768,13 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationGroupsDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationLinksDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationsDto.cs" />
     <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
     <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
     <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
-    <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
     <Compile Include="Dto\StaffList\EstablishedPostRequestDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />

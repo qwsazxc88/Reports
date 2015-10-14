@@ -1,0 +1,193 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationGroupsModel
+@{
+    ViewBag.Title = "Группы операций";
+}
+
+@using (Html.BeginForm("StaffDepartmentOperationGroups", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationGroupsForm", target = "tab1" }))
+{
+
+    <label id="gMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblOGroup" class="grid">
+            <thead>
+                <tr>
+                    <th>Название группы</th>
+                    <th class="tdBtn">Признак<br />использования</th>
+                    <th colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditOperationGroupRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
+                </tr>    
+            </thead>
+            <tbody class="tblOGroupRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.OperationGroups)
+                {
+                    <tr class="tblOGroupRow">
+                        <td>
+                            @Html.HiddenFor(m => m.OperationGroups[i - 1].gId)
+                            @Html.HiddenFor(m => m.OperationGroups[i - 1].gName)
+                            @Html.DisplayFor(m => m.OperationGroups[i - 1].gName)
+                        </td>
+                        <td class="tdBtn">
+                            @Html.HiddenFor(m => m.OperationGroups[i - 1].gIsUsed)
+                            @Html.CheckBoxFor(m => m.OperationGroups[i - 1].gIsUsed, (object)new { value = Convert.ToString(Model.OperationGroups[i - 1].gIsUsed), disabled = "disabled" })
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditOperationGroupRow(@i-1);" href="#" >Изменить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+    
+}
+
+<div id="AddEditOperationGroupRowDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentOperationGroupsDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="glblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.gId)
+                <td>@Html.LabelFor(m => m.gName)</td>
+                <td>@Html.TextBoxFor(m => m.gName, new { style = "width:300px", maxlength = "50" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.gIsUsed)</td>
+                <td>
+                    @Html.CheckBoxFor(m => m.gIsUsed) 
+                    @Html.HiddenFor(m => m.gIsUsed)
+                </td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepOperRef");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#gIsUsed").change(function(){
+            if($("#gIsUsed").val() == 'true'){
+                $("#gIsUsed").val(false);
+            }
+            else{
+                $("#gIsUsed").val(true);
+            }
+        });
+
+        //ShowFlash(false);
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditOperationGroupRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#gId").val($("#OperationGroups_" + IndexRow + "__gId").val());
+            $("#gName").val($("#OperationGroups_" + IndexRow + "__gName").val());
+            $("#gIsUsed").val($("#OperationGroups_" + IndexRow + "__gIsUsed").val() == "True" ? true : false);
+            $("#gIsUsed").prop("checked", ($("#OperationGroups_" + IndexRow + "__gIsUsed").val() == "True" ? true : false));
+            $("#gIsUsed").attr("checked", ($("#OperationGroups_" + IndexRow + "__gIsUsed").val() == "True" ? "checked" : ""));
+        }
+        else{
+            $("#gId").val(0);
+            $("#gName").val("");
+            $("#gIsUsed").val(true);
+            $("#gIsUsed").prop("checked", true);
+        }
+
+        
+
+        $("#glblMsg").text("");
+        $("#gMessageStr").text("");
+
+        CreateBranchEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateBranchEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditOperationGroupRowDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditOperationGroupRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditOperationGroupRowDialog').dialog("open");
+    }
+
+    function processAddEditOperationGroupRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentOperationGroups", "StaffList")";
+        var dataToSend = $("#AddEditOperationGroupRowDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditOperationGroupRowDialog').dialog("close");
+                $("#gMessageStr").text(data.msg);
+                var $table = $("#tblOGroup");
+                var $rows = $("#tblOGroup .tblOGroupRow");
+                $rows.remove();
+                FillOperationGroupsTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#glblMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function FillOperationGroupsTableData(data){
+        for (var i = 0; i < data.OperationGroups.length; i++)
+        {
+            $("#tblOGroup").append(
+                
+                "<tr class=\"tblOGroupRow\">" +
+                    "<td><input id='OperationGroups_" + i + "__gId' name='OperationGroups[" + i + "].gId' value='" + data.OperationGroups[i].gId + "' type='hidden'>" +
+                        "<input id='OperationGroups_" + i + "__gName' name='OperationGroups[" + i + "].gName' value='" + data.OperationGroups[i].gName + "' type='hidden'>" + (data.OperationGroups[i].gName ? data.OperationGroups[i].gName : "") + "</td>" +
+                    "<td class='tdBtn'><input id='OperationGroups_" + i + "__gIsUsed' name='OperationGroups[" + i + "].gIsUsed' value='" + (data.OperationGroups[i].gIsUsed ? 'True' : 'False') + "' type='hidden'>" + 
+                        "<input id='OperationGroups_" + i + "__gIsUsed' name='OperationGroups[" + i + "].gIsUsed' value='" + (data.OperationGroups[i].gIsUsed ? 'True' : 'False') + "' type='checkbox' disabled='disabled' " + (data.OperationGroups[i].gIsUsed ? "checked='checked'" : "''") + ">" +
+                        "<input name='OperationGroups[" + i + "].IsUsed' value='" + data.OperationGroups[i].IsUsed + "' type='hidden'></td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' class='CallModal' onclick='AddEditOperationGroupRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+</script>
+
