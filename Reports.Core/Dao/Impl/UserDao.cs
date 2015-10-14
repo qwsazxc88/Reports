@@ -1329,5 +1329,14 @@ namespace Reports.Core.Dao.Impl
             IList<IdNameDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
             return users;
         }
+        /// <summary>
+        /// Список всех сотрудников по заданному подразделению
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <returns></returns>
+        public IList<User> GetUsersForDepartment(int DepartmentId)
+        {
+            return Session.Query<User>().Where(x => x.Department.Id == DepartmentId && x.IsActive).ToList();
+        }
     }
 }

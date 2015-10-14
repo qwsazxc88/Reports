@@ -373,9 +373,9 @@
     </div>
 }
 
-<hr />
 
-<div id="add-reference-dialog" title="Добавление рекомендации">
+
+<div id="add-reference-dialog" title="Добавление рекомендации" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
     @using (Html.BeginForm("BackgroundCheckAddReference", "Employment", FormMethod.Post))
     {
         <label for="LastName" style="display:block;">Фамилия</label><input type="text" name="LastName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -391,7 +391,7 @@
     }
 </div>
 
-<div id="add-backgroundcheck-comment-dialog" title="Добавление комментария">
+<div id="add-backgroundcheck-comment-dialog" title="Добавление комментария" onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;">
     @using (Html.BeginForm("BackGroundCheckAddComments", "Employment", FormMethod.Post))
     {
         <label for="Comment" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)

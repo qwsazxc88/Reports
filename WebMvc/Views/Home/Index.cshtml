@@ -41,7 +41,8 @@
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                              || (dto.UserRole & UserRole.Estimator)>0)
+                              || (dto.UserRole & UserRole.Estimator)>0
+                              || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
@@ -60,16 +61,20 @@
                          {<text>class="mainMenuItem"</text>} id="mainCharge">
                             @Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                     </div> 
-                    <div @if (Model.menuId == 2)
+                    
+                    @*<div @if (Model.menuId == 2)
                          {<text>class="mainOn"</text>}
                          else
                          {<text>class="mainMenuItem"</text>}
                          id="mainMember">
                             @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                    </div>
-                    @*<div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                    </div> *@
+                    </div>*@
+                    <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                    </div> 
                 }
+                
+                <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+
                 @if ((dto.UserRole & UserRole.Accountant) > 0
                 || (dto.UserRole & UserRole.OutsourcingManager) > 0
                     || (dto.UserRole & UserRole.Estimator) > 0)

@@ -1,0 +1,31 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffEstablishedPostRequest" dynamic-update="true" table="StaffEstablishedPostRequest">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="DateRequest" not-null="false"/>
+    <many-to-one name="RequestType" class="StaffEstablishedPostRequestTypes" column="RequestTypeId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes" index="StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes" not-null="false"/>
+    <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPost" index="StaffEstablishedPostRequest_StaffEstablishedPost" not-null="false"/>
+    <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_StaffEstablishedPostRequest_Position" index="StaffEstablishedPostRequest_Position" not-null="false"/>
+    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffEstablishedPostRequest_Department" index="StaffEstablishedPostRequest_Department" not-null="false"/>
+    <property name="Quantity" not-null="false"/>
+    <property name="Salary" precision="19" scale="2" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    <property name="IsDraft" not-null="false"/>
+    <property name="DateSendToApprove" not-null="false"/>
+    <property name="BeginAccountDate" not-null="false"/>
+    <many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_StaffEstablishedPostRequest_AppointmentReason" index="StaffEstablishedPostRequest_AppointmentReason" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentRequest_CreatorUser" index="StaffDepartmentRequest_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentRequest_EditorUser" index="StaffDepartmentRequest_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+    <bag name="PostChargeLinks" lazy="true" cascade="all-delete-orphan">
+      <key column="SEPRequestId" foreign-key="FK_StaffEstablishedPostChargeLinks_StaffEstablishedPostRequest"/>
+      <one-to-many class="StaffEstablishedPostChargeLinks"/>
+    </bag>
+  </class>
+</hibernate-mapping>

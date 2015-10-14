@@ -32,7 +32,8 @@
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.Estimator) > 0
-                              || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                              || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                              || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
@@ -42,11 +43,14 @@
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                     </div> 
-                    <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                    </div>
-                    @*<div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                    </div> *@
+                    
+                    @*<div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)*@
+                    <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                    </div> 
                 }
+                
+                <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
                     || (dto.UserRole & UserRole.Estimator) > 0
@@ -102,7 +106,7 @@
                                     UserRole.StaffManager |
                                     UserRole.ConsultantOutsourcing)) > 0)
                 {
-                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                    <div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
                 
                  @if (UserDto.IsHelpServiceAvailable(dto))

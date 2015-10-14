@@ -82,6 +82,12 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         IList<IdNameDto> GetEmployeesForCreateHelpServiceRequestOK(string Surname, int UserId);
         IList<IdNameDto> GetUsersWithRole(UserRole role, bool? isActive);
+        /// <summary>
+        /// Список всех сотрудников по заданному подразделению
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <returns></returns>
+        IList<User> GetUsersForDepartment(int DepartmentId);
     }
 }
 

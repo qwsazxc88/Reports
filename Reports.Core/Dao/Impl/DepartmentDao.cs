@@ -4,6 +4,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Services;
+using Reports.Core.Dto;
 using System.Linq;
 using NHibernate.Linq;
 
@@ -168,6 +169,90 @@ namespace Reports.Core.Dao.Impl
                     .ToList<User>();
             }
             return managers;
+        }
+        /// <summary>
+        /// Достаем подразделение по коду
+        /// </summary>
+        /// <param name="Code">КодС</param>
+        /// <returns></returns>
+        public Department GetByCode(string Code)
+        {
+            return (Department)Session.CreateCriteria(typeof(Department))
+                   .Add(Restrictions.Eq("Code", Code)).UniqueResult();
+        }
+        /// <summary>
+        /// Достаем уровень подразделений из СКД с привязкой к точкам из Финграда по заданному родителю.
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения.</param>
+        /// <returns></returns>
+        public IList<DepartmentWithFigradPointsDto> GetDepartmentWithFingradPoint(string DepId)
+        {
+            const string sqlQuery = (@"SELECT A.Id, A.Version, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority,
+                                              B.AvailableEmployees, B.FinDepNameShort, B.FinDepPointCode, B.FinDepName, B.FinDepCode, B.FinAdminCode, B.FinBGCode, B.RPLinkCode, B.ComplianceSign
+                                       FROM Department as A
+                                       LEFT JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
+                                       WHERE ParentId = :DepId");
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Version", NHibernateUtil.Int32).
+                AddScalar("Code", NHibernateUtil.String).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Code1C", NHibernateUtil.Int32).
+                AddScalar("ParentId", NHibernateUtil.Int32).
+                AddScalar("Path", NHibernateUtil.String).
+                AddScalar("ItemLevel", NHibernateUtil.Int32).
+                AddScalar("CodeSKD", NHibernateUtil.String).
+                AddScalar("Priority", NHibernateUtil.Int32).
+                AddScalar("AvailableEmployees", NHibernateUtil.String).
+                AddScalar("FinDepNameShort", NHibernateUtil.String).
+                AddScalar("FinDepPointCode", NHibernateUtil.String).
+                AddScalar("FinDepName", NHibernateUtil.String).
+                AddScalar("FinDepCode", NHibernateUtil.String).
+                AddScalar("FinAdminCode", NHibernateUtil.String).
+                AddScalar("FinBGCode", NHibernateUtil.String).
+                AddScalar("RPLinkCode", NHibernateUtil.String).
+                AddScalar("ComplianceSign", NHibernateUtil.String).
+                SetString("DepId", DepId).
+                SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentWithFigradPointsDto))).
+                List<DepartmentWithFigradPointsDto>();
+        }
+        /// <summary>
+        /// Подсчет количества штатных единиц в пределах указанного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public int DepPositionCount(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(:Id) as SEPCount")
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetInt32("Id", Id)
+                .UniqueResult<int>();
+        }
+
+        /// <summary>
+        /// Достаем уровень подразделений с полями из финграда.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <returns></returns>
+        public IList<StaffListDepartmentDto> DepFingradName(string Id)
+        {
+            return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
+                                            FROM vwStaffListDepartment as A
+                                            WHERE {0} ORDER BY Priority, Name", (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id)))
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("Code", NHibernateUtil.String)
+                .AddScalar("Name", NHibernateUtil.String)
+                .AddScalar("Code1C", NHibernateUtil.Int32)
+                .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("Path", NHibernateUtil.String)
+                .AddScalar("ItemLevel", NHibernateUtil.Int32)
+                .AddScalar("CodeSKD", NHibernateUtil.String)
+                .AddScalar("Priority", NHibernateUtil.Int32)
+                .AddScalar("DepFingradName", NHibernateUtil.String)
+                .AddScalar("DepFingradNameComment", NHibernateUtil.String)
+                .AddScalar("FinDepPointCode", NHibernateUtil.String)
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffListDepartmentDto))).List<StaffListDepartmentDto>();
         }
     }
 }

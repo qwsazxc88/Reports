@@ -229,7 +229,11 @@
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                        {<text>style="display:none"</text>}/>               
+                                                                        {<text>style="display:none"</text>}/>    
+                        @Html.HiddenFor(m => m.IsApproveForAllByConsultant)     
+                        @Html.HiddenFor(m => m.IsApproveForAllByConsultantEnable)                                                                                     
+                        <input type="submit" value="Согласовать за всех" onclick="return SetApprovedForAllByConsultant();" @if (!Model.IsApproveForAllByConsultantEnable)
+                        {<text>style="display:none"</text>}/>                                                                                                       
             </td>
     </tr>
     <tr>
@@ -347,6 +351,13 @@
     {
         return true;
     }
+
+    function SetApprovedForAllByConsultant() {
+        //SetApprovedAndValidateForm();
+        $("#IsApproveForAllByConsultant").val('true');
+        return true;
+    }
+
     function SetApprovedForAllAndValidateForm() {
         SetApprovedAndValidateForm();
         $("#IsApprovedForAll").val('true');

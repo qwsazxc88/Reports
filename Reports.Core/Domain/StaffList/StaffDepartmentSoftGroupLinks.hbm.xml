@@ -1,0 +1,17 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentSoftGroupLinks" dynamic-update="true" table="StaffDepartmentSoftGroupLinks">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="InstallSoft" class="StaffDepartmentInstallSoft" column="SoftId" foreign-key="FK_StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft" index="StaffDepartmentSoftGroupLinks_StaffDepartmentInstallSoft" not-null="false"/>
+    <many-to-one name="SoftGroup" class="StaffDepartmentSoftGroup" column="SoftGroupId" foreign-key="FK_StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup" index="StaffDepartmentSoftGroupLinks_StaffDepartmentSoftGroup" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentSoftGroup_CreatorUser" index="StaffDepartmentSoftGroup_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentSoftGroup_EditorUser" index="StaffDepartmentSoftGroup_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+  </class>
+</hibernate-mapping>

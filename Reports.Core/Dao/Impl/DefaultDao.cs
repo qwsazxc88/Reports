@@ -341,7 +341,6 @@ namespace Reports.Core.Dao.Impl
                                 @"select v.Id as Id,
                                 u.Id as UserId,
                                 '{3}' as Name,
-                                v.CreateDate as CreateDate,
                                 {2} as Date,  
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
@@ -668,6 +667,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.ConsultantPersonnel:
                     return string.Empty;
                 #endregion
+
+                case UserRole.ConsultantOutsourcing:
+                    return string.Empty;
 
                 #region ConsultantOutsorsingManager
                 /*case UserRole.ConsultantOutsorsingManager:

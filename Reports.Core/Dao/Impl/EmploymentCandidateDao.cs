@@ -361,7 +361,7 @@ namespace Reports.Core.Dao.Impl
 
             if (CompleteDate.HasValue)
             {
-                whereString = string.Format(@"{0} personnelManagers.CompleteDate = :CompleteDate",
+                whereString = string.Format(@"{0} cast(personnelManagers.CompleteDate as date) = :CompleteDate",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 

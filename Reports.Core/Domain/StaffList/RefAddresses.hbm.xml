@@ -1,0 +1,34 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="RefAddresses" dynamic-update="true" table="RefAddresses">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="Address" length="400" not-null="false"/>
+    <property name="PostIndex" length="6" not-null="false"/>
+    <property name="RegionCode" length="30" not-null="false"/>
+    <property name="RegionName" length="50" not-null="false"/>
+    <property name="AreaCode" length="30" not-null="false"/>
+    <property name="AreaName" length="50" not-null="false"/>
+    <property name="CityCode" length="30" not-null="false"/>
+    <property name="CityName" length="50" not-null="false"/>
+    <property name="SettlementCode" length="30" not-null="false"/>
+    <property name="SettlementName" length="50" not-null="false"/>
+    <property name="StreetCode" length="30" not-null="false"/>
+    <property name="StreetName" length="50" not-null="false"/>
+    <property name="HouseType" not-null="false"/>
+    <property name="HouseNumber" length="10" not-null="false"/>
+    <property name="BuildType" not-null="false"/>
+    <property name="BuildNumber" length="10" not-null="false"/>
+    <property name="FlatType" not-null="false"/>
+    <property name="FlatNumber" length="10" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_RefAddresses_Creators" index="RefAddresses_Creators" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_RefAddresses_Editors" index="RefAddresses_Editors" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+  </class>
+</hibernate-mapping>

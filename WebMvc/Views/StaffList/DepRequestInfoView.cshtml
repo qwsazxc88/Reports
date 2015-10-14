@@ -1,0 +1,74 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.DepRequestInfoModel
+<table style="width:100%">
+    
+   
+    <tr>
+        <td  style="width:230px">
+            @Html.LabelFor(m => m.DateRequest):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateRequest)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Id):
+        </td>
+        <td>
+            @(Model.Id != 0 ? Model.Id.ToString() : "") 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DepartmentName):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DepartmentName)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.RequestInitiator):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.RequestInitiator)
+        </td>
+    </tr>
+     <tr style="@if(string.IsNullOrEmpty(Model.DepManager5)){<text>display:none;</text>}">
+        <td>
+            @Html.LabelFor(m => m.DepManager5):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DepManager5)
+        </td>
+    </tr>
+    <tr style="@if(string.IsNullOrEmpty(Model.DepManager4)){<text>display:none;</text>}">
+        <td>
+            @Html.LabelFor(m => m.DepManager4):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DepManager4)
+        </td>
+    </tr>
+    <tr style="@if(string.IsNullOrEmpty(Model.DepManager3)){<text>display:none;</text>}">
+        <td>
+            @Html.LabelFor(m => m.DepManager3):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DepManager3)
+        </td>
+    </tr>
+    <tr style="@if(string.IsNullOrEmpty(Model.DepManager2)){<text>display:none;</text>}">
+        <td>
+            @Html.LabelFor(m => m.DepManager2):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DepManager2)
+        </td>
+    </tr>
+    <tr>
+       <td colspan="2"/>
+    </tr>
+</table>           
+
+
