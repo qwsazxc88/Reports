@@ -14,7 +14,7 @@ using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
-    public class StaffListController : Controller
+    public class StaffListController : BaseController
     {
         #region Dependencies
         protected IStaffListBl stafflistBl;
@@ -432,111 +432,318 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentEncoding(bool? IsModal)
+        public ActionResult StaffDepartmentEncoding(int? TabIndex)
         {
-            /*
-             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
-             * не доработал
-             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
-             * 
-             */
-            StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();//StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            model.CandidateID = 1904;
-            model.TabIndex = 0;
-            //model.IsModal = IsModal.HasValue ? IsModal.Value : false;
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
-                return View(model);
+            StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();
+            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
+            return View(model);
         }
-        /// <summary>
-        /// Сохранение данных в справочнике ПО.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult StaffDepartmentEncoding(StaffDepartmentEncodingModel model)
-        {
-            string error = string.Empty;
 
-            //ModelState.Clear();
-            //if (model.SwitchOperation == 0)
-            //{
-            //    model.IsError = false;
-            //    model = StaffListBl.GetSoftReference(model);
-            //}
-            //else
-            //{
-            //    if (ValidateModel(model))
-            //    {
-            //        if (!StaffListBl.SaveSoftReference(model, out error))
-            //        {
-            //            ModelState.AddModelError("MessageStr", error);
-            //        }
-            //        else
-            //        {
-            //            model.IsError = false;
-            //            model = StaffListBl.GetSoftReference(model);
-            //        }
-            //    }
-            //}
-
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
-                return View(model);
-        }
+        #region Справочник филиалов
         /// <summary>
-        /// Загрузка справочника ПО.
+        /// Загрузка справочника филиалов.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         public ActionResult StaffDepartmentBranch()
         {
-            string error = string.Empty;
-            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
             return PartialView(model);
         }
+
         /// <summary>
-        /// Сохранение данных в справочнике ПО.
+        /// Сохраняем данные.
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult StaffDepartmentBranch(StaffDepartmentBranchModel model)
+        public ActionResult AddEditStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit)
         {
-            string error = string.Empty;
+            string error = String.Empty;
+            bool result = false;
 
-            //ModelState.Clear();
-            ValidateModel(model);
-            //if (!ValidateModel(model))
-                model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel(), true, out error);
-            //if (model.SwitchOperation == 0)
-            //{
-            //    model.IsError = false;
-            //    model = StaffListBl.GetSoftReference(model);
-            //}
-            //else
-            //{
-            //    if (ValidateModel(model))
-            //    {
-            //        if (!StaffListBl.SaveSoftReference(model, out error))
-            //        {
-            //            ModelState.AddModelError("MessageStr", error);
-            //        }
-            //        else
-            //        {
-            //            model.IsError = false;
-            //            model = StaffListBl.GetSoftReference(model);
-            //        }
-            //    }
-            //}
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentBranch(itemToAddEdit, out error))
+                    result = true;
+            }
 
-            //if (model.IsModal)
-            //    return PartialView(model);
-            //else
-            return View(model);
+
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
+            ViewBag.Error = error;
+          
+            return Json(new { ok = result, msg = error, model.Branches });
         }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentBranch(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentBranch(Id, out error))
+                result = true;
+
+            StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Branches });
+        }
+        #endregion
+
+        #region Справочник дирекций
+        /// <summary>
+        /// Загрузка справочника дирекций.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentManagement()
+        {
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentMenegment(StaffDepartmentManagementDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentManagement(itemToAddEdit, out error))
+                    result = true;
+            }
+
+
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Managements });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentMenegment(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentManagement(Id, out error))
+                result = true;
+
+            StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Managements });
+        }
+        #endregion
+
+        #region Справочник управлений
+        /// <summary>
+        /// Загрузка справочника управлений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentAdministration()
+        {
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentAdministration(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Administrations });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentAdministration(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentAdministration(Id, out error))
+                result = true;
+
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Administrations });
+        }
+        #endregion
+
+        #region Справочник бизнес-групп
+        /// <summary>
+        /// Загрузка справочника бизнес-групп.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentBusinessGroup()
+        {
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), 0, 0, 0);
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Загрузка справочника бизнес-групп.
+        /// </summary>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentBusinessGroup(int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), AdminFilterId, ManagementFilterId, BranchFilterId);
+            return Json(new { ok = true, msg = "", model.BusinessGroups });
+            //return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupDto itemToAddEdit, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentBusinessGroup(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), AdminFilterId, ManagementFilterId, BranchFilterId);
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.BusinessGroups });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id">Id удаляемой записи</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentBusinessGroup(int Id, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentBusinessGroup(Id, out error))
+                result = true;
+
+            StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), AdminFilterId, ManagementFilterId, BranchFilterId);
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.BusinessGroups });
+        }
+        #endregion
+
+        #region Справочник РП-привязок
+        /// <summary>
+        /// Загрузка справочника РП-привязок.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentRPLink()
+        {
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentRPLink(itemToAddEdit, out error))
+                    result = true;
+            }
+
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.RPLinks });
+        }
+
+        /// <summary>
+        /// Удаляем данные.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStaffDepartmentRPLink(int Id)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.DeleteStaffDepartmentRPLink(Id, out error))
+                result = true;
+
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.RPLinks });
+        }
+        #endregion
         #endregion
         #endregion
 
@@ -630,25 +837,30 @@ namespace WebMvc.Controllers
 
             return ModelState.IsValid;
         }
-        protected bool ValidateModel(StaffDepartmentBranchModel model)
+        protected bool ValidateModel(StaffDepartmentBranchDto EditRow, out string error)
         {
-            int i = 0;
-            foreach (var item in model.Branches)
-            {
-                if (string.IsNullOrEmpty(item.Name) || string.IsNullOrWhiteSpace(item.Name))
-                {
-                    ModelState.AddModelError("Branches[" + i.ToString() + "].Name", "*");
-                }
-                if (string.IsNullOrEmpty(item.Code) || string.IsNullOrWhiteSpace(item.Code))
-                {
-                    ModelState.AddModelError("Branches[" + i.ToString() + "].Code", "*");
-                }
-                i++;
-            }
-            
-            if (!ModelState.IsValid)
-                ModelState.AddModelError("MessageStr", "Проверьте правильность заполнения полей!");
-            return ModelState.IsValid;
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentBranchRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentManagementDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentManagementRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentAdministrationDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentAdministrationRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentBusinessGroupDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentBusinessGroupRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentRPLinkDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentRPLinkRow(EditRow, out error);
         }
         #endregion
 

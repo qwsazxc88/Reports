@@ -32,7 +32,8 @@
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.Estimator) > 0
-                              || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                              || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                              || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
@@ -105,7 +106,7 @@
                                     UserRole.StaffManager |
                                     UserRole.ConsultantOutsourcing)) > 0)
                 {
-                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                    <div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
                 
                  @if (UserDto.IsHelpServiceAvailable(dto))

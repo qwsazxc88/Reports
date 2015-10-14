@@ -216,6 +216,41 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentBranchDao); }
             set { staffdepartmentBranchDao = value; }
         }
+
+        protected IStaffDepartmentManagementDao staffsepartmentManagementDao;
+        public IStaffDepartmentManagementDao StaffDepartmentManagementDao
+        {
+            get { return Validate.Dependency(staffsepartmentManagementDao); }
+            set { staffsepartmentManagementDao = value; }
+        }
+
+        protected IStaffDepartmentAdministrationDao staffdepartmentAdministrationDao;
+        public IStaffDepartmentAdministrationDao StaffDepartmentAdministrationDao
+        {
+            get { return Validate.Dependency(staffdepartmentAdministrationDao); }
+            set { staffdepartmentAdministrationDao = value; }
+        }
+
+        protected IStaffDepartmentBusinessGroupDao staffdepartmentBusinessGroupDao;
+        public IStaffDepartmentBusinessGroupDao StaffDepartmentBusinessGroupDao
+        {
+            get { return Validate.Dependency(staffdepartmentBusinessGroupDao); }
+            set { staffdepartmentBusinessGroupDao = value; }
+        }
+
+        protected IStaffDepartmentRPLinkDao staffdepartmentRPLinkDao;
+        public IStaffDepartmentRPLinkDao StaffDepartmentRPLinkDao
+        {
+            get { return Validate.Dependency(staffdepartmentRPLinkDao); }
+            set { staffdepartmentRPLinkDao = value; }
+        }
+
+        protected IStaffDepartmentOperationGroupsDao staffdepartmentOperationGroupsDao;
+        public IStaffDepartmentOperationGroupsDao StaffDepartmentOperationGroupsDao
+        {
+            get { return Validate.Dependency(staffdepartmentOperationGroupsDao); }
+            set { staffdepartmentOperationGroupsDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -427,7 +462,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //налоговые реквизиты
                 if (entity.Department != null)
                 {
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
+                    //entity.Department
+                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.GetDetailsByDepartmentId(entity.Department);
                     model.KPP = dt != null ? dt.KPP : string.Empty;
                     model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
                     model.OKATO = dt != null ? dt.OKATO : string.Empty;
@@ -495,6 +531,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PlanSalaryFund = dmd.PlanSalaryFund;
                 model.Note = dmd.Note;
                 model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
+                model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 LoadDictionaries(model);
 
                 //кнопки
@@ -713,16 +750,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
-                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
-                {
-                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { 
-                        DepartmentManagerDetail = dmd, 
-                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), 
-                        Creator = curUser, 
-                        CreateDate = DateTime.Now 
-                    });
-                }
+                dmd.DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                //{
+                //    dmd.DepOperations.Add(new StaffDepartmentOperationLinks { 
+                //        DepartmentManagerDetail = dmd, 
+                //        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId), 
+                //        Creator = curUser, 
+                //        CreateDate = DateTime.Now 
+                //    });
+                //}
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
@@ -1009,17 +1046,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
-                foreach (var item in model.Operations.Where(x => x.IsUsed == true))
-                {
-                    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
-                    {
-                        DepartmentManagerDetail = dmd,
-                        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
-                        Creator = curUser,
-                        CreateDate = DateTime.Now
-                    });
-                }
+                dmd.DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
+                //foreach (var item in model.Operations.Where(x => x.IsUsed == true))
+                //{
+                //    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
+                //    {
+                //        DepartmentManagerDetail = dmd,
+                //        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
+                //        Creator = curUser,
+                //        CreateDate = DateTime.Now
+                //    });
+                //}
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
@@ -1183,30 +1221,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //операции
-                if (entity.DepartmentManagerDetails[0].DepOperations == null)
-                    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
+                entity.DepartmentManagerDetails[0].DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
+                //if (entity.DepartmentManagerDetails[0].DepOperations == null)
+                //    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
 
-                foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
-                {
-                    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
+                //foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
+                //{
+                //    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
 
-                    //если была операция, но сняли птицу, то удаляем
-                    if (item.Id != 0 && !item.IsUsed)
-                    {
-                        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
-                        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
-                    }
+                //    //если была операция, но сняли птицу, то удаляем
+                //    if (item.Id != 0 && !item.IsUsed)
+                //    {
+                //        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
+                //        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
+                //    }
                     
-                    //если не было и поставили птицу
-                    if (item.Id == 0 && item.IsUsed)
-                    {
-                        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
-                        oper.Creator = curUser;
-                        oper.CreateDate = DateTime.Now;
-                        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
-                    }
-                }
+                //    //если не было и поставили птицу
+                //    if (item.Id == 0 && item.IsUsed)
+                //    {
+                //        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                //        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
+                //        oper.Creator = curUser;
+                //        oper.CreateDate = DateTime.Now;
+                //        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
+                //    }
+                //}
 
                 //коды программ
                 if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
@@ -2037,23 +2076,803 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Справочник кодировок
+        #region Справочник филиалов
         /// <summary>
-        /// Загрузка справочник кодировок филиалов.
+        /// Загрузка справочника кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
-        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error)
+        public StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model)
         {
-            error = string.Empty;
-            if (IsFull)
-            {
-                model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
-            }
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.TwoLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 2).ToList();
             return model;
         }
+
+        /// <summary>
+        /// Сохраняем данные справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentBranch entity = itemToAddEdit.Id == 0 ? null : StaffDepartmentBranchDao.Load(itemToAddEdit.Id);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentBranch()
+                {
+                    Code = itemToAddEdit.Code,
+                    Name = itemToAddEdit.Name,
+                    Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.Code;
+                entity.Name = itemToAddEdit.Name;
+                entity.Department = itemToAddEdit.DepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.DepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentBranchDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentBranchDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок филиалов.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentBranch(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentBranch entity = StaffDepartmentBranchDao.Load(Id);
+            if (entity != null)
+            {
+                if (!StaffDepartmentBranchDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
+                try
+                {
+                    StaffDepartmentBranchDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentBranchDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }    
+            }
+
+            error = "Запись не найдена!";
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.Name) || string.IsNullOrWhiteSpace(Row.Name) || string.IsNullOrEmpty(Row.Code) || string.IsNullOrWhiteSpace(Row.Code))
+            {
+                error = "Поля Название и Код филиала должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.Code.Trim().Length != 2)
+            {
+                error = "Код филиала должен состоять из двух символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            IList<StaffDepartmentBranch> db = StaffDepartmentBranchDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.Name && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким названием филиала уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.Code && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department != null).Where(x => x.Department.Id == Row.DepartmentId && x.Id != Row.Id).Count() > 0)
+                {
+                    error = "Это подразделение из СКД уже привязано к другому филиалу Финграда!";
+                    return false;
+                }
+            }
+                        
+            return true;
+        }
+        #endregion
+
+        #region Справочник дирекций
+        /// <summary>
+        /// Загрузка справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        public StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model)
+        {
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.ThreeLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 3 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentManagement(StaffDepartmentManagementDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentManagement entity = itemToAddEdit.mId == 0 ? null : StaffDepartmentManagementDao.Load(itemToAddEdit.mId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentManagement()
+                {
+                    Code = itemToAddEdit.mCode,
+                    Name = itemToAddEdit.mName,
+                    DepartmentBranch = itemToAddEdit.BranchId == 0 ? null : StaffDepartmentBranchDao.Get(itemToAddEdit.BranchId),
+                    Department = itemToAddEdit.mDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.mDepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.mCode;
+                entity.Name = itemToAddEdit.mName;
+                entity.DepartmentBranch = itemToAddEdit.BranchId == 0 ? null : StaffDepartmentBranchDao.Get(itemToAddEdit.BranchId);
+                entity.Department = itemToAddEdit.mDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.mDepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentManagementDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentManagementDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок дирекций.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentManagement(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentManagement entity = StaffDepartmentManagementDao.Load(Id);
+            if (entity != null)
+            {
+                if (!StaffDepartmentManagementDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
+                try
+                {
+                    StaffDepartmentManagementDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentManagementDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+            error = "Запись не найдена!";
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentManagementRow(StaffDepartmentManagementDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+            
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.mName) || string.IsNullOrWhiteSpace(Row.mName) || string.IsNullOrEmpty(Row.mCode) || string.IsNullOrWhiteSpace(Row.mCode))
+            {
+                error = "Поля Название и Код дирекции должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.mCode.Trim().Length != 3)
+            {
+                error = "Код дирекции должен состоять из трех символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            IList<StaffDepartmentManagement> db = StaffDepartmentManagementDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.mName && x.Id != Row.mId).Count() > 0)
+                {
+                    error = "Строка с таким названием филиала уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.mCode && x.Id != Row.mId).Count() > 0)
+                {
+                    error = "Строка с таким кодом филиала уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department != null)
+                    .Where(x => x.Department.Id == Row.mDepartmentId && x.Id != Row.mId)
+                    .Count() > 0)
+                {
+                    error = "Это подразделение из СКД уже привязано к другой дирекции Финграда!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Справочник управлений
+        /// <summary>
+        /// Загрузка справочника кодировок управлений.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        public StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model)
+        {
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations();
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.FourLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 4 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника кодировок управлений.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentAdministration entity = itemToAddEdit.aId == 0 ? null : StaffDepartmentAdministrationDao.Load(itemToAddEdit.aId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentAdministration()
+                {
+                    Code = itemToAddEdit.aCode,
+                    Name = itemToAddEdit.aName,
+                    DepartmentManagement = itemToAddEdit.ManagementId == 0 ? null : StaffDepartmentManagementDao.Get(itemToAddEdit.ManagementId),
+                    Department = itemToAddEdit.aDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.aDepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.aCode;
+                entity.Name = itemToAddEdit.aName;
+                entity.DepartmentManagement = itemToAddEdit.ManagementId == 0 ? null : StaffDepartmentManagementDao.Get(itemToAddEdit.ManagementId);
+                entity.Department = itemToAddEdit.aDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.aDepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentAdministrationDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentAdministrationDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок управлений.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentAdministration(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentAdministration entity = StaffDepartmentAdministrationDao.Load(Id);
+            if (entity != null)
+            {
+                if (!StaffDepartmentAdministrationDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
+                try
+                {
+                    StaffDepartmentAdministrationDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentAdministrationDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+            error = "Запись не найдена!";
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок управлений.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentAdministrationRow(StaffDepartmentAdministrationDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.aName) || string.IsNullOrWhiteSpace(Row.aName) || string.IsNullOrEmpty(Row.aCode) || string.IsNullOrWhiteSpace(Row.aCode))
+            {
+                error = "Поля Название и Код управления должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.aCode.Trim().Length != 7)
+            {
+                error = "Код управления должен состоять из 7 символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            IList<StaffDepartmentAdministration> db = StaffDepartmentAdministrationDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.aName && x.Id != Row.aId).Count() > 0)
+                {
+                    error = "Строка с таким названием управления уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.aCode && x.Id != Row.aId).Count() > 0)
+                {
+                    error = "Строка с таким кодом управления уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department != null)
+                    .Where(x => x.Department.Id == Row.aDepartmentId && x.Id != Row.aId)
+                    .Count() > 0)
+                {
+                    error = "Это подразделение из СКД уже привязано к другому управлению Финграда!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        protected string CreateAdministrationCode()
+        {
+            return "";
+        }
+        #endregion
+
+        #region Справочник бизнес-групп
+        /// <summary>
+        /// Загрузка справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        public StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations();
+            model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
+
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
+
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.Branches.Insert(0, new StaffDepartmentBranchDto() { Id = 0, Name = "" });
+
+            model.FiveLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 5 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentBusinessGroup entity = itemToAddEdit.bId == 0 ? null : StaffDepartmentBusinessGroupDao.Load(itemToAddEdit.bId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentBusinessGroup()
+                {
+                    Code = itemToAddEdit.bCode,
+                    Name = itemToAddEdit.bName,
+                    DepartmentAdministration = itemToAddEdit.AdminId == 0 ? null : StaffDepartmentAdministrationDao.Get(itemToAddEdit.AdminId),
+                    Department = itemToAddEdit.bDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.bDepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.bCode;
+                entity.Name = itemToAddEdit.bName;
+                entity.DepartmentAdministration = itemToAddEdit.AdminId == 0 ? null : StaffDepartmentAdministrationDao.Get(itemToAddEdit.AdminId);
+                entity.Department = itemToAddEdit.bDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.bDepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentBusinessGroupDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentBusinessGroupDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentBusinessGroup(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentBusinessGroup entity = StaffDepartmentBusinessGroupDao.Load(Id);
+            
+            if (entity != null)
+            {
+                if (!StaffDepartmentBusinessGroupDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
+                try
+                {
+                    StaffDepartmentBusinessGroupDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentBusinessGroupDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+            error = "Запись не найдена!";
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentBusinessGroupRow(StaffDepartmentBusinessGroupDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.bName) || string.IsNullOrWhiteSpace(Row.bName) || string.IsNullOrEmpty(Row.bCode) || string.IsNullOrWhiteSpace(Row.bCode))
+            {
+                error = "Поля Название и Код бизнес-группы должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.bCode.Trim().Length != 11)
+            {
+                error = "Код бизнес-группы должен состоять из 11 символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            IList<StaffDepartmentBusinessGroup> db = StaffDepartmentBusinessGroupDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.bName && x.Id != Row.bId).Count() > 0)
+                {
+                    error = "Строка с таким названием бизнес-группы уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.bCode && x.Id != Row.bId).Count() > 0)
+                {
+                    error = "Строка с таким кодом бизнес-группы уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department != null)
+                    .Where(x => x.Department.Id == Row.bDepartmentId && x.Id != Row.bId)
+                    .Count() > 0)
+                {
+                    error = "Эта подразделение из СКД уже привязано к другой бизнес-группе Финграда!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        protected string CreateBusinessGroupCode()
+        {
+            return "";
+        }
+        #endregion
+
+        #region Справочник РП-привязок
+        /// <summary>
+        /// Загрузка справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model)
+        {
+            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks();
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(0, 0, 0);
+            model.SixLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 6 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentRPLink entity = itemToAddEdit.rId == 0 ? null : StaffDepartmentRPLinkDao.Load(itemToAddEdit.rId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentRPLink()
+                {
+                    Code = itemToAddEdit.rCode,
+                    Name = itemToAddEdit.rName,
+                    DepartmentBG = itemToAddEdit.BGId == 0 ? null : StaffDepartmentBusinessGroupDao.Get(itemToAddEdit.BGId),
+                    Department = itemToAddEdit.rDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.rDepartmentId),
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Code = itemToAddEdit.rCode;
+                entity.Name = itemToAddEdit.rName;
+                entity.DepartmentBG = itemToAddEdit.BGId == 0 ? null : StaffDepartmentBusinessGroupDao.Get(itemToAddEdit.BGId);
+                entity.Department = itemToAddEdit.rDepartmentId == 0 ? null : DepartmentDao.Load(itemToAddEdit.rDepartmentId);
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentRPLinkDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentRPLinkDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок РП-привязок.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool DeleteStaffDepartmentRPLink(int Id, out string error)
+        {
+            error = string.Empty;
+
+            StaffDepartmentRPLink entity = StaffDepartmentRPLinkDao.Load(Id);
+            if (entity != null)
+            {
+                if (!StaffDepartmentRPLinkDao.IsEnableDelete(Id))
+                {
+                    error = "Удаление данной строки невозможно!";
+                    return false;
+                }
+
+                try
+                {
+                    StaffDepartmentRPLinkDao.DeleteAndFlush(entity);
+                    error = "Запись удалена!";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentRPLinkDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при удалении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+            }
+
+            error = "Запись не найдена!";
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentRPLinkRow(StaffDepartmentRPLinkDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.rName) || string.IsNullOrWhiteSpace(Row.rName) || string.IsNullOrEmpty(Row.rCode) || string.IsNullOrWhiteSpace(Row.rCode))
+            {
+                error = "Поля Название и Код РП-привязки должны быть заполнены!";
+                return false;
+            }
+
+            //проверка на правильное заполнение поля с кодом
+            if (Row.rCode.Trim().Length != 12)
+            {
+                error = "Код РП-привязи должен состоять из 12 символов!";
+                return false;
+            }
+
+            //проверка на повтор полей
+            IList<StaffDepartmentRPLink> db = StaffDepartmentRPLinkDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.rName && x.Id != Row.rId).Count() > 0)
+                {
+                    error = "Строка с таким названием РП-привязки уже существует!";
+                    return false;
+                }
+
+                if (db.Where(x => x.Code == Row.rCode && x.Id != Row.rId).Count() > 0)
+                {
+                    error = "Строка с таким кодом РП-привязки уже существует!";
+                    return false;
+                }
+
+                //проверка на вторичную привязку к подразделениям СКД
+                if (db.Where(x => x.Department != null)
+                    .Where(x => x.Department.Id == Row.rDepartmentId && x.Id != Row.rId)
+                    .Count() > 0)
+                {
+                    error = "Эта подразделение из СКД уже привязано к другой РП-привязке Финграда!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        protected string CreateRPLinkCode()
+        {
+            return "";
+        }
+        #endregion
         #endregion
 
         #endregion
@@ -2109,7 +2928,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
-            model.Operations = StaffDepartmentOperationLinksDao.GetDepartmentOperationLinks(model.DMDetailId);
+            model.OperationGroups = staffdepartmentOperationGroupsDao.LoadAll();
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();

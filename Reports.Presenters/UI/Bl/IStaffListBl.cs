@@ -103,14 +103,158 @@ namespace Reports.Presenters.UI.Bl
         #endregion
 
         #region Справочник кодировок
+        #region Справочник филиалов
         /// <summary>
         /// Загрузка справочник кодировок филиалов.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
-        /// <param name="IsFull">Переключатель, по которому загружаются все данные для страницы.</param>
-        /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model, bool IsFull, out string error);
+        StaffDepartmentBranchModel GetStaffDepartmentBranch(StaffDepartmentBranchModel model);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок филиалов.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentBranch(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок филиалов.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentBranchRow(StaffDepartmentBranchDto Row, out string error);
+        #endregion
+
+        #region Справочник дирекций
+        /// <summary>
+        /// Загрузка справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentManagement(StaffDepartmentManagementDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок дирекций.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentManagement(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок дирекций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentManagementRow(StaffDepartmentManagementDto Row, out string error);
+        #endregion
+
+        #region Справочник управлений
+        /// <summary>
+        /// Загрузка справочника кодировок управлений.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок управлений.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок управлений.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentAdministration(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок управлений.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentAdministrationRow(StaffDepartmentAdministrationDto Row, out string error);
+        #endregion
+
+        #region Справочник бизнес-групп
+        /// <summary>
+        /// Загрузка справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentBusinessGroup(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок бизнес-групп.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentBusinessGroupRow(StaffDepartmentBusinessGroupDto Row, out string error);
+        #endregion
+
+        #region Справочник РП-привязок
+        /// <summary>
+        /// Загрузка справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model);
+        /// <summary>
+        /// Сохраняем данные справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Удаляе строки в справочнике кодировок РП-привязок.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool DeleteStaffDepartmentRPLink(int Id, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника кодировок РП-привязок.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentRPLinkRow(StaffDepartmentRPLinkDto Row, out string error);
+        #endregion
         #endregion
         #endregion
 

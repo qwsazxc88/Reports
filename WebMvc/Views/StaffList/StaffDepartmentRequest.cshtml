@@ -612,6 +612,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            @Html.LabelFor(m => m.OperGroupId)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.OperGroupId, new SelectList(Model.OperationGroups, "Id", "Name")) 
+                            @Html.ValidationMessageFor(model => model.OperGroupId)
+                        </td>
+                    </tr>
+                    @*
+                    <tr>
                         <td colspan="2">
                             <div class="portlet">
                                 <div class="portlet-header">@Html.LabelFor(m => m.Operations)</div>
@@ -642,6 +652,7 @@
                             </div>
                         </td>
                     </tr>
+                    *@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.IsLegalEntity)

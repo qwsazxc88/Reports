@@ -11,10 +11,10 @@ namespace Reports.Core.Domain
     {
         public virtual StaffDepartmentRequest DepRequest { get; set; }
         public virtual string DepCode { get; set; }
+        public virtual string PrevDepCode { get; set; }
         public virtual string NameShort { get; set; }
         public virtual string NameComment { get; set; }
         public virtual StaffDepartmentReasons DepartmentReasons { get; set; }
-        public virtual string PrevDepCode { get; set; }
         public virtual RefAddresses FactAddress { get; set; }
         public virtual string DepStatus { get; set; }
         public virtual StaffDepartmentTypes DepartmentType { get; set; }
@@ -42,8 +42,8 @@ namespace Reports.Core.Domain
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
         public virtual IList<StaffDepartmentOperationModes> DepOperationModes { get; set; }
-        public virtual IList<StaffDepartmentOperationLinks> DepOperations { get; set; }
         public virtual IList<StaffProgramCodes> ProgramCodes { get; set; }
         public virtual IList<StaffDepartmentLandmarks> DepartmentLandmarks { get; set; }
+        public virtual StaffDepartmentOperationGroups DepartmentOperationGroup { get; set; }
     }
 }

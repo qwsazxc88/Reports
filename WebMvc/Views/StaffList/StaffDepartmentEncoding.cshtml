@@ -10,10 +10,10 @@
     <div id="tabs">
         <ul>
             <li><a href="/StaffList/StaffDepartmentBranch">Филиалы</a></li>
-            <li><a href="#">Дирекции</a></li>
-            <li><a href="#">Управления</a></li>
-            <li><a href="#">Бизнес-группы</a></li>
-            <li><a href="#">РП-привязки</a></li>
+            <li><a href="/StaffList/StaffDepartmentManagement">Дирекции</a></li>
+            <li><a href="/StaffList/StaffDepartmentAdministration">Управления</a></li>
+            <li><a href="/StaffList/StaffDepartmentBusinessGroup">Бизнес-группы</a></li>
+            <li><a href="/StaffList/StaffDepartmentRPLink">РП-привязки</a></li>
         </ul>
 
         <div id="tab1"></div>
@@ -38,81 +38,36 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("moDepEncoding");
+        ShowFlash(true);
+        ShowFlash(false);
 
         $.ajaxSetup({ cache: false });
-        var ti = $("#TabIndex").val();
         //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
         $("#tabs").tabs({
+            spinner: "<em>Загрузка...</em>",
             beforeLoad: function (event, ui) {
                 ui.jqXHR.fail(function () {
                     ui.panel.html("Возникла ошибка при загрузке страницы!");
                 });
             },
+            collapsible: true,
             cache: false,
-            ajaxOption: { cache: false },
-            spinner: "Загрузка...",
-            active: 1//$("#TabIndex").val()
+            ajaxOptions: { cache: false },
+            load: function (event, ui) { /*ShowFlash(true);ui.panel.html("Загрузка данных...!");*/
+                //ui.jqXHR.done(function () { ShowFlash(false); })
+                ShowFlash(false);
+            },
+            active: $("#TabIndex").val(),
+            activate: function () { ShowFlash(true); }
         });
 
-        $("#tabs").tabs({ active: $("#TabIndex").val()});
-
-
-        //        $('#tabs').tabs({
-        //            cache: false,
-        //            ajaxOption: { cache: false },
-        //            spinner: "Загрузка...",
-        //            active: $("#TabIndex").val(),
-        //            activate: function (e, ui) {
-        //                console.log(e);
-        //                console.log(ui);
-        //                console.log(ui.newPanel.selector);
-        //                //первая вкладка
-        //                if (ui.newPanel.selector == "tab1") {
-        //                    $("#tab1").text('Подождите, идет загрузка данных ...');
-        //                    AjaxFormRequest("tab1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
-        //                    $("#tab1").ajaxStop(function () {
-        //                    });
-        //                }
-
-        //                //вторая вкладка
-        //                if (ui.newPanel.selector == "tab2") {
-        //                    $("#tab2").text('Подождите, идет загрузка данных ...');
-        //                    AjaxFormRequest("tab2", "PassportReadOnly", "/Employment/PassportReadOnly?Id=@Model.CandidateID", "GET");
-        //                    $("#tab2").ajaxStop(function () {
-        //                    });
-        //                }
-
-        //                //третья вкладка
-        //                if (ui.newPanel.selector == "tab3") {
-        //                    $("#tab3").text('Подождите, идет загрузка данных ...');
-        //                    AjaxFormRequest("tab3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
-        //                    $("#tab3").ajaxStop(function () {
-        //                    });
-        //                }
-
-        //                //четвертая
-        //                if (ui.newPanel.selector == "tab4") {
-        //                    $("#tab4").text('Подождите, идет загрузка данных ...');
-        //                    AjaxFormRequest("tab4", "FamilyReadOnly", "/Employment/FamilyReadOnly?Id=@Model.CandidateID", "GET");
-        //                    $("#tab4").ajaxStop(function () {
-        //                    });
-        //                }
-
-        //                //пятая
-        //                if (ui.newPanel.selector == "tab5") {
-        //                    $("#tab5").text('Подождите, идет загрузка данных ...');
-        //                    AjaxFormRequest("tab5", "MilitaryServiceReadOnly", "/Employment/MilitaryServiceReadOnly?Id=@Model.CandidateID", "GET");
-        //                    $("#tab5").ajaxStop(function () {
-        //                    });
-        //                }
-        //            }
-        //        });
 
         $(document).tooltip({ track: false });
 
-        //ShowFlash(true);
-        //ShowFlash(false);
+
         $(":button").button();
+
+
     });
 
 
@@ -121,6 +76,8 @@
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
         if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
             $("#LoadingIndicator2").removeClass("loading2");
             $("#DivIndicator").dialog("close");
             $("#DivIndicator").hide();
@@ -137,7 +94,7 @@
                 draggable: false,
                 resizable: false,
                 width: 300,
-                height: 60,
+                height: 100,
                 closeOnEscape: false,
                 close: function (event, ui) {
                     //$(this).dialog("destroy").remove();
@@ -145,6 +102,7 @@
             });
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicator").dialog("open");
         }
     }
 
@@ -156,6 +114,7 @@
             dataType: "html", //Тип данных
             data: jQuery("#" + form_id).serialize(),
             success: function (response) { //Если все нормально
+                //document.getElementById(result_id).remove();
                 document.getElementById(result_id).innerHTML = response;
             },
             error: function (response) { //Если ошибка

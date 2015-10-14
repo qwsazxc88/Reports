@@ -1,0 +1,322 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBusinessGroupModel
+@{
+    ViewBag.Title = "Справочник бизнес-групп";
+}
+
+@using (Html.BeginForm("StaffDepartmentBusinessGroup", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBusinessGroupForm", target = "tab4" }))
+{
+    <b>Автоматическое формирование кода бизнес-группы в разработке!</b><br />
+    <label id="bMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblBusinessGroup" class="grid">
+            <thead>
+                <tr>
+                    <th colspan="5">Финград</th>
+                    <th rowspan="2">Название бизнес-группы в СКД</th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditBusinessGrouptRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
+                </tr>    
+                <tr>
+                    <th>Название бизнес-группы</th>
+                    <th>Код бизнес-группы</th>
+                    <th>Управление</th>
+                    <th>Дирекция</th>
+                    <th>Филиал</th>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <div id="FilterDiv">
+                            <h3>Фильтры:</h3>
+                            <div>
+                                @*
+                                <table id="tblFilter">
+                                    <tr>
+                                        <td>@Html.LabelFor(m => m.AdminFilterId)</td>
+                                        <td>
+                                            @Html.DropDownListFor(m => m.AdminFilterId, new SelectList(Model.Administrations, "aId", "aName"), (object) new { onchange = "SetFilter();"})
+                                            @Html.HiddenFor(m => m.AdminFilterId)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>@Html.LabelFor(m => m.ManagementFilterId)</td>
+                                        <td>
+                                            @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetFilter();" })
+                                            @Html.HiddenFor(m => m.ManagementFilterId)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>@Html.LabelFor(m => m.BranchFilterId)</td>
+                                        <td>
+                                            @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetFilter();" })
+                                            @Html.HiddenFor(m => m.BranchFilterId)
+                                        </td>
+                                    </tr>
+                                </table>
+                                *@
+                                
+                                @Html.LabelFor(m => m.AdminFilterId)
+                                @Html.DropDownListFor(m => m.AdminFilterId, new SelectList(Model.Administrations, "aId", "aName"), (object) new { onchange = "SetFilter();"})
+                                @Html.HiddenFor(m => m.AdminFilterId)
+                                <br /><br />
+                                @Html.LabelFor(m => m.ManagementFilterId)
+                                @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetFilter();" })
+                                @Html.HiddenFor(m => m.ManagementFilterId)
+                                <br /><br />
+                                @Html.LabelFor(m => m.BranchFilterId)
+                                @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetFilter();" })
+                                @Html.HiddenFor(m => m.BranchFilterId)
+                                
+                                <button id="btnClearFilter" type="button" title="Сбросить параметры поиска" style="float:right;">Сброс</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            
+            <tbody class="tblBusinessGroupRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.BusinessGroups)
+                {
+                    <tr class="tblBusinessGroupRow">
+                        <td>
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bId)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bName)
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].bName)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bCode)
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].bCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].AdminName)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].AdminId)
+                        </td>
+                        <td>@Html.DisplayFor(m => m.BusinessGroups[i - 1].ManagementName)</td>
+                        <td>@Html.DisplayFor(m => m.BusinessGroups[i - 1].BranchName)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].DepName)
+                            @Html.HiddenFor(m => m.BusinessGroups[i - 1].bDepartmentId)
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditBusinessGrouptRow(@i-1);" href="#" >Изменить</a>
+                        </td>
+                        <td class="tdBtn">
+                            <a onclick="DeleteBusinessGroupsRow(@item.bId);" href="#" >Удалить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div id="AddEditBusinessGroupDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentBusinessGroupDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="bMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.bId)
+                <td>@Html.LabelFor(m => m.bName)</td>
+                <td>@Html.TextBoxFor(m => m.bName, new { style = "width:500px", maxlength = "150" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.bCode)</td>
+                <td>@Html.TextBoxFor(m => m.bCode, new { style = "width:100px", maxlength = "11" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.AdminId)</td>
+                <td>@Html.DropDownListFor(m => m.AdminId, new SelectList(Model.Administrations, "aId", "aName"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.bDepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.bDepartmentId, new SelectList(Model.FiveLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#FilterDiv").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+
+        $("#btnClearFilter").click(function(){
+            $("#AdminFilterId").val(0);
+            $("#ManagementFilterId").val(0);
+            $("#BranchFilterId").val(0);
+
+            SetFilter();
+        });
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditBusinessGrouptRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#bId").val($("#BusinessGroups_" + IndexRow + "__bId").val());
+            $("#bName").val($("#BusinessGroups_" + IndexRow + "__bName").val());
+            $("#bCode").val($("#BusinessGroups_" + IndexRow + "__bCode").val());
+            $("#AdminId").val($("#BusinessGroups_" + IndexRow + "__AdminId").val());
+            $("#bDepartmentId").val($("#BusinessGroups_" + IndexRow + "__bDepartmentId").val());
+        }
+        else{
+            $("#bId").val(0);
+            $("#bName").val("");
+            $("#bCode").val("");
+            $("#AdminId").val(0);
+            $("#bDepartmentId").val(0);
+        }
+
+        $("#bMsg").text("");
+        $("#bMessageStr").text("");
+
+        CreateBusinessGroupsEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateBusinessGroupsEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditBusinessGroupDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            //position: "center",
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditBusinessGrouptRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditBusinessGroupDialog').dialog("open");
+    }
+
+    function processAddEditBusinessGrouptRow()
+    {
+    
+        var actionUrl = "@Url.Action("AddEditStaffDepartmentBusinessGroup", "StaffList")";
+        var url = actionUrl + "?AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        var dataToSend = $("#AddEditBusinessGroupDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditBusinessGroupDialog').dialog("close");
+                $("#bMessageStr").text(data.msg);
+                var $table = $("#tblBusinessGroup");
+                var $rows = $("#tblBusinessGroup .tblBusinessGroupRow");
+                $rows.remove();
+                FillBusinessGroupsTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#bMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function DeleteBusinessGroupsRow(Id){
+        var result = confirm("Подтвердите удаление выбранной записи!");
+        if (!result) {return;}
+
+        var actionUrl="@Url.Action("DeleteStaffDepartmentBusinessGroup", "StaffList")";
+        var url = actionUrl + "?Id=" + Id + "&AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentBusinessGroupForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#bMessageStr").text(data.msg);
+                    var $table = $("#tblBusinessGroup");
+                    var $rows = $("#tblBusinessGroup .tblBusinessGroupRow");
+                    $rows.remove();
+                    FillBusinessGroupsTableData(data);
+                    $("#bMessageStr").text(data.msg);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#bMessageStr").text(data.msg);
+                    alert(data.msg);
+                }
+            }, "json");
+    }
+
+    function SetFilter(){
+        var actionUrl="@Url.Action("StaffDepartmentBusinessGroup", "StaffList")";
+        var url = actionUrl + "?AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentBusinessGroupForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#bMessageStr").text(data.msg);
+                    var $table = $("#tblBusinessGroup");
+                    var $rows = $("#tblBusinessGroup .tblBusinessGroupRow");
+                    $rows.remove();
+                    FillBusinessGroupsTableData(data);
+                    $("#bMessageStr").text(data.msg);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#bMessageStr").text(data.msg);
+                    alert(data.msg);
+                }
+            }, "json");
+    }
+
+    function FillBusinessGroupsTableData(data){
+        for (var i = 0; i < data.BusinessGroups.length; i++)
+        {
+            $("#tblBusinessGroup").append(
+                
+                "<tr class=\"tblBusinessGroupRow\">" +
+                    "<td><input id='BusinessGroups_" + i + "__bId' name='BusinessGroups[" + i + "].bId' value='" + data.BusinessGroups[i].bId + "' type='hidden'>" +
+                        "<input id='BusinessGroups_" + i + "__bName' name='BusinessGroups[" + i + "].bName' value='" + data.BusinessGroups[i].bName + "' type='hidden'>" + (data.BusinessGroups[i].bName ? data.BusinessGroups[i].bName : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__bCode' name='BusinessGroups[" + i + "].bCode' value='" + data.BusinessGroups[i].bCode + "' type='hidden'>" + (data.BusinessGroups[i].bCode ? data.BusinessGroups[i].bCode : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__AdminId' name='BusinessGroups[" + i + "].AdminId' value='" + data.BusinessGroups[i].AdminId + "' type='hidden'>" + (data.BusinessGroups[i].AdminName ? data.BusinessGroups[i].AdminName : "") + "</td>" +
+                    "<td>" + (data.BusinessGroups[i].ManagementName ? data.BusinessGroups[i].ManagementName : "") + "</td>" +
+                    "<td>" + (data.BusinessGroups[i].BranchName ? data.BusinessGroups[i].BranchName : "") + "</td>" +
+                    "<td><input id='BusinessGroups_" + i + "__bDepartmentId' name='BusinessGroups[" + i + "].bDepartmentId' value='" + data.BusinessGroups[i].bDepartmentId + "' type='hidden'>" + (data.BusinessGroups[i].DepName ? data.BusinessGroups[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditBusinessGrouptRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteBusinessGroupsRow(" + data.BusinessGroups[i].bId + ");' href='#' >Удалить</a></td>" +
+                "</tr>"
+            );
+            
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+</script>
+

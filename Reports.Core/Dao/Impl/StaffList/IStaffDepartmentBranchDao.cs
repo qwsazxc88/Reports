@@ -10,9 +10,15 @@ namespace Reports.Core.Dao
     public interface IStaffDepartmentBranchDao : IDao<StaffDepartmentBranch>
     {
         /// </summary>
-        /// Список причин занесения в справочник подразделений.
+        /// Филиалы.
         /// </summary>
         /// <returns></returns>
         IList<StaffDepartmentBranchDto> GetDepartmentBranches();
+        /// <summary>
+        /// Проверка на доступность удаления данной строки.
+        /// </summary>
+        /// <param name="Id">Id удаляемой строки</param>
+        /// <returns></returns>
+        bool IsEnableDelete(int Id);
     }
 }

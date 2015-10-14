@@ -874,9 +874,12 @@
     <Content Include="Views\StaffList\StaffDepartmentSoftReference.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentEncoding.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentBranch.cshtml" />
-    <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentManagement.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentAdministration.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentBusinessGroup.cshtml" />
     <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentRPLink.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
