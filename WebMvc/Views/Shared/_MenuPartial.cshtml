@@ -147,7 +147,8 @@
                         || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                         || (dto.UserRole & UserRole.Inspector) > 0
                         || (dto.UserRole & UserRole.Estimator) > 0
-                        || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                        || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                        || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                 {
                     if ((dto.UserRole & UserRole.Employee) == 0)
                     {

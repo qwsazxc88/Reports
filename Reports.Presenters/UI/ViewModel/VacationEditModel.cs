@@ -121,5 +121,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsApprovedForAll { get; set; }
         public bool IsApprovedForAllEnable { get; set; }
+
+        public bool IsApproveForAllByConsultant { get; set; }//для консультанта, чтобы мог согласовать за всех
+        public bool IsApproveForAllByConsultantEnable { get; set; }//для консультанта, чтобы мог согласовать за всех
     }
 }
