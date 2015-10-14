@@ -363,7 +363,15 @@ namespace Reports.Core
                 ImplementedBy<ManualDeductionDao>().
                 LifeStyle.Is(type));
 
-
+            Register(Component.For<IVacationReturnDao>().
+                ImplementedBy<VacationReturnDao>().
+                LifeStyle.Is(type));
+            Register(Component.For<IrefVacationReturnStatusDao>().
+                ImplementedBy<refVacationReturnStatusDao>().
+                LifeStyle.Is(type));
+            Register(Component.For<IrefVacationReturnTypesDao>().
+                ImplementedBy<refVacationReturnTypesDao>().
+                LifeStyle.Is(type));
 
             Register(Component.For(typeof(IMissionAirTicketTypeDao)).
                ImplementedBy(typeof(MissionAirTicketTypeDao)).

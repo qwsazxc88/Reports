@@ -1,0 +1,44 @@
+﻿@using Reports.Presenters.UI.ViewModel;
+@using WebMvc.Helpers
+@model VacationReturnViewModel
+@{
+    ViewBag.Title = "Заявка на отзыв из отпуска";
+}
+@using(Html.BeginForm("VacationReturnEdit","UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{    
+    @Html.HiddenFor(m=>m.Id)
+    @Html.HiddenFor(m => m.User.Id)
+    @Html.HiddenFor(m=> m.IsRejected)
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.Partial("EditorTemplates/UserInfo", Model.User)    
+        @Html.CreateDisplay(m => m.Status)     
+        @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes,"Id","Name"), Model.IsEditable)
+        @Html.CreateField(m => m.ReturnReason, Model.IsEditable)
+        @Html.CreateField(m => m.ReturnDate, Model.IsEditable)
+        @Html.CreateField(m => m.ContinueDate, Model.IsEditable)
+        if (Model.ScanAddAvailable)
+        {    
+            @Html.CreateFileInput(m => m.File)    
+        }
+        if(Model.IsScanVisible)
+        {
+            @Html.LabelFor(m => m.File)
+            @Html.ActionLink(Model.FileName, "ViewAttachment", new { Id = Model.FileId })
+        }
+    }
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.CreateApprove(x => x.Manager);
+        @Html.CreateApprove(x => x.Chief)
+        @Html.CreateApprove(x => x.PersonnelManager)
+    }
+    using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+    {
+        @Html.CreateButton(true, Model.IsSaveAvailable, "Сохранить");
+        @Html.CreateButton(true, Model.IsCancelAvailable, "Отменить","return Reject()");
+    }
+}
+
+<script src="@Url.Content("~/Scripts/UserRequest/VacationReturn/VacationReturnEdit.js")" type="text/javascript"></script>
+

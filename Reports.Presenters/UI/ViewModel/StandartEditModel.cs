@@ -10,12 +10,15 @@ namespace Reports.Presenters.UI.ViewModel
     {
         #region Служебные поля
         public int Id { get; set; }
+        public int Version { get; set; }
         #endregion
         #region Состояние
         [Display(Name = "Статус")]
         public string Status { get; set; }
         public int StatusId { get; set; }
+        public List<IdNameDto> Statuses { get; set; }
         public bool IsEditable { get; set; }
+        public bool IsAdminEditable { get; set; }
         public bool IsRejected { get; set; }
         public int RequestType { get; set; }
         #endregion

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Reports.Core.Domain;
-
+using System.Linq.Expressions;
 namespace Reports.Core.Dao
 {
     public interface IDao<TEntity, TIdentifier>
@@ -33,6 +33,7 @@ namespace Reports.Core.Dao
         TEntity FindById(string id);
         void Update(Func<TEntity, bool> predicate, Action<TEntity> action);
         IList<TEntity> Find(Func<TEntity, bool> predicate);
+        IList<TEntity> QueryExpression(Expression<Func<TEntity, bool>> predicate);
         IList<TEntity> LoadAll();
         IList<TEntity> LoadAllSorted();
 //        bool IsSameNameEntityExists(Type type,int entityId, string name);

@@ -16,7 +16,8 @@ using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Text;
 using System.Web.Mvc;
-
+using System.Linq.Expressions;
+using Reports.Core.Utils;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class RequestBl : BaseBl, IRequestBl
@@ -38,6 +39,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region DAOs
 
+        protected IVacationReturnDao vacationReturnDao;
+        protected IrefVacationReturnStatusDao refVacationReturnStatusDao;
+        protected IrefVacationReturnTypesDao refVacationReturnTypesDao;
         protected IVacationTypeDao vacationTypeDao;
         protected IAdditionalVacationTypeDao additionalVacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
@@ -105,6 +109,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IVacationReturnDao VacationReturnDao
+        {
+            get { return Validate.Dependency(vacationReturnDao); }
+            set { vacationReturnDao = value; }
+        }
+        public IrefVacationReturnTypesDao RefVacationReturnTypesDao
+        {
+            get { return Validate.Dependency(refVacationReturnTypesDao); }
+            set { refVacationReturnTypesDao = value; }
+        }
+        public IrefVacationReturnStatusDao RefVacationReturnStatusDao
+        {
+            get { return Validate.Dependency(refVacationReturnStatusDao); }
+            set { refVacationReturnStatusDao = value; }
+        }
         public IMailListDao MailListDao
         {
             get { return Validate.Dependency(maillistDao); }
@@ -6189,6 +6208,349 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        #endregion
+        #region VacationReturn
+        public List<VacationReturnDto> GetDocuments(VacationReturnListModel model)
+        {
+            var currentuser = UserDao.Load(CurrentUser.Id);
+            Expression<Func<VacationReturn,bool>> query = QueryCreator.Create<VacationReturn, VacationReturnListModel>(model,currentuser);
+            
+            var result = VacationReturnDao.Find(query.Compile()).Select(x => new VacationReturnDto 
+            { 
+                Id= x.Id,
+                CreateDate = x.CreateDate,
+                Manager = x.Manager.Name,
+                UserName = x.User.Name,
+                Dep3Name = x.User.Department!=null?(x.User.Department.Dep3!=null && x.User.Department.Dep3.Any())?x.User.Department.Dep3.First().Name:"":"",
+                Dep7Name = x.User.Department!=null? x.User.Department.Name:"",
+                Position = x.User.Position!=null?x.User.Position.Name:"",
+                ReturnDate = x.ReturnDate.Value,
+                ContinueDate = x.ContinueDate.Value,
+                Type = x.ReturnType.Name,
+                Status = x.Status.Name
+            }).ToList(); 
+            return result;
+        }
+        public VacationReturnListModel GetVacationReturnListModel()
+        {
+            VacationReturnListModel result = new VacationReturnListModel();
+            result.IsCreateAvailable = (CurrentUser.UserRole & UserRole.Manager) > 0;
+            result.Statuses = RefVacationReturnStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            result.Statuses.Add(new IdNameDto { Id = 0, Name = "" });
+            result.BeginDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            
+            return result;
+        }
+        
+        public VacationReturnCreateViewModel GetCreateModel()
+        {
+            VacationReturnCreateViewModel model = new VacationReturnCreateViewModel();
+            var user= UserDao.Load(CurrentUser.Id);
+            var users = UserDao.GetUsersForManager(CurrentUser.Id, UserRole.Manager, user.Department.Id).Select(x=>x.Id).ToList();
+            //Отпуска        
+
+            model.Users = VacationDao.Find(GetVacationSearchExpression<Vacation>(users).Compile()).Select(x=>new IdNameDto{ Id = x.User.Id, Name=x.User.Name}).ToList();
+            //Отпуск по уходу за ребенком
+
+            model.Users.AddRange(ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(users).Compile()).Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name }).ToList());
+            return model;
+        }
+        private void SetFlagState(VacationReturnViewModel model,VacationReturn entity)
+        {
+            model.IsEditable = false;
+            model.Manager.IsEditable = false;
+            model.Chief.IsEditable = false;
+            model.PersonnelManager.IsEditable = false;
+            model.IsAdminEditable = false;
+            model.ScanAddAvailable = false;
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.ConsultantOutsourcing:
+                    model.IsEditable = true;
+                    model.IsAdminEditable = true;
+                    model.Manager.IsEditable = true;
+                    model.Chief.IsEditable = true;
+                    model.PersonnelManager.IsEditable = true;
+                    model.IsCancelAvailable = true;
+                    model.ScanAddAvailable = true;
+                    break;
+                case UserRole.OutsourcingManager:
+                    model.IsEditable = false;
+                    break;
+                case UserRole.Employee:
+                    model.IsEditable = false;
+                    break;
+                case UserRole.Manager:
+                    model.IsEditable = true && model.StatusId == 1;
+                    model.Manager.IsEditable = true && model.StatusId == 1 && CheckIsChief(model.User.Id,CurrentUser.Id);
+                    if(entity != null && entity.Manager!=null)
+                        model.Chief.IsEditable = true && model.StatusId == 2 && CheckIsChief(entity.Manager.Id,CurrentUser.Id);
+                    model.ScanAddAvailable = true && model.StatusId == 1;
+                    model.IsCancelAvailable = true;
+                    break;
+                case UserRole.PersonnelManager:
+                    model.PersonnelManager.IsEditable = true && model.StatusId==3;
+                    model.IsEditable = true && model.StatusId==3;
+                    model.ScanAddAvailable = true && model.StatusId ==3;
+                    model.IsCancelAvailable = true && model.StatusId <4;
+                    break;
+                default:
+                    throw new Exception("Нет доступа к заявке.");
+            }           
+            
+            model.IsSaveAvailable = model.IsEditable || model.Manager.IsEditable || model.Chief.IsEditable || model.PersonnelManager.IsEditable ;
+        }
+        private void LoadDictionaries(VacationReturnViewModel model)
+        {
+            model.ReturnTypes = RefVacationReturnTypesDao.FindAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Statuses = RefVacationReturnStatusDao.FindAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+        }
+        private void SetModel(VacationReturnViewModel model, VacationReturn entity)
+        {
+            if (entity != null)
+            {
+                model.Id = entity.Id;
+                model.User.Id = entity.User.Id;
+                model.Creator.Id = entity.Creator.Id;
+                model.ReturnType = entity.ReturnType.Id;
+                model.StatusId = entity.Status.Id;
+                model.Status = entity.Status.Name;
+                model.ReturnDate = entity.ReturnDate;
+                model.ContinueDate = entity.ContinueDate;
+                model.ReturnReason = entity.ReturnReason;
+                model.VacationStartDate = entity.Vacation != null ? entity.Vacation.BeginDate : entity.ChildVacation.BeginDate;
+                model.VacationEndDate = entity.Vacation != null ? entity.Vacation.EndDate : entity.ChildVacation.EndDate;
+                if (entity.ManagerDateAccept.HasValue)
+                {
+                    model.Manager.IsChecked = true;
+                    model.Manager.CheckDate = entity.ManagerDateAccept.Value;
+                    model.Manager.Name = entity.Manager != null ? entity.Manager.Name : "";                    
+                }
+                if (entity.ChiefDateAccept.HasValue)
+                {
+                    model.Chief.IsChecked = true;
+                    model.Chief.CheckDate = entity.ChiefDateAccept.Value;
+                    model.Chief.Name = entity.Chief != null ? entity.Chief.Name : "";
+                }
+                if (entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    model.PersonnelManager.IsChecked = true;
+                    model.PersonnelManager.CheckDate = entity.PersonnelManagerDateAccept.Value;
+                    model.PersonnelManager.Name = entity.PersonnelManager != null ? entity.PersonnelManager.Name : "";
+                }
+                var attach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id, RequestAttachmentTypeEnum.VacationReturn);
+                if (attach != null)
+                {
+                    model.FileName = attach.FileName;
+                    model.FileId = attach.Id;
+                    model.IsScanVisible = true;
+                    model.ScanAddAvailable = false;
+                }
+
+            }
+            
+            LoadUserData(model.Creator);
+            LoadUserData(model.User);
+            LoadDictionaries(model);
+            SetFlagState(model,entity);
+        }
+        private void SetEntityStatus(VacationReturn entity)
+        {
+            entity.Status = RefVacationReturnStatusDao.Load(1);//Черновик
+            if(entity.ManagerDateAccept.HasValue)
+                entity.Status = RefVacationReturnStatusDao.Load(2);//Согласовано руководителем
+            if (entity.ManagerDateAccept.HasValue && entity.ChiefDateAccept.HasValue)
+                entity.Status = RefVacationReturnStatusDao.Load(3);//Согласовано вышестоящим руководителем
+            if (entity.ManagerDateAccept.HasValue && entity.ChiefDateAccept.HasValue && entity.PersonnelManagerDateAccept.HasValue)
+                entity.Status = RefVacationReturnStatusDao.Load(4);//Согласовано вышестоящим руководителем
+        }
+        private Expression<Func<T, bool>> GetVacationSearchExpression<T>(List<int> users)
+        {
+            ParameterExpression param = ParameterExpression.Parameter(typeof(T),"x");
+            var now = ConstantExpression.Constant(DateTime.Now);
+            var begin = param.GetProperty("BeginDate");
+            var end = param.GetProperty("EndDate");
+            var user = param.GetProperty("User.Id");
+            var searcher = Expression.And(Expression.LessThanOrEqual(begin,now),Expression.GreaterThanOrEqual(end,now));
+            
+            Expression sub = Expression.Constant(false);
+            foreach (var u in users)
+            {
+                ConstantExpression cu = Expression.Constant(u);
+                sub = Expression.Or(sub, Expression.Equal(user, cu));
+            }
+            searcher = Expression.And(searcher,sub);
+            return Expression.Lambda<Func<T,bool>>(searcher,param) ;
+        }
+        public VacationReturnViewModel GetNewVacationReturnViewModel(int UserId)
+        {
+            VacationReturnViewModel model = new VacationReturnViewModel();
+            model.Creator.Id = CurrentUser.Id;
+            model.User.Id = UserId;
+            model.StatusId = 1;
+            var childvacations = ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(new List<int> { UserId }).Compile());
+            var vacations =VacationDao.Find(GetVacationSearchExpression<Vacation>(new List<int> { UserId }).Compile());
+            vacations.NotNullAndAny()
+                .OnSuccess((x) =>
+                    {
+                        var vac = vacations.First();
+                        model.VacationStartDate = vac.BeginDate;
+                        model.VacationEndDate = vac.EndDate;
+                    })
+                .OnError((x) =>
+                    {
+                        childvacations.NotNullAndAny()
+                            .OnSuccess(y =>
+                                {
+                                    var cvac = childvacations.First();
+                                    model.VacationStartDate = cvac.BeginDate;
+                                    model.VacationEndDate = cvac.EndDate;
+                                });
+                    }
+                );
+            
+            SetModel(model, null);
+            return model;
+        }
+        public Result<VacationReturnViewModel> GetVacationReturnEditModel(int id)
+        {
+            Result<VacationReturnViewModel> result;
+            VacationReturnViewModel model = new VacationReturnViewModel();
+            if (id == 0)
+            {
+                result = new Result<VacationReturnViewModel>(false, "Не корректно указан идентификатор", null);
+            }
+            else
+            {
+                var entity = VacationReturnDao.Load(id);
+                SetModel(model, entity);
+                result = new Result<VacationReturnViewModel>(true, "Ok", model);
+            }
+            return result;
+        }
+        private void ChangeEntityProperties(VacationReturn entity, VacationReturnViewModel model)
+        {
+            //Сохраняем поля заявки
+            entity.ReturnType = RefVacationReturnTypesDao.Load(model.ReturnType);
+            entity.ReturnReason = model.ReturnReason;
+            entity.ReturnDate = model.ReturnDate;
+            entity.ContinueDate = model.ContinueDate;
+        }
+        public Result<VacationReturnViewModel> SaveVacationReturnEditModel(VacationReturnViewModel model)
+        {
+            if ((CurrentUser.UserRole & (UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing))==0)
+                return new Result<VacationReturnViewModel>(false, "Нет прав для редактирования заявки.", null);
+            VacationReturn entity;
+            VacationReturnViewModel oldmodel = null;
+            if (model.Id == 0)
+            {
+                entity = new VacationReturn();
+                entity.CreateDate = DateTime.Now;
+                var childvacations = ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(new List<int> { model.User.Id }).Compile());
+                var vacations = VacationDao.Find(GetVacationSearchExpression<Vacation>(new List<int> { model.User.Id }).Compile());
+                vacations.NotNullAndAny()
+                    .OnSuccess((x) =>
+                    {
+                        entity.Vacation = vacations.First();
+                    })
+                    .OnError((x) =>
+                    {
+                        childvacations.NotNullAndAny()
+                            .OnSuccess(y =>
+                            {
+                                entity.ChildVacation = childvacations.First();
+                            });
+                    }
+                    );
+                if(entity.Vacation == null && entity.ChildVacation == null)
+                    return new Result<VacationReturnViewModel>(false, "При сохранении заявки произошла ошибка: для сотрудника не найден отпуск.", null);
+                entity.Creator = UserDao.Load(CurrentUser.Id);
+                entity.User = UserDao.Load(model.User.Id);
+                entity.VacationStartDate = entity.Vacation!=null?entity.Vacation.BeginDate:entity.ChildVacation.BeginDate;
+                entity.VacationEndDate = entity.Vacation != null ? entity.Vacation.EndDate : entity.ChildVacation.EndDate;
+            }
+            else
+            {
+                entity = VacationReturnDao.Load(model.Id);
+                if (entity == null) return new Result<VacationReturnViewModel>(false, "При сохранении заявки произошла ошибка: заявка не найдена в БД.", null);
+                
+                GetVacationReturnEditModel(model.Id).OnSuccess(x => oldmodel = x.Value);
+                if (oldmodel != null && (!oldmodel.IsEditable && !oldmodel.PersonnelManager.IsEditable && !oldmodel.Manager.IsEditable && !oldmodel.Chief.IsEditable)) return new Result<VacationReturnViewModel>(false, "Редактирование заявки недоступно.", null);                
+            }            
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.Manager:
+                    if (entity.Manager != null && entity.Manager.Id!=CurrentUser.Id && entity.Chief == null)
+                    {
+                        if (!CheckIsChief(entity.Manager.Id, CurrentUser.Id)) return new Result<VacationReturnViewModel>(false, "Нет прав для сохранения заявки.", null);
+                        if(model.Chief.IsChecked)
+                        {
+                            entity.Chief = UserDao.Load(CurrentUser.Id);
+                            entity.ChiefDateAccept = DateTime.Now;
+                        }
+                    }
+                    if (entity.Manager == null)
+                    {                        
+                        if (!CheckIsChief(entity.User.Id,CurrentUser.Id)) return new Result<VacationReturnViewModel>(false, "Нет прав для сохранения заявки.", null);
+                        if (model.Manager.IsChecked)
+                        {
+                            entity.Manager = UserDao.Load(CurrentUser.Id);
+                            entity.ManagerDateAccept = DateTime.Now;
+                        }
+                    }
+                    if ((entity.Manager != null && entity.Manager.Id == CurrentUser.Id) || entity.Creator.Id == CurrentUser.Id)
+                    {
+                        ChangeEntityProperties(entity, model);
+                    }
+
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    ChangeEntityProperties(entity, model);
+                    if (entity.ManagerDateAccept.HasValue != model.Manager.IsChecked)
+                    {
+                        entity.ManagerDateAccept = model.Manager.IsChecked ? DateTime.Now : new DateTime?();
+                        entity.Manager = model.Manager.IsChecked ?UserDao.Load(CurrentUser.Id):null;
+                    }
+                    if (entity.ChiefDateAccept.HasValue != model.Chief.IsChecked)
+                    {
+                        entity.ChiefDateAccept = model.Chief.IsChecked ? DateTime.Now : new DateTime?();
+                        entity.Chief = model.Chief.IsChecked ? UserDao.Load(CurrentUser.Id):null;
+                    }
+                    if (entity.PersonnelManagerDateAccept.HasValue != model.PersonnelManager.IsChecked)
+                    {
+                        entity.PersonnelManagerDateAccept = model.PersonnelManager.IsChecked ? DateTime.Now : new DateTime?();
+                        entity.PersonnelManager = model.PersonnelManager.IsChecked ? UserDao.Load(CurrentUser.Id) : null;
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.User.Personnels.Any(x => x.Id == CurrentUser.Id)) return new Result<VacationReturnViewModel>(false, "Нет прав для сохранения заявки.", null);
+                    ChangeEntityProperties(entity, model);
+                    if (entity.PersonnelManager == null && model.PersonnelManager.IsChecked)
+                    {
+                        entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                    }
+                    
+                    break;
+            }
+            SetEntityStatus(entity);
+            VacationReturnDao.SaveAndFlush(entity);
+            if (model.FileDto != null)
+            {
+                string filename;
+                var attach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id, RequestAttachmentTypeEnum.VacationReturn);
+                if (attach != null)
+                    RequestAttachmentDao.DeleteAndFlush(attach);
+                SaveAttachment(entity.Id, 0, model.FileDto, RequestAttachmentTypeEnum.VacationReturn,out filename);
+            }
+            SetModel(model, entity);
+            return new Result<VacationReturnViewModel>(true,"Заявка успешно сохраннена",model);
+        }
+        private bool CheckIsChief(int ManagerId,int chiefId)
+        {
+            var chiefs = GetChiefsForManager(ManagerId);
+            return chiefs.Any(x => x.Id == chiefId);
+        }
         #endregion
 
         #region Child Vacation

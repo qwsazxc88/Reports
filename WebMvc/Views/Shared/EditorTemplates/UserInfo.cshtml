@@ -1,0 +1,53 @@
+﻿@model Reports.Core.Dto.StandartUserDto
+<fieldset class="bordered doc-wrap-blue panel"> 
+@if (!String.IsNullOrEmpty(Model.Label))
+{
+    <legend title='@Model.Label'></legend>
+}          
+<table>
+    <tr>
+        <td>@Html.LabelFor(m => m.Name)</td>
+        <td>
+            @Html.HiddenFor(m => m.Name)
+            @Html.HiddenFor(m => m.Id)
+            @Html.DisplayFor(m => m.Name)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.PositionName)</td>
+        <td>
+            @Html.HiddenFor(m => m.PositionName)
+            @Html.HiddenFor(m => m.PositionId)
+            @Html.DisplayFor(m => m.PositionName)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.Dep3Name)</td>
+        <td>
+            @Html.HiddenFor(m => m.Dep3Name)
+            @Html.HiddenFor(m => m.Dep3Id)
+            @Html.DisplayFor(m => m.Dep3Name)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.Dep7Name)</td>
+        <td>
+            @Html.HiddenFor(m => m.Dep7Name)
+            @Html.HiddenFor(m => m.Dep7Id)
+            @Html.DisplayFor(m => m.Dep7Name)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.Chiefs)</td>
+        <td>
+            @(Model.Chiefs != null ? Model.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.Personnels)</td>
+        <td>
+            @(Model.Personnels!=null?Model.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
+        </td>
+    </tr>
+</table>
+</fieldset>

@@ -181,7 +181,9 @@
         //SurchargeNote
         SurchargeNoteAttachment= 288,
         //StaffMovements
-        StaffMovements =289
+        StaffMovements =289,
+        //VacationReturn
+        VacationReturn = 290
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
