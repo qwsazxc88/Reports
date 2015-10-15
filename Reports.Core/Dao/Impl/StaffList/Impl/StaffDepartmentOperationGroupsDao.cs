@@ -18,5 +18,18 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+        /// <summary>
+        /// Список групп операций.
+        /// </summary>
+        /// <returns></returns>
+        public IList<StaffDepartmentOperationGroupsDto> GetOperationGroups()
+        {
+            IQuery query = Session.CreateSQLQuery("SELECT Id as gId, Name as gName, IsUsed as gIsUsed FROM StaffDepartmentOperationGroups")
+                .AddScalar("gId", NHibernateUtil.Int32)
+                .AddScalar("gName", NHibernateUtil.String)
+                .AddScalar("gIsUsed", NHibernateUtil.Boolean);
+
+            return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentOperationGroupsDto>()).List<StaffDepartmentOperationGroupsDto>();
+        }
     }
 }

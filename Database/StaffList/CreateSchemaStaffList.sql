@@ -717,6 +717,7 @@ CREATE TABLE [dbo].[StaffDepartmentOperations](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
 	[Name] [nvarchar](250) NULL,
+	[IsUsed] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -738,6 +739,7 @@ CREATE TABLE [dbo].[StaffDepartmentOperationLinks](
 	[Version] [int] NOT NULL,
 	[OperGroupId] [int] NULL,
 	[OperationId] [int] NULL,
+	[IsUsed] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1245,6 +1247,7 @@ CREATE TABLE [dbo].[StaffDepartmentOperationGroups](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
 	[Name] [nvarchar](50) NULL,
+	[IsUsed] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -2127,6 +2130,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название группы операций' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'CreatorID'
 GO
 
@@ -2760,6 +2766,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id операции' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'OperationId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationLinks', @level2type=N'COLUMN',@level2name=N'CreatorID'
 GO
 
@@ -2782,6 +2791,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperations', @level2type=N'COLUMN',@level2name=N'CreatorID'
@@ -3378,6 +3390,46 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffDepartmentOperationGroups
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 1', 1)	--1
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 2', 1)	--2
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 3', 1)	--3
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 4', 1)	--4
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 5', 1)	--5
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 6', 1)	--6
+INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 7', 1)	--7
+--StaffDepartmentOperations
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Оформление товарного кредита', 1)																			--1
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Переводы', 1)																													--2
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Пополнение счетов', 1)																									--3
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Обмен (покупка, продажа) валюты', 1)																		--4
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Оформление денежного кредита', 1)																			--5
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Пополнение  вкладов/Выдача наличных ДС ч/з УС', 1)											--6
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Привлечение ДС на вклады ФЛ', 1)																				--7
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed) VALUES(1, N'Оформление переводов - "Золота Корона", Contact, Система "Город"', 1)	--8
+--StaffDepartmentOperationLinks
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 1, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 2, 2, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 2, 3, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 2, 4, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 3, 5, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 3, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 3, 6, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 3, 7, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 4, 4, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 4, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 4, 6, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 5, 4, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 5, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 6, 4, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 6, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 6, 2, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 6, 7, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 7, 4, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 7, 1, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 7, 7, 1)
+INSERT INTO StaffDepartmentOperationLinks(Version, OperGroupId, OperationId, IsUsed) VALUES(1, 7, 8, 1)
+
 --StaffDepartmentBranch
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'01', N'ГОЛОВНОЙ БАНК', 4129)				--1
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'02', N'Вологодский Филиал (закрыт)', null)				--2

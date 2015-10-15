@@ -614,6 +614,27 @@ namespace Reports.Core
             Register(Component.For<IMessagesDao>()
                 .ImplementedBy<MessagesDao>()
                 .LifeStyle.Is(type));
+            #region StaffMovements
+            Register(Component.For<IrefStaffMovementsRejectReasonDao>()
+                .ImplementedBy<refStaffMovementsRejectReasonDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IrefStaffMovementsStatusDao>()
+                .ImplementedBy<refStaffMovementsStatusDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IrefStaffMovementsTypesDao>()
+                .ImplementedBy<refStaffMovementsTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffMovementsDao>()
+                .ImplementedBy<StaffMovementsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffMovementsDocsDao>()
+                .ImplementedBy<StaffMovementsDocsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffMovementsDataDao>()
+                .ImplementedBy<StaffMovementsDataDao>()
+                .LifeStyle.Is(type));
+            #endregion
+            #region Штатное расписание
             Register(Component.For<IDepartmentArchiveDao>()
                 .ImplementedBy<DepartmentArchiveDao>()
                 .LifeStyle.Is(type));
@@ -722,28 +743,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentOperationGroupsDao>()
                 .ImplementedBy<StaffDepartmentOperationGroupsDao>()
                 .LifeStyle.Is(type));
-            
 
-            #region StaffMovements
-            Register(Component.For<IrefStaffMovementsRejectReasonDao>()
-                .ImplementedBy<refStaffMovementsRejectReasonDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IrefStaffMovementsStatusDao>()
-                .ImplementedBy<refStaffMovementsStatusDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IrefStaffMovementsTypesDao>()
-                .ImplementedBy<refStaffMovementsTypesDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffMovementsDao>()
-                .ImplementedBy<StaffMovementsDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffMovementsDocsDao>()
-                .ImplementedBy<StaffMovementsDocsDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IStaffMovementsDataDao>()
-                .ImplementedBy<StaffMovementsDataDao>()
-                .LifeStyle.Is(type));
             #endregion
+            
         }
         #endregion
 

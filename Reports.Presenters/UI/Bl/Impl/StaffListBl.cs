@@ -2875,6 +2875,267 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
         #endregion
 
+        #region Справочник операций подразделений
+
+        #region Справочник групп операций
+        /// <summary>
+        /// Загрузка справочника групп операций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        public StaffDepartmentOperationGroupsModel GetStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsModel model)
+        {
+            model.OperationGroups = StaffDepartmentOperationGroupsDao.GetOperationGroups();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника групп операций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentOperationGroups entity = itemToAddEdit.gId == 0 ? null : StaffDepartmentOperationGroupsDao.Load(itemToAddEdit.gId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentOperationGroups()
+                {
+                    Name = itemToAddEdit.gName,
+                    IsUsed = itemToAddEdit.gIsUsed,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Name = itemToAddEdit.gName;
+                entity.IsUsed = itemToAddEdit.gIsUsed;
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentOperationGroupsDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentOperationGroupsDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника групп операций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentOperationGroupsRow(StaffDepartmentOperationGroupsDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.gName) || string.IsNullOrWhiteSpace(Row.gName))
+            {
+                error = "Поле 'Название группы' должны быть заполнены!";
+                return false;
+            }
+
+
+            //проверка на повтор полей
+            IList<StaffDepartmentOperationGroups> db = StaffDepartmentOperationGroupsDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.gName && x.Id != Row.gId).Count() > 0)
+                {
+                    error = "Строка с таким названием группы операции уже существует!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Справочник операций
+        /// <summary>
+        /// Загрузка справочника операций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        public StaffDepartmentOperationsModel GetStaffDepartmentOperations(StaffDepartmentOperationsModel model)
+        {
+            model.Operations = StaffDepartmentOperationsDao.GetOperations();
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные справочника операций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentOperations(StaffDepartmentOperationsDto itemToAddEdit, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            StaffDepartmentOperations entity = itemToAddEdit.oId == 0 ? null : StaffDepartmentOperationsDao.Load(itemToAddEdit.oId);
+            if (entity == null)
+            {
+                entity = new StaffDepartmentOperations()
+                {
+                    Name = itemToAddEdit.oName,
+                    IsUsed = itemToAddEdit.oIsUsed,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+            }
+            else
+            {
+                entity.Name = itemToAddEdit.oName;
+                entity.IsUsed = itemToAddEdit.oIsUsed;
+                entity.Editor = curUser;
+                entity.EditDate = DateTime.Now;
+            }
+
+            try
+            {
+                StaffDepartmentOperationsDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffDepartmentOperationsDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника операций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ValidateDepartmentOperationRow(StaffDepartmentOperationsDto Row, out string error)
+        {
+            //решил сделать все проврки здесь, чтобы все было в одном месте.
+            error = string.Empty;
+
+            //проверка на заполнение полей
+            if (string.IsNullOrEmpty(Row.oName) || string.IsNullOrWhiteSpace(Row.oName))
+            {
+                error = "Поле 'Название операции' должно быть заполнено!";
+                return false;
+            }
+
+
+            //проверка на повтор полей
+            IList<StaffDepartmentOperations> db = StaffDepartmentOperationsDao.LoadAll();
+            if (db != null && db.Count != 0)
+            {
+                if (db.Where(x => x.Name == Row.oName && x.Id != Row.oId).Count() > 0)
+                {
+                    error = "Строка с таким названием операции уже существует!";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Связи групп с операциями
+        /// <summary>
+        /// Загрузка связей.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="OperationGroupId">Id группы операций</param>
+        /// <returns></returns>
+        public StaffDepartmentOperationLinksModel GetStaffDepartmentOperationLinks(StaffDepartmentOperationLinksModel model, int OperationGroupId)
+        {
+            model.OperationGroups = StaffDepartmentOperationGroupsDao.GetOperationGroups();
+            OperationGroupId = OperationGroupId != 0 ? OperationGroupId : (model.OperationGroups.Count != 0 ? model.OperationGroups[0].gId : 0);
+            model.OperationList = StaffDepartmentOperationLinksDao.GetOperationGroupLinks(OperationGroupId);
+            return model;
+        }
+
+        /// <summary>
+        /// Сохраняем данные связей операций с группами.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="OperationGroupId">Id группы операций</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveStaffDepartmentOperationLinks(IList<StaffDepartmentOperationLinksDto> itemToAddEdit, int OperationGroupId, out string error)
+        {
+            error = string.Empty;
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            StaffDepartmentOperationLinks entity = null;
+
+            foreach(var item in itemToAddEdit)
+            {
+                //добавление
+                if (item.Id == 0 && item.IsLink)
+                {
+                    entity = new StaffDepartmentOperationLinks()
+                    {
+                        DepartmentOperation = item.OperationId == 0 ? null : StaffDepartmentOperationsDao.Get(item.OperationId),
+                        DepartmentOperationGroup = OperationGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(OperationGroupId),
+                        IsUsed = item.IsLink,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                }
+
+                //редакирование
+                if (item.Id != 0)
+                {
+                    entity = StaffDepartmentOperationLinksDao.Load(item.Id);
+                    entity.IsUsed = item.IsLink;
+                    entity.Editor = curUser;
+                    entity.EditDate = DateTime.Now;
+                }
+
+                if (entity != null)
+                {
+                    try
+                    {
+                        StaffDepartmentOperationLinksDao.SaveAndFlush(entity);
+                        error = "Данные сохранены!";
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentOperationLinksDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+            }
+
+            
+
+            return true;
+        }
+        #endregion
+
+        #endregion
+
         #endregion
 
         #region Штатная расстановка.
