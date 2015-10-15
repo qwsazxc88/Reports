@@ -630,8 +630,6 @@
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
-    <Compile Include="Domain\StaffMovements\StaffMovementsData.cs" />
-    <Compile Include="Domain\StaffMovements\StaffMovementsDocs.cs" />
     <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
     <Compile Include="Domain\StaffList\RefAddresses.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAdministration.cs" />

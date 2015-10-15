@@ -294,9 +294,6 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentEncodingModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentManagementModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestListModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRPLinkModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftReferenceModel.cs" />
