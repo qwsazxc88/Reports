@@ -221,7 +221,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Установленное ПО")]
         public int SoftGroupId { get; set; }
-        public IList<IdNameWithOldNameDto> SoftGroups { get; set; }
+        public IList<StaffDepartmentSoftGroupDto> SoftGroups { get; set; }
 
         [Display(Name = "Признак блокировки подразделения")]
         public bool IsBlocked { get; set; }

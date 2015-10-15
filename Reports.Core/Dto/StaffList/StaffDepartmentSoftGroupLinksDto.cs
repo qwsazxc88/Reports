@@ -6,7 +6,7 @@ namespace Reports.Core.Dto
     /// <summary>
     /// Связи Групп с ПО.
     /// </summary>
-    public class SoftGroupLinkDto
+    public class StaffDepartmentSoftGroupLinksDto
     {
         public int Id { get; set; }
         public int SoftId { get; set; }

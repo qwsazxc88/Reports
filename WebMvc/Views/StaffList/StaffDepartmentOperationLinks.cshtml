@@ -3,7 +3,7 @@
     ViewBag.Title = "Связи групп с операциями";
 }
 
-@using (Html.BeginForm("StaffDepartmentOperationLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationLinksForm", target = "tab2" }))
+@using (Html.BeginForm("StaffDepartmentOperationLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationLinksForm", target = "tab3" }))
 {
     <label id="MessageStr" style="color:Red;font-size:medium;"></label>
     <div>
@@ -66,7 +66,6 @@
 
     //тычем с трочку ...., мышкой
     function CheckUncheckRow(IndexRow){
-        console.log($("#OperationList_" + IndexRow + "__IsLink").val());
 
         if($("#OperationList_" + IndexRow + "__IsLink").val() == "true"){
             $("#OperationList_" + IndexRow + "__IsLink").val(false);
@@ -79,7 +78,6 @@
             $("#OperationList_" + IndexRow + "__IsLink").attr("checked", "checked");
         }
 
-        console.log($("#OperationList_" + IndexRow + "__IsLink").val());
     }
 
     //переключаем группы операций
@@ -131,7 +129,8 @@
                     "<td class='tdBtn'>" + //<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'True' : 'False') + "' type='hidden'>" + 
                         "<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'true' : 'false') + "' type='checkbox' " + 
                         (data.OperationList[i].IsLink ? "checked='checked'" : "''") + " onchange='CheckUncheckRow(" + i + ")' >" +
-                        "<input name='OperationList[" + i + "].IsUsed' value='" + data.OperationList[i].IsUsed + "' type='hidden'></td>" +
+                        //"<input name='OperationList[" + i + "].IsLink' value='" + data.OperationList[i].IsLink + "' type='hidden'>" +
+                        "</td>" +
                 "</tr>"
             );
 
