@@ -5404,6 +5404,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user, vacation, model);
             return model;
         }
+        public Result SaveVacationFileAfter1C(VacationEditModel model, UploadFileDto fileDto)
+        {
+            if(model.Id<=0) return new Result(false,"");
+            var vacation = VacationDao.Load(model.Id);
+            if (!vacation.SendTo1C.HasValue) 
+                return new Result(false, "");
+            if ( vacation.User.Id != CurrentUser.Id)
+                return new Result(false, "");
+            string fileName;
+            int? orderScanAttachmentId = SaveAttachment(vacation.Id, model.OrderScanAttachmentId, fileDto, RequestAttachmentTypeEnum.VacationOrderScan, out fileName);
+            if (orderScanAttachmentId.HasValue)
+            {
+                model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                model.OrderScanAttachment = fileName;
+                return new Result(true, "Файл успешно сохранен.");
+            }
+            return new Result(false, "");
+        }
         public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;

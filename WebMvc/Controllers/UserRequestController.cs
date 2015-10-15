@@ -1169,6 +1169,18 @@ namespace WebMvc.Controllers
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
+             #region Для сохранения файла после выгрузки в 1с #Заплатка
+             bool IsSaveFileAfterSendTo1C = false;
+             if(orderScanFileDto!=null && model.Id>0)
+             RequestBl.SaveVacationFileAfter1C(model, orderScanFileDto)
+                 .OnSuccess(x =>
+                     {
+                         RequestBl.ReloadDictionariesToModel(model);
+                         IsSaveFileAfterSendTo1C = true;
+                     }
+             );
+             if (IsSaveFileAfterSendTo1C) return View(model);
+             #endregion
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
