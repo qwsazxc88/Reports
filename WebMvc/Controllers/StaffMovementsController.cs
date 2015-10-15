@@ -38,7 +38,7 @@ namespace WebMvc.Controllers
         }
         public ContentResult Index(StaffMovementsListModel model)
         {
-            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number, model.Status);
+            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number.HasValue?model.Number.Value:0, model.Status);
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(docs));
         }
         [HttpGet]

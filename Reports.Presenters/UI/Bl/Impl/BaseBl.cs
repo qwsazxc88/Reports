@@ -796,7 +796,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(chiefs!=null && chiefs.Any())
             {
                 model.Chiefs = new List<string>();
-                foreach(var el in chiefs)
+                foreach(var el in chiefs.OrderByDescending(x=>x.Level))
                     model.Chiefs.Add(String.Format("{0} ({1})",el.Name,el.Position!=null?el.Position.Name:""));
             }
             var Dep7=user.Department;

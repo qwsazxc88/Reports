@@ -291,7 +291,7 @@
                                         @Html.RadioButtonFor(m => m.Conjunction, false, new { @id = "IsConjunctionFalse" })<label for="IsConjunctionFalse" id="lblIsConjunctionFalse" @if (!Model.Conjunction)
                                                                                                                                                                   {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                                   else
-                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Осонвная</label>
+                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Основная</label>
                                         @Html.RadioButtonFor(m => m.Conjunction, true, new { @id = "IsConjunctionTrue" })<label for="IsConjunctionTrue" id="lblIsConjunctionTrue" @if (Model.Conjunction)
                                                                                                                                                               {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                               else
@@ -791,6 +791,7 @@ label { font-size:1.1em; }
         if(imgVal=='')
         {
            addControlError($("input[name=MovementNote]"),'Необходимо заявление о переводе.');
+           addControlError($("#JSError"),'Необходимо заявление о переводе.');
             result = false;
         }
          </text>
