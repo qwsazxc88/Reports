@@ -79,11 +79,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffMovementsStatusDao); }
             set { staffMovementsStatusDao = value; }
         }
-        protected IEmploymentHoursTypeDao employmentHoursTypeDao;
-        public IEmploymentHoursTypeDao EmploymentHoursTypeDao
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
         {
-            get { return Validate.Dependency(employmentHoursTypeDao); }
-            set { employmentHoursTypeDao = value; }
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
         }
         protected IAccessGroupDao accessGroupDao;
         public IAccessGroupDao AccessGroupDao
@@ -120,6 +120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffMovementsListModel GetListModel()
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
+            model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -142,6 +143,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
@@ -328,7 +330,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             }
-            var HoursTypes = EmploymentHoursTypeDao.LoadAll();
+            var HoursTypes = ScheduleDao.LoadAll();
             if(HoursTypes!=null && HoursTypes.Any())
             {
                 model.HoursTypes = HoursTypes.Select(x => new IdNameDto { Id=x.Id,Name=x.Name}).ToList();
@@ -367,25 +369,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Загружаем сущьность если идентификатор отличен от 0
                 entity = StaffMovementsDao.Load(model.Id);
             }
+            
             //Меняем поля и сохраняем
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
             model.Id = entity.Id;//Нужно присвоить модели идентификатор
-            #region файлы
-            //походу это уже не надо,если так, то удалить
-            /*if (entity.Docs == null || !entity.Docs.Any()) //Если документов нет, то нужно их все создать заранее.
-            {
-                for(int i=1;i<=6;i++)
-                {
-                    //Создаём все документы сразу
-                    StaffMovementsDocs doc = new StaffMovementsDocs { Request = entity, DocType = i };
-                    StaffMovementsDocsDao.SaveAndFlush(doc);
-                }
-            }*/
-            //Сохраняем файлы, только если можно
-            if(model.IsDocsAddAvailable)
-                SaveFiles(model);
-            #endregion
+            
         }
         public void SaveDocsModel(StaffMovementsEditModel model)
         {            
@@ -609,7 +598,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
-                    model.IsStopButtonAvailable = false;//Конпка приостановки                 
+                    model.IsStopButtonAvailable = false;//Конпка приостановки        
+                    model.IsPositionEditable = model.IsSourceManagerAcceptAvailable || model.IsTargetManagerAcceptAvailable;
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -782,7 +772,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionFront = model.AdditionFront;//Надбавка за работу в фронтофисе
                 entity.Data.AdditionFrontTo = model.AdditionFrontTo;//Надбавка за работу в фронтофисе до
                 entity.Data.Grade = model.Grade;//Грейд
-                entity.Data.HoursType = EmploymentHoursTypeDao.Load(model.HoursType);//График работы
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
                 entity.Data.NorthFactorAddition = model.NorthFactorAddition;
                 entity.Data.NorthFactorYear = model.NorthFactorYear;
@@ -808,6 +798,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             #endregion
+            //файлики
+            if (model.IsDocsAddAvailable)
+                SaveFiles(model);
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {

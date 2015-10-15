@@ -25,7 +25,7 @@ namespace Reports.Core.Domain
         public virtual decimal Salary { get; set; }
         public virtual decimal RegionCoefficient { get; set; }
         public virtual int Grade { get; set; }
-        public virtual EmploymentHoursType HoursType { get; set; }
+        public virtual Schedule HoursType { get; set; }
         public virtual int NorthFactor { get; set; }
         public virtual int NorthFactorOrder { get; set; }
         public virtual int NorthFactorYear { get; set; }
