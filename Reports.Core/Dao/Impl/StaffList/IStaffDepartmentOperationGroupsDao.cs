@@ -9,5 +9,10 @@ namespace Reports.Core.Dao
     /// </summary>
     public interface IStaffDepartmentOperationGroupsDao : IDao<StaffDepartmentOperationGroups>
     {
+        /// <summary>
+        /// Список групп операций.
+        /// </summary>
+        /// <returns></returns>
+        IList<StaffDepartmentOperationGroupsDto> GetOperationGroups();
     }
 }

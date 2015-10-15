@@ -777,9 +777,13 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationGroupsDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationLinksDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentOperationsDto.cs" />
+    <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
+    <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
     <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
-    <Compile Include="Dto\StaffList\DepOperationDto.cs" />
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
     <Compile Include="Dto\StaffList\EstablishedPostRequestDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
@@ -792,8 +796,6 @@
     <Compile Include="Dto\StaffList\StaffEstablishedPostChargeLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffEstablishedPostDto.cs" />
     <Compile Include="Dto\StaffList\StaffListDepartmentDto.cs" />
-    <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
-    <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
@@ -1365,6 +1367,12 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsData.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsDocs.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovements.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationGroups.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRPLink.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentBusinessGroup.hbm.xml" />
@@ -1382,12 +1390,6 @@
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentCashDeskAvailable.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffNetShopIdentification.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentReasons.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsData.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsDocs.hbm.xml" />
-    <EmbeddedResource Include="Domain\StaffMovements\StaffMovements.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostChargeLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostRequestTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentOperationModes.hbm.xml" />

@@ -1,26 +1,22 @@
-﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentEncodingModel
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationReferenceModel
 @{
     Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "Справочник кодирования";
+    ViewBag.Title = "Справочник операций подразделений";
 }
 
-@using (Html.BeginForm("StaffDepartmentEncoding", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentEncodingForm" }))
+@using (Html.BeginForm("StaffDepartmentOperationReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationReferenceForm" }))
 {
     @Html.HiddenFor(m => m.TabIndex)
     <div id="tabs">
         <ul>
-            <li><a href="/StaffList/StaffDepartmentBranch">Филиалы</a></li>
-            <li><a href="/StaffList/StaffDepartmentManagement">Дирекции</a></li>
-            <li><a href="/StaffList/StaffDepartmentAdministration">Управления</a></li>
-            <li><a href="/StaffList/StaffDepartmentBusinessGroup">Бизнес-группы</a></li>
-            <li><a href="/StaffList/StaffDepartmentRPLink">РП-привязки</a></li>
+            <li><a href="/StaffList/StaffDepartmentOperationGroups">Группы операций</a></li>
+            <li><a href="/StaffList/StaffDepartmentOperations">Операции</a></li>
+            <li><a href="/StaffList/StaffDepartmentOperationLinks">Связи групп и операций</a></li>
         </ul>
 
         <div id="tab1"></div>
         <div id="tab2"></div>
         <div id="tab3"></div>
-        <div id="tab4"></div>
-        <div id="tab5"></div>
     </div>
     
     <div id="DivIndicator" style="display:none;">
@@ -37,7 +33,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        setActiveMenuItem("moDepEncoding");
+        setActiveMenuItem("moDepOperRef");
         ShowFlash(true);
         //ShowFlash(false);
 
@@ -124,3 +120,4 @@
         });
     }
 </script>
+

@@ -459,7 +459,7 @@ BEGIN
 			IF substring(@aa, @i, 1) = ';'
 			BEGIN
 --				print rtrim(ltrim(@bb))
-				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb))) 
 				BEGIN
 					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
 				END
@@ -474,7 +474,7 @@ BEGIN
 			IF @len - @i = 1
 			BEGIN
 --				print rtrim(ltrim(@bb))
-				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb)))
+				IF NOT EXISTS (SELECT * FROM #TMP2 WHERE [Description] = rtrim(ltrim(@bb))) 
 				BEGIN
 					INSERT INTO #TMP2 (id, [Description]) VALUES(@rowid, rtrim(ltrim(@bb)))
 				END
@@ -523,8 +523,9 @@ DELETE FROM #TMP2 WHERE [Description] = ''
 
 UPDATE #TMP2 SET [Description] = replace([Description], '++', 'ПАО "Совкомбанк"') WHERE [Description]  like '%++%'
 
-INSERT INTO StaffDepartmentOperations(Version, Name)
-SELECT distinct 1, [Description] FROM #TMP2
+INSERT INTO StaffDepartmentOperations(Version, Name, IsUsed)
+SELECT distinct 1, [Description], cast(0 as bit) FROM #TMP2 as A
+WHERE NOT EXISTS (SELECT * FROM StaffDepartmentOperations WHERE Name = A.[Description])
 
 --теперь пытаемся закачать данные в новую структуру
 
@@ -533,7 +534,9 @@ WHILE EXISTS(SELECT * FROM #TMP1_1)
 BEGIN
 	SELECT top 1 @RowId = RowId, @Oper = Operation FROM #tmp1_1 ORDER BY RowId
 
-	INSERT INTO StaffDepartmentOperationGroups ([Version], Name) values(1, 'Группа опеаций ' + cast(@RowId as varchar))
+	INSERT INTO StaffDepartmentOperationGroups ([Version], Name, IsUsed) 
+	SELECT  1, 'Группа опеаций ' + cast(max(Id) + 1 as varchar), 0
+	FROM StaffDepartmentOperationGroups
 
 	SET @OperGroupId = @@IDENTITY
 
@@ -545,7 +548,7 @@ BEGIN
 		SELECT top 1 @Id = Id, @aa = Name FROM StaffDepartmentOperations WHERE Id > @Id ORDER BY Id
 
 		IF @Oper like '%' + @aa + '%'
-			INSERT INTO  StaffDepartmentOperationLinks([Version], OperGroupId, OperationId) VALUES(1, @OperGroupId, @Id)
+			INSERT INTO  StaffDepartmentOperationLinks([Version], OperGroupId, OperationId, IsUsed) VALUES(1, @OperGroupId, @Id, 1)
 
 	END
 

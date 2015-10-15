@@ -256,6 +256,77 @@ namespace Reports.Presenters.UI.Bl
         bool ValidateDepartmentRPLinkRow(StaffDepartmentRPLinkDto Row, out string error);
         #endregion
         #endregion
+
+        #region Справочник операций подразделений
+
+        #region Справочник групп операций
+        /// <summary>
+        /// Загрузка справочника групп операций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentOperationGroupsModel GetStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsModel model);
+        /// <summary>
+        /// Сохраняем данные справочника групп операций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsDto itemToAddEdit, out string error);
+        /// <summary>
+        /// Проверка сохраняемой строки справочника групп операций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentOperationGroupsRow(StaffDepartmentOperationGroupsDto Row, out string error);
+        #endregion
+
+        #region Справочник операций
+        /// <summary>
+        /// Загрузка справочника операций.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentOperationsModel GetStaffDepartmentOperations(StaffDepartmentOperationsModel model);
+
+        /// <summary>
+        /// Сохраняем данные справочника операций.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentOperations(StaffDepartmentOperationsDto itemToAddEdit, out string error);
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника операций.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentOperationRow(StaffDepartmentOperationsDto Row, out string error);
+        #endregion
+
+        #region Связи групп с операциями
+        /// <summary>
+        /// Загрузка связей.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="OperationGroupId">Id группы операций</param>
+        /// <returns></returns>
+        StaffDepartmentOperationLinksModel GetStaffDepartmentOperationLinks(StaffDepartmentOperationLinksModel model, int OperationGroupId);
+
+        /// <summary>
+        /// Сохраняем данные связей операций с группами.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="OperationGroupId">Id группы операций</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentOperationLinks(IList<StaffDepartmentOperationLinksDto> itemToAddEdit, int OperationGroupId, out string error);
+        #endregion
+
+        #endregion
         #endregion
 
         #region Штатная расстановка.

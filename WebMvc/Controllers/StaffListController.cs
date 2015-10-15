@@ -745,6 +745,142 @@ namespace WebMvc.Controllers
         }
         #endregion
         #endregion
+
+        #region Справочник операций
+        /// <summary>
+        /// Загрузка справочника операций подразделений.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentOperationReference(int? TabIndex)
+        {
+            StaffDepartmentOperationReferenceModel model = new StaffDepartmentOperationReferenceModel();
+            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
+            return View(model);
+        }
+
+        #region Справочник групп операций
+        /// <summary>
+        /// Загрузка справочника групп операций.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentOperationGroups()
+        {
+            StaffDepartmentOperationGroupsModel model = StaffListBl.GetStaffDepartmentOperationGroups(new StaffDepartmentOperationGroupsModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentOperationGroups(itemToAddEdit, out error))
+                    result = true;
+            }
+
+
+            StaffDepartmentOperationGroupsModel model = StaffListBl.GetStaffDepartmentOperationGroups(new StaffDepartmentOperationGroupsModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.OperationGroups });
+        }
+        #endregion
+
+        #region Справочник операций
+        /// <summary>
+        /// Загрузка справочника операций.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentOperations()
+        {
+            StaffDepartmentOperationsModel model = StaffListBl.GetStaffDepartmentOperations(new StaffDepartmentOperationsModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentOperations(StaffDepartmentOperationsDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentOperations(itemToAddEdit, out error))
+                    result = true;
+            }
+
+
+            StaffDepartmentOperationsModel model = StaffListBl.GetStaffDepartmentOperations(new StaffDepartmentOperationsModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.Operations });
+        }
+        #endregion
+
+        #region Связи операций с группами
+        /// <summary>
+        /// Загрузка связей.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentOperationLinks()
+        {
+            StaffDepartmentOperationLinksModel model = StaffListBl.GetStaffDepartmentOperationLinks(new StaffDepartmentOperationLinksModel(), 0);
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Загрузка связей при выборе в выпадающем списке.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentOperationLinks(int OperationGroupId)
+        {
+            StaffDepartmentOperationLinksModel model = StaffListBl.GetStaffDepartmentOperationLinks(new StaffDepartmentOperationLinksModel(), OperationGroupId);
+
+            return Json(new { ok = true, msg = "", model.OperationList });
+        }   
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd">Данные</param>
+        /// <param name="OperGroupId">Id группы операций</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentOperationLinks(IList<StaffDepartmentOperationLinksDto> OperationList, int OperationGroupId)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.SaveStaffDepartmentOperationLinks(OperationList, OperationGroupId, out error))
+                result = true;
+            
+
+            StaffDepartmentOperationLinksModel model = StaffListBl.GetStaffDepartmentOperationLinks(new StaffDepartmentOperationLinksModel(), OperationGroupId);
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.OperationList });
+        }
+        #endregion
+
+        #endregion
         #endregion
 
         #region Валидация
@@ -861,6 +997,16 @@ namespace WebMvc.Controllers
         {
             error = string.Empty;
             return StaffListBl.ValidateDepartmentRPLinkRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentOperationGroupsDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentOperationGroupsRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentOperationsDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentOperationRow(EditRow, out error);
         }
         #endregion
 

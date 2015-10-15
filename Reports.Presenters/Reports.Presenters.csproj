@@ -279,6 +279,14 @@
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationGroupsModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationLinksModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationReferenceModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationsModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
+    <Compile Include="UI\ViewModel\StandartEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\AddressModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepRequestInfoModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepStructureFingradPointsModel.cs" />
@@ -288,9 +296,6 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentEncodingModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentManagementModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestListModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
-    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentRPLinkModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftReferenceModel.cs" />
@@ -305,7 +310,6 @@
     <Compile Include="UI\ViewModel\StaffList\TreeViewModel.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UI\ViewModel\StandartEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteListModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeViewModel.cs" />

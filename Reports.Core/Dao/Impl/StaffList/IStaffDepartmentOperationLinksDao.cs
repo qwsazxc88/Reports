@@ -9,6 +9,11 @@ namespace Reports.Core.Dao
     /// </summary>
     public interface IStaffDepartmentOperationLinksDao : IDao<StaffDepartmentOperationLinks>
     {
-        
+        /// <summary>
+        /// Список связей с операциями.
+        /// </summary>
+        /// <param name="OperGroupId">Id группы операций.</param>
+        /// <returns></returns>
+        IList<StaffDepartmentOperationLinksDto> GetOperationGroupLinks(int OperGroupId);
     }
 }
