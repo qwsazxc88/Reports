@@ -13,6 +13,6 @@ namespace Reports.Core.Dao
         /// Список Установленного ПО.
         /// </summary>
         /// <returns></returns>
-        IList<IdNameWithOldNameDto> GetInstallSoft();
+        IList<StaffDepartmentInstallSoftDto> GetInstallSoft();
     }
 }

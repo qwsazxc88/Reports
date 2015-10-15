@@ -87,19 +87,74 @@ namespace Reports.Presenters.UI.Bl
         #endregion
 
         #region Справочник ПО.
+        #region Справочник групп ПО
         /// <summary>
-        /// Загрузка модели справочника ПО.
+        /// Загрузка справочника групп ПО.
         /// </summary>
-        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="model">Обрабатываемая модель</param>
         /// <returns></returns>
-        StaffDepartmentSoftReferenceModel GetSoftReference(StaffDepartmentSoftReferenceModel model);
+        StaffDepartmentSoftGroupModel GetStaffDepartmentSoftGroup(StaffDepartmentSoftGroupModel model);
+
         /// <summary>
-        /// Создание/Сохранение данных.
+        /// Сохраняем данные справочника групп ПО.
         /// </summary>
-        /// <param name="model">Обрабатываемая модель.</param>
-        /// <param name="error">Для сообщений.</param>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
         /// <returns></returns>
-        bool SaveSoftReference(StaffDepartmentSoftReferenceModel model, out string error);
+        bool SaveStaffDepartmentSoftGroup(StaffDepartmentSoftGroupDto itemToAddEdit, out string error);
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника групп ПО.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentSoftGroupRow(StaffDepartmentSoftGroupDto Row, out string error);
+        #endregion
+
+        #region Справочник банковского ПО
+        /// <summary>
+        /// Загрузка справочника банковского ПО.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <returns></returns>
+        StaffDepartmentInstallSoftModel GetStaffDepartmentInstallSoft(StaffDepartmentInstallSoftModel model);
+
+        /// <summary>
+        /// Сохраняем данные справочника банковского ПО.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentInstallSoft(StaffDepartmentInstallSoftDto itemToAddEdit, out string error);
+
+        /// <summary>
+        /// Проверка сохраняемой строки справочника банковского ПО.
+        /// </summary>
+        /// <param name="Row">Строка.</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool ValidateDepartmentInstallSoftRow(StaffDepartmentInstallSoftDto Row, out string error);
+        #endregion
+
+        #region Связи групп с ПО
+        /// <summary>
+        /// Загрузка связей.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="SoftGroupId">Id группы ПО</param>
+        /// <returns></returns>
+        StaffDepartmentSoftGroupLinksModel GetStaffDepartmentSoftGroupLinks(StaffDepartmentSoftGroupLinksModel model, int SoftGroupId);
+
+        /// <summary>
+        /// Сохраняем данные связей ПО с группами.
+        /// </summary>
+        /// <param name="itemToAddEdit"></param>
+        /// <param name="SoftGroupId">Id группы ПО</param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        bool SaveStaffDepartmentSoftGroupLinks(IList<StaffDepartmentSoftGroupLinksDto> itemToAddEdit, int SoftGroupId, out string error);
+        #endregion
         #endregion
 
         #region Справочник кодировок

@@ -23,9 +23,9 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="GroupId">Id группы ПО.</param>
         /// <returns></returns>
-        public IList<SoftGroupLinkDto> GetSoftGroupLinks(int GroupId)
+        public IList<StaffDepartmentSoftGroupLinksDto> GetSoftGroupLinks(int GroupId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as SoftId, A.Name, B.Id, cast(case when B.Id is null then 0 else isnull(B.IsUsed, 0) end as bit) as IsUsed
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as SoftId, A.Name, B.Id, isnull(B.IsUsed, 0) as IsUsed
                                                     FROM StaffDepartmentInstallSoft as A
                                                     LEFT JOIN StaffDepartmentSoftGroupLinks as B ON B.SoftId = A.Id and B.SoftGroupId = :GroupId")
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -33,7 +33,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Name", NHibernateUtil.String)
                 .AddScalar("IsUsed", NHibernateUtil.Boolean)
                 .SetInt32("GroupId", GroupId);
-            return query.SetResultTransformer(Transformers.AliasToBean<SoftGroupLinkDto>()).List<SoftGroupLinkDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentSoftGroupLinksDto>()).List<StaffDepartmentSoftGroupLinksDto>();
         }
     }
 }

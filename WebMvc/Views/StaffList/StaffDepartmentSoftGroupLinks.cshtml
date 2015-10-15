@@ -1,0 +1,145 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentSoftGroupLinksModel
+@{
+    ViewBag.Title = "Справочник связей ПО с группами";
+}
+
+@using (Html.BeginForm("StaffDepartmentSoftGroupLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftGroupLinksForm", target = "tab3" }))
+{
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
+    <div>
+        @Html.LabelFor(m => m.SoftGroupId) &nbsp;&nbsp;
+        @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.GroupList, "gId", "gName"), (object)new { onchange = "SelectSoftGroup();" }) 
+        @Html.HiddenFor(m => m.SoftGroupId)
+        <button type="button" id="btnSaveLink" title="Сохранить изменения" style="float:right;">Сохранить</button>
+    </div>
+    <br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblSL" class="grid">
+            <thead>
+                <tr>
+                    <th>ПО</th>
+                    <th class="tdBtn">Связано</th>
+                </tr>    
+            </thead>
+            <tbody class="tblSLRows">
+                @{ int i = 0; }
+
+                @foreach (var item in Model.SoftGroupLink)
+                {
+                    <tr class="tblSLRow">
+                        <td>
+                            @Html.HiddenFor(m => m.SoftGroupLink[i].Id)
+                            @Html.HiddenFor(m => m.SoftGroupLink[i].SoftId)
+                            @Html.DisplayFor(m => m.SoftGroupLink[i].Name)
+                        </td>
+                        <td class="tdBtn">
+                            @Html.CheckBoxFor(m => m.SoftGroupLink[i].IsUsed, (object)new {  onchange = "CheckUncheckRow(" + i + ")", value = Model.SoftGroupLink[i].IsUsed ? "true" : "false" })
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSoftReference");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        //сохраняем данные
+        $("#btnSaveLink").click(function(){
+            processAddEditSoftGroupRow(true);
+        });
+
+    });
+
+    //тычем с трочку ...., мышкой
+    function CheckUncheckRow(IndexRow){
+        //console.log($("#SoftGroupLink_" + IndexRow + "__IsUsed").val());
+
+        if($("#SoftGroupLink_" + IndexRow + "__IsUsed").val() == "true"){
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").val(false);
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").prop("checked", false);
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").attr("checked", "");
+        }
+        else{
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").val(true);
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").prop("checked", true);
+            $("#SoftGroupLink_" + IndexRow + "__IsUsed").attr("checked", "checked");
+        }
+
+        //console.log($("#SoftGroupLink_" + IndexRow + "__IsUsed").val());
+    }
+
+    //переключаем группы операций
+    function SelectSoftGroup(){
+        processAddEditSoftGroupRow(false);
+    }
+
+
+    function processAddEditSoftGroupRow(IsSave)
+    {
+
+        var url = "";    
+        if (IsSave){
+            url = "@Url.Action("AddEditStaffDepartmentSoftGroupLinks", "StaffList")";
+        }
+        else{
+            url = "@Url.Action("StaffDepartmentSoftGroupLinks", "StaffList")";
+        }
+
+        var dataToSend = $("#StaffDepartmentSoftGroupLinksForm").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $("#MessageStr").text(data.msg);
+                var $table = $("#tblSL");
+                var $rows = $("#tblSL .tblSLRow");
+                $rows.remove();
+                FillSoftGroupLinkTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#MessageStr").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function FillSoftGroupLinkTableData(data){
+        for (var i = 0; i < data.SoftGroupLink.length; i++)
+        {
+            $("#tblSL").append(
+                
+                "<tr class=\"tblSLRow\">" +
+                    "<td><input id='SoftGroupLink_" + i + "__Id' name='SoftGroupLink[" + i + "].Id' value='" + data.SoftGroupLink[i].Id + "' type='hidden'>" +
+                        "<input id='SoftGroupLink_" + i + "__SoftId' name='SoftGroupLink[" + i + "].SoftId' value='" + data.SoftGroupLink[i].SoftId + "' type='hidden'>" +
+                        "<input id='SoftGroupLink_" + i + "__Name' name='SoftGroupLink[" + i + "].Name' value='" + data.SoftGroupLink[i].Name + "' type='hidden'>" + (data.SoftGroupLink[i].Name ? data.SoftGroupLink[i].Name : "") + "</td>" +
+                    "<td class='tdBtn'>" + //"<input id='SoftGroupLink_" + i + "__IsUsed' name='SoftGroupLink[" + i + "].IsUsed' value='" + (data.SoftGroupLink[i].IsUsed ? 'True' : 'False') + "' type='hidden'>" + 
+                        "<input id='SoftGroupLink_" + i + "__IsUsed' name='SoftGroupLink[" + i + "].IsUsed' value='" + (data.SoftGroupLink[i].IsUsed ? 'true' : 'false') + "' type='checkbox' " + 
+                        (data.SoftGroupLink[i].IsUsed ? "checked='checked'" : "''") + " onchange='CheckUncheckRow(" + i + ")' >" +
+                        //"<input name='SoftGroupLink[" + i + "].IsUsed' value='" + data.SoftGroupLink[i].IsUsed + "' type='hidden'>" +
+                        "</td>" +
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+</script>
+

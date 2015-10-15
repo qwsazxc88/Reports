@@ -14,6 +14,6 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <param name="GroupId">Id группы ПО.</param>
         /// <returns></returns>
-        IList<SoftGroupLinkDto> GetSoftGroupLinks(int GroupId);
+        IList<StaffDepartmentSoftGroupLinksDto> GetSoftGroupLinks(int GroupId);
     }
 }
