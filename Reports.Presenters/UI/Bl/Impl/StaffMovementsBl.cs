@@ -120,6 +120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffMovementsListModel GetListModel()
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
+            model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -142,6 +143,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
@@ -367,25 +369,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Загружаем сущьность если идентификатор отличен от 0
                 entity = StaffMovementsDao.Load(model.Id);
             }
+            
             //Меняем поля и сохраняем
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
             model.Id = entity.Id;//Нужно присвоить модели идентификатор
-            #region файлы
-            //походу это уже не надо,если так, то удалить
-            /*if (entity.Docs == null || !entity.Docs.Any()) //Если документов нет, то нужно их все создать заранее.
-            {
-                for(int i=1;i<=6;i++)
-                {
-                    //Создаём все документы сразу
-                    StaffMovementsDocs doc = new StaffMovementsDocs { Request = entity, DocType = i };
-                    StaffMovementsDocsDao.SaveAndFlush(doc);
-                }
-            }*/
-            //Сохраняем файлы, только если можно
-            if(model.IsDocsAddAvailable)
-                SaveFiles(model);
-            #endregion
+            
         }
         public void SaveDocsModel(StaffMovementsEditModel model)
         {            
@@ -609,7 +598,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
-                    model.IsStopButtonAvailable = false;//Конпка приостановки                 
+                    model.IsStopButtonAvailable = false;//Конпка приостановки        
+                    model.IsPositionEditable = model.IsSourceManagerAcceptAvailable || model.IsTargetManagerAcceptAvailable;
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -808,6 +798,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             #endregion
+            //файлики
+            if (model.IsDocsAddAvailable)
+                SaveFiles(model);
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {
