@@ -1,0 +1,277 @@
+﻿@model Reports.Presenters.UI.ViewModel.VacationReturnListModel
+@{
+    
+    ViewBag.Title = "Отзыв из отпуска - реестр заявок";
+}
+<script type="text/javascript" src="../../Scripts/angular.min.js"></script>
+<div ng-app="GridApp" >
+@using (Html.BeginForm())
+{
+     <table style="width:100%" ng-controller="GridController">     
+     <tr>
+     </tr>
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>                                           
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Id", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.UserName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.UserName)
+                            </td>
+                        </tr>                         
+                        <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>                      
+                        <tr>
+                          <td colspan="2">
+                            <input type="button" ng-click="GetData();" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    
+                   <tr>
+                          <td>
+                            @if (Model.IsCreateAvailable)
+                            {
+                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateVacationReturn", "UserRequest")'"/>  
+                            }                                                                                                              
+                            <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
+                            <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
+                            <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid');" />
+                            <input type="button" style="float: right;" value="Фильтр" onclick="$( '#FiltrRow' ).toggle( 'highlight' );" />
+                           </td>
+                        </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+     <tr>
+        <td colspan="2">            
+            <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
+                <tr style='cursor: pointer; ' class="noselect">
+                     <th ng-click="Sort('Id')">
+                       <a>№<br />п/п</a>
+                       <span class="sortorder" ng-show="predicate === 'Id'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                     <th ng-click="Sort('Id')">
+                       <a>Номер заявки</a>
+                       <span class="sortorder" ng-show="predicate === 'Id'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Type')">
+                       <a>Вид заявки</a>
+                       <span class="sortorder" ng-show="predicate === 'Type'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('ReturnType')">
+                       <a>Вид отзыва</a>
+                       <span class="sortorder" ng-show="predicate === 'ReturnType'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Vacation')">
+                       <a>Вид отзыва</a>
+                       <span class="sortorder" ng-show="predicate === 'Vacation'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('UserName')">
+                       <a>ФИО сотрудника</a>
+                       <span class="sortorder" ng-show="predicate === 'UserName'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Position')">
+                       <a>Должность</a>
+                       <span class="sortorder" ng-show="predicate === 'Position'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dep3Name')">
+                       <a>Дирекция 3 ур.</a>
+                       <span class="sortorder" ng-show="predicate === 'Dep3Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dep7Name')">
+                       <a>Подразделени 7 ур.</a>
+                       <span class="sortorder" ng-show="predicate === 'Dep7Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Manager')">
+                       <a>Руководитель</a>
+                       <span class="sortorder" ng-show="predicate === 'Manager'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('CreateDate')">
+                       <a>Дата создания</a>
+                       <span class="sortorder" ng-show="predicate === 'CreateDate'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('ReturnDate')" colspan=2>
+                       <a>Период</a>
+                       <span class="sortorder" ng-show="predicate === 'ReturnDate'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Status')" colspan=2>
+                       <a>Состояние</a>
+                       <span class="sortorder" ng-show="predicate === 'Status'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                </tr>
+                <tr id="FiltrRow">
+                    <td><input ng-model="search.NPP" class="filterinput" /></td>
+                    <td><input ng-model="search.Id" class="filterinput" /></td>
+                    <td><input ng-model="search.Type" class="filterinput"  /></td>
+                    <td><input ng-model="search.ReturnType" class="filterinput"  /></td>
+                    <td><input ng-model="search.Vacation" class="filterinput"  /></td>
+                    <td><input ng-model="search.UserName" class="filterinput"  /></td>
+                    <td><input ng-model="search.Position" class="filterinput"  /></td>
+                    <td><input ng-model="search.Dep3Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.Dep7Name" class="filterinput"  /></td>
+                    <td><input ng-model="search.Manager" class="filterinput"  /></td>
+                    <td><input ng-model="search.CreateDate" class="filterinput"  /></td>
+                    <td><input ng-model="search.ReturnDate" class="filterinput"  /></td>
+                    <td><input ng-model="search.ContinueDate" class="filterinput"  /></td>
+                    <td><input ng-model="search.Status" class="filterinput"  /></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
+                    <td>{{row.NPP}}</td>
+			        <td><a href="/UserRequest/VacationReturnEdit/{{row.Id}}">{{row.Id}}</a></td>
+                    <td>{{row.Type}}</td>
+                    <td>{{row.ReturnType}}</td>
+                    <td>{{row.Vacation}}</td>
+                    <td>{{row.UserName}}</td>
+                    <td>{{row.Position}}</td>
+                    <td>{{row.Dep3Name}}</td>
+                    <td>{{row.Dep7Name}}</td>
+                    <td>{{row.Manager}}</td>
+                    <td>{{row.CreateDate| date: 'dd.MM.yyyy'}}</td>
+                    <td>{{row.ReturnDate| date: 'dd.MM.yyyy'}}</td>
+                    <td>{{row.ContinueDate| date: 'dd.MM.yyyy'}}</td>
+                    <td>{{row.Status}}</td>
+		        </tr>
+                </tbody>
+            </table>
+        </td>
+     </tr>
+    </table> 
+}
+</div>
+<script>
+    var GridApp = angular.module('GridApp', []);
+    GridApp.controller('GridController', function ($scope, $http, $filter) {
+        $scope.IsWorking = false;
+        $scope.Grid = {};
+        $scope.model = {};
+        $scope.model.UserName = '';
+        $scope.reverse = false;
+        var orderBy = $filter('orderBy');
+        $scope.Sort = function (col) {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
+            if ($scope.predicate == col) {
+                $scope.reverse = !$scope.reverse;
+            }
+            else {
+                $scope.predicate = col;
+            }
+            $scope.IsWorking = false;
+            $(':button').button('enable');
+        }
+
+        $scope.GetData = function () {
+            $scope.IsWorking = true;
+            $(':button').button('disable');
+            $scope.TotalSum = 0;
+            $http.post('/UserRequest/VacationReturnList',
+                {   DepartmentId: $('#DepartmentId').val(),
+                    StatusId: $('#StatusId').val(),
+                    UserName: $('#UserName').val(),
+                    Number: $('#Number').val(),
+                    BeginDate: $('#BeginDate').val(),
+                    EndDate: $('#EndDate').val()
+                }).
+              success(function (data, status, headers, config) {
+                  for (var i = 0; i < data.length; i++) {
+                      $scope.TotalSum += data[i].AllSum;
+                  }
+                  $scope.Grid.Data = data;
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
+              }).
+              error(function (data, status, headers, config) {
+                  alert('Ошибка при получении данных.');
+                  $scope.IsWorking = false;
+                  $(':button').button('enable');
+              });
+        }
+    });	
+</script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+        $("#EndDate").datepicker({changeMonth: true, changeYear: true});
+        $(".hasDatepicker").width("75px");
+        $(':button, :input[type=button], :input[type=submit]').button();
+        setActiveMenuItem("StaffMovements");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DepartmentName").val('');
+       
+         $("#Status").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+   
+ </script> 

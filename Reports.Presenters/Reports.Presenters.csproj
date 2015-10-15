@@ -274,6 +274,8 @@
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
     <Compile Include="UI\ViewModel\SettingsModel.cs" />
+    <Compile Include="UI\ViewModel\Shared\ApprovalViewModel.cs" />
+    <Compile Include="UI\ViewModel\Shared\GridViewModel.cs" />
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
@@ -324,13 +326,20 @@
     <Compile Include="UI\ViewModel\UserInfoModel.cs" />
     <Compile Include="UI\ViewModel\UserListModel.cs" />
     <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="UI\ViewModel\UserRequest\VacationReturnCreateViewModel.cs" />
+    <Compile Include="UI\ViewModel\UserRequest\VacationReturnViewModel.cs" />
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="UI\ViewModel\VacationPrintModel.cs" />
+    <Compile Include="UI\ViewModel\VacationReturnListModel.cs" />
     <Compile Include="Utils\Converters.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QueryCreator\QueryCreator.csproj">
+      <Project>{01001EC8-3BAF-4C93-B84D-FED35F5D77A7}</Project>
+      <Name>QueryCreator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reports.CommonWeb\Reports.CommonWeb.csproj">
       <Project>{B3032E92-B802-4876-92B3-6E2479EE6CDE}</Project>
       <Name>Reports.CommonWeb</Name>
