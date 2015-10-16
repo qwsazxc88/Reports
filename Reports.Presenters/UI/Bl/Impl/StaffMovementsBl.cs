@@ -371,9 +371,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
             //Меняем поля и сохраняем
+            //файлики
+            if (model.IsDocsAddAvailable && model.Id > 0)
+                SaveFiles(model);
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
-            model.Id = entity.Id;//Нужно присвоить модели идентификатор
+            //файлики только для первого раза
+            if (model.IsDocsAddAvailable && model.Id == 0 && entity.Id > 0)
+            {
+                model.Id = entity.Id;//Нужно присвоить модели идентификатор
+                SaveFiles(model);
+            }
             
         }
         public void SaveDocsModel(StaffMovementsEditModel model)
@@ -599,7 +607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки        
-                    model.IsPositionEditable = model.IsSourceManagerAcceptAvailable || model.IsTargetManagerAcceptAvailable;
+                    model.IsPositionEditable = model.IsPositionEditable && (model.Id==0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -798,9 +806,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             #endregion
-            //файлики
-            if (model.IsDocsAddAvailable)
-                SaveFiles(model);
+            
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {
