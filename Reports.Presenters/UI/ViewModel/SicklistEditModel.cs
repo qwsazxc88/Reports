@@ -24,7 +24,9 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> Types;
         public bool IsTypeEditable { get; set; }
         public int SicklistTypeIdBabyMindingHidden { get; set; }
-
+        public bool IsPyrusLinkAvailable { get; set; }
+        [Display(Name="Номер задачи в Pyrus")]
+        public string PyrusNumber { get; set; }
         public bool IsDatesEditable { get; set; }
 
         [Display(Name = "В случае ухода за ребенком")]
