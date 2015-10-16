@@ -183,7 +183,7 @@
                                                 tblStr += "&nbsp;";
                                             }
                                             tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
-                                            "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                            "<span Id='span-tr" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                             "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
                                             "<button type='button' class='btnDepNewWindow' title='Открыть ветку в новом окне' onclick='GetDepartments("+ result.Departments[i].Code + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
@@ -206,12 +206,12 @@
                             $(ParentRowName).after(tblStr);//вставляем новую строку
                             //var aa = $(ParentRowName);
                             //console.log(aa);
-                            $("#span" + result.Departments[i].Code1C).removeClass("collapse collapsible");
+                            $("#span-tr" + result.Departments[i].Code1C).removeClass("collapse collapsible");
                             $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
 
                             //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
                             if (result.Departments[i].ItemLevel <= 7){
-                                $("#span" + result.Departments[i].Code1C).addClass("collapse collapsible");
+                                $("#span-tr" + result.Departments[i].Code1C).addClass("collapse collapsible");
                                 $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
                                 //console.log(ResultStr);
                                 //назначаем обработчик для раскрытия веток дерева
@@ -220,6 +220,12 @@
                                     $(this).children('span').toggleClass("collapse expand");
                                     $(this).closest('li').children('ul').slideToggle();
                                 });
+
+                                //пи автооткрытии показываются сотрудники, но не видно, что отработан клик по подразделению 7 уровня - РАЗОБРАТЬСЯ
+                                if (IsExpandAll){
+                                    //$("#span-tr" + result.Departments[i].Code1C).click();
+                                    //$("#getnodes-" + result.Departments[i].Code1C).click(); 
+                                }
                             }
                         }
                     }
@@ -266,37 +272,6 @@
                         $(ParentRowName).after(tblStr);//вставляем новую строку
                     }
                     
-                    //этот кусок работал, когда не было штатных единиц
-//                    for (var i = 0; i < result.UserPositions.length; i++)//сотрудники, для уровней выше 7 руководство
-//                    {   
-//                        tblStr = "<tr id='tru-" + result.UserPositions[i].Id + "' accessKey='" + result.UserPositions[i].Branch + "' class='IsVisible' ;'>" +
-//                                    "<td>" +
-//                                    "<span>";
-//                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-//                                        for (var j = 0; j < BSCount; j++)
-//                                        {
-//                                            tblStr += "&nbsp;";
-//                                        }
-//                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-//                                        "<span Id='span-tr'" + result.UserPositions[i].Id + "' >&nbsp;</span> " + result.UserPositions[i].Position + "</a>" +
-//                                    "</span>" +
-//                                    "</td>" + 
-//                                    "<td></td>" +
-//                                    "<td></td>" +
-//                                    "<td></td>" +
-//                                    "<td></td>" +
-//                                    "<td></td>" +
-//                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы'></button></td>" +
-//                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы'></button></td>" +
-//                                    "<td></td>" +
-//                                    "<td></td>" +
-//                                    "</tr>";
-
-//                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-//                        $(ParentRowName).after(tblStr);//вставляем новую строку
-//                    }
-                    
-
                     //пытаемся раскрыть рекурсивно всю ветку 
                     if (DepTable.length > 0)
                     {

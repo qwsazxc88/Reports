@@ -3871,26 +3871,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
         {
             IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
-            //foreach (var item in deps)
-            //{
-            //    StaffListDepartmentDto dto = DepartmentDao.DepFingradName(DepId);
-            //    Sdeps.Add(new StaffListDepartmentDto {
-            //        Id = dto.Id,
-            //        Code = dto.Code,
-            //        Name = dto.Name,
-            //        Code1C = dto.Code1C,
-            //        ParentId = dto.ParentId,
-            //        Path = dto.Path,
-            //        ItemLevel = dto.ItemLevel,
-            //        CodeSKD = dto.CodeSKD,
-            //        Priority = dto.Priority,
-            //        DepFingradName = dto.DepFingradName,
-            //        DepFingradNameComment = dto.DepFingradNameComment,
-            //        FinDepPointCode = dto.FinDepPointCode,
-            //        SEPCount = DepartmentDao.DepPositionCount(dto.Id)
-            //    });
-            //}
-
             return Sdeps;
         }
         #endregion

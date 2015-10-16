@@ -3707,6 +3707,7 @@ INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Филиал')
 --метим подразделения
 UPDATE Department SET BFGId = 3	WHERE Name like '%гпд%'	
 UPDATE Department SET BFGId = 5	WHERE Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%' 
+--UPDATE Department SET BFGId = null	WHERE BFGId = 5
 
 IF DB_NAME() = 'WebAppTest'
 BEGIN
