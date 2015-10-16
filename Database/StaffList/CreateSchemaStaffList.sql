@@ -3376,7 +3376,7 @@ SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSK
 										when 2 then 'Фронт'
 										when 3 then 'ГПД'
 										when 4 then 'Управленческое' end as DepFingradNameComment,
-			 C.DepCode as FinDepPointCode
+			 C.DepCode as FinDepPointCode, A.BFGId
 FROM Department as A
 LEFT JOIN StaffDepartmentRequest as B ON B.DepartmentId = A.Id and B.IsUsed = 1 
 LEFT JOIN StaffDepartmentManagerDetails as C ON C.DepRequestId = B.Id
@@ -3703,6 +3703,10 @@ INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'ТУРМ')
 INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'УРМ')
 INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Филиал')
 
+
+--метим подразделения
+UPDATE Department SET BFGId = 3	WHERE Name like '%гпд%'	
+UPDATE Department SET BFGId = 5	WHERE Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%' 
 
 IF DB_NAME() = 'WebAppTest'
 BEGIN

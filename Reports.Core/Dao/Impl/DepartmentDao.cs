@@ -238,6 +238,7 @@ namespace Reports.Core.Dao.Impl
         public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly)
         {
             string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
+            SqlWhere += " and isnull(BFGId, 0) not in (3, 5)";
             return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
                                             FROM vwStaffListDepartment as A
                                             WHERE {0} ORDER BY Priority, Name", SqlWhere))
