@@ -279,7 +279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
@@ -347,8 +347,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateState = null;
                 model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
                 model.ParentId = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Id : model.ParentId;
-                model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Name : model.DepParentName;
-                model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
+                model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Name : DepartmentDao.Get(model.ParentId).Name;
+                model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
                 model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
                 model.IsBack = false;
                 model.OrderNumber = string.Empty;
@@ -430,6 +430,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateState = entity.DateState;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.ParentId = entity.ParentDepartment != null ? entity.ParentDepartment.Id : 0;
                 model.DepParentName = entity.ParentDepartment != null ? entity.ParentDepartment.Name : string.Empty;
                 model.ItemLevel = entity.ItemLevel;
                 model.Name = entity.Name;
@@ -535,7 +536,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
+                model.IsDraftButtonAvailable = (model.Id == 0 || !entity.BeginAccountDate.HasValue) ? true : false;
                 model.IsAgreeButtonAvailable = entity.IsDraft;
             }
             
@@ -561,6 +562,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     RequestType = StaffDepartmentRequestTypesDao.Load(model.RequestTypeId),
                     DateRequest = DateTime.Now,
+                    ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId),
+                    DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId),
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
                     IsBack = model.IsBack,
@@ -627,8 +630,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
 
-                entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
-                entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);                
+                //entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
+                //entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);                
                 
 
                 //поля ЦБ реквизитов
@@ -835,7 +838,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsDraft = model.IsDraft;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
-            entity.ParentDepartment = model.ParentId.Value == 0 ? null : DepartmentDao.Load(model.ParentId.Value);
+            entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
             entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
 
             //юридический адрес
@@ -3416,7 +3419,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
@@ -3441,7 +3444,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
-            model.OperationGroups = staffdepartmentOperationGroupsDao.LoadAll();
+            model.OperationGroups = StaffDepartmentOperationGroupsDao.GetOperationGroups();
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
@@ -3738,7 +3741,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.UserPositions = ul;
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
@@ -3774,9 +3777,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <summary>
         /// подгружаем только подчиненые ветки на один уровень ниже
         /// </summary>
-        /// <param name="DepId"></param>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId)
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
         {
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
@@ -3793,10 +3797,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
                 }
 
-                return GetDepListWithSEPCount(DepId);
+                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
             }
 
-            return GetDepListWithSEPCount(DepId);
+            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
         }
         /// <summary>
         /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
@@ -3859,13 +3863,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
         /// <summary>
-        /// Достаем уровень подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
+        /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
         /// </summary>
         /// <param name="DepId">Id родительского подразделения.</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId)
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
         {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId);
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
             //foreach (var item in deps)
             //{
             //    StaffListDepartmentDto dto = DepartmentDao.DepFingradName(DepId);

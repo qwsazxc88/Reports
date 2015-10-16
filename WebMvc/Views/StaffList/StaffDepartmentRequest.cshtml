@@ -12,6 +12,7 @@
     @Html.HiddenFor(m => m.DMDetailId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+    @Html.HiddenFor(m => m.ItemLevel)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -198,7 +199,9 @@
             </div>
         </div>
 
-
+        @if (Model.ItemLevel < 3 || Model.ItemLevel == 7)
+        {
+    
         <div id="MainDiv2">
             <h3>Налоговые реквизиты</h3>
             <div>
@@ -570,10 +573,9 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.SoftGroupId)</td>
                         <td>
-                            @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroups, "ID", "Name")) 
+                            @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroups, "gId", "gName")) 
                             @Html.ValidationMessageFor(model => model.SoftGroupId)
-                            <button type="button" title="Обновить">Обновить</button>
-                            <button type="button" title="Показать справочник" onclick="CreateSoftReferenceDialog();">Справочник</button>
+                            <button type="button" title="Показать справочник ПО" onclick="CreateReferenceDialog(1, 'SoftGroupId');">Справочник</button>
                         </td>
                     </tr>
                     <tr>
@@ -616,43 +618,11 @@
                             @Html.LabelFor(m => m.OperGroupId)
                         </td>
                         <td>
-                            @Html.DropDownListFor(model => model.OperGroupId, new SelectList(Model.OperationGroups, "Id", "Name")) 
+                            @Html.DropDownListFor(model => model.OperGroupId, new SelectList(Model.OperationGroups, "gId", "gName")) 
                             @Html.ValidationMessageFor(model => model.OperGroupId)
+                            <button type="button" title="Показать справочник операций" onclick="CreateReferenceDialog(2, 'OperGroupId');">Справочник</button>
                         </td>
                     </tr>
-                    @*
-                    <tr>
-                        <td colspan="2">
-                            <div class="portlet">
-                                <div class="portlet-header">@Html.LabelFor(m => m.Operations)</div>
-                                <div class="portlet-content">
-                                    <table class="grid">
-                                        <thead>
-                                            <tr>
-                                                <th>Название Операции</th>
-                                                <th style="width:30%;">Использовать</th>
-                                            </tr>
-                                        <//thead>
-                                        @{ i = 1; }
-                                        @foreach (var item in Model.Operations)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @Html.HiddenFor(m => m.Operations[i - 1].Id)
-                                                    @Html.HiddenFor(m => m.Operations[i - 1].OperationId)
-                                                    @Html.HiddenFor(m => m.Operations[i - 1].OperationName)
-                                                    @item.OperationName
-                                                </td>
-                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.Operations[i - 1].IsUsed)</td>
-                                            </tr>
-                                            { i++; }
-                                        }
-                                    </table>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    *@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.IsLegalEntity)
@@ -725,7 +695,8 @@
                 </table>
             </div>
         </div>
-
+            
+        }
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
                                                                     {<text>disabled=disabled</text>}>Сохранить</button>
@@ -754,8 +725,8 @@
     $(document).ready(function () {
         setActiveMenuItem("moDepRequest");
         $(document).tooltip({ track: true });
-        ShowFlash(true);
-        ShowFlash(false);
+        //ShowFlash(true);
+        //ShowFlash(false);
 
         
         $(":button").button();
@@ -1030,13 +1001,13 @@
         { // initialize dialog box
             autoOpen: false,
             modal: true,
-            //title: title,     
+            title: title,     
             // fix IE6  
             bgiframe: true,
             draggable: false,
             resizable: false,
             width: 700,
-            height: 450,
+            height: 480,
             closeOnEscape: false,
             close: function (event, ui) {
                 //$(this).dialog("destroy").remove();
@@ -1054,36 +1025,47 @@
             }
         });
 
-        //убрал заголовок окна, потому что он пропадает, если после вызова модального окна использовать поверх еще одно модальное окно в качестве индикатора загрузки данных
-        $(".ui-dialog-titlebar").hide();
-        $(".ui-dialog-titlebar-close").hide();
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
 
         $(AdressDiv).dialog("open");
 
     }
 
 
-    function CreateSoftReferenceDialog() {
-        var title = "Справочник ПО";
+    function CreateReferenceDialog(RefType, ControlName) {
+        
         var newElement = document.createElement('div');
-        newElement.id = "divSoftReferenceDialog";
-        var SoftRefDiv = $(newElement);
+        newElement.id = "DivReferenceDialog";
+        var ReferenceDiv = $(newElement);
 
-        var actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentSoftReference", "StaffList")";
-        actionSoftReferenceDialogUrl += "?IsModal=true#StaffDepartmentSoftReferenceForm";
+        var actionSoftReferenceDialogUrl = "";
+        var title = "";
 
-        $(SoftRefDiv).text('Подождите, идет загрузка данных ...');
+        if (RefType == 1){
+            title = "Справочник ПО";
+            actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentSoftReference", "StaffList")";
+            actionSoftReferenceDialogUrl += "?TabIndex=2&IsModal=true";
+        }
+        else{
+            title = "Справочник операций";
+            actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentOperationReference", "StaffList")";
+            actionSoftReferenceDialogUrl += "?TabIndex=2&IsModal=true";
+        }
+        
+
+        $(ReferenceDiv).text('Подождите, идет загрузка данных ...');
         $.ajaxSetup({ cache: false });
-        $(SoftRefDiv).load(actionSoftReferenceDialogUrl
+        $(ReferenceDiv).load(actionSoftReferenceDialogUrl
             , function (response, status, xhr) {
                 if (status == "error") {
                     var msg = "Произошла ошибка: ";
-                    $(SoftRefDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                    $(ReferenceDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
                 }
             }
         );
 
-        $(SoftRefDiv).dialog(
+        $(ReferenceDiv).dialog(
         { // initialize dialog box
             autoOpen: false,
             modal: true,
@@ -1096,21 +1078,22 @@
             height: 450,
             closeOnEscape: true,
             close: function (event, ui) {
-                $(this).dialog("close");
+                $(this).dialog("destroy");
             },
             buttons:
             {
                 "OK": function () {
-                    $(SoftRefDiv).dialog("close");
+                    setActiveMenuItem("moDepRequest");
+                    RefreshReference(ControlName, RefType);
+                    $(ReferenceDiv).dialog("destroy");//если использоать метод "close", перестают работать вкладки в вызываемом справочнике
                 }
-//                ,
-//                "Отмена": function () {
-//                    $(this).dialog("close");
-//                }
             }
         });
 
-        $(SoftRefDiv).dialog("open");
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $(ReferenceDiv).dialog("open");
 
     }
 
@@ -1144,20 +1127,51 @@
         }
     }
 
-
-    function AjaxFormRequest(result_id,form_id,url) {
-        jQuery.ajax({
-            url:     url, //Адрес подгружаемой страницы
-            type:     "POST", //Тип запроса
-            dataType: "html", //Тип данных
-            data: jQuery("#"+form_id).serialize(), 
-            success: function(response) { //Если все нормально
-            document.getElementById(result_id).innerHTML = response;
-                },
-            error: function(response) { //Если ошибка
-            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
-                }   
-        });
+    //после закрытия модальных окон обновляем списки справочников
+    function RefreshReference(ControlName, RefType) {
+        var url = "@Url.Action("RefreshDepartmentRequestReference", "StaffList")";
+        url += "?SwitchReference=" + RefType;
+        var dataToSend = $("#StaffDepartmentRequestForm").serialize();
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                RefreshDropDownListData(ControlName, data, RefType);
+            }
+            else{
+                alert(data.msg);
+            }
+        }, "json");
     }
+
+    function RefreshDropDownListData(ControlName, data, RefType)
+    {
+        var Value = $("#" + ControlName).val();
+
+        var optionsValues = '<select id="' + ControlName + '" name="' + ControlName + '">';
+        //optionsValues += '<option value="0"></option>';
+
+        //справочник ПО
+        if (RefType == 1){
+            $.each(data.SoftGroups, function (item, data) {
+                optionsValues += '<option value="' + data.gId + '">' + data.gName + '</option>';
+            });
+        }
+
+        //справочник операций
+        if (RefType == 2){
+            $.each(data.OperationGroups, function (item, data) {
+                optionsValues += '<option value="' + data.gId + '">' + data.gName + '</option>';
+            });
+        }
+
+        
+        optionsValues += '</select>';
+        var options = $('#' + ControlName );
+        options.replaceWith(optionsValues);
+
+        $("#" + ControlName).val(Value);
+
+    }
+
+    
 </script>
 

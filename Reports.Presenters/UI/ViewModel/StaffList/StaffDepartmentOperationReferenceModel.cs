@@ -11,7 +11,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class StaffDepartmentOperationReferenceModel
     {
         #region Служебные поля.
-        //public string MessageStr { get; set; }
+        public bool IsModal { get; set; }   //для модального вызова
         public int TabIndex { get; set; }   //для позиционирования на вкладке
         #endregion
     }

@@ -38,23 +38,26 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Штатное расписание, первичная загрузка страницы.
         /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffList()
+        public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
         {
             StaffListModel model = new StaffListModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(null);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
             return View(model);
         }
         
         /// <summary>
         /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
         /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffList(string DepId)
+        public ActionResult StaffListGetNodes(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
             StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
@@ -209,6 +212,24 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
+        /// <summary>
+        /// Обновляем справочники на странице после закрытия модальных окон.
+        /// </summary>
+        /// <param name="SwitchReference">Переключатель: 1 - справочник ПО, 2 - справочник операций</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult RefreshDepartmentRequestReference(int SwitchReference)
+        {
+            StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
+            model.RequestTypeId = 1;
+            model.Id = 0;
+            StaffListBl.LoadDictionaries(model);
+
+            if (SwitchReference == 1)
+                return Json(new { ok = true, msg = "", model.SoftGroups });
+            else 
+                return Json(new { ok = true, msg = "", model.OperationGroups });
+        }
         #endregion
 
         #region Заявки для штатных единиц.
@@ -346,7 +367,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListArrangement()
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(null);
+            model.Departments = StaffListBl.GetDepartmentListByParent(null, false);
             return View(model);
         }
         /// <summary>
@@ -369,13 +390,19 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Загрузка справочника ПО.
         /// </summary>
+        /// <param name="TabIndex">Позиционируемся на заданой вкладке</param>
+        /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentSoftReference(int? TabIndex)
+        public ActionResult StaffDepartmentSoftReference(int? TabIndex, bool? IsModal)
         {
             StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
             model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
-            return View(model);
+            model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            if (!model.IsModal)
+                return View(model);
+            else
+                return PartialView(model);
         }
         ///// <summary>
         ///// Сохранение данных в справочнике ПО.
@@ -863,13 +890,19 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Загрузка справочника операций подразделений.
         /// </summary>
+        /// <param name="TabIndex">Позиционируемся на заданой вкладке</param>
+        /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentOperationReference(int? TabIndex)
+        public ActionResult StaffDepartmentOperationReference(int? TabIndex, bool? IsModal)
         {
             StaffDepartmentOperationReferenceModel model = new StaffDepartmentOperationReferenceModel();
             model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
-            return View(model);
+            model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            if (!model.IsModal)
+                return View(model);
+            else
+                return PartialView(model);
         }
 
         #region Справочник групп операций
@@ -1098,7 +1131,7 @@ namespace WebMvc.Controllers
         public ActionResult TreeViewAjax()
         {
             TreeViewAjaxModel model = new TreeViewAjaxModel();//StaffListBl.GetDepartmentList();
-            model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
+            model.Departments = StaffListBl.GetDepartmentListByParent("9900424", false);
             return View(model);
         }
         /// <summary>
@@ -1110,7 +1143,7 @@ namespace WebMvc.Controllers
         public ActionResult TreeViewAjax(string DepId)
         {
             TreeViewAjaxModel model = new TreeViewAjaxModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, false);
             return Json(model.Departments);
         }
         /// <summary>

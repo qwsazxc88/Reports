@@ -12,6 +12,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     public class StaffDepartmentSoftReferenceModel
     {
         #region Служебные поля.
+        public bool IsModal { get; set; }   //для модального вызова
         public int TabIndex { get; set; }   //для позиционирования на вкладке
         #endregion
     }

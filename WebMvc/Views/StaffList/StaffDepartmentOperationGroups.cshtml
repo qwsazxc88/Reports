@@ -44,6 +44,14 @@
         </table>
     </div>
     
+    <div id="DivIndicatorOG" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <div id="AddEditOperationGroupRowDialog" style="display:none;">
@@ -89,7 +97,7 @@
             }
         });
 
-        //ShowFlash(false);
+        //ShowFlashOG(false);
     });
 
     //вкл/выкл режима редактирования
@@ -150,7 +158,7 @@
     
         var url = "@Url.Action("AddEditStaffDepartmentOperationGroups", "StaffList")";
         var dataToSend = $("#AddEditOperationGroupRowDialog form").serialize();
-        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        ShowFlashOG(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditOperationGroupRowDialog').dialog("close");
@@ -160,10 +168,10 @@
                 $rows.remove();
                 FillOperationGroupsTableData(data);
                 
-                ShowFlash(false);
+                ShowFlashOG(false);
             }
             else{
-                ShowFlash(false);
+                ShowFlashOG(false);
                 $("#glblMsg").text(data.msg);
             }
         }, "json");
@@ -189,5 +197,38 @@
         }
     }
 
+
+    function ShowFlashOG(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorOG").dialog("close");
+            $("#DivIndicatorOG").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOG").show();
+            $("#DivIndicatorOG").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorOG").dialog("open");
+        }
+    }
 </script>
 
