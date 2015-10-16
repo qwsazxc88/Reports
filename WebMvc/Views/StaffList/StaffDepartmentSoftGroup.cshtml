@@ -36,12 +36,21 @@
             </tbody>
         </table>
     </div>
+    
+    <div id="DivIndicatorSG" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <div id="AddEditSoftGroupDialog" style="display:none;">
     @using (Html.BeginForm("StaffDepartmentMenegmentDialog", "StaffList", FormMethod.Post))
     {
-        <label id="пMsg" style="color:Red;font-size:medium;"></label>
+        <label id="gMsg" style="color:Red;font-size:medium;"></label>
         <table>
             <tr>
                 @Html.HiddenFor(m => m.gId)
@@ -64,7 +73,7 @@
         $(":button").button();
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
-        //ShowFlash(false);
+        //ShowFlashSG(false);
     });
 
     //вкл/выкл режима редактирования
@@ -78,7 +87,7 @@
             $("#gName").val("");
         }
 
-        $("#пMsg").text("");
+        $("#gMsg").text("");
         $("#gMessageStr").text("");
 
         CreateSoftGroupEdtRowDialog(IndexRow >= 0 ? true : false);
@@ -118,7 +127,7 @@
     
         var url = "@Url.Action("AddEditStaffDepartmentSoftGroup", "StaffList")";
         var dataToSend = $("#AddEditSoftGroupDialog form").serialize();
-        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        ShowFlashSG(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditSoftGroupDialog').dialog("close");
@@ -128,11 +137,11 @@
                 $rows.remove();
                 FillManagementTableData(data);
                 
-                ShowFlash(false);
+                ShowFlashSG(false);
             }
             else{
-                ShowFlash(false);
-                $("#пMsg").text(data.msg);
+                ShowFlashSG(false);
+                $("#gMsg").text(data.msg);
             }
         }, "json");
     };
@@ -154,5 +163,38 @@
         }
     }
 
+
+    function ShowFlashSG(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorSG").dialog("close");
+            $("#DivIndicatorSG").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorSG").show();
+            $("#DivIndicatorSG").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorSG").dialog("open");
+        }
+    }
 </script>
 

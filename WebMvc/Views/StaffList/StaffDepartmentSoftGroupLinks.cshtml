@@ -43,6 +43,14 @@
         </table>
     </div>
     
+    <div id="DivIndicatorSGL" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <script type="text/javascript">
@@ -100,7 +108,7 @@
         }
 
         var dataToSend = $("#StaffDepartmentSoftGroupLinksForm").serialize();
-        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        ShowFlashSGL(true);    //это диалоговое окно находится на родительской странице
 
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
@@ -110,10 +118,10 @@
                 $rows.remove();
                 FillSoftGroupLinkTableData(data);
                 
-                ShowFlash(false);
+                ShowFlashSGL(false);
             }
             else{
-                ShowFlash(false);
+                ShowFlashSGL(false);
                 $("#MessageStr").text(data.msg);
             }
         }, "json");
@@ -141,5 +149,38 @@
         }
     }
 
+
+    function ShowFlashSGL(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorSGL").dialog("close");
+            $("#DivIndicatorSGL").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorSGL").show();
+            $("#DivIndicatorSGL").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorSGL").dialog("open");
+        }
+    }
 </script>
 

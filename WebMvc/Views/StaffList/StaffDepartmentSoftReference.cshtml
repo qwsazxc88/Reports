@@ -1,14 +1,17 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentSoftReferenceModel
 @{
-    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "Справочник ПО";        
+    if (!Model.IsModal)
+    {
+        Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+        ViewBag.Title = "Справочник ПО";        
+    }
 }
 
 
 @using (Html.BeginForm("StaffDepartmentSoftReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftReferenceForm" }))
 {
     @Html.HiddenFor(m => m.TabIndex)
-
+    @Html.HiddenFor(m => m.IsModal)
     <div id="tabs">
         <ul>
             <li><a href="/StaffList/StaffDepartmentSoftGroup">Группы ПО</a></li>
@@ -22,7 +25,7 @@
 
     </div>
     
-    <div id="DivIndicator" style="display:none;">
+    <div id="DivIndicatorSR" style="display:none;">
         <table>
             <tr>
                 <td><span id="LoadingIndicator2"></span></td>
@@ -38,7 +41,9 @@
     $(document).ready(function () {
         setActiveMenuItem("moSoftReference");
 
-        ShowFlash(true);
+        if (!$("#IsModal").val()) {
+            ShowFlashSR(true);
+        }
 
         $.ajaxSetup({ cache: false });
         //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
@@ -47,37 +52,46 @@
             beforeLoad: function (event, ui) {
                 ui.jqXHR.fail(function () {
                     ui.panel.html("Возникла ошибка при загрузке страницы!");
-                    ShowFlash(false);
+                    if (!$("#IsModal").val()) {
+                        ShowFlashSR(false);
+                    }
                 });
             },
             collapsible: true,
             cache: false,
             ajaxOptions: { cache: false },
-            load: function (event, ui) { /*ShowFlash(true);ui.panel.html("Загрузка данных...!");*/
-                //ui.jqXHR.done(function () { ShowFlash(false); })
-                ShowFlash(false);
+            load: function (event, ui) { 
+                if (!$("#IsModal").val()) {
+                    ShowFlashSR(false);
+                }
             },
             active: $("#TabIndex").val(),
-            activate: function () { ShowFlash(true); }
+            activate: function () {
+                if (!$("#IsModal").val()) {
+                    ShowFlashSR(true);
+                }
+            }
         });
 
         $(document).tooltip({ track: true });
         $(":button").button();
     });
 
-    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    function ShowFlashSR(IsShow)  //показываем индикатор загрузки
     {
         if (!IsShow) {
             $(".ui-dialog-titlebar").show();
             $(".ui-dialog-titlebar-close").show();
             $("#LoadingIndicator2").removeClass("loading2");
-            $("#DivIndicator").dialog("close");
-            $("#DivIndicator").hide();
+            if (!$("#IsModal").val()) {
+                $("#DivIndicatorSR").dialog("close");
+            }
+            $("#DivIndicatorSR").hide();
         }
         else {
             $("#LoadingIndicator2").addClass("loading2");
-            $("#DivIndicator").show();
-            $("#DivIndicator").dialog(
+            $("#DivIndicatorSR").show();
+            $("#DivIndicatorSR").dialog(
             { // initialize dialog box
                 autoOpen: true,
                 modal: true,
@@ -94,7 +108,9 @@
             });
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
-            $("#DivIndicator").dialog("open");
+                if (!$("#IsModal").val()) {
+                    $("#DivIndicatorSR").dialog("open");
+                }
         }
     }
 </script>

@@ -1,12 +1,16 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationReferenceModel
 @{
-    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
-    ViewBag.Title = "Справочник операций подразделений";
+    if (!Model.IsModal)
+    {
+        Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+        ViewBag.Title = "Справочник операций подразделений";
+    }
 }
 
 @using (Html.BeginForm("StaffDepartmentOperationReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationReferenceForm" }))
 {
     @Html.HiddenFor(m => m.TabIndex)
+    @Html.HiddenFor(m => m.IsModal)
     <div id="tabs">
         <ul>
             <li><a href="/StaffList/StaffDepartmentOperationGroups">Группы операций</a></li>
@@ -19,7 +23,7 @@
         <div id="tab3"></div>
     </div>
     
-    <div id="DivIndicator" style="display:none;">
+    <div id="DivIndicatorOR" style="display:none;">
         <table>
             <tr>
                 <td><span id="LoadingIndicator2"></span></td>
@@ -34,8 +38,10 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("moDepOperRef");
-        ShowFlash(true);
-        //ShowFlash(false);
+
+        if (!$("#IsModal").val()) {
+            ShowFlashOR(true);
+        }
 
         $.ajaxSetup({ cache: false });
         //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
@@ -44,18 +50,25 @@
             beforeLoad: function (event, ui) {
                 ui.jqXHR.fail(function () {
                     ui.panel.html("Возникла ошибка при загрузке страницы!");
-                    ShowFlash(false);
+                    if (!$("#IsModal").val()) {
+                        ShowFlashOR(false);
+                    }
                 });
             },
             collapsible: true,
             cache: false,
             ajaxOptions: { cache: false },
-            load: function (event, ui) { /*ShowFlash(true);ui.panel.html("Загрузка данных...!");*/
-                //ui.jqXHR.done(function () { ShowFlash(false); })
-                ShowFlash(false);
+            load: function (event, ui) { 
+                if (!$("#IsModal").val()) {
+                    ShowFlashOR(false);
+                }
             },
             active: $("#TabIndex").val(),
-            activate: function () { ShowFlash(true); }
+            activate: function () {
+                if (!$("#IsModal").val()) {
+                    ShowFlashOR(true);
+                }
+            }
         });
 
 
@@ -70,19 +83,21 @@
 
 
 
-    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    function ShowFlashOR(IsShow)  //показываем индикатор загрузки
     {
         if (!IsShow) {
             $(".ui-dialog-titlebar").show();
             $(".ui-dialog-titlebar-close").show();
             $("#LoadingIndicator2").removeClass("loading2");
-            $("#DivIndicator").dialog("close");
-            $("#DivIndicator").hide();
+            if (!$("#IsModal").val()) {
+                $("#DivIndicatorOR").dialog("close");
+            }
+            $("#DivIndicatorOR").hide();
         }
         else {
             $("#LoadingIndicator2").addClass("loading2");
-            $("#DivIndicator").show();
-            $("#DivIndicator").dialog(
+            $("#DivIndicatorOR").show();
+            $("#DivIndicatorOR").dialog(
             { // initialize dialog box
                 autoOpen: true,
                 modal: true,
@@ -99,25 +114,11 @@
             });
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
-            $("#DivIndicator").dialog("open");
+            if (!$("#IsModal").val()) {
+                $("#DivIndicatorOR").dialog("open");
+            }
         }
     }
 
-    //функция отправки и получения ajax-запроса
-    function AjaxFormRequest(result_id, form_id, url, TypePost) {
-        jQuery.ajax({
-            url: url, //Адрес подгружаемой страницы
-            type: TypePost, //Тип запроса
-            dataType: "html", //Тип данных
-            data: jQuery("#" + form_id).serialize(),
-            success: function (response) { //Если все нормально
-                //document.getElementById(result_id).remove();
-                document.getElementById(result_id).innerHTML = response;
-            },
-            error: function (response) { //Если ошибка
-                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
-            }
-        });
-    }
 </script>
 

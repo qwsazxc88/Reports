@@ -233,12 +233,14 @@ namespace Reports.Core.Dao.Impl
         /// Достаем уровень подразделений с полями из финграда.
         /// </summary>
         /// <param name="Id">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> DepFingradName(string Id)
+        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly)
         {
+            string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
             return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
                                             FROM vwStaffListDepartment as A
-                                            WHERE {0} ORDER BY Priority, Name", (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id)))
+                                            WHERE {0} ORDER BY Priority, Name", SqlWhere))
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("Code", NHibernateUtil.String)
                 .AddScalar("Name", NHibernateUtil.String)
