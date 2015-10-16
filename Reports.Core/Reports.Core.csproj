@@ -98,6 +98,7 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
+    <Compile Include="Dao\IMailConfirmDao.cs" />
     <Compile Include="Dao\IMailListDao.cs" />
     <Compile Include="Dao\IManualDeductionDao.cs" />
     <Compile Include="Dao\IKladrDao.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Dao\Impl\HelpPersonnelBillingCommentDao.cs" />
     <Compile Include="Dao\Impl\HelpPersonnelBillingRequestDao.cs" />
     <Compile Include="Dao\Impl\KladrDao.cs" />
+    <Compile Include="Dao\Impl\MailConfirmDao.cs" />
     <Compile Include="Dao\Impl\MailListDao.cs" />
     <Compile Include="Dao\Impl\ManualDeductionDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
@@ -482,6 +484,7 @@
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
     <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsRejectReasonDao.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsStatus.cs" />
@@ -1426,6 +1429,7 @@
     <EmbeddedResource Include="Domain\HelpBillingExecutorTasks.hbm.xml" />
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
     <EmbeddedResource Include="Domain\MailList.hbm.xml" />
+    <EmbeddedResource Include="Domain\MailConfirm.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

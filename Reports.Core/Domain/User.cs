@@ -40,7 +40,7 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual string Name { get; set; }
         public virtual string Email { get; set; }
-
+        public virtual string AlternativeMail { get; set; }
         #region Deleted
         //public const string FirstNameFieldName = "FirstName";
         //public virtual string FirstName { get; set; }

@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Reflection;
 using log4net;
 using Reports.Core;
+using Reports.Core.Utils;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -35,10 +36,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Fields
         protected IAuthenticationService authenticationService;
         protected IUserDao userDao;
+        protected IMailConfirmDao mailConfirmDao;
         protected ISettingsDao settingsDao;
         protected IDepartmentDao departmentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
         #endregion
+        public IMailConfirmDao MailConfirmDao
+        {
+            get { return Validate.Dependency(mailConfirmDao); }
+            set { mailConfirmDao = value; }
+        }
         public IAuthenticationService AuthenticationService
         {
             get { return Validate.Dependency(authenticationService); }
@@ -109,6 +116,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateRelease = user.DateRelease;
             model.FullName = user.FullName;
             return user;
+        }
+        public Result ConfirmMail(Guid key)
+        {
+            var confirm = MailConfirmDao.Load(key);
+            if (confirm != null )
+            {
+
+                confirm.User.AlternativeMail = confirm.Mail;
+                UserDao.SaveAndFlush(confirm.User);
+                return new Result(true, "E-mail успешно подтвержден.");
+            }
+            return new Result(false, "При подтверждении адреса возникла ошибка.");
+        }
+        public string AddAlternativeMail(string Email)
+        {
+            return AddAlternativeMail(CurrentUser.Id, Email);
+        }
+        public string AddAlternativeMail(int UserId, string Email)
+        {
+            var user = UserDao.Load(UserId);
+            MailConfirm confirm = new MailConfirm { Mail = Email, User = user };
+            MailConfirmDao.SaveAndFlush(confirm);
+            string confirmation = String.Format("Кто-то указал ваш адрес почты на Кадровом портале. Для подтверждения адреса почты пройдите по ссылке https://ruscount.com:8002/Account/Confirm?key={0}", confirm.Id.ToString());
+            SendEmail(Email, "Подтверждение адреса почты", confirmation);
+            return String.Format("https://ruscount.com:8002/Account/Confirm?key={0}",confirm.Id.ToString());
         }
         protected EmailDto SendEmailForManagerAcceptRequests(User user,DateTime acceptDate)
         {
