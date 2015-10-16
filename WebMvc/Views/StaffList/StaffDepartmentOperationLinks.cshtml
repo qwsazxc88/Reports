@@ -3,7 +3,7 @@
     ViewBag.Title = "Связи групп с операциями";
 }
 
-@using (Html.BeginForm("StaffDepartmentOperationLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationLinksForm", target = "tab2" }))
+@using (Html.BeginForm("StaffDepartmentOperationLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationLinksForm", target = "tab3" }))
 {
     <label id="MessageStr" style="color:Red;font-size:medium;"></label>
     <div>
@@ -43,6 +43,14 @@
         </table>
     </div>
     
+    <div id="DivIndicatorOL" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 }
 
 <script type="text/javascript">
@@ -66,7 +74,6 @@
 
     //тычем с трочку ...., мышкой
     function CheckUncheckRow(IndexRow){
-        console.log($("#OperationList_" + IndexRow + "__IsLink").val());
 
         if($("#OperationList_" + IndexRow + "__IsLink").val() == "true"){
             $("#OperationList_" + IndexRow + "__IsLink").val(false);
@@ -79,7 +86,6 @@
             $("#OperationList_" + IndexRow + "__IsLink").attr("checked", "checked");
         }
 
-        console.log($("#OperationList_" + IndexRow + "__IsLink").val());
     }
 
     //переключаем группы операций
@@ -100,7 +106,7 @@
         }
 
         var dataToSend = $("#StaffDepartmentOperationLinksForm").serialize();
-        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        ShowFlashOL(true);    //это диалоговое окно находится на родительской странице
 
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
@@ -110,10 +116,10 @@
                 $rows.remove();
                 FillOperationListTableData(data);
                 
-                ShowFlash(false);
+                ShowFlashOL(false);
             }
             else{
-                ShowFlash(false);
+                ShowFlashOL(false);
                 $("#MessageStr").text(data.msg);
             }
         }, "json");
@@ -131,7 +137,8 @@
                     "<td class='tdBtn'>" + //<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'True' : 'False') + "' type='hidden'>" + 
                         "<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'true' : 'false') + "' type='checkbox' " + 
                         (data.OperationList[i].IsLink ? "checked='checked'" : "''") + " onchange='CheckUncheckRow(" + i + ")' >" +
-                        "<input name='OperationList[" + i + "].IsUsed' value='" + data.OperationList[i].IsUsed + "' type='hidden'></td>" +
+                        //"<input name='OperationList[" + i + "].IsLink' value='" + data.OperationList[i].IsLink + "' type='hidden'>" +
+                        "</td>" +
                 "</tr>"
             );
 
@@ -140,5 +147,38 @@
         }
     }
 
+
+    function ShowFlashOL(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorOL").dialog("close");
+            $("#DivIndicatorOL").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOL").show();
+            $("#DivIndicatorOL").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorOL").dialog("open");
+        }
+    }
 </script>
 

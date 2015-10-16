@@ -22,14 +22,13 @@ namespace Reports.Core.Dao.Impl
         /// Список признаков арендованных помещений.
         /// </summary>
         /// <returns></returns>
-        public IList<IdNameWithOldNameDto> GetSoftGroups()
+        public IList<StaffDepartmentSoftGroupDto> GetSoftGroups()
         {
-            IQuery query = Session.CreateSQLQuery("SELECT Id, Name, Name as OldName FROM StaffDepartmentSoftGroup")
-                .AddScalar("Id", NHibernateUtil.Int32)
-                .AddScalar("Name", NHibernateUtil.String)
-                .AddScalar("OldName", NHibernateUtil.String);
+            IQuery query = Session.CreateSQLQuery("SELECT Id as gId, Name as gName FROM StaffDepartmentSoftGroup")
+                .AddScalar("gId", NHibernateUtil.Int32)
+                .AddScalar("gName", NHibernateUtil.String);
 
-            return query.SetResultTransformer(Transformers.AliasToBean<IdNameWithOldNameDto>()).List<IdNameWithOldNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentSoftGroupDto>()).List<StaffDepartmentSoftGroupDto>();
         }
     }
 }

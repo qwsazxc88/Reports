@@ -1,0 +1,202 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentInstallSoftModel
+@{
+    ViewBag.Title = "Справочник банковского ПО";
+}
+
+@using (Html.BeginForm("StaffDepartmentInstallSoft", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentInstallSoftForm", target = "tab2" }))
+{
+    <label id="sMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblSoft" class="grid">
+            <thead>
+                <tr>
+                    <th>Название ПО</th>
+                    <th class="tdBtn"><button type="button" title="Создать новую запись" onclick="AddEditInstallSoftRow(-1);">Создать</button></th>
+                </tr>    
+            </thead>
+            
+            <tbody class="tblSoftRows">
+                @{ int i = 0; }
+
+                @foreach (var item in Model.SoftList)
+                {
+                    <tr class="tblSoftRow">
+                        <td>
+                            @Html.HiddenFor(m => m.SoftList[i].sId)
+                            @Html.HiddenFor(m => m.SoftList[i].sName)
+                            @Html.DisplayFor(m => m.SoftList[i].sName)
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditInstallSoftRow(@i);" href="#" >Изменить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="DivIndicatorIS" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+    
+}
+
+<div id="AddEditInstallSoftDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentMenegmentDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="sMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.sId)
+                <td>@Html.LabelFor(m => m.sName)</td>
+                <td>@Html.TextBoxFor(m => m.sName, new { style = "width:400px", maxlength = "50" }) </td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSoftReference");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+        //ShowFlashIS(false);
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditInstallSoftRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#sId").val($("#SoftList_" + IndexRow + "__sId").val());
+            $("#sName").val($("#SoftList_" + IndexRow + "__sName").val());
+        }
+        else{
+            $("#sId").val(0);
+            $("#sName").val("");
+        }
+
+        $("#sMsg").text("");
+        $("#sMessageStr").text("");
+
+        CreateInstallSoftEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateInstallSoftEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditInstallSoftDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditInstallSoftRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditInstallSoftDialog').dialog("open");
+    }
+
+    function processAddEditInstallSoftRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentInstallSoft", "StaffList")";
+        var dataToSend = $("#AddEditInstallSoftDialog form").serialize();
+        ShowFlashIS(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditInstallSoftDialog').dialog("close");
+                $("#sMessageStr").text(data.msg);
+                var $table = $("#tblSoft");
+                var $rows = $("#tblSoft .tblSoftRow");
+                $rows.remove();
+                FillManagementTableData(data);
+                
+                ShowFlashIS(false);
+            }
+            else{
+                ShowFlashIS(false);
+                $("#sMsg").text(data.msg);
+            }
+        }, "json");
+    };
+
+    function FillManagementTableData(data){
+        for (var i = 0; i < data.SoftList.length; i++)
+        {
+            $("#tblSoft").append(
+                
+                "<tr class=\"tblSoftRow\">" +
+                    "<td><input id='SoftList_" + i + "__sId' name='SoftList[" + i + "].sId' value='" + data.SoftList[i].sId + "' type='hidden'>" +
+                        "<input id='SoftList_" + i + "__sName' name='SoftList[" + i + "].sName' value='" + data.SoftList[i].sName + "' type='hidden'>" + (data.SoftList[i].sName ? data.SoftList[i].sName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' class='CallModal' onclick='AddEditInstallSoftRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+
+    function ShowFlashIS(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorIS").dialog("close");
+            $("#DivIndicatorIS").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorIS").show();
+            $("#DivIndicatorIS").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorIS").dialog("open");
+        }
+    }
+</script>
+
+

@@ -22,14 +22,13 @@ namespace Reports.Core.Dao.Impl
         /// Список Установленного ПО.
         /// </summary>
         /// <returns></returns>
-        public IList<IdNameWithOldNameDto> GetInstallSoft()
+        public IList<StaffDepartmentInstallSoftDto> GetInstallSoft()
         {
-            IQuery query = Session.CreateSQLQuery("SELECT Id, Name, Name as OldName FROM StaffDepartmentInstallSoft")
-                .AddScalar("Id", NHibernateUtil.Int32)
-                .AddScalar("Name", NHibernateUtil.String)
-                .AddScalar("OldName", NHibernateUtil.String);
+            IQuery query = Session.CreateSQLQuery("SELECT Id as sId, Name as sName FROM StaffDepartmentInstallSoft")
+                .AddScalar("sId", NHibernateUtil.Int32)
+                .AddScalar("sName", NHibernateUtil.String);
 
-            return query.SetResultTransformer(Transformers.AliasToBean<IdNameWithOldNameDto>()).List<IdNameWithOldNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentInstallSoftDto>()).List<StaffDepartmentInstallSoftDto>();
         }
     }
 }

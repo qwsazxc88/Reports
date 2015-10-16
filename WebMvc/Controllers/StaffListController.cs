@@ -38,23 +38,26 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Штатное расписание, первичная загрузка страницы.
         /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffList()
+        public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
         {
             StaffListModel model = new StaffListModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(null);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
             return View(model);
         }
         
         /// <summary>
         /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
         /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.Findep | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager)]
-        public ActionResult StaffList(string DepId)
+        public ActionResult StaffListGetNodes(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
             StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
@@ -209,6 +212,24 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(StaffListBl.GetKladr(Code, AddressType, null, null, null, null));
             return Content(jsonString);
         }
+        /// <summary>
+        /// Обновляем справочники на странице после закрытия модальных окон.
+        /// </summary>
+        /// <param name="SwitchReference">Переключатель: 1 - справочник ПО, 2 - справочник операций</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult RefreshDepartmentRequestReference(int SwitchReference)
+        {
+            StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
+            model.RequestTypeId = 1;
+            model.Id = 0;
+            StaffListBl.LoadDictionaries(model);
+
+            if (SwitchReference == 1)
+                return Json(new { ok = true, msg = "", model.SoftGroups });
+            else 
+                return Json(new { ok = true, msg = "", model.OperationGroups });
+        }
         #endregion
 
         #region Заявки для штатных единиц.
@@ -346,7 +367,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListArrangement()
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(null);
+            model.Departments = StaffListBl.GetDepartmentListByParent(null, false);
             return View(model);
         }
         /// <summary>
@@ -369,61 +390,180 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Загрузка справочника ПО.
         /// </summary>
+        /// <param name="TabIndex">Позиционируемся на заданой вкладке</param>
+        /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentSoftReference(bool? IsModal)
+        public ActionResult StaffDepartmentSoftReference(int? TabIndex, bool? IsModal)
         {
-            /*
-             входящий параметр и все что с ним связано - это была попытка вытаскивать справочник в заявке модально 
-             * не доработал
-             * возможно надо переделать форму справочника или решить проблему с пропаданием вкладок справочника в модальном окне после submit
-             * 
-             */
-            StaffDepartmentSoftReferenceModel model = StaffListBl.GetSoftReference(new StaffDepartmentSoftReferenceModel());
-            model.TabIndex = 0;
+            StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
+            model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
             model.IsModal = IsModal.HasValue ? IsModal.Value : false;
-            if (model.IsModal)
-                return PartialView(model);
-            else
+            if (!model.IsModal)
                 return View(model);
+            else
+                return PartialView(model);
         }
+        ///// <summary>
+        ///// Сохранение данных в справочнике ПО.
+        ///// </summary>
+        ///// <param name="model"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
+        //{
+        //    string error = string.Empty;
+
+        //    ModelState.Clear();
+        //    if (model.SwitchOperation == 0)
+        //    {
+        //        model.IsError = false;
+        //        model = StaffListBl.GetSoftReference(model);
+        //    }
+        //    else
+        //    {
+        //        if (ValidateModel(model))
+        //        {
+        //            if (!StaffListBl.SaveSoftReference(model, out error))
+        //            {
+        //                ModelState.AddModelError("MessageStr", error);
+        //            }
+        //            else
+        //            {
+        //                model.IsError = false;
+        //                model = StaffListBl.GetSoftReference(model);
+        //            }
+        //        }
+        //    }
+
+        //    if (model.IsModal)
+        //        return PartialView(model);
+        //    else
+        //        return View(model);
+        //}
+
+        #region Справочник групп ПО
         /// <summary>
-        /// Сохранение данных в справочнике ПО.
+        /// Загрузка справочника групп ПО.
         /// </summary>
-        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentSoftGroup()
+        {
+            StaffDepartmentSoftGroupModel model = StaffListBl.GetStaffDepartmentSoftGroup(new StaffDepartmentSoftGroupModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult StaffDepartmentSoftReference(StaffDepartmentSoftReferenceModel model)
+        public ActionResult AddEditStaffDepartmentSoftGroup(StaffDepartmentSoftGroupDto itemToAddEdit)
         {
-            string error = string.Empty;
+            string error = String.Empty;
+            bool result = false;
 
-            ModelState.Clear();
-            if (model.SwitchOperation == 0)
+            if (ValidateModel(itemToAddEdit, out error))
             {
-                model.IsError = false;
-                model = StaffListBl.GetSoftReference(model);
-            }
-            else
-            {
-                if (ValidateModel(model))
-                {
-                    if (!StaffListBl.SaveSoftReference(model, out error))
-                    {
-                        ModelState.AddModelError("MessageStr", error);
-                    }
-                    else
-                    {
-                        model.IsError = false;
-                        model = StaffListBl.GetSoftReference(model);
-                    }
-                }
+                if (StaffListBl.SaveStaffDepartmentSoftGroup(itemToAddEdit, out error))
+                    result = true;
             }
 
-            if (model.IsModal)
-                return PartialView(model);
-            else
-                return View(model);
+
+            StaffDepartmentSoftGroupModel model = StaffListBl.GetStaffDepartmentSoftGroup(new StaffDepartmentSoftGroupModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.GroupList });
         }
+
+        #endregion
+
+        #region Справочник банковского ПО
+        /// <summary>
+        /// Загрузка справочника банковского ПО.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentInstallSoft()
+        {
+            StaffDepartmentInstallSoftModel model = StaffListBl.GetStaffDepartmentInstallSoft(new StaffDepartmentInstallSoftModel());
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentInstallSoft(StaffDepartmentInstallSoftDto itemToAddEdit)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (ValidateModel(itemToAddEdit, out error))
+            {
+                if (StaffListBl.SaveStaffDepartmentInstallSoft(itemToAddEdit, out error))
+                    result = true;
+            }
+
+
+            StaffDepartmentInstallSoftModel model = StaffListBl.GetStaffDepartmentInstallSoft(new StaffDepartmentInstallSoftModel());
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.SoftList });
+        }
+
+        #endregion
+
+        #region Связи ПО с группами
+        /// <summary>
+        /// Загрузка связей.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StaffDepartmentSoftGroupLinks()
+        {
+            StaffDepartmentSoftGroupLinksModel model = StaffListBl.GetStaffDepartmentSoftGroupLinks(new StaffDepartmentSoftGroupLinksModel(), 0);
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Загрузка связей при выборе в выпадающем списке.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentSoftGroupLinks(int SoftGroupId)
+        {
+            StaffDepartmentSoftGroupLinksModel model = StaffListBl.GetStaffDepartmentSoftGroupLinks(new StaffDepartmentSoftGroupLinksModel(), SoftGroupId);
+
+            return Json(new { ok = true, msg = "", model.SoftGroupLink });
+        }
+
+        /// <summary>
+        /// Сохраняем данные.
+        /// </summary>
+        /// <param name="SoftGroupLink">Данные</param>
+        /// <param name="OperGroupId">Id группы операций</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEditStaffDepartmentSoftGroupLinks(IList<StaffDepartmentSoftGroupLinksDto> SoftGroupLink, int SoftGroupId)
+        {
+            string error = String.Empty;
+            bool result = false;
+
+            if (StaffListBl.SaveStaffDepartmentSoftGroupLinks(SoftGroupLink, SoftGroupId, out error))
+                result = true;
+
+
+            StaffDepartmentSoftGroupLinksModel model = StaffListBl.GetStaffDepartmentSoftGroupLinks(new StaffDepartmentSoftGroupLinksModel(), SoftGroupId);
+            ViewBag.Error = error;
+
+            return Json(new { ok = result, msg = error, model.SoftGroupLink });
+        }
+        #endregion
         #endregion
 
         #region Cправочник кодировок
@@ -750,13 +890,19 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Загрузка справочника операций подразделений.
         /// </summary>
+        /// <param name="TabIndex">Позиционируемся на заданой вкладке</param>
+        /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult StaffDepartmentOperationReference(int? TabIndex)
+        public ActionResult StaffDepartmentOperationReference(int? TabIndex, bool? IsModal)
         {
             StaffDepartmentOperationReferenceModel model = new StaffDepartmentOperationReferenceModel();
             model.TabIndex = TabIndex.HasValue && TabIndex.Value > 0 ? TabIndex.Value : 0;
-            return View(model);
+            model.IsModal = IsModal.HasValue ? IsModal.Value : false;
+            if (!model.IsModal)
+                return View(model);
+            else
+                return PartialView(model);
         }
 
         #region Справочник групп операций
@@ -860,7 +1006,7 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Сохраняем данные.
         /// </summary>
-        /// <param name="itemToAdd">Данные</param>
+        /// <param name="OperationList">Данные</param>
         /// <param name="OperGroupId">Id группы операций</param>
         /// <returns></returns>
         [HttpPost]
@@ -918,60 +1064,15 @@ namespace WebMvc.Controllers
 
             return ModelState.IsValid;
         }
-        protected bool ValidateModel(StaffDepartmentSoftReferenceModel model)
+        protected bool ValidateModel(StaffDepartmentSoftGroupDto EditRow, out string error)
         {
-            switch (model.TabIndex)
-            {
-                case 0:
-                    if (model.SwitchOperation == 1)//добавление
-                    {
-                        if (string.IsNullOrEmpty(model.SoftGroupName) || string.IsNullOrWhiteSpace(model.SoftGroupName))
-                            ModelState.AddModelError("SoftGroupName", "Введите название группы ПО!");
-                    }
-                    if (model.SwitchOperation == 2)//редактирование
-                    {
-                        for (int i = 0; i < model.GroupList.Count; i++)
-                        {
-                            if (string.IsNullOrEmpty(model.GroupList[i].Name) || string.IsNullOrWhiteSpace(model.GroupList[i].Name))
-                            {
-                                ModelState.AddModelError("GroupList[" + i.ToString() + "].Name", "*");
-                                ModelState.AddModelError("MessageStr", "Введите название группы ПО");
-                            }
-                        }
-                    }
-                    break;
-                case 1:
-                    if (model.SwitchOperation == 3)
-                    {
-                        if (model.SoftGroupLink.Where(x => x.IsUsed).Count() == 0)
-                        {
-                            ModelState.AddModelError("MessageStr", "Группа ПО должна содержать в себе установленное ПО!");
-                        }
-                    }
-                    break;
-                case 2:
-                    if (model.SwitchOperation == 4)//добавление
-                    {
-                        if (string.IsNullOrEmpty(model.SoftName) || string.IsNullOrWhiteSpace(model.SoftName))
-                            ModelState.AddModelError("SoftName", "Введите название ПО!");
-                    }
-                    if (model.SwitchOperation == 5)//редактирование
-                    {
-                        for (int i = 0; i < model.SoftList.Count; i++)
-                        {
-                            if (string.IsNullOrEmpty(model.SoftList[i].Name) || string.IsNullOrWhiteSpace(model.SoftList[i].Name))
-                            {
-                                ModelState.AddModelError("SoftList[" + i.ToString() + "].Name", "*");
-                                ModelState.AddModelError("MessageStr", "Введите название ПО");
-                            }
-                        }
-                    }
-                    break;
-            }
-
-            model.IsError = !ModelState.IsValid;
-
-            return ModelState.IsValid;
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentSoftGroupRow(EditRow, out error);
+        }
+        protected bool ValidateModel(StaffDepartmentInstallSoftDto EditRow, out string error)
+        {
+            error = string.Empty;
+            return StaffListBl.ValidateDepartmentInstallSoftRow(EditRow, out error);
         }
         protected bool ValidateModel(StaffDepartmentBranchDto EditRow, out string error)
         {
@@ -1030,7 +1131,7 @@ namespace WebMvc.Controllers
         public ActionResult TreeViewAjax()
         {
             TreeViewAjaxModel model = new TreeViewAjaxModel();//StaffListBl.GetDepartmentList();
-            model.Departments = StaffListBl.GetDepartmentListByParent("9900424");
+            model.Departments = StaffListBl.GetDepartmentListByParent("9900424", false);
             return View(model);
         }
         /// <summary>
@@ -1042,7 +1143,7 @@ namespace WebMvc.Controllers
         public ActionResult TreeViewAjax(string DepId)
         {
             TreeViewAjaxModel model = new TreeViewAjaxModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, false);
             return Json(model.Departments);
         }
         /// <summary>

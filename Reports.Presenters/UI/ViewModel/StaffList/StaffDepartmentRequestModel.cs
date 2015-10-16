@@ -36,7 +36,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int? DepartmentId { get; set; }
 
         [Display(Name = "Родительское подразделение")]
-        public int? ParentId { get; set; }
+        public int ParentId { get; set; }
         public string DepParentName { get; set; }
 
         [Display(Name = "Уровень подразделения")]
@@ -221,7 +221,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Установленное ПО")]
         public int SoftGroupId { get; set; }
-        public IList<IdNameWithOldNameDto> SoftGroups { get; set; }
+        public IList<StaffDepartmentSoftGroupDto> SoftGroups { get; set; }
 
         [Display(Name = "Признак блокировки подразделения")]
         public bool IsBlocked { get; set; }
@@ -232,7 +232,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Операции")]
         public int OperGroupId { get; set; }
-        public IList<StaffDepartmentOperationGroups> OperationGroups { get; set; }
+        public IList<StaffDepartmentOperationGroupsDto> OperationGroups { get; set; }
 
         [Display(Name = "Признак обслуживания юридических лиц")]
         public bool IsLegalEntity { get; set; }

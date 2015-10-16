@@ -780,9 +780,11 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentInstallSoftDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationGroupsDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationsDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentSoftGroupDto.cs" />
     <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
     <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
@@ -790,7 +792,7 @@
     <Compile Include="Dto\StaffList\DepOperationModeDto.cs" />
     <Compile Include="Dto\StaffList\EstablishedPostRequestDto.cs" />
     <Compile Include="Dto\StaffList\ProgramCodeDto.cs" />
-    <Compile Include="Dto\StaffList\SoftGroupLinkDto.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentSoftGroupLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentAdministrationDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentBranchDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentBusinessGroupDto.cs" />

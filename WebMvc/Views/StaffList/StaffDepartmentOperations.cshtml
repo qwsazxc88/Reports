@@ -42,7 +42,15 @@
             </tbody>
         </table>
     </div>
-    
+ 
+    <div id="DivIndicatorOp" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>   
 }
 
 <div id="AddEditOperationRowDialog" style="display:none;">
@@ -88,7 +96,7 @@
             }
         });
 
-        //ShowFlash(false);
+        //ShowFlashOp(false);
     });
 
     //вкл/выкл режима редактирования
@@ -149,7 +157,7 @@
     
         var url = "@Url.Action("AddEditStaffDepartmentOperations", "StaffList")";
         var dataToSend = $("#AddEditOperationRowDialog form").serialize();
-        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        ShowFlashOp(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditOperationRowDialog').dialog("close");
@@ -159,10 +167,10 @@
                 $rows.remove();
                 FillOperationsTableData(data);
                 
-                ShowFlash(false);
+                ShowFlashOp(false);
             }
             else{
-                ShowFlash(false);
+                ShowFlashOp(false);
                 $("#olblMsg").text(data.msg);
             }
         }, "json");
@@ -188,5 +196,38 @@
         }
     }
 
+
+    function ShowFlashOp(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorOp").dialog("close");
+            $("#DivIndicatorOp").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOp").show();
+            $("#DivIndicatorOp").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorOp").dialog("open");
+        }
+    }
 </script>
 
