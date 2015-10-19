@@ -90,26 +90,31 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Для Руководителя
         [Display(Name = "Ставка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal TargetSalary { get; set; }
         [Display(Name = "Вид расчёта оклада")]
         public int TargetSalaryType { get; set; }
         [Display(Name = "Оклад")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal TargetCasing { get; set; }
         [Display(Name="Условия перевода")]
         public string MovementCondition { get; set; }
         [Display(Name="Должностная надбавка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionPosition {get;set;}
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? AdditionPositionTo {get;set;}
         [Display(Name = "Персональная надбавка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionPersonnel { get; set; }
         [Display(Name="Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? AdditionPersonnelTo { get; set; }
         [Display(Name = "Надбавка за квалификацию")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionQuality { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
@@ -133,12 +138,16 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name="Номер ДС")]
         public string AdditionalAgreementNumber { get; set; }
         [Display(Name="Районный коэффициент")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal RegionCoefficient {get;set;}
         [Display(Name="Территориальная надбавка (руб.)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionTerritory {get;set;}
         [Display(Name="Надбавка за разъездной характер работы")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionTraveling { get; set; }
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб.)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionFront { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",

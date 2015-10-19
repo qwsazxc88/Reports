@@ -1,4 +1,5 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffMovementsEditModel
+@using WebMvc.Helpers
 @{
     ViewBag.Title = "Редактирование заявки на перемещение";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
@@ -34,6 +35,7 @@
     @Html.HiddenFor(m => m.IsStopButtonPressed)
     @Html.HiddenFor(m => m.IsTargetManagerAcceptAvailable)
     @Html.HiddenFor(m => m.IsUserAcceptAvailable)
+    @Html.HiddenFor(m => m.Creator.Id)
     </div>
     <table style="width:100%">
     <tr>
@@ -128,62 +130,124 @@
                             }
                           </ul>
                           <div id="tabs-1">
+                          @if (Model.SourceManager != null)
+                          {
                             <fieldset class="bordered doc-wrap-blue panel" >
-                            <legend title='Реквизиты инициатора(автора) заявки' class="bordered">Реквизиты инициатора(автора) заявки</legend>
+                            <legend title='Реквизиты руководителя' class="bordered">Реквизиты @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</legend>
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Name)
-                                        @Html.HiddenFor(m => m.Creator.Id)
-                                        @Html.DisplayFor(m => m.Creator.Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.PositionName)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.PositionName)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.PositionName)
-                                        @Html.HiddenFor(m => m.Creator.PositionId)
-                                        @Html.DisplayFor(m => m.Creator.PositionName)
+                                        @Html.HiddenFor(m => m.SourceManager.PositionName)
+                                        @Html.HiddenFor(m => m.SourceManager.PositionId)
+                                        @Html.DisplayFor(m => m.SourceManager.PositionName)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Dep3Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Dep3Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Dep3Name)
-                                        @Html.HiddenFor(m => m.Creator.Dep3Id)
-                                        @Html.DisplayFor(m => m.Creator.Dep3Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep3Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep3Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Dep3Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Dep7Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Dep7Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Dep7Name)
-                                        @Html.HiddenFor(m => m.Creator.Dep7Id)
-                                        @Html.DisplayFor(m => m.Creator.Dep7Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep7Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep7Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Dep7Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Managers)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Managers)</td>
                                     <td>
-                                        @(Model.Creator.Managers != null ? Model.Creator.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                        @(Model.SourceManager.Managers != null ? Model.SourceManager.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Chiefs)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Chiefs)</td>
                                     <td>
-                                        @(Model.Creator.Chiefs != null ? Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                        @(Model.SourceManager.Chiefs != null ? Model.SourceManager.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Personnels)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Personnels)</td>
                                     <td>
-                                        @(Model.Creator.Personnels != null ? Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                        @(Model.SourceManager.Personnels != null ? Model.SourceManager.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                             </table>
                             </fieldset>
+                          }
+                            @if (Model.RequestType == 2 && Model.TargetManager!=null)
+                            {
+                            <fieldset class="bordered doc-wrap-blue panel" >
+                            <legend title='Реквизиты принимающего руководителя' class="bordered">Реквизиты принимающего руководителя</legend>
+                            <table>
+                                
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.PositionName)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.PositionName)
+                                        @Html.HiddenFor(m => m.TargetManager.PositionId)
+                                        @Html.DisplayFor(m => m.TargetManager.PositionName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Dep3Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Dep3Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Dep3Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Dep3Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Dep7Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Dep7Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Dep7Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Dep7Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Managers)</td>
+                                    <td>
+                                        @(Model.TargetManager.Managers != null ? Model.TargetManager.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Chiefs)</td>
+                                    <td>
+                                        @(Model.TargetManager.Chiefs != null ? Model.TargetManager.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Personnels)</td>
+                                    <td>
+                                        @(Model.TargetManager.Personnels != null ? Model.TargetManager.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                            </table>
+                            </fieldset>
+                            }
                             <fieldset class="bordered doc-wrap-blue panel" >
                             <legend title='Место работы сотрудника в настоящее время' class="bordered">Место работы сотрудника в настоящее время</legend>
                             <table>
@@ -329,15 +393,15 @@
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetSalary)</td>
-                                <td>@Html.TextBoxFor(m => m.TargetSalary, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.TextBoxNewFor(m => m.TargetSalary, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetCasing)</td>
-                                <td>@Html.TextBoxFor(m => m.TargetCasing, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.TextBoxNewFor(m => m.TargetCasing,"{0:F2}" ,Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionPersonnel)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPersonnel, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPersonnel, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                  @Html.LabelFor(m => m.AdditionPersonnelTo)
                                  @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
@@ -346,7 +410,7 @@
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionPosition)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPosition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPosition, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionPositionTo)
                                 @Html.TextBoxFor(m => m.AdditionPositionTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
@@ -355,10 +419,10 @@
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionQuality)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionQuality, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionQuality, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionQualityTo)
-                                @Html.TextBoxFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxNewFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                                 </div>
                                 </td>
                             </tr>
@@ -414,19 +478,19 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.RegionCoefficient)</td>
-                                    <td>@Html.TextBoxFor(m => m.RegionCoefficient, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.RegionCoefficient, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTerritory)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionTerritory, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTerritory, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTraveling)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionTraveling, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTraveling, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionFront)</td>
-                                    <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionFront, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                    <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionFront, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 
                                     <div class="TempMovingContainer formfield">
                                         @Html.LabelFor(m => m.AdditionFrontTo)
@@ -458,7 +522,7 @@
                                             @Html.LabelFor(m => m.NorthFactorDay)
                                             @Html.TextBoxFor(m => m.NorthFactorDay)
                                             @Html.LabelFor(m => m.NorthFactorAddition)
-                                            @Html.TextBoxFor(m => m.NorthFactorAddition)
+                                            @Html.TextBoxNewFor(m => m.NorthFactorAddition,"{0:F2}" )
                                         </div>
                                      </td>
                                     
@@ -758,6 +822,8 @@ label { font-size:1.1em; }
         margin:5px;
 }
 </style>
+
+
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
@@ -1013,6 +1079,7 @@ label { font-size:1.1em; }
     function ConfigureFields()
     {
         $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+               
         $('#IsHourlyContainer').buttonset(@if(!Model.IsPersonnelManagerEditable){<text>{disabled: true}</text>});
         $('#IsTempMovingContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
         $('#ConjunctionContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
