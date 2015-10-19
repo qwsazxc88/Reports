@@ -30,5 +30,11 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id подразделения</param>
         /// <returns></returns>
         int GetCurrentRequestId(int DepartmentId);
+        /// <summary>
+        /// Проверка на возможность создать код Финграда для создаваемого подразделения.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <returns></returns>
+        bool IsEnableCreateCode(int Id);
     }
 }

@@ -251,6 +251,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffdepartmentOperationGroupsDao); }
             set { staffdepartmentOperationGroupsDao = value; }
         }
+
+        protected IStaffDepartmentAccessoryDao staffdepartmentAccessoryDao;
+        public IStaffDepartmentAccessoryDao StaffDepartmentAccessoryDao
+        {
+            get { return Validate.Dependency(staffdepartmentAccessoryDao); }
+            set { staffdepartmentAccessoryDao = value; }
+        }
+
+        protected IDepartmentArchiveDao departmentarchiveDao;
+        public IDepartmentArchiveDao DepartmentArchiveDao
+        {
+            get { return Validate.Dependency(departmentarchiveDao); }
+            set { departmentarchiveDao = value; }
+        }
+
         #endregion
 
         #region Штатное расписание.
@@ -350,7 +365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Name : DepartmentDao.Get(model.ParentId).Name;
                 model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
                 model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
-                model.IsBack = false;
+                model.BFGId = 0;
                 model.OrderNumber = string.Empty;
                 model.OrderDate = null;
                 model.LegalAddressId = 0;
@@ -434,7 +449,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepParentName = entity.ParentDepartment != null ? entity.ParentDepartment.Name : string.Empty;
                 model.ItemLevel = entity.ItemLevel;
                 model.Name = entity.Name;
-                model.IsBack = entity.IsBack;
+                model.BFGId = entity.DepartmentAccessory != null ? entity.DepartmentAccessory.Id : 0;
                 model.OrderNumber = entity.OrderNumber;
                 model.OrderDate = entity.OrderDate;
                 if (entity.LegalAddress != null)
@@ -566,7 +581,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId),
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
-                    IsBack = model.IsBack,
+                    DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId),
                     OrderNumber = model.OrderNumber,
                     OrderDate = model.OrderDate,
                     IsTaxAdminAccount = model.IsTaxAdminAccount,
@@ -829,7 +844,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //поля общих реквизитов
             entity.Name = model.Name;
-            entity.IsBack = model.IsBack;
+            entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
             entity.OrderNumber = model.OrderNumber;
             entity.OrderDate = model.OrderDate;
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
@@ -1326,24 +1341,33 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             }
 
+            //находим действующую заявку и убираем у нее признак использования
+            int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+            StaffDepartmentRequest OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
+
             //Утверждение
             if (!model.IsDraft)
             {
-                //if (!SaveDepartmentReference(entity, curUser, out error))
-                //{
-                //    return false;
-                //}
-                //если заявка на создание подразделения
-                    //заносим запись в справочник подразделений
-                    //заносим запись в архив
-                    //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
+                if (!SaveDepartmentReference(entity, curUser, out error))
+                {
+                    return false;
+                }
 
                 //если заявка на изменение/удаление подразделения
-                    //заносим изменения в справочник?
-                    //заносим запись в архив
-                    //находим действующую заявку и убираем у нее признак использования
-                    //у текущей заявки ставим признак использования
+                if (entity.RequestType.Id != 1)
+                {
+                    
+                    if (OldEntity != null)
+                    {
+                        OldEntity.IsUsed = false;
+                        OldEntity.Editor = curUser;
+                        OldEntity.EditDate = DateTime.Now;
+                    }
 
+
+                    //у текущей заявки ставим признак использования
+                    entity.IsUsed = true;
+                }
             }
 
 
@@ -1351,6 +1375,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 try
                 {
+                    if (OldEntity != null)
+                        StaffDepartmentRequestDao.SaveAndFlush(OldEntity);
+
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
                 }
@@ -1380,60 +1407,49 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveDepartmentReference(StaffDepartmentRequest entity, User curUser, out string error)
         {
             error = string.Empty;
+
             Department dep = entity.Department != null ? DepartmentDao.Get(entity.Department.Id) : new Department();
+            //родительское подразделение
+            Department ParentDep = entity.ParentDepartment != null ? DepartmentDao.Get(entity.ParentDepartment.Id) : new Department();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
             if (entity.RequestType.Id == 1)
             {
-                //dep.Code = entity.Position;
+                dep.Code = null;
                 dep.Name = entity.Name;
-                //dep.Code1C = entity.Quantity;
-                //dep.ParentId = entity.Salary;
-                //dep.Path = true;
-                dep.ItemLevel = entity.ItemLevel;
-                //dep.CodeSKD = entity.ItemLevel;
+                dep.Code1C = null;
+                dep.ParentId = ParentDep.Code1C;
+                dep.Path = ParentDep.Path + "__new";
+                dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
+                dep.CodeSKD = null;
                 //dep.Priority = entity.ItemLevel;
-                //dep.IsUsed = entity.ItemLevel;
-                //dep.Creator = curUser;
-                //dep.CreateDate = DateTime.Now;
+                dep.IsUsed = true;
+                dep.DepartmentAccessory = entity.DepartmentAccessory;
+                dep.FingradCode = "";//формируем код для Финград
+                dep.Creator = curUser;
+                dep.CreateDate = DateTime.Now;
             }
 
-            ////если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            //if (entity.RequestType.Id != 1)
-            //{
-            //    if (entity.RequestType.Id == 2)
-            //    {
-            //        dep.Position = entity.Position;
-            //        dep.Quantity = entity.Quantity;
-            //        dep.Salary = entity.Salary;
-            //    }
-            //    else if (entity.RequestType.Id == 3)
-            //    {
-            //        dep.IsUsed = false; //делаем неактивной текущую запись в справочнике
-            //    }
-            //    dep.Editor = curUser;
-            //    dep.EditDate = DateTime.Now;
-            //}
+            //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
+            if (entity.RequestType.Id != 1)
+            {
+                if (entity.RequestType.Id == 2)
+                {
+                    dep.ParentId = ParentDep.Code1C;
+                    dep.Path = ParentDep.ItemLevel != entity.ItemLevel ? ParentDep.Path + "__new" : dep.Path;
+                    dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
+                    dep.IsUsed = entity.IsUsed;
+                }
+                else if (entity.RequestType.Id == 3)
+                {
+                    dep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+                }
+                dep.Editor = curUser;
+                dep.EditDate = DateTime.Now;
+            }
 
 
-            ////архивируем изменения
-            //if (dep.EstablishedPostArchive == null)
-            //    dep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
-
-            //dep.EstablishedPostArchive.Add(new StaffEstablishedPostArchive
-            //{
-            //    StaffEstablishedPost = dep,
-            //    Position = dep.Position,
-            //    Department = dep.Department,
-            //    Quantity = dep.Quantity,
-            //    Salary = dep.Salary,
-            //    IsUsed = dep.IsUsed,
-            //    BeginAccountDate = dep.BeginAccountDate,
-            //    Priority = dep.Priority,
-            //    Creator = curUser,
-            //    CreateDate = DateTime.Now
-            //});
-
-
+            
+            
             try
             {
                 DepartmentDao.SaveAndFlush(dep);
@@ -1441,11 +1457,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.Department == null)
                     entity.Department = new Department();
 
+                //если нет кода или изменился родитель, то надо подкорректировать путь
+                dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
+
+                DepartmentDao.SaveAndFlush(dep);
+
+                //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
                 entity.Department = dep;
+
+                //архивируем изменения
+                DepartmentArchive da = new DepartmentArchive()
+                {
+                    Department = dep,
+                    Code = dep.Code,
+                    Name = dep.Name,
+                    Code1C = dep.Code1C,
+                    ParentId = dep.ParentId,
+                    Path = dep.Path,
+                    ItemLevel = dep.ItemLevel,
+                    Priority = dep.Priority,
+                    IsUsed = dep.IsUsed,
+                    Creator = curUser,
+                    CreateDate = DateTime.Now
+                };
+
+                DepartmentArchiveDao.SaveAndFlush(da);
             }
             catch (Exception ex)
             {
-                StaffEstablishedPostDao.RollbackTran();
+                DepartmentDao.RollbackTran();
+                DepartmentArchiveDao.RollbackTran();
                 error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
                 return false;
             }
@@ -1473,6 +1514,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DepManager2 = GetManagers(curUser, 2);
             
             return model;
+        }
+        /// <summary>
+        /// Проверка на возможность создать код Финград для подразделения в текущей заявке.
+        /// </summary>
+        /// <param name="Id">Id заявки</param>
+        /// <returns></returns>
+        public bool ValidateCreateCodeAvailable(int Id)
+        {
+            StaffDepartmentRequest req = StaffDepartmentRequestDao.Get(Id);
+
+            if (req == null)
+                return false;
+
+            if (!StaffDepartmentRequestDao.IsEnableCreateCode(req.ParentDepartment.Id))
+                return false;
+            //req.ParentDepartment
+
+
+            return true;
         }
         #endregion
 
@@ -1590,7 +1650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (DepId != 0)
                     {
                         StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
-                        model.IsBack = DepEntity.IsBack;
+                        //model.IsBack = DepEntity.IsBack;
                         if (DepEntity.LegalAddress != null)
                         {
                             model.LegalAddress = DepEntity.LegalAddress.Address;
@@ -3452,6 +3512,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
             model.SKB_GE = StaffDepartmentSKB_GEDao.GetSKB_GE();
             model.SoftGroups = StaffDepartmentSoftGroupDao.GetSoftGroups();
+            model.Accessoryes = StaffDepartmentAccessoryDao.GetAccessoryes();
+            model.Accessoryes.Insert(0, new IdNameDto { Id = 0, Name = "" });
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.

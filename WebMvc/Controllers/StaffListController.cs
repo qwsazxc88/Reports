@@ -148,24 +148,20 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))//проверки
                 {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", "В разработке!");
-                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("MessageStr", "В разработке!");
-                    //}
-                    //else
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
-                    //}
+                    if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetDepartmentRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
+                    }
                 }
             }
             
-            //заглушка для выкладки на тест для показа прототипов
-            //StaffListBl.LoadDictionaries(model);
-            //ModelState.AddModelError("Message", "В разработке!");
+            
             //для комментариев
             ViewBag.PlaceId = model.Id;
             ViewBag.PlaceTypeId = 2; 
@@ -1036,6 +1032,15 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffDepartmentRequestModel model)
         {
+            //добавление
+            //проверка на возможность сформировать код для подразделения 7 уровня
+            //нужно проверить наличие всех кодов в ветке
+            //нужно сформировать код
+            //если по данному подразделению это не первая заявка, то нужно достать предыдущий код для финграда
+
+            //закрытие
+            //проверить на наличие сотрудников в подразделении
+
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffEstablishedPostRequestListModel model)

@@ -14,8 +14,8 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; }
         public virtual int ItemLevel { get; set; }
         public virtual Department ParentDepartment { get; set; }
-        public virtual string Name { get; set; } 
-        public virtual bool IsBack { get; set; } 
+        public virtual string Name { get; set; }
+        public virtual StaffDepartmentAccessory DepartmentAccessory { get; set; }
         public virtual string OrderNumber { get; set; }
         public virtual DateTime? OrderDate { get; set; }
         public virtual RefAddresses LegalAddress { get; set; } 

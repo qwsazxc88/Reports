@@ -13,9 +13,22 @@
 		<property name="ItemLevel" not-null="false"/>
     <property name="CodeSKD" not-null="false"/>
     <property name="Priority" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    <property name="FingradCode" not-null="false"/>
     <bag name="Dep3" table="vwDepartmentToDep3" inverse="true">
       <key column="DepartmentId"/>
       <many-to-many class="Department" column="Dep3Level"/>
+    </bag>
+    <many-to-one name="DepartmentAccessory" class="StaffDepartmentAccessory" column="BFGId" foreign-key="FK_Department_StaffDepartmentAccessory" index="Department_StaffDepartmentAccessory" not-null="false"/>
+
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_Department_CreatorUser" index="Department_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_Department_EditorUser" index="Department_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+    <bag name="DepartmentArchives" lazy="true" cascade="all-delete-orphan">
+      <key column="DepartmentId" foreign-key="FK_DepartmentArchive_Department"/>
+      <one-to-many class="DepartmentArchive"/>
     </bag>
   </class>
 </hibernate-mapping>

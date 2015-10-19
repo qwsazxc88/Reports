@@ -41,10 +41,10 @@
                     <td class="tdBtn">@item.ItemLevel</td>
                     <td>
                         <span>
-                            <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name</a>
+                            <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span id=@("span-tr" + item.Id.ToString()) class="collapse collapsible">&nbsp;</span> @item.Name</a>
                         </span>
                         @*<a class="ui-notify-close" href='@Url.Action("StaffList", "StaffList", new { Depid = @item.Code1C })' style="cursor:hand">test</a>*@
-                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="$('#span-tr' + @item.Id.ToString()).toggleClass('collapse expand'); GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                         <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
                     <td></td>
@@ -183,7 +183,7 @@
                                                 tblStr += "&nbsp;";
                                             }
                                             tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
-                                            "<span Id='span-tr" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                            "<span Id='span-tr" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span>" + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                             "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
                                             "<button type='button' class='btnDepNewWindow' title='Открыть ветку в новом окне' onclick='GetDepartments("+ result.Departments[i].Code + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
@@ -221,10 +221,10 @@
                                     $(this).closest('li').children('ul').slideToggle();
                                 });
 
-                                //пи автооткрытии показываются сотрудники, но не видно, что отработан клик по подразделению 7 уровня - РАЗОБРАТЬСЯ
+                                //при автооткрытии имитируем клик, меняем внешний вид
                                 if (IsExpandAll){
-                                    //$("#span-tr" + result.Departments[i].Code1C).click();
-                                    //$("#getnodes-" + result.Departments[i].Code1C).click(); 
+                                    $("#span-tr" + result.Departments[i].Code1C).toggleClass("collapse expand");
+
                                 }
                             }
                         }

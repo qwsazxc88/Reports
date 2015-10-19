@@ -229,6 +229,7 @@ namespace Reports.Core.Dao.Impl
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
+
         /// <summary>
         /// Достаем Id действующей заявки для данного подразделения.
         /// </summary>
@@ -242,6 +243,30 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)
                 .UniqueResult<int>();
+        }
+
+        /// <summary>
+        /// Проверка на возможность создать код Финграда для создаваемого подразделения.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <returns></returns>
+        public bool IsEnableCreateCode(int Id)
+        {
+            //от родительского подразделения и вверх по ветке до филиала смотрим чтобы справочник кодировок имел коды к веткам
+            IQuery query = Session.CreateSQLQuery(@"SELECT cast(case when count(*) = 0 then 1 else 0 end as bit) IsExists
+                                                    FROM (SELECT B.Id, 
+						                                         case when B.ItemLevel = 6 then (SELECT Code FROM StaffDepartmentRPLink WHERE DepartmentId = B.Id) 
+									                                        when B.ItemLevel = 5 then (SELECT Code FROM StaffDepartmentBusinessGroup WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 4 then (SELECT Code FROM StaffDepartmentAdministration WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 3 then (SELECT Code FROM StaffDepartmentManagement WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 2 then (SELECT Code FROM StaffDepartmentBranch WHERE DepartmentId = B.Id)
+						                                         else B.FingradCode end as FingradCode
+			                                              FROM Department as A
+			                                              INNER JOIN Department as B ON B.ItemLevel <= A.ItemLevel and B.ItemLevel <> 1 and A.Path like B.Path + '%'
+			                                              WHERE A.Id = " + Id.ToString() + @") as A
+                                                    WHERE A.FingradCode is null")
+            .AddScalar("IsExists", NHibernateUtil.Boolean);
+            return query.UniqueResult<bool>();
         }
     }
 }

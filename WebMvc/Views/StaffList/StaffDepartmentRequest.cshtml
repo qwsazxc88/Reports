@@ -39,12 +39,14 @@
                             @(Model.DateState.HasValue ? Model.DateState.Value.ToShortDateString() : string.Empty)
                         </td>
                     </tr>
+                    @*
                     <tr>
                         <td>@Html.LabelFor(m => m.Id)</td>
                         <td>
                             @(Model.Id != 0 ? Model.Id.ToString() : "")
                         </td>
                     </tr>
+                    *@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
@@ -68,19 +70,11 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsBack)
+                            @Html.LabelFor(m => m.BFGId)
                         </td>
                         <td>
-                            <div id="IsBackContainer">
-                                @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                {<text>style="border-color:red;"</text>}
-                                                                                                                                                else
-                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                    else
-                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
+                            @Html.DropDownListFor(model => model.BFGId, new SelectList(Model.Accessoryes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.BFGId)
                         </td>
                     </tr>
                     <tr>
@@ -169,13 +163,13 @@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.ParentId)<br />
-                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(6);"/>
                         </td>
                         <td>
                             <label id="DepParentNameLabel">@Model.DepParentName</label>
                             @Html.HiddenFor(m => m.ParentId)
                             @Html.HiddenFor(m => m.DepParentName)
                             @Html.ValidationMessageFor(model => model.ParentId)
+                            <input type="button" style="float:right;" value="Изменить" title="Корректировка родительского подразделения (при необходимости)" onclick="changeDepartment(6);"/>
                         </td>
                     </tr>
                     <tr>
@@ -724,7 +718,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("moDepRequest");
-        $(document).tooltip({ track: true });
+        $(document).tooltip({ track: false });
         //ShowFlash(true);
         //ShowFlash(false);
 
@@ -804,24 +798,13 @@
         $(".hasDatepicker").width("85px");
 
         
-        $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
         $('#IsPlanContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
         $('#IsLegalEntityContainer').buttonset();
 
-
-        $("#IsBackTrue").click(function () {
-            $("#lblIsBackTrue").css("border-color", "red");
-            $("#lblIsBackFalse").css("border-color", "silver");
-        });
-        $("#IsBackFalse").click(function () {
-            $("#lblIsBackFalse").css("border-color", "red");
-            $("#lblIsBackTrue").css("border-color", "silver");
-        });
-
-                
+               
         $("#IsTaxAdminAccountTrue").click(function () {
             $("#lblIsTaxAdminAccountTrue").css("border-color", "red");
             $("#lblIsTaxAdminAccountFalse").css("border-color", "silver");
