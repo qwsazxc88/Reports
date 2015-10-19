@@ -32,5 +32,7 @@ namespace Reports.Core.Dto
         public IList<string> Chiefs { get; set; }
         [Display(Name = "Кадровики")]
         public IList<string> Personnels { get; set; }
+        [Display(Name = "Руководители")]
+        public IList<string> Managers { get; set; }
     }
 }
