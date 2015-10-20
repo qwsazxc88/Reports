@@ -526,7 +526,7 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.NorthFactor)</td>
                                     <td>
-                                       <div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                       @*<div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                         <div id="NorthFactor_2" class = "formfield">
                                             @Html.LabelFor(m => m.NorthFactorOrder)
                                             @Html.DropDownListFor(m => m.NorthFactorOrder, new SelectList(Model.NorthFactorOrders, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
@@ -540,7 +540,7 @@
                                             @Html.TextBoxFor(m => m.NorthFactorDay)
                                             @Html.LabelFor(m => m.NorthFactorAddition)
                                             @Html.TextBoxNewFor(m => m.NorthFactorAddition,"{0:F2}" )
-                                        </div>
+                                        </div>*@
                                         @Html.LabelFor(m => m.NorthFactorAdditionAction)
                                         @Html.DropDownListFor(m => m.NorthFactorAdditionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
                                      </td>
@@ -1016,13 +1016,13 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить график работы');
                 result = false;
             }
-            clearControlErrors($("#NorthFactor"));
+            @*clearControlErrors($("#NorthFactor"));
             if($("#NorthFactor").val() == '' || $("#NorthFactor").val() ==0)
             {
                 addControlError($("#NorthFactor"),'Необходимо заполнить северный стаж');
                 addControlError($("#JSError"),'Необходимо заполнить северный стаж');
                 result = false;
-            }
+            }*@
             clearControlErrors($("#ChangesToAgreementEnties"));
             if($("#ChangesToAgreementEnties").val() == '' )
             {
