@@ -404,8 +404,10 @@
                                 <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPersonnel, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                  @Html.LabelFor(m => m.AdditionPersonnelTo)
-                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })                                 
                                  </div>
+                                 @Html.LabelFor(m=>m.AdditionPersonnelAction)
+                                 @Html.DropDownListFor(m => m.AdditionPersonnelAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
                             </tr>
                             <tr>
@@ -414,7 +416,10 @@
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionPositionTo)
                                 @Html.TextBoxFor(m => m.AdditionPositionTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                
                                 </div>
+                                @Html.LabelFor(m=>m.AdditionPositionAction)
+                                @Html.DropDownListFor(m => m.AdditionPositionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
                             </tr>
                             <tr>
@@ -423,7 +428,10 @@
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionQualityTo)
                                 @Html.TextBoxNewFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                
                                 </div>
+                                @Html.LabelFor(m=>m.AdditionQualityAction)
+                                @Html.DropDownListFor(m => m.AdditionQualityAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                                 </td>
                             </tr>
                           </table>
@@ -482,11 +490,17 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTerritory)</td>
-                                    <td>@Html.TextBoxNewFor(m => m.AdditionTerritory, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTerritory, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                        @Html.LabelFor(m=>m.AdditionTerritoryAction)
+                                        @Html.DropDownListFor(m=>m.AdditionTerritoryAction,new SelectList(Model.AdditionActions,"Id","Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTraveling)</td>
-                                    <td>@Html.TextBoxNewFor(m => m.AdditionTraveling, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTraveling, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    @Html.LabelFor(m => m.AdditionTravelingAction)
+                                        @Html.DropDownListFor(m => m.AdditionTravelingAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionFront)</td>
@@ -495,7 +509,10 @@
                                     <div class="TempMovingContainer formfield">
                                         @Html.LabelFor(m => m.AdditionFrontTo)
                                         @Html.TextBoxFor(m => m.AdditionFrontTo, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+
                                     </div>
+                                    @Html.LabelFor(m => m.AdditionFrontAction)
+                                        @Html.DropDownListFor(m => m.AdditionFrontAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -524,6 +541,8 @@
                                             @Html.LabelFor(m => m.NorthFactorAddition)
                                             @Html.TextBoxNewFor(m => m.NorthFactorAddition,"{0:F2}" )
                                         </div>
+                                        @Html.LabelFor(m => m.NorthFactorAdditionAction)
+                                        @Html.DropDownListFor(m => m.NorthFactorAdditionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
                                      </td>
                                     
                                 </tr>

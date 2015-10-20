@@ -354,7 +354,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.RequestTypes = model.RequestTypes.Where(x => x.Id != 1).ToList();
                 }
             }
-            model.NorthFactors = GetNorthExperienceTypes();            
+            model.NorthFactors = GetNorthExperienceTypes();
+            model.AdditionActions = new List<IdNameDto>();
+            model.AdditionActions.Add(new IdNameDto { Id = 1, Name = "Начать" });
+            model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
+            model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
+            model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
@@ -765,6 +770,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionQualityTo = model.AdditionQualityTo;//Квалификационная надбавка до
                 entity.Data.Salary = model.TargetSalary;
                 entity.Data.Conjunction = model.Conjunction;
+                
+                entity.Data.AdditionPersonnelAction = model.AdditionPersonnelAction;
+                entity.Data.AdditionPositionAction = model.AdditionPositionAction;
+                entity.Data.AdditionQualityAction = model.AdditionQualityAction;
+                
             }
             #endregion
             #region Для кадров
@@ -794,6 +804,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementReasonOrder = model.MovementReasonOrder;//Причина перемещения
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);//Подписант
+                entity.Data.NorthFactorAdditionAction = model.NorthFactorAdditionAction;
+                entity.Data.AdditionFrontAction = model.AdditionFrontAction;
+                entity.Data.AdditionTerritoryAction = model.AdditionTerritoryAction;
+                entity.Data.AdditionTravelingAction = model.AdditionTravelingAction;
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
