@@ -211,11 +211,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Conjunction = entity.Data.Conjunction;
                 model.MovementCondition = entity.Data.MovementCondition;
                 model.AdditionPersonnel = entity.Data.AdditionPersonnel;
+                model.AdditionPersonnelAction = entity.Data.AdditionPersonnelAction;
                 model.AdditionPersonnelTo = entity.Data.AdditionPersonnelTo;
+
                 model.AdditionPosition = entity.Data.AdditionPosition;
+                model.AdditionPositionAction = entity.Data.AdditionPositionAction;
                 model.AdditionPositionTo = entity.Data.AdditionPositionTo;
+
                 model.AdditionQuality = entity.Data.AdditionQuality;
+                model.AdditionQualityAction = entity.Data.AdditionQualityAction;
                 model.AdditionQualityTo = entity.Data.AdditionQualityTo;
+
                 #endregion
                 #region Для кадровиков
                 model.OrderDate = entity.OrderDate;
@@ -224,14 +230,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsHourly = entity.Data.SalaryType == 1;
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.AdditionTerritory = entity.Data.AdditionTerritory;
+                model.AdditionTerritoryAction = entity.Data.AdditionTerritoryAction;
+
                 model.AdditionTraveling = entity.Data.AdditionTraveling;
+                model.AdditionTravelingAction = entity.Data.AdditionTravelingAction;
+
                 model.AdditionFront = entity.Data.AdditionFront;
+                model.AdditionFrontAction = entity.Data.AdditionFrontAction;
                 model.AdditionFrontTo = entity.Data.AdditionFrontTo;
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
                 model.NorthFactor = entity.Data.NorthFactor;
                 model.NorthFactorOrder = entity.Data.NorthFactorOrder;
                 model.NorthFactorAddition = entity.Data.NorthFactorAddition;
+                model.NorthFactorAdditionAction = entity.Data.NorthFactorAdditionAction;
                 model.NorthFactorDay = entity.Data.NorthFactorDay;
                 model.NorthFactorMonth = entity.Data.NorthFactorMonth;
                 model.NorthFactorYear = entity.Data.NorthFactorYear;
