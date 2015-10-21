@@ -16,7 +16,9 @@ namespace Reports.Presenters
         {
 
             base.AddComponents();
-            
+            Register(Component.For(typeof(IBaseBl))
+                        .ImplementedBy(typeof(BaseBl))
+                        .LifeStyle.Is(type));
             //AddComponent<ILoginBl, LoginBl>();
             Register(Component.For(typeof(ILoginBl))
                         .ImplementedBy(typeof(LoginBl))

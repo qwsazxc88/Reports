@@ -15,6 +15,7 @@ namespace Reports.Core.Dto
         public string Dep7Name { get; set; }
         public string Dep3Name { get; set; }
         public string Email { get; set; }
+        public string AlternativeMail { get; set; }
         public DateTime? EndDate { get; set; }
         public string Manager6 { get; set; }
         public string Manager5 { get; set; }

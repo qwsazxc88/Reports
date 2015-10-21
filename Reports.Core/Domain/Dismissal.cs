@@ -23,7 +23,7 @@ namespace Reports.Core.Domain
         public virtual decimal? Compensation { get; set; }
         public virtual decimal? Reduction { get; set; }
         public virtual string Reason { get; set; }
-        
+        public virtual string PirusNumber { get; set; }
         public virtual TimesheetStatus TimesheetStatus { get; set; }
         
         public virtual User User { get; set; }

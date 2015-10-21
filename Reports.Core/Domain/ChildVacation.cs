@@ -16,7 +16,7 @@ namespace Reports.Core.Domain
 
         public virtual bool FreeRate { get; set; }
         public virtual DateTime? PaidToDate { get; set; }
-        
+        public virtual string PirusNumber { get; set; }
         public virtual bool IsPreviousPaymentCounted { get; set; }
         public virtual int? ChildrenCount { get; set; }
         public virtual bool IsFirstChild { get; set; }

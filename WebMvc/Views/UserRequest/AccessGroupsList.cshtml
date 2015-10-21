@@ -164,6 +164,9 @@
                         <th>
                             <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Электронная<br />почта<br />сотрудника</a></div>
                         </th>
+                        <th>
+                            <div id="sort14"><a href="#"  onclick = "SortChanged(6);">Дополнительная<br />электронная<br />почта</a></div>
+                        </th>
                     </tr>
                     <tbody id="AGList">
                         @if (Model.AccessGroupList != null && Model.AccessGroupList.Count > 0)
@@ -188,6 +191,7 @@
                                     <td>@doc.Manager4</td>
                                     <td>@doc.AccessGroupName</td>
                                     <td>@doc.Email</td>
+                                    <td>@doc.AlternativeMail</td>
                                 </tr>
                                 i++;
                             }

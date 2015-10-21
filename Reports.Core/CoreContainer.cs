@@ -99,6 +99,9 @@ namespace Reports.Core
 
         public virtual void AddComponents()
         {
+            Register(Component.For(typeof(IMailConfirmDao)).
+                     ImplementedBy(typeof(MailConfirmDao)).
+                     LifeStyle.Is(type));
            // AddFacility("NonOptionalFacility", new NonOptionalFacility());
             Register(Component.For(typeof(IUserDao)).
                      ImplementedBy(typeof(UserDao)).

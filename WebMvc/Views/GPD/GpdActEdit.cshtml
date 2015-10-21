@@ -111,6 +111,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepLevel7Name):
+                            </td>
+                            <td>
+                                @(string.IsNullOrEmpty(Model.DepLevel7Name) ? "" : Model.DepLevel7Name)
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="width:300px">
                                 @Html.LabelFor(m => m.ChargingDate):
                             </td>

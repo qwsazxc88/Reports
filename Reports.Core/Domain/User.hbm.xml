@@ -25,6 +25,7 @@
     <property name="Address" length="256" not-null="false"/>
 	  <!--<property name="CanAnswer" not-null="true"/>
 	  <property name="Birthday" not-null="false"/>-->
+    <property name ="AlternativeMail" not-null="false"/>
 	  <property name="RoleId" not-null="true"/>
     <property name="ContractType" not-null="false"/>
     <bag name="ClearanceChecklistRoleRecords" table="UserClearanceChecklistRoleRecord" lazy="true" cascade="save-update">
