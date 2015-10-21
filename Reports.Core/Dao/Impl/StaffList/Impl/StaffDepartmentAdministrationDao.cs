@@ -5,6 +5,9 @@ using Reports.Core.Services;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
+using System;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -48,6 +51,33 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery("SELECT cast(case when count(*) > 0 then 0 else 1 end as bit) IsExists FROM dbo.StaffDepartmentBusinessGroup WHERE AdminId = " + Id.ToString())
             .AddScalar("IsExists", NHibernateUtil.Boolean);
             return query.UniqueResult<bool>();
+        }
+
+        /// <summary>
+        /// Достаем запись из справочника кодировок управлений по подразделению из СКД
+        /// </summary>
+        /// <param name="Dep">Подразделение 4 уровня</param>
+        /// <returns></returns>
+        public StaffDepartmentAdministration GetDepartmentAdministrationByDeparment(Department Dep)
+        {
+            return Session.Query<StaffDepartmentAdministration>().
+                Where(x => x.Department == Dep)
+                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Формируем новый код для управления.
+        /// </summary>
+        /// <param name="Management">Дирекция</param>
+        /// <returns></returns>
+        public string GetNewAdministrationCode(StaffDepartmentManagement Management)
+        {
+            string Code = Session.Query<StaffDepartmentAdministration>().Where(x => x.DepartmentManagement == Management && x.Code.StartsWith(Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-")).Max(x => x.Code.Substring(6));
+
+            //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
+            Code = Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-" + (Convert.ToInt32(Code) + 1).ToString();
+
+            return Code;
         }
     }
 }

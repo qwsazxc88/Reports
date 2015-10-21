@@ -3514,7 +3514,7 @@ INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'02', N'Вологодский Филиал (закрыт)', null)				--2
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'03', N'МОСКОВСКИЙ ФИЛИАЛ', 4131)		--3
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'04', N'ЦЕНТРАЛЬНЫЙ ФИЛИАЛ', 4132)	--4
---INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--4
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--5
 
 --StaffDepartmentManagement
 INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId)

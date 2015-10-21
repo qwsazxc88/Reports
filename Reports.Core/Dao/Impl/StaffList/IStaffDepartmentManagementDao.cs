@@ -20,5 +20,17 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id удаляемой строки</param>
         /// <returns></returns>
         bool IsEnableDelete(int Id);
+        /// <summary>
+        /// Достаем запись из справочника кодировок дирекций по подразделению из СКД
+        /// </summary>
+        /// <param name="Dep">Подразделение ниже 3 уровня.</param>
+        /// <returns></returns>
+        StaffDepartmentManagement GetDepartmentManagementByDeparment(Department Dep);
+        /// <summary>
+        /// Формируем новый код для дирекции.
+        /// </summary>
+        /// <param name="Branch">Филиал</param>
+        /// <returns></returns>
+        string GetNewManagementCode(StaffDepartmentBranch Branch);
     }
 }

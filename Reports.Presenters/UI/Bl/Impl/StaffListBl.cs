@@ -490,7 +490,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //ЦБ реквизиты
-                StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
+                StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails[0];
                 model.ATMCountTotal = cbd.ATMCountTotal.HasValue ? cbd.ATMCountTotal.Value : 0;
                 model.ATMCashInStarted = cbd.ATMCashInStarted.HasValue ? cbd.ATMCashInStarted.Value : 0;
                 model.ATMCashInCount = cbd.ATMCashInCount.HasValue ? cbd.ATMCashInCount.Value : 0;
@@ -503,7 +503,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ATMStartedDate = cbd.ATMStartedDate;
 
                 //Управленческие реквизиты
-                StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails.Where(x => x.DepRequest.Id == entity.Id).Single();
+                StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails[0];
                 model.DMDetailId = dmd.Id;
                 model.NameShort = dmd.NameShort;
                 model.DepCode = dmd.DepCode; 
@@ -551,11 +551,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = (model.Id == 0 || !entity.BeginAccountDate.HasValue) ? true : false;
+                model.IsDraftButtonAvailable = (!entity.BeginAccountDate.HasValue) ? true : false;
                 model.IsAgreeButtonAvailable = entity.IsDraft;
             }
             
-            
+           
             return model;
         }
         /// <summary>
@@ -651,7 +651,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //поля ЦБ реквизитов
                 entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
-
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
                     DepRequest = entity,
@@ -805,6 +804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
 
+                //entity.DepartmentManagerDetails.Add(dmd);
                 entity.DepartmentManagerDetails.Add(dmd);
 
                 try
@@ -927,10 +927,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //поля ЦБ реквизитов
-            if (entity.DepartmentCBDetails.Count == 0)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
+            if (entity.DepartmentCBDetails == null)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
             {
                 entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
-
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
                     DepRequest = entity,
@@ -966,6 +965,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.DepartmentManagerDetails == null) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
             {
                 entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
                 dmd.NameShort = model.NameShort;
@@ -1065,17 +1065,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //операции
                 dmd.DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
-                //dmd.DepOperations = new List<StaffDepartmentOperationLinks>();
-                //foreach (var item in model.Operations.Where(x => x.IsUsed == true))
-                //{
-                //    dmd.DepOperations.Add(new StaffDepartmentOperationLinks
-                //    {
-                //        DepartmentManagerDetail = dmd,
-                //        DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId),
-                //        Creator = curUser,
-                //        CreateDate = DateTime.Now
-                //    });
-                //}
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
@@ -1105,6 +1094,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
 
+                //entity.DepartmentManagerDetails.Add(dmd);
                 entity.DepartmentManagerDetails.Add(dmd);
             }
             else
@@ -1240,30 +1230,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //операции
                 entity.DepartmentManagerDetails[0].DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
-                //if (entity.DepartmentManagerDetails[0].DepOperations == null)
-                //    entity.DepartmentManagerDetails[0].DepOperations = new List<StaffDepartmentOperationLinks>();
-
-                //foreach (var item in model.Operations)// в отличие от первичного добавления делаем цикл по всем операциям
-                //{
-                //    StaffDepartmentOperationLinks oper = new StaffDepartmentOperationLinks();
-
-                //    //если была операция, но сняли птицу, то удаляем
-                //    if (item.Id != 0 && !item.IsUsed)
-                //    {
-                //        oper = entity.DepartmentManagerDetails[0].DepOperations.Where(x => x.Id == item.Id/* && item.IsUsed*/).Single();
-                //        entity.DepartmentManagerDetails[0].DepOperations.Remove(oper);
-                //    }
-                    
-                //    //если не было и поставили птицу
-                //    if (item.Id == 0 && item.IsUsed)
-                //    {
-                //        oper.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                //        oper.DepartmentOperation = StaffDepartmentOperationsDao.Load(item.OperationId);
-                //        oper.Creator = curUser;
-                //        oper.CreateDate = DateTime.Now;
-                //        entity.DepartmentManagerDetails[0].DepOperations.Add(oper);
-                //    }
-                //}
 
                 //коды программ
                 if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
@@ -1336,9 +1302,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
                         entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                     }
-
                 }
-
             }
 
             //находим действующую заявку и убираем у нее признак использования
@@ -1348,6 +1312,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             //Утверждение
             if (!model.IsDraft)
             {
+                //проверки для текущей заявки 
+                if (!ValidateDepartmentRequest(entity, out error))
+                {
+                    return false;
+                }
+
+                ////создаем код для подразделения
+                //if (!CreateCodeForDepartment(entity, out error))
+                //{
+                //    return false;
+                //}
+
+
+                //занесение данных по подразделению в справочник подазделений
                 if (!SaveDepartmentReference(entity, curUser, out error))
                 {
                     return false;
@@ -1424,7 +1402,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //dep.Priority = entity.ItemLevel;
                 dep.IsUsed = true;
                 dep.DepartmentAccessory = entity.DepartmentAccessory;
-                dep.FingradCode = "";//формируем код для Финград
+                //dep.FingradCode = "";//формируем код для Финград
                 dep.Creator = curUser;
                 dep.CreateDate = DateTime.Now;
             }
@@ -1448,11 +1426,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
-            
-            
             try
             {
                 DepartmentDao.SaveAndFlush(dep);
+                //DepartmentDao.CommitTran();
 
                 if (entity.Department == null)
                     entity.Department = new Department();
@@ -1460,10 +1437,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //если нет кода или изменился родитель, то надо подкорректировать путь
                 dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
 
-                DepartmentDao.SaveAndFlush(dep);
+                //DepartmentDao.SaveAndFlush(dep);
 
                 //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
                 entity.Department = dep;
+
+                //создаем код для подразделения
+                if (entity.RequestType.Id == 1)
+                {
+                    if (!CreateCodeForDepartment(entity, dep, curUser, out error))
+                    {
+                        error = "Произошла ошибка при формировании кода подразделения!";
+                        DepartmentDao.RollbackTran();
+                        DepartmentArchiveDao.RollbackTran();
+                    }
+                }
 
                 //архивируем изменения
                 DepartmentArchive da = new DepartmentArchive()
@@ -1518,20 +1506,249 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <summary>
         /// Проверка на возможность создать код Финград для подразделения в текущей заявке.
         /// </summary>
-        /// <param name="Id">Id заявки</param>
+        /// <param name="entity">Проверяемая заявка.</param>
+        /// <param name="error">Переменная для сообщений.</param>
         /// <returns></returns>
-        public bool ValidateCreateCodeAvailable(int Id)
+        protected bool ValidateDepartmentRequest(StaffDepartmentRequest entity, out string error)
         {
-            StaffDepartmentRequest req = StaffDepartmentRequestDao.Get(Id);
+            error = string.Empty;
 
-            if (req == null)
-                return false;
+            if (entity.RequestType.Id != 3)//создание/редактирование
+            {
+                //проверка на возможность сформировать код для подразделения
+                if (!StaffDepartmentRequestDao.IsEnableCreateCode(entity.ParentDepartment.Id))
+                {
+                    error = "Невозможно создать код для данного подразделения! Проверьте наличие кодов и связей для всей ветки подразделений в справочнике кодировок.";
+                    return false;
+                }
+            }
+            else//закрытие
+            {
+                //проверка на наличие сотрудников в закрываемом подразделении
+                if (UserDao.GetUsersForDepartment(entity.Department.Id).Count != 0)
+                {
+                    error = "В подразделении еще работают сотрудники! Закрытие подразделения невозможно!";
+                    return false;
+                }
 
-            if (!StaffDepartmentRequestDao.IsEnableCreateCode(req.ParentDepartment.Id))
-                return false;
-            //req.ParentDepartment
+                if (!entity.DepartmentManagerDetails[0].CloseDate.HasValue)
+                {
+                    error = "Укажите дату закрытия подразделения!";
+                    return false;
+                }
+            }
 
+            return true;
+        }
+        /// <summary>
+        /// Процедура создания кода для подразделения.
+        /// </summary>
+        /// <param name="entity">Заявка для подразделения</param>
+        /// <param name="dep">Подразделение, для которго надо создать код.</param>
+        /// <param name="curUser">Текущий пользователь.</param>
+        /// <param name="error">Переменная для сообщений.</param>
+        /// <returns></returns>
+        protected bool CreateCodeForDepartment(StaffDepartmentRequest entity, Department dep, User curUser, out string error)
+        {
+            error = string.Empty;
+            string Code = string.Empty;
 
+            if (entity.ItemLevel == 1 || entity.ItemLevel > 7)
+            {
+                error = "Создание подразделения такого уровня не предусмотрено программой!";
+                return true;
+            }
+
+            StaffDepartmentBranch br = new StaffDepartmentBranch();
+            StaffDepartmentManagement mn = new StaffDepartmentManagement();
+
+            //if (entity.ItemLevel >= 5)
+            //{
+            //    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+            //    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+            //}
+
+            switch (entity.ItemLevel)
+            {
+                case 2:
+                    StaffDepartmentBranch Depbr = new StaffDepartmentBranch()
+                    {
+                        Code = StaffDepartmentBranchDao.GetNewBranchCode(),
+                        Name = dep.Name,
+                        Department = dep,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                    try
+                    {
+                        StaffDepartmentBranchDao.SaveAndFlush(Depbr);
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentBranchDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+                case 3:
+                    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                    if (br == null)
+                    {
+                        error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    StaffDepartmentManagement Depm = new StaffDepartmentManagement()
+                    {
+                        Code = StaffDepartmentManagementDao.GetNewManagementCode(br),//сделать
+                        Name = dep.Name,
+                        DepartmentBranch = br,
+                        Department = dep,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                    try
+                    {
+                        StaffDepartmentManagementDao.SaveAndFlush(Depm);
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentManagementDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+                case 4:
+                    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+
+                    if (mn == null)
+                    {
+                        error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    StaffDepartmentAdministration Depa = new StaffDepartmentAdministration()
+                    {
+                        Code = StaffDepartmentAdministrationDao.GetNewAdministrationCode(mn),
+                        Name = dep.Name,
+                        DepartmentManagement = mn,
+                        Department = dep,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                    try
+                    {
+                        StaffDepartmentAdministrationDao.SaveAndFlush(Depa);
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentAdministrationDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+                case 5:
+                    StaffDepartmentAdministration adm = StaffDepartmentAdministrationDao.GetDepartmentAdministrationByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+
+                    if (adm == null)
+                    {
+                        error = "Для данной точки не определено управление! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    StaffDepartmentBusinessGroup Depbg = new StaffDepartmentBusinessGroup()
+                    {
+                        Code = StaffDepartmentBusinessGroupDao.GetNewBusinessGroupCode(adm),
+                        Name = dep.Name,
+                        DepartmentAdministration = adm,
+                        Department = dep,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                    try
+                    {
+                        StaffDepartmentBusinessGroupDao.SaveAndFlush(Depbg);
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentBusinessGroupDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+                case 6:
+                    StaffDepartmentBusinessGroup bg = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroupByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+
+                    if (bg == null)
+                    {
+                        error = "Для данной точки не определена бизнес-группа! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    StaffDepartmentRPLink Deprp = new StaffDepartmentRPLink()
+                    {
+                        Code = StaffDepartmentRPLinkDao.GetNewRPLinkCode(bg),
+                        Name = dep.Name,
+                        DepartmentBG = bg,
+                        Department = dep,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    };
+
+                    try
+                    {
+                        StaffDepartmentRPLinkDao.SaveAndFlush(Deprp);
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentRPLinkDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+                case 7:
+                    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                    if (br == null)
+                    {
+                        error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                    if (mn == null)
+                    {
+                        error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    StaffDepartmentRPLink rp = StaffDepartmentRPLinkDao.GetDepartmentRPLinkByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                    if (rp == null)
+                    {
+                        error = "Для данной точки не определена РП-привязка! Проверьте данные в справочнике кодировки.";
+                        return false;
+                    }
+
+                    entity.DepartmentManagerDetails[0].DepCode = StaffDepartmentRequestDao.GetNewFinDepCode(br, mn, rp);
+                    dep.FingradCode = entity.DepartmentManagerDetails[0].DepCode;
+
+                    try
+                    {
+                        DepartmentDao.SaveAndFlush(dep);
+                    }
+                    catch (Exception ex)
+                    {
+                        DepartmentDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                    break;
+            }
+
+            
             return true;
         }
         #endregion

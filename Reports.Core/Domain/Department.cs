@@ -33,6 +33,7 @@ namespace Reports.Core.Domain
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
         public virtual IList<DepartmentArchive> DepartmentArchives { get; set; }
+
         #endregion
 
         #region Constructors

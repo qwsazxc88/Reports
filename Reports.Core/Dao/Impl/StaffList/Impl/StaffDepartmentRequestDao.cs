@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -39,11 +41,11 @@ namespace Reports.Core.Dao.Impl
                                        A.RequestTypeId,
                                        A.DepartmentId,
                                        A.ParentId,
-                                       Dep2.Name as Dep2Name, 
-                                       Dep3.Name as Dep3Name, 
-                                       Dep4.Name as Dep4Name, 
-                                       Dep5.Name as Dep5Name, 
-                                       Dep6.Name as Dep6Name, 
+                                       isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name, 
+                                       isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name, 
+                                       isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name, 
+                                       isnull(Dep5.Name, case when A.ItemLevel = 5 then A.Name else null end) as Dep5Name, 
+                                       isnull(Dep6.Name, case when A.ItemLevel = 6 then A.Name else null end) as Dep6Name, 
                                        case when A.ItemLevel = 7 then A.Name else null end as Dep7Name, 
                                        Dep2.Path as Dep2Path, 
                                        Dep3.Path as Dep3Path, 
@@ -267,6 +269,25 @@ namespace Reports.Core.Dao.Impl
                                                     WHERE A.FingradCode is null")
             .AddScalar("IsExists", NHibernateUtil.Boolean);
             return query.UniqueResult<bool>();
+        }
+
+        /// <summary>
+        /// Формируем новый код для подразделения 7 уровня.
+        /// </summary>
+        /// <param name="br">Филиал</param>
+        /// <param name="mn">Дирекция</param>
+        /// <param name="rp">РП-привязка</param>
+        /// <returns></returns>
+        public string GetNewFinDepCode(StaffDepartmentBranch br, StaffDepartmentManagement mn, StaffDepartmentRPLink rp)
+        {
+            string Code = Session.Query<Department>().Where(x => x.ItemLevel == 7 && x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).Max(x => x.Code.Substring(9, 3));
+
+            //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
+            Code = (Convert.ToInt32(Code) + 1).ToString().Length == 1 ? "00" : ((Convert.ToInt32(Code) + 1).ToString().Length == 2 ? "0" : "") + (Convert.ToInt32(Code) + 1).ToString();
+
+            Code = br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2) + "-" + Code;
+
+            return Code;
         }
     }
 }

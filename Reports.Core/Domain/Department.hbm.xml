@@ -30,5 +30,6 @@
       <key column="DepartmentId" foreign-key="FK_DepartmentArchive_Department"/>
       <one-to-many class="DepartmentArchive"/>
     </bag>
+
   </class>
 </hibernate-mapping>

@@ -8,6 +8,7 @@
 
     <property name="DateRequest" not-null="false"/>
     <many-to-one name="RequestType" class="StaffDepartmentRequestTypes" column="RequestTypeId" foreign-key="FK_StaffDepartmentRequest_StaffDepartmentRequestTypes" index="StaffDepartmentRequest_StaffDepartmentRequestTypes" not-null="false"/>
+    
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffDepartmentRequest_Department" index="StaffDepartmentRequest_Department" not-null="false"/>
     <property name="ItemLevel" not-null="false"/>
     <many-to-one name="ParentDepartment" class="Department" column="ParentId" foreign-key="FK_StaffDepartmentRequest_DepartmentParent" index="StaffDepartmentRequest_DepartmentParent" not-null="false"/>
@@ -38,7 +39,11 @@
     <bag name="DepartmentManagerDetails" lazy="true" cascade="all-delete-orphan">
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentManagerDetails"/>
-    </bag>    
+    </bag>
+    <!--
+    <many-to-one name="DepartmentCBDetails" class="StaffDepartmentCBDetails" column="DepRequestId" foreign-key="FK_StaffDepartmentCBDetails_StaffDepartmentRequest" index="StaffDepartmentCBDetails_StaffDepartmentRequest" not-null="false"/>
+    <many-to-one name="DepartmentManagerDetails" class="StaffDepartmentManagerDetails" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>
     
+-->    
   </class>
 </hibernate-mapping>
