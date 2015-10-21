@@ -93,7 +93,7 @@
                            break;
                            case 2:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Авансовый отчёт № @el.Number проверен</a>
                            break;
-                           case 6:<a href='@Url.Action("MissionReportEdit", "MissionOrder", new { id = el.DocId })'> Сторно к авансовому отчёту № @el.Number</a>
+                           case 6:<a href='@Url.Action("DeductionEdit", "Deduction", new { id = el.DocId })'> Ручное удержание к АО № @el.Number</a>
                                                                                                                                   break;
                            case 3:<a href='@Url.Action("MissionUserCredsList", "MissionOrder", new { userid = Model.DocumentNumber })'>Возврат сотруднику долга за организацией по авансовому отчету № @el.Number</a>
                                                                                                                                                                                                   break;

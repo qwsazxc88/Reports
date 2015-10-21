@@ -608,13 +608,13 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @" r.CandidateRejectDate is null and r.StaffDateAccept is not null and r.IsEducationExists=0 ";
                         break;
                     case 8://Welcome 
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult>2   and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.IsEducationExists is null and r.TestingResult>2   and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 9://собеседование назначено
-                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.ColloquyDate is not null and r.IsColloquyPassed is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 10://входное тестирование
-                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=2 and v.Recruter=1 ";
+                        statusWhere = @" r.CandidateRejectDate is null and r.IsColloquyPassed=1 and r.TestingResult is null  and v.AppointmentEducationTypeId=1 and v.Recruter=1 ";
                         break;
                     case 11:
                         statusWhere = @" r.CandidateRejectDate is not null ";
@@ -740,7 +740,16 @@ namespace Reports.Core.Dao.Impl
                                     where uC.Id = {0}
                                     and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
                                 )
-                                ", currentUser.Id);
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.ManualRoleRecord mrr on  (mrr.UserId = uC.[Id] and mrr.TargetDepartmentId > 0)
+                                    inner join dbo.Department dc on dc.Id = mrr.TargetDepartmentId
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel <= crDep.ItemLevel
+                                )    
+                            ", currentUser.Id);
                             break;
                         case 3:
                             sqlDepQueryPart = string.Format(
@@ -750,7 +759,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join  dbo.ManualRoleRecord mrr on  (mrr.UserId = uC.[Id] and mrr.TargetDepartmentId > 0)
                                     inner join dbo.Department dc on dc.Id = mrr.TargetDepartmentId
                                     where uC.Id = {0}
-                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel < crDep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel <= crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         case 4:

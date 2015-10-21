@@ -1,0 +1,208 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <title>Terrapoint - Department</title>
+</head>
+<body ng-app="GridApp">
+<script type="text/javascript" src="../../Scripts/angular.min.js"></script>
+<script type="text/javascript" src="../../Scripts/jquery-1.4.4.min.js"></script>
+    <div ng-controller="GridController">
+        <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
+                <tr style='cursor: pointer; ' class="noselect">
+                     <th ng-click="Sort('TPCode')">
+                       <a>Код точки</a>
+                       <span class="sortorder" ng-show="predicate === 'TPCode'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TP1Name')">
+                        <a>1ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TP1Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TP2Name')">
+                        <a>2ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'TP2Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TPName')">
+                        <a>Название точки</a>
+                        <span class="sortorder" ng-show="predicate === 'TPName'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TPCity')">
+                        <a>Город точки</a>
+                        <span class="sortorder" ng-show="predicate === 'TPCity'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TPStreet')">
+                        <a>Улица точки</a>
+                        <span class="sortorder" ng-show="predicate === 'TPStreet'" ng-class="{reverse:reverse}"></span>
+                    </th> 
+                    <th ng-click="Sort('Did')">
+                        <a>Идентификатор подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Did'" ng-class="{reverse:reverse}"></span>
+                    </th> 
+                    <th ng-click="Sort('Dcode')">
+                        <a>Код подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Dcode'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('D2name')">
+                        <a>подр. 2 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'D2name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('D3name')">
+                        <a>подр. 3 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'D3name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('D4name')">
+                        <a>подр. 4 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'D4name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('D5name')">
+                        <a>подр. 5 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'D5name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('D6name')">
+                        <a>подр. 6 ур.</a>
+                        <span class="sortorder" ng-show="predicate === 'D6name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dname')">
+                        <a>Название подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Dname'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('BFGId')">
+                        <a>признак</a>
+                        <span class="sortorder" ng-show="predicate === 'BFGId'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('Dcity')">
+                        <a>Город подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Dcity'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Dstreet')">
+                        <a>Улица подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Dstreet'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('Dhouse')">
+                        <a>Дом подразделения</a>
+                        <span class="sortorder" ng-show="predicate === 'Dhouse'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1id')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Идентификатор)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1id'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1code')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Код)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1code'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1name')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Название)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1city')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Город)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1city'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1street')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Улица)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1street'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th  ng-click="Sort('D1house')">
+                        <a>Подразделение <br /> к которому отностится<br /> (Дом)</a>
+                        <span class="sortorder" ng-show="predicate === 'D1house'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                </tr>
+                <tr id="FiltrRow" class="noExl">
+                <td><input ng-model="search.TPCode" class="filterinput" /></td>
+                <td><input ng-model="search.TP1Name" class="filterinput"  /></td>
+                <td><input ng-model="search.TP2Name" class="filterinput"  /></td>
+                <td><input ng-model="search.TPName" class="filterinput"  /></td>
+                <td><input ng-model="search.TPCity" class="filterinput"  /></td>
+                <td><input ng-model="search.TPStreet" class="filterinput"  /></td>
+                <td><input ng-model="search.Did" class="filterinput"  /></td>
+                <td><input ng-model="search.Dcode" class="filterinput"  /></td>
+                <td><input ng-model="search.D2name" class="filterinput"  /></td>
+                <td><input ng-model="search.D3name" class="filterinput"  /></td>
+                <td><input ng-model="search.D4name" class="filterinput"  /></td>
+                <td><input ng-model="search.D5name" class="filterinput"  /></td>
+                <td><input ng-model="search.D6name" class="filterinput"  /></td>
+                <td><input ng-model="search.Dname" class="filterinput"  /></td>
+                <td><input ng-model="search.BFGId" class="filterinput"  /></td>
+                <td><input ng-model="search.Dcity" class="filterinput"  /></td>
+                <td><input ng-model="search.Dstreet" class="filterinput"  /></td>
+                <td><input ng-model="search.Dhouse" class="filterinput"  /></td>
+                <td><input ng-model="search.D1id" class="filterinput"  /></td>
+                <td><input ng-model="search.D1code" class="filterinput"  /></td>
+                <td><input ng-model="search.D1name" class="filterinput"  /></td>
+                <td><input ng-model="search.D1city" class="filterinput"  /></td>
+                <td><input ng-model="search.D1street" class="filterinput"  /></td>
+                <td><input ng-model="search.D1house" class="filterinput"  /></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
+			        <td>{{row.TPCode}}</td>
+                    <td>{{row.TP1Name}}</td>
+                    <td>{{row.TP2Name}}</td>
+                    <td>{{row.TPName}}</td>
+                    <td>{{row.TPCity}}</td>
+                    <td>{{row.TPStreet}}</td>
+                    <td>{{row.Did}}</td>
+                    <td>{{row.Dcode}}</td>
+                    <td>{{row.D2name}}</td>
+                    <td>{{row.D3name}}</td>
+                    <td>{{row.D4name}}</td>
+                    <td>{{row.D5name}}</td>
+                    <td>{{row.D6name}}</td>
+                    <td>{{row.Dname}}</td>
+                    <td>{{row.BFGId}}</td>
+                    <td>{{row.Dcity}}</td>
+                    <td>{{row.Dstreet}}</td>
+                    <td>{{row.Dhouse}}</td>
+                    <td>{{row.D1id}}</td>
+                    <td>{{row.D1code}}</td>
+                    <td>{{row.D1name}}</td>
+                    <td>{{row.D1city}}</td>
+                    <td>{{row.D1street}}</td>
+                    <td>{{row.D1house}}</td>
+		        </tr>
+                </tbody>
+            </table>
+    </div>
+<script>
+    var GridApp = angular.module('GridApp', []);
+    GridApp.controller('GridController', function ($scope, $http, $filter) {
+        $scope.IsWorking = false;
+        $scope.Grid = {};
+        $scope.model = {};
+        $scope.reverse = false;
+        var orderBy = $filter('orderBy');
+        $scope.Sort = function (col) {
+            $scope.IsWorking = true;
+            if ($scope.predicate == col) {
+                $scope.reverse = !$scope.reverse;
+            }
+            else {
+                $scope.predicate = col;
+            }
+            $scope.IsWorking = false;
+        }
+
+        $scope.GetData = function () {
+            $scope.IsWorking = true;
+            $scope.TotalSum = 0;
+            $http.post('/UserRequest/GetTP_D_list', {  }).
+              success(function (data, status, headers, config) {
+                  $scope.Grid.Data = data;
+                  $scope.IsWorking = false;
+              }).
+              error(function (data, status, headers, config) {
+                  alert('Ошибка при получении данных.');
+                  $scope.IsWorking = false;
+              });
+        }
+        $scope.GetData();
+    });	
+</script>
+</body>
+</html>

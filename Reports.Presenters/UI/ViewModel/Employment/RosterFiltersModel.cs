@@ -14,10 +14,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string UserName { get; set; }
         public DateTime? BeginDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public DateTime? EmploymentDateBegin { get; set; }
+        public DateTime? EmploymentDateEnd { get; set; }
         public int? CandidateId { get; set; }
         public string ContractNumber1C { get; set; }
         public DateTime? CompleteDate { get; set; }
         public string AppointmentReportNumber { get; set; }
         public int? AppointmentNumber { get; set; }
+        public int PersonnelId { get; set; }
     }
 }

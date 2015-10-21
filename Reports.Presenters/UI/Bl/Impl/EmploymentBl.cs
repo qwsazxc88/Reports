@@ -1879,6 +1879,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model)
+        {
+            EmploymentCandidate entity = GetCandidate(model.CandidateID);
+            model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
+            return model;
+        }
+
         public RosterModel GetRosterModel(RosterFiltersModel filters)
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -1928,11 +1935,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
+                    filters != null ? filters.PersonnelId : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -1943,6 +1953,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate = filters.BeginDate;
                 model.EndDate = filters.EndDate;
                 model.CompleteDate = filters.CompleteDate;
+                model.EmploymentDateBegin = filters.EmploymentDateBegin;
+                model.EmploymentDateEnd = filters.EmploymentDateEnd;
                 model.UserName = filters.UserName;
                 model.ContractNumber1C = filters.ContractNumber1C;
                 model.CandidateId = filters.CandidateId;
@@ -1955,6 +1967,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
             model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Manager || AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+                model.IsMarkDocOriginal = true;
+            else
+                model.IsMarkDocOriginal = false;
                                     
             return model;
         }
@@ -2814,11 +2832,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.CompleteDate : null,
+                    filters != null ? filters.EmploymentDateBegin : null,
+                    filters != null ? filters.EmploymentDateEnd : null,
                     filters != null ? filters.UserName : null,
                     filters != null ? filters.ContractNumber1C : null,
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
+                    filters != null ? filters.PersonnelId : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -2898,6 +2919,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(RosterModel model)
         {
             model.Statuses = GetEmploymentStatuses();
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
         }
         public void LoadDictionaries(SignersModel model)
         {
@@ -3130,7 +3152,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Отсутствуют права на выбранное подразделение.";
                 return null;
             }
-            
+
+            if (string.IsNullOrEmpty(model.Surname) || string.IsNullOrWhiteSpace(model.Surname))
+            {
+                error = "Заполните ФИО кандидата!";
+                return null;
+            }
+            else
+            {
+                if (model.Surname.Trim().Length == 0)
+                {
+                    error = "Заполните ФИО кандидата!";
+                    return null;
+                }
+            }
+
             User newUser = new User
             {
                 Login = string.Empty,
@@ -4948,7 +4984,62 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+        /// <summary>
+        /// Сохраняем признаки получения оригиналов ТК/ТД
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список</param>
+        /// <param name="IsTK">Переключатель типа документов.</param>
+        /// <returns></returns>
+        public bool SaveCandidateDocRecieved(IList<CandidateDocRecievedDto> roster, bool IsTK)
+        {
+            try
+            {
+                User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
 
+                    if (IsTK)
+                    {
+                        if (entity.IsTKReceived != item.IsTKReceived)
+                        {
+                            entity.IsTKReceived = item.IsTKReceived;
+
+                            if (entity.IsTKReceived)
+                                entity.TKReceivedDate = DateTime.Now;
+                            else
+                                entity.TKReceivedDate = null;
+
+                            item.ReceivedDate = entity.TKReceivedDate.HasValue ? entity.TKReceivedDate.Value.ToShortDateString() : "";
+                            entity.TKMarkUser = curUser;
+                        }
+                    }
+                    else
+                    {
+                        if (entity.IsTDReceived != item.IsTDReceived)
+                        {
+                            entity.IsTDReceived = item.IsTDReceived;
+                            if (entity.IsTDReceived)
+                                entity.TDReceivedDate = DateTime.Now;
+                            else
+                                entity.TDReceivedDate = null;
+
+                            item.ReceivedDate = entity.TDReceivedDate.HasValue ? entity.TDReceivedDate.Value.ToShortDateString() : "";
+                            entity.TDMarkUser = curUser;
+                        }
+                    }
+
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
         #endregion
 
         #region SetEntityHelpers

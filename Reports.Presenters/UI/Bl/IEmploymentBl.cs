@@ -46,6 +46,7 @@ namespace Reports.Presenters.UI.Bl
 
         CandidateDocumentsModel GetCandidateDocumentsModel(int? userId = null);
         ScanOriginalDocumentsModel GetScanOriginalDocumentsModel(int? userId = null);
+        PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model);
         RosterModel GetRosterModel(RosterFiltersModel filters);
         CreateCandidateModel GetCreateCandidateModel();
         CreateCandidateModel GetCreateCandidateModel(CreateCandidateModel model);
@@ -116,6 +117,13 @@ namespace Reports.Presenters.UI.Bl
         bool SavePersonnelManagersRejecting(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
+        /// <summary>
+        /// Сохраняем признаки получения оригиналов ТК/ТД
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список</param>
+        /// <param name="IsTK">Переключатель типа документов.</param>
+        /// <returns></returns>
+        bool SaveCandidateDocRecieved(IList<CandidateDocRecievedDto> roster, bool IsTK);
         /// <summary>
         /// Добавляем комментарий
         /// </summary>

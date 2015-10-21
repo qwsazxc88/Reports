@@ -22,7 +22,7 @@ namespace WebMvc.Controllers
     [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.DismissedEmployee)]
+        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.DismissedEmployee | UserRole.ConsultantOutsourcing)]
     public class UserRequestController : BaseController
     {
         
@@ -140,7 +140,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
           UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult AllRequestList()
          {
              AllRequestListModel model = RequestBl.GetAllRequestListModel();
@@ -1037,7 +1037,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult AbsenceList()
          {
              AbsenceListModel model = RequestBl.GetAbsenceListModel();
@@ -1061,7 +1061,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
           UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult AbsenceEdit(int id, int userId)
          {
              //int? userId = new int?();
@@ -1126,7 +1126,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
           UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator|
-          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult VacationList()
          {
              //int? userId = new int?();
@@ -1152,16 +1152,18 @@ namespace WebMvc.Controllers
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult VacationEdit(int id,int userId)
          {
              //int? userId = new int?();
              VacationEditModel model = RequestBl.GetVacationEditModel(id,userId);
+             ModelState.Clear();
              return View(model);
          }
          [HttpPost]
          public ActionResult VacationEdit(VacationEditModel model)
          {
+             string source = Newtonsoft.Json.JsonConvert.SerializeObject(model);
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
@@ -1171,7 +1173,9 @@ namespace WebMvc.Controllers
              {
                  model.IsApproved = false;
                  model.IsApprovedForAll = false;
-                 RequestBl.ReloadDictionariesToModel(model);
+                 
+                     RequestBl.ReloadDictionariesToModel(model);
+                
                  return View(model);
              }
 
@@ -1208,6 +1212,7 @@ namespace WebMvc.Controllers
 
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
+             ModelState.Clear();
              UserRole role = AuthenticationService.CurrentUser.UserRole;
              if (model.Id > 0 && fileDto == null)
              {
@@ -1304,7 +1309,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
           UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult ChildVacationList()
          {
              //int? userId = new int?();
@@ -1335,7 +1340,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel |
           UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Estimator |
-          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.ConsultantOutsourcing)]
          public ActionResult ChildVacationEdit(int id, int userId)
          {
              //int? userId = new int?();
@@ -2215,7 +2220,7 @@ namespace WebMvc.Controllers
                 return;
             DateTime beginDate = date.Value;
             DateTime current = DateTime.Today;
-            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : 1;
+            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? 30 : 1);
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
             if ((current.Day > limitDate) && monthBegin > beginDate)
             {
@@ -2354,5 +2359,24 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
+
+         public ViewResult TerrapointDepartment()
+         {
+             return View();
+         }
+         public ViewResult DepartmentTerrapoint()
+         {
+             return View();
+         }
+         public ContentResult GetTP_D_list()
+         {
+             var content = RequestBl.GetTP_D_list();
+             return  Content( Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
+         public ContentResult GetD_TP_list()
+         {
+             var content = RequestBl.GetD_TP_list();
+             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(content));
+         }
     }        
 }

@@ -36,100 +36,128 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <span style="font-weight: bold">Выбор параметров</span>
+                                @*<span style="font-weight: bold">Выбор параметров</span>*@
+                                <div id="DivFilter">
+                                    <h3><a href="#">Выбор параметров</a></h3>
+                                    <div>
+                                        
+                                        <table>
+                                            <tr>
+                                                <td colspan="2">
+                                                    @Html.ValidationSummary(false)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:250px;">
+                                                    @Html.LabelFor(m => m.DepartmentName):
+                                                </td>
+                                                <td>
+                                                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>           
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.StatusId):
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(model => model.StatusId, Model.Statuses, string.Empty)
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.UserName):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.UserName, new { placeholder = "ФИО" })
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.CandidateId):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m.CandidateId)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.ContractNumber1C):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m.ContractNumber1C)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.CompleteDate):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m.CompleteDate)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.AppointmentReportNumber):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m.AppointmentReportNumber)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.AppointmentNumber):
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m.AppointmentNumber)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.PersonnelId):
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(model => model.PersonnelId, new SelectList(Model.Personnels, "Id", "Name"))
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    @Html.LabelFor(m => m.BeginDate):
+                                                    @Html.EditorFor(model => model.BeginDate) 
+                                                    @Html.LabelFor(m => m.EndDate):
+                                                    @Html.EditorFor(model => model.EndDate) 
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    @Html.LabelFor(m => m.EmploymentDateBegin):
+                                                    @Html.EditorFor(model => model.EmploymentDateBegin) 
+                                                    @Html.LabelFor(m => m.EmploymentDateEnd):
+                                                    @Html.EditorFor(model => model.EmploymentDateEnd) 
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                @*<button type="submit">Выбрать</button>*@
+                                                <button id="btnSubmit" type="button">Выбрать</button>
+                                                <input type="button" value="Очистить" onclick="resetFilter();"/>
+                                                </td>
+                                            </tr>                        
+                                        </table>
+
+
+
+                                    </div>
+                                </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                @Html.ValidationSummary(false)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width:250px;">
-                                @Html.LabelFor(m => m.DepartmentName):
-                            </td>
-                            <td>
-                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
-                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>           
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.StatusId):
-                            </td>
-                            <td>
-                                @Html.DropDownListFor(model => model.StatusId, Model.Statuses, string.Empty)
-                                </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.UserName):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.UserName, new { placeholder = "ФИО" })
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.CandidateId):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.CandidateId)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.ContractNumber1C):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.ContractNumber1C)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.CompleteDate):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.CompleteDate)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.AppointmentReportNumber):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.AppointmentReportNumber)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.AppointmentNumber):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.AppointmentNumber)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                @Html.LabelFor(m => m.BeginDate):
-                                @Html.EditorFor(model => model.BeginDate) 
-                                @Html.LabelFor(m => m.EndDate):
-                                @Html.EditorFor(model => model.EndDate) 
-                                </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                            @*<button type="submit">Выбрать</button>*@
-                            <button id="btnSubmit" type="button">Выбрать</button>
-                            <input type="button" value="Очистить" onclick="resetFilter();"/>
-                            </td>
-                        </tr>                        
+                        
                     </table>
                 </div>
             </td>
@@ -159,6 +187,8 @@
         @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
         {
             <button type="button" id="btnSaveTechDissmiss">Сохранить техн. увольнения</button>
+            <button type="button" id="btnSaveTK">Сохранить данные о получении оригинала ТК</button>
+            <button type="button" id="btnSaveTD">Сохранить данные о получении оригинала ТД</button>
         }
     </div>
     
@@ -261,6 +291,15 @@
         <th>
             <div id="sort22"><a href="#" onclick="SortColumnChanged(22);">ФИО<br />Наставника</a></div>
         </th>
+        @if (Model.IsMarkDocOriginal)
+        {
+            <th>
+                <div id="sort24"><a href="#" onclick="SortColumnChanged(24);">Оригинал ТК<br />получен</a></div>
+            </th>
+            <th>
+                <div id="sort25"><a href="#" onclick="SortColumnChanged(25);">Оригинал ТД<br />получен</a></div>
+            </th>
+        }
         @*
         <th>
             Анкета
@@ -287,6 +326,7 @@
     </tr>
     <tbody id="tblBody">
         @{ int i = 1; }
+        @{string ln = string.Empty;}
 
         @foreach (var candidate in Model.Roster)
         {
@@ -399,11 +439,44 @@
                     }
                 </td>
                 <td>
-                    @if(candidate.DismissalDate.HasValue) {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
+                    @if (candidate.DismissalDate.HasValue)
+                    {<p>@candidate.DismissalDate.Value.ToShortDateString()</p>}
                 </td>
                 <td>
                     &nbsp;@candidate.MentorName
                 </td>
+
+                @if (Model.IsMarkDocOriginal)
+                {
+                
+                    <td class="centered">
+                        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                        }
+                        else
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsTKReceived, new { disabled = "disabled" })
+                        }
+                        <br />
+                        @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TKReceivedDate";}
+                        <label id=@ln>@(candidate.TKReceivedDate.HasValue ? candidate.TKReceivedDate.Value.ToShortDateString() : "")</label>
+                    
+                    </td>
+                    <td class="centered">
+                        @if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                        }
+                        else
+                        {
+                            @Html.CheckBoxFor(m => m.Roster[i - 1].IsTDReceived, new { disabled = "disabled" })
+                        }
+                        <br />
+                        @{ln = "Roster_" + @Convert.ToString(i - 1) + "__TDReceivedDate";}
+                        <label id=@ln>@candidate.TDReceivedDate</label>
+                    </td>
+                }
                 @*
                 <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
                     <span class="buttonLink">Разделы</span>
@@ -460,8 +533,14 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
-        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate, #CompleteDate'), "-1:+0", true);
-        $(".hasDatepicker").width("75px");
+        
+
+        $("#DivFilter").accordion({
+            header: "h3",
+            collapsible: true});
+
+        UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate, #CompleteDate, #EmploymentDateBegin, #EmploymentDateEnd'), "-1:+0", true);
+        $(".hasDatepicker").width("85px");
 
         $(".selcheckByManager, #setAllByManager").click(function () {
             isApproveByManagerChanged = true;
@@ -556,6 +635,52 @@
                 }
             );
         });
+
+        $("#btnSaveTK").click(function () {
+            var url="@Url.Action("CandidateSaveTKRecieved", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        for (var i = 0; i < data.roster.length; i++)
+                        {
+                            $("#" + "Roster_" + i + "__TKReceivedDate").text(data.roster[i].ReceivedDate);
+                        }
+
+                        alert("Пометки о получении оригинала ТК сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
+
+        $("#btnSaveTD").click(function () {
+            var url="@Url.Action("CandidateSaveTDRecieved", "Employment")";
+
+            var dataToSend = $("#mainForm").serialize();
+
+            $.post(url,
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok == true) {
+                        for (var i = 0; i < data.roster.length; i++)
+                        {
+                            $("#" + "Roster_" + i + "__TDReceivedDate").text(data.roster[i].ReceivedDate);
+                        }
+
+                        alert("Пометки о получении оригинала ТД сохранены!.");
+                    }
+                    else {
+                        alert("Ошибка при сохранении данных!.");
+                    }
+                }
+            );
+        });
             
 
     });
@@ -564,6 +689,8 @@
         $("#BeginDate").val('');
         $("#EndDate").val('');
         $("#CompleteDate").val('');
+        $("#EmploymentDateBegin").val('');
+        $("#EmploymentDateEnd").val('');
 
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');

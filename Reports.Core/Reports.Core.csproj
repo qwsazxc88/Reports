@@ -289,6 +289,17 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsRejectReasonDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsStatusDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDataDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDocsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsStatusDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsTypesDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDataDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDocsDao.cs" />
     <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
@@ -390,6 +401,12 @@
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
+    <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsRejectReasonDao.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsStatus.cs" />
+    <Compile Include="Domain\StaffMovements\refStaffMovementsTypes.cs" />
+    <Compile Include="Domain\StandartRequestEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
@@ -539,6 +556,9 @@
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovements.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsData.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsDocs.cs" />
     <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\SurchargeNote.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
@@ -585,6 +605,7 @@
     <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DepartmentDto.cs" />
+    <Compile Include="Dto\Department_TerrapointDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -636,9 +657,12 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
+    <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\SurchargeDto.cs" />
     <Compile Include="Dto\SurchargeNoteDto.cs" />
     <Compile Include="Dto\TerraGraphicDto.cs" />
+    <Compile Include="Dto\Terrapoint_DepartmentDto.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
     <Compile Include="Dto\UploadFileDto.cs" />
@@ -649,10 +673,14 @@
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
     <Compile Include="Dto\SicklistDto.cs" />
+    <Compile Include="Enum\CommentsPlaceTypes.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Enum\EmploymentStatus.cs" />
+    <Compile Include="Enum\StaffMovementsDocsTypes.cs" />
+    <Compile Include="Enum\StaffMovementsRejectReasonEnum.cs" />
+    <Compile Include="Enum\StaffMovementsStatus.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />
@@ -676,6 +704,8 @@
     <Compile Include="StringHelper.cs" />
     <Compile Include="Utils\IncorrectDatabaseVersionException.cs" />
     <Compile Include="Utils\PasswordManager.cs" />
+    <Compile Include="Utils\Result.cs" />
+    <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\Utils.cs" />
     <Compile Include="Validate.cs" />
   </ItemGroup>
@@ -1198,6 +1228,12 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsData.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsDocs.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovements.hbm.xml" />
     <EmbeddedResource Include="Domain\VacationSaldo.hbm.xml" />
     <EmbeddedResource Include="Domain\SurchargeNote.hbm.xml">
       <SubType>Designer</SubType>

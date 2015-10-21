@@ -90,8 +90,8 @@ namespace WebMvc.Controllers
 
             if (!string.IsNullOrEmpty(error))
             {
-                //ViewBag.Error = error;
-                ModelState.AddModelError("DepartmentId", error);
+                ViewBag.Error = error;
+                //ModelState.AddModelError("DepartmentId", error);
             }
 
             if (ModelState.Count != 0)
@@ -1768,7 +1768,31 @@ namespace WebMvc.Controllers
             bool result = EmploymentBl.SaveCandidateTechDissmiss(roster);
             return Json(new { ok = result });
         }
-        
+        /// <summary>
+        /// Сохраняем отметки о плучении кадровиком оригинала трудовой книжки (ТК) кандидата.
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
+        public ActionResult CandidateSaveTKRecieved(IList<CandidateDocRecievedDto> roster)
+        {
+            bool result = EmploymentBl.SaveCandidateDocRecieved(roster, true);
+            return Json(new { ok = result, roster });
+        }
+        /// <summary>
+        /// Сохраняем отметки о плучении кадровиком оригинала трудовой договора (ТД) кандидата.
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
+        public ActionResult CandidateSaveTDRecieved(IList<CandidateDocRecievedDto> roster)
+        {
+            bool result = EmploymentBl.SaveCandidateDocRecieved(roster, false);
+            return Json(new { ok = result, roster });
+        }
+
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
@@ -1780,6 +1804,7 @@ namespace WebMvc.Controllers
             model.IsManagersAvailable = IsManagersAvailable;
             model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
             model.TabIndex = TabIndex;
+            model = EmploymentBl.GetPersonnelInfoModel(model);
             return View(model);
         }
 

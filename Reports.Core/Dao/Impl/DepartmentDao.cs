@@ -87,6 +87,60 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(Department))).
                 List<Department>();
         }
+        public IList<Reports.Core.Dto.Terrapoint_DepartmentDto> GetTP_D_list()
+        {
+            var querystr = "SELECT * FROM vwTerrapoint_Department";
+            var query = Session.CreateSQLQuery(querystr)
+                  .AddScalar("TPCode", NHibernateUtil.String)
+                  .AddScalar("TP1Name", NHibernateUtil.String)
+                  .AddScalar("TP2Name", NHibernateUtil.String)
+                  .AddScalar("TPName", NHibernateUtil.String)
+                  .AddScalar("TPCity", NHibernateUtil.String)
+                  .AddScalar("TPStreet", NHibernateUtil.String)
+                  .AddScalar("Did", NHibernateUtil.Int32)
+                  .AddScalar("Dcode", NHibernateUtil.String)
+                  .AddScalar("Dname", NHibernateUtil.String)
+                  .AddScalar("D2name", NHibernateUtil.String)
+                  .AddScalar("D3name", NHibernateUtil.String)
+                  .AddScalar("D4name", NHibernateUtil.String)
+                  .AddScalar("D5name", NHibernateUtil.String)
+                  .AddScalar("D6name", NHibernateUtil.String)
+                  .AddScalar("BFGId", NHibernateUtil.String)
+                  .AddScalar("Dcity", NHibernateUtil.String)
+                  .AddScalar("Dstreet", NHibernateUtil.String)
+                  .AddScalar("Dhouse", NHibernateUtil.String)
+                  .AddScalar("D1id", NHibernateUtil.Int32)
+                  .AddScalar("D1code", NHibernateUtil.String)
+                  .AddScalar("D1name", NHibernateUtil.String)
+                  .AddScalar("D1city", NHibernateUtil.String)
+                  .AddScalar("D1street", NHibernateUtil.String)
+                  .AddScalar("D1house", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(Reports.Core.Dto.Terrapoint_DepartmentDto))).List<Reports.Core.Dto.Terrapoint_DepartmentDto>();
+        }
+        public IList<Reports.Core.Dto.Department_TerrapointDto> GetD_TP_list()
+        {
+            var querystr = "SELECT * FROM vwDepartment_Terrapoint";
+            var query = Session.CreateSQLQuery(querystr)
+                .AddScalar("Did", NHibernateUtil.Int32)
+              .AddScalar("Dcode", NHibernateUtil.String)
+              .AddScalar("Dname", NHibernateUtil.String)
+              .AddScalar("D2name", NHibernateUtil.String)
+              .AddScalar("D3name", NHibernateUtil.String)
+              .AddScalar("D4name", NHibernateUtil.String)
+              .AddScalar("D5name", NHibernateUtil.String)
+              .AddScalar("D6name", NHibernateUtil.String)
+              .AddScalar("BFGId", NHibernateUtil.String)
+              .AddScalar("Dcity", NHibernateUtil.String)
+              .AddScalar("Dstreet", NHibernateUtil.String)
+              .AddScalar("Dhouse", NHibernateUtil.String)
+              .AddScalar("TPcode", NHibernateUtil.String)
+              .AddScalar("TP1Name", NHibernateUtil.String)
+              .AddScalar("TP2Name", NHibernateUtil.String)
+              .AddScalar("TPName", NHibernateUtil.String)
+              .AddScalar("TPcity", NHibernateUtil.String)
+              .AddScalar("TPstreet", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(Reports.Core.Dto.Department_TerrapointDto))).List<Reports.Core.Dto.Department_TerrapointDto>();
+        }
         public Department GetParentDepartmentWithLevel(Department dep,int level)
         {
             return Session.Query<Department>().

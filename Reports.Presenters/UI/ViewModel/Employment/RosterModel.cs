@@ -36,6 +36,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
+        [Display(Name = "Период приема с")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EmploymentDateBegin { get; set; }
+        [Display(Name = "по")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EmploymentDateEnd { get; set; }
+
+
         [Display(Name = "Номер заявки")]
         public int? CandidateId { get; set; }
 
@@ -52,6 +60,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Номер заявки из подбора персонала")]
         public int? AppointmentNumber { get; set; }
 
+        [Display(Name = "Поиск по кадровику")]
+        public int PersonnelId { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
+
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
 
@@ -60,7 +72,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         // Согласование списком для вышестоящего руководителя
         public bool IsBulkApproveByHigherManagerAvailable { get; set; }
-
+        //Метки для оригиналов документов
+        public bool IsMarkDocOriginal { get; set; }
         
         public RosterModel()
         {

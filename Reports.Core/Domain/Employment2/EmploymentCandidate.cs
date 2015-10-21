@@ -47,5 +47,13 @@ namespace Reports.Core.Domain
         public virtual DateTime? ManagerToHigherManagerSendEmailDate { get; set; }
         public virtual bool IsPersonnelManagerToManagerSendEmail { get; set; }
         public virtual DateTime? PersonnelManagerToManagerSendEmailDate { get; set; }
+        //отметки о получении оригинала ТК
+        public virtual bool IsTKReceived { get; set; }
+        public virtual DateTime? TKReceivedDate { get; set; }
+        public virtual User TKMarkUser { get; set; }
+        //отметки о получении оригинала ТД
+        public virtual bool IsTDReceived { get; set; }
+        public virtual DateTime? TDReceivedDate { get; set; }
+        public virtual User TDMarkUser { get; set; }
     }
 }
