@@ -24,5 +24,17 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id удаляемой строки</param>
         /// <returns></returns>
         bool IsEnableDelete(int Id);
+        /// <summary>
+        /// Достаем запись из справочника кодировок бизнес-групп по подразделению из СКД
+        /// </summary>
+        /// <param name="Dep">Подразделение 5 уровня</param>
+        /// <returns></returns>
+        StaffDepartmentBusinessGroup GetDepartmentBusinessGroupByDeparment(Department Dep);
+        /// <summary>
+        /// Формируем новый код для бизнес-группы.
+        /// </summary>
+        /// <param name="Administration">Управление</param>
+        /// <returns></returns>
+        string GetNewBusinessGroupCode(StaffDepartmentAdministration Administration);
     }
 }

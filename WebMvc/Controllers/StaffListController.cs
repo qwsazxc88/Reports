@@ -130,42 +130,44 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             string error = string.Empty;
             bool IsComplete = false;
-            if (model.IsDraft)  //сохранение черновика
+            if (ValidateModel(model))//проверки
             {
-                IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
-                if (!IsComplete)
+                if (model.IsDraft)  //сохранение черновика
                 {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", error);
+                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                    if (!IsComplete)
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetDepartmentRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                    }
                 }
                 else
                 {
-                    model = StaffListBl.GetDepartmentRequest(model);
-                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                    //if (ValidateModel(model))//проверки
+                    //{
+                    //}
+                    if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetDepartmentRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
+                    }
                 }
             }
             else
-            {
-                if (ValidateModel(model))//проверки
-                {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", "В разработке!");
-                    //if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("MessageStr", "В разработке!");
-                    //}
-                    //else
-                    //{
-                    //    StaffListBl.LoadDictionaries(model);
-                    //    ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
-                    //}
-                }
-            }
+                StaffListBl.LoadDictionaries(model);
             
-            //заглушка для выкладки на тест для показа прототипов
-            //StaffListBl.LoadDictionaries(model);
-            //ModelState.AddModelError("Message", "В разработке!");
+            
+            
             //для комментариев
             ViewBag.PlaceId = model.Id;
             ViewBag.PlaceTypeId = 2; 
@@ -1036,6 +1038,24 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffDepartmentRequestModel model)
         {
+            //добавление
+            //если по данному подразделению это не первая заявка, то нужно достать предыдущий код для финграда
+
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError("Name", "Введите название подразделения!");
+                ModelState.AddModelError("MessageStr", "Введите название подразделения!");
+            }
+
+            if (!model.IsDraft)
+            {
+                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7))
+                {
+                    ModelState.AddModelError("DepNextId", "Укажите подразделение с налоговыми рекизитами!");
+                    ModelState.AddModelError("MessageStr", "Укажите подразделение с налоговыми рекизитами!");
+                }
+            }
+
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffEstablishedPostRequestListModel model)

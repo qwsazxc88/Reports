@@ -5,6 +5,9 @@ using Reports.Core.Services;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
+using System;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -79,6 +82,39 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery("SELECT cast(case when count(*) > 0 then 0 else 1 end as bit) IsExists FROM dbo.StaffDepartmentRPLink WHERE BGId = " + Id.ToString())
             .AddScalar("IsExists", NHibernateUtil.Boolean);
             return query.UniqueResult<bool>();
+        }
+
+        /// <summary>
+        /// Достаем запись из справочника кодировок бизнес-групп по подразделению из СКД
+        /// </summary>
+        /// <param name="Dep">Подразделение 5 уровня</param>
+        /// <returns></returns>
+        public StaffDepartmentBusinessGroup GetDepartmentBusinessGroupByDeparment(Department Dep)
+        {
+            return Session.Query<StaffDepartmentBusinessGroup>().
+                Where(x => x.Department == Dep)
+                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Формируем новый код для бизнес-группы.
+        /// </summary>
+        /// <param name="Administration">Управление</param>
+        /// <returns></returns>
+        public string GetNewBusinessGroupCode(StaffDepartmentAdministration Administration)
+        {
+            IList<StaffDepartmentBusinessGroup> bg = Session.Query<StaffDepartmentBusinessGroup>().Where(x => x.DepartmentAdministration == Administration).ToList();
+
+            string Code = bg.Count() == 0 ? "0" :
+                bg.Where(x => x.Code.StartsWith(Administration.Code))
+                .OrderByDescending(x => x.Code.Substring(8))
+                .FirstOrDefault().Code.Substring(8);
+
+            //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = Administration.Code + "-" + (Code.Length == 2 ? "0" + Code : ((Code.Length == 1 ? "00" + Code : Code)));
+
+            return Code;
         }
     }
 }

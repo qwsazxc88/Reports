@@ -39,12 +39,14 @@
                             @(Model.DateState.HasValue ? Model.DateState.Value.ToShortDateString() : string.Empty)
                         </td>
                     </tr>
+                    @*
                     <tr>
                         <td>@Html.LabelFor(m => m.Id)</td>
                         <td>
                             @(Model.Id != 0 ? Model.Id.ToString() : "")
                         </td>
                     </tr>
+                    *@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
@@ -68,19 +70,11 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsBack)
+                            @Html.LabelFor(m => m.BFGId)
                         </td>
                         <td>
-                            <div id="IsBackContainer">
-                                @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                {<text>style="border-color:red;"</text>}
-                                                                                                                                                else
-                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                    else
-                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
+                            @Html.DropDownListFor(model => model.BFGId, new SelectList(Model.Accessoryes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.BFGId)
                         </td>
                     </tr>
                     <tr>
@@ -94,6 +88,8 @@
                         <td>@Html.LabelFor(m => m.OrderDate)</td>
                         <td>@Html.TextBoxFor(m => m.OrderDate) @Html.ValidationMessageFor(model => model.OrderDate)</td>
                     </tr>
+                    
+
                     <tr>
                         <td>
                             @Html.HiddenFor(m => m.LegalAddress)
@@ -120,62 +116,69 @@
                             @Html.ValidationMessageFor(model => model.LegalAddress)
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.IsTaxAdminAccount)
-                        </td>
-                        <td>
-                            <div id="IsTaxAdminAccountContainer">
-                                @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
-                                                                                                                                                                                            {<text>style="border-color:red;"</text>}
-                                                                                                                                                                                            else
-                                                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
-                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
-                                                                                                                                                                                                else
-                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.IsEmployeAvailable)
-                        </td>
-                        <td>
-                            <div id="IsEmployeAvailableContainer">
-                                @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+
+
+                    @if (Model.ItemLevel <= 2 || Model.ItemLevel == 7)
+                    {
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTaxAdminAccount)
+                            </td>
+                            <td>
+                                <div id="IsTaxAdminAccountContainer">
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
                                                                                                                                                                                                 {<text>style="border-color:red;"</text>}
                                                                                                                                                                                                 else
                                                                                                                                                                                                 {<text> style="border-color:none;"</text>}>Да</label>
-                                @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
                                                                                                                                                                                                     {<text>style="border-color:red;"</text>}
                                                                                                                                                                                                     else
                                                                                                                                                                                                     {<text> style="border-color:none;"</text>}>Нет</label>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.DepNextId)<br />
-                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);"/>
-                        </td>
-                        <td>
-                            <label id="DepNextNameLabel">@Model.DepNextName</label>
-                            @Html.HiddenFor(m => m.DepNextId)
-                            @Html.HiddenFor(m => m.DepNextName)
-                            @Html.ValidationMessageFor(model => model.DepNextId)
-                        </td>
-                    </tr>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsEmployeAvailable)
+                            </td>
+                            <td>
+                                <div id="IsEmployeAvailableContainer">
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                        else
+                                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepNextId)<br />
+                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);"/>
+                            </td>
+                            <td>
+                                <label id="DepNextNameLabel">@Model.DepNextName</label>
+                                @Html.HiddenFor(m => m.DepNextId)
+                                @Html.HiddenFor(m => m.DepNextName)
+                                @Html.ValidationMessageFor(model => model.DepNextId)
+                            </td>
+                        </tr>
+                    }
+                    
+
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.ParentId)<br />
-                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(6);"/>
                         </td>
                         <td>
                             <label id="DepParentNameLabel">@Model.DepParentName</label>
                             @Html.HiddenFor(m => m.ParentId)
                             @Html.HiddenFor(m => m.DepParentName)
                             @Html.ValidationMessageFor(model => model.ParentId)
+                            <input type="button" style="float:right;" value="Изменить" title="Корректировка родительского подразделения (при необходимости)" onclick="changeDepartment(6);"/>
                         </td>
                     </tr>
                     <tr>
@@ -195,6 +198,19 @@
                             </div>
                         </td>
                     </tr>
+                    @*
+                    @if (Model.ItemLevel >= 3 && Model.ItemLevel < 7)
+                    {
+                        <tr>
+                            <td>@Html.LabelFor(m => m.DepCode)</td>
+                            <td>@Html.DisplayFor(m => m.DepCode)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.PrevDepCode)</td>
+                            <td>@Html.DisplayFor(m => m.PrevDepCode)</td>
+                        </tr>
+                    }
+                    *@
                 </table>
             </div>
         </div>
@@ -703,10 +719,10 @@
         <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                      {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    if (Model.Id != 0)
-    {
+                                                                                     if (Model.Id != 0)
+                                                                                     {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-    }
+                                                                                     }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -724,7 +740,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("moDepRequest");
-        $(document).tooltip({ track: true });
+        $(document).tooltip({ track: false });
         //ShowFlash(true);
         //ShowFlash(false);
 
@@ -752,7 +768,7 @@
         });
         $("#MainDiv1").accordion({
             header: "h3",
-            active: false,
+            //active: false,
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"
@@ -804,24 +820,13 @@
         $(".hasDatepicker").width("85px");
 
         
-        $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
         $('#IsPlanContainer').buttonset();
         $('#IsBlockedContainer').buttonset();
         $('#IsLegalEntityContainer').buttonset();
 
-
-        $("#IsBackTrue").click(function () {
-            $("#lblIsBackTrue").css("border-color", "red");
-            $("#lblIsBackFalse").css("border-color", "silver");
-        });
-        $("#IsBackFalse").click(function () {
-            $("#lblIsBackFalse").css("border-color", "red");
-            $("#lblIsBackTrue").css("border-color", "silver");
-        });
-
-                
+               
         $("#IsTaxAdminAccountTrue").click(function () {
             $("#lblIsTaxAdminAccountTrue").css("border-color", "red");
             $("#lblIsTaxAdminAccountFalse").css("border-color", "silver");
@@ -1116,7 +1121,7 @@
                 draggable: false,
                 resizable: false,
                 width: 300,
-                height: 60,
+                height: 100,
                 closeOnEscape: false,
                 close: function (event, ui) {
                     //$(this).dialog("destroy").remove();

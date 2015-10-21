@@ -30,5 +30,19 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id подразделения</param>
         /// <returns></returns>
         int GetCurrentRequestId(int DepartmentId);
+        /// <summary>
+        /// Проверка на возможность создать код Финграда для создаваемого подразделения.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <returns></returns>
+        bool IsEnableCreateCode(int Id);
+        /// <summary>
+        /// Формируем новый код для подразделения 7 уровня.
+        /// </summary>
+        /// <param name="br">Филиал</param>
+        /// <param name="mn">Дирекция</param>
+        /// <param name="rp">РП-привязка</param>
+        /// <returns></returns>
+        string GetNewFinDepCode(StaffDepartmentBranch br, StaffDepartmentManagement mn, StaffDepartmentRPLink rp);
     }
 }

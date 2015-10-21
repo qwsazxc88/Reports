@@ -21,6 +21,10 @@ IF OBJECT_ID ('FK_Users_StaffEstablishedPost', 'F') IS NOT NULL
 GO
 
 
+IF OBJECT_ID ('FK_Department_StaffDepartmentAccessory', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[Department] DROP CONSTRAINT [FK_Department_StaffDepartmentAccessory]
+GO
+
 
 IF OBJECT_ID ('FK_RefAddresses_Editors', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Editors]
@@ -200,6 +204,10 @@ GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_StaffDepartmentRequestTypes', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffDepartmentRequest_StaffDepartmentAccessory', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentAccessory]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
@@ -684,7 +692,7 @@ CREATE TABLE [dbo].[StaffDepartmentRequest](
 	[ItemLevel] [int] NULL,
 	[ParentId] [int] NULL,
 	[Name] [nvarchar](128) NULL,
-	[IsBack] [bit] NULL,
+	[BFGId] [int] NULL,
 	[OrderNumber] [nvarchar](200) NULL,
 	[OrderDate] [datetime] NULL,
 	[LegalAddressId] [int] NULL,
@@ -863,6 +871,7 @@ CREATE TABLE [dbo].[DepartmentArchive](
 	[ParentId] [int] NULL,
 	[Path] [nvarchar](128) NULL,
 	[ItemLevel] [int] NULL,
+	[Priority] [int] NULL,
 	[IsUsed] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
@@ -1261,8 +1270,38 @@ CREATE TABLE [dbo].[StaffDepartmentOperationGroups](
 GO
 
 
+if OBJECT_ID (N'StaffDepartmentAccessory', 'U') is not null
+	DROP TABLE [dbo].[StaffDepartmentAccessory]
+GO
+CREATE TABLE [dbo].[StaffDepartmentAccessory](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NULL CONSTRAINT [DF_StaffDepartmentAccessory_CreateDate]  DEFAULT (getdate()),
+ CONSTRAINT [PK_StaffDepartmentAccessory] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+--ТАК КАК ПОДРАЗДЕЛЕНИЯ УЖЕ ИМЕЮТ ДАННЫЕ ИЗ ЭТОГО СПРАВОЧНИКА, ТО заполняем даннымиСРАЗУ ТУТ
+--StaffDepartmentAccessory
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Бэк')
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Фронт')
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'ГПД')
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Управленческое')
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Удалено/закрыто')
+
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[Department]  WITH CHECK ADD  CONSTRAINT [FK_Department_StaffDepartmentAccessory] FOREIGN KEY([BFGId])
+REFERENCES [dbo].[StaffDepartmentAccessory] ([Id])
+GO
+
+ALTER TABLE [dbo].[Department] CHECK CONSTRAINT [FK_Department_StaffDepartmentAccessory]
+GO
+
 ALTER TABLE [dbo].[StaffDepartmentOperationGroups] ADD  CONSTRAINT [DF_StaffDepartmentOperationGroups_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1838,9 +1877,6 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentOperations] CHECK CONSTRAINT [FK_StaffDepartmentOperations_EditorUser]
 GO
 
-ALTER TABLE [dbo].[StaffDepartmentRequest] ADD  CONSTRAINT [DF_StaffDepartmentRequest_IsBack]  DEFAULT ((0)) FOR [IsBack]
-GO
-
 ALTER TABLE [dbo].[StaffDepartmentRequest] ADD  CONSTRAINT [DF_StaffDepartmentRequest_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -1884,6 +1920,13 @@ REFERENCES [dbo].[StaffDepartmentRequestTypes] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentRequestTypes]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentAccessory] FOREIGN KEY([BFGId])
+REFERENCES [dbo].[StaffDepartmentAccessory] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_StaffDepartmentAccessory]
 GO
 
 ALTER TABLE [dbo].[StaffDepartmentTaxDetails]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentTaxDetails_Department] FOREIGN KEY([DepartmentId])
@@ -2121,6 +2164,21 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник принадлежности подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationGroups', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -2571,6 +2629,27 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'DepartmentId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'Code'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'Code1C'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код 1С родительского подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'ParentId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Путь' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'Path'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Уровень подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'ItemLevel'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Сортировка в пределах уровня' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'Priority'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'DepartmentArchive', @level2type=N'COLUMN',@level2name=N'IsUsed'
 GO
 
@@ -2832,7 +2911,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Наименование подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак БЭК/ФРОНТ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsBack'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Принадлежность подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'BFGId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер приказа' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'OrderNumber'
@@ -3435,7 +3514,7 @@ INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'02', N'Вологодский Филиал (закрыт)', null)				--2
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'03', N'МОСКОВСКИЙ ФИЛИАЛ', 4131)		--3
 INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'04', N'ЦЕНТРАЛЬНЫЙ ФИЛИАЛ', 4132)	--4
---INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--4
+INSERT INTO StaffDepartmentBranch(Version, Code, Name, DepartmentId) VALUES(1, N'05', N'Представительство в Чешской республике', null)	--5
 
 --StaffDepartmentManagement
 INSERT INTO StaffDepartmentManagement(Version, Code, Name, BranchId, DepartmentId)
@@ -3704,9 +3783,15 @@ INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'УРМ')
 INSERT INTO StaffDepartmentTypes(Version, Name) VALUES(1, N'Филиал')
 
 
+
+
+
 --метим подразделения
 UPDATE Department SET BFGId = 3	WHERE Name like '%гпд%'	
-UPDATE Department SET BFGId = 5	WHERE Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%' 
+--UPDATE Department SET BFGId = null	WHERE Name like '%гпд%'	
+	--удаленные прокрашиваются при обработке данных
+--UPDATE Department SET BFGId = 5	WHERE Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%' 
+--UPDATE Department SET BFGId = null	WHERE BFGId = 5
 
 IF DB_NAME() = 'WebAppTest'
 BEGIN

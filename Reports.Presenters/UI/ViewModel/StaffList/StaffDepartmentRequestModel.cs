@@ -45,8 +45,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Назание структурного подразделения")]
         public string Name { get; set; }
 
-        [Display(Name = "Признак БЭК/ФРОНТ")]
-        public bool IsBack { get; set; }
+        [Display(Name = "Принадлежность подразделения")]
+        public int BFGId { get; set; }
+        public IList<IdNameDto> Accessoryes { get; set; }
 
         [Display(Name = "Номер приказа")]
         public string OrderNumber { get; set; }
@@ -73,17 +74,17 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int LegalFlatType { get; set; }
         public string LegalFlatNumber { get; set; }
 
-        [Display(Name = "Признак постановки на учет в ИФНС")]
+        [Display(Name = "Требуется постановка на учет в ИФНС")]
         public bool IsTaxAdminAccount { get; set; }
 
-        [Display(Name = "Признак наличия персонала в подразделении")]
+        [Display(Name = "Осуществлять прием сотрудников в подразделение")]
         public bool IsEmployeAvailable { get; set; }
 
-        [Display(Name = "Соседнее подразделение с налоговыми реквизитами")]
+        [Display(Name = "Указать подразделение с налоговыми реквизитами")]
         public int DepNextId { get; set; }
         public string DepNextName { get; set; }
 
-        [Display(Name = "Признак плановой операции")]
+        [Display(Name = "Операция плановая")]
         public bool IsPlan { get; set; }
 
         [Display(Name = "Инициатор")]
@@ -223,10 +224,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int SoftGroupId { get; set; }
         public IList<StaffDepartmentSoftGroupDto> SoftGroups { get; set; }
 
-        [Display(Name = "Признак блокировки подразделения")]
+        [Display(Name = "Наличие блокировки подразделения")]
         public bool IsBlocked { get; set; }
 
-        [Display(Name = "Признак сетевого магазина")]
+        [Display(Name = "Идентификация сетевого магазина")]
         public int? NetShopId { get; set; }
         public IList<IdNameDto> NetShopTypes { get; set; }
 
@@ -234,7 +235,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int OperGroupId { get; set; }
         public IList<StaffDepartmentOperationGroupsDto> OperationGroups { get; set; }
 
-        [Display(Name = "Признак обслуживания юридических лиц")]
+        [Display(Name = "Обслуживание юридических лиц")]
         public bool IsLegalEntity { get; set; }
 
         [Display(Name = "Ориентиры")]

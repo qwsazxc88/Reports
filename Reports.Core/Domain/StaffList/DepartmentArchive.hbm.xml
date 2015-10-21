@@ -12,6 +12,7 @@
     <property name="ParentId" not-null="false"/>
     <property name="Path" length="128" not-null="false"/>
     <property name="ItemLevel" not-null="false"/>
+    <property name="Priority" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_DepartmentArchive_CreatorUser" index="DepartmentArchive_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>

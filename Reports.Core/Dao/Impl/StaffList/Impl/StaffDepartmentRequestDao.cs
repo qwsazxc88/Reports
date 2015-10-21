@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -39,11 +41,11 @@ namespace Reports.Core.Dao.Impl
                                        A.RequestTypeId,
                                        A.DepartmentId,
                                        A.ParentId,
-                                       Dep2.Name as Dep2Name, 
-                                       Dep3.Name as Dep3Name, 
-                                       Dep4.Name as Dep4Name, 
-                                       Dep5.Name as Dep5Name, 
-                                       Dep6.Name as Dep6Name, 
+                                       isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name, 
+                                       isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name, 
+                                       isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name, 
+                                       isnull(Dep5.Name, case when A.ItemLevel = 5 then A.Name else null end) as Dep5Name, 
+                                       isnull(Dep6.Name, case when A.ItemLevel = 6 then A.Name else null end) as Dep6Name, 
                                        case when A.ItemLevel = 7 then A.Name else null end as Dep7Name, 
                                        Dep2.Path as Dep2Path, 
                                        Dep3.Path as Dep3Path, 
@@ -229,6 +231,7 @@ namespace Reports.Core.Dao.Impl
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
+
         /// <summary>
         /// Достаем Id действующей заявки для данного подразделения.
         /// </summary>
@@ -242,6 +245,54 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)
                 .UniqueResult<int>();
+        }
+
+        /// <summary>
+        /// Проверка на возможность создать код Финграда для создаваемого подразделения.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <returns></returns>
+        public bool IsEnableCreateCode(int Id)
+        {
+            //от родительского подразделения и вверх по ветке до филиала смотрим чтобы справочник кодировок имел коды к веткам
+            IQuery query = Session.CreateSQLQuery(@"SELECT cast(case when count(*) = 0 then 1 else 0 end as bit) IsExists
+                                                    FROM (SELECT B.Id, 
+						                                         case when B.ItemLevel = 6 then (SELECT Code FROM StaffDepartmentRPLink WHERE DepartmentId = B.Id) 
+									                                        when B.ItemLevel = 5 then (SELECT Code FROM StaffDepartmentBusinessGroup WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 4 then (SELECT Code FROM StaffDepartmentAdministration WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 3 then (SELECT Code FROM StaffDepartmentManagement WHERE DepartmentId = B.Id)
+									                                        when B.ItemLevel = 2 then (SELECT Code FROM StaffDepartmentBranch WHERE DepartmentId = B.Id)
+						                                         else B.FingradCode end as FingradCode
+			                                              FROM Department as A
+			                                              INNER JOIN Department as B ON B.ItemLevel <= A.ItemLevel and B.ItemLevel <> 1 and A.Path like B.Path + '%'
+			                                              WHERE A.Id = " + Id.ToString() + @") as A
+                                                    WHERE A.FingradCode is null")
+            .AddScalar("IsExists", NHibernateUtil.Boolean);
+            return query.UniqueResult<bool>();
+        }
+
+        /// <summary>
+        /// Формируем новый код для подразделения 7 уровня.
+        /// </summary>
+        /// <param name="br">Филиал</param>
+        /// <param name="mn">Дирекция</param>
+        /// <param name="rp">РП-привязка</param>
+        /// <returns></returns>
+        public string GetNewFinDepCode(StaffDepartmentBranch br, StaffDepartmentManagement mn, StaffDepartmentRPLink rp)
+        {
+            IList<Department> dep = Session.Query<Department>().Where(x => x.ItemLevel == 7 && x.ParentId == rp.Department.Code1C && x.FingradCode != null).ToList();
+
+
+            string Code = dep.Count == 0 ? "0" :
+                dep.Where(x => x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).OrderByDescending(x => x.FingradCode.Substring(9)).FirstOrDefault().FingradCode.Substring(9);
+
+            //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = (Code.Length == 1 ? "00" : (Code.Length == 2 ? "0" : "")) + Code;
+
+            Code = br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2) + "-" + Code;
+
+            return Code;
         }
     }
 }

@@ -602,7 +602,7 @@ BEGIN
 																			,ItemLevel
 																			,ParentId
 																			,Name
-																			,IsBack
+																			,BFGId
 																			,OrderNumber
 																			,OrderDate
 																			,LegalAddressId
@@ -623,7 +623,7 @@ BEGIN
 					,B.ItemLevel
 					,C.Id
 					,B.Name
-					,case when A.[Front_Back1] = 'Front' then 0 when A.[Front_Back1] = 'Back' then 1 else null end
+					,case when A.[Front_Back1] = 'Front' then 2 when A.[Front_Back1] = 'Back' then 1 else null end
 					,[Приказы]
 					,null
 					,@LegalAddressId	--адрес
@@ -936,6 +936,61 @@ BEGIN
 END
 
 
+--в удаленных могут работать сотрудники, по этому с них и родителей нужно снять метки
+SET @i = 1
+--сначала прокрашиваем все уровни для удаленных с 1 до 7
+WHILE @i < 8
+BEGIN
+	--красим родителей
+	UPDATE Department SET BFGId = 5
+	WHERE (Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%') 
+	and isnull(BFGId, 0) <> 5 and ItemLevel = @i
+
+	--стараемся прокрасить от родителя до самого низа
+	UPDATE Department SET BFGId = 5
+	FROM Department as A
+	INNER JOIN (SELECT * FROM Department 
+							WHERE (Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%') 
+							and isnull(BFGId, 0) = 5 
+							and ItemLevel = @i) as B ON A.Path like B.Path + '%'
+	
+
+	SET @i += 1
+END
+
+
+--потом выявляем интересующие нас точки 7 уровня и снимаем метки с них и их родителей до самого верха
+--не надо скрывать точки и их родителей, помеченные к удалению, если:
+	--к ним привязаны сотрудники 
+	--есть связь с точкой из финграда
+--начинаем с нижнего уровня до верха
+SELECT A.*,
+			 case when exists (SELECT * FROM Users WHERE DepartmentId = A.Id and IsActive = 1) then 1 else 0 end as IsPeople,
+			 case when A.FingradCode is not null then 1 else 0 end as IsFin
+			 INTO #DelDep
+FROM Department as A
+WHERE --A.BFGId = 5 
+			(A.Name like '%ликвидиров%' or A.Name like '%закрыт%' or A.Name like '%не исп%' or A.Name like '%корзина%' )
+			and A.ItemLevel = 7
+
+
+--для 7
+UPDATE Department SET BFGId = null
+FROM Department as A
+INNER JOIN (select * from #DelDep WHERE IsPeople = 1 or IsFin = 1) as B ON B.Id = A.Id
+--для его родителей
+UPDATE Department SET BFGId = null
+FROM Department as A
+INNER JOIN (SELECT distinct A.*
+						FROM Department as A
+						INNER JOIN (select * from #DelDep WHERE IsPeople = 1 or IsFin = 1) as B ON B.Path like A.Path + '%'
+						WHERE A.ItemLevel < 7) as B ON B.Id = A.Id
+
+
+
+--проставим признак использования подразделения
+UPDATE Department SET IsUsed = case when isnull(BFGId, 1) <> 5 then 1 else 0 end
+
 drop table #TMP
 drop table #TMP1
 drop table #TMP1_1
@@ -943,5 +998,5 @@ drop table #TMP2
 drop table #TMP3
 drop table #TMP4
 drop table #TMP5
-
+drop table #DelDep
 
