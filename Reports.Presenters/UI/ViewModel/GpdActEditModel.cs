@@ -31,6 +31,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Подразделение 3 ур.")]
         public string DepLevel3Name { get; set; }
 
+        [Display(Name = "Подразделение 7 ур.")]
+        public string DepLevel7Name { get; set; }
+
         [Display(Name = "Месяц начисления")]
         [DisplayFormat(DataFormatString = "{0:MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? ChargingDate { get; set; }
