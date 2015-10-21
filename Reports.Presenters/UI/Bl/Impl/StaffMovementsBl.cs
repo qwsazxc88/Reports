@@ -211,11 +211,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Conjunction = entity.Data.Conjunction;
                 model.MovementCondition = entity.Data.MovementCondition;
                 model.AdditionPersonnel = entity.Data.AdditionPersonnel;
+                model.AdditionPersonnelAction = entity.Data.AdditionPersonnelAction;
                 model.AdditionPersonnelTo = entity.Data.AdditionPersonnelTo;
+
                 model.AdditionPosition = entity.Data.AdditionPosition;
+                model.AdditionPositionAction = entity.Data.AdditionPositionAction;
                 model.AdditionPositionTo = entity.Data.AdditionPositionTo;
+
                 model.AdditionQuality = entity.Data.AdditionQuality;
+                model.AdditionQualityAction = entity.Data.AdditionQualityAction;
                 model.AdditionQualityTo = entity.Data.AdditionQualityTo;
+
                 #endregion
                 #region Для кадровиков
                 model.OrderDate = entity.OrderDate;
@@ -224,14 +230,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsHourly = entity.Data.SalaryType == 1;
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.AdditionTerritory = entity.Data.AdditionTerritory;
+                model.AdditionTerritoryAction = entity.Data.AdditionTerritoryAction;
+
                 model.AdditionTraveling = entity.Data.AdditionTraveling;
+                model.AdditionTravelingAction = entity.Data.AdditionTravelingAction;
+
                 model.AdditionFront = entity.Data.AdditionFront;
+                model.AdditionFrontAction = entity.Data.AdditionFrontAction;
                 model.AdditionFrontTo = entity.Data.AdditionFrontTo;
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
                 model.NorthFactor = entity.Data.NorthFactor;
                 model.NorthFactorOrder = entity.Data.NorthFactorOrder;
                 model.NorthFactorAddition = entity.Data.NorthFactorAddition;
+                model.NorthFactorAdditionAction = entity.Data.NorthFactorAdditionAction;
                 model.NorthFactorDay = entity.Data.NorthFactorDay;
                 model.NorthFactorMonth = entity.Data.NorthFactorMonth;
                 model.NorthFactorYear = entity.Data.NorthFactorYear;
@@ -354,7 +366,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.RequestTypes = model.RequestTypes.Where(x => x.Id != 1).ToList();
                 }
             }
-            model.NorthFactors = GetNorthExperienceTypes();            
+            model.NorthFactors = GetNorthExperienceTypes();
+            model.AdditionActions = new List<IdNameDto>();
+            model.AdditionActions.Add(new IdNameDto { Id = 1, Name = "Начать" });
+            model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
+            model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
+            model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
@@ -371,9 +388,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
             //Меняем поля и сохраняем
+            //файлики
+            if (model.IsDocsAddAvailable && model.Id > 0)
+                SaveFiles(model);
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
-            model.Id = entity.Id;//Нужно присвоить модели идентификатор
+            //файлики только для первого раза
+            if (model.IsDocsAddAvailable && model.Id == 0 && entity.Id > 0)
+            {
+                model.Id = entity.Id;//Нужно присвоить модели идентификатор
+                SaveFiles(model);
+            }
             
         }
         public void SaveDocsModel(StaffMovementsEditModel model)
@@ -599,7 +624,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки        
-                    model.IsPositionEditable = model.IsSourceManagerAcceptAvailable || model.IsTargetManagerAcceptAvailable;
+                    model.IsPositionEditable = model.IsPositionEditable && (model.Id==0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -757,6 +782,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionQualityTo = model.AdditionQualityTo;//Квалификационная надбавка до
                 entity.Data.Salary = model.TargetSalary;
                 entity.Data.Conjunction = model.Conjunction;
+                
+                entity.Data.AdditionPersonnelAction = model.AdditionPersonnelAction;
+                entity.Data.AdditionPositionAction = model.AdditionPositionAction;
+                entity.Data.AdditionQualityAction = model.AdditionQualityAction;
+                
             }
             #endregion
             #region Для кадров
@@ -786,6 +816,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementReasonOrder = model.MovementReasonOrder;//Причина перемещения
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);//Подписант
+                entity.Data.NorthFactorAdditionAction = model.NorthFactorAdditionAction;
+                entity.Data.AdditionFrontAction = model.AdditionFrontAction;
+                entity.Data.AdditionTerritoryAction = model.AdditionTerritoryAction;
+                entity.Data.AdditionTravelingAction = model.AdditionTravelingAction;
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
@@ -798,9 +832,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             #endregion
-            //файлики
-            if (model.IsDocsAddAvailable)
-                SaveFiles(model);
+            
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {

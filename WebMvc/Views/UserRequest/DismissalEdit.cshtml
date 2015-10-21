@@ -226,6 +226,12 @@
                 {
                     <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
                 }
+                @if (Model.IsApprovedEnable && Model.IsPyrusLinkAvailable)
+                {
+                    <a href="https://pyrus.com/ru/">Закрыть доступ к программам через систему Pyrus</a>
+                    @Html.LabelFor(m => m.PyrusNumber)
+                    @Html.TextBoxFor(m => m.PyrusNumber, Model.IsApprovedEnable ? null : (object)new { disabled = "disabled" })
+                }
             </td>
     </tr>
     <tr>
@@ -238,6 +244,10 @@
                 @if (!Model.IsApprovedByPersonnelManagerEnable)
                 {
                     <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />
+                }
+                @if (Model.IsApprovedEnable && Model.IsPyrusLinkAvailableForPersonnel)
+                {
+                    <a href="https://pyrus.com/ru/">Закрыть доступ к программам через систему Pyrus</a>
                 }
             </td>
     </tr>

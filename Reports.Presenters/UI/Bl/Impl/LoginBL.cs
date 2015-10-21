@@ -328,8 +328,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
+                IList<User> alter = UserDao.Find(x => x.AlternativeMail == model.Email);
                 IList<User> users = UserDao.FindByEmail(model.Email);
-                if (users.Count == 0)
+                if (users.Count == 0 && !alter.Any())
                 {
                     model.Error =
                         "Не найден пользователь с таким адресом электронной почты.";
@@ -357,7 +358,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    return;
                 //}
                 string message = string.Format("Информация для пользователя с адресом электронной почты {0}:<br/>",model.Email);
-                message = users.Aggregate(message, (current, user) => current + string.Format("Логин {0} - пароль {1}<br/>", user.Login, user.Password));
+                if(users.Any())
+                    message = users.Aggregate(message, (current, user) => current + string.Format("Логин {0} - пароль {1}<br/>", user.Login, user.Password));
+                else
+                    message = alter.Aggregate(message, (current, user) => current + string.Format("Логин {0} - пароль {1}<br/>", user.Login, user.Password));
                 SendEmail(model,/*EmailType.UserPasswordRecovered,*/
                     model.Email,
                     "Восстановление пароля",
