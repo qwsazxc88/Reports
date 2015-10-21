@@ -1130,6 +1130,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ContractBeginDate = doc.ContractBeginDate;
                     model.ContractEndDate = doc.ContractEndDate;
                     model.DepLevel3Name = doc.DepLevel3Name;
+                    model.DepLevel7Name = doc.DepLevel7Name;
                     model.ChargingDate = doc.ChargingDate;
                     model.DateBegin = doc.DateBegin;
                     model.DateEnd = doc.DateEnd;
