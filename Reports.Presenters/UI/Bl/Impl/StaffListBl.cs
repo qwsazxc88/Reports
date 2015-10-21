@@ -672,7 +672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
                 dmd.NameShort = model.NameShort;
-                dmd.DepartmentReasons = model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
+                dmd.DepartmentReasons = !model.ReasonId.HasValue || model.ReasonId.Value == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
 
                 //фактический адрес
                 if (!string.IsNullOrEmpty(model.FactAddress))
@@ -726,21 +726,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 dmd.DepStatus = model.DepStatus;
-                dmd.DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
-                dmd.SKB_GE = model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
+                dmd.DepartmentType = !model.DepTypeId.HasValue || model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                dmd.SKB_GE = !model.SKB_GE_Id.HasValue || model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.OperationMode = model.OperationMode;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
-                dmd.RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
+                dmd.RentPlace = !model.RentPlaceId.HasValue || model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
                 dmd.AgreementDetails = model.AgreementDetails;
                 dmd.DivisionArea = model.DivisionArea;
                 dmd.AmountPayment = model.AmountPayment;
                 dmd.Phone = model.Phone;
                 dmd.IsBlocked = model.IsBlocked;
-                dmd.NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
-                dmd.CashDeskAvailable = model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
+                dmd.NetShopIdentification = !model.NetShopId.HasValue || model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
+                dmd.CashDeskAvailable = !model.CDAvailableId.HasValue || model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
                 dmd.IsLegalEntity = model.IsLegalEntity;
                 dmd.PlanEPCount = model.PlanEPCount;
                 dmd.PlanSalaryFund = model.PlanSalaryFund;
@@ -750,20 +750,23 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //режим работы
                 dmd.DepOperationModes = new List<StaffDepartmentOperationModes>();
-                foreach (var item in model.OperationModes)
+                if (model.OperationModes != null)
                 {
-                    dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                    foreach (var item in model.OperationModes)
                     {
-                        DepartmentManagerDetail = dmd, 
-                        WeekDay = item.WeekDay,
-                        WorkBegin = item.WorkBegin,
-                        WorkEnd = item.WorkEnd,
-                        BreakBegin = item.BreakBegin,
-                        BreakEnd = item.BreakEnd,
-                        IsWorkDay = item.IsWorkDay,
-                        Creator = curUser,
-                        CreateDate = DateTime.Now
-                    });
+                        dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
+                        {
+                            DepartmentManagerDetail = dmd,
+                            WeekDay = item.WeekDay,
+                            WorkBegin = item.WorkBegin,
+                            WorkEnd = item.WorkEnd,
+                            BreakBegin = item.BreakBegin,
+                            BreakEnd = item.BreakEnd,
+                            IsWorkDay = item.IsWorkDay,
+                            Creator = curUser,
+                            CreateDate = DateTime.Now
+                        });
+                    }
                 }
 
                 //операции
@@ -780,28 +783,36 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //коды программ
                 dmd.ProgramCodes = new List<StaffProgramCodes>();
-                foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                if (model.ProgramCodes != null)
                 {
-                    dmd.ProgramCodes.Add(new StaffProgramCodes { 
-                        DepartmentManagerDetail = dmd, 
-                        Program = StaffProgramReferenceDao.Load(item.ProgramId), 
-                        Code = item.Code, 
-                        Creator = curUser, 
-                        CreateDate = DateTime.Now 
-                    });
+                    foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                    {
+                        dmd.ProgramCodes.Add(new StaffProgramCodes
+                        {
+                            DepartmentManagerDetail = dmd,
+                            Program = StaffProgramReferenceDao.Load(item.ProgramId),
+                            Code = item.Code,
+                            Creator = curUser,
+                            CreateDate = DateTime.Now
+                        });
+                    }
                 }
 
                 //ориентиры
                 dmd.DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
-                foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
+                if (model.DepLandmarks != null)
                 {
-                    dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks { 
-                        DepartmentManagerDetail = dmd, 
-                        LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId), 
-                        Description = item.Description, 
-                        Creator = curUser, 
-                        CreateDate = DateTime.Now 
-                    });
+                    foreach (var item in model.DepLandmarks.Where(x => x.Description != null))
+                    {
+                        dmd.DepartmentLandmarks.Add(new StaffDepartmentLandmarks
+                        {
+                            DepartmentManagerDetail = dmd,
+                            LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId),
+                            Description = item.Description,
+                            Creator = curUser,
+                            CreateDate = DateTime.Now
+                        });
+                    }
                 }
 
                 //entity.DepartmentManagerDetails.Add(dmd);
@@ -1100,7 +1111,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 entity.DepartmentManagerDetails[0].NameShort = model.NameShort;
-                entity.DepartmentManagerDetails[0].DepartmentReasons = model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
+                entity.DepartmentManagerDetails[0].DepartmentReasons = !model.ReasonId.HasValue || model.ReasonId == 0 ? null : StaffDepartmentReasonsDao.Load(model.ReasonId.Value);
 
                 //фактический адрес
                 RefAddresses fa = null;
@@ -1171,21 +1182,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 entity.DepartmentManagerDetails[0].DepStatus = model.DepStatus;
-                entity.DepartmentManagerDetails[0].DepartmentType = model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
-                entity.DepartmentManagerDetails[0].SKB_GE = model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
+                entity.DepartmentManagerDetails[0].DepartmentType = !model.DepTypeId.HasValue || model.DepTypeId.Value == 0 ? null : StaffDepartmentTypesDao.Load(model.DepTypeId.Value);
+                entity.DepartmentManagerDetails[0].SKB_GE = !model.SKB_GE_Id.HasValue || model.SKB_GE_Id.Value == 0 ? null : StaffDepartmentSKB_GEDao.Load(model.SKB_GE_Id.Value);
                 entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
                 entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
                 entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
                 entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
                 entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
-                entity.DepartmentManagerDetails[0].RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
+                entity.DepartmentManagerDetails[0].RentPlace = !model.RentPlaceId.HasValue || model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
                 entity.DepartmentManagerDetails[0].AgreementDetails = model.AgreementDetails;
                 entity.DepartmentManagerDetails[0].DivisionArea = model.DivisionArea;
                 entity.DepartmentManagerDetails[0].AmountPayment = model.AmountPayment;
                 entity.DepartmentManagerDetails[0].Phone = model.Phone;
                 entity.DepartmentManagerDetails[0].IsBlocked = model.IsBlocked;
-                entity.DepartmentManagerDetails[0].NetShopIdentification = model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
-                entity.DepartmentManagerDetails[0].CashDeskAvailable = model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
+                entity.DepartmentManagerDetails[0].NetShopIdentification = !model.NetShopId.HasValue || model.NetShopId.Value == 0 ? null : StaffNetShopIdentificationDao.Load(model.NetShopId.Value);
+                entity.DepartmentManagerDetails[0].CashDeskAvailable = !model.CDAvailableId.HasValue || model.CDAvailableId.Value == 0 ? null : StaffDepartmentCashDeskAvailableDao.Load(model.CDAvailableId.Value);
                 entity.DepartmentManagerDetails[0].IsLegalEntity = model.IsLegalEntity;
                 entity.DepartmentManagerDetails[0].PlanEPCount = model.PlanEPCount;
                 entity.DepartmentManagerDetails[0].PlanSalaryFund = model.PlanSalaryFund;
@@ -1198,33 +1209,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.DepartmentManagerDetails[0].DepOperationModes == null)
                     entity.DepartmentManagerDetails[0].DepOperationModes = new List<StaffDepartmentOperationModes>();
 
-                foreach (var item in model.OperationModes)
+                if (model.OperationModes != null)
                 {
-                    StaffDepartmentOperationModes dom = new StaffDepartmentOperationModes();
-                    //если не было, добавляем
-                    if (item.Id == 0)
+                    foreach (var item in model.OperationModes)
                     {
-                        dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                        dom.WeekDay = item.WeekDay;
-                        dom.WorkBegin = item.WorkBegin;
-                        dom.WorkEnd = item.WorkEnd;
-                        dom.BreakBegin = item.BreakBegin;
-                        dom.BreakEnd = item.BreakEnd;
-                        dom.IsWorkDay = item.IsWorkDay;
-                        dom.Creator = curUser;
-                        dom.CreateDate = DateTime.Now;
+                        StaffDepartmentOperationModes dom = new StaffDepartmentOperationModes();
+                        //если не было, добавляем
+                        if (item.Id == 0)
+                        {
+                            dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                            dom.WeekDay = item.WeekDay;
+                            dom.WorkBegin = item.WorkBegin;
+                            dom.WorkEnd = item.WorkEnd;
+                            dom.BreakBegin = item.BreakBegin;
+                            dom.BreakEnd = item.BreakEnd;
+                            dom.IsWorkDay = item.IsWorkDay;
+                            dom.Creator = curUser;
+                            dom.CreateDate = DateTime.Now;
 
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Add(dom);
-                    }
-                    else//редактируем
-                    {
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkBegin = item.WorkBegin;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkEnd = item.WorkEnd;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakBegin = item.BreakBegin;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakEnd = item.BreakEnd;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().IsWorkDay = item.IsWorkDay;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                        entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Add(dom);
+                        }
+                        else//редактируем
+                        {
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkBegin = item.WorkBegin;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().WorkEnd = item.WorkEnd;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakBegin = item.BreakBegin;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().BreakEnd = item.BreakEnd;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().IsWorkDay = item.IsWorkDay;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                            entity.DepartmentManagerDetails[0].DepOperationModes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                        }
                     }
                 }
 
@@ -1235,35 +1249,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
                     entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
 
-                foreach (var item in model.ProgramCodes)
+                if (model.ProgramCodes != null)
                 {
-                    StaffProgramCodes pc = new StaffProgramCodes();
-
-                    //если была запись и убрали значение кода, то удаляем
-                    if (item.Id != 0 && item.Code == null)
+                    foreach (var item in model.ProgramCodes)
                     {
-                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
-                    }
+                        StaffProgramCodes pc = new StaffProgramCodes();
 
-                    //если не было записи и ввели код, то добавляем
-                    if (item.Id == 0 && item.Code != null)
-                    {
-                        pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                        pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
-                        pc.Code = item.Code;
-                        pc.Creator = curUser;
-                        pc.CreateDate = DateTime.Now;
+                        //если была запись и убрали значение кода, то удаляем
+                        if (item.Id != 0 && item.Code == null)
+                        {
+                            pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                            entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                        }
 
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
-                    }
+                        //если не было записи и ввели код, то добавляем
+                        if (item.Id == 0 && item.Code != null)
+                        {
+                            pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                            pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                            pc.Code = item.Code;
+                            pc.Creator = curUser;
+                            pc.CreateDate = DateTime.Now;
 
-                    //запись была и есть код, то предпологаем, что это редактирование
-                    if (item.Id != 0 && item.Code != null)
-                    {
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                            entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                        }
+
+                        //запись была и есть код, то предпологаем, что это редактирование
+                        if (item.Id != 0 && item.Code != null)
+                        {
+                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                        }
                     }
                 }
 
@@ -1272,35 +1289,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.DepartmentManagerDetails[0].DepartmentLandmarks == null)
                     entity.DepartmentManagerDetails[0].DepartmentLandmarks = new List<StaffDepartmentLandmarks>();
 
-                foreach (var item in model.DepLandmarks)
+                if (model.DepLandmarks != null)
                 {
-                    StaffDepartmentLandmarks lm = new StaffDepartmentLandmarks();
-
-                    //если была запись и убрали значение кода, то удаляем
-                    if (item.Id != 0 && item.Description == null)
+                    foreach (var item in model.DepLandmarks)
                     {
-                        lm = entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id && x.Description != null).Single();
-                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Remove(lm);
-                    }
+                        StaffDepartmentLandmarks lm = new StaffDepartmentLandmarks();
 
-                    //если не было записи и ввели код, то добавляем
-                    if (item.Id == 0 && item.Description != null)
-                    {
-                        lm.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                        lm.LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId);
-                        lm.Description = item.Description;
-                        lm.Creator = curUser;
-                        lm.CreateDate = DateTime.Now;
+                        //если была запись и убрали значение кода, то удаляем
+                        if (item.Id != 0 && item.Description == null)
+                        {
+                            lm = entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id && x.Description != null).Single();
+                            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Remove(lm);
+                        }
 
-                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Add(lm);
-                    }
+                        //если не было записи и ввели код, то добавляем
+                        if (item.Id == 0 && item.Description != null)
+                        {
+                            lm.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                            lm.LandmarkTypes = StaffLandmarkTypesDao.Load(item.LandmarkId);
+                            lm.Description = item.Description;
+                            lm.Creator = curUser;
+                            lm.CreateDate = DateTime.Now;
 
-                    //запись была и есть код, то предпологаем, что это редактирование
-                    if (item.Id != 0 && item.Description != null)
-                    {
-                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Description = item.Description;
-                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                        entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Add(lm);
+                        }
+
+                        //запись была и есть код, то предпологаем, что это редактирование
+                        if (item.Id != 0 && item.Description != null)
+                        {
+                            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Description = item.Description;
+                            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                            entity.DepartmentManagerDetails[0].DepartmentLandmarks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                        }
                     }
                 }
             }
@@ -1437,6 +1457,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //если нет кода или изменился родитель, то надо подкорректировать путь
                 dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
 
+                //только при добавлении надо заполнить эти поля, так как в структуре на поле Code1C ссылается поле ParentId, то есть значения в поле Code1C должны быть уникальными
+                if (entity.RequestType.Id == 1)
+                {
+                    dep.Code = dep.Id.ToString();
+                    dep.Code1C = dep.Id;
+                }
+
                 //DepartmentDao.SaveAndFlush(dep);
 
                 //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
@@ -1570,7 +1597,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             switch (entity.ItemLevel)
             {
-                case 2:
+                case 2://филиал
                     StaffDepartmentBranch Depbr = new StaffDepartmentBranch()
                     {
                         Code = StaffDepartmentBranchDao.GetNewBranchCode(),
@@ -1591,7 +1618,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
-                case 3:
+                case 3://дирекция
                     br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
                     if (br == null)
                     {
@@ -1620,7 +1647,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
-                case 4:
+                case 4://управление
                     mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
 
                     if (mn == null)
@@ -1650,7 +1677,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
-                case 5:
+                case 5://бизнес-группа
                     StaffDepartmentAdministration adm = StaffDepartmentAdministrationDao.GetDepartmentAdministrationByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
 
                     if (adm == null)
@@ -1680,7 +1707,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
-                case 6:
+                case 6://рп-привязка
                     StaffDepartmentBusinessGroup bg = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroupByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
 
                     if (bg == null)
@@ -1710,7 +1737,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     break;
-                case 7:
+                case 7://подразделение (точка)
                     br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
                     if (br == null)
                     {

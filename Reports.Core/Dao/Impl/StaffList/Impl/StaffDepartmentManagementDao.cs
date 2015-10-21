@@ -73,10 +73,17 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public string GetNewManagementCode(StaffDepartmentBranch Branch)
         {
-            string Code = Session.Query<StaffDepartmentManagement>().Where(x => x.DepartmentBranch == Branch).Max(x => x.Code.Substring(1));
+            IList<StaffDepartmentManagement> dm = Session.Query<StaffDepartmentManagement>().Where(x => x.DepartmentBranch == Branch).ToList();
+
+            string Code = dm.Count == 0 ? "0" :
+                dm.Where(x => x.Code.Substring(0, 1) == Branch.Code.Substring(1))
+                .OrderByDescending(x => x.Code.Substring(1))
+                .FirstOrDefault().Code.Substring(1);
+
 
             //предпологаем, что код содержит только цифры, увеличиваем на 1
-            Code = Branch.Code.Substring(1) + (Convert.ToInt32(Code) + 1).ToString();
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = Branch.Code.Substring(1) + (Code.Length == 1 ? "0" + Code : Code);
 
             return Code;
         }

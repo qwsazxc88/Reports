@@ -72,7 +72,12 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public string GetNewAdministrationCode(StaffDepartmentManagement Management)
         {
-            string Code = Session.Query<StaffDepartmentAdministration>().Where(x => x.DepartmentManagement == Management && x.Code.StartsWith(Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-")).Max(x => x.Code.Substring(6));
+            IList<StaffDepartmentAdministration> da = Session.Query<StaffDepartmentAdministration>().Where(x => x.DepartmentManagement == Management).ToList();
+
+            string Code = da.Count == 0 ? "0" : 
+                da.Where(x => x.Code.StartsWith(Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-"))
+                .OrderByDescending(x => x.Code.Substring(6))
+                .FirstOrDefault().Code.Substring(6);
 
             //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
             Code = Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-" + (Convert.ToInt32(Code) + 1).ToString();

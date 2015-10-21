@@ -103,10 +103,16 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public string GetNewBusinessGroupCode(StaffDepartmentAdministration Administration)
         {
-            string Code = Session.Query<StaffDepartmentBusinessGroup>().Where(x => x.DepartmentAdministration == Administration && x.Code.StartsWith(Administration.Code)).Max(x => x.Code.Substring(8));
+            IList<StaffDepartmentBusinessGroup> bg = Session.Query<StaffDepartmentBusinessGroup>().Where(x => x.DepartmentAdministration == Administration).ToList();
+
+            string Code = bg.Count() == 0 ? "0" :
+                bg.Where(x => x.Code.StartsWith(Administration.Code))
+                .OrderByDescending(x => x.Code.Substring(8))
+                .FirstOrDefault().Code.Substring(8);
 
             //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
-            Code = Administration.Code + "-" + (Convert.ToInt32(Code) + 1).ToString();
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = Administration.Code + "-" + (Code.Length == 2 ? "0" + Code : ((Code.Length == 1 ? "00" + Code : Code)));
 
             return Code;
         }

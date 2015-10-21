@@ -280,10 +280,15 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public string GetNewFinDepCode(StaffDepartmentBranch br, StaffDepartmentManagement mn, StaffDepartmentRPLink rp)
         {
-            string Code = Session.Query<Department>().Where(x => x.ItemLevel == 7 && x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).Max(x => x.Code.Substring(9, 3));
+            IList<Department> dep = Session.Query<Department>().Where(x => x.ItemLevel == 7 && x.ParentId == rp.Department.Code1C && x.FingradCode != null).ToList();
+
+
+            string Code = dep.Count == 0 ? "0" :
+                dep.Where(x => x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).OrderByDescending(x => x.FingradCode.Substring(9)).FirstOrDefault().FingradCode.Substring(9);
 
             //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
-            Code = (Convert.ToInt32(Code) + 1).ToString().Length == 1 ? "00" : ((Convert.ToInt32(Code) + 1).ToString().Length == 2 ? "0" : "") + (Convert.ToInt32(Code) + 1).ToString();
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = (Code.Length == 1 ? "00" : (Code.Length == 2 ? "0" : "")) + Code;
 
             Code = br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2) + "-" + Code;
 

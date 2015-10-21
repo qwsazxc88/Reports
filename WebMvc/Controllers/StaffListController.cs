@@ -1049,7 +1049,7 @@ namespace WebMvc.Controllers
 
             if (!model.IsDraft)
             {
-                if (model.DepNextId == 0)
+                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7))
                 {
                     ModelState.AddModelError("DepNextId", "Укажите подразделение с налоговыми рекизитами!");
                     ModelState.AddModelError("MessageStr", "Укажите подразделение с налоговыми рекизитами!");

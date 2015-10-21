@@ -231,46 +231,38 @@
                     }
                     
 
-                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
-                    {   
-                        tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    //вариант с пробелами для отобржажения в первой колонке
-//                                    "<td>" +
-//                                    "<span>";
-//                                        var BSCount = (result.Departments != null ? (result.Departments[0].ItemLevel - 1) : 6) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-//                                        for (var j = 0; j < BSCount; j++)
-//                                        {
-//                                            tblStr += "&nbsp;";
-//                                        }
-//                                        tblStr += "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-//                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
-//                                    "</span>" +
-//                                    "</td>" + 
-                                    "<td>" +
-                                    "<span>" +
-                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
-                                    "</span>" +
-                                    "</td>" + 
-                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
-                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    //onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'
-                                    "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы' onclick='GetEstablishedPostRequest(2, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
-                                    "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы' onclick='GetEstablishedPostRequest(3, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "</tr>";
+                    if(result.EstablishedPosts != null)
+                    {
+                        for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                        {   
+                            tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td>" +
+                                        "<span>" +
+                                            "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                            "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        //onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'
+                                        "<td class='tdBtn'><button type='button' class='btnPosEdit' title='Создать заявку на изменение данной штатной единицы' onclick='GetEstablishedPostRequest(2, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnPosDelete' title='Создать заявку на сокращение штатной единицы' onclick='GetEstablishedPostRequest(3, " + result.EstablishedPosts[i].DepartmentId + ", " + result.EstablishedPosts[i].Id + ");'></button></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "</tr>";
 
-                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
+                        }
                     }
+                    
                     
                     //пытаемся раскрыть рекурсивно всю ветку 
                     if (DepTable.length > 0)

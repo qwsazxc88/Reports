@@ -72,10 +72,15 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public string GetNewRPLinkCode(StaffDepartmentBusinessGroup BusinessGroup)
         {
-            string Code = Session.Query<StaffDepartmentRPLink>().Where(x => x.DepartmentBG == BusinessGroup && x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6))).Max(x => x.Code.Substring(6, 2));
+            IList<StaffDepartmentRPLink> rp = Session.Query<StaffDepartmentRPLink>().Where(x => x.DepartmentBG == BusinessGroup && x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6))).ToList();
+            string Code = rp.Count() == 0 ? "0" : 
+                rp.Where(x => x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6)))
+                .OrderByDescending(x => x.Code.Substring(6, 2))
+                .FirstOrDefault().Code.Substring(6, 2);
 
             //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
-            Code = BusinessGroup.Code.Substring(0, 6) + (Convert.ToInt32(Code) + 1).ToString() + "000";
+            Code = (Convert.ToInt32(Code) + 1).ToString();
+            Code = BusinessGroup.Code.Substring(0, 6) + (Code.Length == 1 ? "0" + Code : Code) + "-000";
 
             return Code;
         }
