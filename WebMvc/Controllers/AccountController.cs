@@ -15,7 +15,7 @@ namespace WebMvc.Controllers
         public const int MinPasswordLength = 7;
         public const int MaxSupportMessageLength = 512;
         protected ILoginBl loginBl;
-
+        protected IBaseBl baseBl;
         #region Properties
 
         public ILoginBl LoginBl
@@ -26,7 +26,14 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(loginBl);
             }
         }
-
+        public IBaseBl BaseBl
+        {
+            get
+            {
+                baseBl = Ioc.Resolve<IBaseBl>();
+                return Validate.Dependency(baseBl);
+            }
+        }
         #endregion
 
         //public IFormsAuthenticationService FormsService
@@ -85,7 +92,25 @@ namespace WebMvc.Controllers
         // **************************************
         // URL: /Account/LogOff
         // **************************************
-
+        public JsonResult AddAlternativeEmail(string Email)
+        {
+            BaseBl.AddAlternativeMail(Email);
+            return Json(new {result="Ok.",message="На указанный адрес отправлено письмо с подтверждением."});
+        }
+        public JsonResult AddAlternativeEmailToUser(int UserId, string Email)
+        {
+            BaseBl.AddAlternativeMail(UserId, Email);
+            return Json(new { result = "Ok.", message = "На указанный адрес отправлено письмо с подтверждением." });
+        }
+        [HttpGet]
+        public ContentResult Confirm(Guid key)
+        {
+            string result ="";
+            BaseBl.ConfirmMail(key)
+                .OnSuccess(x => result = x.Message)
+                .OnError(x => result = x.Message);
+            return Content(result);
+        }
         public ActionResult LogOff()
         {
             LoginBl.LogOff();
