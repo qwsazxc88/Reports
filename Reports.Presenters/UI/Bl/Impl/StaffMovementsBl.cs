@@ -255,6 +255,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 model.SignatoryId = entity.Data.Signatory!=null?entity.Data.Signatory.Id:0;
                 model.SignatoryName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
+
+                model.AgreementEntry1_2 = entity.Data.AgreementEntry1_2;
+                model.AgreementEntry1_6 = entity.Data.AgreementEntry1_6;
+                model.AgreementEntry2_2_1 = entity.Data.AgreementEntry2_2_1;
+                model.AgreementEntry4_2 = entity.Data.AgreementEntry4_2;
+                model.AgreementEntry5_1 = entity.Data.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) model.AgreementField1_2[0] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_2 == 3) model.AgreementField1_2[1] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_6 == 1) model.AgreementField1_6[0] = entity.Data.AgreementField1_6;
+                if (model.AgreementEntry4_2 == 2) model.AgreementField4_2[0] = entity.Data.AgreementField4_2;
+                if (model.AgreementEntry5_1 == 5) model.AgreementField5_1[0] = entity.Data.AgreementField5_1;
                 #endregion
                 #region Files
                 var docs = entity.Docs;
@@ -337,6 +348,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         private void LoadDictionaries(StaffMovementsEditModel model)
         {
+            model.AgreementEntry1_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"}
+            };
+            model.AgreementEntry1_6List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}               
+            };
+            model.AgreementEntry2_2_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}
+            };
+            model.AgreementEntry4_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"}
+            };
+            model.AgreementEntry5_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"},
+                new IdNameDto{ Id=5,Name="Вариант 5"},
+                new IdNameDto{ Id=6,Name="Вариант 6"}
+            };
             var extracharges = ExtraChargesDao.LoadAll();
             if (extracharges != null && extracharges.Any())
             {
@@ -820,6 +858,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionFrontAction = model.AdditionFrontAction;
                 entity.Data.AdditionTerritoryAction = model.AdditionTerritoryAction;
                 entity.Data.AdditionTravelingAction = model.AdditionTravelingAction;
+                entity.Data.AgreementEntry1_2 = model.AgreementEntry1_2;
+                entity.Data.AgreementEntry1_6 = model.AgreementEntry1_6;
+                entity.Data.AgreementEntry2_2_1 = model.AgreementEntry2_2_1;
+                entity.Data.AgreementEntry4_2 = model.AgreementEntry4_2;
+                entity.Data.AgreementEntry5_1 = model.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) entity.Data.AgreementField1_2 = model.AgreementField1_2[0];
+                if (model.AgreementEntry1_2 == 3) entity.Data.AgreementField1_2 = model.AgreementField1_2[1];
+                if (model.AgreementEntry1_6 == 1) entity.Data.AgreementField1_6 = model.AgreementField1_6[0];
+                if (model.AgreementEntry4_2 == 2) entity.Data.AgreementField4_2 = model.AgreementField4_2[0];
+                if (model.AgreementEntry5_1 == 5) entity.Data.AgreementField5_1 = model.AgreementField5_1[0];
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {

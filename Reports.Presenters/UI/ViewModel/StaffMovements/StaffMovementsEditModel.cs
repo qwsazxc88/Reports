@@ -222,10 +222,15 @@ namespace Reports.Presenters.UI.ViewModel
         public string[] AgreementField1_6 { get; set; }
         public string[] AgreementField5_1 { get; set; }
         public string[] AgreementField4_2 { get; set; }
+        [Display(Name="Пункт 1.2")]
         public int AgreementEntry1_2 { get; set; }
+        [Display(Name = "Пункт 1.6")]
         public int AgreementEntry1_6 { get; set; }
+        [Display(Name = "Пункт 2.2.1")]
         public int AgreementEntry2_2_1 { get; set; }
+        [Display(Name = "Пункт 4.2")]
         public int AgreementEntry4_2 { get; set; }
+        [Display(Name = "Пункт 5.1")]
         public int AgreementEntry5_1 { get; set; }
         public IList<IdNameDto> AgreementEntry1_2List { get; set; }
         public IList<IdNameDto> AgreementEntry1_6List { get; set; }
