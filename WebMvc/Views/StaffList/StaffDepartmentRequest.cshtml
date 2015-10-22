@@ -481,10 +481,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i - 1].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -492,7 +492,7 @@
                                             <td >@Html.LabelFor(m => m.OperationMode)</td>
                                             <td colspan="5">
                                                 @Html.ValidationMessageFor(model => model.OperationMode) 
-                                                @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:99%;" })
+                                                @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:99%;", maxlength = "150" })
                                             </td>
                                         </tr>
                                     </table>
@@ -731,6 +731,7 @@
             </tr>
         </table>
     </div>
+    
 }
 
 <script type="text/javascript">
@@ -743,6 +744,9 @@
         $(document).tooltip({ track: false });
         //ShowFlash(true);
         //ShowFlash(false);
+        $(".TimeMask").focus(function(e){
+            $(this).mask("99-99");
+        });
 
         
         $(":button").button();

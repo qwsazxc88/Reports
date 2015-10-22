@@ -1338,14 +1338,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
 
-                ////создаем код для подразделения
-                //if (!CreateCodeForDepartment(entity, out error))
-                //{
-                //    return false;
-                //}
 
-
-                //занесение данных по подразделению в справочник подазделений
+                //занесение данных по подразделению в справочник подазделений и создание кодов для подразделений
                 if (!SaveDepartmentReference(entity, curUser, out error))
                 {
                     return false;
@@ -1361,11 +1355,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         OldEntity.Editor = curUser;
                         OldEntity.EditDate = DateTime.Now;
                     }
-
-
-                    //у текущей заявки ставим признак использования
-                    entity.IsUsed = true;
                 }
+
+                //у текущей заявки ставим признак использования
+                entity.IsUsed = true;
+                entity.BeginAccountDate = DateTime.Now;
             }
 
 
@@ -3748,14 +3742,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DepLandmarks = StaffDepartmentLandmarksDao.GetDepartmentLandmarks(model.DMDetailId);
             model.DepTypes = StaffDepartmentTypesDao.GetDepartmentTypes();
             model.ProgramCodes = StaffProgramCodesDao.GetProgramCodes(model.DMDetailId);
+
             model.OperationGroups = StaffDepartmentOperationGroupsDao.GetOperationGroups();
+            model.OperationGroups.Insert(0, new StaffDepartmentOperationGroupsDto { gId = 0, gName = "" });
+
             model.OperationModes = StaffDepartmentOperationModesDao.GetDepartmentOperationModes(model.DMDetailId);
             model.Reasons = StaffDepartmentReasonsDao.GetDepartmentReasons();
             model.NetShopTypes = StaffNetShopIdentificationDao.GetNetShopTypes();
             model.CashDeskAvailables = StaffDepartmentCashDeskAvailableDao.GetCashDeskAvailable();
             model.RentPlace = StaffDepartmentRentPlaceDao.GetRentPlace();
             model.SKB_GE = StaffDepartmentSKB_GEDao.GetSKB_GE();
+
             model.SoftGroups = StaffDepartmentSoftGroupDao.GetSoftGroups();
+            model.SoftGroups.Insert(0, new StaffDepartmentSoftGroupDto { gId = 0, gName = "" });
+
             model.Accessoryes = StaffDepartmentAccessoryDao.GetAccessoryes();
             model.Accessoryes.Insert(0, new IdNameDto { Id = 0, Name = "" });
         }
