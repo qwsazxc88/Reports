@@ -3535,7 +3535,7 @@ UPDATE StaffDepartmentManagement SET DepartmentId = 4175 WHERE Code = '301'
 
 --StaffDepartmentAdministration
 INSERT INTO StaffDepartmentAdministration(Version, Code, Name, ManagementId, DepartmentId)
-SELECT 1 as [Version], A.[ID Управление Дирекции], A.[Управление Дирекции], B.Id, D.Id
+SELECT 1 as [Version], A.[ID Управление Дирекции], A.[Управление Дирекции], B.Id, case when A.[Управление Дирекции] like '%закрыто%' then null else D.Id end as Id--D.Id
 FROM DepFinAdmin as A
 LEFT JOIN StaffDepartmentManagement as B ON B.Name = A.[Дирекция]
 LEFT JOIN Department as E ON E.Id = B.DepartmentId
@@ -3551,6 +3551,7 @@ LEFT JOIN (SELECT distinct C.[ID_Управления_Дирекции_Управление_Дирекции], D.Id,
 									and not (A.[ID Управление Дирекции] = '04-03-2' and D.Id = 10035)
 									and not (A.[ID Управление Дирекции] = '04-07-1' and D.Id = 4314)
 									and not (A.[ID Управление Дирекции] = '03-00-3' and D.Id = 10397)
+									and not (A.[ID Управление Дирекции] = '04-04-5' and D.Id = 5256)
 
 --у помеченных, как закрытые удаляем связи с нашим справочником
 UPDATE StaffDepartmentAdministration SET DepartmentId = null WHERE Name like '%закрыто%'
