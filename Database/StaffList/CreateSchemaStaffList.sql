@@ -778,7 +778,7 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[DepTypeId] [int] NULL,
 	[OpenDate] [datetime] NULL,
 	[CloseDate] [datetime] NULL,
-	[OperationMode] [nvarchar](400) NULL,
+	[OperationMode] [nvarchar](150) NULL,
 	[BeginIdleDate] [datetime] NULL,
 	[EndIdleDate] [datetime] NULL,
 	[RentPlaceId] [int] NULL,

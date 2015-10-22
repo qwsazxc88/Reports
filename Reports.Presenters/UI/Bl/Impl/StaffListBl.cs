@@ -1355,12 +1355,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         OldEntity.Editor = curUser;
                         OldEntity.EditDate = DateTime.Now;
                     }
-
-
-                    //у текущей заявки ставим признак использования
-                    entity.IsUsed = true;
-                    entity.BeginAccountDate = DateTime.Now;
                 }
+
+                //у текущей заявки ставим признак использования
+                entity.IsUsed = true;
+                entity.BeginAccountDate = DateTime.Now;
             }
 
 
