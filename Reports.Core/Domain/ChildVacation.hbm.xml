@@ -14,7 +14,7 @@
     <!--<property name="DaysCount"  not-null="true"/>-->
     <property name="FreeRate" not-null="true"/>
     <property name="PaidToDate" not-null="false"/>
-    
+    <property name="PirusNumber" not-null="false"/>
     <property name="IsPreviousPaymentCounted" not-null="true"/>
     <property name="ChildrenCount" not-null="false"/>
     <property name="IsFirstChild" not-null="true"/>
