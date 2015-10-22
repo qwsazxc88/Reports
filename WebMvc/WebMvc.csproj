@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -123,10 +123,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ConvertHelper.cs" />
-    <Compile Include="Helpers\FieldHelper.cs" />
     <Compile Include="Helpers\ObjectExtension.cs" />
-    <Compile Include="Helpers\ToolbarBlock.cs" />
-    <Compile Include="Helpers\TextBoxHelper_new.cs" />
     <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\UserRequestController.cs" />
@@ -163,6 +160,8 @@
     <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui-1.10.4.custom.css" />
+    <Content Include="Content\themes\base\jquery-ui-1.10.4.custom.min.css" />
     <Content Include="Content\themes\base\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -218,8 +217,8 @@
     <Content Include="Scripts\jquery.bgiframe.min.js" />
     <Content Include="Scripts\jquery.global.js" />
     <Content Include="Scripts\jquery.maskedinput-1.2.2.js" />
-    <Content Include="Scripts\jquery.maskedinput.min.js" />
     <Content Include="Scripts\jquery.maskedinput.js" />
+    <Content Include="Scripts\jquery.maskedinput.min.js" />
     <Content Include="Scripts\jquery.ui.datepicker-ru.js" />
     <Content Include="Scripts\jquery.upload-1.0.2.min.js" />
     <Content Include="Scripts\jquery.validate_new.min.js" />
@@ -232,7 +231,6 @@
     <Content Include="Scripts\textAngular-sanitize.min.js" />
     <Content Include="Scripts\textAngular.min.js" />
     <Content Include="Scripts\UIHelpers.js" />
-    <Content Include="Scripts\UserRequest\VacationReturn\VacationReturnEdit.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -333,6 +331,7 @@
     <Content Include="App_GlobalResources\Resources.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -830,8 +829,12 @@
     <Content Include="Views\Employment\PrintObligationTradeSecret.cshtml" />
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
+    <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
+    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
+    <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />
@@ -839,6 +842,7 @@
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
     <Content Include="Views\Appointment\Instruction.cshtml" />
     <Content Include="Views\Info\News.cshtml" />
+    <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteEdit.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteList.cshtml" />
     <Content Include="Views\Shared\_LayoutSurchargeNote.cshtml" />
@@ -851,37 +855,23 @@
     <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
     <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml">
-      <SubType>Code</SubType>    
-    </Content>
-	<Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
+    <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
-    <Content Include="Views\StaffList\Address.cshtml" />
-    <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />
+    <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
     <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
-    <Content Include="Views\UserRequest\VacationReturnEdit.cshtml" />
-    <Content Include="Views\UserRequest\CreateVacationReturn.cshtml" />
-    <Content Include="Views\UserRequest\VacationReturnList.cshtml" />
-
-    <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
-    <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
-
-    <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
-    <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
-    <Content Include="Views\StaffList\StaffEstablishedPostRequest.cshtml" />
-    <Content Include="Views\StaffList\StaffEstablishedPostRequestList.cshtml" />
-    <Content Include="Views\StaffList\StaffListArrangement.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
+    <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />
+    <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
+    <Content Include="Views\StaffList\StaffEstablishedPostRequestList.cshtml" />
+    <Content Include="Views\StaffList\StaffEstablishedPostRequest.cshtml" />
+    <Content Include="Views\StaffList\StaffListArrangement.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentSoftReference.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentEncoding.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentBranch.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentManagement.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentAdministration.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentBusinessGroup.cshtml" />
-    <Content Include="Views\StaffList\TreeView.cshtml" />
-    <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRPLink.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentOperationReference.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentOperationGroups.cshtml" />
