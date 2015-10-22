@@ -50,5 +50,15 @@ namespace Reports.Core.Domain
         public virtual string MovementCondition { get; set; }
         public  virtual Signer Signatory { get; set; }
         public virtual bool Conjunction { get; set; }
+
+        public virtual string AgreementField1_2 { get; set; }
+        public virtual string AgreementField1_6 { get; set; }
+        public virtual string AgreementField5_1 { get; set; }
+        public virtual string AgreementField4_2 { get; set; }
+        public virtual int AgreementEntry1_2 { get; set; }
+        public virtual int AgreementEntry1_6 { get; set; }
+        public virtual int AgreementEntry2_2_1 { get; set; }
+        public virtual int AgreementEntry4_2 { get; set; }
+        public virtual int AgreementEntry5_1 { get; set; }
     }
 }

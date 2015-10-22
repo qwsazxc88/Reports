@@ -546,10 +546,10 @@
                                      </td>
                                     
                                 </tr>
-                                <tr>
+                                @*<tr>
                                     <td>@Html.LabelFor(m => m.ChangesToAgreementEnties)</td>
                                     <td>@Html.TextBoxFor(m => m.ChangesToAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
+                                </tr>*@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.ChangesToAgreement)</td>
                                     <td>@Html.TextBoxFor(m => m.ChangesToAgreement, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
@@ -558,9 +558,41 @@
                                     <td>@Html.LabelFor(m => m.AgreementDate)</td>
                                     <td>@Html.TextBoxFor(m => m.AgreementDate, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
-                                <tr>
+                                @*<tr>
                                     <td>@Html.LabelFor(m => m.AdditionalAgreementEnties)</td>
                                     <td>@Html.TextBoxFor(m => m.AdditionalAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                </tr>*@
+                                <tr>
+                                    <td colspan='2'>
+                                    Пункты Дополнительного соглашения
+                                    <table>
+                                    <tr>
+                                        <td>@Html.DropDownListFor(m => m.AgreementEntry1_2,new SelectList(Model.AgreementEntry1_2List,"Id","Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry1_2var1" class="HiddenObject">
+                                            Работник переводится, с его согласия, с должности <div class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</div> <div class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</div> на должность <div class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</div>  <div class="M_TargetDepartment">@Html.DisplayFor(m => m.TargetDepartmentName)</div>  с <div class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</div> г.
+                                            </div>
+                                            <div id="AgreementEntry1_2var2" class="HiddenObject">
+                                            Работник переводится, с его согласия, с должности <div class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</div> <div class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</div> на должность <div class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</div>  <div class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</div>  с <div class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</div> г. временно @Html.TextBoxFor(m=>m.AgreementField1_2[0])
+                                            </div>
+                                            <div id="AgreementEntry1_2var3" class="HiddenObject">
+                                            Работник переводится, с его согласия,  с временной должности <div class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</div> @Html.TextBoxFor(m=>m.AgreementField1_2[1]) <div class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</div> на постоянную должность <div class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</div> <div class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</div> с <div class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</div> г.
+                                            </div>
+                                            <div id="AgreementEntry1_2var4" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>@Html.DropDownListFor(m => m.AgreementEntry1_6,new SelectList(Model.AgreementEntry1_6List,"Id","Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry1_6var1" class="HiddenObject">
+                                            </div>
+                                            <div id="AgreementEntry1_6var2" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </table>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.MovementReasonOrder)</td>

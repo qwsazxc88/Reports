@@ -14,6 +14,10 @@ namespace Reports.Presenters.UI.ViewModel
             this.User = new StandartUserDto();
             this.Creator = new StandartUserDto();
             this.StatusId = 1;
+            this.AgreementField1_2 = new string[] { "", "" };
+            this.AgreementField1_6 = new string[] { "" };
+            this.AgreementField4_2 = new string[] { "" };
+            this.AgreementField5_1 = new string[] { "" };
         }
         #region Служебное
         public bool IsDepartmentEditable { get; set; }
@@ -59,6 +63,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "На должность")]
         public string TargetPositionName { get; set; }
         public int TargetPositionId { get; set; }
+        public string SourcePositionName { get; set; }
+        public string SourceDepartment { get; set; }
         public IList<IdNameDto> TargetPositions { get; set; }
         public StandartUserDto SourceManager { get; set; }
         public IList<IdNameDto> AdditionActions { get; set; }
@@ -210,6 +216,23 @@ namespace Reports.Presenters.UI.ViewModel
         public string SignatoryName { get; set; }
         public int SignatoryId { get; set; }
         public IList<IdNameDto> SignatoryList { get; set; }
+        #region пункты договора
+        
+        public string[] AgreementField1_2 { get; set; }
+        public string[] AgreementField1_6 { get; set; }
+        public string[] AgreementField5_1 { get; set; }
+        public string[] AgreementField4_2 { get; set; }
+        public int AgreementEntry1_2 { get; set; }
+        public int AgreementEntry1_6 { get; set; }
+        public int AgreementEntry2_2_1 { get; set; }
+        public int AgreementEntry4_2 { get; set; }
+        public int AgreementEntry5_1 { get; set; }
+        public IList<IdNameDto> AgreementEntry1_2List { get; set; }
+        public IList<IdNameDto> AgreementEntry1_6List { get; set; }
+        public IList<IdNameDto> AgreementEntry2_2_1List { get; set; }
+        public IList<IdNameDto> AgreementEntry4_2List { get; set; }
+        public IList<IdNameDto> AgreementEntry5_1List { get; set; }
+        #endregion
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }
