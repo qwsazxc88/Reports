@@ -14,7 +14,7 @@
     <!--<property name="DaysCount"  not-null="true"/>-->
     
     <property name="Number"  not-null="true"/>
-	
+    <property name="PirusNumber" not-null="false"/>
 	  <many-to-one name="Type" class="DismissalType" column="TypeId" foreign-key="FK_Dismissal_DismissalType" index="Dismissal_DismissalType"  not-null="false"/>
     <!--<many-to-one name="CompensationType" class="DismissalCompensationType" column="CompensationTypeId" foreign-key="FK_Dismissal_DismissalCompensationType" index="Dismissal_DismissalCompensationType"  not-null="false"/>-->
     <property name="Compensation" precision="19" scale="2" not-null="false"/>
