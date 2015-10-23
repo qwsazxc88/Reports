@@ -195,6 +195,15 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Примечание")]
         public string OperationMode { get; set; }//к режиму работы подразделения
 
+        [Display(Name = "Примечание")]
+        public string OperationModeCash { get; set; }//к режиму работы кассы
+
+        [Display(Name = "Примечание")]
+        public string OperationModeATM { get; set; }//к режиму работы банкомата
+
+        [Display(Name = "Примечание")]
+        public string OperationModeCashIn { get; set; }//к режиму работы кэшина
+
         [Display(Name = "Дата начала простоя")]
         public DateTime? BeginIdleDate { get; set; }
 

@@ -232,6 +232,9 @@ UPDATE #TMP SET --[Дата_процедуры] = case when year([Дата_процедуры]) = 1900 the
 								,[Приказы] = case when len([Приказы]) = 0 or [Приказы] = N'-' then null else [Приказы] end
 								,[№_телефона] = case when len([№_телефона]) = 0 or [№_телефона] = N'-' then null else [№_телефона] end
 								,[Режим_работы_офиса_доступа_к_УС] = case when len([Режим_работы_офиса_доступа_к_УС]) = 0 or [Режим_работы_офиса_доступа_к_УС] = N'-' then null else [Режим_работы_офиса_доступа_к_УС] end
+								,[Режим_работы_кассы] = case when len([Режим_работы_кассы]) = 0 or [Режим_работы_кассы] = N'-' then null else [Режим_работы_кассы] end
+								,[Режим_работы_Банкомата] = case when len([Режим_работы_Банкомата]) = 0 or [Режим_работы_Банкомата] = N'-' then null else [Режим_работы_Банкомата] end
+								,[Режим_работы_Cash_in] = case when len([Режим_работы_Cash_in]) = 0 or [Режим_работы_Cash_in] = N'-' then null else [Режим_работы_Cash_in] end
 								,[Инкассирующее_подразделение_кэшина] = case when len([Инкассирующее_подразделение_кэшина]) = 0 or [Инкассирующее_подразделение_кэшина] = N'-' then null else [Инкассирующее_подразделение_кэшина] end
 								,[Инкассирующее_подразделение_банкомата] = case when len([Инкассирующее_подразделение_банкомата]) = 0 or [Инкассирующее_подразделение_банкомата] = N'-' then null else [Инкассирующее_подразделение_банкомата] end
 								,[Дата_запуска_кэшина_первая] = case when year([Дата_запуска_кэшина_первая]) = 1900 then null else [Дата_запуска_кэшина_первая] end
@@ -687,6 +690,9 @@ BEGIN
 																						,OpenDate
 																						,CloseDate
 																						,OperationMode
+																						,OperationModeCash
+																						,OperationModeATM
+																						,OperationModeCashIn
 																						,BeginIdleDate
 																						,EndIdleDate
 																						,RentPlaceId
@@ -718,6 +724,9 @@ BEGIN
 					,A.[Дата_открытия_офиса]
 					,A.[Дата_закрытия_офиса]
 					,A.[Режим_работы_офиса_доступа_к_УС]
+					,A.[Режим_работы_кассы]
+					,A.[Режим_работы_Банкомата]
+					,A.[Режим_работы_Cash_in]
 					,A.[Дата_начала_простоя_точки]
 					,A.[Дата_возобновления_работы_точки]
 					,F.Id
@@ -904,8 +913,19 @@ BEGIN
 			SET @i = 1
 			WHILE @i < 8
 			BEGIN
-				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, [WeekDay], IsWorkDay, CreatorId)
-				VALUES(1, @DMDetailId, @i, cast(SUBSTRING(@WorkDays, @i, 1) as bit), @CreatorId)
+				--подразделения
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, ModeType, [WeekDay], IsWorkDay, CreatorId)
+				VALUES(1, @DMDetailId, 1, @i, cast(SUBSTRING(@WorkDays, @i, 1) as bit), @CreatorId)
+
+				--касса
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, ModeType, [WeekDay], IsWorkDay, CreatorId)
+				VALUES(1, @DMDetailId, 2, @i, 0, @CreatorId)
+				--банкомат
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, ModeType, [WeekDay], IsWorkDay, CreatorId)
+				VALUES(1, @DMDetailId, 3, @i, 0, @CreatorId)
+				--кэшин
+				INSERT INTO StaffDepartmentOperationModes([Version], DMDetailId, ModeType, [WeekDay], IsWorkDay, CreatorId)
+				VALUES(1, @DMDetailId, 4, @i, 0, @CreatorId)
 				SET @i += 1
 			END	
 		END

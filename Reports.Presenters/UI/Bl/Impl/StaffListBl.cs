@@ -406,6 +406,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OpenDate = null;
                 model.CloseDate = null;
                 model.OperationMode = string.Empty;
+                model.OperationModeCash = string.Empty;
+                model.OperationModeATM = string.Empty;
+                model.OperationModeCashIn = string.Empty;
                 model.BeginIdleDate = null;
                 model.EndIdleDate = null;
                 model.RentPlaceId = 0;
@@ -533,6 +536,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OpenDate = dmd.OpenDate;
                 model.CloseDate = dmd.CloseDate;
                 model.OperationMode = dmd.OperationMode;
+                model.OperationModeCash = dmd.OperationModeCash;
+                model.OperationModeATM = dmd.OperationModeATM;
+                model.OperationModeCashIn = dmd.OperationModeCashIn;
                 model.BeginIdleDate = dmd.BeginIdleDate;
                 model.EndIdleDate = dmd.EndIdleDate;
                 model.RentPlaceId = dmd.RentPlace != null ? dmd.RentPlace.Id : 0;
@@ -731,6 +737,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.OperationMode = model.OperationMode;
+                dmd.OperationModeCash = model.OperationModeCash;
+                dmd.OperationModeATM = model.OperationModeATM;
+                dmd.OperationModeCashIn = model.OperationModeCashIn;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
                 dmd.RentPlace = !model.RentPlaceId.HasValue || model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
@@ -757,6 +766,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
                         {
                             DepartmentManagerDetail = dmd,
+                            ModeType = item.ModeType,
                             WeekDay = item.WeekDay,
                             WorkBegin = item.WorkBegin,
                             WorkEnd = item.WorkEnd,
@@ -1040,6 +1050,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dmd.OpenDate = model.OpenDate;
                 dmd.CloseDate = model.CloseDate;
                 dmd.OperationMode = model.OperationMode;
+                dmd.OperationModeCash = model.OperationModeCash;
+                dmd.OperationModeATM = model.OperationModeATM;
+                dmd.OperationModeCashIn = model.OperationModeCashIn;
                 dmd.BeginIdleDate = model.BeginIdleDate;
                 dmd.EndIdleDate = model.EndIdleDate;
                 dmd.RentPlace = model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
@@ -1064,6 +1077,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     dmd.DepOperationModes.Add(new StaffDepartmentOperationModes
                     {
                         DepartmentManagerDetail = dmd,
+                        ModeType = item.ModeType,
                         WorkBegin = item.WorkBegin,
                         WorkEnd = item.WorkEnd,
                         BreakBegin = item.BreakBegin,
@@ -1187,6 +1201,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].OpenDate = model.OpenDate;
                 entity.DepartmentManagerDetails[0].CloseDate = model.CloseDate;
                 entity.DepartmentManagerDetails[0].OperationMode = model.OperationMode;
+                entity.DepartmentManagerDetails[0].OperationModeCash = model.OperationModeCash;
+                entity.DepartmentManagerDetails[0].OperationModeATM = model.OperationModeATM;
+                entity.DepartmentManagerDetails[0].OperationModeCashIn = model.OperationModeCashIn;
                 entity.DepartmentManagerDetails[0].BeginIdleDate = model.BeginIdleDate;
                 entity.DepartmentManagerDetails[0].EndIdleDate = model.EndIdleDate;
                 entity.DepartmentManagerDetails[0].RentPlace = !model.RentPlaceId.HasValue || model.RentPlaceId.Value == 0 ? null : StaffDepartmentRentPlaceDao.Load(model.RentPlaceId.Value);
@@ -1218,6 +1235,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (item.Id == 0)
                         {
                             dom.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                            dom.ModeType = item.ModeType;
                             dom.WeekDay = item.WeekDay;
                             dom.WorkBegin = item.WorkBegin;
                             dom.WorkEnd = item.WorkEnd;
@@ -1582,12 +1600,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             StaffDepartmentBranch br = new StaffDepartmentBranch();
             StaffDepartmentManagement mn = new StaffDepartmentManagement();
-
-            //if (entity.ItemLevel >= 5)
-            //{
-            //    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-            //    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-            //}
 
             switch (entity.ItemLevel)
             {

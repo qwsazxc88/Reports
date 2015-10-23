@@ -25,10 +25,11 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<DepOperationModeDto> GetDepartmentOperationModes(int DMDetailId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id, A.DMDetailId, A.WeekDay, A.WorkBegin, A.WorkEnd, A.BreakBegin, A.BreakEnd, A.IsWorkDay
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id, A.DMDetailId, A.ModeType, A.WeekDay, A.WorkBegin, A.WorkEnd, A.BreakBegin, A.BreakEnd, A.IsWorkDay
                                                     FROM dbo.fnGetDepartmentOperationModes(" + DMDetailId.ToString() + ") as A")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("DMDetailId", NHibernateUtil.Int32)
+                .AddScalar("ModeType", NHibernateUtil.Int32)
                 .AddScalar("WeekDay", NHibernateUtil.Int32)
                 .AddScalar("WorkBegin", NHibernateUtil.String)
                 .AddScalar("WorkEnd", NHibernateUtil.String)

@@ -779,6 +779,9 @@ CREATE TABLE [dbo].[StaffDepartmentManagerDetails](
 	[OpenDate] [datetime] NULL,
 	[CloseDate] [datetime] NULL,
 	[OperationMode] [nvarchar](150) NULL,
+	[OperationModeCash] [nvarchar](150) NULL,
+	[OperationModeATM] [nvarchar](150) NULL,
+	[OperationModeCashIn] [nvarchar](150) NULL,
 	[BeginIdleDate] [datetime] NULL,
 	[EndIdleDate] [datetime] NULL,
 	[RentPlaceId] [int] NULL,
@@ -929,6 +932,7 @@ CREATE TABLE [dbo].[StaffDepartmentOperationModes](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL,
 	[DMDetailId] [int] NULL,
+	[ModeType] [int] NULL,
 	[WeekDay] [int] NOT NULL,
 	[WorkBegin] [nvarchar](5) NULL,
 	[WorkEnd] [nvarchar](5) NULL,
@@ -2782,6 +2786,15 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperationMode'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы кассы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperationModeCash'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы банкомата' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperationModeATM'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Режим работы кэшинов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'OperationModeCashIn'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала простоя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentManagerDetails', @level2type=N'COLUMN',@level2name=N'BeginIdleDate'
 GO
 
@@ -3328,6 +3341,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id управленческих реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'DMDetailId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип режима работы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'ModeType'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер дня недели' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentOperationModes', @level2type=N'COLUMN',@level2name=N'WeekDay'
 GO
 
@@ -3824,6 +3840,7 @@ RETURNS
 (
 	 Id int 
 	,DMDetailId int
+	,ModeType int
 	,WeekDay int
 	,WorkBegin nvarchar(5)
 	,WorkEnd nvarchar(5)
@@ -3835,28 +3852,73 @@ AS
 BEGIN
 
 	INSERT INTO @ReturnTable
-	SELECT Id, DMDetailId, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay 
+	SELECT Id, DMDetailId, ModeType, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay 
 	FROM StaffDepartmentOperationModes
 	WHERE DMDetailId = @DMDetailId
 
 	IF NOT EXISTS (SELECT * FROM @ReturnTable)
 	BEGIN
 		INSERT INTO @ReturnTable
-		SELECT Id, DMDetailId, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay FROM StaffDepartmentOperationModes WHERE DMDetailId = -1
+		SELECT Id, DMDetailId, ModeType, WeekDay, WorkBegin, WorkEnd, BreakBegin, BreakEnd, IsWorkDay FROM StaffDepartmentOperationModes WHERE DMDetailId = -1
 		UNION ALL
-		SELECT null, null, 1, null, null, null, null, 0
+		SELECT null, null, 1, 1, null, null, null, null, 0
 		UNION ALL
-		SELECT null, null, 2, null, null, null, null, 0
+		SELECT null, null, 1, 2, null, null, null, null, 0
 		UNION ALL
-		SELECT null, null, 3, null, null, null, null, 0
+		SELECT null, null, 1, 3, null, null, null, null, 0
 		UNION ALL
-		SELECT null, null, 4, null, null, null, null, 0
+		SELECT null, null, 1, 4, null, null, null, null, 0
 		UNION ALL
-		SELECT null, null, 5, null, null, null, null, 0
+		SELECT null, null, 1, 5, null, null, null, null, 0
 		UNION ALL
-		SELECT null, null, 6, null, null, null, null, 0
+		SELECT null, null, 1, 6, null, null, null, null, 0
+		--для кассы
 		UNION ALL
-		SELECT null, null, 7, null, null, null, null, 0
+		SELECT null, null, 2, 7, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 1, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 2, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 3, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 4, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 5, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 2, 7, null, null, null, null, 0
+		--для банкомата
+		UNION ALL
+		SELECT null, null, 3, 1, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 2, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 3, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 4, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 5, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 3, 7, null, null, null, null, 0
+		--для кэшина
+		UNION ALL
+		SELECT null, null, 4, 1, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 2, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 3, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 4, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 5, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 4, 7, null, null, null, null, 0
 	END
 
 
