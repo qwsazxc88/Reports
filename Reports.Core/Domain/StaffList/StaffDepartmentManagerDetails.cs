@@ -21,6 +21,9 @@ namespace Reports.Core.Domain
         public virtual DateTime? OpenDate { get; set; }
         public virtual DateTime? CloseDate { get; set; }
         public virtual string OperationMode { get; set; }
+        public virtual string OperationModeCash { get; set; }
+        public virtual string OperationModeATM { get; set; }
+        public virtual string OperationModeCashIn { get; set; }
         public virtual DateTime? BeginIdleDate { get; set; }
         public virtual DateTime? EndIdleDate { get; set; }
         public virtual StaffDepartmentRentPlace RentPlace { get; set; }

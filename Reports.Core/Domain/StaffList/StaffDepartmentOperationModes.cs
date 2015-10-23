@@ -9,6 +9,7 @@ namespace Reports.Core.Domain
     public class StaffDepartmentOperationModes : AbstractEntityWithVersion
     {
         public virtual StaffDepartmentManagerDetails DepartmentManagerDetail { get; set; }
+        public virtual int ModeType { get; set; }
         public virtual int WeekDay { get; set; }
         public virtual string WorkBegin { get; set; }
         public virtual string WorkEnd { get; set; }
