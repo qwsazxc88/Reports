@@ -18,6 +18,9 @@
     <property name="OpenDate" not-null="false"/>
     <property name="CloseDate" not-null="false"/>
     <property name="OperationMode" length="150" not-null="false"/>
+    <property name="OperationModeCash" length="150" not-null="false"/>
+    <property name="OperationModeATM" length="150" not-null="false"/>
+    <property name="OperationModeCashIn" length="150" not-null="false"/>
     <property name="BeginIdleDate" not-null="false"/>
     <property name="EndIdleDate" not-null="false"/>
     <many-to-one name="RentPlace" class="StaffDepartmentRentPlace" column="RentPlaceId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace" index="StaffDepartmentManagerDetails_StaffDepartmentRentPlace" not-null="false"/>

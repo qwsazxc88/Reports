@@ -7,6 +7,7 @@
     <version name="Version" column= "Version"/>
 
     <many-to-one name="DepartmentManagerDetail" class="StaffDepartmentManagerDetails" column="DMDetailId" foreign-key="FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails" index="StaffDepartmentOperationModes_StaffDepartmentManagerDetails" not-null="false"/>
+    <property name="ModeType" not-null="false"/>
     <property name="WeekDay" not-null="true"/>
     <property name="WorkBegin" length="5" not-null="false"/>
     <property name="WorkEnd" length="5" not-null="false"/>

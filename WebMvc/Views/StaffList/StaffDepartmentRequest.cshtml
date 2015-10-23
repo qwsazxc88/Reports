@@ -428,10 +428,11 @@
                             @Html.ValidationMessageFor(model => model.CloseDate)
                         </td>
                     </tr>
+
                     <tr>
                         <td colspan="2">
                             <div class="portlet">
-                                <div class="portlet-header">@Html.LabelFor(m => m.OperationModes)</div>
+                                <div class="portlet-header">Режим работы подразделения</div>
                                 <div class="portlet-content">
                                     <table class="grid">
                                         <thead>
@@ -448,13 +449,14 @@
                                                 <th>Конец</th>
                                             </tr>
                                         <//thead>
-                                        @{ int i = 1; }
-                                        @foreach (var item in Model.OperationModes)
+                                        @{ int i = 0; }
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 1))
                                         {
                                             <tr>
                                                 <td>
-                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].Id)
-                                                    @Html.HiddenFor(m => m.OperationModes[i - 1].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
                                                     @switch (@item.WeekDay)
                                                     {
                                                         case 1:
@@ -480,11 +482,11 @@
                                                             break;
                                                     }
                                                 </td>
-                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i - 1].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].WorkEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakBegin, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i - 1].BreakEnd, new { maxlength = "5", style = "width:70px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -500,6 +502,229 @@
                             </div>
                         </td>
                     </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы кассы</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 2))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeCash)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeCash) 
+                                                @Html.TextBoxFor(m => m.OperationModeCash, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы банкомата</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 3))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeATM)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeATM) 
+                                                @Html.TextBoxFor(m => m.OperationModeATM, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы кэшина</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 4))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeCashIn)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeCashIn) 
+                                                @Html.TextBoxFor(m => m.OperationModeCashIn, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
                     <tr>
                         <td>@Html.LabelFor(m => m.BeginIdleDate)</td>
                         <td>
