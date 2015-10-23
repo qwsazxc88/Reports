@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
         [Display(Name = "Серия", Prompt = "## ##"),
-            RegularExpression(@"^\d{2}\s\d{2}$", ErrorMessage = "Требуется 4 цифры в формате ## ##"),
+            //RegularExpression(@"^\S{2}\s\S{2}$", ErrorMessage = "Требуется 4 знака в формате ## ##"),
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSeries { get; set; }
 
