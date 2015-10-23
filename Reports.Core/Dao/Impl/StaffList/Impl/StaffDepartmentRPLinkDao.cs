@@ -24,23 +24,62 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// РП-привязки.
         /// </summary>
+        /// <param name="BGFilterId">Id бизнес-группы.</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public IList<StaffDepartmentRPLinkDto> GetDepartmentRPLinks()
+        public IList<StaffDepartmentRPLinkDto> GetDepartmentRPLinks(int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as rId, A.Code as rCode, A.Name as rName, A.BGId, B.Name as BGName, A.DepartmentId as rDepartmentId, C.Name as DepName
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as rId, A.Code as rCode, A.Name as rName, A.BGId, B.Name as BGName, A.DepartmentId as rDepartmentId, C.Name as DepName, D.Name as AdminName, E.Name as ManagementName, F.Name as BranchName
                                                     FROM StaffDepartmentRPLink as A
                                                     LEFT JOIN StaffDepartmentBusinessGroup as B ON B.Id = A.BGId
-                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId")
+                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId
+                                                    LEFT JOIN StaffDepartmentAdministration as D ON D.Id = B.AdminId
+												    LEFT JOIN StaffDepartmentManagement as E ON E.Id = D.ManagementId
+                                                    LEFT JOIN StaffDepartmentBranch as F ON F.Id = E.BranchId " + SqlWhere(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId))
                 .AddScalar("rId", NHibernateUtil.Int32)
                 .AddScalar("rCode", NHibernateUtil.String)
                 .AddScalar("rName", NHibernateUtil.String)
                 .AddScalar("BGId", NHibernateUtil.Int32)
                 .AddScalar("BGName", NHibernateUtil.String)
                 .AddScalar("rDepartmentId", NHibernateUtil.Int32)
-                .AddScalar("DepName", NHibernateUtil.String);
+                .AddScalar("DepName", NHibernateUtil.String)
+                .AddScalar("AdminName", NHibernateUtil.String)
+                .AddScalar("ManagementName", NHibernateUtil.String)
+                .AddScalar("BranchName", NHibernateUtil.String);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentRPLinkDto>()).List<StaffDepartmentRPLinkDto>();
         }
+
+        /// <summary>
+        /// Собираем условие для запроса.
+        /// </summary>
+        /// <param name="BGFilterId">Id бизнес-группы.</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        /// <returns></returns>
+        protected string SqlWhere(int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            string Where = string.Empty;
+
+            if (BGFilterId != 0)
+                Where += "B.Id = " + BGFilterId.ToString();
+
+            if (AdminFilterId != 0)
+                Where += (Where.Length != 0 ? " and " : "") + "D.Id = " + AdminFilterId.ToString();
+
+            if (ManagementFilterId != 0)
+                Where += (Where.Length != 0 ? " and " : "") + "E.Id = " + ManagementFilterId.ToString();
+
+            if (BranchFilterId != 0)
+                Where += (Where.Length != 0 ? " and " : "") + "F.Id = " + BranchFilterId.ToString();
+
+            return (Where.Length != 0 ? "WHERE " + Where : "");
+        }
+
         /// <summary>
         /// Проверка на доступность удаления данной строки.
         /// </summary>

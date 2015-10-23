@@ -24,23 +24,48 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// Управления.
         /// </summary>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public IList<StaffDepartmentAdministrationDto> GetDepartmentAdministrations()
+        public IList<StaffDepartmentAdministrationDto> GetDepartmentAdministrations(int ManagementFilterId, int BranchFilterId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as aId, A.Code as aCode, A.Name as aName, A.ManagementId, B.Name as ManagementName, A.DepartmentId as aDepartmentId, C.Name as DepName
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as aId, A.Code as aCode, A.Name as aName, A.ManagementId, B.Name as ManagementName, A.DepartmentId as aDepartmentId, C.Name as DepName, D.Name as BranchName
                                                     FROM StaffDepartmentAdministration as A
                                                     LEFT JOIN StaffDepartmentManagement as B ON B.Id = A.ManagementId
-                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId")
+                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId
+                                                    LEFT JOIN StaffDepartmentBranch as D ON D.Id = B.BranchId " + SqlWhere(ManagementFilterId, BranchFilterId))
                 .AddScalar("aId", NHibernateUtil.Int32)
                 .AddScalar("aCode", NHibernateUtil.String)
                 .AddScalar("aName", NHibernateUtil.String)
                 .AddScalar("ManagementId", NHibernateUtil.Int32)
                 .AddScalar("ManagementName", NHibernateUtil.String)
                 .AddScalar("aDepartmentId", NHibernateUtil.Int32)
-                .AddScalar("DepName", NHibernateUtil.String);
+                .AddScalar("DepName", NHibernateUtil.String)
+                .AddScalar("BranchName", NHibernateUtil.String);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentAdministrationDto>()).List<StaffDepartmentAdministrationDto>();
         }
+
+        /// <summary>
+        /// Собираем условие для запроса.
+        /// </summary>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        /// <returns></returns>
+        protected string SqlWhere(int ManagementFilterId, int BranchFilterId)
+        {
+            string Where = string.Empty;
+
+            if (ManagementFilterId != 0)
+                Where += "B.Id = " + ManagementFilterId.ToString();
+
+            if (BranchFilterId != 0)
+                Where += (Where.Length != 0 ? " and " : "") + "D.Id = " + BranchFilterId.ToString();
+
+            return (Where.Length != 0 ? "WHERE " + Where : "");
+        }
+
         /// <summary>
         /// Проверка на доступность удаления данной строки.
         /// </summary>

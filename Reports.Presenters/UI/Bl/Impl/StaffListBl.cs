@@ -2799,7 +2799,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model)
         {
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(0);
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.ThreeLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 3 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
@@ -2951,11 +2951,20 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загрузка справочника кодировок управлений.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model)
+        public StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model, int ManagementFilterId, int BranchFilterId)
         {
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations();
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
+
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
+
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.Branches.Insert(0, new StaffDepartmentBranchDto() { Id = 0, Name = "" });
+
             model.FourLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 4 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
         }
@@ -3119,10 +3128,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
 
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations();
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements();
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -3284,11 +3293,27 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загрузка справочника кодировок РП-привязок.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="BGFilterId">Id бизнес-группы</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model)
+        public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks();
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(0, 0, 0);
+            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
+
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.BusinessGroups.Insert(0, new StaffDepartmentBusinessGroupDto() { bId = 0, bName = "" });
+
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
+
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
+
+            model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
+            model.Branches.Insert(0, new StaffDepartmentBranchDto() { Id = 0, Name = "" });
+
             model.SixLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 6 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
         }

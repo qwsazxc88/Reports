@@ -703,17 +703,32 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult StaffDepartmentAdministration()
         {
-            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), 0, 0);
             return PartialView(model);
+        }
+
+        /// <summary>
+        /// Загрузка справочника управлений.
+        /// </summary>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentAdministration(int ManagementFilterId, int BranchFilterId)
+        {
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), ManagementFilterId, BranchFilterId);
+            return Json(new { ok = true, msg = "", model.Administrations });
         }
 
         /// <summary>
         /// Сохраняем данные.
         /// </summary>
         /// <param name="itemToAdd"></param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddEditStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit)
+        public ActionResult AddEditStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
             bool result = false;
@@ -724,7 +739,7 @@ namespace WebMvc.Controllers
                     result = true;
             }
 
-            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), ManagementFilterId, BranchFilterId);
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.Administrations });
@@ -733,10 +748,12 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Удаляем данные.
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="Id">Id строки</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteStaffDepartmentAdministration(int Id)
+        public ActionResult DeleteStaffDepartmentAdministration(int Id, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
             bool result = false;
@@ -744,7 +761,7 @@ namespace WebMvc.Controllers
             if (StaffListBl.DeleteStaffDepartmentAdministration(Id, out error))
                 result = true;
 
-            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel());
+            StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), ManagementFilterId, BranchFilterId);
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.Administrations });
@@ -769,7 +786,6 @@ namespace WebMvc.Controllers
         /// <param name="AdminFilterId">Id управления.</param>
         /// <param name="ManagementFilterId">Id дирекции</param>
         /// <param name="BranchFilterId">Id филиала</param>
-        /// <returns></returns>
         /// <returns></returns>
         [HttpPost]
         public ActionResult StaffDepartmentBusinessGroup(int AdminFilterId, int ManagementFilterId, int BranchFilterId)
@@ -839,17 +855,36 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult StaffDepartmentRPLink()
         {
-            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), 0, 0, 0, 0);
             return PartialView(model);
+        }
+
+        /// <summary>
+        /// Загрузка справочника РП-привязок.
+        /// </summary>
+        /// <param name="BGFilterId">Id бизнес-группы</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult StaffDepartmentRPLink(int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
+        {
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
+            return Json(new { ok = true, msg = "", model.RPLinks });
         }
 
         /// <summary>
         /// Сохраняем данные.
         /// </summary>
         /// <param name="itemToAdd"></param>
+        /// <param name="BGFilterId">Id бизнес-группы</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddEditStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit)
+        public ActionResult AddEditStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
             bool result = false;
@@ -860,7 +895,7 @@ namespace WebMvc.Controllers
                     result = true;
             }
 
-            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.RPLinks });
@@ -869,10 +904,14 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Удаляем данные.
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="Id">Id записи</param>
+        /// <param name="BGFilterId">Id бизнес-группы</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteStaffDepartmentRPLink(int Id)
+        public ActionResult DeleteStaffDepartmentRPLink(int Id, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
             bool result = false;
@@ -880,7 +919,7 @@ namespace WebMvc.Controllers
             if (StaffListBl.DeleteStaffDepartmentRPLink(Id, out error))
                 result = true;
 
-            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel());
+            StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
             ViewBag.Error = error;
 
             return Json(new { ok = result, msg = error, model.RPLinks });

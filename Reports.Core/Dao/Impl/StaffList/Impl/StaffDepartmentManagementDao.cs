@@ -24,13 +24,14 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// Справочник дирекций.
         /// </summary>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        public IList<StaffDepartmentManagementDto> GetDepartmentManagements()
+        public IList<StaffDepartmentManagementDto> GetDepartmentManagements(int BranchFilterId)
         {
             IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as mId, A.Code as mCode, A.Name as mName, A.BranchId, B.Name as BranchName, A.DepartmentId as mDepartmentId, C.Name as DepName
                                                     FROM StaffDepartmentManagement as A
                                                     LEFT JOIN StaffDepartmentBranch as B ON B.Id = A.BranchId
-                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId")
+                                                    LEFT JOIN Department as C ON C.Id = A.DepartmentId " + (BranchFilterId == 0 ? "" : "WHERE B.Id = " + BranchFilterId.ToString()))
                 .AddScalar("mId", NHibernateUtil.Int32)
                 .AddScalar("mCode", NHibernateUtil.String)
                 .AddScalar("mName", NHibernateUtil.String)
