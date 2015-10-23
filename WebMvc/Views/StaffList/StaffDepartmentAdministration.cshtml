@@ -11,7 +11,7 @@
         <table id="tblAdministration" class="grid">
             <thead>
                 <tr>
-                    <th colspan="3">Финград</th>
+                    <th colspan="4">Финград</th>
                     <th rowspan="2">Название управления в СКД</th>
                     <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditAdministrationRow(-1);">Создать</button></th>
                     @*<th rowspan="2" class="tdBtn"></th>*@
@@ -20,6 +20,25 @@
                     <th>Название управления</th>
                     <th>Код управления</th>
                     <th>Дирекция</th>
+                    <th>Филиал</th>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        <div id="AFilterDiv">
+                            <h3>Фильтры:</h3>
+                            <div>
+                                @Html.LabelFor(m => m.ManagementFilterId)
+                                @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetAFilter();" })
+                                @Html.HiddenFor(m => m.ManagementFilterId)
+                                <br /><br />
+                                @Html.LabelFor(m => m.BranchFilterId)
+                                @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetAFilter();" })
+                                @Html.HiddenFor(m => m.BranchFilterId)
+                                
+                                <button id="btnAClearFilter" type="button" title="Сбросить параметры поиска" style="float:right;">Сброс</button>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </thead>
             
@@ -42,6 +61,7 @@
                             @Html.DisplayFor(m => m.Administrations[i - 1].ManagementName)
                             @Html.HiddenFor(m => m.Administrations[i - 1].ManagementId)
                         </td>
+                        <td>@Html.DisplayFor(m => m.Administrations[i - 1].BranchName)</td>
                         <td>
                             @Html.DisplayFor(m => m.Administrations[i - 1].DepName)
                             @Html.HiddenFor(m => m.Administrations[i - 1].aDepartmentId)
@@ -98,6 +118,21 @@
         $(":button").button();
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#AFilterDiv").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+
+        $("#btnAClearFilter").click(function(){
+            $("#ManagementFilterId").val(0);
+            $("#BranchFilterId").val(0);
+
+            SetAFilter();
+        });
     });
 
     //вкл/выкл режима редактирования
@@ -184,7 +219,29 @@
         var actionUrl="@Url.Action("DeleteStaffDepartmentAdministration", "StaffList")";
         var url = actionUrl + "?Id=" + Id;
         ShowFlash(true);
-        var dataToSend = $("#StaffDepartmentMenegmentForm").serialize();
+        var dataToSend = $("#StaffDepartmentAdministrationForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#aMessageStr").text(data.msg);
+                    var $table = $("#tblAdministration");
+                    var $rows = $("#tblAdministration .tblAdministrationRow");
+                    $rows.remove();
+                    FillAdministrationTableData(data);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#aMessageStr").text(data.msg);
+                    alert(data.msg);
+                }
+            }, "json");
+    }
+
+    function SetAFilter(){
+        var actionUrl="@Url.Action("StaffDepartmentAdministration", "StaffList")";
+        var url = actionUrl + "?ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentAdministrationForm").serialize();
             $.post(url, dataToSend, function(data){
                 if (data.ok == true){
                     $("#aMessageStr").text(data.msg);
@@ -212,6 +269,7 @@
                         "<input id='Administrations_" + i + "__aName' name='Administrations[" + i + "].aName' value='" + data.Administrations[i].aName + "' type='hidden'>" + (data.Administrations[i].aName ? data.Administrations[i].aName : "") + "</td>" +
                     "<td><input id='Administrations_" + i + "__aCode' name='Administrations[" + i + "].aCode' value='" + data.Administrations[i].aCode + "' type='hidden'>" + (data.Administrations[i].aCode ? data.Administrations[i].aCode : "") + "</td>" +
                     "<td><input id='Administrations_" + i + "__ManagementId' name='Administrations[" + i + "].ManagementId' value='" + data.Administrations[i].ManagementId + "' type='hidden'>" + (data.Administrations[i].ManagementName ? data.Administrations[i].ManagementName : "") + "</td>" +
+                    "<td>" + (data.Administrations[i].BranchName ? data.Administrations[i].BranchName : "") + "</td>" +
                     "<td><input id='Administrations_" + i + "__aDepartmentId' name='Administrations[" + i + "].aDepartmentId' value='" + data.Administrations[i].aDepartmentId + "' type='hidden'>" + (data.Administrations[i].DepName ? data.Administrations[i].DepName : "") + "</td>" +
                     "<td class='tdBtn'><a id='AddEdit" + i + "' onclick='AddEditAdministrationRow(" + i + ");' href='#' >Изменить</a></td>" + 
                     "<td class='tdBtn'><a onclick='DeleteAdministrationRow(" + data.Administrations[i].aId + ");' href='#' >Удалить</a></td>" +

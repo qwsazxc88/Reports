@@ -12,8 +12,10 @@ namespace Reports.Core.Dao
         /// </summary>
         /// Управления.
         /// </summary>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        IList<StaffDepartmentAdministrationDto> GetDepartmentAdministrations();
+        IList<StaffDepartmentAdministrationDto> GetDepartmentAdministrations(int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Проверка на доступность удаления данной строки.
         /// </summary>

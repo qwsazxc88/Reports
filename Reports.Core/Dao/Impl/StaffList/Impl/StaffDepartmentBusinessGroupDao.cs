@@ -56,7 +56,6 @@ namespace Reports.Core.Dao.Impl
         /// <param name="ManagementFilterId">Id дирекции</param>
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        /// <returns></returns>
         protected string SqlWhere(int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string Where = string.Empty;

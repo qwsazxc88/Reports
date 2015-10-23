@@ -16,7 +16,6 @@ namespace Reports.Core.Dao
         /// <param name="ManagementFilterId">Id дирекции</param>
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        /// <returns></returns>
         IList<StaffDepartmentBusinessGroupDto> GetDepartmentBusinessGroups(int AdminFilterId, int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Проверка на доступность удаления данной строки.

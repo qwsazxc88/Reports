@@ -25,48 +25,22 @@
                 </tr>
                 <tr>
                     <td colspan="8">
-                        <div id="FilterDiv">
+                        <div id="BGFilterDiv">
                             <h3>Фильтры:</h3>
                             <div>
-                                @*
-                                <table id="tblFilter">
-                                    <tr>
-                                        <td>@Html.LabelFor(m => m.AdminFilterId)</td>
-                                        <td>
-                                            @Html.DropDownListFor(m => m.AdminFilterId, new SelectList(Model.Administrations, "aId", "aName"), (object) new { onchange = "SetFilter();"})
-                                            @Html.HiddenFor(m => m.AdminFilterId)
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>@Html.LabelFor(m => m.ManagementFilterId)</td>
-                                        <td>
-                                            @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetFilter();" })
-                                            @Html.HiddenFor(m => m.ManagementFilterId)
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>@Html.LabelFor(m => m.BranchFilterId)</td>
-                                        <td>
-                                            @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetFilter();" })
-                                            @Html.HiddenFor(m => m.BranchFilterId)
-                                        </td>
-                                    </tr>
-                                </table>
-                                *@
-                                
                                 @Html.LabelFor(m => m.AdminFilterId)
-                                @Html.DropDownListFor(m => m.AdminFilterId, new SelectList(Model.Administrations, "aId", "aName"), (object) new { onchange = "SetFilter();"})
+                                @Html.DropDownListFor(m => m.AdminFilterId, new SelectList(Model.Administrations, "aId", "aName"), (object) new { onchange = "SetBGFilter();"})
                                 @Html.HiddenFor(m => m.AdminFilterId)
                                 <br /><br />
                                 @Html.LabelFor(m => m.ManagementFilterId)
-                                @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetFilter();" })
+                                @Html.DropDownListFor(m => m.ManagementFilterId, new SelectList(Model.Managements, "mId", "mName"), (object)new { onchange = "SetBGFilter();" })
                                 @Html.HiddenFor(m => m.ManagementFilterId)
                                 <br /><br />
                                 @Html.LabelFor(m => m.BranchFilterId)
-                                @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetFilter();" })
+                                @Html.DropDownListFor(m => m.BranchFilterId, new SelectList(Model.Branches, "Id", "Name"), (object)new { onchange = "SetBGFilter();" })
                                 @Html.HiddenFor(m => m.BranchFilterId)
                                 
-                                <button id="btnClearFilter" type="button" title="Сбросить параметры поиска" style="float:right;">Сброс</button>
+                                <button id="btnBGClearFilter" type="button" title="Сбросить параметры поиска" style="float:right;">Сброс</button>
                             </div>
                         </div>
                     </td>
@@ -150,7 +124,7 @@
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
 
-        $("#FilterDiv").accordion({
+        $("#BGFilterDiv").accordion({
             header: "h3",
             active: false,
             collapsible: true,
@@ -158,12 +132,12 @@
             heightStyle: "content"
         });
 
-        $("#btnClearFilter").click(function(){
+        $("#btnBGClearFilter").click(function(){
             $("#AdminFilterId").val(0);
             $("#ManagementFilterId").val(0);
             $("#BranchFilterId").val(0);
 
-            SetFilter();
+            SetBGFilter();
         });
     });
 
@@ -271,7 +245,7 @@
             }, "json");
     }
 
-    function SetFilter(){
+    function SetBGFilter(){
         var actionUrl="@Url.Action("StaffDepartmentBusinessGroup", "StaffList")";
         var url = actionUrl + "?AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
         ShowFlash(true);

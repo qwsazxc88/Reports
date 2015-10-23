@@ -12,8 +12,12 @@ namespace Reports.Core.Dao
         /// </summary>
         /// РП-привязки.
         /// </summary>
+        /// <param name="BGFilterId">Id бизнес-группы.</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        IList<StaffDepartmentRPLinkDto> GetDepartmentRPLinks();
+        IList<StaffDepartmentRPLinkDto> GetDepartmentRPLinks(int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Проверка на доступность удаления данной строки.
         /// </summary>

@@ -223,8 +223,10 @@ namespace Reports.Presenters.UI.Bl
         /// Загрузка справочника кодировок управлений.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model);
+        StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model, int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Сохраняем данные справочника кодировок управлений.
         /// </summary>
@@ -286,8 +288,12 @@ namespace Reports.Presenters.UI.Bl
         /// Загрузка справочника кодировок РП-привязок.
         /// </summary>
         /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="BGFilterId">Id бизнес-группы</param>
+        /// <param name="AdminFilterId">Id управления.</param>
+        /// <param name="ManagementFilterId">Id дирекции</param>
+        /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
-        StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model);
+        StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId);
         /// <summary>
         /// Сохраняем данные справочника кодировок РП-привязок.
         /// </summary>

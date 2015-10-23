@@ -13,6 +13,15 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
     {
         public IList<StaffDepartmentAdministrationDto> Administrations { get; set; }
 
+        #region Справочники для фильтров
+        [Display(Name = "Фильтр по дирекции")]
+        public int ManagementFilterId { get; set; }
+
+        [Display(Name = "Фильтр по филиалу")]
+        public int BranchFilterId { get; set; }
+        public IList<StaffDepartmentBranchDto> Branches { get; set; }
+        #endregion
+
         #region Поля для модального окна
         public int aId { get; set; }
 
