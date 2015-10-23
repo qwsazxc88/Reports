@@ -61,7 +61,8 @@
         *@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{2}\s\d{2}$", title = "4 цифры (## ##)", })
+            @Html.TextBoxFor(m => m.InternalPassportSeries, new { maxlength = "5", prompt = "## ##" })
+            @*@Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\S{2}\s\S{2}$", title = "4 знака (## ##)", })*@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
@@ -173,8 +174,8 @@
         setActiveMenuItem("empPassport");
         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
         jQuery(function ($) {
-            $.mask.definitions['~'] = '[+-]';
-            $('#InternalPassportSeries').mask('99 99');
+            //$.mask.definitions['~'] = '[+-]';
+            //$('#InternalPassportSeries').mask('** **');
         });
 
         $("#btnPassportDraft").click(function(){
