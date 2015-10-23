@@ -693,7 +693,7 @@
                               <td>
                               Дополнительное соглашение
                               </td>
-                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="button" value="Печать" onclick="GetAgreementDoc()" /></td>
                               <td>
                                @if (Model.AdditionalAgreementDocDto != null && !string.IsNullOrEmpty(Model.AdditionalAgreementDocDto.FileName))
                                {
@@ -1284,7 +1284,51 @@ label { font-size:1.1em; }
             icon.closest(".portlet").find(".portlet-content").toggle();
         });
     }
+    function GetAgreementDoc()
+    {
+    var newForm = jQuery('<form>', {
+        'action': '/StaffMovements/GetAgreementDoc',
+        'target': '_blank'
+    }).append(jQuery('<input>', {
+        'name': 'AgreementNumber',
+        'value': $('#AdditionalAgreementNumber').val(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'AgreementDate',
+        'value': $('#AdditionalAgreementDate').val(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'UserName',
+        'value': '@Model.User.Name',
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'TargetPosition',
+        'value': $("select[name^='TargetPositionId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'TargetDepartment',
+        'value': $('#TargetDepartmentNameLabel').text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerName',
+        'value': $("select[name^='SignatoryId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerShortName',
+        'value': $("select[name^='SignatoryId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerPositionWithDepartment',
+        'value': '',
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'UserShortName',
+        'value': '@Model.User.Name',
+        'type': 'hidden'
+    }));
+    newForm.appendTo('body').submit();
     
+    }
     $(document).ready(function () {
         setActiveMenuItem("StaffMovements");
         ConfigureFields();

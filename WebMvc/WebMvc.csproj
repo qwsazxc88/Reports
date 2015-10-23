@@ -273,6 +273,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Files\StaffMovements\" />
     <Folder Include="Templates\" />
     <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
