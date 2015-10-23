@@ -175,6 +175,7 @@
     <Content Include="Content\themes\base\ui-icons_454545_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\vis.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="FileSizeTooLarge.htm" />
     <Content Include="Files\doc\docProps\app.xml" />
@@ -231,6 +232,7 @@
     <Content Include="Scripts\textAngular-sanitize.min.js" />
     <Content Include="Scripts\textAngular.min.js" />
     <Content Include="Scripts\UIHelpers.js" />
+    <Content Include="Scripts\vis.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -275,6 +277,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Templates\" />
+    <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">

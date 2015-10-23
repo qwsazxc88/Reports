@@ -32,6 +32,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             "копейки",
                                             "копеек",
                                         };
+       
         protected static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #region Fields
         protected IAuthenticationService authenticationService;
