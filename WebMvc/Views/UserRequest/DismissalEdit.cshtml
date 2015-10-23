@@ -1,5 +1,9 @@
-﻿@model Reports.Presenters.UI.ViewModel.DismissalEditModel
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+
+@model Reports.Presenters.UI.ViewModel.DismissalEditModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Редактирование увольнения";
 }
 
@@ -226,6 +230,16 @@
                 {
                     <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
                 }
+                @if((dto.UserRole & (UserRole.Manager | UserRole.OutsourcingManager))>0 )
+                {
+                <a target="_blank" href="https://pyrus.com/ru/">Закрыть доступ к программам через систему Pyrus</a>
+                    }
+                @if (Model.IsApprovedEnable && Model.IsPyrusLinkAvailable)
+                {
+                    
+                    @Html.LabelFor(m => m.PyrusNumber)
+                    @Html.TextBoxFor(m => m.PyrusNumber, Model.IsApprovedEnable ? null : (object)new { disabled = "disabled" })
+                }
             </td>
     </tr>
     <tr>
@@ -238,6 +252,10 @@
                 @if (!Model.IsApprovedByPersonnelManagerEnable)
                 {
                     <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />
+                }
+                @if((dto.UserRole & (UserRole.PersonnelManager | UserRole.OutsourcingManager))>0 )
+                {
+                    <a target="_blank"  href="https://pyrus.com/ru/">Создать обходной лист через систему Pyrus</a>
                 }
             </td>
     </tr>

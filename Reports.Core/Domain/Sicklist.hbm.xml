@@ -11,7 +11,7 @@
     
     <property name="Number"  not-null="true"/>
 	<property name="SicklistNumber"  not-null="true"/>
-	  
+    <property name="PirusNumber" not-null="false"/>
   <many-to-one name="Type" class="SicklistType" column="TypeId" foreign-key="FK_Sicklist_SicklistType" index="Sicklist_SicklistType"  not-null="false"/>
   <many-to-one name="BabyMindingType" class="SicklistBabyMindingType" column="BabyMindingTypeId" foreign-key="FK_Sicklist_BabyMindingType" index="Sicklist_BabyMindingType"  not-null="false"/>
   <many-to-one name="PaymentPercent" class="SicklistPaymentPercent" column="PaymentPercentId" foreign-key="FK_Sicklist_SicklistPaymentPercent" index="Sicklist_SicklistPaymentPercent"  not-null="false"/>

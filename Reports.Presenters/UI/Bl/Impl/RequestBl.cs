@@ -1988,6 +1988,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.IsPyrusLinkAvailable = true;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
@@ -1996,13 +1997,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
+                        model.IsPyrusLinkAvailable = false ;
                         //model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
+                        
                         //model.IsApprovedByManagerEnable = false;
                         //model.IsStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
+                        model.IsPyrusLinkAvailableForPersonnel = true;
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         //model.IsStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
@@ -2029,6 +2033,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUserRole)
             {
                 case UserRole.Employee:
+                    model.IsPyrusLinkAvailable = false;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -2079,6 +2084,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
                 case UserRole.Manager:
+                    model.IsPyrusLinkAvailable = true;
                     //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
                     //model.IsPrintAvailable = formMan != null;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
@@ -2104,6 +2110,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.PersonnelManager:
                     // Кадровик может за сотрудника прикрепить скан подписанного приказа
+                    model.IsPyrusLinkAvailableForPersonnel = true;
                     if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
                     {
                         model.IsConfirmationAllowed = true;
@@ -2509,6 +2516,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
                     || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
+                if (!String.IsNullOrEmpty(model.PyrusNumber))
+                    entity.PirusNumber = model.PyrusNumber;
                 //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -4012,7 +4021,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Sicklist sicklist;
-
+                
                 if (model.Id == 0)
                 #region Сохранение нового БЛ
                 {
@@ -4149,6 +4158,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
                 || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
+                if (!String.IsNullOrEmpty(model.PyrusNumber))
+                    entity.PirusNumber = model.PyrusNumber;
                 if (!entity.ManagerDateAccept.HasValue)
                 {
                     if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -4319,19 +4330,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (entity != null)
+                model.IsPyrusLinkAvailable = entity.Type != null ? entity.Type.Id == 12 : false;
+            else
+                model.IsPyrusLinkAvailable = true;
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
                 model.IsBabyMindingTypeEditable = false;
                 model.IsDatesEditable = true;
-                model.IsApprovedEnable = false;
+                model.IsApprovedEnable = false;               
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
+                        model.IsPyrusLinkAvailable = false;
                         model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
+                        
                         model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
@@ -4388,6 +4405,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUserRole)
             {
                 case UserRole.Employee:
+                    model.IsPyrusLinkAvailable = false;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -4397,6 +4415,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
+                    model.IsPyrusLinkAvailable = entity.Type != null ? entity.Type.Id == 12 : false;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -5404,6 +5423,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user, vacation, model);
             return model;
         }
+        public Result SaveVacationFileAfter1C(VacationEditModel model, UploadFileDto fileDto)
+        {
+            if(model.Id<=0) return new Result(false,"");
+            var vacation = VacationDao.Load(model.Id);
+            if (!vacation.SendTo1C.HasValue) 
+                return new Result(false, "");
+            if ( vacation.User.Id != CurrentUser.Id)
+                return new Result(false, "");
+            string fileName;
+            int? orderScanAttachmentId = SaveAttachment(vacation.Id, model.OrderScanAttachmentId, fileDto, RequestAttachmentTypeEnum.VacationOrderScan, out fileName);
+            if (orderScanAttachmentId.HasValue)
+            {
+                model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                model.OrderScanAttachment = fileName;
+                return new Result(true, "Файл успешно сохранен.");
+            }
+            return new Result(false, "");
+        }
         public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
@@ -6346,6 +6383,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.IsPyrusLinkAvailable = true;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
@@ -6354,9 +6392,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        //model.IsApprovedByUserEnable = false;
+                        model.IsPyrusLinkAvailable = false;
+                    //model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
+                        
                         //model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
@@ -6389,6 +6429,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUserRole)
             {
                 case UserRole.Employee:
+                    model.IsPyrusLinkAvailable = false;
                     if (!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -6398,6 +6439,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
+                    model.IsPyrusLinkAvailable = true;
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -6671,6 +6713,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (((current.UserRole & UserRole.Manager) == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
                     || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
+                if(!String.IsNullOrEmpty(model.PyrusNumber))
+                    entity.PirusNumber = model.PyrusNumber;
                 if (!entity.ManagerDateAccept.HasValue)
                 {
                     if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
