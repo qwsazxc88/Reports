@@ -255,6 +255,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 model.SignatoryId = entity.Data.Signatory!=null?entity.Data.Signatory.Id:0;
                 model.SignatoryName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
+
+                model.AgreementEntry1_2 = entity.Data.AgreementEntry1_2;
+                model.AgreementEntry1_6 = entity.Data.AgreementEntry1_6;
+                model.AgreementEntry2_2_1 = entity.Data.AgreementEntry2_2_1;
+                model.AgreementEntry4_2 = entity.Data.AgreementEntry4_2;
+                model.AgreementEntry5_1 = entity.Data.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) model.AgreementField1_2[0] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_2 == 3) model.AgreementField1_2[1] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_6 == 1) model.AgreementField1_6[0] = entity.Data.AgreementField1_6;
+                if (model.AgreementEntry4_2 == 2) model.AgreementField4_2[0] = entity.Data.AgreementField4_2;
+                if (model.AgreementEntry5_1 == 5) model.AgreementField5_1[0] = entity.Data.AgreementField5_1;
                 #endregion
                 #region Files
                 var docs = entity.Docs;
@@ -337,6 +348,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         private void LoadDictionaries(StaffMovementsEditModel model)
         {
+            model.AgreementEntry1_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"}
+            };
+            model.AgreementEntry1_6List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}               
+            };
+            model.AgreementEntry2_2_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}
+            };
+            model.AgreementEntry4_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"}
+            };
+            model.AgreementEntry5_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"},
+                new IdNameDto{ Id=5,Name="Вариант 5"},
+                new IdNameDto{ Id=6,Name="Вариант 6"}
+            };
             var extracharges = ExtraChargesDao.LoadAll();
             if (extracharges != null && extracharges.Any())
             {
@@ -820,6 +858,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionFrontAction = model.AdditionFrontAction;
                 entity.Data.AdditionTerritoryAction = model.AdditionTerritoryAction;
                 entity.Data.AdditionTravelingAction = model.AdditionTravelingAction;
+                entity.Data.AgreementEntry1_2 = model.AgreementEntry1_2;
+                entity.Data.AgreementEntry1_6 = model.AgreementEntry1_6;
+                entity.Data.AgreementEntry2_2_1 = model.AgreementEntry2_2_1;
+                entity.Data.AgreementEntry4_2 = model.AgreementEntry4_2;
+                entity.Data.AgreementEntry5_1 = model.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) entity.Data.AgreementField1_2 = model.AgreementField1_2[0];
+                if (model.AgreementEntry1_2 == 3) entity.Data.AgreementField1_2 = model.AgreementField1_2[1];
+                if (model.AgreementEntry1_6 == 1) entity.Data.AgreementField1_6 = model.AgreementField1_6[0];
+                if (model.AgreementEntry4_2 == 2) entity.Data.AgreementField4_2 = model.AgreementField4_2[0];
+                if (model.AgreementEntry5_1 == 5) entity.Data.AgreementField5_1 = model.AgreementField5_1[0];
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
@@ -1113,6 +1161,48 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Dictionaries
+        public static string[] GetAgreementEntriesTemplate(string entry)
+        {
+            Dictionary<string, string[]> Entries = new Dictionary<string, string[]>();
+            //пункт 1.2
+            string[] entry1_2 = new string[] 
+            {
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. ",
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. временно, {{Field}} ",
+                "Работник переводится, с его согласия,  с временной должности {{SourcePosition}} {{Field}} {{SourceDepartment}} на постоянную должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г.",
+                "Не выбран"
+            };
+            //Пункт 1.6
+            string[] entry1_6 = new string[] 
+            {
+                "Фактическое место работы Работника: {{Field}}",
+                "Не выбран"
+            };
+            //Пункт 2.2.1
+            string[] entry2_2_1 = new string[] 
+            {
+                "Должностные обязанности изменяются согласно должностной инструкции {{TargetPosition}} {{TargetDepartment}}",
+                "Не выбран"
+            };
+            //Пункт 4_2
+            string[] entry4_2 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}",
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}"+Environment.NewLine+"Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет {{Field}} рублей в месяц",
+                "Не выбран"
+            };
+            //Пункт 5.1
+            string[] entry5_1 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.",
+                "{{Field}}",
+                "Не выбран"
+            };
+            return Entries[entry];
+        }
         public IList<IdNameDto> GetNorthExperienceTypes()
         {
             IList<IdNameDto> inDto = new List<IdNameDto> { };
