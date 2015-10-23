@@ -274,6 +274,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Templates\" />
+    <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">
