@@ -2027,7 +2027,7 @@ namespace WebMvc.Controllers
 
             int numberOfFilledFields = 0;            
 
-            numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
+            numberOfFilledFields += /*string.IsNullOrEmpty(model.PassportData) ? 0 :*/ 1;//Номер паспорта больше не нужен, он ушёл в прошлое и про него забыли, пусть вместо него будет 1.
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 

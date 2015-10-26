@@ -24,10 +24,7 @@
                 <label>ФИО</label>
                 <input type="text" name="Surname" value="@Model.Name" />
             </div>
-            <div class="formfield clear">
-                <label>Паспортные данные</label>
-                <input type="text" id="PassportData" name="PassportData" />
-            </div>
+            
             <div class="formfield clear">
                 <label>Снилс</label>
                 <input type="text" id="SNILS" name="SNILS" />
@@ -447,7 +444,6 @@
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
             $('#SNILS').mask('999-999-999 99');
-            $('#PassportData').mask('9999 999999');
         }); 
     $("#DateAccept").datepicker({changeMonth: true, changeYear: true});
     $("#ColloquyDate").datepicker({changeMonth: true, changeYear: true});
