@@ -410,7 +410,7 @@
                                  @Html.DropDownListFor(m => m.AdditionPersonnelAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
                             </tr>
-                            <tr>
+                            @*<tr>
                                 <td>@Html.LabelFor(m => m.AdditionPosition)</td>
                                 <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPosition, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
@@ -421,7 +421,7 @@
                                 @Html.LabelFor(m=>m.AdditionPositionAction)
                                 @Html.DropDownListFor(m => m.AdditionPositionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
-                            </tr>
+                            </tr>*@
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionQuality)</td>
                                 <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionQuality, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
