@@ -390,7 +390,7 @@ namespace Reports.Core.Dao.Impl
                     }
 
                     sqlWhere = string.Format(@"{0}
-                        (
+                        ((
                             ( u.Level>3 or u.Level IS NULL )
                             and u.Id in
                             (
@@ -420,6 +420,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Role
                                         on mrr.RoleId = 2
                             )
+                        )
                         )
                         ", sqlWhere);
                     break;
