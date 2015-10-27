@@ -224,7 +224,12 @@
                 ShowFlash(false);
                 $("#rMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlash(false);
+            $('#AddEditRPLinkDialog').dialog("close");
+            $("#rMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function DeleteRPLinkRow(Id){
@@ -249,7 +254,11 @@
                     $("#rMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#rMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function SetRPFilter(){
@@ -271,7 +280,11 @@
                     $("#rMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#rMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function FillRPLinkTableData(data){

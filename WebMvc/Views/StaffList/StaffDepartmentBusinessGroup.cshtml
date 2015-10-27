@@ -216,7 +216,12 @@
                 ShowFlash(false);
                 $("#bMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlash(false);
+            $('#AddEditBusinessGroupDialog').dialog("close");
+            $("#bMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function DeleteBusinessGroupsRow(Id){
@@ -242,7 +247,11 @@
                     $("#bMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#bMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function SetBGFilter(){
@@ -265,7 +274,11 @@
                     $("#bMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#bMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function FillBusinessGroupsTableData(data){

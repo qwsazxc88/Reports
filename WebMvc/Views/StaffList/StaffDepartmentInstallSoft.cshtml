@@ -144,7 +144,12 @@
                 ShowFlashIS(false);
                 $("#sMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlashIS(false);
+            $('#AddEditInstallSoftDialog').dialog("close");
+            $("#sMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function FillManagementTableData(data){

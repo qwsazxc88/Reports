@@ -159,6 +159,7 @@
         var url = "@Url.Action("AddEditStaffDepartmentOperationGroups", "StaffList")";
         var dataToSend = $("#AddEditOperationGroupRowDialog form").serialize();
         ShowFlashOG(true);    //это диалоговое окно находится на родительской странице
+
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
                 $('#AddEditOperationGroupRowDialog').dialog("close");
@@ -174,7 +175,12 @@
                 ShowFlashOG(false);
                 $("#glblMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlashOG(false);
+            $('#AddEditOperationGroupRowDialog').dialog("close");
+            $("#gMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function FillOperationGroupsTableData(data){

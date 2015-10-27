@@ -157,6 +157,7 @@
                 type: 'POST',
                 dataType: 'json',
                 data: dataToSend,
+                async: false,
                 success: function(result){
                     // $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
@@ -267,22 +268,18 @@
                     //пытаемся раскрыть рекурсивно всю ветку 
                     if (DepTable.length > 0)
                     {
-                        //console.log(DepTable);
-                        ShowFlash(true);
                         for (var i = 0; i < DepTable.length; i++)
                         {
-                            ShowFlash(true);
                             GetNodes(DepTable[i], IsExpandAll);
                         }
                         DepTable = [];
-                        //ShowFlash(false);
                     }
                     
 
-
                     $(":button").button();
-
+                    
                     ShowFlash(false);
+
                 },
                 error: function(){
                     alert("При загрузке данных произошла ошибка.");

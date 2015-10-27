@@ -209,7 +209,12 @@
                 ShowFlash(false);
                 $("#aMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlash(false);
+            $('#AddEditAdministrationDialog').dialog("close");
+            $("#aMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function DeleteAdministrationRow(Id){
@@ -234,7 +239,11 @@
                     $("#aMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#aMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function SetAFilter(){
@@ -256,7 +265,11 @@
                     $("#aMessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#aMessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function FillAdministrationTableData(data){

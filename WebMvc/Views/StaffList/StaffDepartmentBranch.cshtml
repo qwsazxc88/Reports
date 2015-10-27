@@ -166,7 +166,12 @@
                 ShowFlash(false);
                 $("#lblMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlash(false);
+            $('#AddEditBranchRowDialog').dialog("close");
+            $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function DeleteBranchRow(Id){
@@ -191,7 +196,11 @@
                     $("#MessageStr").text(data.msg);
                     alert(data.msg);
                 }
-            }, "json");
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
     }
 
     function FillBranchTableData(data){

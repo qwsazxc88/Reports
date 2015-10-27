@@ -173,7 +173,12 @@
                 ShowFlashOp(false);
                 $("#olblMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlashOp(false);
+            $('#AddEditOperationRowDialog').dialog("close");
+            $("#oMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function FillOperationsTableData(data){

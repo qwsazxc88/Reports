@@ -3763,6 +3763,7 @@ INSERT INTO StaffDepartmentReasons(Name) VALUES (N'переезд стандартный')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'по плану РР')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивная точка')
 INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивный переезд')
+INSERT INTO StaffDepartmentReasons(Name) VALUES (N'фиктивный переезд (изменение реквизитов аренды)')
 
 --StaffNetShopIdentification
 INSERT INTO StaffNetShopIdentification(Name) VALUES (N'-')
@@ -3822,7 +3823,7 @@ BEGIN
 END
 
 
-DELETE FROM Messages WHERE CommentPlaceType in (2, 3)
+DELETE FROM Messages WHERE CommentPlaceType in (2, 4)
 
 --7. СОЗДАНИЕ ФУНКЦИЙ
 

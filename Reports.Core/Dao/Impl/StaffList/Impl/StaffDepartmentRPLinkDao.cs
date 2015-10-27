@@ -112,7 +112,7 @@ namespace Reports.Core.Dao.Impl
         public string GetNewRPLinkCode(StaffDepartmentBusinessGroup BusinessGroup)
         {
             IList<StaffDepartmentRPLink> rp = Session.Query<StaffDepartmentRPLink>().Where(x => x.DepartmentBG == BusinessGroup && x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6))).ToList();
-            string Code = rp.Count() == 0 ? "0" : 
+            string Code = rp.Count() == 0 || rp.Where(x => x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6))).Count() == 0 ? "0" : 
                 rp.Where(x => x.Code.StartsWith(BusinessGroup.Code.Substring(0, 6)))
                 .OrderByDescending(x => x.Code.Substring(6, 2))
                 .FirstOrDefault().Code.Substring(6, 2);

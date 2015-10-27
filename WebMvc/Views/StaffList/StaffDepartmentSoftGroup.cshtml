@@ -143,7 +143,12 @@
                 ShowFlashSG(false);
                 $("#gMsg").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlashSG(false);
+            $('#AddEditSoftGroupDialog').dialog("close");
+            $("#gMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function FillManagementTableData(data){

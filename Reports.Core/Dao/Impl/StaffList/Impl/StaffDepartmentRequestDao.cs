@@ -71,7 +71,7 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Department as Dep4 ON C.Path like Dep4.Path + N'%' and Dep4.ItemLevel = 4
                                 LEFT JOIN Department as Dep5 ON C.Path like Dep5.Path + N'%' and Dep5.ItemLevel = 5
                                 LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
-                                INNER JOIN Users as D ON D.Id = A.CreatorID
+                                LEFT JOIN Users as D ON D.Id = A.CreatorID
                                 LEFT JOIN Position as E ON E.Id = D.PositionId";
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
@@ -264,7 +264,7 @@ namespace Reports.Core.Dao.Impl
 									                                        when B.ItemLevel = 2 then (SELECT Code FROM StaffDepartmentBranch WHERE DepartmentId = B.Id)
 						                                         else B.FingradCode end as FingradCode
 			                                              FROM Department as A
-			                                              INNER JOIN Department as B ON B.ItemLevel <= A.ItemLevel and B.ItemLevel <> 1 and A.Path like B.Path + '%'
+			                                              INNER JOIN Department as B ON B.ItemLevel <= A.ItemLevel and B.ItemLevel not in (1, 7) and A.Path like B.Path + '%'
 			                                              WHERE A.Id = " + Id.ToString() + @") as A
                                                     WHERE A.FingradCode is null")
             .AddScalar("IsExists", NHibernateUtil.Boolean);
@@ -283,8 +283,10 @@ namespace Reports.Core.Dao.Impl
             IList<Department> dep = Session.Query<Department>().Where(x => x.ItemLevel == 7 && x.ParentId == rp.Department.Code1C && x.FingradCode != null).ToList();
 
 
-            string Code = dep.Count == 0 ? "0" :
-                dep.Where(x => x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).OrderByDescending(x => x.FingradCode.Substring(9)).FirstOrDefault().FingradCode.Substring(9);
+            string Code = dep.Count == 0 || dep.Where(x => x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2))).Count() == 0 ? "0" :
+                dep.Where(x => x.FingradCode.StartsWith(br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2)))
+                .OrderByDescending(x => x.FingradCode.Substring(9))
+                .FirstOrDefault().FingradCode.Substring(9);
 
             //предпологаем, что код содержит только цифры с разделителями, увеличиваем на 1
             Code = (Convert.ToInt32(Code) + 1).ToString();
@@ -293,6 +295,23 @@ namespace Reports.Core.Dao.Impl
             Code = br.Code + "-" + mn.Code.Substring(1) + "-" + rp.Code.Substring(6, 2) + "-" + Code;
 
             return Code;
+        }
+
+        /// <summary>
+        /// Проверка на возможность закрыть подразделение.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public bool IsEnableCloseDepartment(int Id)
+        {
+            //от текущего подразделения смотрим всю ветку вниз и ищем сотрудников в подразделениях
+            IQuery query = Session.CreateSQLQuery(@"SELECT cast(case when count(*) = 0 then 1 else 0 end as bit) IsExists
+                                                    FROM Department as A
+                                                    INNER JOIN Department as B ON B.Path like A.Path + N'%'
+                                                    INNER JOIN Users as C ON C.DepartmentId = B.Id and (C.RoleId & 2 > 0) and C.IsActive = 1
+                                                    WHERE A.Id = " + Id.ToString())
+            .AddScalar("IsExists", NHibernateUtil.Boolean);
+            return query.UniqueResult<bool>();
         }
     }
 }
