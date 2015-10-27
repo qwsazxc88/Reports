@@ -1933,8 +1933,9 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
-                    EmploymentBl.DeleteAttachment(modelDel);
+                    //DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    //EmploymentBl.DeleteAttachment(modelDel);
+                    EmploymentBl.DeleteCandidateDocument(model);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
                     ModelState.AddModelError("SendTo1C", "Файл удален!");
                 }
@@ -2027,7 +2028,7 @@ namespace WebMvc.Controllers
 
             int numberOfFilledFields = 0;            
 
-            numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
+            numberOfFilledFields += /*string.IsNullOrEmpty(model.PassportData) ? 0 :*/ 1;//Номер паспорта больше не нужен, он ушёл в прошлое и про него забыли, пусть вместо него будет 1.
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
