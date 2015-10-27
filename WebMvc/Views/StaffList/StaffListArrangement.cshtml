@@ -1,0 +1,291 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffListArrangementModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Штатная расстановка";
+}
+
+@using (Html.BeginForm("StaffListArrangement", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListArrangementForm" }))
+{
+    @Html.HiddenFor(m => m.DepId)
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        
+        <table id="tbl" class="grid">
+            <thead>
+                <tr>
+                    <th>Уровень<br />подразделений</th>
+                    <th>Структура подразделений</th>
+                    <th>Должность</th>
+                    <th>Количество<br />штатных<br />единиц</th>
+                    <th>ФИО<br />сотрудника</th>
+                    <th>Оклад</th>
+                    <th>Название в<br />Финграде</th>
+                    <th>Комментарий</th>
+                    <th>Код в<br />Финграде</th>
+                </tr>    
+            </thead>
+            
+            @{ int i = 0; }
+            @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
+            {
+                <tr id="tr-@item.Code1C" accessKey="@item.Path" style="background-color: #E9FFE9;">
+                    <td class="tdBtn">@item.ItemLevel</td>
+                    <td>
+                        <span>
+                            <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
+                        </span>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
+                    </td>
+                    <td></td>
+                    <td>@item.SEPCount</td>
+                    <td></td>
+                    <td></td>
+                    <td>@item.DepFingradName</td>
+                    <td>@item.DepFingradNameComment</td>
+                    <td>@item.FinDepPointCode</td>
+                </tr>
+            }
+            @{ i++; }
+        </table>             
+
+    </div>
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    var DepTable = [];
+
+    $(document).ready(function () {
+        setActiveMenuItem("moStaffArrangement");
+
+         $(document).tooltip({track: false});
+
+        ShowFlash(true);
+        ShowFlash(false);
+        $(":button").button();
+        //для эффекта раскрытой ветки
+        $(".Acollapsible").click(function (e) {
+            e.preventDefault();
+            $(this).children('span').toggleClass("collapse expand");
+        })
+    });
+
+
+    //подгружаем уровни структуры и штатные единицы
+    function GetNodes(Id, IsExpandAll) {
+        //чтобы не подгружались данные вторично
+        if($("#getnodes-" + Id).hasClass("IsLoading")){
+            var IsCollapse = false;
+            var akParent = "";
+            akParent = $("#tr-" + Id)[0].accessKey;
+            //перебираем загруженные строковые элементы страницы, чтобы скрывать/раскрывать загруженные ветки
+            $("tr").each(function(){
+                if (this.id == "tr-" + Id){
+                }
+                else{
+                    //по пути определяем нужные строки и по наличию класса показываем/скрываем их
+                    if (akParent.length != 0)
+                    {
+                        if (this.accessKey.indexOf(akParent) > -1){
+                            if (this.accessKey.substring(akParent.length) == this.id.substring(3) + "." || this.accessKey == akParent)//дочерние следующего уровня
+                            {
+                                if($("#" + this.id).hasClass("IsVisible")){ IsCollapse = true; }    //определяем что происходит в данный момент, скрытие/расркытие дочерних строк
+
+                                if (IsCollapse)
+                                {
+                                    $("#" + this.id).removeClass("IsVisible");
+                                    $("#" + this.id).hide();
+                                }
+                                else
+                                {
+                                    $("#" + this.id).addClass("IsVisible");
+                                    $("#" + this.id).show();
+                                }
+                            }
+
+                            if(IsCollapse)
+                            {
+                                $("#" + this.id).hide();
+                                $("#" + this.id).addClass("IsHide");
+                            }
+                            else
+                            {
+                                if ($("#" + this.id).hasClass("IsVisible") && $("#" + this.id).hasClass("IsHide"))
+                                {
+                                    $("#" + this.id).show();
+                                    $("#" + this.id).removeClass("IsHide");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        else{$("#getnodes-" + Id).addClass("IsLoading");}
+
+        var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
+            $("#DepId").val(Id);
+            var dataToSend = $("#StaffListArrangementForm").serialize();
+            ShowFlash(true);
+
+            jQuery.ajax({
+                url: actionUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: dataToSend,
+                success: function(result){
+                    // $liParent = $("#li-" + Id.toString());
+                    var ResultStr = "";
+                    var tblStr = "";
+
+
+                    if (result.Departments != null)
+                    {
+                        //DepTable = result.Departments;
+                        for (var i = 0; i < result.Departments.length; i++)
+                        {   
+                            if(IsExpandAll)
+                            {
+                                DepTable[i] = result.Departments[i].Code1C;
+                            }
+
+                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
+                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
+                                        "<td>" +
+                                        "<span>";
+                                            var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                            for (var j = 0; j < BSCount; j++)
+                                            {
+                                                tblStr += "&nbsp;";
+                                            }
+                                            tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
+                                            "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                        "</span>" +
+                                            "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
+                                        "</td>" + 
+                                        "<td></td>" +
+                                        "<td>" + result.Departments[i].SEPCount + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
+                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
+                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
+                                        "</tr>";
+
+                            var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
+                            //var aa = $(ParentRowName);
+                            //console.log(aa);
+                            $("#span" + result.Departments[i].Code1C).removeClass("collapse collapsible");
+                            $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
+
+                            //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
+                            if (result.Departments[i].ItemLevel <= 7){
+                                $("#span" + result.Departments[i].Code1C).addClass("collapse collapsible");
+                                $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
+                                //console.log(ResultStr);
+                                //назначаем обработчик для раскрытия веток дерева
+                                $("#getnodes-" + result.Departments[i].Code1C).click(function (e) {
+                                    e.preventDefault();
+                                    $(this).children('span').toggleClass("collapse expand");
+                                    $(this).closest('li').children('ul').slideToggle();
+                                });
+                            }
+                        }
+                    }
+                    
+
+                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                    {   
+                        tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-u-" + result.EstablishedPosts[i].UserId +"' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td>" +
+                                    "<span>" +
+                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                    "</span>" +
+                                    "</td>" + 
+                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].Surname + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                    "<td></td>" +
+                                    //"<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "</tr>";
+
+                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                    }
+                    
+
+                    //пытаемся раскрыть рекурсивно всю ветку 
+                    if (DepTable.length > 0)
+                    {
+                        //console.log(DepTable);
+                        ShowFlash(true);
+                        for (var i = 0; i < DepTable.length; i++)
+                        {
+                            ShowFlash(true);
+                            GetNodes(DepTable[i], IsExpandAll);
+                        }
+                        DepTable = [];
+                        //ShowFlash(false);
+                    }
+                    
+
+
+                    $(":button").button();
+
+                    ShowFlash(false);
+                },
+                error: function(){
+                    alert("При загрузке данных произошла ошибка.");
+                    ShowFlash(false);
+                }
+            });
+    }
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+
+   
+</script>
+
+

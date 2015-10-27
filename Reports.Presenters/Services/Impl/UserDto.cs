@@ -185,5 +185,9 @@ namespace Reports.Presenters.Services.Impl
             //    return "Кадровик";
             //throw new ValidationException(string.Format("Неизвестная роль {0}",(int)dto.UserRole));
         }
+        public static bool IsStaffDepartmentAvailable(IUser dto)
+        {
+            return (dto.UserRole & (UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)) > 0;
+        }
     }
 }

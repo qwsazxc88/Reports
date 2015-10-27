@@ -36,7 +36,7 @@ namespace Reports.Core
          /// </summary>
         OutsourcingManager = 32,
          /// <summary>
-         /// Контролер
+         /// Куратор
          /// </summary>
         Inspector = 64,
          /// <summary>

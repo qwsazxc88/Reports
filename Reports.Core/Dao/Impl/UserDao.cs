@@ -390,7 +390,7 @@ namespace Reports.Core.Dao.Impl
                     }
 
                     sqlWhere = string.Format(@"{0}
-                        (
+                        ((
                             ( u.Level>3 or u.Level IS NULL )
                             and u.Id in
                             (
@@ -421,13 +421,14 @@ namespace Reports.Core.Dao.Impl
                                         on mrr.RoleId = 2
                             )
                         )
+                        )
                         ", sqlWhere);
                     break;
                 case UserRole.PersonnelManager:
-                    sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
+                    sqlWhere += string.Format("(u.RoleId & {0}) > 0  and  exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;
                 case UserRole.Chief:
-                    sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
+                    sqlWhere += string.Format("(u.RoleId & {0}) > 0  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;
                 case UserRole.Estimator:
                 case UserRole.OutsourcingManager:
@@ -1328,6 +1329,15 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Name", NHibernateUtil.String);
             IList<IdNameDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
             return users;
+        }
+        /// <summary>
+        /// Список всех сотрудников по заданному подразделению
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <returns></returns>
+        public IList<User> GetUsersForDepartment(int DepartmentId)
+        {
+            return Session.Query<User>().Where(x => x.Department.Id == DepartmentId && x.IsActive).ToList();
         }
     }
 }

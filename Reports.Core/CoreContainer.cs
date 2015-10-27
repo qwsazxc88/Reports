@@ -606,12 +606,17 @@ namespace Reports.Core
             Register(Component.For<INewsDao>()
                 .ImplementedBy<NewsDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IKladrDao>()
+                .ImplementedBy<KladrDao>()
+                .LifeStyle.Is(type));
             Register(Component.For<ISurchargeNoteDao>()
                 .ImplementedBy<SurchargeNoteDao>()
                 .LifeStyle.Is(type));
             Register(Component.For<IMessagesDao>()
                 .ImplementedBy<MessagesDao>()
                 .LifeStyle.Is(type));
+
+
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
@@ -632,6 +637,122 @@ namespace Reports.Core
                 .ImplementedBy<StaffMovementsDataDao>()
                 .LifeStyle.Is(type));
             #endregion
+
+            #region Штатное расписание
+            Register(Component.For<IDepartmentArchiveDao>()
+                .ImplementedBy<DepartmentArchiveDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostArchiveDao>()
+                .ImplementedBy<StaffEstablishedPostArchiveDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffPostChargeLinksDao>()
+                .ImplementedBy<StaffPostChargeLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostRequestDao>()
+                .ImplementedBy<StaffEstablishedPostRequestDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IRefAddressesDao>()
+                .ImplementedBy<RefAddressesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffProgramReferenceDao>()
+                .ImplementedBy<StaffProgramReferenceDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffProgramCodesDao>()
+                .ImplementedBy<StaffProgramCodesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffLandmarkTypesDao>()
+                .ImplementedBy<StaffLandmarkTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentLandmarksDao>()
+                .ImplementedBy<StaffDepartmentLandmarksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentManagerDetailsDao>()
+                .ImplementedBy<StaffDepartmentManagerDetailsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentTaxDetailsDao>()
+                .ImplementedBy<StaffDepartmentTaxDetailsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentCBDetailsDao>()
+                .ImplementedBy<StaffDepartmentCBDetailsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostDao>()
+                .ImplementedBy<StaffEstablishedPostDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffExtraChargesDao>()
+                .ImplementedBy<StaffExtraChargesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRequestDao>()
+                .ImplementedBy<StaffDepartmentRequestDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentTypesDao>()
+                .ImplementedBy<StaffDepartmentTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentOperationsDao>()
+                .ImplementedBy<StaffDepartmentOperationsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentOperationLinksDao>()
+                .ImplementedBy<StaffDepartmentOperationLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRequestTypesDao>()
+                .ImplementedBy<StaffDepartmentRequestTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentOperationModesDao>()
+                .ImplementedBy<StaffDepartmentOperationModesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostRequestTypesDao>()
+                .ImplementedBy<StaffEstablishedPostRequestTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostChargeLinksDao>()
+                .ImplementedBy<StaffEstablishedPostChargeLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentReasonsDao>()
+                .ImplementedBy<StaffDepartmentReasonsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffNetShopIdentificationDao>()
+                .ImplementedBy<StaffNetShopIdentificationDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentCashDeskAvailableDao>()
+                .ImplementedBy<StaffDepartmentCashDeskAvailableDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRentPlaceDao>()
+                .ImplementedBy<StaffDepartmentRentPlaceDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSKB_GEDao>()
+                .ImplementedBy<StaffDepartmentSKB_GEDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSoftGroupDao>()
+                .ImplementedBy<StaffDepartmentSoftGroupDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentInstallSoftDao>()
+                .ImplementedBy<StaffDepartmentInstallSoftDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentSoftGroupLinksDao>()
+                .ImplementedBy<StaffDepartmentSoftGroupLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentBranchDao>()
+                .ImplementedBy<StaffDepartmentBranchDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentManagementDao>()
+                .ImplementedBy<StaffDepartmentManagementDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentAdministrationDao>()
+                .ImplementedBy<StaffDepartmentAdministrationDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentBusinessGroupDao>()
+                .ImplementedBy<StaffDepartmentBusinessGroupDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentRPLinkDao>()
+                .ImplementedBy<StaffDepartmentRPLinkDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentOperationGroupsDao>()
+                .ImplementedBy<StaffDepartmentOperationGroupsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffDepartmentAccessoryDao>()
+                .ImplementedBy<StaffDepartmentAccessoryDao>()
+                .LifeStyle.Is(type));
+            #endregion
+            
+            
         }
         #endregion
 

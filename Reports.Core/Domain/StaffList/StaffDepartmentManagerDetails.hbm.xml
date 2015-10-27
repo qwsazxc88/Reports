@@ -1,0 +1,63 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentManagerDetails" dynamic-update="true" table="StaffDepartmentManagerDetails">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="DepRequest" class="StaffDepartmentRequest" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>
+    <property name="DepCode" length="20" not-null="false"/>
+    <property name="PrevDepCode" length="20" not-null="false"/>
+    <property name="NameShort" length="100" not-null="false"/>
+    <property name="NameComment" length="50" not-null="false"/>
+    <many-to-one name="DepartmentReasons" class="StaffDepartmentReasons" column="ReasonId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentReasons" index="StaffDepartmentManagerDetails_StaffDepartmentReasons" not-null="false"/>
+    <many-to-one name="FactAddress" class="RefAddresses" column="FactAddressId" foreign-key="FK_StaffDepartmentManagerDetails_RefAddresses" index="StaffDepartmentManagerDetails_RefAddresses" not-null="false"/>
+    <property name="DepStatus" length="50" not-null="false"/>
+    <many-to-one name="DepartmentType" class="StaffDepartmentTypes" column="DepTypeId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentTypes" index="StaffDepartmentManagerDetails_StaffDepartmentTypes" not-null="false"/>
+    <property name="OpenDate" not-null="false"/>
+    <property name="CloseDate" not-null="false"/>
+    <property name="OperationMode" length="150" not-null="false"/>
+    <property name="OperationModeCash" length="150" not-null="false"/>
+    <property name="OperationModeATM" length="150" not-null="false"/>
+    <property name="OperationModeCashIn" length="150" not-null="false"/>
+    <property name="BeginIdleDate" not-null="false"/>
+    <property name="EndIdleDate" not-null="false"/>
+    <many-to-one name="RentPlace" class="StaffDepartmentRentPlace" column="RentPlaceId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRentPlace" index="StaffDepartmentManagerDetails_StaffDepartmentRentPlace" not-null="false"/>
+    <property name="AgreementDetails" length="250" not-null="false"/>
+    <property name="DivisionArea" not-null="false"/>
+    <property name="AmountPayment" not-null="false"/>
+    <property name="Phone" length="20" not-null="false"/>
+    <property name="IsBlocked" not-null="false"/>
+    <many-to-one name="NetShopIdentification" class="StaffNetShopIdentification" column="NetShopId" foreign-key="FK_StaffDepartmentManagerDetails_StaffNetShopIdentification" index="StaffDepartmentManagerDetails_StaffNetShopIdentification" not-null="false"/>
+    <property name="IsLegalEntity" not-null="false"/>
+    <property name="PlanEPCount" not-null="false"/>
+    <property name="PlanSalaryFund" precision="19" scale="2" not-null="false"/>
+    <property name="Note" length="250" not-null="false"/>
+    <many-to-one name="CashDeskAvailable" class="StaffDepartmentCashDeskAvailable" column="CDAvailableId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" index="StaffDepartmentManagerDetails_StaffDepartmentCashDeskAvailable" not-null="false"/>
+    <many-to-one name="SKB_GE" class="StaffDepartmentSKB_GE" column="SKB_GE_Id" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" index="StaffDepartmentManagerDetails_StaffDepartmentSKB_GE" not-null="false"/>
+    <many-to-one name="SoftGroup" class="StaffDepartmentSoftGroup" column="SoftGroupId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" index="StaffDepartmentManagerDetails_StaffDepartmentSoftGroup" not-null="false"/>
+    <many-to-one name="DepartmentOperationGroup" class="StaffDepartmentOperationGroups" column="OperGroupId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentOperationGroups" index="StaffDepartmentManagerDetails_StaffDepartmentOperationGroups" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentManagerDetails_CreatorUser" index="StaffDepartmentManagerDetails_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentManagerDetails_EditorUser" index="StaffDepartmentManagerDetails_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+    
+
+    <bag name="DepOperationModes" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffDepartmentOperationModes"/>
+    </bag>
+    
+    <bag name="ProgramCodes" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffProgramCodes_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffProgramCodes"/>
+    </bag>
+    
+    <bag name="DepartmentLandmarks" lazy="true" cascade="all-delete-orphan">
+      <key column="DMDetailId" foreign-key="FK_StaffDepartmentLandmarks_StaffDepartmentManagerDetails"/>
+      <one-to-many class="StaffDepartmentLandmarks"/>
+    </bag>
+    
+  </class>
+</hibernate-mapping>

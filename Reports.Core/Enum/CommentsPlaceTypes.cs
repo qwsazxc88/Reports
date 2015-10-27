@@ -7,9 +7,21 @@ namespace Reports.Core.Enum
 {
     public enum CommentsPlaceTypes
     {
-        //Начисления
+        /// <summary>
+        /// Начисления
+        /// </summary>
         SurchargeNote =1,
-        //Кадровые перемещения
-        StaffMovements =3
+        /// <summary>
+        /// Заявки штатного расписания для подразделения
+        /// </summary>
+        StaffListDepratment = 2,
+        /// <summary>
+        /// Кадровые перемещения
+        /// </summary>
+        StaffMovements =3,
+        /// <summary>
+        /// Заявки штатного расписания для штатных единиц.
+        /// </summary>
+        StaffListEstablishedPost = 4
     }
 }
