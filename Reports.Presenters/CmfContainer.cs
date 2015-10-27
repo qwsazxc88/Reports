@@ -60,6 +60,9 @@ namespace Reports.Presenters
             Register(Component.For(typeof(ISurchargeBL))
                 .ImplementedBy(typeof(SurchargeBl))
                 .LifeStyle.Is(type));
+            Register(Component.For(typeof(IStaffListBl))
+                        .ImplementedBy(typeof(StaffListBl))
+                        .LifeStyle.Is(type));
             
             Register(Component.For(typeof(IStaffMovementsBl))
                        .ImplementedBy(typeof(StaffMovementsBl))

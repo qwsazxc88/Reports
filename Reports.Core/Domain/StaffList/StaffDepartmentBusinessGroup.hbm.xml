@@ -1,0 +1,19 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentBusinessGroup" dynamic-update="true" table="StaffDepartmentBusinessGroup">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="Code" length="11" not-null="false"/>
+    <property name="Name" length="150" not-null="false"/>
+    <many-to-one name="DepartmentAdministration" class="StaffDepartmentAdministration" column="AdminId" foreign-key="FK_StaffDepartmentBusinessGroup_StaffDepartmentBranch" index="StaffDepartmentBusinessGroup_StaffDepartmentBranch" not-null="false"/>
+    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffDepartmentBusinessGroup_Department" index="StaffDepartmentBusinessGroup_Department" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentBusinessGroup_CreatorUser" index="StaffDepartmentBusinessGroup_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentBusinessGroup_EditorUser" index="StaffDepartmentBusinessGroup_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+  </class>
+</hibernate-mapping>

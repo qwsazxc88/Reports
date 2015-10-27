@@ -1,0 +1,22 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentOperationModes" dynamic-update="true" table="StaffDepartmentOperationModes">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="DepartmentManagerDetail" class="StaffDepartmentManagerDetails" column="DMDetailId" foreign-key="FK_StaffDepartmentOperationModes_StaffDepartmentManagerDetails" index="StaffDepartmentOperationModes_StaffDepartmentManagerDetails" not-null="false"/>
+    <property name="ModeType" not-null="false"/>
+    <property name="WeekDay" not-null="true"/>
+    <property name="WorkBegin" length="5" not-null="false"/>
+    <property name="WorkEnd" length="5" not-null="false"/>
+    <property name="BreakBegin" length="5" not-null="false"/>
+    <property name="BreakEnd" length="5" not-null="false"/>
+    <property name="IsWorkDay" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentOperationModes_CreatorUser" index="StaffDepartmentOperationModes_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentOperationModes_EditorUser" index="StaffDepartmentOperationModes_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+  </class>
+</hibernate-mapping>

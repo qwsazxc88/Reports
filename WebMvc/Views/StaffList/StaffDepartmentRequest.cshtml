@@ -1,0 +1,1415 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentRequestModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+}
+
+  
+@using (Html.BeginForm("StaffDepartmentRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentRequestForm" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IsDraft)
+    @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.DMDetailId)
+    @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
+    @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+    @Html.HiddenFor(m => m.ItemLevel)
+    @Html.HiddenFor(m => m.IsUsed)
+    @Html.HiddenFor(m => m.DepartmentId)
+   
+    
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    <legend style="text-align:left;font-size:medium;">Заявка</legend>
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv">
+            <h3>Реквизиты инициатора</h3>
+            <div>
+                @Html.Partial("DepRequestInfoView", Model.DepRequestInfo)
+            </div>
+        </div>
+
+
+        <div id="MainDiv1">
+            <h3>Общие реквизиты</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DateState)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.DateState)
+                            @(Model.DateState.HasValue ? Model.DateState.Value.ToShortDateString() : string.Empty)
+                        </td>
+                    </tr>
+                    @*
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Id)</td>
+                        <td>
+                            @(Model.Id != 0 ? Model.Id.ToString() : "")
+                        </td>
+                    </tr>
+                    *@
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestTypeId)</td>
+                        <td>
+                            @Html.HiddenFor(m => m.RequestTypeId)
+                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ItemLevel)</td>
+                        <td>
+                            @Model.ItemLevel.ToString()
+                            @Html.HiddenFor(m => m.ItemLevel)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Name)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Name, (object)new { maxlength = "128", style = "width:600px;" })
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.BFGId)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.BFGId, new SelectList(Model.Accessoryes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.BFGId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OrderNumber)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.OrderNumber, (object)new { maxlength = "200", style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.OrderNumber)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OrderDate)</td>
+                        <td>@Html.TextBoxFor(m => m.OrderDate) @Html.ValidationMessageFor(model => model.OrderDate)</td>
+                    </tr>
+                    
+
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.LegalAddress)
+                            @Html.HiddenFor(m => m.LegalAddressId)
+                            @Html.HiddenFor(m => m.LegalPostIndex)
+                            @Html.HiddenFor(m => m.LegalRegionCode)
+                            @Html.HiddenFor(m => m.LegalAreaCode)
+                            @Html.HiddenFor(m => m.LegalCityCode)
+                            @Html.HiddenFor(m => m.LegalSettlementCode)
+                            @Html.HiddenFor(m => m.LegalStreetCode)
+                            @Html.HiddenFor(m => m.LegalHouseType)
+                            @Html.HiddenFor(m => m.LegalHouseNumber)
+                            @Html.HiddenFor(m => m.LegalBuildType)
+                            @Html.HiddenFor(m => m.LegalBuildNumber)
+                            @Html.HiddenFor(m => m.LegalFlatType)
+                            @Html.HiddenFor(m => m.LegalFlatNumber)
+
+
+                            @Html.LabelFor(m => m.LegalAddressId)<br />
+                            <button type="button" title="Выбрать адрес" onclick="CreateAddressDialog(1);">Выбрать</button>
+                        </td>
+                        <td>
+                            <label id="LegalAddressLabel">@Model.LegalAddress</label>
+                            @Html.ValidationMessageFor(model => model.LegalAddress)
+                        </td>
+                    </tr>
+
+
+                    @if (Model.ItemLevel <= 2 || Model.ItemLevel == 7)
+                    {
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTaxAdminAccount)
+                            </td>
+                            <td>
+                                <div id="IsTaxAdminAccountContainer">
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsEmployeAvailable)
+                            </td>
+                            <td>
+                                <div id="IsEmployeAvailableContainer">
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                        else
+                                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepNextId)<br />
+                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);"/>
+                            </td>
+                            <td>
+                                <label id="DepNextNameLabel">@Model.DepNextName</label>
+                                @Html.HiddenFor(m => m.DepNextId)
+                                @Html.HiddenFor(m => m.DepNextName)
+                                @Html.ValidationMessageFor(model => model.DepNextId)
+                            </td>
+                        </tr>
+                    }
+                    
+
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.ParentId)<br />
+                        </td>
+                        <td>
+                            <label id="DepParentNameLabel">@Model.DepParentName</label>
+                            @Html.HiddenFor(m => m.ParentId)
+                            @Html.HiddenFor(m => m.DepParentName)
+                            @Html.ValidationMessageFor(model => model.ParentId)
+                            <input type="button" style="float:right;" value="Изменить" title="Корректировка родительского подразделения (при необходимости)" onclick="changeDepartment(6);"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsPlan)
+                        </td>
+                        <td>
+                            <div id="IsPlanContainer">
+                                @Html.RadioButtonFor(m => m.IsPlan, true, new { @id = "IsPlanTrue" })<label id="lblIsPlanTrue" for="IsPlanTrue" @if (Model.IsPlan)
+                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                else
+                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsPlan, false, new { @id = "IsPlanFalse" })<label id="lblIsPlanFalse" for="IsPlanFalse" @if (!Model.IsPlan)
+                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                    else
+                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                    @*
+                    @if (Model.ItemLevel >= 3 && Model.ItemLevel < 7)
+                    {
+                        <tr>
+                            <td>@Html.LabelFor(m => m.DepCode)</td>
+                            <td>@Html.DisplayFor(m => m.DepCode)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.PrevDepCode)</td>
+                            <td>@Html.DisplayFor(m => m.PrevDepCode)</td>
+                        </tr>
+                    }
+                    *@
+                </table>
+            </div>
+        </div>
+
+        @if (Model.ItemLevel < 3 || Model.ItemLevel == 7)
+        {
+    
+        <div id="MainDiv2">
+            <h3>Налоговые реквизиты</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.KPP)</td>
+                        <td>@Model.KPP</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKTMO)</td>
+                        <td>@Model.OKTMO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKATO)</td>
+                        <td>@Model.OKATO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RegionCode)</td>
+                        <td>@Model.RegionCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminCode)</td>
+                        <td>@Model.TaxAdminCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminName)</td>
+                        <td>@Model.TaxAdminName</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PostAddress)</td>
+                        <td>@Model.PostAddress</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv3">
+            <h3>ЦБ реквизиты</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ATMCountTotal)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMCountTotal, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.ATMCountTotal)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ATMCashInStarted)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMCashInStarted, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.ATMCashInStarted)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ATMCashInCount)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMCashInCount, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.ATMCashInCount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ATMCount)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMCount, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.ATMCount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DepCachinId)<br />
+                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(2);"/>
+                        </td>
+                        <td>
+                            <label id="DepCachinNameLabel">@Model.DepCachinName</label>
+                            @Html.HiddenFor(m => m.DepCachinId)
+                            @Html.HiddenFor(m => m.DepCachinName)
+                            @Html.ValidationMessageFor(model => model.DepCachinId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DepATMId)<br />
+                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(3);"/>
+                        </td>
+                        <td>
+                            <label id="DepATMNameLabel">@Model.DepATMName</label>
+                            @Html.HiddenFor(m => m.DepATMId)
+                            @Html.HiddenFor(m => m.DepATMName)
+                            @Html.ValidationMessageFor(model => model.DepATMId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.CashInStartedDate)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.CashInStartedDate)
+                            @Html.ValidationMessageFor(model => model.CashInStartedDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.ATMStartedDate)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.ATMStartedDate)
+                            @Html.ValidationMessageFor(model => model.ATMStartedDate)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv4">
+            <h3>Управленческие реквизиты</h3>
+            <div>
+                <table width="50%">
+                    <tr>
+                        <td>@Html.LabelFor(m => m.NameShort)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.NameShort, (object)new { style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.NameShort)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DepCode)</td>
+                        <td>@Html.DisplayFor(m => m.DepCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PrevDepCode)</td>
+                        <td>@Html.DisplayFor(m => m.PrevDepCode)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.ReasonId)
+                            @Html.HiddenFor(m => m.ReasonIdOld)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.ReasonId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.FactAddress)
+                            @Html.HiddenFor(m => m.FactAddressId)
+                            @Html.HiddenFor(m => m.FactPostIndex)
+                            @Html.HiddenFor(m => m.FactRegionCode)
+                            @Html.HiddenFor(m => m.FactAreaCode)
+                            @Html.HiddenFor(m => m.FactCityCode)
+                            @Html.HiddenFor(m => m.FactSettlementCode)
+                            @Html.HiddenFor(m => m.FactStreetCode)
+                            @Html.HiddenFor(m => m.FactHouseType)
+                            @Html.HiddenFor(m => m.FactHouseNumber)
+                            @Html.HiddenFor(m => m.FactBuildType)
+                            @Html.HiddenFor(m => m.FactBuildNumber)
+                            @Html.HiddenFor(m => m.FactFlatType)
+                            @Html.HiddenFor(m => m.FactFlatNumber)
+
+
+                            @Html.LabelFor(m => m.FactAddressId)<br />
+                            <button type="button" onclick="CreateAddressDialog(2);">Выбрать</button>
+                        </td>
+                        <td>
+                            <label id="FactAddressLabel">@Model.FactAddress</label>
+                        </td>
+                    </tr>
+                    @*
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DepStatus)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.DepStatus, (object)new { style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.DepStatus)
+                        </td>
+                    </tr>
+                    *@
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DepTypeId):
+                            @Html.HiddenFor(m => m.DepTypeIdOld)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.DepTypeId, new SelectList(Model.DepTypes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.DepTypeId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.SKB_GE_Id):
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.SKB_GE_Id, new SelectList(Model.SKB_GE, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.SKB_GE_Id)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OpenDate)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.OpenDate)
+                            @Html.ValidationMessageFor(model => model.OpenDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.CloseDate)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.CloseDate)
+                            @Html.ValidationMessageFor(model => model.CloseDate)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы подразделения</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ int i = 0; }
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 1))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationMode)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationMode) 
+                                                @Html.TextBoxFor(m => m.OperationMode, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы кассы</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 2))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeCash)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeCash) 
+                                                @Html.TextBoxFor(m => m.OperationModeCash, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы банкомата</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 3))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeATM)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeATM) 
+                                                @Html.TextBoxFor(m => m.OperationModeATM, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">Режим работы кэшина</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">День недели</th>
+                                                <th rowspan="2">Раб. день</th>
+                                                <th colspan="2">Время работы</th>
+                                                <th colspan="2">Перерыв</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                                <th>Начало</th>
+                                                <th>Конец</th>
+                                            </tr>
+                                        <//thead>
+                                        @*@{ i = 7; }*@
+                                        @foreach (var item in Model.OperationModes.Where(x => x.ModeType == 4))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.OperationModes[i].Id)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].WeekDay)
+                                                    @Html.HiddenFor(m => m.OperationModes[i].ModeType)
+                                                    @switch (@item.WeekDay)
+                                                    {
+                                                        case 1:
+                                                            <label>Понедельник</label>
+                                                            break;
+                                                        case 2:
+                                                            <label>Вторник</label>
+                                                            break;
+                                                        case 3:
+                                                            <label>Среда</label>
+                                                            break;
+                                                        case 4:
+                                                            <label>Четверг</label>
+                                                            break;
+                                                        case 5:
+                                                            <label>Пятница</label>
+                                                            break;
+                                                        case 6:
+                                                            <label>Суббота</label>
+                                                            break;
+                                                        case 7:
+                                                            <label>Воскресение</label>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                            </tr>
+                                                    { i++; }
+                                        }
+                                        <tr>
+                                            <td >@Html.LabelFor(m => m.OperationModeCashIn)</td>
+                                            <td colspan="5">
+                                                @Html.ValidationMessageFor(model => model.OperationModeCashIn) 
+                                                @Html.TextBoxFor(m => m.OperationModeCashIn, (object)new { style = "width:99%;", maxlength = "150" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BeginIdleDate)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.BeginIdleDate)
+                            @Html.ValidationMessageFor(model => model.BeginIdleDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.EndIdleDate)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.EndIdleDate)
+                            @Html.ValidationMessageFor(model => model.EndIdleDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.RentPlaceId)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.RentPlaceId, new SelectList(Model.RentPlace, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.RentPlaceId)
+                        </td>
+                    </tr>
+                    @*
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.AgreementDetails)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.AgreementDetails, (object)new { style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.AgreementDetails)
+                        </td>
+                    </tr>
+                    *@
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DivisionArea)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.DivisionArea, (object)new { style = "width:70px;", placeholder = "0.00" })
+                            @Html.ValidationMessageFor(model => model.DivisionArea)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AmountPayment)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.AmountPayment, (object)new { style = "width:70px;", placeholder = "0.00" })
+                            @Html.ValidationMessageFor(model => model.AmountPayment)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Phone)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Phone, (object)new { style = "width:400px;" })
+                            @Html.ValidationMessageFor(model => model.Phone)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.ProgramCodes)</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th>Название программы</th>
+                                                <th style="width:30%;">Код</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ i = 1; }
+                                        @foreach (var item in Model.ProgramCodes)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramId)
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramName)
+                                                    @item.ProgramName
+                                                </td>
+                                                <td>@Html.TextBoxFor(m => m.ProgramCodes[i - 1].Code)</td>
+                                            </tr>
+                                            { i++; }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.SoftGroupId)</td>
+                        <td>
+                            @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroups, "gId", "gName")) 
+                            @Html.ValidationMessageFor(model => model.SoftGroupId)
+                            <button type="button" title="Показать справочник ПО" onclick="CreateReferenceDialog(1, 'SoftGroupId');">Справочник</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsBlocked)
+                        </td>
+                        <td>
+                            <div id="IsBlockedContainer">
+                                @Html.RadioButtonFor(m => m.IsBlocked, true, new { @id = "IsBlockedTrue" })<label id="lblIsBlockedTrue" for="IsBlockedTrue" @if (Model.IsBlocked)
+                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                            else
+                                                                                                                                                            {<text> style="border-color:none;"</text>}>Заблокирован</label>
+                                @Html.RadioButtonFor(m => m.IsBlocked, false, new { @id = "IsBlockedFalse" })<label id="lblIsBlockedFalse" for="IsBlockedFalse" @if (!Model.IsBlocked)
+                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                else
+                                                                                                                                                                {<text> style="border-color:none;"</text>}>Действует</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.NetShopId):
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.NetShopId, new SelectList(Model.NetShopTypes, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.NetShopId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.CDAvailableId)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.CDAvailableId, new SelectList(Model.CashDeskAvailables, "ID", "Name")) 
+                            @Html.ValidationMessageFor(model => model.CDAvailableId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.OperGroupId)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.OperGroupId, new SelectList(Model.OperationGroups, "gId", "gName")) 
+                            @Html.ValidationMessageFor(model => model.OperGroupId)
+                            <button type="button" title="Показать справочник операций" onclick="CreateReferenceDialog(2, 'OperGroupId');">Справочник</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsLegalEntity)
+                        </td>
+                        <td>
+                            <div id="IsLegalEntityContainer">
+                                @Html.RadioButtonFor(m => m.IsLegalEntity, true, new { @id = "IsLegalEntityTrue" })<label id="lblIsLegalEntityTrue" for="IsLegalEntityTrue" @if (Model.IsLegalEntity)
+                                                                                                                                                                            {<text>style="border-color:red;"</text>}
+                                                                                                                                                                            else
+                                                                                                                                                                            {<text> style="border-color:none;"</text>}>Да</label>
+                                @Html.RadioButtonFor(m => m.IsLegalEntity, false, new { @id = "IsLegalEntityFalse" })<label id="lblIsLegalEntityFalse" for="IsLegalEntityFalse" @if (!Model.IsLegalEntity)
+                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                else
+                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.DepLandmarks)</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th>Вид ориентира</th>
+                                                <th>Ориентир</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ i = 1; }
+                                        @foreach (var item in Model.DepLandmarks)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.DepLandmarks[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.DepLandmarks[i - 1].LandmarkId)
+                                                    @Html.HiddenFor(m => m.DepLandmarks[i - 1].LandmarkName)
+                                                    @item.LandmarkName
+                                                </td>
+                                                <td>@Html.TextBoxFor(m => m.DepLandmarks[i - 1].Description, new { style = "width:99%;" })</td>
+                                            </tr>
+                                            { i++; }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PlanEPCount)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.PlanEPCount, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.PlanEPCount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PlanSalaryFund)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.PlanSalaryFund, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.PlanSalaryFund)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Note)</td>
+                        <td>
+                            @Html.TextAreaFor(m => m.Note, (object)new { maxlength = "250", style = "width:99%;" })
+                            @Html.ValidationMessageFor(model => model.Note)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+            
+        }
+        <br />
+        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
+                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
+    </div>
+                                                                                     if (Model.Id != 0)
+                                                                                     {
+        @Html.Partial("~/Views/Info/Comments.cshtml")
+                                                                                     }
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    var OldAddressType = -1;
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
+    $(document).ready(function () {
+        setActiveMenuItem("moDepRequest");
+        $(document).tooltip({ track: false });
+        //ShowFlash(true);
+        //ShowFlash(false);
+        $(".TimeMask").focus(function(e){
+            $(this).mask("99-99");
+        });
+
+        
+        $(":button").button();
+
+        $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
+        $("#btnAgree").click(function(){ 
+            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
+                return;
+            }
+
+            $("#IsDraft").val(false); 
+            ShowFlash(true); 
+            $("#StaffDepartmentRequestForm").submit(); 
+        });
+
+
+        $("#MainDiv").accordion({
+            header: "h3",
+            //active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv1").accordion({
+            header: "h3",
+            //active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv2").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv3").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv4").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        
+
+        $( ".portlet" )
+            .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
+            .find( ".portlet-header" )
+            .addClass( "ui-state-default ui-corner-all" )
+            .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+ 
+        $( ".portlet-toggle" ).click(function() {
+            var icon = $( this );
+            icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
+            icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
+        });
+
+        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
+
+        $("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#CashInStartedDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#ATMStartedDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#OpenDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#CloseDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#BeginIdleDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#EndIdleDate").datepicker({ changeYear: true, changeMonth: true });
+        $(".hasDatepicker").width("85px");
+
+        
+        $('#IsTaxAdminAccountContainer').buttonset();
+        $('#IsEmployeAvailableContainer').buttonset();
+        $('#IsPlanContainer').buttonset();
+        $('#IsBlockedContainer').buttonset();
+        $('#IsLegalEntityContainer').buttonset();
+
+               
+        $("#IsTaxAdminAccountTrue").click(function () {
+            $("#lblIsTaxAdminAccountTrue").css("border-color", "red");
+            $("#lblIsTaxAdminAccountFalse").css("border-color", "silver");
+        });
+        $("#IsTaxAdminAccountFalse").click(function () {
+            $("#lblIsTaxAdminAccountFalse").css("border-color", "red");
+            $("#lblIsTaxAdminAccountTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsEmployeAvailableTrue").click(function () {
+            $("#lblIsEmployeAvailableTrue").css("border-color", "red");
+            $("#lblIsEmployeAvailableFalse").css("border-color", "silver");
+        });
+        $("#IsEmployeAvailableFalse").click(function () {
+            $("#lblIsEmployeAvailableFalse").css("border-color", "red");
+            $("#lblIsEmployeAvailableTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsPlanTrue").click(function () {
+            $("#lblIsPlanTrue").css("border-color", "red");
+            $("#lblIsPlanFalse").css("border-color", "silver");
+        });
+        $("#IsPlanFalse").click(function () {
+            $("#lblIsPlanFalse").css("border-color", "red");
+            $("#lblIsPlanTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsBlockedTrue").click(function () {
+            $("#lblIsBlockedTrue").css("border-color", "red");
+            $("#lblIsBlockedFalse").css("border-color", "silver");
+        });
+        $("#IsBlockedFalse").click(function () {
+            $("#lblIsBlockedFalse").css("border-color", "red");
+            $("#lblIsBlockedTrue").css("border-color", "silver");
+        });
+
+
+        $("#IsLegalEntityTrue").click(function () {
+            $("#lblIsLegalEntityTrue").css("border-color", "red");
+            $("#lblIsLegalEntityFalse").css("border-color", "silver");
+        });
+        $("#IsLegalEntityFalse").click(function () {
+            $("#lblIsLegalEntityFalse").css("border-color", "red");
+            $("#lblIsLegalEntityTrue").css("border-color", "silver");
+        });
+
+        //ShowFlash(true);
+        //ShowFlash(false);
+    });
+
+    //строим строку параметров для вызова кладра
+    function GetParamStr(Type)
+    {
+        var ParamStr = "";
+        if (Type == 1)
+        {
+            ParamStr = "?Id=" + $("#LegalAddressId").val();
+            ParamStr += "&PostIndex=" + ($("#LegalPostIndex").val() == "null" ? null : $("#LegalPostIndex").val());
+            ParamStr += "&RegionCode=" + ($("#LegalRegionCode").val() == "null" ? null : $("#LegalRegionCode").val());
+            ParamStr += "&AreaCode=" + ($("#LegalAreaCode").val() == "null" ? null : $("#LegalAreaCode").val());
+            ParamStr += "&CityCode=" + ($("#LegalCityCode").val() == "null" ? null : $("#LegalCityCode").val());
+            ParamStr += "&SettlementCode=" + ($("#LegalSettlementCode").val() == "null" ? null : $("#LegalSettlementCode").val());
+            ParamStr += "&StreetCode=" + ($("#LegalStreetCode").val() == "null" ? null : $("#LegalStreetCode").val());
+            ParamStr += "&HouseType=" + $("#LegalHouseType").val();
+            ParamStr += "&HouseNumber=" + $("#LegalHouseNumber").val();
+            ParamStr += "&BuildType=" + $("#LegalBuildType").val();
+            ParamStr += "&BuildNumber=" + $("#LegalBuildNumber").val();
+            ParamStr += "&FlatType=" + $("#LegalFlatType").val();
+            ParamStr += "&FlatNumber=" + $("#LegalFlatNumber").val();
+        }
+
+        if (Type == 2)
+        {
+            ParamStr = "?Id=" + $("#FactAddressId").val();
+            ParamStr += "&PostIndex=" + ($("#FactPostIndex").val() == "null" ? "" : $("#FactPostIndex").val());
+            ParamStr += "&RegionCode=" + ($("#FactRegionCode").val() == "null" ? "" : $("#FactRegionCode").val());
+            ParamStr += "&AreaCode=" + ($("#FactAreaCode").val() == "null" ? "" : $("#FactAreaCode").val());
+            ParamStr += "&CityCode=" + ($("#FactCityCode").val() == "null" ? "" : $("#FactCityCode").val());
+            ParamStr += "&SettlementCode=" + ($("#FactSettlementCode").val() == "null" ? "" : $("#FactSettlementCode").val());
+            ParamStr += "&StreetCode=" + ($("#FactStreetCode").val() == "null" ? "" : $("#FactStreetCode").val());
+            ParamStr += "&HouseType=" + $("#FactHouseType").val();
+            ParamStr += "&HouseNumber=" + $("#FactHouseNumber").val();
+            ParamStr += "&BuildType=" + $("#FactBuildType").val();
+            ParamStr += "&BuildNumber=" + $("#FactBuildNumber").val();
+            ParamStr += "&FlatType=" + $("#FactFlatType").val();
+            ParamStr += "&FlatNumber=" + $("#FactFlatNumber").val();
+        }
+        return ParamStr;
+    }
+
+    //сохраняем полученные параметры адреса
+    function SaveKladrParam(Type)
+    {
+        if(Type == 1)
+        {
+            $("#LegalPostIndex").val(($("#PostIndex").val() == "null" ? null : $("#PostIndex").val()));
+            $("#LegalRegionCode").val(($("#RegionCode").val() == "null" ? null : $("#RegionCode").val()));
+            $("#LegalAreaCode").val(($("#AreaCode").val() == "null" ? null : $("#AreaCode").val()));
+            $("#LegalCityCode").val(($("#CityCode").val() == "null" ?  null : $("#CityCode").val()));
+            $("#LegalSettlementCode").val(($("#SettlementCode").val() == "null" ? null : $("#SettlementCode").val()));
+            $("#LegalStreetCode").val(($("#StreetCode").val() == "null" ? null : $("#StreetCode").val()));
+            $("#LegalHouseType").val($("#HouseType").val());
+            $("#LegalHouseNumber").val($("#HouseNumber").val());
+            $("#LegalBuildType").val($("#BuildType").val());                            
+            $("#LegalBuildNumber").val($("#BuildNumber").val()); 
+            $("#LegalFlatType").val($("#FlatType").val()); 
+            $("#LegalFlatNumber").val($("#FlatNumber").val()); 
+
+            $("#LegalAddress").val($("#Address").val());
+            $("#LegalAddressLabel").text($("#Address").val());                
+        }
+
+        if(Type == 2)
+        {
+            $("#FactPostIndex").val(($("#PostIndex").val() == "null" ? null : $("#PostIndex").val()));
+            $("#FactRegionCode").val(($("#RegionCode").val() == "null" ? null : $("#RegionCode").val()));
+            $("#FactAreaCode").val(($("#AreaCode").val() == "null" ? null : $("#AreaCode").val()));
+            $("#FactCityCode").val(($("#CityCode").val() == "null" ?  null : $("#CityCode").val()));
+            $("#FactSettlementCode").val(($("#SettlementCode").val() == "null" ? null : $("#SettlementCode").val()));
+            $("#FactStreetCode").val(($("#StreetCode").val() == "null" ? null : $("#StreetCode").val()));
+            $("#FactHouseType").val($("#HouseType").val());
+            $("#FactHouseNumber").val($("#HouseNumber").val());
+            $("#FactBuildType").val($("#BuildType").val());                            
+            $("#FactBuildNumber").val($("#BuildNumber").val()); 
+            $("#FactFlatType").val($("#FlatType").val()); 
+            $("#FactFlatNumber").val($("#FlatNumber").val()); 
+
+            $("#FactAddress").val($("#Address").val());
+            $("#FactAddressLabel").text($("#Address").val());                
+        }
+    }
+
+    function CreateAddressDialog(Type) {
+        if (Type == null) return;
+        var title = "Адрес";
+        //если уже вызывалось модальное окно, то не создаем его, а открываем уже существующее
+        if (OldAddressType == Type)
+        {
+            if($("#divDetailDialog").length){
+                $("#divDetailDialog").dialog("open");
+                return;
+            }
+        }
+        else  //если окно вызывается из другого места и уже существует готовый экземпляр, то убиваем его
+        {
+            if($("#divDetailDialog").length){
+                $("#divDetailDialog").dialog("destroy").remove();
+            }
+        }
+        
+        OldAddressType = Type;
+
+        var newElement = document.createElement('div');
+        newElement.id = "divDetailDialog";
+        var AdressDiv = $(newElement);
+
+        var actionDetailDialogUrl = "@Url.Action("Address", "StaffList")";
+
+        actionDetailDialogUrl += GetParamStr(Type);
+      
+
+        $(AdressDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(AdressDiv).load(actionDetailDialogUrl
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(AdressDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+
+        $(AdressDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,     
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 480,
+            closeOnEscape: false,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    SaveKladrParam(Type);
+                    $(this).dialog("close");
+                }
+                ,
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $(AdressDiv).dialog("open");
+
+    }
+
+
+    function CreateReferenceDialog(RefType, ControlName) {
+        
+        var newElement = document.createElement('div');
+        newElement.id = "DivReferenceDialog";
+        var ReferenceDiv = $(newElement);
+
+        var actionSoftReferenceDialogUrl = "";
+        var title = "";
+
+        if (RefType == 1){
+            title = "Справочник ПО";
+            actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentSoftReference", "StaffList")";
+            actionSoftReferenceDialogUrl += "?TabIndex=2&IsModal=true";
+        }
+        else{
+            title = "Справочник операций";
+            actionSoftReferenceDialogUrl = "@Url.Action("StaffDepartmentOperationReference", "StaffList")";
+            actionSoftReferenceDialogUrl += "?TabIndex=2&IsModal=true";
+        }
+        
+
+        $(ReferenceDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(ReferenceDiv).load(actionSoftReferenceDialogUrl
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(ReferenceDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+
+        $(ReferenceDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,     
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 450,
+            closeOnEscape: true,
+            close: function (event, ui) {
+                $(this).dialog("destroy");
+            },
+            buttons:
+            {
+                "OK": function () {
+                    setActiveMenuItem("moDepRequest");
+                    RefreshReference(ControlName, RefType);
+                    $(ReferenceDiv).dialog("destroy");//если использоать метод "close", перестают работать вкладки в вызываемом справочнике
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $(ReferenceDiv).dialog("open");
+
+    }
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+
+    //после закрытия модальных окон обновляем списки справочников
+    function RefreshReference(ControlName, RefType) {
+        var url = "@Url.Action("RefreshDepartmentRequestReference", "StaffList")";
+        url += "?SwitchReference=" + RefType;
+        var dataToSend = $("#StaffDepartmentRequestForm").serialize();
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                RefreshDropDownListData(ControlName, data, RefType);
+            }
+            else{
+                alert(data.msg);
+            }
+        }, "json");
+    }
+
+    function RefreshDropDownListData(ControlName, data, RefType)
+    {
+        var Value = $("#" + ControlName).val();
+
+        var optionsValues = '<select id="' + ControlName + '" name="' + ControlName + '">';
+        //optionsValues += '<option value="0"></option>';
+
+        //справочник ПО
+        if (RefType == 1){
+            $.each(data.SoftGroups, function (item, data) {
+                optionsValues += '<option value="' + data.gId + '">' + data.gName + '</option>';
+            });
+        }
+
+        //справочник операций
+        if (RefType == 2){
+            $.each(data.OperationGroups, function (item, data) {
+                optionsValues += '<option value="' + data.gId + '">' + data.gName + '</option>';
+            });
+        }
+
+        
+        optionsValues += '</select>';
+        var options = $('#' + ControlName );
+        options.replaceWith(optionsValues);
+
+        $("#" + ControlName).val(Value);
+
+    }
+
+    
+</script>
+

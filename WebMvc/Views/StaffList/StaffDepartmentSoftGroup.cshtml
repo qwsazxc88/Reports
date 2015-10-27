@@ -1,0 +1,205 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentSoftGroupModel
+@{
+    ViewBag.Title = "Справочник групп ПО";
+}
+
+@using (Html.BeginForm("StaffDepartmentSoftGroup", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentSoftGroupForm", target = "tab1" }))
+{
+    <label id="gMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblSG" class="grid">
+            <thead>
+                <tr>
+                    <th>Название группы ПО</th>
+                    <th class="tdBtn"><button type="button" title="Создать новую запись" onclick="AddEditSoftGroupRow(-1);">Создать</button></th>
+                </tr>    
+            </thead>
+            
+            <tbody class="tblSGRows">
+                @{ int i = 0; }
+
+                @foreach (var item in Model.GroupList)
+                {
+                    <tr class="tblSGRow">
+                        <td>
+                            @Html.HiddenFor(m => m.GroupList[i].gId)
+                            @Html.HiddenFor(m => m.GroupList[i].gName)
+                            @Html.DisplayFor(m => m.GroupList[i].gName)
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditSoftGroupRow(@i);" href="#" >Изменить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="DivIndicatorSG" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<div id="AddEditSoftGroupDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentMenegmentDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="gMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.gId)
+                <td>@Html.LabelFor(m => m.gName)</td>
+                <td>@Html.TextBoxFor(m => m.gName, new { style = "width:400px", maxlength = "50" }) </td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSoftReference");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+        //ShowFlashSG(false);
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditSoftGroupRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#gId").val($("#GroupList_" + IndexRow + "__gId").val());
+            $("#gName").val($("#GroupList_" + IndexRow + "__gName").val());
+        }
+        else{
+            $("#gId").val(0);
+            $("#gName").val("");
+        }
+
+        $("#gMsg").text("");
+        $("#gMessageStr").text("");
+
+        CreateSoftGroupEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateSoftGroupEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditSoftGroupDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditSoftGroupRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditSoftGroupDialog').dialog("open");
+    }
+
+    function processAddEditSoftGroupRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentSoftGroup", "StaffList")";
+        var dataToSend = $("#AddEditSoftGroupDialog form").serialize();
+        ShowFlashSG(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditSoftGroupDialog').dialog("close");
+                $("#gMessageStr").text(data.msg);
+                var $table = $("#tblSG");
+                var $rows = $("#tblSG .tblSGRow");
+                $rows.remove();
+                FillManagementTableData(data);
+                
+                ShowFlashSG(false);
+            }
+            else{
+                ShowFlashSG(false);
+                $("#gMsg").text(data.msg);
+            }
+        }, "json")
+        .fail(function(data){
+            ShowFlashSG(false);
+            $('#AddEditSoftGroupDialog').dialog("close");
+            $("#gMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
+    };
+
+    function FillManagementTableData(data){
+        for (var i = 0; i < data.GroupList.length; i++)
+        {
+            $("#tblSG").append(
+                
+                "<tr class=\"tblSGRow\">" +
+                    "<td><input id='GroupList_" + i + "__gId' name='GroupList[" + i + "].gId' value='" + data.GroupList[i].gId + "' type='hidden'>" +
+                        "<input id='GroupList_" + i + "__gName' name='GroupList[" + i + "].gName' value='" + data.GroupList[i].gName + "' type='hidden'>" + (data.GroupList[i].gName ? data.GroupList[i].gName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' class='CallModal' onclick='AddEditSoftGroupRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+
+    function ShowFlashSG(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorSG").dialog("close");
+            $("#DivIndicatorSG").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorSG").show();
+            $("#DivIndicatorSG").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorSG").dialog("open");
+        }
+    }
+</script>
+

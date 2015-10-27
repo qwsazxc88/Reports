@@ -1,0 +1,227 @@
+﻿    @model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentBranchModel
+@{
+    ViewBag.Title = "Справочник филиалов";
+}
+
+@using (Html.BeginForm("StaffDepartmentBranch", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentBranchForm", target = "tab1" }))
+{
+
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblBranch" class="grid">
+            <thead>
+                <tr>
+                    <th colspan="2">Финград</th>
+                    <th rowspan="2">Название филиала в СКД</th>
+                    <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditBranchRow(-1);">Создать</button></th>
+                    @*<th rowspan="2" class="tdBtn"></th>*@
+                </tr>    
+                <tr>
+                    <th>Название филиала</th>
+                    <th>Код филиала</th>
+                </tr>
+            </thead>
+            <tbody class="tblBranchRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.Branches)
+                {
+                    <tr class="tblBranchRow">
+                        <td>
+                            @Html.HiddenFor(m => m.Branches[i - 1].Id)
+                            @Html.HiddenFor(m => m.Branches[i - 1].Name)
+                            @Html.DisplayFor(m => m.Branches[i - 1].Name)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.Branches[i - 1].Code)
+                            @Html.DisplayFor(m => m.Branches[i - 1].Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.Branches[i - 1].DepName)
+                            @Html.HiddenFor(m => m.Branches[i - 1].DepartmentId)
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditBranchRow(@i-1);" href="#" >Изменить</a>
+                        </td>
+                        <td class="tdBtn">
+                            <a onclick="DeleteBranchRow(@item.Id);" href="#" >Удалить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+   
+}
+
+<div id="AddEditBranchRowDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentBranchDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="lblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.Id)
+                <td>@Html.LabelFor(m => m.Name)</td>
+                <td>@Html.TextBoxFor(m => m.Name, new { style = "width:300px", maxlength = "50" }) @Html.ValidationMessageFor(m => m.Name)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Code)</td>
+                <td>@Html.TextBoxFor(m => m.Code, new { style = "width:25px", maxlength = "2" }) @Html.ValidationMessageFor(m => m.Code)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                <td>@Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.TwoLevelDeps, "Id", "Name"))</td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        //ShowFlash(false);
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditBranchRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#Id").val($("#Branches_" + IndexRow + "__Id").val());
+            $("#Name").val($("#Branches_" + IndexRow + "__Name").val());
+            $("#Code").val($("#Branches_" + IndexRow + "__Code").val());
+            $("#DepartmentId").val($("#Branches_" + IndexRow + "__DepartmentId").val());
+        }
+        else{
+            $("#Id").val(0);
+            $("#Name").val("");
+            $("#Code").val("");
+            $("#DepartmentId").val(0);
+        }
+
+        $("#lblMsg").text("");
+        $("#MessageStr").text("");
+
+        CreateBranchEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateBranchEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditBranchRowDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditBranchRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditBranchRowDialog').dialog("open");
+    }
+
+    function processAddEditBranchRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentBranch", "StaffList")";
+        var dataToSend = $("#AddEditBranchRowDialog form").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditBranchRowDialog').dialog("close");
+                $("#MessageStr").text(data.msg);
+                var $table = $("#tblBranch");
+                var $rows = $("#tblBranch .tblBranchRow");
+                $rows.remove();
+                FillBranchTableData(data);
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                $("#lblMsg").text(data.msg);
+            }
+        }, "json")
+        .fail(function(data){
+            ShowFlash(false);
+            $('#AddEditBranchRowDialog').dialog("close");
+            $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
+    };
+
+    function DeleteBranchRow(Id){
+        var result = confirm("Подтвердите удаление выбранной записи!");
+        if (!result) {return;}
+
+        var actionUrl="@Url.Action("DeleteStaffDepartmentBranch", "StaffList")";
+        var url = actionUrl + "?Id=" + Id;
+        ShowFlash(true);
+        var dataToSend = $("#StaffDepartmentBranchForm").serialize();
+            $.post(url, dataToSend, function(data){
+                if (data.ok == true){
+                    $("#MessageStr").text(data.msg);
+                    var $table = $("#tblBranch");
+                    var $rows = $("#tblBranch .tblBranchRow");
+                    $rows.remove();
+                    FillBranchTableData(data);
+                    ShowFlash(false);
+                }
+                else{
+                    ShowFlash(false);
+                    $("#MessageStr").text(data.msg);
+                    alert(data.msg);
+                }
+            }, "json")
+            .fail(function(data){
+                ShowFlash(false);
+                $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+            });
+    }
+
+    function FillBranchTableData(data){
+        for (var i = 0; i < data.Branches.length; i++)
+        {
+            $("#tblBranch").append(
+                
+                "<tr class=\"tblBranchRow\">" +
+                    "<td><input id='Branches_" + i + "__Id' name='Branches[" + i + "].Id' value='" + data.Branches[i].Id + "' type='hidden'>" +
+                        "<input id='Branches_" + i + "__Name' name='Branches[" + i + "].Name' value='" + data.Branches[i].Name + "' type='hidden'>" + (data.Branches[i].Name ? data.Branches[i].Name : "") + "</td>" +
+                    "<td><input id='Branches_" + i + "__Code' name='Branches[" + i + "].Code' value='" + data.Branches[i].Code + "' type='hidden'>" + (data.Branches[i].Code ? data.Branches[i].Code : "") + "</td>" +
+                    "<td><input id='Branches_" + i + "__DepartmentId' name='Branches[" + i + "].DepartmentId' value='" + data.Branches[i].DepartmentId + "' type='hidden'>" + (data.Branches[i].DepName ? data.Branches[i].DepName : "") + "</td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' class='CallModal' onclick='AddEditBranchRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                    "<td class='tdBtn'><a onclick='DeleteBranchRow(" + data.Branches[i].Id + ");' href='#' >Удалить</a></td>" +
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+</script>
+
