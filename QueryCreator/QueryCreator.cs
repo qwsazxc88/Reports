@@ -110,11 +110,8 @@ namespace Reports.Core
                     result = Expression.Equal(useridprop, Expression.Constant(user.Id));
                     break;
                 case UserRole.PersonnelManager:
-                    var users = Ioc.Resolve<IUserDao>().GetUsersForPersonnel(user.Id);
-                    foreach (var u in users)
-                    {
-                        result = Expression.Or(result, Expression.Equal(useridprop, Expression.Constant(u.Id)));
-                    }
+                    var users = Ioc.Resolve<IUserDao>().GetUsersForPersonnel(user.Id).Select(x=>x.Id).ToList();
+                    result = Expression.Or(result, Expression.Call(Expression.Constant(users), typeof(List<int>).GetMethod("Contains"),useridprop));                   
                     break;
             }
             return result;
