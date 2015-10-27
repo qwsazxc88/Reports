@@ -3567,7 +3567,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return;
                 }
             }
-
+            
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
             IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
 
@@ -3843,6 +3843,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             }
 
+        }
+        /// <summary>
+        /// Удаляем скан с вкладки документы.
+        /// </summary>
+        /// <param name="model">Модель страницы</param>
+        public void DeleteCandidateDocument(CandidateDocumentsModel model)
+        {
+            DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+            if (DeleteAttachment(modelDel))
+            {
+                //при удалении скана кадровиком до выгрузки меняется статус анкеты
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+                {
+                    EmploymentCandidate candidate = GetCandidate(model.UserId);
+                    if (!EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+                    {
+                        //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
+                        if (!candidate.SendTo1C.HasValue && candidate.Status == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE)
+                            candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+                    }
+                }
+            }
         }
 
         public void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error)
