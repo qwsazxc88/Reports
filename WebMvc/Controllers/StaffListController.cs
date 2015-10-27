@@ -102,6 +102,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId, int? Id)
         {
+            ModelState.Clear();
             StaffDepartmentRequestModel model = new StaffDepartmentRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание нового подразделения" : (RequestType == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
             model.RequestTypeId = RequestType;
