@@ -8,6 +8,33 @@ SET NOCOUNT ON
 
 --return
 
+--проверка на задвоенность точек после сопоставлени€
+select PossibleDepartmentId, count(PossibleDepartmentId) as cnt 
+into #checkpoint
+from TerraPoint where PossibleDepartmentId is not null and ItemLevel = 3 and (EndDate is null or (EndDate is not null and DATEDIFF(dd, EndDate, getdate()) <= 30))
+group by PossibleDepartmentId
+having count(PossibleDepartmentId) > 1
+
+
+if exists(select * from #checkpoint)
+begin
+	print 'задвоенные записи в террасофте'
+
+	select a.Id, c.Name, a.Name, c.City, c.Street, c.House, a.City, a.Street  from TerraPoint as a
+	inner join #checkpoint as b on b.PossibleDepartmentId = a.PossibleDepartmentId
+	inner join Department as c on c.id = a.PossibleDepartmentId
+	order by c.Name
+
+	drop table #checkpoint
+	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
+	return
+end
+else
+	drop table #checkpoint
+
+--конец проверки
+
+
 DECLARE @Id int, @DepRequestId int, @LegalAddressId int, @FactAddressId int, @DMDetailId int, @WorkDays varchar(7), 
 				@aa varchar(5000), @bb varchar(5000), @len int, @i int, @RowId int, @Oper varchar(max), @CreatorId int,
 				@DepartmentID int, @DepTmpId int, @DepNewId int, @Code varchar(15), @OperGroupId int
@@ -391,8 +418,8 @@ CREATE TABLE #TMP2 (id int, [Description] varchar(400))
 --находим руководителей подразделений на уровень выше на ступень выше
 SELECT A.Id, A.ParentId, A.ItemLevel  INTO #TMP3
 FROM Department as A
-INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
-INNER JOIN Fingrad_csv as C ON C.[ од_подразделени€] = B.FinDepPointCode
+--INNER JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
+--INNER JOIN Fingrad_csv as C ON C.[ од_подразделени€] = B.FinDepPointCode
 
 --список руководителей (исключил беременных)
 SELECT * INTO #TMP4
@@ -957,6 +984,7 @@ END
 
 
 --в удаленных могут работать сотрудники, по этому с них и родителей нужно сн€ть метки
+--одним заходом еще обработаем √ѕƒ
 SET @i = 1
 --сначала прокрашиваем все уровни дл€ удаленных с 1 до 7
 WHILE @i < 8
@@ -985,7 +1013,7 @@ END
 	--есть св€зь с точкой из финграда
 --начинаем с нижнего уровн€ до верха
 SELECT A.*,
-			 case when exists (SELECT * FROM Users WHERE DepartmentId = A.Id and IsActive = 1) then 1 else 0 end as IsPeople,
+			 case when exists (SELECT * FROM Users WHERE DepartmentId = A.Id and IsActive = 1 and (RoleId & 2 > 0)) then 1 else 0 end as IsPeople,
 			 case when A.FingradCode is not null then 1 else 0 end as IsFin
 			 INTO #DelDep
 FROM Department as A
@@ -997,7 +1025,9 @@ WHERE --A.BFGId = 5
 --дл€ 7
 UPDATE Department SET BFGId = null
 FROM Department as A
-INNER JOIN (select * from #DelDep WHERE IsPeople = 1 or IsFin = 1) as B ON B.Id = A.Id
+INNER JOIN (select * from #DelDep WHERE IsPeople = 1 or IsFin = 1) as B ON B.Id = A.Id 
+WHERE isnull(A.BFGId, 0) <> 4
+
 --дл€ его родителей
 UPDATE Department SET BFGId = null
 FROM Department as A
@@ -1005,11 +1035,65 @@ INNER JOIN (SELECT distinct A.*
 						FROM Department as A
 						INNER JOIN (select * from #DelDep WHERE IsPeople = 1 or IsFin = 1) as B ON B.Path like A.Path + '%'
 						WHERE A.ItemLevel < 7) as B ON B.Id = A.Id
+WHERE isnull(A.BFGId, 0) <> 4
 
 
 
 --проставим признак использовани€ подразделени€
 UPDATE Department SET IsUsed = case when isnull(BFGId, 1) <> 5 then 1 else 0 end
+
+
+
+--создаем фиктивные за€вки дл€ уже существующих подразделений разных уровней и не св€занных с ‘инградом
+INSERT INTO StaffDepartmentRequest ([Version]
+																			,DateRequest
+																			,RequestTypeId
+																			,DepartmentId
+																			,ItemLevel
+																			,ParentId
+																			,Name
+																			,BFGId
+																			,OrderNumber
+																			,OrderDate
+																			,LegalAddressId
+																			,IsTaxAdminAccount
+																			,IsEmployeAvailable
+																			,DepNextId
+																			,IsPlan
+																			,IsUsed
+																			,IsDraft
+																			,DateSendToApprove
+																			,BeginAccountDate
+																			,DateState
+																			,CreatorId)
+	SELECT 1
+					,getdate()--A.[ƒата_процедуры]
+					,1--case when A.[¬ид_процедуры] = '«анесение в справочник' then 1 else 2 end
+					,A.Id
+					,A.ItemLevel
+					,B.Id
+					,A.Name
+					,A.BFGId
+					,null
+					,null
+					,null	--адрес
+					,case when A.ItemLevel in (1, 2) then 1 when A.ItemLevel in (3, 4, 5, 6) then 0 else (case when exists (SELECT * FROM Users WHERE DepartmentId = A.Id and IsActive = 1 and (RoleId & 2 > 0)) then 1 else 0 end) end
+					,case when A.ItemLevel < 7 then 0 else (case when exists (SELECT * FROM Users WHERE DepartmentId = A.Id and IsActive = 1 and (RoleId & 2 > 0)) then 1 else 0 end) end
+					,null
+					,0
+					,1
+					,0
+					,null
+					,getdate()
+					,null
+					,C.UserId
+	FROM (SELECT * FROM Department as A
+				WHERE isnull(A.BFGId, 1) not in (3, 4, 5) and A.FingradCode is null) as A
+	LEFT JOIN Department as B ON B.Code1C = A.ParentId
+	LEFT JOIN #TMP5 as C ON C.Id = A.Id
+	ORDER BY A.ItemLevel
+
+
 
 drop table #TMP
 drop table #TMP1

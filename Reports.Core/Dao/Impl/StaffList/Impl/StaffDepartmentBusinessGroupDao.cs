@@ -104,7 +104,7 @@ namespace Reports.Core.Dao.Impl
         {
             IList<StaffDepartmentBusinessGroup> bg = Session.Query<StaffDepartmentBusinessGroup>().Where(x => x.DepartmentAdministration == Administration).ToList();
 
-            string Code = bg.Count() == 0 ? "0" :
+            string Code = bg.Count() == 0 || bg.Where(x => x.Code.StartsWith(Administration.Code)).Count() == 0 ? "0" :
                 bg.Where(x => x.Code.StartsWith(Administration.Code))
                 .OrderByDescending(x => x.Code.Substring(8))
                 .FirstOrDefault().Code.Substring(8);

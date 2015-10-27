@@ -33,7 +33,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffDepartmentRequestTypes> RequestTypes { get; set; }
 
         [Display(Name = "Id подразделения")]
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
 
         [Display(Name = "Родительское подразделение")]
         public int ParentId { get; set; }
@@ -89,6 +89,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Инициатор")]
         public int UserId { get; set; }
+
+        [Display(Name = "Признак действующей заявки")]
+        public bool IsUsed { get; set; }
         #endregion
 
         #region Налоговые реквизиты
@@ -158,6 +161,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Причина внесения в справочник")]
         public int? ReasonId { get; set; }
         public IList<IdNameDto> Reasons { get; set; }
+        public int ReasonIdOld { get; set; }
 
         [Display(Name = "Фактический адрес")]
         public int? FactAddressId { get; set; }
@@ -182,6 +186,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Тип подразделения")]
         public int? DepTypeId { get; set; }
         public IList<IdNameDto> DepTypes { get; set; }
+        public int DepTypeIdOld { get; set; }
 
         [Display(Name = "Дата фактического открытия офиса")]
         public DateTime? OpenDate { get; set; }

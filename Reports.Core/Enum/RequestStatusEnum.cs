@@ -214,22 +214,4 @@
         DeductionOnDismissal = 2,
         DeductionAfterDismissal = 3,
     }
-    /// <summary>
-    /// Нумератор для комментариев.
-    /// </summary>
-    public enum RequestCommentTypeEnum
-    {
-        /// <summary>
-        /// Начисления
-        /// </summary>
-        SurchargeNote = 1,
-        /// <summary>
-        /// Заявки штатного расписания для подразделения
-        /// </summary>
-        StaffListDepratment = 2,
-        /// <summary>
-        /// Заявки штатного расписания для штатных единиц.
-        /// </summary>
-        StaffListEstablishedPost = 3
-    }
 }

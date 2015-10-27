@@ -353,18 +353,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             //для заявок на редактирование надо сделать поиск текущей заявки по Id подразделения, для того чтобы ее заполнить только данными, а Id самой заявки обнулить, чтобы запись добавилась, а не редактировалась
             bool IsRequestExists = model.Id == 0 ? false : true;
             if (model.Id == 0)
-                model.Id = StaffDepartmentRequestDao.GetCurrentRequestId(model.DepartmentId.HasValue ? model.DepartmentId.Value : 0);
+                model.Id = StaffDepartmentRequestDao.GetCurrentRequestId(model.DepartmentId);
 
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
                 //Общие реквизиты
                 model.DateState = null;
-                model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
-                model.ParentId = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Id : model.ParentId;
-                model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId.Value).ParentId.ToString()).Name : DepartmentDao.Get(model.ParentId).Name;
-                model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
-                model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
+                model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId;
+                model.ParentId = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId).ParentId.ToString()).Id : model.ParentId;
+                model.DepParentName = model.RequestTypeId != 1 ? DepartmentDao.GetByCode(DepartmentDao.Load(model.DepartmentId).ParentId.ToString()).Name : DepartmentDao.Get(model.ParentId).Name;
+                model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId).ItemLevel;
+                model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId).Name;//string.Empty;
                 model.BFGId = 0;
                 model.OrderNumber = string.Empty;
                 model.OrderDate = null;
@@ -477,6 +477,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepNextId = entity.DepNext != null ? entity.DepNext.Id : 0;
                 model.DepNextName = entity.DepNext != null ? entity.DepNext.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
+                model.IsUsed = entity.IsUsed;
 
                 //налоговые реквизиты
                 if (entity.Department != null)
@@ -493,72 +494,81 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //ЦБ реквизиты
-                StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails[0];
-                model.ATMCountTotal = cbd.ATMCountTotal.HasValue ? cbd.ATMCountTotal.Value : 0;
-                model.ATMCashInStarted = cbd.ATMCashInStarted.HasValue ? cbd.ATMCashInStarted.Value : 0;
-                model.ATMCashInCount = cbd.ATMCashInCount.HasValue ? cbd.ATMCashInCount.Value : 0;
-                model.ATMCount = cbd.ATMCount.HasValue ? cbd.ATMCount.Value : 0;
-                model.DepCachinId = cbd.DepCashin != null ? cbd.DepCashin.Id : 0;
-                model.DepATMId = cbd.DepATM != null ? cbd.DepATM.Id : 0;
-                model.DepCachinName = cbd.DepCashin != null ? cbd.DepCashin.Name : string.Empty;
-                model.DepATMName = cbd.DepATM != null ? cbd.DepATM.Name : string.Empty;
-                model.CashInStartedDate = cbd.CashInStartedDate;
-                model.ATMStartedDate = cbd.ATMStartedDate;
+                if (entity.DepartmentCBDetails.Count != 0)
+                {
+                    StaffDepartmentCBDetails cbd = entity.DepartmentCBDetails[0];
+                    model.ATMCountTotal = cbd.ATMCountTotal.HasValue ? cbd.ATMCountTotal.Value : 0;
+                    model.ATMCashInStarted = cbd.ATMCashInStarted.HasValue ? cbd.ATMCashInStarted.Value : 0;
+                    model.ATMCashInCount = cbd.ATMCashInCount.HasValue ? cbd.ATMCashInCount.Value : 0;
+                    model.ATMCount = cbd.ATMCount.HasValue ? cbd.ATMCount.Value : 0;
+                    model.DepCachinId = cbd.DepCashin != null ? cbd.DepCashin.Id : 0;
+                    model.DepATMId = cbd.DepATM != null ? cbd.DepATM.Id : 0;
+                    model.DepCachinName = cbd.DepCashin != null ? cbd.DepCashin.Name : string.Empty;
+                    model.DepATMName = cbd.DepATM != null ? cbd.DepATM.Name : string.Empty;
+                    model.CashInStartedDate = cbd.CashInStartedDate;
+                    model.ATMStartedDate = cbd.ATMStartedDate;
+                }
 
                 //Управленческие реквизиты
-                StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails[0];
-                model.DMDetailId = dmd.Id;
-                model.NameShort = dmd.NameShort;
-                model.DepCode = dmd.DepCode; 
-                model.PrevDepCode = dmd.PrevDepCode;
-                model.ReasonId = dmd.DepartmentReasons != null ? dmd.DepartmentReasons.Id : 0;
-                if (dmd.FactAddress != null)
+                if (entity.DepartmentManagerDetails.Count != 0)
                 {
-                    model.FactAddressId = dmd.FactAddress.Id;
-                    model.FactAddress = dmd.FactAddress.Address;
-                    model.FactPostIndex = dmd.FactAddress.PostIndex;
-                    model.FactRegionCode = dmd.FactAddress.RegionCode;
-                    model.FactAreaCode = dmd.FactAddress.AreaCode;
-                    model.FactCityCode = dmd.FactAddress.CityCode;
-                    model.FactSettlementCode = dmd.FactAddress.SettlementCode;
-                    model.FactStreetCode = dmd.FactAddress.StreetCode;
-                    model.FactHouseType = dmd.FactAddress.HouseType;
-                    model.FactHouseNumber = dmd.FactAddress.HouseNumber;
-                    model.FactBuildType = dmd.FactAddress.BuildType;
-                    model.FactBuildNumber = dmd.FactAddress.BuildNumber;
-                    model.FactFlatType = dmd.FactAddress.FlatType;
-                    model.FactFlatNumber = dmd.FactAddress.FlatNumber;
+                    StaffDepartmentManagerDetails dmd = entity.DepartmentManagerDetails[0];
+                    model.DMDetailId = dmd.Id;
+                    model.NameShort = dmd.NameShort;
+                    model.DepCode = dmd.DepCode;
+                    model.PrevDepCode = dmd.PrevDepCode;
+                    model.ReasonId = dmd.DepartmentReasons != null ? dmd.DepartmentReasons.Id : 0;
+                    model.ReasonIdOld = dmd.DepartmentReasons != null ? dmd.DepartmentReasons.Id : 0;
+                    if (dmd.FactAddress != null)
+                    {
+                        model.FactAddressId = dmd.FactAddress.Id;
+                        model.FactAddress = dmd.FactAddress.Address;
+                        model.FactPostIndex = dmd.FactAddress.PostIndex;
+                        model.FactRegionCode = dmd.FactAddress.RegionCode;
+                        model.FactAreaCode = dmd.FactAddress.AreaCode;
+                        model.FactCityCode = dmd.FactAddress.CityCode;
+                        model.FactSettlementCode = dmd.FactAddress.SettlementCode;
+                        model.FactStreetCode = dmd.FactAddress.StreetCode;
+                        model.FactHouseType = dmd.FactAddress.HouseType;
+                        model.FactHouseNumber = dmd.FactAddress.HouseNumber;
+                        model.FactBuildType = dmd.FactAddress.BuildType;
+                        model.FactBuildNumber = dmd.FactAddress.BuildNumber;
+                        model.FactFlatType = dmd.FactAddress.FlatType;
+                        model.FactFlatNumber = dmd.FactAddress.FlatNumber;
+                    }
+
+                    model.DepStatus = dmd.DepStatus;
+                    model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
+                    model.DepTypeIdOld = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
+                    model.SKB_GE_Id = dmd.SKB_GE != null ? dmd.SKB_GE.Id : 0;
+                    model.OpenDate = dmd.OpenDate;
+                    model.CloseDate = dmd.CloseDate;
+                    model.OperationMode = dmd.OperationMode;
+                    model.OperationModeCash = dmd.OperationModeCash;
+                    model.OperationModeATM = dmd.OperationModeATM;
+                    model.OperationModeCashIn = dmd.OperationModeCashIn;
+                    model.BeginIdleDate = dmd.BeginIdleDate;
+                    model.EndIdleDate = dmd.EndIdleDate;
+                    model.RentPlaceId = dmd.RentPlace != null ? dmd.RentPlace.Id : 0;
+                    model.AgreementDetails = dmd.AgreementDetails;
+                    model.DivisionArea = dmd.DivisionArea;
+                    model.AmountPayment = dmd.AmountPayment;
+                    model.Phone = dmd.Phone;
+                    model.IsBlocked = dmd.IsBlocked;
+                    model.NetShopId = dmd.NetShopIdentification != null ? dmd.NetShopIdentification.Id : 0;
+                    model.IsLegalEntity = dmd.IsLegalEntity;
+                    model.PlanEPCount = dmd.PlanEPCount;
+                    model.PlanSalaryFund = dmd.PlanSalaryFund;
+                    model.Note = dmd.Note;
+                    model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
+                    model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 }
-                
-                model.DepStatus = dmd.DepStatus;
-                model.DepTypeId = dmd.DepartmentType != null ? dmd.DepartmentType.Id : 0;
-                model.SKB_GE_Id = dmd.SKB_GE != null ? dmd.SKB_GE.Id : 0;
-                model.OpenDate = dmd.OpenDate;
-                model.CloseDate = dmd.CloseDate;
-                model.OperationMode = dmd.OperationMode;
-                model.OperationModeCash = dmd.OperationModeCash;
-                model.OperationModeATM = dmd.OperationModeATM;
-                model.OperationModeCashIn = dmd.OperationModeCashIn;
-                model.BeginIdleDate = dmd.BeginIdleDate;
-                model.EndIdleDate = dmd.EndIdleDate;
-                model.RentPlaceId = dmd.RentPlace != null ? dmd.RentPlace.Id : 0;
-                model.AgreementDetails = dmd.AgreementDetails;
-                model.DivisionArea = dmd.DivisionArea;
-                model.AmountPayment = dmd.AmountPayment;
-                model.Phone = dmd.Phone;
-                model.IsBlocked = dmd.IsBlocked;
-                model.NetShopId = dmd.NetShopIdentification != null ? dmd.NetShopIdentification.Id : 0;
-                model.IsLegalEntity = dmd.IsLegalEntity;
-                model.PlanEPCount = dmd.PlanEPCount;
-                model.PlanSalaryFund = dmd.PlanSalaryFund;
-                model.Note = dmd.Note;
-                model.CDAvailableId = dmd.CashDeskAvailable != null ? dmd.CashDeskAvailable.Id : 0;
-                model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
+
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = (!entity.BeginAccountDate.HasValue) ? true : false;
-                model.IsAgreeButtonAvailable = entity.IsDraft;
+                model.IsDraftButtonAvailable = true;//(!entity.BeginAccountDate.HasValue || model.Id == 0) ? true : false;
+                model.IsAgreeButtonAvailable = !entity.BeginAccountDate.HasValue;
             }
             
            
@@ -583,6 +593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     RequestType = StaffDepartmentRequestTypesDao.Load(model.RequestTypeId),
                     DateRequest = DateTime.Now,
+                    Department = model.DepartmentId == 0 ? null : DepartmentDao.Get(model.DepartmentId),
                     ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId),
                     DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId),
                     ItemLevel = model.ItemLevel.Value,
@@ -1369,9 +1380,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     
                     if (OldEntity != null)
                     {
+                        //если переезд, то у старой заявки ставим дату закрытия автоматически
+                        OldEntity.DepartmentManagerDetails[0].CloseDate = DateTime.Now;
                         OldEntity.IsUsed = false;
                         OldEntity.Editor = curUser;
                         OldEntity.EditDate = DateTime.Now;
+                        //записываем предыдущий код
+                        entity.DepartmentManagerDetails[0].PrevDepCode = OldEntity.DepartmentManagerDetails[0].DepCode;
                     }
                 }
 
@@ -1431,10 +1446,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dep.Path = ParentDep.Path + "__new";
                 dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
                 dep.CodeSKD = null;
-                //dep.Priority = entity.ItemLevel;
+                dep.Priority = 99;//искусственное значение
                 dep.IsUsed = true;
                 dep.DepartmentAccessory = entity.DepartmentAccessory;
-                //dep.FingradCode = "";//формируем код для Финград
+                //dep.FingradCode = "";//формируем код ниже
                 dep.Creator = curUser;
                 dep.CreateDate = DateTime.Now;
             }
@@ -1461,7 +1476,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 DepartmentDao.SaveAndFlush(dep);
-                //DepartmentDao.CommitTran();
 
                 if (entity.Department == null)
                     entity.Department = new Department();
@@ -1476,13 +1490,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     dep.Code1C = dep.Id;
                 }
 
-                //DepartmentDao.SaveAndFlush(dep);
-
                 //у текущей заявки делаем ссылку на новое подразделение и ставим признак использования
                 entity.Department = dep;
 
                 //создаем код для подразделения
-                if (entity.RequestType.Id == 1)
+                if (entity.RequestType.Id != 3)
                 {
                     if (!CreateCodeForDepartment(entity, dep, curUser, out error))
                     {
@@ -1563,14 +1575,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else//закрытие
             {
-                //проверка на наличие сотрудников в закрываемом подразделении
-                if (UserDao.GetUsersForDepartment(entity.Department.Id).Count != 0)
+                //проверяем наличие сотрудников в подразделении по ветке вниз
+                if (!StaffDepartmentRequestDao.IsEnableCloseDepartment(entity.Department.Id))
                 {
-                    error = "В подразделении еще работают сотрудники! Закрытие подразделения невозможно!";
+                    error = "Данное подразделение нельзя закрыть, так как в нем работают сотрудники!";
                     return false;
                 }
 
-                if (!entity.DepartmentManagerDetails[0].CloseDate.HasValue)
+                if (entity.ItemLevel == 7 && !entity.DepartmentManagerDetails[0].CloseDate.HasValue)
                 {
                     error = "Укажите дату закрытия подразделения!";
                     return false;
@@ -1595,6 +1607,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.ItemLevel == 1 || entity.ItemLevel > 7)
             {
                 error = "Создание подразделения такого уровня не предусмотрено программой!";
+                return true;
+            }
+
+            //в заявках на изменение код создается только для точек 7 иуровня
+            if (entity.RequestType.Id == 2 && entity.ItemLevel <= 6)
+            {
                 return true;
             }
 

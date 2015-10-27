@@ -124,7 +124,11 @@
                 ShowFlashSGL(false);
                 $("#MessageStr").text(data.msg);
             }
-        }, "json");
+        }, "json")
+        .fail(function(data){
+            ShowFlashSGL(false);
+            $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
     };
 
     function FillSoftGroupLinkTableData(data){

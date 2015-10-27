@@ -13,6 +13,8 @@
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
     @Html.HiddenFor(m => m.ItemLevel)
+    @Html.HiddenFor(m => m.IsUsed)
+    @Html.HiddenFor(m => m.DepartmentId)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -356,6 +358,7 @@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.ReasonId)
+                            @Html.HiddenFor(m => m.ReasonIdOld)
                         </td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
@@ -399,6 +402,7 @@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.DepTypeId):
+                            @Html.HiddenFor(m => m.DepTypeIdOld)
                         </td>
                         <td>
                             @Html.DropDownListFor(model => model.DepTypeId, new SelectList(Model.DepTypes, "ID", "Name")) 

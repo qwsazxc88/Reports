@@ -44,5 +44,11 @@ namespace Reports.Core.Dao
         /// <param name="rp">РП-привязка</param>
         /// <returns></returns>
         string GetNewFinDepCode(StaffDepartmentBranch br, StaffDepartmentManagement mn, StaffDepartmentRPLink rp);
+        /// <summary>
+        /// Проверка на возможность закрыть подразделение.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        bool IsEnableCloseDepartment(int Id);
     }
 }

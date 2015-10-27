@@ -99,7 +99,7 @@ namespace Reports.Core.Dao.Impl
         {
             IList<StaffDepartmentAdministration> da = Session.Query<StaffDepartmentAdministration>().Where(x => x.DepartmentManagement == Management).ToList();
 
-            string Code = da.Count == 0 ? "0" : 
+            string Code = da.Count == 0 || da.Where(x => x.Code.StartsWith(Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-")).Count() == 0 ? "0" : 
                 da.Where(x => x.Code.StartsWith(Management.DepartmentBranch.Code + "-" + Management.Code.Substring(1) + "-"))
                 .OrderByDescending(x => x.Code.Substring(6))
                 .FirstOrDefault().Code.Substring(6);

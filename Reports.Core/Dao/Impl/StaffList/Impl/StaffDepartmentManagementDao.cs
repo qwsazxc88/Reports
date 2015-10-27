@@ -76,7 +76,7 @@ namespace Reports.Core.Dao.Impl
         {
             IList<StaffDepartmentManagement> dm = Session.Query<StaffDepartmentManagement>().Where(x => x.DepartmentBranch == Branch).ToList();
 
-            string Code = dm.Count == 0 ? "0" :
+            string Code = dm.Count == 0 || dm.Where(x => x.Code.Substring(0, 1) == Branch.Code.Substring(1)).Count() == 0 ? "0" :
                 dm.Where(x => x.Code.Substring(0, 1) == Branch.Code.Substring(1))
                 .OrderByDescending(x => x.Code.Substring(1))
                 .FirstOrDefault().Code.Substring(1);

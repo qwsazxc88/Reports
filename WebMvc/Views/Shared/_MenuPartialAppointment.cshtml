@@ -51,7 +51,10 @@
                 </div> 
                 }
                 
-                <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                {
+                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                }
 
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
