@@ -1933,8 +1933,9 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
-                    EmploymentBl.DeleteAttachment(modelDel);
+                    //DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    //EmploymentBl.DeleteAttachment(modelDel);
+                    EmploymentBl.DeleteCandidateDocument(model);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
                     ModelState.AddModelError("SendTo1C", "Файл удален!");
                 }
