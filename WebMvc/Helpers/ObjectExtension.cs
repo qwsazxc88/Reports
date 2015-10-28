@@ -22,5 +22,15 @@ namespace WebMvc.Helpers
             }
             return (param.ToString());
         }
+        public static string ToHtmlAttributeString(this object obj)
+        {
+            string result = " ";
+            var props = obj.GetType().GetProperties();
+            for (int i = 0; i < props.Length; i++)
+            {
+                result+=String.Format(" {0} ='{1}' ",props[i].Name,props[i].GetValue(obj, null).ToString());
+            }
+            return result;
+        }
     }
 }

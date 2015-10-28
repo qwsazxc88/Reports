@@ -14,7 +14,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Core.Services;
-
+using System.Linq.Expressions;
 namespace Reports.Core.Dao.Impl
 {
     //[Transient]
@@ -366,12 +366,17 @@ namespace Reports.Core.Dao.Impl
         {
         }
         public IList<TEntity> Find(Func<TEntity, bool> predicate)
-        {
+        {            
             var result= Session.Query<TEntity>().Where(predicate);
             return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
         }
+        public IList<TEntity> QueryExpression(Expression<Func<TEntity, bool>> predicate)
+        {           
+            var result = Session.Query<TEntity>().Where(predicate);
+            return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
+        }
         public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
-        {
+        {            
             var result = Session.Query<TEntity>().Where(predicate);
             if (result != null )
             {

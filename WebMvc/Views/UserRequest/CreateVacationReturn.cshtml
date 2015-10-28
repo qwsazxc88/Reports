@@ -1,0 +1,10 @@
+﻿@using WebMvc.Helpers
+@model Reports.Presenters.UI.ViewModel.VacationReturnCreateViewModel
+@using (Html.BeginForm("CreateVacationReturn", "UserRequest"))
+{
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.CreateDropdown(m => m.UserId, new SelectList(Model.Users, "Id", "Name"))
+        @Html.CreateButton(true, true, "Создать");        
+    }
+}
