@@ -390,6 +390,9 @@
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
     <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\refVacationReturnStatusDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\refVacationReturnTypesDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\VacationReturnDao.cs" />
     <Compile Include="Dao\Impl\UserToDepartmentDao.cs" />
     <Compile Include="Dao\Impl\VacationCommentDao.cs" />
     <Compile Include="Dao\Impl\VacationDao.cs" />
@@ -421,6 +424,8 @@
     <Compile Include="Dao\INoteTypeDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
+    <Compile Include="Dao\IrefVacationReturnStatusDao.cs" />
+    <Compile Include="Dao\IrefVacationReturnTypesDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
     <Compile Include="Dao\IRequestAttachmentDao.cs" />
@@ -452,6 +457,7 @@
     <Compile Include="Dao\IUserToDepartmentDao.cs" />
     <Compile Include="Dao\IVacationCommentDao.cs" />
     <Compile Include="Dao\IVacationDao.cs" />
+    <Compile Include="Dao\IVacationReturnDao.cs" />
     <Compile Include="Dao\IVacationTypeDao.cs" />
     <Compile Include="Dao\IWorkingCalendarDao.cs" />
     <Compile Include="Dao\IWorkingGraphicDao.cs" />
@@ -688,6 +694,9 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\UserRequest\refVacationReturnStatus.cs" />
+    <Compile Include="Domain\UserRequest\refVacationReturnTypes.cs" />
+    <Compile Include="Domain\UserRequest\VacationReturn.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationSaldo.cs" />
@@ -804,6 +813,7 @@
     <Compile Include="Dto\UploadFileDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
+    <Compile Include="Dto\UserRequest\VacationReturnDto.cs" />
     <Compile Include="Dto\UserRolesDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
@@ -838,6 +848,7 @@
     <Compile Include="Services\ISessionManager.cs" />
     <Compile Include="Services\IStartupService.cs" />
     <Compile Include="StringHelper.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IncorrectDatabaseVersionException.cs" />
     <Compile Include="Utils\PasswordManager.cs" />
     <Compile Include="Utils\Result.cs" />
@@ -1365,6 +1376,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentAccessory.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnStatus.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\VacationReturn.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />

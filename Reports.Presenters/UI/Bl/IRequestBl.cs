@@ -224,5 +224,13 @@ namespace Reports.Presenters.UI.Bl
         bool CheckDepartmentLevel(int id, int level);
         IList<Terrapoint_DepartmentDto> GetTP_D_list();
         IList<Department_TerrapointDto> GetD_TP_list();
+        #region VacationReturn
+         VacationReturnCreateViewModel GetCreateModel();
+         List<VacationReturnDto> GetDocuments(VacationReturnListModel model);
+         VacationReturnListModel GetVacationReturnListModel();
+         VacationReturnViewModel GetNewVacationReturnViewModel(int UserId);
+         Result<VacationReturnViewModel> GetVacationReturnEditModel(int id);
+         Result<VacationReturnViewModel> SaveVacationReturnEditModel(VacationReturnViewModel model);
+        #endregion
     }
 }
