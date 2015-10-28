@@ -34,6 +34,7 @@
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name.ToUpper()</a>
                         </span>
                         <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
@@ -140,6 +141,7 @@
                 type: 'POST',
                 dataType: 'json',
                 data: dataToSend,
+                async: true,
                 success: function(result){
                     // $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
@@ -169,6 +171,7 @@
                                             "<span Id='span-tr'" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
                                         "</span>" +
                                             "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
+                                            "<button type='button' class='btnDepNewWindow' title='Открыть ветку в новом окне' onclick='GetDepartments("+ result.Departments[i].Code + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
                                         "</td>" + 
                                         "<td></td>" +
                                         "<td>" + result.Departments[i].SEPCount + "</td>" +
@@ -197,6 +200,12 @@
                                     $(this).children('span').toggleClass("collapse expand");
                                     $(this).closest('li').children('ul').slideToggle();
                                 });
+
+                                //при автооткрытии имитируем клик, меняем внешний вид
+                                if (IsExpandAll){
+                                    $("#span-tr" + result.Departments[i].Code1C).toggleClass("collapse expand");
+
+                                }
                             }
                         }
                     }
@@ -230,15 +239,11 @@
                     //пытаемся раскрыть рекурсивно всю ветку 
                     if (DepTable.length > 0)
                     {
-                        //console.log(DepTable);
-                        ShowFlash(true);
                         for (var i = 0; i < DepTable.length; i++)
                         {
-                            ShowFlash(true);
                             GetNodes(DepTable[i], IsExpandAll);
                         }
                         DepTable = [];
-                        //ShowFlash(false);
                     }
                     
 
@@ -286,6 +291,13 @@
     }
 
    
+   //открываем ветку в новом окне
+    function GetDepartments(DepCode)
+    {
+        var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
+        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
+        location.href = actionUrl;
+    }
 </script>
 
 

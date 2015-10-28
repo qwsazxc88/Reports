@@ -17,6 +17,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Номер заявки")]
         public int Id { get; set; }
 
+        [Display(Name = "Инициатор")]
+        public string RequestInitiator { get; set; } //фио + должность
+
         [Display(Name = "Id штатной единицы")]
         public int SEPId { get; set; }
 
@@ -25,11 +28,11 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffEstablishedPostRequestTypes> RequestTypes { get; set; }
 
         [Display(Name = "Назание структурного подразделения")]
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
 
-        [Display(Name = "Признак БЭК/ФРОНТ")]
-        public bool IsBack { get; set; }
+        [Display(Name = "Принадлежность подразделения")]
+        public string AccessoryName { get; set; }
 
         [Display(Name = "Юридический адрес")]
         public string LegalAddress { get; set; }

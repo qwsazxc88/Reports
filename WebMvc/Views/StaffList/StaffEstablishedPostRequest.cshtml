@@ -42,7 +42,12 @@
                             @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
                         </td>
                     </tr>
-                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestInitiator)</td>
+                        <td>
+                            @Model.RequestInitiator
+                        </td>
+                    </tr>                    
                 </table>
             </div>
         </div>
@@ -60,34 +65,10 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsBack)
+                            @Html.LabelFor(m => m.AccessoryName)
                         </td>
                         <td>
-                            <div id="IsBackContainer">
-                                @Html.HiddenFor(m => m.IsBack)
-                                @if (Model.IsBack)
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                    else
-                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse", disabled = "disabled" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                                               {<text>style="border-color:red;"</text>}
-                                                                                                                                                                               else
-                                                                                                                                                                               {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                                else
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue", disabled = "disabled" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                                           {<text>style="border-color:red;"</text>}
-                                                                                                                                                                           else
-                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                        else
-                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                            </div>
+                            @(string.IsNullOrEmpty(Model.AccessoryName) ? "" : Model.AccessoryName)
                         </td>
                     </tr>
                     <tr>
@@ -334,11 +315,8 @@
 
         //        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
 
-        //$("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
-        //$(".hasDatepicker").width("85px");
 
 
-        $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
 

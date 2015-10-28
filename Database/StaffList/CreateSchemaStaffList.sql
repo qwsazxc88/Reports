@@ -3467,10 +3467,7 @@ SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSK
 						when A.ItemLevel = 6 then H.Name
 						else C.NameShort end as DepFingradName, 
 			 --C.NameComment as DepFingradNameComment, 
-			 case A.BFGId when 1 then 'Бэк'
-										when 2 then 'Фронт'
-										when 3 then 'ГПД'
-										when 4 then 'Управленческое' end as DepFingradNameComment,
+			 I.Name as DepFingradNameComment,
 			 C.DepCode as FinDepPointCode, A.BFGId
 FROM Department as A
 LEFT JOIN StaffDepartmentRequest as B ON B.DepartmentId = A.Id and B.IsUsed = 1 
@@ -3481,6 +3478,7 @@ LEFT JOIN StaffDepartmentManagement as E ON E.DepartmentId = A.Id
 LEFT JOIN StaffDepartmentAdministration as F ON F.DepartmentId = A.Id 
 LEFT JOIN StaffDepartmentBusinessGroup as G ON G.DepartmentId = A.Id 
 LEFT JOIN StaffDepartmentRPLink as H ON H.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentAccessory as I ON I.id = A.BFGId
 GO
 
 

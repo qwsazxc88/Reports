@@ -1459,6 +1459,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.RequestType.Id == 2)
                 {
+                    dep.Name = entity.Name;
                     dep.ParentId = ParentDep.Code1C;
                     dep.Path = ParentDep.ItemLevel != entity.ItemLevel ? ParentDep.Path + "__new" : dep.Path;
                     dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
@@ -1859,28 +1860,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Id == 0)
             {
                 model.DateRequest = null;
-                //model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
-                //model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
-                //model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
-                model.IsBack = false;
-                model.LegalAddress = string.Empty;
-                model.IsTaxAdminAccount = false;
-                model.IsEmployeAvailable = false;
+                model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
                 model.PositionName = string.Empty;
                 model.Quantity = 0;
                 model.Salary = 0;
                 model.ReasonId = 0;
-
-                //налоговые реквизиты
-                model.KPP = string.Empty;
-                model.OKTMO = string.Empty;
-                model.OKATO = string.Empty;
-                model.RegionCode = string.Empty;
-                model.TaxAdminCode = string.Empty;
-                model.TaxAdminName = string.Empty;
-                model.PostAddress = string.Empty;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -1904,39 +1889,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
                 model.PositionId = entity.Position.Id;
                 model.PositionName = entity.Position.Name;
                 model.Quantity = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
 
-                //кусок для подразделения
-                if (entity.Department != null)
-                {
-                    int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
-                    if (DepId != 0)
-                    {
-                        StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
-                        //model.IsBack = DepEntity.IsBack;
-                        if (DepEntity.LegalAddress != null)
-                        {
-                            model.LegalAddress = DepEntity.LegalAddress.Address;
-                        }
-                        model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
-                        model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
-                    }
-
-                    //налоговые реквизиты
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
-                    model.KPP = dt != null ? dt.KPP : string.Empty;
-                    model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
-                    model.OKATO = dt != null ? dt.OKATO : string.Empty;
-                    model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
-                    model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
-                    model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
-                    model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
-                }
 
                 //кнопки
                 model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
@@ -1972,7 +1930,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DateRequest = DateTime.Now,
                     StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId),
                     Position = PositionDao.Get(model.PositionId),
-                    Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null,
+                    Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null,
                     Quantity = model.Quantity,
                     Salary = model.Salary,
                     IsUsed = false,
@@ -2038,7 +1996,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DateRequest = DateTime.Now;
             entity.StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId);
             entity.Position = PositionDao.Get(model.PositionId);
-            entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
+            entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
             entity.Quantity = model.Quantity;
             entity.Salary = model.Salary;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
@@ -2219,6 +2177,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return true;
+        }
+        /// <summary>
+        /// Загрузка реквизитов инициатора и подразделения к заявкам для штатных единиц
+        /// </summary>
+        /// <param name="model">Заполняемая модель заявки.</param>
+        /// <returns></returns>
+        protected void GetDepRequestInfo(StaffEstablishedPostRequestModel model)
+        {
+            User curUser = UserDao.Load(model.UserId != 0 ? model.UserId : AuthenticationService.CurrentUser.Id);
+            model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
+            model.RequestInitiator = curUser.Name + " - " + (curUser.Position != null ? curUser.Position.Name : string.Empty);
+
+            if (model.DepartmentId != 0)
+            {
+                Department dep = DepartmentDao.Get(model.DepartmentId);
+                model.DepartmentName = dep.Name;
+                int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(dep != null ? dep.Id : 0);
+                if (DepId != 0)
+                {
+                    StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
+                    //model.IsBack = DepEntity.IsBack;
+                    if (DepEntity.LegalAddress != null)
+                    {
+                        model.LegalAddress = DepEntity.LegalAddress.Address;
+                    }
+                    model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
+                    model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
+                    model.AccessoryName = DepEntity.DepartmentAccessory != null ? DepEntity.DepartmentAccessory.Name : string.Empty;
+                }
+
+                //налоговые реквизиты
+                StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
+                model.KPP = dt != null ? dt.KPP : string.Empty;
+                model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
+                model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
+                model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
+                model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
+                model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+            }
+
         }
         #endregion
 
@@ -3827,6 +3826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
             ////для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             //model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
+            GetDepRequestInfo(model);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
