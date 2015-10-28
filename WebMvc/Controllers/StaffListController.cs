@@ -276,6 +276,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
+            ModelState.Clear();
             StaffEstablishedPostRequestModel model = new StaffEstablishedPostRequestModel();
             ViewBag.Title = RequestType == 1 ? "Заявка на создание ШЕ" : (RequestType == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
             model.RequestTypeId = RequestType;

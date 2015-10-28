@@ -45,6 +45,7 @@ INSERT INTO StaffEstablishedPostRequest([Version]
 																				,IsUsed
 																				,IsDraft
 																				,DateSendToApprove
+																				,DateAccept
 																				,BeginAccountDate
 																				,ReasonId
 																				,CreatorID)
@@ -58,6 +59,7 @@ SELECT 1
 			 ,Salary
 			 ,IsUsed
 			 ,0
+			 ,getdate()
 			 ,getdate()
 			 ,getdate()
 			 ,null	--причину пока не указываю
