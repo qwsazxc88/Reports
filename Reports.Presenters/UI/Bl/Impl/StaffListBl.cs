@@ -1915,7 +1915,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginAccountDate = entity.BeginAccountDate;
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;
+                model.IsDraftButtonAvailable = !entity.DateSendToApprove.HasValue;
                 model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
 
             }
