@@ -142,6 +142,14 @@ IF OBJECT_ID ('FK_StaffProgramCodes_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffProgramCodes] DROP CONSTRAINT [FK_StaffProgramCodes_CreatorUser]
 GO
 
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffWorkingConditions', 'F') IS NOT NULL	
+	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_Schedule', 'F') IS NOT NULL	
+	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule]
+GO
+
 IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes', 'F') IS NOT NULL	
 	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes]
 GO
@@ -570,11 +578,14 @@ CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[SEPId] [int] NULL,
 	[PositionId] [int] NULL,
 	[DepartmentId] [int] NULL,
+	[ScheduleId] [int] NULL,
+	[WCId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[IsDraft] [bit] NULL,
 	[DateSendToApprove] [datetime] NULL,
+	[DateAccept] [datetime] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[ReasonId] [int] NULL,
 	[CreatorID] [int] NULL,
@@ -1298,6 +1309,24 @@ INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Управленческое'
 INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Удалено/закрыто')
 
 
+
+if OBJECT_ID (N'StaffWorkingConditions', 'U') is not null
+	DROP TABLE [dbo].[StaffWorkingConditions]
+GO
+CREATE TABLE [dbo].[StaffWorkingConditions](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+ CONSTRAINT [PK_StaffWorkingConditions] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
 ALTER TABLE [dbo].[Department]  WITH CHECK ADD  CONSTRAINT [FK_Department_StaffDepartmentAccessory] FOREIGN KEY([BFGId])
 REFERENCES [dbo].[StaffDepartmentAccessory] ([Id])
@@ -1631,6 +1660,20 @@ REFERENCES [dbo].[StaffEstablishedPost] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostChargeLinks_StaffEstablishedPost]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule] FOREIGN KEY([ScheduleId])
+REFERENCES [dbo].[Schedule] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions] FOREIGN KEY([WCId])
+REFERENCES [dbo].[StaffWorkingConditions] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostChargeLinks_StaffEstablishedPostRequest] FOREIGN KEY([SEPRequestId])
@@ -2168,6 +2211,18 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Наименование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов условий труда' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -3116,6 +3171,12 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DepartmentId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'График работы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'ScheduleId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id условия труда' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'WCId'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Quantity'
 GO
 
@@ -3129,6 +3190,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак чернов
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата отправки на согласование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DateSendToApprove'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DateAccept'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала учета в системе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'BeginAccountDate'
@@ -3483,6 +3547,14 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffWorkingConditions
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'на время отсутствия основного работника')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'совместительство')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'основное место работы')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'срочный трудовой договор')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'не полный рабочий день')
+
+
 --StaffDepartmentOperationGroups
 INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 1', 1)	--1
 INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 2', 1)	--2

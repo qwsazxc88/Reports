@@ -758,6 +758,9 @@ namespace Reports.Core
             Register(Component.For<IStaffDepartmentAccessoryDao>()
                 .ImplementedBy<StaffDepartmentAccessoryDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffWorkingConditionsDao>()
+                .ImplementedBy<StaffWorkingConditionsDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             

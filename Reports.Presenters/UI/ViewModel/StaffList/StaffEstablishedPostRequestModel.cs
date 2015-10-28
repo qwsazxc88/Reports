@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
 using Reports.Core.Domain;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
@@ -19,6 +20,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Инициатор")]
         public string RequestInitiator { get; set; } //фио + должность
+        public int UserId { get; set; }
 
         [Display(Name = "Id штатной единицы")]
         public int SEPId { get; set; }
@@ -26,6 +28,14 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Вид заявки")]
         public int RequestTypeId { get; set; }
         public IList<StaffEstablishedPostRequestTypes> RequestTypes { get; set; }
+
+        [Display(Name = "График работы")]
+        public int ScheduleId { get; set; }
+        public IEnumerable<SelectListItem> Schedules { get; set; }
+
+        [Display(Name = "Условия труда")]
+        public int WCId { get; set; }
+        public IEnumerable<SelectListItem> WorkConditions { get; set; }
 
         [Display(Name = "Назание структурного подразделения")]
         public int DepartmentId { get; set; }
@@ -60,8 +70,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Надбавки")]
         public IList<StaffEstablishedPostChargeLinksDto> PostChargeLinks { get; set; }
 
-        [Display(Name = "Инициатор")]
-        public int UserId { get; set; }
+        [Display(Name = "Дата начала учета в системе")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? BeginAccountDate { get; set; }
 
         #region Налоговые реквизиты
         [Display(Name = "КПП")]
