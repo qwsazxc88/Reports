@@ -236,6 +236,7 @@
     <Content Include="Scripts\textAngular.min.js" />
     <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Scripts\vis.min.js" />
+    <Content Include="Scripts\UserRequest\VacationReturn\VacationReturnEdit.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -868,6 +869,10 @@
     <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
+    <Content Include="Views\UserRequest\VacationReturnEdit.cshtml" />
+    <Content Include="Views\UserRequest\CreateVacationReturn.cshtml" />
+    <Content Include="Views\UserRequest\VacationReturnList.cshtml" />
     <Content Include="Views\StaffList\DepRequestInfoView.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequestList.cshtml" />
     <Content Include="Views\StaffList\StaffEstablishedPostRequestList.cshtml" />

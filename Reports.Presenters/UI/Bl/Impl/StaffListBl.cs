@@ -266,6 +266,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { departmentarchiveDao = value; }
         }
 
+        protected IStaffWorkingConditionsDao staffworkingConditionsDao;
+        public IStaffWorkingConditionsDao StaffWorkingConditionsDao
+        {
+            get { return Validate.Dependency(staffworkingConditionsDao); }
+            set { staffworkingConditionsDao = value; }
+        }
+
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
+        {
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -1459,6 +1472,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.RequestType.Id == 2)
                 {
+                    dep.Name = entity.Name;
                     dep.ParentId = ParentDep.Code1C;
                     dep.Path = ParentDep.ItemLevel != entity.ItemLevel ? ParentDep.Path + "__new" : dep.Path;
                     dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
@@ -1859,28 +1873,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Id == 0)
             {
                 model.DateRequest = null;
-                //model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
-                //model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
-                //model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
-                model.IsBack = false;
-                model.LegalAddress = string.Empty;
-                model.IsTaxAdminAccount = false;
-                model.IsEmployeAvailable = false;
+                model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
                 model.PositionName = string.Empty;
                 model.Quantity = 0;
                 model.Salary = 0;
                 model.ReasonId = 0;
-
-                //налоговые реквизиты
-                model.KPP = string.Empty;
-                model.OKTMO = string.Empty;
-                model.OKATO = string.Empty;
-                model.RegionCode = string.Empty;
-                model.TaxAdminCode = string.Empty;
-                model.TaxAdminName = string.Empty;
-                model.PostAddress = string.Empty;
+                model.ScheduleId = 0;
+                model.WCId = 0;
+                model.BeginAccountDate = DateTime.Now;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -1904,43 +1905,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
                 model.PositionId = entity.Position.Id;
                 model.PositionName = entity.Position.Name;
                 model.Quantity = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
-
-                //кусок для подразделения
-                if (entity.Department != null)
-                {
-                    int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
-                    if (DepId != 0)
-                    {
-                        StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
-                        //model.IsBack = DepEntity.IsBack;
-                        if (DepEntity.LegalAddress != null)
-                        {
-                            model.LegalAddress = DepEntity.LegalAddress.Address;
-                        }
-                        model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
-                        model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
-                    }
-
-                    //налоговые реквизиты
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
-                    model.KPP = dt != null ? dt.KPP : string.Empty;
-                    model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
-                    model.OKATO = dt != null ? dt.OKATO : string.Empty;
-                    model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
-                    model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
-                    model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
-                    model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
-                }
+                model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
+                model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
+                model.BeginAccountDate = entity.BeginAccountDate;
 
                 //кнопки
-                model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
-                model.IsAgreeButtonAvailable = entity.IsDraft;
+                model.IsDraftButtonAvailable = true;
+                model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
 
             }
 
@@ -1972,9 +1948,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DateRequest = DateTime.Now,
                     StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId),
                     Position = PositionDao.Get(model.PositionId),
-                    Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null,
+                    Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null,
+                    Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null,
+                    WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null,
                     Quantity = model.Quantity,
                     Salary = model.Salary,
+                    BeginAccountDate = model.BeginAccountDate,
                     IsUsed = false,
                     IsDraft = true,
                     Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null,
@@ -2038,9 +2017,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DateRequest = DateTime.Now;
             entity.StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId);
             entity.Position = PositionDao.Get(model.PositionId);
-            entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
+            entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
+            entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
+            entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
             entity.Quantity = model.Quantity;
             entity.Salary = model.Salary;
+            entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
@@ -2078,45 +2060,50 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
-            //надбавки
-            if (entity.PostChargeLinks == null)
-                entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
-
-            foreach (var item in model.PostChargeLinks)
+            //надбавки 
+            //сохраняем только при открытии и изменении до отправки на согласование
+            if (model.RequestTypeId != 3 && !entity.DateSendToApprove.HasValue)
             {
-                StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
+                if (entity.PostChargeLinks == null)
+                    entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
 
-                //если была запись и убрали значения, то удаляем
-                if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                foreach (var item in model.PostChargeLinks)
                 {
-                    pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
-                    entity.PostChargeLinks.Remove(pcl);
-                }
+                    StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
 
-                //если не было записи и ввели значение, то добавляем
-                if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
-                {
-                    pcl.EstablishedPostRequest = entity;
-                    pcl.EstablishedPost = entity.StaffEstablishedPost;
-                    pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
-                    pcl.Amount = item.Amount;
-                    pcl.AmountProc = item.AmountProc;
-                    pcl.Creator = curUser;
-                    pcl.CreateDate = DateTime.Now;
+                    //если была запись и убрали значения, то удаляем
+                    if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                    {
+                        pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
+                        entity.PostChargeLinks.Remove(pcl);
+                    }
 
-                    entity.PostChargeLinks.Add(pcl);
-                }
+                    //если не было записи и ввели значение, то добавляем
+                    if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    {
+                        pcl.EstablishedPostRequest = entity;
+                        pcl.EstablishedPost = entity.StaffEstablishedPost;
+                        pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
+                        pcl.Amount = item.Amount;
+                        pcl.AmountProc = item.AmountProc;
+                        pcl.Creator = curUser;
+                        pcl.CreateDate = DateTime.Now;
 
-                //запись была и есть код, то предпологаем, что это редактирование
-                if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
-                {
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                        entity.PostChargeLinks.Add(pcl);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    {
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
                 }
             }
+            
 
             if (model.Id != 0)
             {
@@ -2210,6 +2197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.StaffEstablishedPost = new StaffEstablishedPost();
 
                 entity.StaffEstablishedPost = sep;
+                entity.DateAccept = DateTime.Now;//согласовано
             }
             catch (Exception ex)
             {
@@ -2219,6 +2207,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return true;
+        }
+        /// <summary>
+        /// Загрузка реквизитов инициатора и подразделения к заявкам для штатных единиц
+        /// </summary>
+        /// <param name="model">Заполняемая модель заявки.</param>
+        /// <returns></returns>
+        protected void GetDepRequestInfo(StaffEstablishedPostRequestModel model)
+        {
+            User curUser = UserDao.Load(model.UserId != 0 ? model.UserId : AuthenticationService.CurrentUser.Id);
+            model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
+            model.RequestInitiator = curUser.Name + " - " + (curUser.Position != null ? curUser.Position.Name : string.Empty);
+
+            if (model.DepartmentId != 0)
+            {
+                Department dep = DepartmentDao.Get(model.DepartmentId);
+                model.DepartmentName = dep.Name;
+                int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(dep != null ? dep.Id : 0);
+                if (DepId != 0)
+                {
+                    StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
+                    //model.IsBack = DepEntity.IsBack;
+                    if (DepEntity.LegalAddress != null)
+                    {
+                        model.LegalAddress = DepEntity.LegalAddress.Address;
+                    }
+                    model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
+                    model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
+                    model.AccessoryName = DepEntity.DepartmentAccessory != null ? DepEntity.DepartmentAccessory.Name : string.Empty;
+                }
+
+                //налоговые реквизиты
+                StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
+                model.KPP = dt != null ? dt.KPP : string.Empty;
+                model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
+                model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
+                model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
+                model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
+                model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+            }
+
         }
         #endregion
 
@@ -3823,10 +3852,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //реквизиты инициатора
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.Reasons = AppointmentReasonDao.LoadAll();
-            //добавил пустую первую строку
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
-            ////для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
-            //model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
+
+            model.Schedules = ScheduleDao.LoadAll().Where(x => x.Id == 37 || x.Id == 45 || x.Id == 48).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
+            model.WorkConditions = StaffWorkingConditionsDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
+
+            GetDepRequestInfo(model);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.

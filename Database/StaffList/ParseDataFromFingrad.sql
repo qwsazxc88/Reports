@@ -45,6 +45,7 @@ FROM DepartmentArchive as A
 INNER JOIN Department as B on B.Id = A.DepartmentId and B.BFGId = 4
 
 DELETE Department WHERE BFGId = 4	
+
 --убираем у всех записей 7 уровня коды из Финграда, чтобы при обработке проставить их заново
 UPDATE Department SET FingradCode = null
 
@@ -653,7 +654,7 @@ BEGIN
 					,B.ItemLevel
 					,C.Id
 					,B.Name
-					,case when A.[Front_Back1] = 'Front' then 2 when A.[Front_Back1] = 'Back' then 1 else null end
+					,B.BFGId
 					,[Приказы]
 					,null
 					,@LegalAddressId	--адрес
@@ -992,7 +993,7 @@ BEGIN
 	--красим родителей
 	UPDATE Department SET BFGId = 5
 	WHERE (Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%') 
-	and isnull(BFGId, 0) <> 5 and ItemLevel = @i
+	and isnull(BFGId, 0) not in (4, 5) and ItemLevel = @i
 
 	--стараемся прокрасить от родителя до самого низа
 	UPDATE Department SET BFGId = 5
@@ -1020,6 +1021,7 @@ FROM Department as A
 WHERE --A.BFGId = 5 
 			(A.Name like '%ликвидиров%' or A.Name like '%закрыт%' or A.Name like '%не исп%' or A.Name like '%корзина%' )
 			and A.ItemLevel = 7
+			and isnull(A.BFGId, 0) <> 4	--то что из финграда оставляем
 
 
 --для 7

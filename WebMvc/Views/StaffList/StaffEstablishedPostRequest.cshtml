@@ -10,6 +10,7 @@
     @Html.HiddenFor(m => m.SEPId)
     @Html.HiddenFor(m => m.DepartmentId)
     @Html.HiddenFor(m => m.PositionId)
+    @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
    
@@ -42,7 +43,12 @@
                             @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
                         </td>
                     </tr>
-                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestInitiator)</td>
+                        <td>
+                            @Model.RequestInitiator
+                        </td>
+                    </tr>                    
                 </table>
             </div>
         </div>
@@ -60,34 +66,10 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsBack)
+                            @Html.LabelFor(m => m.AccessoryName)
                         </td>
                         <td>
-                            <div id="IsBackContainer">
-                                @Html.HiddenFor(m => m.IsBack)
-                                @if (Model.IsBack)
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                    else
-                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse", disabled = "disabled" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                                               {<text>style="border-color:red;"</text>}
-                                                                                                                                                                               else
-                                                                                                                                                                               {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                                else
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue", disabled = "disabled" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                                           {<text>style="border-color:red;"</text>}
-                                                                                                                                                                           else
-                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                        else
-                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                            </div>
+                            @(string.IsNullOrEmpty(Model.AccessoryName) ? "" : Model.AccessoryName)
                         </td>
                     </tr>
                     <tr>
@@ -205,7 +187,7 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.PositionId)</td>
                         <td>
-                            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "StaffList")" />
+                            @Html.TextBoxFor(m => m.PositionName, Model.RequestTypeId != 1 ? (object)new { style = "width:600px;", @readonly = "readonly" } : (object)new { style = "width:600px;" })
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
@@ -265,6 +247,24 @@
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>
                     </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ScheduleId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.WCId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.WCId, Model.WorkConditions, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
+                        <td>
+                            @Html.EditorFor(m => m.BeginAccountDate)
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -294,11 +294,23 @@
     $(document).ready(function () {
         setActiveMenuItem("moSEPRequest");
 
+        $("#PositionName").autocomplete({
+            source: "@Url.Action("AutocompletePositionSearch", "StaffList")",
+            minLength: 1,
+            select: function (event, ui) {
+                $("#PositionName").val(ui.item.label);
+                $("#PositionId").val(ui.item.PositionId);
+            }
+        });
+
+
         ShowFlash(true);
         ShowFlash(false);
 
         $(document).tooltip({ track: true });
         $(":button").button();
+        $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("75px");
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
         $("#btnAgree").click(function () {
@@ -313,7 +325,7 @@
 
         $("#MainDiv2").accordion({
             header: "h3",
-            active: false,//эта строка делает данный раздел закрытым по молчанию
+            active: false, //эта строка делает данный раздел закрытым по молчанию
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"
@@ -334,32 +346,11 @@
 
         //        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
 
-        //$("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
-        //$(".hasDatepicker").width("85px");
 
 
-        $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
 
-
-        //автозаполнение должностей
-        $(function () {
-            $("[data-autocomplete-source]").each(
-                function () {
-                    var target = $(this);
-                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
-                        select: function (event, ui) {
-                            //для физиков
-                            if (ui.item.PositionId != null) {
-                                $("#PositionName").val(ui.item.label);
-                                $("#PositionId").val(ui.item.PositionId);
-                            }
-                            return true;
-                        }
-                    });
-                });
-        });
 
     });
 
