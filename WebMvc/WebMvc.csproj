@@ -280,7 +280,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Files\StaffMovements\" />
     <Folder Include="Templates\" />
     <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
@@ -845,6 +844,18 @@
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
+    <None Include="Files\StaffMovements\Dogovor.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\StaffMovements\prilozhenie1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\StaffMovements\prilozhenie2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\StaffMovements\sluzhebnaya_zapiska_na_perevod_sotrudnika.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Files\Template\word\_rels\document.xml.rels" />
     <None Include="Files\Template\_rels\.rels" />
     <Content Include="Views\Appointment\AppointmentReportList.cshtml" />
