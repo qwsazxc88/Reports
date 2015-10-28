@@ -149,6 +149,11 @@ namespace Reports.Presenters.UI.Bl
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
         void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
+        /// <summary>
+        /// Удаляем скан с вкладки документы.
+        /// </summary>
+        /// <param name="model">Модель страницы</param>
+        void DeleteCandidateDocument(CandidateDocumentsModel model);
         void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error);
 
         /// <summary>
