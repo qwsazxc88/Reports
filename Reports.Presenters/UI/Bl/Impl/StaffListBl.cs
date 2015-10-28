@@ -2197,6 +2197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.StaffEstablishedPost = new StaffEstablishedPost();
 
                 entity.StaffEstablishedPost = sep;
+                entity.DateSendToApprove = DateTime.Now;//отправлено на согласование
                 entity.DateAccept = DateTime.Now;//согласовано
             }
             catch (Exception ex)
