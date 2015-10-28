@@ -126,6 +126,7 @@
     <Compile Include="Helpers\FieldHelper.cs" />
     <Compile Include="Helpers\ObjectExtension.cs" />
     <Compile Include="Helpers\ToolbarBlock.cs" />
+    <Compile Include="Helpers\TextBoxHelper_new.cs" />
     <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\UserRequestController.cs" />
@@ -221,6 +222,7 @@
     <Content Include="Scripts\jquery.global.js" />
     <Content Include="Scripts\jquery.maskedinput-1.2.2.js" />
     <Content Include="Scripts\jquery.maskedinput.js" />
+    <Content Include="Scripts\jquery.maskedinput.min.js" />
     <Content Include="Scripts\jquery.ui.datepicker-ru.js" />
     <Content Include="Scripts\jquery.upload-1.0.2.min.js" />
     <Content Include="Scripts\jquery.validate_new.min.js" />
@@ -278,7 +280,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Files\StaffMovements\" />
     <Folder Include="Templates\" />
+    <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">
