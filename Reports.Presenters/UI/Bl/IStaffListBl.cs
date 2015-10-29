@@ -401,6 +401,13 @@ namespace Reports.Presenters.UI.Bl
 
         #region Загрузка словарей и справочников.
         /// <summary>
+        /// подгружаем только подчиненые ветки на один уровень ниже
+        /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <returns></returns>
+        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly);
+        /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.
         /// </summary>
         /// <param name="model">Модель заявки.</param>
@@ -421,23 +428,6 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="Name"></param>
         /// <returns></returns>
         IList<IdNameDto> GetPositionAutocomplete(string Name);
-        #endregion
-
-        #region Для теста
-        TreeViewModel GetDepartmentList();
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        TreeGridAjaxModel GetDepartmentStructure(string DepId);
-        /// <summary>
-        /// подгружаем только подчиненые ветки на один уровень ниже
-        /// </summary>
-        /// <param name="DepId">Id родительского подразделения</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
-        /// <returns></returns>
-        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly);
         /// <summary>
         /// Загружаем модель для составления Российских адресов.
         /// </summary>
@@ -455,12 +445,6 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="SettlementCode">Код населенного пункта.</param>
         /// <returns></returns>
         KladrWithPostIndex GetKladr(string Code, int AddressType, string RegionCode, string AreaCode, string CityCode, string SettlementCode);
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId);
         #endregion
     }
 }

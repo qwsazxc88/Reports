@@ -234,6 +234,7 @@
                 type: RequestType,
                 dataType: 'json',
                 data: dataToSend,
+                //async: false,
                 success: function(KladrResult){
                     setKladrValuesToDropdown(controlName, KladrResult, AddressType);
                     //ShowKladrFlash(false);
@@ -257,10 +258,10 @@
 
             for (var i = 0; i < data.Kladr.length; i++)
             {
-                optionsValues += '<option value="' + data.Kladr[i].Code + '">' + data.Kladr[i].Name + '</option>';
+                optionsValues += "<option value=" + (data.Kladr[i].Code != null ? data.Kladr[i].Code : "") + ">" + (data.Kladr[i].Name != null ? data.Kladr[i].Name : "") + "</option>";
             }
 
-            optionsValues += '</select>';
+            optionsValues += "</select>";
 
             var options = $("#" + controlName );
             options.replaceWith(optionsValues);
