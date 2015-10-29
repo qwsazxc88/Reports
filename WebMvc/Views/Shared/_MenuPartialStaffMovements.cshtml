@@ -48,7 +48,7 @@
                 }
                 
                 <div id="liStaffMovements" class="mainOn">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                </div> 
+                </div>
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Estimator) > 0
