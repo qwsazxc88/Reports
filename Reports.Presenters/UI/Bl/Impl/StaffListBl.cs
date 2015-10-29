@@ -317,6 +317,49 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        #region Построение дерева
+        /// <summary>
+        /// подгружаем только подчиненые ветки на один уровень ниже
+        /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <returns></returns>
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
+        {
+            //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
+            if (string.IsNullOrEmpty(DepId))
+            {
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2
+                    || AuthenticationService.CurrentUser.Id == 6638 || AuthenticationService.CurrentUser.Id == 22821
+                    || AuthenticationService.CurrentUser.Id == 24926 || AuthenticationService.CurrentUser.Id == 513)//временно открыт доступ 4 сотрудникам к всей структуре
+                {
+                    //DepId = "9900424";
+                    //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
+                }
+                else
+                {
+                    User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
+                }
+
+                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+            }
+
+            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+        }
+        /// <summary>
+        /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
+        /// </summary>
+        /// <param name="DepId">Id родительского подразделения.</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <returns></returns>
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
+        {
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
+            return Sdeps;
+        }
+        #endregion
+
         #region Заявки для подразделений
         /// <summary>
         /// Загрузка запросной формы реестра заявок подразделений.
@@ -4088,183 +4131,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             return ht;
-        }
-        #endregion
-
-        #region Для тестов
-        /// <summary>
-        /// собираем полное дерево
-        /// </summary>
-        /// <returns></returns>
-        public TreeViewModel GetDepartmentList()
-        {
-            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            TreeViewModel model = new TreeViewModel();
-            //model.Departments = DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(currentUser.Department.Path)).ToList();
-            //model.Departments = DepartmentDao.LoadAll().Where(x => x.Id == currentUser.Department.Id).ToList();
-            //model.ParentId = currentUser.Department.ParentId.ToString();
-            //model.DepId = currentUser.Department.Code;
-            model.Departments = DepartmentDao.LoadAll();
-            return model;
-        }
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        public TreeGridAjaxModel GetDepartmentStructure(string DepId)
-        {
-            TreeGridAjaxModel model = new TreeGridAjaxModel();
-            Department dep =DepartmentDao.GetByCode(DepId);
-            int DepartmentId = dep.Id;
-            int itemLevel = dep.ItemLevel.Value;
-            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
-            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
-            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
-            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            if (itemLevel != 7)
-            {
-                //руководство
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-                //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
-            }
-            else
-            {
-                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)
-                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-            }
-
-
-            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
-            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
-            //    model.Departments = GetDepartmentListByParent(DepId);
-            //else
-            //{
-            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
-            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-            //    foreach (var item in Users)
-            //    {
-            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-            //    }
-            //    model.UserPositions = ul;
-            //}
-            return model;
-        }
-        /// <summary>
-        /// подгружаем только подчиненые ветки на один уровень ниже
-        /// </summary>
-        /// <param name="DepId">Id родительского подразделения</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
-        /// <returns></returns>
-        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
-        {
-            //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
-            if (string.IsNullOrEmpty(DepId))
-            {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2
-                    || AuthenticationService.CurrentUser.Id == 6638 || AuthenticationService.CurrentUser.Id == 22821)//временно открыт доступ 2 сотрудникам к всей структуре
-                {
-                    //DepId = "9900424";
-                    //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
-                }
-                else
-                {
-                    User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
-                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
-                }
-
-                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
-            }
-
-            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
-        }
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        public DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId)
-        {
-            DepStructureFingradPointsModel model = new DepStructureFingradPointsModel();
-            Department dep = DepartmentDao.GetByCode(DepId);
-            int DepartmentId = dep.Id;
-            int itemLevel = dep.ItemLevel.Value;
-            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
-            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
-            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
-            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            if (itemLevel != 7)
-            {
-                //руководство
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-                //уровень подразделений
-                model.Departments = DepartmentDao.GetDepartmentWithFingradPoint(DepId).OrderBy(x => x.Priority).ToList();
-            }
-            else
-            {
-                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)
-                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-            }
-
-
-            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
-            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
-            //    model.Departments = GetDepartmentListByParent(DepId);
-            //else
-            //{
-            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
-            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-            //    foreach (var item in Users)
-            //    {
-            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-            //    }
-            //    model.UserPositions = ul;
-            //}
-            return model;
-        }
-        /// <summary>
-        /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
-        /// </summary>
-        /// <param name="DepId">Id родительского подразделения.</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
-        /// <returns></returns>
-        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
-        {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
-            return Sdeps;
         }
         #endregion
     }

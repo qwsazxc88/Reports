@@ -833,12 +833,10 @@
     <Content Include="Views\Employment\PrintObligationTradeSecret.cshtml" />
     <Content Include="Views\Employment\PrintRegisterPersonalRecord.cshtml" />
     <Content Include="Views\Employment\Instruction.cshtml" />
-    <Content Include="Views\StaffList\TreeView.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
-    <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\Template\word\_rels\document.xml.rels" />
@@ -861,8 +859,6 @@
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
     <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
-    <Content Include="Views\StaffList\TreeGridAjax.cshtml" />
-    <Content Include="Views\StaffList\DepStructureFingradPoints.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
