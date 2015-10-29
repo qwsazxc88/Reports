@@ -38,9 +38,11 @@ namespace Reports.Presenters.UI.ViewModel
         public List<IdNameDto> ReturnTypes { get; set; }
 
         [Display(Name="Дата начала отпуска")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "dd.MM.yyyy")]
         public DateTime VacationStartDate { get; set; }
 
         [Display(Name = "Дата завершения отпуска")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "dd.MM.yyyy")]
         public DateTime VacationEndDate { get; set; }
         
         [Display(Name="Скан согласия сотрудника:")]

@@ -31,7 +31,7 @@ namespace WebMvc.Helpers
         {
             string template = "<div class='field-wrap'><span style='width:200px;display:inline-block;'>{0}:</span>{1}{2}</div>";
             var label = Html.LabelFor(expression);
-            var editor = Html.TextBoxNewFor(expression, format, HtmlAttributes);
+            var editor = Html.TextBoxNewFor( expression, format, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
             return new MvcHtmlString(String.Format(template, label, editor, validation));
         }

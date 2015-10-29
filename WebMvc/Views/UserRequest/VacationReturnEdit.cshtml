@@ -4,6 +4,7 @@
 @{
     ViewBag.Title = "Заявка на отзыв из отпуска";
 }
+<link href="../../Content/artem.css" rel="stylesheet" type="text/css" />
 @using(Html.BeginForm("VacationReturnEdit","UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {    
     @Html.HiddenFor(m=>m.Id)
@@ -16,8 +17,8 @@
         @Html.Partial("EditorTemplates/UserInfo", Model.User)       
         @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes, "Id", "Name"), Model.IsEditable)
         @Html.CreateField(m => m.ReturnReason, Model.IsEditable)
-        @Html.CreateField("dd.MM.yyyy", m => m.ReturnDate, Model.IsEditable)
-        @Html.CreateField("dd.MM.yyyy", m => m.ContinueDate, Model.IsEditable)
+        @Html.CreateField("{0:dd.MM.yyyy}", m => m.ReturnDate, Model.IsEditable)
+        @Html.CreateField("{0:dd.MM.yyyy}", m => m.ContinueDate, Model.IsEditable)
         @Html.CreateDisplay(m => m.DaysCount)
         if (Model.ScanAddAvailable)
         {    
