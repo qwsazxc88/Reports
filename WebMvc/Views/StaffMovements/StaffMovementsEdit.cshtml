@@ -727,7 +727,7 @@
                               <td>
                               Договор мат.ответственность
                               </td>
-                              <td><input type="button" value="Печать" /></td>
+                              <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=1">Печать</a></td>
                               <td>
                                 @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
                                 {
@@ -1202,7 +1202,7 @@ label { font-size:1.1em; }
         $('#IsHourlyContainer').buttonset(@if(!Model.IsPersonnelManagerEditable){<text>{disabled: true}</text>});
         $('#IsTempMovingContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
         $('#ConjunctionContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
-        $(':button, :input[type=button], :input[type=submit]').button();
+        $(':button, :input[type=button], :input[type=submit], .button').button();
         $(':input[type=text]').addClass("widget");
         @if(Model.IsManagerEditable)
         {<text>

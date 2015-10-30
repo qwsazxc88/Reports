@@ -76,7 +76,18 @@ namespace WebMvc.Controllers
             return View("StaffMovementsEdit", model);
 
         }
-
+        public ActionResult GetPrintModel(int id, int type)
+        {
+            StaffMovementsPrintModel model=StaffMovementsBl.GetPrintModel(id);
+            string view = "";
+            switch (type)
+            {
+                case 1:
+                    view = "~/Views/StaffMovements/Templates/MaterialLiabilityDoc.cshtml";
+                    break;
+            }
+            return View(view, model);
+        }
         public ContentResult GetPositionsForDepartment(int id)
         {
             var positions = StaffMovementsBl.GetPositionsForDepartment(id);

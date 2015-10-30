@@ -238,6 +238,10 @@
     <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Scripts\vis.min.js" />
     <Content Include="Scripts\UserRequest\VacationReturn\VacationReturnEdit.js" />
+    <Content Include="Views\StaffMovements\Templates\Addition.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Addition2.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\MaterialLiabilityDoc.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Order.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -282,7 +286,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Templates\" />
-    <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">
