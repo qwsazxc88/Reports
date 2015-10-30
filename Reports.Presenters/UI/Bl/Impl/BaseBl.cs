@@ -32,6 +32,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             "копейки",
                                             "копеек",
                                         };
+       
         protected static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #region Fields
         protected IAuthenticationService authenticationService;
@@ -825,11 +826,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             var chiefs=GetChiefsForManager(user.Id);
-            if(chiefs!=null && chiefs.Any())
+            if (user.Department != null)
             {
-                model.Chiefs = new List<string>();
-                foreach(var el in chiefs)
-                    model.Chiefs.Add(String.Format("{0} ({1})",el.Name,el.Position!=null?el.Position.Name:""));
+                var managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true);
+                if (managers == null) managers = new List<User>();
+                if (managers.Any())
+                {
+                    int maxlvlv = managers.Max(x => x.Level.HasValue ? x.Level.Value : 0);
+                    managers = managers.Where(x => x.Level == maxlvlv).ToList();
+                }
+
+                model.Managers = new List<string>();
+                foreach (var el in managers.OrderByDescending(x => x.Level))
+                {
+                    model.Managers.Add(String.Format("{0} ({1})", el.Name, el.Position != null ? el.Position.Name : ""));
+                }
+
+                if (chiefs != null && chiefs.Any())
+                {
+                    model.Chiefs = new List<string>();
+                    foreach (var el in chiefs.OrderByDescending(x => x.Level))
+                    {
+                        if (managers.Any(x => x.Id == el.Id)) continue;
+                        model.Chiefs.Add(String.Format("{0} ({1})", el.Name, el.Position != null ? el.Position.Name : ""));
+                    }
+                }
             }
             var Dep7=user.Department;
             if(Dep7!=null)
