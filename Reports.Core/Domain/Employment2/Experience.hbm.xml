@@ -5,7 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Experience_Candidate" index="Experience_Candidate" not-null="true"/>
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Experience_Candidate" index="Experience_Candidate" not-null="false"/>
     <bag name="ExperienceItems" lazy="true" cascade="all-delete-orphan">
       <key column="ExperienceId" foreign-key="FK_ExperienceItem_Experience"/>
       <one-to-many class="ExperienceItem"/>
