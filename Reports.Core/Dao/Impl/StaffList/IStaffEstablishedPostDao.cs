@@ -21,5 +21,11 @@ namespace Reports.Core.Dao
         /// <param name="DepartmentId"></param>
         /// <returns></returns>
         IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId);
+        /// <summary>
+        /// Достаем список сотрудников, закрепленных за данной штатной единицей.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        IList<User> GetEstablishedPostUsed(int SEPId);
     }
 }

@@ -1925,6 +1925,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ScheduleId = 0;
                 model.WCId = 0;
                 model.BeginAccountDate = DateTime.Now;
+                model.EPInfo = string.Empty;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -1957,8 +1958,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
                 model.BeginAccountDate = entity.BeginAccountDate;
 
+                int UsersCount = StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost.Id).Count;
+                model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
+
                 //кнопки
-                model.IsDraftButtonAvailable = !entity.DateSendToApprove.HasValue;
+                model.IsDraftButtonAvailable = true;
                 model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
 
             }
