@@ -74,6 +74,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BeginAccountDate { get; set; }
 
+        [Display(Name = "Данные по ШЕ")]
+        public string EPInfo { get; set; }
+
         #region Налоговые реквизиты
         [Display(Name = "КПП")]
         public string KPP { get; set; }

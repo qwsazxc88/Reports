@@ -196,6 +196,7 @@
                         <td>
                             @Html.TextBoxFor(m => m.Quantity, (object)new { style = "width:70px;" })
                             @Html.ValidationMessageFor(model => model.Quantity)
+                            @Html.DisplayFor(m => m.EPInfo)
                         </td>
                     </tr>
                     <tr>

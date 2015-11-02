@@ -75,5 +75,14 @@ namespace Reports.Core.Dao.Impl
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
         }
+        /// <summary>
+        /// Достаем список сотрудников, закрепленных за данной штатной единицей.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public IList<User> GetEstablishedPostUsed(int SEPId)
+        {
+            return Session.Query<User>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.IsActive == true).ToList();
+        }
     }
 }

@@ -299,9 +299,9 @@ UPDATE #TMP SET --[Дата_процедуры] = case when year([Дата_процедуры]) = 1900 the
 --								,[ОКТМО] = case when len([ОКТМО]) = 0 or [ОКТМО] = N'-' then null else [ОКТМО] end
 
 
-UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
+--UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
+--UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
+--UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
 --UPDATE #TMP SET [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = null where [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = '06.08.2014'
 UPDATE #TMP SET [Дни_работы_точки] = '1111110' WHERE [Дни_работы_точки] = '111110'
 
@@ -614,13 +614,41 @@ BEGIN
 
 	--оба адреса делаем одинаковыми
 	--заносим адрес
-	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version]
+													,[Address]
+													,PostIndex
+													,RegionName
+													,CityName
+													,SettlementName
+													,StreetName
+													,CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when len(isnull([Индекс], '')) = 0 then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом]
+				,[Индекс]
+				,[Субъект_федерации]
+				,case when [Населенный_пункт] like 'г. %' then [Населенный_пункт] else null end
+				,case when [Населенный_пункт] not like 'г. %' then [Населенный_пункт] else null end
+				,substring([Улица_дом], 1, 50)
+				,@CreatorId 
+	FROM #TMP WHERE Id = @Id
 
 	SET @LegalAddressId = @@IDENTITY
 
-	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version]
+													,[Address]
+													,PostIndex
+													,RegionName
+													,CityName
+													,SettlementName
+													,StreetName
+													,CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when len(isnull([Индекс], '')) = 0 then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом]
+				,[Индекс]
+				,[Субъект_федерации]
+				,case when [Населенный_пункт] like 'г. %' then [Населенный_пункт] else null end
+				,case when [Населенный_пункт] not like 'г. %' then [Населенный_пункт] else null end
+				,substring([Улица_дом], 1, 50)
+				,@CreatorId 
+	FROM #TMP WHERE Id = @Id
 
 	SET @FactAddressId = @@IDENTITY
 
@@ -1095,6 +1123,16 @@ INSERT INTO StaffDepartmentRequest ([Version]
 	LEFT JOIN #TMP5 as C ON C.Id = A.Id
 	ORDER BY A.ItemLevel
 
+
+
+--проставляем инкассирующие подразделения в заявки (ВАЖНО ПРИ НАЛИЧИИ ЗАЯВОК КУСОК МОЖНО ИСПОЛЬЗОВАТЬ ОТДЕЛЬНО)
+UPDATE StaffDepartmentCBDetails SET DepCachinId = E.DepartmentId, DepATMId = F.DepartmentId
+FROM StaffDepartmentCBDetails as A
+INNER JOIN StaffDepartmentRequest as B ON B.Id = A.DepRequestId and B.IsDraft = 0
+INNER JOIN Department as C ON C.id = B.DepartmentId and C.FingradCode is not null
+INNER JOIN Fingrad_csv as D ON D.[Код_подразделения] = C.FingradCode and (D.[Инкассирующее_подразделение_кэшина] is not null or D.[Инкассирующее_подразделение_банкомата] is not null)
+LEFT JOIN StaffDepartmentRPLink as E ON E.Code = D.[Инкассирующее_подразделение_кэшина_Код_РП_в_финград]
+LEFT JOIN StaffDepartmentRPLink as F ON F.Code = D.[Инкассирующее_подразделение_банкомата_Код_РП_в_финград]
 
 
 drop table #TMP
