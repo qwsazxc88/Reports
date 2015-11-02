@@ -7,6 +7,8 @@ namespace Reports.Presenters.UI.ViewModel
 {
     public class StaffMovementsPrintModel
     {
+        public string OrderNumber { get; set; }
+        public string AdditionNumber { get; set; }
         public string UserName { get; set; }
         public string ShortUserName { get; set; }
         public string TargetPosition { get; set; }

@@ -242,6 +242,12 @@
     <Content Include="Views\StaffMovements\Templates\Addition2.cshtml" />
     <Content Include="Views\StaffMovements\Templates\MaterialLiabilityDoc.cshtml" />
     <Content Include="Views\StaffMovements\Templates\Order.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie1.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\StaffMovements\Templates\prilozhenie2.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
