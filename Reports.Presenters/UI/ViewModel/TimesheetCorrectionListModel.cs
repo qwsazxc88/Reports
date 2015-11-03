@@ -13,7 +13,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
-
+        public string ManagerName { get; set; }
         //[AutoComplete("AutoComplete", "Departments", "searchText")]
         //public IdNameReadonlyDto Department { get; set; }
         //public int DepartmentId { get; set; }

@@ -89,7 +89,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("SicklistNumber", NHibernateUtil.String).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("Position",NHibernateUtil.String);
+                AddScalar("Position",NHibernateUtil.String).
+                AddScalar("ManagerName",NHibernateUtil.String);
         }
 
         public bool ResetApprovals(int id)
