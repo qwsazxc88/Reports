@@ -486,6 +486,10 @@
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements_DocTypes.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
@@ -733,6 +737,8 @@
     <Compile Include="Dto\Department_TerrapointDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
+    <Compile Include="Dto\DocumentMovements\DocumentMovementsDto.cs" />
+    <Compile Include="Dto\DocumentMovements\DocumentMovementsSelectedDocsDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
     <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
     <Compile Include="Dto\Employment2\CandidateTechDissmissDto.cs" />
@@ -1436,6 +1442,10 @@
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
     <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <EmbeddedResource Include="Domain\MailConfirm.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

@@ -103,6 +103,7 @@
     <Compile Include="Controllers\AutoCompleteController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DeductionController.cs" />
+    <Compile Include="Controllers\DocumentMovementsController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\EmploymentController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -178,6 +179,7 @@
     <Content Include="Content\themes\base\ui-icons_454545_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\uigrid\ui-grid.min.css" />
     <Content Include="Content\vis.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="FileSizeTooLarge.htm" />
@@ -234,6 +236,7 @@
     <Content Include="Scripts\textAngular-rangy.min.js" />
     <Content Include="Scripts\textAngular-sanitize.min.js" />
     <Content Include="Scripts\textAngular.min.js" />
+    <Content Include="Scripts\uigrid\ui-grid.min.js" />
     <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Scripts\vis.min.js" />
     <Content Include="Scripts\UserRequest\VacationReturn\VacationReturnEdit.js" />
