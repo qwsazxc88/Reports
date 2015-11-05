@@ -301,8 +301,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-
-            //все закомментаренное работало когда не было штатных единиц
             if (itemLevel != 7)
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
@@ -938,7 +936,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
             entity.IsEmployeAvailable = model.IsEmployeAvailable;
             entity.IsPlan = model.IsPlan;
-            entity.IsDraft = model.IsDraft;
+            entity.IsDraft = entity.IsUsed ? false : model.IsDraft;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
@@ -1015,9 +1013,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //поля ЦБ реквизитов
-            if (entity.DepartmentCBDetails == null)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
+            if (entity.DepartmentCBDetails == null || entity.DepartmentCBDetails.Count == 0)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
             {
-                entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+                if (entity.DepartmentCBDetails == null)
+                    entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
                     DepRequest = entity,
@@ -1050,9 +1050,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //поля управленческих реквизитов
-            if (entity.DepartmentManagerDetails == null) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
+            if (entity.DepartmentManagerDetails == null || entity.DepartmentManagerDetails.Count == 0) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
             {
-                entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+                if (entity.DepartmentManagerDetails == null)
+                    entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
 
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
@@ -1411,12 +1412,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //находим действующую заявку и убираем у нее признак использования
-            int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
-            StaffDepartmentRequest OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
+            //int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+            StaffDepartmentRequest OldEntity = null;
 
             //Утверждение
             if (!model.IsDraft)
             {
+                //находим действующую заявку и убираем у нее признак использования
+                int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+                OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
+
                 //проверки для текущей заявки 
                 if (!ValidateDepartmentRequest(entity, out error))
                 {
@@ -3843,8 +3848,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-
-            //все закомментаренное работало когда не было штатных единиц
             if (itemLevel != 7)
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
