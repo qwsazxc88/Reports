@@ -1,4 +1,5 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffMovementsEditModel
+@using WebMvc.Helpers
 @{
     ViewBag.Title = "Редактирование заявки на перемещение";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
@@ -34,6 +35,7 @@
     @Html.HiddenFor(m => m.IsStopButtonPressed)
     @Html.HiddenFor(m => m.IsTargetManagerAcceptAvailable)
     @Html.HiddenFor(m => m.IsUserAcceptAvailable)
+    @Html.HiddenFor(m => m.Creator.Id)
     </div>
     <table style="width:100%">
     <tr>
@@ -128,56 +130,124 @@
                             }
                           </ul>
                           <div id="tabs-1">
+                          @if (Model.SourceManager != null)
+                          {
                             <fieldset class="bordered doc-wrap-blue panel" >
-                            <legend title='Реквизиты инициатора(автора) заявки' class="bordered">Реквизиты инициатора(автора) заявки</legend>
+                            <legend title='Реквизиты руководителя' class="bordered">Реквизиты @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</legend>
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Name)
-                                        @Html.HiddenFor(m => m.Creator.Id)
-                                        @Html.DisplayFor(m => m.Creator.Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.PositionName)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.PositionName)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.PositionName)
-                                        @Html.HiddenFor(m => m.Creator.PositionId)
-                                        @Html.DisplayFor(m => m.Creator.PositionName)
+                                        @Html.HiddenFor(m => m.SourceManager.PositionName)
+                                        @Html.HiddenFor(m => m.SourceManager.PositionId)
+                                        @Html.DisplayFor(m => m.SourceManager.PositionName)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Dep3Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Dep3Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Dep3Name)
-                                        @Html.HiddenFor(m => m.Creator.Dep3Id)
-                                        @Html.DisplayFor(m => m.Creator.Dep3Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep3Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep3Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Dep3Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Dep7Name)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Dep7Name)</td>
                                     <td>
-                                        @Html.HiddenFor(m => m.Creator.Dep7Name)
-                                        @Html.HiddenFor(m => m.Creator.Dep7Id)
-                                        @Html.DisplayFor(m => m.Creator.Dep7Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep7Name)
+                                        @Html.HiddenFor(m => m.SourceManager.Dep7Id)
+                                        @Html.DisplayFor(m => m.SourceManager.Dep7Name)
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Chiefs)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Managers)</td>
                                     <td>
-                                        @(Model.Creator.Chiefs != null ? Model.Creator.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                        @(Model.SourceManager.Managers != null ? Model.SourceManager.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.Creator.Personnels)</td>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Chiefs)</td>
                                     <td>
-                                        @(Model.Creator.Personnels != null ? Model.Creator.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                        @(Model.SourceManager.Chiefs != null ? Model.SourceManager.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.SourceManager.Personnels)</td>
+                                    <td>
+                                        @(Model.SourceManager.Personnels != null ? Model.SourceManager.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                             </table>
                             </fieldset>
+                          }
+                            @if (Model.RequestType == 2 && Model.TargetManager!=null)
+                            {
+                            <fieldset class="bordered doc-wrap-blue panel" >
+                            <legend title='Реквизиты принимающего руководителя' class="bordered">Реквизиты принимающего руководителя</legend>
+                            <table>
+                                
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.PositionName)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.PositionName)
+                                        @Html.HiddenFor(m => m.TargetManager.PositionId)
+                                        @Html.DisplayFor(m => m.TargetManager.PositionName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Dep3Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Dep3Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Dep3Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Dep3Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Dep7Name)</td>
+                                    <td>
+                                        @Html.HiddenFor(m => m.TargetManager.Dep7Name)
+                                        @Html.HiddenFor(m => m.TargetManager.Dep7Id)
+                                        @Html.DisplayFor(m => m.TargetManager.Dep7Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Managers)</td>
+                                    <td>
+                                        @(Model.TargetManager.Managers != null ? Model.TargetManager.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Chiefs)</td>
+                                    <td>
+                                        @(Model.TargetManager.Chiefs != null ? Model.TargetManager.Chiefs.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.TargetManager.Personnels)</td>
+                                    <td>
+                                        @(Model.TargetManager.Personnels != null ? Model.TargetManager.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
+                                    </td>
+                                </tr>
+                            </table>
+                            </fieldset>
+                            }
                             <fieldset class="bordered doc-wrap-blue panel" >
                             <legend title='Место работы сотрудника в настоящее время' class="bordered">Место работы сотрудника в настоящее время</legend>
                             <table>
@@ -211,6 +281,12 @@
                                         @Html.HiddenFor(m => m.User.Dep7Name)
                                         @Html.HiddenFor(m => m.User.Dep7Id)
                                         @Html.DisplayFor(m => m.User.Dep7Name)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.LabelFor(m => m.User.Managers)</td>
+                                    <td>
+                                        @(Model.User.Managers != null ? Model.User.Managers.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
@@ -291,7 +367,7 @@
                                         @Html.RadioButtonFor(m => m.Conjunction, false, new { @id = "IsConjunctionFalse" })<label for="IsConjunctionFalse" id="lblIsConjunctionFalse" @if (!Model.Conjunction)
                                                                                                                                                                   {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                                   else
-                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Осонвная</label>
+                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Основная</label>
                                         @Html.RadioButtonFor(m => m.Conjunction, true, new { @id = "IsConjunctionTrue" })<label for="IsConjunctionTrue" id="lblIsConjunctionTrue" @if (Model.Conjunction)
                                                                                                                                                               {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                               else
@@ -317,37 +393,45 @@
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetSalary)</td>
-                                <td>@Html.TextBoxFor(m => m.TargetSalary, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.TextBoxNewFor(m => m.TargetSalary, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.TargetCasing)</td>
-                                <td>@Html.TextBoxFor(m => m.TargetCasing, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.TextBoxNewFor(m => m.TargetCasing,"{0:F2}" ,Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionPersonnel)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPersonnel, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPersonnel, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                  @Html.LabelFor(m => m.AdditionPersonnelTo)
-                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })                                 
                                  </div>
+                                 @Html.LabelFor(m=>m.AdditionPersonnelAction)
+                                 @Html.DropDownListFor(m => m.AdditionPersonnelAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
                             </tr>
-                            <tr>
+                            @*<tr>
                                 <td>@Html.LabelFor(m => m.AdditionPosition)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionPosition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPosition, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionPositionTo)
                                 @Html.TextBoxFor(m => m.AdditionPositionTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                
                                 </div>
+                                @Html.LabelFor(m=>m.AdditionPositionAction)
+                                @Html.DropDownListFor(m => m.AdditionPositionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                               </td>
-                            </tr>
+                            </tr>*@
                             <tr>
                                 <td>@Html.LabelFor(m => m.AdditionQuality)</td>
-                                <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionQuality, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionQuality, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 <div class="TempMovingContainer formfield">
                                 @Html.LabelFor(m => m.AdditionQualityTo)
-                                @Html.TextBoxFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxNewFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
+                                
                                 </div>
+                                @Html.LabelFor(m=>m.AdditionQualityAction)
+                                @Html.DropDownListFor(m => m.AdditionQualityAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                                 </td>
                             </tr>
                           </table>
@@ -402,24 +486,33 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.RegionCoefficient)</td>
-                                    <td>@Html.TextBoxFor(m => m.RegionCoefficient, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.RegionCoefficient, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTerritory)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionTerritory, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTerritory, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                        @Html.LabelFor(m=>m.AdditionTerritoryAction)
+                                        @Html.DropDownListFor(m=>m.AdditionTerritoryAction,new SelectList(Model.AdditionActions,"Id","Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionTraveling)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionTraveling, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxNewFor(m => m.AdditionTraveling, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    @Html.LabelFor(m => m.AdditionTravelingAction)
+                                        @Html.DropDownListFor(m => m.AdditionTravelingAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AdditionFront)</td>
-                                    <td><div class="formfield">@Html.TextBoxFor(m => m.AdditionFront, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                    <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionFront, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                 
                                     <div class="TempMovingContainer formfield">
                                         @Html.LabelFor(m => m.AdditionFrontTo)
                                         @Html.TextBoxFor(m => m.AdditionFrontTo, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+
                                     </div>
+                                    @Html.LabelFor(m => m.AdditionFrontAction)
+                                        @Html.DropDownListFor(m => m.AdditionFrontAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -433,7 +526,7 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.NorthFactor)</td>
                                     <td>
-                                       <div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
+                                       @*<div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
                                         <div id="NorthFactor_2" class = "formfield">
                                             @Html.LabelFor(m => m.NorthFactorOrder)
                                             @Html.DropDownListFor(m => m.NorthFactorOrder, new SelectList(Model.NorthFactorOrders, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
@@ -446,15 +539,17 @@
                                             @Html.LabelFor(m => m.NorthFactorDay)
                                             @Html.TextBoxFor(m => m.NorthFactorDay)
                                             @Html.LabelFor(m => m.NorthFactorAddition)
-                                            @Html.TextBoxFor(m => m.NorthFactorAddition)
-                                        </div>
+                                            @Html.TextBoxNewFor(m => m.NorthFactorAddition,"{0:F2}" )
+                                        </div>*@
+                                        @Html.LabelFor(m => m.NorthFactorAdditionAction)
+                                        @Html.DropDownListFor(m => m.NorthFactorAdditionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
                                      </td>
                                     
                                 </tr>
-                                <tr>
+                                @*<tr>
                                     <td>@Html.LabelFor(m => m.ChangesToAgreementEnties)</td>
                                     <td>@Html.TextBoxFor(m => m.ChangesToAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
+                                </tr>*@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.ChangesToAgreement)</td>
                                     <td>@Html.TextBoxFor(m => m.ChangesToAgreement, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
@@ -463,9 +558,93 @@
                                     <td>@Html.LabelFor(m => m.AgreementDate)</td>
                                     <td>@Html.TextBoxFor(m => m.AgreementDate, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
-                                <tr>
+                                @*<tr>
                                     <td>@Html.LabelFor(m => m.AdditionalAgreementEnties)</td>
                                     <td>@Html.TextBoxFor(m => m.AdditionalAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                </tr>*@
+                                <tr>
+                                    <td colspan='2'>
+                                    Пункты Дополнительного соглашения
+                                    <table>
+                                    <tr style='border:1px solid lightgray;'>
+                                        <td>@Html.LabelFor(m=>m.AgreementEntry1_2)
+                                        @Html.DropDownListFor(m => m.AgreementEntry1_2,new SelectList(Model.AgreementEntry1_2List,"Id","Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry1_2var1" class="HiddenObject">
+                                            Работник переводится, с его согласия, с должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m => m.TargetDepartmentName)</span>  с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г.
+                                            </div>
+                                            <div id="AgreementEntry1_2var2" class="HiddenObject">
+                                            Работник переводится, с его согласия, с должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span>  с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. временно @Html.TextBoxFor(m=>m.AgreementField1_2[0])
+                                            </div>
+                                            <div id="AgreementEntry1_2var3" class="HiddenObject">
+                                            Работник переводится, с его согласия,  с временной должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> @Html.TextBoxFor(m=>m.AgreementField1_2[1]) <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на постоянную должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span> <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span> с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г.
+                                            </div>
+                                            <div id="AgreementEntry1_2var4" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style='border:1px solid lightgray;'>
+                                        <td>@Html.LabelFor(m=>m.AgreementEntry1_6)
+                                        @Html.DropDownListFor(m => m.AgreementEntry1_6,new SelectList(Model.AgreementEntry1_6List,"Id","Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry1_6var1" class="HiddenObject">
+                                            Фактическое место работы Работника: @Html.TextBoxFor(m=>m.AgreementField1_6[0])
+                                            </div>
+                                            <div id="AgreementEntry1_6var2" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style='border:1px solid lightgray;'>
+                                        <td>@Html.LabelFor(m=>m.AgreementEntry2_2_1)
+                                        @Html.DropDownListFor(m => m.AgreementEntry2_2_1, new SelectList(Model.AgreementEntry2_2_1List, "Id", "Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry2_2_1var1" class="HiddenObject">
+                                            Должностные обязанности изменяются согласно должностной инструкции <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span>
+                                            </div>
+                                            <div id="AgreementEntry2_2_1var2" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style='border:1px solid lightgray;'>
+                                        <td>@Html.LabelFor(m=>m.AgreementEntry4_2)
+                                        @Html.DropDownListFor(m => m.AgreementEntry4_2, new SelectList(Model.AgreementEntry4_2List, "Id", "Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry4_2var1" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается c <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. <br />- базовый должностной оклад в размере <span class="M_TargetCasing">@Html.DisplayFor(m => m.TargetCasing)</span> рублей в месяц;
+                                            </div>
+                                            <div id="AgreementEntry4_2var2" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается c <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. <br />- базовый должностной оклад в размере <span class="M_TargetCasing">@Html.DisplayFor(m=>m.TargetCasing)</span> рублей в месяц;<br />
+                                            Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет @Html.TextBoxFor(m=>m.AgreementField4_2[0]) рублей в месяц
+                                            </div>
+                                            <div id="AgreementEntry4_2var3" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style='border:1px solid lightgray;'>
+                                        <td>@Html.LabelFor(m=>m.AgreementEntry5_1)
+                                        @Html.DropDownListFor(m => m.AgreementEntry5_1, new SelectList(Model.AgreementEntry5_1List, "Id", "Name"))</td>
+                                        <td>
+                                            <div id="AgreementEntry5_1var1" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.
+                                            </div>
+                                            <div id="AgreementEntry5_1var2" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.
+                                            </div>
+                                            <div id="AgreementEntry5_1var3" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.
+                                            </div>
+                                            <div id="AgreementEntry5_1var4" class="HiddenObject">
+                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.
+                                            </div>
+                                            <div id="AgreementEntry5_1var5" class="HiddenObject">
+                                            @Html.TextBoxFor(m=>m.AgreementField5_1[0])
+                                            </div>
+                                            <div id="AgreementEntry5_1var6" class="HiddenObject">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </table>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.MovementReasonOrder)</td>
@@ -514,7 +693,7 @@
                               <td>
                               Дополнительное соглашение
                               </td>
-                              <td><input type="button" value="Печать" /></td>
+                              <td><input type="button" value="Печать" onclick="GetAgreementDoc()" /></td>
                               <td>
                                @if (Model.AdditionalAgreementDocDto != null && !string.IsNullOrEmpty(Model.AdditionalAgreementDocDto.FileName))
                                {
@@ -746,6 +925,8 @@ label { font-size:1.1em; }
         margin:5px;
 }
 </style>
+
+
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
@@ -791,6 +972,7 @@ label { font-size:1.1em; }
         if(imgVal=='')
         {
            addControlError($("input[name=MovementNote]"),'Необходимо заявление о переводе.');
+           addControlError($("#JSError"),'Необходимо заявление о переводе.');
             result = false;
         }
          </text>
@@ -918,13 +1100,13 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить график работы');
                 result = false;
             }
-            clearControlErrors($("#NorthFactor"));
+            @*clearControlErrors($("#NorthFactor"));
             if($("#NorthFactor").val() == '' || $("#NorthFactor").val() ==0)
             {
                 addControlError($("#NorthFactor"),'Необходимо заполнить северный стаж');
                 addControlError($("#JSError"),'Необходимо заполнить северный стаж');
                 result = false;
-            }
+            }*@
             clearControlErrors($("#ChangesToAgreementEnties"));
             if($("#ChangesToAgreementEnties").val() == '' )
             {
@@ -1000,6 +1182,23 @@ label { font-size:1.1em; }
     function ConfigureFields()
     {
         $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+        $("#MovementDate").change(function(){$('.M_MovementDate').text($(this).val());});
+        $("#TargetCasing").change(function(){$('.M_TargetCasing').text($(this).val());});
+        $("#TargetDepartmentId").change(function(){$('.M_TargetDepartment').text($('#TargetDepartmentNameLabel').text());});
+        $( "select[name^='TargetPositionId']" ).change(function()
+        {
+            $('.M_TargetPositionName').text($("select[name^='TargetPositionId'] option:selected").text());
+        });
+        $( "select[name^='AgreementEntry']" ).change(
+        function ()
+        {
+            var element=$(this);
+            var val=element.val();
+            var fieldname = element.attr('name');
+            var objs=$( "div[id^='"+fieldname+"var']" ).removeClass( "HiddenObject" ).addClass( "HiddenObject" );
+            var obj=$( '#'+fieldname+"var"+val ).removeClass( "HiddenObject" );
+        }   );   
+        $( "select[name^='AgreementEntry']" ).change();
         $('#IsHourlyContainer').buttonset(@if(!Model.IsPersonnelManagerEditable){<text>{disabled: true}</text>});
         $('#IsTempMovingContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
         $('#ConjunctionContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
@@ -1084,6 +1283,51 @@ label { font-size:1.1em; }
             icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
             icon.closest(".portlet").find(".portlet-content").toggle();
         });
+    }
+    function GetAgreementDoc()
+    {
+    var newForm = jQuery('<form>', {
+        'action': '/StaffMovements/GetAgreementDoc',
+        'target': '_blank'
+    }).append(jQuery('<input>', {
+        'name': 'AgreementNumber',
+        'value': $('#AdditionalAgreementNumber').val(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'AgreementDate',
+        'value': $('#AdditionalAgreementDate').val(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'UserName',
+        'value': '@Model.User.Name',
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'TargetPosition',
+        'value': $("select[name^='TargetPositionId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'TargetDepartment',
+        'value': $('#TargetDepartmentNameLabel').text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerName',
+        'value': $("select[name^='SignatoryId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerShortName',
+        'value': $("select[name^='SignatoryId'] option:selected").text(),
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'SignerPositionWithDepartment',
+        'value': '',
+        'type': 'hidden'
+    })).append(jQuery('<input>', {
+        'name': 'UserShortName',
+        'value': '@Model.User.Name',
+        'type': 'hidden'
+    }));
+    newForm.appendTo('body').submit();
+    
     }
     $(document).ready(function () {
         setActiveMenuItem("StaffMovements");

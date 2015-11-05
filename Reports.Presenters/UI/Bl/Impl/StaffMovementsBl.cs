@@ -79,11 +79,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffMovementsStatusDao); }
             set { staffMovementsStatusDao = value; }
         }
-        protected IEmploymentHoursTypeDao employmentHoursTypeDao;
-        public IEmploymentHoursTypeDao EmploymentHoursTypeDao
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
         {
-            get { return Validate.Dependency(employmentHoursTypeDao); }
-            set { employmentHoursTypeDao = value; }
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
         }
         protected IAccessGroupDao accessGroupDao;
         public IAccessGroupDao AccessGroupDao
@@ -120,6 +120,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffMovementsListModel GetListModel()
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
+            model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -142,6 +143,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
@@ -209,11 +211,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Conjunction = entity.Data.Conjunction;
                 model.MovementCondition = entity.Data.MovementCondition;
                 model.AdditionPersonnel = entity.Data.AdditionPersonnel;
+                model.AdditionPersonnelAction = entity.Data.AdditionPersonnelAction;
                 model.AdditionPersonnelTo = entity.Data.AdditionPersonnelTo;
+
                 model.AdditionPosition = entity.Data.AdditionPosition;
+                model.AdditionPositionAction = entity.Data.AdditionPositionAction;
                 model.AdditionPositionTo = entity.Data.AdditionPositionTo;
+
                 model.AdditionQuality = entity.Data.AdditionQuality;
+                model.AdditionQualityAction = entity.Data.AdditionQualityAction;
                 model.AdditionQualityTo = entity.Data.AdditionQualityTo;
+
                 #endregion
                 #region Для кадровиков
                 model.OrderDate = entity.OrderDate;
@@ -222,14 +230,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsHourly = entity.Data.SalaryType == 1;
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.AdditionTerritory = entity.Data.AdditionTerritory;
+                model.AdditionTerritoryAction = entity.Data.AdditionTerritoryAction;
+
                 model.AdditionTraveling = entity.Data.AdditionTraveling;
+                model.AdditionTravelingAction = entity.Data.AdditionTravelingAction;
+
                 model.AdditionFront = entity.Data.AdditionFront;
+                model.AdditionFrontAction = entity.Data.AdditionFrontAction;
                 model.AdditionFrontTo = entity.Data.AdditionFrontTo;
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
                 model.NorthFactor = entity.Data.NorthFactor;
                 model.NorthFactorOrder = entity.Data.NorthFactorOrder;
                 model.NorthFactorAddition = entity.Data.NorthFactorAddition;
+                model.NorthFactorAdditionAction = entity.Data.NorthFactorAdditionAction;
                 model.NorthFactorDay = entity.Data.NorthFactorDay;
                 model.NorthFactorMonth = entity.Data.NorthFactorMonth;
                 model.NorthFactorYear = entity.Data.NorthFactorYear;
@@ -241,6 +255,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 model.SignatoryId = entity.Data.Signatory!=null?entity.Data.Signatory.Id:0;
                 model.SignatoryName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
+
+                model.AgreementEntry1_2 = entity.Data.AgreementEntry1_2;
+                model.AgreementEntry1_6 = entity.Data.AgreementEntry1_6;
+                model.AgreementEntry2_2_1 = entity.Data.AgreementEntry2_2_1;
+                model.AgreementEntry4_2 = entity.Data.AgreementEntry4_2;
+                model.AgreementEntry5_1 = entity.Data.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) model.AgreementField1_2[0] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_2 == 3) model.AgreementField1_2[1] = entity.Data.AgreementField1_2 ;
+                if (model.AgreementEntry1_6 == 1) model.AgreementField1_6[0] = entity.Data.AgreementField1_6;
+                if (model.AgreementEntry4_2 == 2) model.AgreementField4_2[0] = entity.Data.AgreementField4_2;
+                if (model.AgreementEntry5_1 == 5) model.AgreementField5_1[0] = entity.Data.AgreementField5_1;
                 #endregion
                 #region Files
                 var docs = entity.Docs;
@@ -323,12 +348,39 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         private void LoadDictionaries(StaffMovementsEditModel model)
         {
+            model.AgreementEntry1_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"}
+            };
+            model.AgreementEntry1_6List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}               
+            };
+            model.AgreementEntry2_2_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"}
+            };
+            model.AgreementEntry4_2List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"}
+            };
+            model.AgreementEntry5_1List = new List<IdNameDto> { 
+                new IdNameDto{ Id=1,Name="Вариант 1"},
+                new IdNameDto{ Id=2,Name="Вариант 2"},
+                new IdNameDto{ Id=3,Name="Вариант 3"},
+                new IdNameDto{ Id=4,Name="Вариант 4"},
+                new IdNameDto{ Id=5,Name="Вариант 5"},
+                new IdNameDto{ Id=6,Name="Вариант 6"}
+            };
             var extracharges = ExtraChargesDao.LoadAll();
             if (extracharges != null && extracharges.Any())
             {
                 model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             }
-            var HoursTypes = EmploymentHoursTypeDao.LoadAll();
+            var HoursTypes = ScheduleDao.LoadAll();
             if(HoursTypes!=null && HoursTypes.Any())
             {
                 model.HoursTypes = HoursTypes.Select(x => new IdNameDto { Id=x.Id,Name=x.Name}).ToList();
@@ -352,7 +404,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.RequestTypes = model.RequestTypes.Where(x => x.Id != 1).ToList();
                 }
             }
-            model.NorthFactors = GetNorthExperienceTypes();            
+            model.NorthFactors = GetNorthExperienceTypes();
+            model.AdditionActions = new List<IdNameDto>();
+            model.AdditionActions.Add(new IdNameDto { Id = 1, Name = "Начать" });
+            model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
+            model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
+            model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
@@ -367,25 +424,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Загружаем сущьность если идентификатор отличен от 0
                 entity = StaffMovementsDao.Load(model.Id);
             }
+            
             //Меняем поля и сохраняем
+            //файлики
+            if (model.IsDocsAddAvailable && model.Id > 0)
+                SaveFiles(model);
             ChangeEntityProperties(entity, model);
             StaffMovementsDao.SaveAndFlush(entity);
-            model.Id = entity.Id;//Нужно присвоить модели идентификатор
-            #region файлы
-            //походу это уже не надо,если так, то удалить
-            /*if (entity.Docs == null || !entity.Docs.Any()) //Если документов нет, то нужно их все создать заранее.
+            //файлики только для первого раза
+            if (model.IsDocsAddAvailable && model.Id == 0 && entity.Id > 0)
             {
-                for(int i=1;i<=6;i++)
-                {
-                    //Создаём все документы сразу
-                    StaffMovementsDocs doc = new StaffMovementsDocs { Request = entity, DocType = i };
-                    StaffMovementsDocsDao.SaveAndFlush(doc);
-                }
-            }*/
-            //Сохраняем файлы, только если можно
-            if(model.IsDocsAddAvailable)
+                model.Id = entity.Id;//Нужно присвоить модели идентификатор
                 SaveFiles(model);
-            #endregion
+            }
+            
         }
         public void SaveDocsModel(StaffMovementsEditModel model)
         {            
@@ -609,7 +661,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
-                    model.IsStopButtonAvailable = false;//Конпка приостановки                 
+                    model.IsStopButtonAvailable = false;//Конпка приостановки        
+                    model.IsPositionEditable = model.IsPositionEditable && (model.Id==0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -767,6 +820,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionQualityTo = model.AdditionQualityTo;//Квалификационная надбавка до
                 entity.Data.Salary = model.TargetSalary;
                 entity.Data.Conjunction = model.Conjunction;
+                
+                entity.Data.AdditionPersonnelAction = model.AdditionPersonnelAction;
+                entity.Data.AdditionPositionAction = model.AdditionPositionAction;
+                entity.Data.AdditionQualityAction = model.AdditionQualityAction;
+                
             }
             #endregion
             #region Для кадров
@@ -782,7 +840,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.AdditionFront = model.AdditionFront;//Надбавка за работу в фронтофисе
                 entity.Data.AdditionFrontTo = model.AdditionFrontTo;//Надбавка за работу в фронтофисе до
                 entity.Data.Grade = model.Grade;//Грейд
-                entity.Data.HoursType = EmploymentHoursTypeDao.Load(model.HoursType);//График работы
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
                 entity.Data.NorthFactorAddition = model.NorthFactorAddition;
                 entity.Data.NorthFactorYear = model.NorthFactorYear;
@@ -796,6 +854,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementReasonOrder = model.MovementReasonOrder;//Причина перемещения
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 entity.Data.Signatory = EmploymentSignersDao.Load(model.SignatoryId);//Подписант
+                entity.Data.NorthFactorAdditionAction = model.NorthFactorAdditionAction;
+                entity.Data.AdditionFrontAction = model.AdditionFrontAction;
+                entity.Data.AdditionTerritoryAction = model.AdditionTerritoryAction;
+                entity.Data.AdditionTravelingAction = model.AdditionTravelingAction;
+                entity.Data.AgreementEntry1_2 = model.AgreementEntry1_2;
+                entity.Data.AgreementEntry1_6 = model.AgreementEntry1_6;
+                entity.Data.AgreementEntry2_2_1 = model.AgreementEntry2_2_1;
+                entity.Data.AgreementEntry4_2 = model.AgreementEntry4_2;
+                entity.Data.AgreementEntry5_1 = model.AgreementEntry5_1;
+                if (model.AgreementEntry1_2 == 2) entity.Data.AgreementField1_2 = model.AgreementField1_2[0];
+                if (model.AgreementEntry1_2 == 3) entity.Data.AgreementField1_2 = model.AgreementField1_2[1];
+                if (model.AgreementEntry1_6 == 1) entity.Data.AgreementField1_6 = model.AgreementField1_6[0];
+                if (model.AgreementEntry4_2 == 2) entity.Data.AgreementField4_2 = model.AgreementField4_2[0];
+                if (model.AgreementEntry5_1 == 5) entity.Data.AgreementField5_1 = model.AgreementField5_1[0];
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
@@ -808,6 +880,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             #endregion
+            
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {
@@ -1088,6 +1161,48 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Dictionaries
+        public static string[] GetAgreementEntriesTemplate(string entry)
+        {
+            Dictionary<string, string[]> Entries = new Dictionary<string, string[]>();
+            //пункт 1.2
+            string[] entry1_2 = new string[] 
+            {
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. ",
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. временно, {{Field}} ",
+                "Работник переводится, с его согласия,  с временной должности {{SourcePosition}} {{Field}} {{SourceDepartment}} на постоянную должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г.",
+                "Не выбран"
+            };
+            //Пункт 1.6
+            string[] entry1_6 = new string[] 
+            {
+                "Фактическое место работы Работника: {{Field}}",
+                "Не выбран"
+            };
+            //Пункт 2.2.1
+            string[] entry2_2_1 = new string[] 
+            {
+                "Должностные обязанности изменяются согласно должностной инструкции {{TargetPosition}} {{TargetDepartment}}",
+                "Не выбран"
+            };
+            //Пункт 4_2
+            string[] entry4_2 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}",
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}"+Environment.NewLine+"Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет {{Field}} рублей в месяц",
+                "Не выбран"
+            };
+            //Пункт 5.1
+            string[] entry5_1 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.",
+                "{{Field}}",
+                "Не выбран"
+            };
+            return Entries[entry];
+        }
         public IList<IdNameDto> GetNorthExperienceTypes()
         {
             IList<IdNameDto> inDto = new List<IdNameDto> { };

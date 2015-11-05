@@ -38,7 +38,7 @@ namespace WebMvc.Controllers
         }
         public ContentResult Index(StaffMovementsListModel model)
         {
-            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number, model.Status);
+            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number.HasValue?model.Number.Value:0, model.Status);
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(docs));
         }
         [HttpGet]
@@ -92,6 +92,12 @@ namespace WebMvc.Controllers
         {
             StaffMovementsBl.SaveDocsModel(model);
             return Content("Ok");
+        }
+
+        public FileResult GetAgreementDoc(string AgreementNumber, string AgreementDate ,string UserName, string SignerName, string TargetPosition, string TargetDepartment, string SignerShortName, string SignerPositionWithDepartment, string UserShortName)
+        {
+            var data = NoteDocumentCreator.StaffMovementsDocsCreator.CreateAgreementDoc(Server.MapPath("~/Files"), AgreementNumber, AgreementDate, UserName, SignerName, TargetPosition, TargetDepartment, SignerShortName, SignerPositionWithDepartment, UserShortName);
+            return File(data, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "dogovor.docx");
         }
     }
 }

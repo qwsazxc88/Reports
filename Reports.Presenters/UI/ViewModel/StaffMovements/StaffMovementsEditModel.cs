@@ -14,6 +14,10 @@ namespace Reports.Presenters.UI.ViewModel
             this.User = new StandartUserDto();
             this.Creator = new StandartUserDto();
             this.StatusId = 1;
+            this.AgreementField1_2 = new string[] { "", "" };
+            this.AgreementField1_6 = new string[] { "" };
+            this.AgreementField4_2 = new string[] { "" };
+            this.AgreementField5_1 = new string[] { "" };
         }
         #region Служебное
         public bool IsDepartmentEditable { get; set; }
@@ -59,8 +63,11 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "На должность")]
         public string TargetPositionName { get; set; }
         public int TargetPositionId { get; set; }
+        public string SourcePositionName { get; set; }
+        public string SourceDepartment { get; set; }
         public IList<IdNameDto> TargetPositions { get; set; }
         public StandartUserDto SourceManager { get; set; }
+        public IList<IdNameDto> AdditionActions { get; set; }
         public StandartUserDto TargetManager { get; set; }
         #endregion
         #region Согласования
@@ -90,27 +97,38 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
         #region Для Руководителя
         [Display(Name = "Ставка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal TargetSalary { get; set; }
         [Display(Name = "Вид расчёта оклада")]
         public int TargetSalaryType { get; set; }
         [Display(Name = "Оклад")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal TargetCasing { get; set; }
         [Display(Name="Условия перевода")]
         public string MovementCondition { get; set; }
         [Display(Name="Должностная надбавка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionPosition {get;set;}
+        [Display(Name="Действие")]
+        public int AdditionPositionAction { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? AdditionPositionTo {get;set;}
         [Display(Name = "Персональная надбавка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionPersonnel { get; set; }
+        [Display(Name = "Действие")]
+        public int AdditionPersonnelAction { get; set; }
         [Display(Name="Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? AdditionPersonnelTo { get; set; }
         [Display(Name = "Надбавка за квалификацию")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionQuality { get; set; }
+        [Display(Name = "Действие")]
+        public int AdditionQualityAction { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
@@ -133,13 +151,23 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name="Номер ДС")]
         public string AdditionalAgreementNumber { get; set; }
         [Display(Name="Районный коэффициент")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal RegionCoefficient {get;set;}
         [Display(Name="Территориальная надбавка (руб.)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionTerritory {get;set;}
+        [Display(Name = "Действие")]
+        public int AdditionTerritoryAction { get; set; }
         [Display(Name="Надбавка за разъездной характер работы")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionTraveling { get; set; }
+        [Display(Name = "Действие")]
+        public int AdditionTravelingAction { get; set; }
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб.)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal AdditionFront { get; set; }
+        [Display(Name = "Действие")]
+        public int AdditionFrontAction { get; set; }
         [Display(Name = "Дата окончания временной надбавки")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
@@ -161,6 +189,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int NorthFactorDay { get; set; }
         [Display(Name="Надбавка")]
         public decimal NorthFactorAddition { get; set; }
+        [Display(Name="Действие")]
+        public int NorthFactorAdditionAction { get; set; }
         public IList<IdNameDto> NorthFactorOrders { get; set; }
         public IList<IdNameDto> NorthFactors { get; set; }
         [Display(Name = "Пункты Дополнительного соглашения")]
@@ -186,6 +216,28 @@ namespace Reports.Presenters.UI.ViewModel
         public string SignatoryName { get; set; }
         public int SignatoryId { get; set; }
         public IList<IdNameDto> SignatoryList { get; set; }
+        #region пункты договора
+        
+        public string[] AgreementField1_2 { get; set; }
+        public string[] AgreementField1_6 { get; set; }
+        public string[] AgreementField5_1 { get; set; }
+        public string[] AgreementField4_2 { get; set; }
+        [Display(Name="Пункт 1.2")]
+        public int AgreementEntry1_2 { get; set; }
+        [Display(Name = "Пункт 1.6")]
+        public int AgreementEntry1_6 { get; set; }
+        [Display(Name = "Пункт 2.2.1")]
+        public int AgreementEntry2_2_1 { get; set; }
+        [Display(Name = "Пункт 4.2")]
+        public int AgreementEntry4_2 { get; set; }
+        [Display(Name = "Пункт 5.1")]
+        public int AgreementEntry5_1 { get; set; }
+        public IList<IdNameDto> AgreementEntry1_2List { get; set; }
+        public IList<IdNameDto> AgreementEntry1_6List { get; set; }
+        public IList<IdNameDto> AgreementEntry2_2_1List { get; set; }
+        public IList<IdNameDto> AgreementEntry4_2List { get; set; }
+        public IList<IdNameDto> AgreementEntry5_1List { get; set; }
+        #endregion
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }

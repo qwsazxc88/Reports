@@ -263,7 +263,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("Position",NHibernateUtil.String);
+                AddScalar("Position",NHibernateUtil.String).
+                AddScalar("ManagerName",NHibernateUtil.String);
         }
 
         public IList<Vacation> LoadForIdsList(List<int> ids)

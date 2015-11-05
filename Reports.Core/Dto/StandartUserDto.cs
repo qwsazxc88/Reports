@@ -7,8 +7,11 @@ namespace Reports.Core.Dto
 {
     public class StandartUserDto
     {
+        public string Label { get; set; }
         [Display(Name = "ФИО сотрудника")]
         public string Name { get; set; }
+        [Display(Name="Организация")]
+        public string Organization { get; set; }
         public int Id { get; set; }
         [Display(Name = "Дирекция 3 ур.")]
         public string Dep3Name { get; set; }
@@ -32,5 +35,7 @@ namespace Reports.Core.Dto
         public IList<string> Chiefs { get; set; }
         [Display(Name = "Кадровики")]
         public IList<string> Personnels { get; set; }
+        [Display(Name = "Руководители")]
+        public IList<string> Managers { get; set; }
     }
 }

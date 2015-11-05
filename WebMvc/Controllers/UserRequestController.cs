@@ -2390,5 +2390,48 @@ namespace WebMvc.Controllers
              var content = RequestBl.GetD_TP_list();
              return Content(Newtonsoft.Json.JsonConvert.SerializeObject(content));
          }
+        #region VacationReturn
+        [HttpGet]
+        public ActionResult CreateVacationReturn()
+        {
+            var model = RequestBl.GetCreateModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult CreateVacationReturn(int UserId)
+        {
+            var model = RequestBl.GetNewVacationReturnViewModel(UserId);
+            return View("VacationReturnEdit",model);
+        }
+        [HttpGet]
+        public ActionResult VacationReturnEdit(int id)
+        {
+            var model = RequestBl.GetVacationReturnEditModel(id);
+            
+            return View(model.Value);
+        }
+        [HttpPost]
+        public ActionResult VacationReturnEdit(VacationReturnViewModel model)
+        {
+            ModelState.Clear();
+            model.FileDto = GetFileContext(Request, ModelState, "File");
+            var result = RequestBl.SaveVacationReturnEditModel(model);
+            result
+                .OnSuccess(x => model = x.Value)
+                .OnError(x => { RequestBl.GetVacationReturnEditModel(model.Id).OnSuccess(y => model = y.Value); ModelState.AddModelError("SaveError", x.Message); });
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult VacationReturnList()
+        {
+            return View(RequestBl.GetVacationReturnListModel());                 
+        }
+        [HttpPost]
+        public ContentResult VacationReturnList(VacationReturnListModel model)
+        {
+            Console.Write(Request.ToString());
+            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(RequestBl.GetDocuments(model)));
+        }
+        #endregion
     }        
 }
