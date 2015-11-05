@@ -29,11 +29,18 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery =
                 string.Format(@"select v.Id as Id,
+                                (
+								select top(1) manager.name 
+								from Users manager 
+								inner JOIN Department userd on userd.Id=u.DepartmentId
+								INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                          u.Id as UserId,
                          'Оплата праздничных и выходных дней  '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[HolidayWork] v
-            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+            inner join [dbo].[Users] u on u.Id = v.UserId", DeleteRequestText);
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
