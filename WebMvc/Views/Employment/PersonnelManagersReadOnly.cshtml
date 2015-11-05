@@ -198,7 +198,7 @@
                         <label id="Variant11">Настоящий Договор заключается временно для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами.</label>
                         <label id="Variant12"><label>Договор заключается временно, на период отсутствия основного работника </label>@Html.TextBoxFor(m => m.ContractPointsFio, new { placeholder = "ФИО", style = "width:400px" })<label>, за которым в соответствии с трудовым договором закреплено рабочее место и вступает в силу со дня подписания сторонами.</label> </label>
                         <label id="Variant13">Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label>
-                        <label id="Variant111">Настоящий Договор заключается на срок с даты начала по дату окончания ТД.</label>
+                        <label id="Variant113"><label>Договор заключается временно для выполнения работ, связанных с временным расширением объема оказываемых услуг, и вступает в силу со дня подписания сторонами. Настоящий Договор заключается на срок с </label>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "даты начала ТД") <label> по </label>@(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "дату окончания ТД")<label>.</label></label>
                     </td>
                 </tr>
                 <tr>
@@ -412,11 +412,8 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
-            if ($("#ContractPoint_1_Id").val() == 3)
-                $("#Variant111").hide();
+            $("#Variant113").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
-            if ($("#ContractPoint_1_Id").val() != 3)
-                $("#Variant111").show();
         }
         else if (TypeId == 2) {
         }
