@@ -55,12 +55,12 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
-@*
-@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 11)
+
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 13)
 {
-    <label>1.5. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
+    <label>1.5. Договор заключается временно для выполнения работ, связанных с временным расширением объема оказываемых услуг, и вступает в силу со дня подписания сторонами. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
 }
-*@
+
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value != 2)
 {
     <text>Дата начала работы - </text><b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
