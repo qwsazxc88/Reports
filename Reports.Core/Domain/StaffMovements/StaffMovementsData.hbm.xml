@@ -6,15 +6,21 @@
     </id>
     
     <property name="AdditionPersonnel" not-null="false"/>
+    <property name="AdditionPersonnelAction" not-null="false"/>
     <property name="AdditionPersonnelTo" not-null="false"/>
     <property name="AdditionTerritory" not-null="false"/>
+    <property name="AdditionTerritoryAction" not-null="false"/>
     <property name="AdditionPosition" not-null="false"/>
+    <property name="AdditionPositionAction" not-null="false"/>
     <property name="AdditionPositionTo" not-null="false"/>
     <property name="AdditionQuality" not-null="false"/>
+    <property name="AdditionQualityAction" not-null="false"/>
     <property name="AdditionQualityTo" not-null="false"/>
     <property name="AdditionTraveling" not-null="false"/>
+    <property name="AdditionTravelingAction" not-null="false"/>
     <property name="AdditionTravelingTo" not-null="false"/>
     <property name="AdditionFront" not-null="false"/>
+    <property name="AdditionFrontAction" not-null="false"/>
     <property name="AdditionFrontTo" not-null="false"/>
     <property name="AdditionalAgreementNumber" not-null="false"/>
     <property name="AdditionalAgreementDate" not-null="false"/>
@@ -29,6 +35,7 @@
     <property name="NorthFactorMonth" not-null="false"/>
     <property name="NorthFactorDay" not-null="false"/>
     <property name="NorthFactorAddition" not-null="false"/>
+    <property name="NorthFactorAdditionAction" not-null="false"/>
     <property name="ChangesToAgreementEntries" not-null="false"/>
     <property name="ChangesToAgreement" not-null="false"/>
     <property name="AgreementDate" not-null="false"/>
@@ -37,9 +44,21 @@
     <property name="MovementReasonOrder" not-null="false"/>
     <property name="MovementTempReason" not-null="false"/>
     <property name="MovementCondition" not-null="false"/>
-    <property name="Conjunction" not-null="false"/>    
+    <property name="Conjunction" not-null="false"/>
+
+    <property name="AgreementField1_2" not-null="false"/>
+    <property name="AgreementField1_6" not-null="false"/>
+    <property name="AgreementField5_1" not-null="false"/>
+    <property name="AgreementField4_2" not-null="false"/>
+    
+    <property name="AgreementEntry1_2" not-null="false"/>
+    <property name="AgreementEntry1_6" not-null="false"/>
+    <property name="AgreementEntry2_2_1" not-null="false"/>
+    <property name="AgreementEntry4_2" not-null="false"/>
+    <property name="AgreementEntry5_1" not-null="false"/>
+    
     <many-to-one name="Signatory" class="Signer" column="Signatory" foreign-key="FK_StaffMovementsData_Signatory" not-null="false"/>
     <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroup" foreign-key="FK_StaffMovementsData_AccessGroup" not-null="false"/>
-    <many-to-one name="HoursType" class="EmploymentHoursType" column="HoursType" foreign-key="FK_StaffMovementsData_EmployementHoursType" not-null="false"/>
+    <many-to-one name="HoursType" class="Schedule" column="HoursType" foreign-key="FK_StaffMovementsData_HoursType" not-null="false"/>
   </class>
 </hibernate-mapping>
