@@ -625,6 +625,18 @@ namespace Reports.Core
             Register(Component.For<IMessagesDao>()
                 .ImplementedBy<MessagesDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IPartialTypesDao>()
+                .ImplementedBy<PartialTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IAssistansDao>()
+                .ImplementedBy<AssistansDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IAssistantPartialLinksDao>()
+                .ImplementedBy<AssistantPartialLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IDocumentApprovalDao>()
+                .ImplementedBy<DocumentApprovalDao>()
+                .LifeStyle.Is(type));
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()

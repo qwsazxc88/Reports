@@ -90,7 +90,10 @@
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
+    <Compile Include="Dao\IAssistansDao.cs" />
+    <Compile Include="Dao\IAssistantPartialLinksDao.cs" />
     <Compile Include="Dao\IDeductionImportDao.cs" />
+    <Compile Include="Dao\IDocumentApprovalDao.cs" />
     <Compile Include="Dao\IExtraChargesDao.cs" />
     <Compile Include="Dao\IHelpBillingExecutorTaskDao.cs" />
     <Compile Include="Dao\IHelpPersonnelBillingCommentDao.cs" />
@@ -192,6 +195,8 @@
     <Compile Include="Dao\Impl\AppointmentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReportCommentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReportDao.cs" />
+    <Compile Include="Dao\Impl\AssistansDao.cs" />
+    <Compile Include="Dao\Impl\AssistantPartialLinksDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
@@ -203,6 +208,7 @@
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\DeductionImportDao.cs" />
     <Compile Include="Dao\Impl\DictionariesDaoImplementations.cs" />
+    <Compile Include="Dao\Impl\DocumentApprovalDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
@@ -280,6 +286,7 @@
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\NewsDao.cs" />
     <Compile Include="Dao\Impl\NoteTypeDao.cs" />
+    <Compile Include="Dao\Impl\PartialTypesDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
@@ -424,6 +431,7 @@
     <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
     <Compile Include="Dao\INewsDao.cs" />
     <Compile Include="Dao\INoteTypeDao.cs" />
+    <Compile Include="Dao\IPartialTypesDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IrefVacationReturnStatusDao.cs" />
@@ -488,6 +496,10 @@
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\Assistans.cs" />
+    <Compile Include="Domain\AssistantPartialLinks.cs" />
+    <Compile Include="Domain\DocumentApproval.cs" />
+    <Compile Include="Domain\PartialTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffList\StaffWorkingConditions.cs" />
@@ -822,6 +834,7 @@
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
     <Compile Include="Dto\SicklistDto.cs" />
+    <Compile Include="Enum\ApprovalTypeEnum.cs" />
     <Compile Include="Enum\CommentsPlaceTypes.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\FamilyRelationship.cs" />
@@ -1440,6 +1453,10 @@
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
     <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <EmbeddedResource Include="Domain\MailConfirm.hbm.xml" />
+    <EmbeddedResource Include="Domain\PartialTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\Assistans.hbm.xml" />
+    <EmbeddedResource Include="Domain\AssistantPartialLinks.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentApproval.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

@@ -231,6 +231,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								select top(1) manager.name 
+								from Users manager 
+								inner JOIN Department userd on userd.Id=u.DepartmentId
+								INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -258,6 +265,13 @@ namespace Reports.Core.Dao.Impl
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
                                 v.Number as Number,
+                                (
+								    select top(1) manager.name 
+								    from Users manager 
+								    inner JOIN Department userd on userd.Id=u.DepartmentId
+								    INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 v.SicklistNumber,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
@@ -296,6 +310,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForListChildVacation =
                                @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								select top(1) manager.name 
+								from Users manager 
+								inner JOIN Department userd on userd.Id=u.DepartmentId
+								INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 N'{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -318,6 +339,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForListVacation =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								    select top(1) manager.name 
+								    from Users manager 
+								    inner JOIN Department userd on userd.Id=u.DepartmentId
+								    INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -949,6 +977,9 @@ namespace Reports.Core.Dao.Impl
                 case 15:
                     sqlQuery += @"order by Dep7Name";
                     break;
+                case 16:
+                    sqlQuery += @" order by ManagerName ";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
@@ -972,7 +1003,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("Position",NHibernateUtil.String);
+                AddScalar("Position",NHibernateUtil.String).
+                AddScalar("ManagerName", NHibernateUtil.String);
         }
 
         public virtual IList<VacationDto> GetDefaultDocuments(
