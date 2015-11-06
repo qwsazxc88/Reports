@@ -273,6 +273,37 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<IdNameDto> SKB_GE { get; set; }
         #endregion
 
+        #region Согласование
+        [Display(Name = "Инициатор")]
+        public bool IsInitiatorApprove { get; set; }    //1
+        public bool IsInitiatorApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО инициатора")]
+        public string InitiatorApproveName { get; set; }
+
+        [Display(Name = "Куратор")]
+        public bool IsCuratorApprove { get; set; }  //2
+        public bool IsCuratorApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО куратора")]
+        public string CuratorApproveName { get; set; }
+
+        [Display(Name = "Вышестоящий руководитель")]
+        public bool IsTopManagerApprove { get; set; }   //3
+        public bool IsTopManagerApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО вышестоящего руководителя")]
+        public string TopManagerApproveName { get; set; }
+
+        [Display(Name = "Член правления")]
+        public bool IsBoardMemberApprove { get; set; }   //4
+        public bool IsBoardMemberApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО члена правления")]
+        public string BoardMemberApproveName { get; set; }
+
+        #endregion
+
         #region Служебные поля
         [Display(Name = "Признак черновика.")]
         public bool IsDraft { get; set; }

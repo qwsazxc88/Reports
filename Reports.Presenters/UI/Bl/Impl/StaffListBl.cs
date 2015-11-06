@@ -7,6 +7,7 @@ using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -279,6 +280,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(scheduleDao); }
             set { scheduleDao = value; }
         }
+
+        protected IDocumentApprovalDao documentapprovalDao;
+        public IDocumentApprovalDao DocumentApprovalDao
+        {
+            get { return Validate.Dependency(documentapprovalDao); }
+            set { documentapprovalDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -327,8 +336,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
             {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2
-                    || AuthenticationService.CurrentUser.Id == 6638 || AuthenticationService.CurrentUser.Id == 22821
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.Inspector || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager
+                    || AuthenticationService.CurrentUser.Id == 6638 //|| AuthenticationService.CurrentUser.Id == 22821
                     || AuthenticationService.CurrentUser.Id == 24926 || AuthenticationService.CurrentUser.Id == 513)//временно открыт доступ 4 сотрудникам к всей структуре
                 {
                     //DepId = "9900424";
@@ -337,7 +347,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
-                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
+                    if (string.IsNullOrEmpty(DepId))
+                        IsParentDepOnly = true;
+
+                    DepId = (cur == null || cur.Department == null ? null : cur.Department.Code1C.ToString());
+                    
                 }
 
                 return GetDepListWithSEPCount(DepId, IsParentDepOnly);
@@ -480,7 +494,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;
+                //сохранение/черновик
+                if (UserRole.Manager == AuthenticationService.CurrentUser.UserRole || UserRole.Inspector == AuthenticationService.CurrentUser.UserRole || UserRole.ConsultantOutsourcing == AuthenticationService.CurrentUser.UserRole)
+                    model.IsDraftButtonAvailable = true;
+
                 model.IsAgreeButtonAvailable = false;
             }
             else
@@ -618,11 +635,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 }
 
+
+                //согласование
+                SetApprovalFlags(model, entity);
+
+                //заполнение справочников
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;//(!entity.BeginAccountDate.HasValue || model.Id == 0) ? true : false;
-                model.IsAgreeButtonAvailable = !entity.BeginAccountDate.HasValue;
+                //сохранение/черновик
+                if (UserRole.Manager == AuthenticationService.CurrentUser.UserRole || UserRole.Inspector == AuthenticationService.CurrentUser.UserRole || UserRole.ConsultantOutsourcing == AuthenticationService.CurrentUser.UserRole)
+                    model.IsDraftButtonAvailable = true;
+                else
+                    model.IsDraftButtonAvailable = false;
+
+                //сохранение/согласование
+                if (UserRole.Manager == AuthenticationService.CurrentUser.UserRole || UserRole.Inspector == AuthenticationService.CurrentUser.UserRole || UserRole.ConsultantOutsourcing == AuthenticationService.CurrentUser.UserRole)
+                {
+                    model.IsAgreeButtonAvailable = !entity.DateState.HasValue;
+                }
+                else
+                    model.IsAgreeButtonAvailable = false;
             }
             
            
@@ -1863,6 +1896,60 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             
             return true;
+        }
+        /// <summary>
+        /// Определяем состояние согласования заявки.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Данные заявки</param>
+        protected void SetApprovalFlags(StaffDepartmentRequestModel model, StaffDepartmentRequest entity)
+        {
+            //разбираемся с состоянием птиц
+            IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
+            //для новых/автоматически сформированных заявок
+            if (DocApproval == null || DocApproval.Count == 0)
+            {
+                model.IsInitiatorApproveAvailable = entity.IsUsed ? false : true;
+                model.IsCuratorApproveAvailable = false;
+                model.IsTopManagerApproveAvailable = false;
+                model.IsBoardMemberApproveAvailable = false;
+            }
+            else
+            {
+                //сначала все делаем доступным
+                model.IsInitiatorApproveAvailable = true;
+                model.IsCuratorApproveAvailable = true;
+                model.IsTopManagerApproveAvailable = true;
+                model.IsBoardMemberApproveAvailable = true;
+
+                //потом проводим слесарную обработку по состоянию согласования 
+                foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
+                {
+                    switch (item.Number)
+                    {
+                        case 1:
+                            model.IsInitiatorApprove = !item.IsArchive;
+                            model.IsInitiatorApproveAvailable = false;
+                            model.InitiatorApproveName = item.AssistantUser == null ? item.ApproveUser.Name : item.AssistantUser.Name;
+                            break;
+                        case 2:
+                            model.IsCuratorApprove = !item.IsArchive;
+                            model.IsCuratorApproveAvailable = false;
+                            model.CuratorApproveName = item.AssistantUser == null ? item.ApproveUser.Name : item.AssistantUser.Name;
+                            break;
+                        case 3:
+                            model.IsTopManagerApprove = !item.IsArchive;
+                            model.IsTopManagerApproveAvailable = false;
+                            model.TopManagerApproveName = item.AssistantUser == null ? item.ApproveUser.Name : item.AssistantUser.Name;
+                            break;
+                        case 4:
+                            model.IsBoardMemberApprove = !item.IsArchive;
+                            model.IsBoardMemberApproveAvailable = false;
+                            model.BoardMemberApproveName = item.AssistantUser == null ? item.ApproveUser.Name : item.AssistantUser.Name;
+                            break;
+                    }
+                }
+            }
         }
         #endregion
 

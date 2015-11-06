@@ -942,16 +942,49 @@
         </div>
             
         }
+        
+        @if (Model.Id != 0)
+        {
+            <div id="MainDiv5">
+                <h3>Согласование</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.IsInitiatorApprove)</td>
+                            <td>@Html.CheckBoxFor(m => m.IsInitiatorApprove, !Model.IsInitiatorApproveAvailable ? (object)new { disabled = "disabled" } : null)</td>
+                            <td>@Html.DisplayFor(m => m.InitiatorApproveName)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.IsCuratorApprove)</td>
+                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, !Model.IsCuratorApproveAvailable ? (object)new { disabled = "disabled" } : null)</td>
+                            <td>@Html.DisplayFor(m => m.CuratorApproveName)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.IsTopManagerApprove)</td>
+                            <td>@Html.CheckBoxFor(m => m.IsTopManagerApprove, !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)</td>
+                            <td>@Html.DisplayFor(m => m.TopManagerApproveName)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.IsBoardMemberApprove)</td>
+                            <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)</td>
+                            <td>@Html.DisplayFor(m => m.BoardMemberApproveName)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>  
+        }
         <br />
         <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
                                                                     {<text>disabled=disabled</text>}>Сохранить</button>
         <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                      {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-                                                                                     if (Model.Id != 0)
-                                                                                     {
-        @Html.Partial("~/Views/Info/Comments.cshtml")
-                                                                                     }
+    
+    if (Model.Id != 0)
+    {
+    @Html.Partial("~/Views/Info/Comments.cshtml")
+    }
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -1023,6 +1056,13 @@
         $("#MainDiv4").accordion({
             header: "h3",
             active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv5").accordion({
+            header: "h3",
+            //active: true,
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"
