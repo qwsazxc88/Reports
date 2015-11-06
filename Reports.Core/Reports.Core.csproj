@@ -488,6 +488,8 @@
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
+    <Compile Include="Domain\Assistans.cs" />
+    <Compile Include="Domain\PartialTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffList\StaffWorkingConditions.cs" />
@@ -1440,6 +1442,8 @@
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
     <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <EmbeddedResource Include="Domain\MailConfirm.hbm.xml" />
+    <EmbeddedResource Include="Domain\PartialTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\Assistans.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

@@ -1,0 +1,21 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Assistans" dynamic-update="true" table="Assistans">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="ApproveUser" class="User" column="UserId" foreign-key="FK_Assistans_Users" index="Assistans_Users" not-null="false"/>
+    <many-to-one name="AssistantUser" class="User" column="AssistantId" foreign-key="FK_Assistans_UserAssistans" index="Assistans_UserAssistans" not-null="false"/>
+    <property name="BeginDate" not-null="false"/>
+    <property name="EndDate" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_Assistans_CreatorUser" index="Assistans_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_Assistans_EditorUser" index="Assistans_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+  </class>
+</hibernate-mapping>
