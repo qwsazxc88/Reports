@@ -3,18 +3,18 @@
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Помощники.
+    /// Связи помощников с разделами приложения
     /// </summary>
-    public class Assistans : AbstractEntityWithVersion
+    public class AssistantPartialLinks : AbstractEntityWithVersion
     {
         /// <summary>
-        /// Согласовант.
+        /// Связь согласовнта и помощника.
         /// </summary>
-        public virtual User ApproveUser { get; set; }
+        public virtual Assistans Assistans { get; set; }
         /// <summary>
-        /// Помощник.
+        /// Раздел приложения.
         /// </summary>
-        public virtual User AssistantUser { get; set; }
+        public virtual PartialTypes PartialTypes { get; set; }
         /// <summary>
         /// Начало периода действия.
         /// </summary>
