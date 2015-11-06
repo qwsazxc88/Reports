@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\ajax-loader.gif" />
+    <Content Include="Content\artem.css" />
     <Content Include="Content\Default.css" />
     <Content Include="Content\favicon.ico" />
     <Content Include="Content\files\NewYear.jpg" />
@@ -242,6 +243,16 @@
     <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Scripts\vis.min.js" />
     <Content Include="Scripts\UserRequest\VacationReturn\VacationReturnEdit.js" />
+    <Content Include="Views\StaffMovements\Templates\Addition.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Addition2.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\MaterialLiabilityDoc.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Order.cshtml" />
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie1.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\StaffMovements\Templates\prilozhenie2.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -286,7 +297,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Templates\" />
-    <Folder Include="Views\StaffMovements\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoteDocumentCreator\NoteDocumentCreator.csproj">

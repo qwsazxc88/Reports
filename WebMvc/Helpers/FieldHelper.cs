@@ -24,6 +24,18 @@ namespace WebMvc.Helpers
         {
             return Html.CreateField(expression, Enabled ? null : (object)new { disabled = "disabled" });
         }
+        public static MvcHtmlString CreateField<TModel, TValue>(this HtmlHelper<TModel> Html, string format ,Expression<Func<TModel, TValue>> expression, bool Enabled)
+        {
+            return Html.CreateField( format, expression, Enabled ? null : (object)new { disabled = "disabled" });
+        }
+        public static MvcHtmlString CreateField<TModel, TValue>(this HtmlHelper<TModel> Html, string format, Expression<Func<TModel, TValue>> expression, object HtmlAttributes = null)
+        {
+            string template = "<div class='field-wrap'><span style='width:200px;display:inline-block;'>{0}:</span>{1}{2}</div>";
+            var label = Html.LabelFor(expression);
+            var editor = Html.TextBoxNewFor( expression, format, HtmlAttributes);
+            var validation = Html.ValidationMessageFor(expression);
+            return new MvcHtmlString(String.Format(template, label, editor, validation));
+        }
 
         public static MvcHtmlString CreateDropdown<TModel, TValue>(this HtmlHelper<TModel> Html, Expression<Func<TModel, TValue>> expression, SelectList Items,object HtmlAttributes = null)
         {
