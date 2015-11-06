@@ -6,6 +6,75 @@
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Instruction";
 }
+
+<style>
+
+font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:1;
+	mso-generic-font-family:roman;
+	mso-font-format:other;
+	mso-font-pitch:variable;
+	mso-font-signature:0 0 0 0 0 0;}
+font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;
+	mso-font-charset:204;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-536870145 1073786111 1 0 415 0;}
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:Calibri;
+	mso-fareast-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	mso-fareast-language:EN-US;}
+.MsoPapDefault
+	{mso-style-type:export-only;
+	margin-bottom:10.0pt;
+	line-height:115%;}
+page WordSection1
+	{size:841.9pt 595.3pt;
+	mso-page-orientation:landscape;
+	margin:42.5pt 2.0cm 3.0cm 2.0cm;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.WordSection1
+	{page:WordSection1;}
+
+</style>
+
 <div id="tabs">
     <ul>
         @if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
@@ -19,11 +88,13 @@
             <li><a href="#tabs3">Для вышестоящего руководителя</a></li>
             <li><a href="#tabs4">Для специалиста департамента безопасности</a></li>
             <li><a href="#tabs5">Для тренера</a></li>
+            <li><a href="#tabs6">Для кадровика</a></li>
         }
     </ul>
 
         
     <div id="tabs1">            
+    @*
         <p align=center><strong>Краткий порядок пользования программой «ПРИЕМ».</strong></p>
         <p align=center><strong>(Для Кандидатов).</strong></p>
 
@@ -48,11 +119,339 @@
         4. Получив отсканированные  копии Ваших  документов, кадровая служба продолжит оформление Вашего Приема, подписание Руководством Банка пакета документов на Ваш прием, занесение Ваших  
         данных для ведения табельного учета и начисления заработной платы. <b>Если отсканированные документы не будут предоставлены, дальнейшее оформление Приема будет невозможным.</b> Доступ в программу Прием будет для  Вас  закрыт на третий  рабочий день.<br /><br />
         5. По вопросам заполнения электронной анкеты, оформления документов и организационным вопросам просьба обращаться к Вашему будущему Руководителю.
+        *@
+
+        <a href="@Url.Content("~/Templates/InstructionForCandidate.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
+
+        <div class=WordSection1>
+
+            <p class=MsoNormal align=center style='margin-bottom:6.0pt;text-align:center;
+            line-height:normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;
+            font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1
+            этап. <b style='mso-bidi-font-weight:normal'>Инструкция для Кандидата <o:p></o:p></b></span></u></p>
+
+            <p class=MsoNormal align=center style='margin-bottom:6.0pt;text-align:center;
+            line-height:normal'><b style='mso-bidi-font-weight:normal'><u><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>на вакантную должность<o:p></o:p></span></u></b></p>
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1. При
+            поступлении на работу в ПАО &quot;<span class=SpellE>Совкомбанк</span>&quot;
+            Кандидату необходимо заполнить <b style='mso-bidi-font-weight:normal'>электронную
+            анкету на<span style='mso-spacerun:yes'>  </span>прием</b>. Для этого
+            необходимо выполнить следующие действия:<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.1.
+            Напишите <u>собственноручное заявление о согласии на обработку</u> персональных
+            данных. Образец получите у Работодателя;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.2.
+            Подготовьте <span class=SpellE><u>скан-копии</u></span> оригинальных
+            документов, необходимых для приема на работу (ИНН, СНИЛС, паспорт (все
+            заполненные страницы), свидетельства о рождении детей, документы воинского
+            учета, согласие на обработку персональных данных,<span
+            style='mso-spacerun:yes'>  </span>трудовую книжку,<span
+            style='mso-spacerun:yes'>  </span>документ об образовании далее используются
+            термины &quot;Сканы&quot;, &quot;Скан&quot;;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Обратите<span
+            style='mso-spacerun:yes'>  </span>внимание: ФИО в<span
+            style='mso-spacerun:yes'>  </span>СНИЛС, паспорте должны<span
+            style='mso-spacerun:yes'>  </span>быть одинаковыми.<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.3. <u>Получите
+            логин и пароль</u> у Работодателя для работы в программе ПРИЕМ, сохраните логин
+            и пароль; логин и пароль действуют до окончания <span class=SpellE>формления</span>
+            Приема; при утере<span style='mso-spacerun:yes'>  </span>не<span
+            style='mso-spacerun:yes'>  </span><span class=SpellE>восстаналиваются</span> ;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.4. <u>Войдите
+            в программу</u> ПРИЕМ по адресу: </span><a href="https://ruscount.com:8002/"><b
+            style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman";
+            color:blue'>https<span style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+            mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+            style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+            mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+            style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><b
+            style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>,</span></b><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'> используя полученные логин и
+            пароль;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.5.
+            Заполните страницу электронной анкеты <b style='mso-bidi-font-weight:normal'>Сканы
+            оригиналов документов, </b>прикрепив Сканы. Для этого нажмите <b
+            style='mso-bidi-font-weight:normal'>Выберите файл </b>на странице <b
+            style='mso-bidi-font-weight:normal'>Сканы оригиналов документов</b>,
+            поставьте<span style='mso-spacerun:yes'>  </span>галочки рядом с полем
+            передаваемых документов;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.6.<b
+            style='mso-bidi-font-weight:normal'> </b>Заполните страницы электронной анкеты:<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Общая информация, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Паспортные данные, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Образование, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Состав семьи, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Воинский учет, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>- Трудовая деятельность, <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+            mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+            "Times New Roman"'>- Контактные данные. <o:p></o:p></span></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>На
+            каждой старице анкеты поставьте галочки возле полей:<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>-
+            <b style='mso-bidi-font-weight:normal'>Согласие на обработку</b>,<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>-
+            <b style='mso-bidi-font-weight:normal'>Правильность представленных данных
+            подтверждаю</b>,<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>- <b
+            style='mso-bidi-font-weight:normal'>Сохранить черновик</b>.<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Примечание:</span></u><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'> страница<b style='mso-bidi-font-weight:
+            normal'> Документы </b>доступна только для сотрудников.<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.7.
+            Перейдите на страницу <b style='mso-bidi-font-weight:normal'>Департамент
+            безопасности<span style='mso-spacerun:yes'>  </span><o:p></o:p></b></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'><span style='mso-spacerun:yes'>  
+            </span></span></b><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;
+            font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>распечатайте
+            анкету<span style='mso-spacerun:yes'>      </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>   </span>собственноручно подпишите распечатанную
+            анкету <o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>   </span>сделайте скан-копию подписанной анкеты<span
+            style='mso-spacerun:yes'>    </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>   </span>разместите Скан на этой же странице<span
+            style='mso-spacerun:yes'>  </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>   </span>нажмите <b style='mso-bidi-font-weight:normal'>Сохранить
+            черновик</b> (после сохранения Черновиком<span style='mso-spacerun:yes'> 
+            </span>Вы<span style='mso-spacerun:yes'>  </span>можете<span
+            style='mso-spacerun:yes'>  </span>проверить и откорректировать при
+            необходимости предоставляемые данные)<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>   </span>отправьте заполненную анкету на
+            согласование, нажав <b style='mso-bidi-font-weight:normal'>Отправить на
+            согласование.<o:p></o:p></b></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>(<u>ВНИМАНИЕ!</u>
+            После отправки страницы на согласование редактирование такой страницу
+            невозможно. Отправленная на согласование страница станет зеленого цвета).<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Примечание:
+            В случае возникновения каких-либо трудностей при работе с программой ПРИЕМ Вы
+            можете обратиться за разъяснениями к своему будущему Руководителю.<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'> </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+            text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+            mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+            "Times New Roman"'>2 этап. <b style='mso-bidi-font-weight:normal'>Инструкция
+            для Кандидата <o:p></o:p></b></span></u></p>
+
+            <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+            text-align:center;line-height:normal'><b style='mso-bidi-font-weight:normal'><u><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'>&quot;Первый рабочий день&quot;<o:p></o:p></span></u></b></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'> </span><o:p></o:p></span></p>
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2. После
+            принятия положительного решения о Вашем приеме на работу в ПАО &quot;<span
+            class=SpellE>Совкомбанк</span>&quot; Вам необходимо выполнить ряд действий:<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.1.
+            Напишите заявление<span style='mso-spacerun:yes'>  </span>о приеме<span
+            style='mso-spacerun:yes'>  </span>на<span style='mso-spacerun:yes'> 
+            </span>работу;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.2. Войдите
+            в программу ПРИЕМ по адресу: </span><a href="https://ruscount.com:8002/"><b
+            style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman";
+            color:blue'>https<span style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+            mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+            style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+            mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+            style='display:none;mso-hide:all'>HYPERLINK
+            &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><b
+            style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>,</span></b><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'> используя логин и пароль,
+            полученные Вами как Кандидатом;<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.3.
+            Зайдите на страницу <b style='mso-bidi-font-weight:normal'>Документы<span
+            style='mso-spacerun:yes'>  </span><o:p></o:p></b></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+            style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+            mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>       </span></span></b><span style='font-size:12.0pt;
+            mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+            "Times New Roman"'><span style='mso-spacerun:yes'> </span>распечатайте
+            подготовленные именно для Вас документы (трудовой договор , приказ о приеме,
+            другие документы)<span style='mso-spacerun:yes'>    </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>       </span>подпишите распечатанные документы<span
+            style='mso-spacerun:yes'>   </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>       </span>отсканируйте подписанные документы<span
+            style='mso-spacerun:yes'>   </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+            style='mso-spacerun:yes'>       </span>прикрепите требуемые<span
+            style='mso-spacerun:yes'>  </span>Сканы документов.<span
+            style='mso-spacerun:yes'>   </span><o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Обратите
+            внимание: все Договоры и соглашения распечатываются и подписываются в<span
+            style='mso-spacerun:yes'>  </span>ДВУХ экземплярах ( один оригинал Договора
+            остается<span style='mso-spacerun:yes'>  </span>у <span class=SpellE>Работотеля</span>,
+            второй оригинал Договора передается Сотруднику)<o:p></o:p></span></p>
+
+            <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+            normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+            "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.4.<span
+            style='mso-spacerun:yes'>  </span>Передайте <b style='mso-bidi-font-weight:
+            normal'>Руководителю-инициатору</b> оригиналы распечатанных и подписанных
+            документов и оригинал трудовой книжки.<o:p></o:p></span></p>
+            <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+            justify;line-height:normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:
+            11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.5.
+            ВНИМАНИЕ!</span></u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;
+            font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>
+            В случае непредставления Сканов требуемых документов оформление приема будет
+            невозможным. Доступ в программу ПРИЕМ будет для Вас закрыт на третий рабочий
+            день.<o:p></o:p></span></p>
+
+            <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+        </div>
     </div>    
     
     @if ((dto.UserRole & UserRole.Candidate) != UserRole.Candidate)
     {
-            <div id="tabs2">    
+        <div id="tabs2">    
+            @*
             <p align=center><strong>Краткий порядок пользования программой «ПРИЕМ».</strong></p>
             <p align=center><strong>(Для Руководителей).</strong></p>
         
@@ -82,9 +481,296 @@
             &nbsp;&nbsp;&nbsp;&nbsp;<label style="text-decoration:underline;">9.1) Дата начала  работы, указанная в  заявлении, должна совпадать с датой  начала  работы в Пакете документов на Прием . В случае,  если дата начала  работы будет отличаться от заявленной ранее, 
             Вам надо зайти в Прием (страница Руководители)  и изменить  дату начала работы  перед формированием Пакета документов на Прием кандидатом.</label>  <br />
             &nbsp;&nbsp;&nbsp;&nbsp;<label style="text-decoration:underline;">9.2) Дата  начала работы не должна быть ранее даты  издания Пакета документов  на Прием. </label>
-       
+            *@
+
+            <a href="@Url.Content("~/Templates/InstructionForInitiator.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
+
+            <div class=WordSection1>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>Инструкция для <b style='mso-bidi-font-weight:normal'>Руководителя-инициатора</b>
+                <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>о принятия решение по Кандидату <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>в программе ПРИЕМ <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1. При
+                рассмотрении кандидатуры нового сотрудника ПАО «<span class=SpellE>Совкомбанка</span>»
+                необходимо проверить наличие вакансии в штатном расписании в Управлении
+                кадрового делопроизводства и учета банка (<span class=SpellE>e-mail</span>: </span><a
+                href="mailto:Shtat@sovkombank.ru" style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman";color:blue;text-decoration:underline;font-weight:bold'>Shtat@sovkombank.ru</a><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>;</span></b><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> тел. (4942) 39-09-35, 39-09-36).<o:p></o:p></span></p>
+
+                
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.<span
+                style='mso-spacerun:yes'>  </span>При наличии вакансии в программе «ПОДБОР
+                ПЕРСОНАЛА (добавление кандидата в ПРИЕМ)» <b style='mso-bidi-font-weight:normal'>создать
+                логин и пароль</b> для входа и заполнения Кандидатом электронной анкеты на
+                прием в программе ПРИЕМ, для чего необходимо выполнить следующие действия:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>2.1. Зайти в программу «ПОДБОР ПЕРСОНАЛА
+                (добавление Кандидата в ПРИЕМ)»<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>по адресу: </span><a
+                href="https://ruscount.com:8002/"><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman";color:blue'>https<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>   </span><o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+                margin-left:17.0pt;margin-bottom:.0001pt;text-align:justify;line-height:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>2.2. Перейти на страницу <b
+                style='mso-bidi-font-weight:normal'>Реестр отчетов по подбору</b> (если
+                Кандидат подбирался<span style='mso-spacerun:yes'>  </span>через Службу по
+                подбору персонала) или на страницу <b style='mso-bidi-font-weight:normal'>Согласование
+                Кандидата от Руководителя </b>(если Кандидат подбирался самостоятельно или уже
+                согласован в программе <b style='mso-bidi-font-weight:normal'>Pyrus.com</b>)<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:82.2pt;margin-bottom:
+                0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><span style='mso-spacerun:yes'>    
+                </span>- заполнить:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><span style='mso-spacerun:yes'>    
+                </span><b style='mso-bidi-font-weight:normal'>ФИО, <o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>паспортные данные, <o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>СНИЛС, <o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>дату рождения,<o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>структурное подразделение до 7 уровня,<o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>выбрать кадровика,<o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:0cm;
+                margin-left:0cm;margin-bottom:.0001pt;text-align:justify;line-height:normal'><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>обучение,<o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:1.0cm;margin-bottom:6.0pt;
+                margin-left:0cm;text-align:justify;line-height:normal'><b style='mso-bidi-font-weight:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>вид трудового договора. <o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>   </span>Сохранить введенные данные, нажав <b
+                style='mso-bidi-font-weight:normal'>Сохранить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+                margin-left:17.0pt;margin-bottom:.0001pt;text-align:justify;line-height:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>2.3. Распечатать учетную запись (<b
+                style='mso-bidi-font-weight:normal'>логин и пароль</b>) Кандидата с инструкцией
+                для Кандидата <o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Примечание</span></u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>: данная возможность появится после
+                согласования специалистом <span class=SpellE>УКДиУ</span> (Рогозина И.Е.,
+                Ибрагимова А.А., Чеснова С.А., Тиханова О.А.) и Вышестоящим Руководителем.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>   </span>2.4. Передать Кандидату распечатанный <b
+                style='mso-bidi-font-weight:normal'>логин и пароль</b> с инструкцией. Сохранить
+                логин и пароль; логин и пароль действуют до окончания <span class=SpellE>формления</span>
+                Приема; при утере<span style='mso-spacerun:yes'>  </span>не<span
+                style='mso-spacerun:yes'>  </span><span class=SpellE>восстаналиваются</span> ;<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>3.
+                Отслеживать заполнение Кандидатом электронной анкеты. <o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Примечание</span></u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>: Руководитель самостоятельно может
+                вложить скан распечатанной и подписанной Кандидатом анкеты на странице <b
+                style='mso-bidi-font-weight:normal'>Департамент безопасности -</b> п.1.7.
+                Инструкции для Кандидатов на вакантную должность.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>4. <u>После
+                прохождения Итоговой проверки</u> Департаментом безопасности <b
+                style='mso-bidi-font-weight:normal'>Руководитель-инициатор </b>получает на
+                электронный почтовый адрес сообщение о согласовании/несогласовании Кандидата
+                Департаментом безопасности.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal;tab-stops:21.3pt'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>5. <u>В случае положительного решения</u> по Кандидату <b
+                style='mso-bidi-font-weight:normal'>Руководителю-инициатору </b>необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>войти в программу ПРИЕМ<span
+                style='mso-spacerun:yes'>        </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в <b style='mso-bidi-font-weight:
+                normal'>реестре Кандидатов </b>нужного Кандидата, нажав на <b style='mso-bidi-font-weight:
+                normal'>ФИО Кандидата<span style='mso-spacerun:yes'>    </span></b><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>в электронной анкете Кандидата заполнить
+                страницу <b style='mso-bidi-font-weight:normal'>Руководители <o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><span style='mso-spacerun:yes'>      </span></span></b><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>отправить анкету на согласование<b
+                style='mso-bidi-font-weight:normal'> Вышестоящему руководителю.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>ВНИМАНИЕ!</span></u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> Если Кандидат подобран в программе
+                Подбор персонала, то Руководитель-инициатор не может согласовать Кандидата,
+                пока в отчете по подбору к заявке на подбор по данному Кандидату не будут
+                указаны <b style='mso-bidi-font-weight:normal'>Специалистом <span class=SpellE>ОПИНП<span
+                style='font-weight:normal'>а</span></span></b> и<span
+                style='mso-spacerun:yes'>  </span><b style='mso-bidi-font-weight:normal'>Тренером</b>
+                – данные о прохождении первичного обучения.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>6. После
+                положительного согласования анкеты<span style='mso-spacerun:yes'>  </span><b
+                style='mso-bidi-font-weight:normal'>Вышестоящим руководителем</b> <b
+                style='mso-bidi-font-weight:normal'>Руководитель-инициатор</b> уведомляет
+                Кандидата о дате начала работы.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>ВНИМАНИЕ!</span></u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> Дата начала работы, указанная в
+                заявлении Кандидата, должна совпадать с датой начала работы в <b
+                style='mso-bidi-font-weight:normal'>Пакете ( Трудовой договор, Приказ и др.)
+                документов на Прием. </b>В случае расхождения дат следует зайти в программу
+                ПРИЕМ и изменить дату начала работы в <b style='mso-bidi-font-weight:normal'>Пакете
+                документов на Прием</b>, при этом дата начала работы не может быть ранее даты
+                издания <b style='mso-bidi-font-weight:normal'>Пакета документов на Прием.</b><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>7.
+                В случае приема Кандидата на работу<span style='mso-spacerun:yes'>  </span><u>в
+                первый рабочий день</u> <b style='mso-bidi-font-weight:normal'>Руководитель-инициатор</b>
+                передает полученные от Кандидата оригиналы подписанных документов и трудовой
+                книжки <b style='mso-bidi-font-weight:normal'>в Кадровую службу.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>8.
+                При необходимости предоставить доступы<span style='mso-spacerun:yes'> 
+                </span>в<span style='mso-spacerun:yes'>  </span>рабочие банковские<span
+                style='mso-spacerun:yes'>   </span>программы со страницы Руководители по ссылке<span
+                style='mso-spacerun:yes'>  </span>перейти<span style='mso-spacerun:yes'> 
+                </span>в </span><a href="https://pyrus.com/"><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman";color:blue'>https://pyrus.com/</span></a><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><span style='mso-spacerun:yes'> 
+                </span>и создать задачу .<o:p></o:p></span></p>
+
+            </div>
         </div>
-        <div id="tabs3">            
+        <div id="tabs3">         
+            @*   
             <p align=center><strong>Краткий порядок пользования программой «ПРИЕМ».</strong></p>
             <p align=center><strong>(Для Вышестоящего руководителя (Руководителя БГ, Управляющего по области, Регионального директора, Управляющего филиалом))</strong></p>
             1. При согласовании Руководителем электронной анкеты кандидата на прием, Вышестоящему руководителю на электронный почтовый адрес приходит сообщение о необходимости согласования приема кандидата.<br /><br />
@@ -95,9 +781,120 @@
             &nbsp;&nbsp;&nbsp;&nbsp;а) Выбрать в электронной анкете кандидата страницу «Руководители»;<br />
             &nbsp;&nbsp;&nbsp;&nbsp;б) Для положительного согласования приема кандидата, необходимо внизу страницы «Руководители», в поле «Согласование», выбрать статус «Согласен на прием» и нажать кнопку «Применить»;<br />
             &nbsp;&nbsp;&nbsp;&nbsp;в) Для отказа кандидату в приеме необходимо внизу страницы «Руководители» в поле «Согласование» выбрать статус «Отклонить прием» и нажать кнопку «Применить».
+            *@
 
+            <a href="@Url.Content("~/Templates/InstructionForTopManager.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
+
+            <div class=WordSection1>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>Инструкция для <b style='mso-bidi-font-weight:normal'>Вышестоящего
+                руководителя<o:p></o:p></b></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>о принятия решение по Кандидату <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>в программе ПРИЕМ <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1. <b
+                style='mso-bidi-font-weight:normal'>Вышестоящий руководитель<span
+                style='mso-spacerun:yes'>  </span></b>получает на электронный почтовый адрес
+                сообщение о необходимости <b style='mso-bidi-font-weight:normal'>согласования
+                анкеты по приему Кандидата.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.
+                Для просмотра анкеты Кандидата и <b style='mso-bidi-font-weight:normal'>утверждения/<span
+                class=SpellE>неутверждения</span> приема</b> Кандидата необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>войти в программу ПРИЕМ </span><a
+                href="https://ruscount.com:8002/"><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman";color:blue'>https<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в реестре по приему нужного
+                Кандидата, нажав на ФИО Кандидата<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>зайти в анкету Кандидата.<span
+                style='mso-spacerun:yes'>   </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>3.
+                <u>Для согласования</u><b style='mso-bidi-font-weight:normal'> </b>Кандидата
+                необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Руководители </b><span
+                style='mso-spacerun:yes'>     </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>в поле <b style='mso-bidi-font-weight:
+                normal'>Согласование </b>выбрать <b style='mso-bidi-font-weight:normal'>Согласен
+                на прием</b> и нажать <b style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>5.
+                <u>При отклонении</u> кандидатуры Кандидата необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Руководители </b><span
+                style='mso-spacerun:yes'>     </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>в поле <b style='mso-bidi-font-weight:
+                normal'>Согласование </b>выбрать <b style='mso-bidi-font-weight:normal'>Отклонить
+                прием</b> и нажать <b style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+            </div>
         </div>
         <div id="tabs4">         
+            @*
             <p align=center><strong>Краткий порядок пользования программой «ПРИЕМ».</strong></p>
             <p align=center><strong>(Для специалиста Департамента безопасности)</strong></p>
 
@@ -118,10 +915,216 @@
             &nbsp;&nbsp;&nbsp;&nbsp;в) Для отказа кандидату в приеме или если кандидат во вкладку «Департамент безопасности» не прикрепил скан подписанной электронно заполненной анкеты необходимо внизу страницы «Департамент безопасности» в 
             поле «Согласование» выбрать статус «Отклонить прием» и нажать кнопку «Применить»;<br />
             &nbsp;&nbsp;&nbsp;&nbsp;г) Для согласования приема кандидата без проверки необходимо внизу страницы «Департамент безопасности» в поле «Согласование» поставить галку в поле «Без проверки» и нажать кнопку «Применить».
+            *@
 
+            <a href="@Url.Content("~/Templates/InstructionForBackground.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
    
+            <div class=WordSection1>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>Инструкция для <b style='mso-bidi-font-weight:normal'>Департамента
+                безопасности</b> <o:p></o:p></span></u></p>
+                
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>о принятии решения по Кандидату <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>в программе ПРИЕМ <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+                
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1. При
+                появлении новых анкет Кандидатов в программе ПРИЕМ в Департамент безопасности
+                на адрес </span><a href="mailto:list-priem-bezopas@sovkombank.ru" style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman";
+                color:blue;text-decoration:underline;font-weight:bold'>list-priem-bezopas@sovkombank.ru</a><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> приходит сообщение о необходимости
+                согласования приема Кандидата.<o:p></o:p></span></p>
+                
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.
+                Для просмотра электронной анкеты Кандидата необходимо:<o:p></o:p></span></p>
+                
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal;tab-stops:21.3pt'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><span style='mso-spacerun:yes'>       </span>войти в
+                программу ПРИЕМ </span><a href="https://ruscount.com:8002/"><b
+                style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman";
+                color:blue'>https<span style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><span
+                style='mso-ascii-font-family:Calibri;mso-fareast-font-family:Calibri;
+                mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'> <o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal;tab-stops:21.3pt'><span style='mso-ascii-font-family:
+                Calibri;mso-fareast-font-family:Calibri;mso-hansi-font-family:Calibri;
+                mso-bidi-font-family:Calibri'><span style='mso-spacerun:yes'>        
+                </span>выбрать с<span style='mso-spacerun:yes'>  </span>помощью фильтра
+                необходимое подразделение;</span><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>       </span>выбрать в реестре по приему нужного
+                Кандидата, нажав на ФИО Кандидата<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>       </span>в анкете выбрать страницу <b
+                style='mso-bidi-font-weight:normal'>Сканы оригиналов документов </b>и проверить
+                наличие Сканов рукописных и прочих документов Кандидата, обратив внимание на
+                обязательное наличие <o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>-
+                <b style='mso-bidi-font-weight:normal'>Согласия на обработку персональных
+                данных,<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>- Заявлений о достоверности сведений.<o:p></o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>3.
+                <u>Для предварительного согласования</u><b style='mso-bidi-font-weight:normal'>
+                </b>Кандидата необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal;tab-stops:21.3pt'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><span style='mso-spacerun:yes'>  </span><span
+                style='mso-spacerun:yes'>     </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Сканы оригиналов
+                документов<span style='mso-spacerun:yes'>  </span></b><span
+                style='mso-spacerun:yes'>     </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>       </span>в поле <b style='mso-bidi-font-weight:
+                normal'>Согласование </b>выбрать <b style='mso-bidi-font-weight:normal'>Согласен
+                на прием</b> и нажать <b style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>4.
+                <u>При отклонении</u> кандидатуры Кандидата необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Сканы оригиналов документов<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>в поле <b style='mso-bidi-font-weight:
+                normal'>Согласование </b>выбрать <b style='mso-bidi-font-weight:normal'>Отклонить
+                прием</b> и нажать <b style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>5.
+                <u>Для окончательного согласования</u><b style='mso-bidi-font-weight:normal'> </b>Кандидата
+                необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Департамент безопасности<span
+                style='mso-spacerun:yes'>  </span></b><span
+                style='mso-spacerun:yes'>     </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>в поле <b style='mso-bidi-font-weight:
+                normal'>Согласование </b>выбрать <b style='mso-bidi-font-weight:normal'>Согласен
+                на прием</b> и нажать <b style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>6.
+                <u>Для согласования<b style='mso-bidi-font-weight:normal'> </b>Кандидата без
+                проверки</u> необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>выбрать в электронной анкете Кандидата
+                страницу <b style='mso-bidi-font-weight:normal'>Департамент безопасности<span
+                style='mso-spacerun:yes'>  </span></b><span
+                style='mso-spacerun:yes'>     </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>      </span>отметить галочкой поле <b
+                style='mso-bidi-font-weight:normal'>Без проверки </b>и нажать <b
+                style='mso-bidi-font-weight:normal'>Применить.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+                
+            </div>
         </div>
         <div id="tabs5">            
+            @*
             <p align=center><strong>Краткий порядок пользования программой «ПРИЕМ».</strong></p>
             <p align=center><strong>(Для Тренера)</strong></p>
         
@@ -132,9 +1135,233 @@
             &nbsp;&nbsp;&nbsp;&nbsp;а) Зайти в программу «ПРИЕМ» по адресу https://ruscount.com:8002; <br />
             &nbsp;&nbsp;&nbsp;&nbsp;б) Выбрать в реестре по приему кандидатов необходимого кандидата и нажать на ФИО кандидата для заполнения страницы «Обучение»;<br />
             &nbsp;&nbsp;&nbsp;&nbsp;в) Заполнить страницу «Обучение» и нажать на кнопку «Записать».
+            *@
 
+            <a href="@Url.Content("~/Templates/InstructionForTrainer.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
 
+            <div class=WordSection1>
 
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><b style='mso-bidi-font-weight:normal'><u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>Инструкция для Тренера <o:p></o:p></span></u></b></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>о принятия решение по Кандидату <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>в программе ПРИЕМ <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></b></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.<span
+                style='mso-spacerun:yes'>  </span>При появлении в программе ПРИЕМ новых анкет
+                Кандидатов, для которых требуется обучение, Тренерам на адрес </span><a
+                href="mailto:list-priem-obuch@sovkombank.ru" style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman";color:blue;text-decoration:underline;font-weight:bold'>list-priem-obuch@sovkombank.ru</a><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> приходит сообщение о необходимости
+                проведения обучения Кандидата.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2.<span
+                style='mso-spacerun:yes'>  </span>После проведения обучения Тренеру необходимо:<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>войти в программу ПРИЕМ </span><a
+                href="https://ruscount.com:8002/"><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman";color:blue'>https<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+                style='display:none;mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>.<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>com<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><span
+                style='mso-ascii-font-family:Calibri;mso-fareast-font-family:Calibri;
+                mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'> </span><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>выбрать в реестре по приему нужного
+                Кандидата, нажав на ФИО Кандидата<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>в анкете выбрать страницу <b
+                style='mso-bidi-font-weight:normal'>Обучение<span style='mso-spacerun:yes'> 
+                </span><o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>заполнить страницу<b style='mso-bidi-font-weight:
+                normal'> Обучение <o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'><span style='mso-spacerun:yes'>     </span></span></b><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'>нажать кнопку<b style='mso-bidi-font-weight:
+                normal'> Записать.</b><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>ВНИМАНИЕ!
+                Тренер может заполнить страницу <b style='mso-bidi-font-weight:normal'>Обучение
+                </b>в анкете Кандидата только после согласования анкеты с <b style='mso-bidi-font-weight:
+                normal'>Департаментом безопасности</b>, с момента появления статуса <b
+                style='mso-bidi-font-weight:normal'>Ожидается заявление о приеме.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+            </div>
+        </div>
+        <div id="tabs6">
+            <a href="@Url.Content("~/Templates/InstructionForPersonnelManager.docx")" target="_blank" style="color:Blue;font-weight:bold">Скачать инструкцию</a>
+
+            <div class=WordSection1>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>Инструкция для <b style='mso-bidi-font-weight:normal'>Кадровой
+                службы</b> <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>о принятия решение по Кандидату <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+                text-align:center;line-height:normal'><u><span style='font-size:12.0pt;
+                mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+                "Times New Roman"'>в программе ПРИЕМ <o:p></o:p></span></u></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>1.
+                В случае утверждения Кандидата <b style='mso-bidi-font-weight:normal'>Вышестоящим
+                руководителем</b> Кадровой службе необходимо<b style='mso-bidi-font-weight:
+                normal'>: <o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>- войти в программу ПРИЕМ </span><a
+                href="https://ruscount.com:8002/"><b style='mso-bidi-font-weight:normal'><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman";color:blue'>https<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>://<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>ruscount<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>.<span style='display:none;
+                mso-hide:all'>HYPERLINK &quot;https://ruscount.com:8002/&quot;</span>com<span
+                style='display:none;mso-hide:all'>HYPERLINK
+                &quot;https://ruscount.com:8002/&quot;</span>:8002</span></b></a><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>- отметить статус <b style='mso-bidi-font-weight:
+                normal'>Оформление Кадры <o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>- откроется список Кандидатов, зайти в
+                анкету Кандидата<span style='mso-spacerun:yes'>    </span><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>- заполнить страницу <b style='mso-bidi-font-weight:
+                normal'>Кадры</b><o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><span
+                style='mso-spacerun:yes'>     </span>- назначить список документов на странице <b
+                style='mso-bidi-font-weight:normal'>Документы</b> для подписи Кандидатом
+                (заявление на прием, трудовой договор, приказ о приеме, другие документы).<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>2. Далее
+                выполняется контроль за действиями Кандидата, предусмотренными пунктами 2.3.,
+                2.4. <b style='mso-bidi-font-weight:normal'>Инструкции «Первый рабочий день»
+                для Кандидата.<o:p></o:p></b></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>3. После
+                получения всех необходимых отсканированных документов <b style='mso-bidi-font-weight:
+                normal'>Кадровая служба</b> вносит данные Кандидата, необходимые для ведения
+                табельного учета и начисления заработной платы.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:6.0pt;text-align:justify;line-height:
+                normal'><span style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:
+                "Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><u><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>Примечание:</span></u><span
+                style='font-size:12.0pt;mso-bidi-font-size:11.0pt;font-family:"Times New Roman","serif";
+                mso-fareast-font-family:"Times New Roman"'> не забудьте проконтролировать
+                п.2.5. ВНИМАНИЕ<span style='mso-spacerun:yes'>  </span>Инструкции «Первый
+                рабочий день» о блокировании доступа Кандидата к программе ПРИЕМ.<o:p></o:p></span></p>
+
+                <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                justify;line-height:normal'><span style='font-size:12.0pt;mso-bidi-font-size:
+                11.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'>4.
+                При получении<span style='mso-spacerun:yes'>  </span>оригиналов<span
+                style='mso-spacerun:yes'>  </span>документов отметить в<span
+                style='mso-spacerun:yes'>  </span>реестре <b style='mso-bidi-font-weight:normal'>Оригинал
+                получен</b>.<o:p></o:p></span></p>
+
+            </div>
         </div>
     }    
     
