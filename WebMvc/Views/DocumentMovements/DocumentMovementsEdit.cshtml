@@ -1,0 +1,24 @@
+﻿@using WebMvc.Helpers
+@using Reports.Presenters.UI.ViewModel
+@model DocumentMovementsEditModel
+@Html.AddScripts("../../Scripts/angular.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js");
+@using (Html.BeginBlock("doc-wrap", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
+{
+    using (Html.BeginForm())
+    {
+        using (Html.BeginBlock("filter-wrap"))
+        {
+            if(Model.SendDate.HasValue)
+            {
+                
+            }
+            else
+            {
+                @Html.CreateField(model => model.User.Id, new { ngmodel="Model.User.Id" })
+            }
+        }
+        using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+        {
+        }
+    }
+}

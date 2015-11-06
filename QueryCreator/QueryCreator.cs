@@ -7,11 +7,12 @@ using System.Reflection;
 using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Core.Utils;
+
 namespace Reports.Core
 {
     public static class QueryCreator
     {
-        public static Expression<Func<TDomain, bool>> Create<TDomain, TSearchModel>(TSearchModel searchmodel,User currentuser)
+        public static Expression<Func<TDomain, bool>> Create<TDomain, TSearchModel>(TSearchModel searchmodel,User currentuser, UserRole currentrole)
         {
             //Expression для модели поиска
             ConstantExpression search = ConstantExpression.Constant(searchmodel);
@@ -21,10 +22,10 @@ namespace Reports.Core
             Expression rights = Expression.Constant(true);
             var smattrib = searchmodel.GetType().GetCustomAttributes(typeof(SearchModelAttribute), false);
             smattrib.NotNullAndAny()
-                .OnSuccess(x => 
-                        rights = GetUserRights(currentuser, domain, ((SearchModelAttribute)smattrib.First()).RightsProperty))
+                .OnSuccess(x =>
+                        rights = GetUserRights(currentuser, currentrole, domain, ((SearchModelAttribute)smattrib.First()).RightsProperty))
                 .OnError(x=>
-                        rights = GetUserRights(currentuser, domain));
+                        rights = GetUserRights(currentuser, currentrole, domain));
             
             //Получаем все свойства модели поиска
             var props = typeof(TSearchModel).GetProperties();
@@ -85,12 +86,12 @@ namespace Reports.Core
             //создаём результат
             return Expression.Lambda<Func<TDomain, bool>>(result, domain);
         }
-        private static Expression GetUserRights(User user, Expression domain, string departmentContainer="User.Department")
+        private static Expression GetUserRights(User user,UserRole role, Expression domain, string departmentContainer="User.Department")
         {
-            var userdepprop = domain.GetProperty(departmentContainer+".Path");
+            var userdepprop = domain.GetProperty(departmentContainer+".Path");            
             var useridprop = domain.GetProperty("User.Id");
             Expression result = Expression.Constant(false);
-            switch (user.UserRole)
+            switch (role)
             {
                 case UserRole.Manager:
                     List<Department> deps = Ioc.Resolve<IManualRoleRecordDao>().Find(x => x.User.Id == user.Id && x.TargetDepartment != null).Select(x => x.TargetDepartment).ToList();
@@ -116,13 +117,6 @@ namespace Reports.Core
             }
             return result;
         }
-        public static Expression GetProperty(this Expression expression, string property)
-        {
-            string[] props = property.Split('.');
-            Expression result = Expression.Property(expression, props[0]);
-            for (int i = 1; i < props.Length; i++)
-                result = Expression.Property(result, props[i]);
-            return result;
-        }
+        
     }
 }

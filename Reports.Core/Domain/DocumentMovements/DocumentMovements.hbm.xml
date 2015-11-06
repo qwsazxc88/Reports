@@ -5,7 +5,7 @@
     </id>
     <property name="CreateDate" not-null="true"/>
     <property name="SendDate" not-null="false"/>
-    
+    <property name ="ReceiverCheckDate" not-null="false"/>
     <many-to-one name="Sender" class="User" column="Sender" foreign-key="FK_DocumentMovements_Sender" not-null="true"/>
     <many-to-one name="Receiver" class="User" column="Receiver" foreign-key="FK_DocumentMovements_Receiver" not-null="false"/>
     

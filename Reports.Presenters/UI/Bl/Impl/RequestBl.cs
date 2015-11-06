@@ -6260,7 +6260,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public List<VacationReturnDto> GetDocuments(VacationReturnListModel model)
         {
             var currentuser = UserDao.Load(CurrentUser.Id);
-            Expression<Func<VacationReturn,bool>> query = QueryCreator.Create<VacationReturn, VacationReturnListModel>(model,currentuser);
+            Expression<Func<VacationReturn,bool>> query = QueryCreator.Create<VacationReturn, VacationReturnListModel>(model,currentuser, CurrentUser.UserRole);
             int npp = 1;
             var result = VacationReturnDao.Find(query.Compile()).Select(x => new VacationReturnDto 
             { 

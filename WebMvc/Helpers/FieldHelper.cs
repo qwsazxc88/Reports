@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -81,6 +82,16 @@ namespace WebMvc.Helpers
             string action = String.IsNullOrEmpty(OnClick) ? "" : String.Format(" onclick='{0}' ", OnClick);
 
             return new MvcHtmlString(String.Format("<input type='{0}' value='{1}' {2} {3}></input>", IsSubmit ? "submit" : "button", Content, action,Enabled?"":"disabled='disabled'"));
+        }
+        public static MvcHtmlString AddScripts(this HtmlHelper Html, params string[] scripts)
+        {
+            string template = "<script type='text/javascript' src='{0}'></script>"+Environment.NewLine;
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < scripts.Length; i++)
+            {
+                result.Append(String.Format(template, scripts[i]));
+            }
+            return new MvcHtmlString(result.ToString());
         }
     }
 }

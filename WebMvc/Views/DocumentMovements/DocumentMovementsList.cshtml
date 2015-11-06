@@ -1,0 +1,23 @@
+﻿@using Reports.Presenters.UI.ViewModel
+@using WebMvc.Helpers
+@model DocumentMovementsListModel
+@{
+    ViewBag.Title = "Документооборот";
+}
+@using(Html.BeginForm("DocumentMovementsList","DocumentMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{    
+    
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.CreateField(m => m.Number)
+        @Html.CreateField(m => m.UserName)
+        @Html.CreateField(m => m.SenderName)
+        @Html.CreateField(m => m.ReceiverName)
+    }
+    
+    using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+    {
+        @Html.CreateButton(true, true, "Выбрать")
+        @Html.CreateButton(false, true , "Очистить","ClearForm();")
+    }
+}

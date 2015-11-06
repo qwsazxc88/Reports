@@ -203,6 +203,7 @@
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\DeductionImportDao.cs" />
     <Compile Include="Dao\Impl\DictionariesDaoImplementations.cs" />
+    <Compile Include="Dao\Impl\DocumentMovements\DocumentMovementsDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
@@ -422,6 +423,7 @@
     <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
     <Compile Include="Dao\INewsDao.cs" />
     <Compile Include="Dao\INoteTypeDao.cs" />
+    <Compile Include="Dao\IDocumentMovementsDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IrefVacationReturnStatusDao.cs" />
@@ -848,6 +850,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Roles.cs" />
+    <Compile Include="Utils\SearchFieldAttribute.cs" />
     <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\IHttpContextService.cs" />
     <Compile Include="Services\Impl\StartupService.cs" />

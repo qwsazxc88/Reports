@@ -108,6 +108,7 @@
     <Compile Include="UI\Bl\IAppointmentBl.cs" />
     <Compile Include="UI\Bl\IAutoComplete.cs" />
     <Compile Include="UI\Bl\IBaseBl.cs" />
+    <Compile Include="UI\Bl\IDocumentMovementsBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
     <Compile Include="UI\Bl\IEmploymentBl.cs" />
     <Compile Include="UI\Bl\IGpdBl.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="UI\Bl\Impl\AppointmentBl.cs" />
     <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
+    <Compile Include="UI\Bl\Impl\DocumentMovementsBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
     <Compile Include="UI\Bl\Impl\EmploymentBl.cs" />
@@ -166,6 +168,8 @@
     <Compile Include="UI\ViewModel\DismissalEditModel.cs" />
     <Compile Include="UI\ViewModel\DismissalListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentCommentsModel.cs" />
+    <Compile Include="UI\ViewModel\DocumentMovements\DocumentMovementsEditModel.cs" />
+    <Compile Include="UI\ViewModel\DocumentMovements\DocumentMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentSubtypeListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentTypeListModel.cs" />
     <Compile Include="UI\ViewModel\EditDayModel.cs" />
