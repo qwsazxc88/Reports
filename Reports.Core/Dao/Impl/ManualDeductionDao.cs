@@ -61,6 +61,8 @@ namespace Reports.Core.Dao.Impl
                         UserName = x.User.Name,
                         Position = x.User.Position!=null?x.User.Position.Name:"",
                         AllSum = x.AllSum,
+                        DeductionUploadingDate = x.Deductions!=null && x.Deductions.Any()?x.Deductions.First().DeductionDate:new DateTime?(),
+                        CreateDate = x.CreateDate,
                         DeductionDate = x.MissionReport.MissionOrder.EndDate.HasValue ? x.MissionReport.MissionOrder.EndDate.Value : x.MissionReport.MissionOrder.CreateDate,
                         DeleteDate = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToShortDateString() : "",
                         UserId = x.User.Id,
