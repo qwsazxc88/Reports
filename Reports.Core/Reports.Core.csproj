@@ -842,6 +842,7 @@
     <Compile Include="Filters\UserListFilter.cs" />
     <Compile Include="Filters\UserLoginFilter.cs" />
     <Compile Include="Ioc.cs" />
+    <Compile Include="Attributes\ngAtrributes.cs" />
     <Compile Include="NHibernateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -1445,7 +1446,9 @@
     <EmbeddedResource Include="Domain\ManualDeduction.hbm.xml" />
     <EmbeddedResource Include="Domain\MailList.hbm.xml" />
     <EmbeddedResource Include="Domain\MailConfirm.hbm.xml" />
-    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.hbm.xml" />
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.hbm.xml" />
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />

@@ -3,35 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Reports.Core.Domain;
+using Reports.Core;
 namespace Reports.Core.Dto
 {
     public class DocumentMovementsDto
-    {
-        public DocumentMovementsDto()
-        {
-            this.User = new StandartUserDto();
-            this.Sender = new StandartUserDto();
-            this.Receiver = new StandartUserDto();
-            this.SelectedDocs = new List<DocumentMovementsSelectedDocsDto>();
-        }
-        public StandartUserDto User { get; set; }
-        public StandartUserDto Sender { get; set; }
-        public StandartUserDto Receiver { get; set; }
+    {     
+        [ngGrid(ColumnName="Номер", FilterEnabled = true, IsEditable= false, SortEnabled = true, Type = ngType.Number)]
+        public int Id { get; set; }
+        [ngGrid(ColumnName = "ФИО сотрудника", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string User { get; set; }
+        [ngGrid(ColumnName = "Дирекция 3 ур.", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string UserDep3 { get; set; }
+        [ngGrid(ColumnName = "Подразделение 7 ур.", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string UserDep7 { get; set; }
+        [ngGrid(ColumnName = "Направление", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string Direction { get; set; }
+        [ngGrid(ColumnName = "Отправитель", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string Sender { get; set; }
+        [ngGrid(ColumnName = "Получатель", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string Receiver { get; set; }
+        [ngGrid(ColumnName = "Дата создания", FilterEnabled = true, Type = ngType.Date, IsEditable = false, SortEnabled = true)]
         public DateTime CreateDate { get; set; }
+        [ngGrid(ColumnName = "Дата отправки", FilterEnabled = true, Type = ngType.Date, IsEditable = false, SortEnabled = true)]
         public DateTime? SendDate { get; set; }
+        [ngGrid(ColumnName = "Описание", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
         public string Descript { get; set; }
-        public List<DocumentMovementsSelectedDocsDto> SelectedDocs { get; set; }
-        //public virtual DocumentMovements_SelectedDocs Docs { get; set; }
-        public DocumentMovementsDto FromDomain(DocumentMovements x)
-        {
-                CreateDate = x.CreateDate;
-                Descript = x.Descript;
-                Receiver = x.Receiver != null ? new StandartUserDto { Id = x.Receiver.Id, Name = x.Receiver.Name, Dep7Name = x.Receiver.Department != null ? x.Receiver.Department.Name : "", Dep3Name = x.Receiver.Department != null && x.Receiver.Department.Dep3 != null && x.Receiver.Department.Dep3.Any() ? x.Receiver.Department.Dep3.First().Name : "" } : new StandartUserDto { };
-                Sender = x.Sender != null ? new StandartUserDto { Id = x.Sender.Id, Name = x.Sender.Name, Dep7Name = x.Sender.Department != null ? x.Sender.Department.Name : "", Dep3Name = x.Sender.Department != null && x.Sender.Department.Dep3 != null && x.Sender.Department.Dep3.Any() ? x.Sender.Department.Dep3.First().Name : "" } : new StandartUserDto { };
-                User = x.User != null ? new StandartUserDto { Id = x.User.Id, Name = x.User.Name, Dep7Name = x.User.Department != null ? x.User.Department.Name : "", Dep3Name = x.User.Department != null && x.User.Department.Dep3 != null && x.User.Department.Dep3.Any() ? x.User.Department.Dep3.First().Name : "" } : new StandartUserDto { };
-                SendDate = x.SendDate;
-                SelectedDocs = x.Docs.Select<DocumentMovements_SelectedDocs,DocumentMovementsSelectedDocsDto>(t => new DocumentMovementsSelectedDocsDto().FromDomain(t)).ToList();
-                return this;
-        }
+        [ngGrid(ColumnName = "Наименование документа", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string DocumentName { get; set; }
+        [ngGrid(ColumnName = "Документ отправлен", FilterEnabled = true, Type = ngType.Boolean, IsEditable = false, SortEnabled = true)]
+        public bool DocumentSended { get; set; }
+        [ngGrid(ColumnName = "Документ получен", FilterEnabled = true, Type = ngType.Boolean, IsEditable = false, SortEnabled = true)]
+        public bool DocumentReceived { get; set; }
+        [ngGrid(ColumnName = "Статус", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        public string Status { get; set; }
+        
     }
 }

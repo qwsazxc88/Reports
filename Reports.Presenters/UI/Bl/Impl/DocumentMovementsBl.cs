@@ -41,8 +41,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(CurrentUser.Id);            
             var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole);
-            var docs = DocumentMovementsDao.Find(query.Compile()).Select(x => new DocumentMovementsDto().FromDomain(x)).ToList();
-            return docs;
+            var docs = DocumentMovementsDao.Find(query.Compile()).ToList();
+            List<DocumentMovementsDto> result = new List<DocumentMovementsDto>();
+            foreach (var doc in docs)
+            {
+                foreach (var el in doc.Docs.Where(x => x.SenderCheck || x.RecieverCheck))
+                    result.Add(new DocumentMovementsDto { Id = doc.Id, CreateDate=doc.CreateDate, Descript = doc.Descript, DocumentName= el.DocType.Name, DocumentReceived= el.RecieverCheck, DocumentSended = el.SenderCheck, Receiver = doc.Receiver.Name, SendDate=doc.SendDate, Sender = doc.Sender.Name, User= doc.User.Name, UserDep3 = doc.User.Department.Dep3.First().Name, UserDep7 = doc.User.Department.Name});
+            }
+            return result;
         }
 
         public DocumentMovementsEditModel GetEditModel(int Id)

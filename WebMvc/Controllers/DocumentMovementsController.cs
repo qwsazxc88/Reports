@@ -22,6 +22,7 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(documentMovementsBl);
             }
         }
+
         public ActionResult Index()
         {
             return RedirectToAction("DocumentMovementsList");
@@ -43,6 +44,18 @@ namespace WebMvc.Controllers
         {
             model.Documents = DocumentMovementsBl.GetDocuments(model);            
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(model.Documents));
+        }
+        [HttpGet]
+        public ActionResult DocumentMovementsEdit(int id)
+        {
+            var model = DocumentMovementsBl.GetEditModel(id);
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult DocumentMovementsEdit(DocumentMovementsEditModel model)
+        {
+            model = DocumentMovementsBl.SaveModel(model);
+            return View(model);
         }
     }
 }

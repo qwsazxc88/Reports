@@ -1,24 +1,77 @@
 ﻿@using WebMvc.Helpers
 @using Reports.Presenters.UI.ViewModel
 @model DocumentMovementsEditModel
-@Html.AddScripts("../../Scripts/angular.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js");
-@using (Html.BeginBlock("doc-wrap", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
+@{
+    ViewBag.Title = "Документооборот - Редактирование заявки";
+}
+@Html.AddStyles("../../Content/artem.css")          
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js","../../Scripts/angular.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js")
+@using (Html.BeginBlock("", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
 {
+    @Html.HiddenFor(model => model.Id)
     using (Html.BeginForm())
     {
         using (Html.BeginBlock("filter-wrap"))
         {
-            if(Model.SendDate.HasValue)
+            @Html.CreateHeader((string)ViewBag.Title);
+            @Html.CreateDisplay(model => model.Id)
+            @Html.CreateDisplay(model => model.CreateDate)
+            @Html.Partial("EditorTemplates/UserInfo", Model.Sender)
+                                                 if (Model.SendDate.HasValue)
+                                                 {
+                @Html.Partial("EditorTemplates/UserInfo", Model.User)                
+                @Html.Partial("EditorTemplates/UserInfo", Model.Receiver)
+                                                 }
+                                                 else
+                                                 {
+                                                     using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
+                                                     {
+                    @Html.CreateField(model => model.User.Name, new Dictionary<string, object> { { "ng-model", "Model.User.Name" } })
+                    @Html.HiddenFor(model => model.User.Id, new Dictionary<string, object> { { "ng-model", "Model.User.Id" } })
+                                                     }
+                                                     using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
+                                                     {
+                    @Html.CreateField(model => model.Receiver.Name, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Name" } })
+                    @Html.HiddenFor(model => model.Receiver.Id, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Id" } })
+                                                     }
+                                                 }
+        }
+        using (Html.BeginBlock("filter-wrap"))
+        {   
+                    
+            @Html.CreateTextArea(model => model.Descript,(!Model.SenderAccept && Model.IsUserSender))
+            using (Html.BeginTable("grid"))
             {
-                
+                using (Html.BeginRow(""))
+                {
+                    @Html.TD("Название документа", "")
+                    @Html.TD("Отметка об отправке", "")
+                    @Html.TD("Отметка о получении", "")
+                }
+                for (int i = 0; i < Model.SelectedDocs.Count; i++)
+                {
+                    using (Html.BeginRow(""))
+                    {
+                        using (Html.BeginCell(""))
+                        {
+                            @Html.HiddenFor(model => model.SelectedDocs[i].Type)
+                            @Html.DisplayFor(model => model.SelectedDocs[i].TypeName)
+                        }
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].SenderCheck, Model.IsUserSender, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs[i].SenderCheck" } }), "")
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].RecieverCheck, Model.IsUserReceiver, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs[i].ReceiverCheck" } }), "")                                
+                    }
+                }
             }
-            else
-            {
-                @Html.CreateField(model => model.User.Id, new { ngmodel="Model.User.Id" })
-            }
+        }
+        using (Html.BeginBlock("filter-wrap"))
+        {
+            @Html.CreateCheckBox(model => model.SenderAccept, (!Model.SenderAccept && Model.IsUserSender), true)
+            @Html.CreateCheckBox(model => model.ReceiverAccept, (!Model.ReceiverAccept && Model.IsUserReceiver), true)
         }
         using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
         {
+           @Html.CreateButton(false, (!Model.SenderAccept && Model.IsUserSender) || (!Model.ReceiverAccept && Model.IsUserReceiver), "Сохранить", new Dictionary<string, object> { { "ng-click", "SaveModel" } })
+           @Html.CreateButton(false, true, "Печать", "window.print();");
         }
     }
 }

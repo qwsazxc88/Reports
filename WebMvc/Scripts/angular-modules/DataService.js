@@ -1,4 +1,6 @@
-﻿Application.factory('dataService', function ($http) {
+﻿console.log('Service module loading...');
+var ServiceModule = angular.module('ServiceModule', []);
+ServiceModule.factory('dataService', function ($http) {
     return {
         Get: function (url, data, success, fail) {
             $http.get(url, data).
@@ -16,9 +18,9 @@
                       MainLogStorage += 'Post data to ' + url + ' fails! Data transfer error. ';
                       fail('Ошибка при передачи данных.');
                   });
-            },
+        },
         Post: function (url, data, success, fail) {
-                $http.post(url, data).
+            $http.post(url, data).
                   success(function (data, status, headers, config) {
                       if (data.Success == 'Success') {
                           MainLogStorage += 'Post data to ' + url + ' success!';
@@ -35,4 +37,5 @@
                   });
         }
     };
-})
+      });
+      console.log('Service module loaded');

@@ -339,7 +339,7 @@
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="UI\ViewModel\VacationPrintModel.cs" />
-    <Compile Include="UI\ViewModel\VacationReturnListModel.cs" />
+    <Compile Include="UI\ViewModel\UserRequest\VacationReturnListModel.cs" />
     <Compile Include="Utils\Converters.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>

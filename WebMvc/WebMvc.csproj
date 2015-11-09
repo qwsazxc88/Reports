@@ -125,7 +125,9 @@
     </Compile>
     <Compile Include="Helpers\ConvertHelper.cs" />
     <Compile Include="Helpers\FieldHelper.cs" />
+    <Compile Include="Helpers\Fieldset.cs" />
     <Compile Include="Helpers\ObjectExtension.cs" />
+    <Compile Include="Helpers\Table.cs" />
     <Compile Include="Helpers\ToolbarBlock.cs" />
     <Compile Include="Helpers\TextBoxHelper_new.cs" />
     <Compile Include="Models\HomeModel.cs" />
@@ -150,6 +152,7 @@
     <Content Include="Content\logo.gif" />
     <Content Include="Content\logobg.gif" />
     <Content Include="Content\PrintForm.css" />
+    <Content Include="Content\select.min.css" />
     <Content Include="Content\SKB_logo.png" />
     <Content Include="Content\textAngular.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -181,6 +184,7 @@
     <Content Include="Content\themes\base\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\uigrid\ui-grid.min.css" />
+    <Content Include="Content\uigrid\ui-grid.svg" />
     <Content Include="Content\vis.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="FileSizeTooLarge.htm" />
@@ -204,11 +208,13 @@
     <Content Include="Files\Template\[Content_Types].xml" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\angular-modules\DataService.js" />
+    <Content Include="Scripts\angular-modules\select-tpls.min.js" />
     <Content Include="Scripts\angular-sanitize.min.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\DepartmentTree.js" />
     <Content Include="Scripts\DocumentMovements\DocumentMovementsEdit.js" />
+    <Content Include="Scripts\DocumentMovements\DocumentMovementsList.js" />
     <Content Include="Scripts\fileuploader.js" />
     <Content Include="Scripts\globinfo\Globalization.ru-RU.js" />
     <Content Include="Scripts\globinfo\Globalization.ru-RU.min.js" />
@@ -231,6 +237,7 @@
     <Content Include="Scripts\jquery.ui.datepicker-ru.js" />
     <Content Include="Scripts\jquery.upload-1.0.2.min.js" />
     <Content Include="Scripts\jquery.validate_new.min.js" />
+    <Content Include="Scripts\jQueryUIDefaults.js" />
     <Content Include="Scripts\json2.js" />
     <Content Include="Scripts\localization\messages_ru.js" />
     <Content Include="Scripts\mustache.js" />
@@ -857,6 +864,9 @@
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
+    <None Include="Content\uigrid\ui-grid.eot" />
+    <None Include="Content\uigrid\ui-grid.ttf" />
+    <None Include="Content\uigrid\ui-grid.woff" />
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\StaffMovements\Dogovor.docx">
