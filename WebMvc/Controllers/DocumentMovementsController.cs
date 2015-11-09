@@ -57,5 +57,11 @@ namespace WebMvc.Controllers
             model = DocumentMovementsBl.SaveModel(model);
             return View(model);
         }
+        public ContentResult GetUsers(string query)
+        {
+            var result = DocumentMovementsBl.GetUsers(query);
+            return Content
+                (Newtonsoft.Json.JsonConvert.SerializeObject(result));
+        }
     }
 }

@@ -10,5 +10,17 @@ Application.controller('DocumentMovementsEditController', function ($scope, $htt
         $scope.IsWorking = true;
         dataService.Post('DocumentMovements/DocumentMovementsEdit', $scope.Model, $scope.SetModel, alert);
     }
+    $scope.SearchUsers = function (query) {
+
+
+        $http({ method: 'POST', url: '/DocumentMovements/GetUsers/', data: { query: query} }).
+             success(function (data, status, headers, config) {
+                 return data;
+             }).
+            error(function (data, status, headers, config) {
+                return [];
+            });
+
+    }
 });
 console.log('DocumentMovementsEdit module loaded...');

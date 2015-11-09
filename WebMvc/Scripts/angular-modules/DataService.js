@@ -1,7 +1,8 @@
 ﻿console.log('Service module loading...');
 var ServiceModule = angular.module('ServiceModule', []);
-ServiceModule.factory('dataService', function ($http) {
+ServiceModule.factory('dataService', function ($http, $q) {
     return {
+        
         Get: function (url, data, success, fail) {
             $http.get(url, data).
                   success(function (data, status, headers, config) {

@@ -30,10 +30,11 @@
 
         using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
         {
-        @Html.CreateButton(false, true, "Выбрать", new Dictionary<string, object> { { "ng-click", "GetDocuments" } }, "")
-        @Html.CreateButton(false, true, "Очистить", new Dictionary<string, object> { { "ng-click", "ClearForm" } }, "")
+        @Html.CreateButton(false, true, "Выбрать", new Dictionary<string, object> { { "ng-click", "'GetDocuments'" } }, "")
+        @Html.CreateButton(false, true, "Очистить", new Dictionary<string, object> { { "ng-click", "'ClearForm'" } }, "")
         @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
         }
         @(Html.ngGrid<DocumentMovementsDto>("Model.Documents"))
+     @*<div ui-grid="{ data: Model.Documents, enableSorting: true, columnDefs:[{field:'Id', displayName:'Номер' }, {field:'User', displayName:'ФИО сотрудника', enableFiltering:true, enableSorting:true, type :'string' }]}"></div>*@
     }
 }

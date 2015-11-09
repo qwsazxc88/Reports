@@ -164,5 +164,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetModel(newmodel);
             return newmodel;
         }
+        public List<IdNameDto> GetUsers(string query)
+        {
+            var usrs = UserDao.Find(x => x.Name.Contains(query));
+            if (usrs != null && usrs.Any())
+                return usrs.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            else return new List<IdNameDto>();
+        }
     }
 }

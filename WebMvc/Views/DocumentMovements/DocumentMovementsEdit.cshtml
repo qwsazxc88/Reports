@@ -4,8 +4,8 @@
 @{
     ViewBag.Title = "Документооборот - Редактирование заявки";
 }
-@Html.AddStyles("../../Content/artem.css")          
-@Html.AddScripts("../../Scripts/jQueryUIDefaults.js","../../Scripts/angular.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js")
+@Html.AddStyles("../../Content/artem.css", "../../Content/select.min.css")
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js","../../Scripts/angular.min.js","../../Scripts/angular-modules/select-tpls.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js")
 @using (Html.BeginBlock("", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
 {
     @Html.HiddenFor(model => model.Id)
@@ -26,13 +26,14 @@
                                                  {
                                                      using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
                                                      {
-                    @Html.CreateField(model => model.User.Name, new Dictionary<string, object> { { "ng-model", "Model.User.Name" } })
-                    @Html.HiddenFor(model => model.User.Id, new Dictionary<string, object> { { "ng-model", "Model.User.Id" } })
+                                                        @Html.CreateField(model => model.User.Name, new Dictionary<string, object> { { "ng-model", "Model.User.Name" } })
+                                                        @Html.HiddenFor(model => model.User.Id, new Dictionary<string, object> { { "ng-model", "Model.User.Id" } })
                                                      }
                                                      using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
                                                      {
-                    @Html.CreateField(model => model.Receiver.Name, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Name" } })
-                    @Html.HiddenFor(model => model.Receiver.Id, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Id" } })
+                                                         @Html.ngAutoComplete("Model.Receiver.Name","SearchUsers($query)","user","user.Name")
+                                                        @Html.CreateField(model => model.Receiver.Name, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Name" } })
+                                                        @Html.HiddenFor(model => model.Receiver.Id, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Id" } })
                                                      }
                                                  }
         }

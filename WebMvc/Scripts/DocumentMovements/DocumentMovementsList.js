@@ -5,9 +5,9 @@ Application.controller('DocumentMovementsListController', function ($scope, $htt
     $scope.SetModel = function (data) { $scope.Model = data; $scope.IsWorking = false; }
     $scope.OnError = function (message) { alert(message); $scope.IsWorking = false; }
     $scope.IsWorking = false;
-    $scope.columns = [{ field: 'name', displayName:'Имя' }, { field: 'gender'}];
+    
     $scope.Model = {};
-    $scope.Model.Documents = [{ company: 'sovkom', name: 'pupkin', gender: 'male' }, { company: 'tls', name: 'lol', gender: 'female' }];
+    $scope.Model.Documents = [];
     $scope.Model.GridOptions =
     {
         enableSorting: true,

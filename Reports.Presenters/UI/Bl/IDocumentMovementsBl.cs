@@ -7,11 +7,12 @@ using Reports.Core;
 using Reports.Presenters.UI.ViewModel;
 namespace Reports.Presenters.UI.Bl
 {
-    public interface IDocumentMovementsBl
+    public interface IDocumentMovementsBl: IBaseBl
     {
         DocumentMovementsListModel GetListModel();
         List<DocumentMovementsDto> GetDocuments(DocumentMovementsListModel model);
         DocumentMovementsEditModel GetEditModel(int Id);
         DocumentMovementsEditModel SaveModel(DocumentMovementsEditModel model);
+        List<IdNameDto> GetUsers(string query);
     }
 }
