@@ -288,16 +288,29 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         //кураторы и кадровки банка имеют одинаковые права
         [Display(Name = "Куратор")]
-        public bool IsCurator { get; set; }  //
+        public bool IsCuratorApprove { get; set; }    //2
+        public bool IsCurator { get; set; }  //2
+        public bool IsCuratorApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО куратора")]
+        public string CuratorApproveName { get; set; }
+
+
         [Display(Name = "Кадровик банка")]
-        public bool IsPersonnelBank { get; set; }  //
+        public bool IsPersonnelBankApprove { get; set; }  //3
+        public bool IsPersonnelBank { get; set; }  //3
+        public bool IsPersonnelBankApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО кадровика")]
+        public string PersonnelBankApproveName { get; set; }
+
         [Display(Name = "Консультант РК")]
         public bool IsConsultant { get; set; }  //
 
 
 
         [Display(Name = "Вышестоящий руководитель 3 ур.")]
-        public bool IsTopManagerApprove { get; set; }   //2
+        public bool IsTopManagerApprove { get; set; }   //4
         public bool IsTopManagerApproveAvailable { get; set; }
 
         [Display(Name = "ФИО вышестоящего руководителя")]
@@ -310,7 +323,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
 
         [Display(Name = "Член правления")]
-        public bool IsBoardMemberApprove { get; set; }   //3
+        public bool IsBoardMemberApprove { get; set; }   //5
         public bool IsBoardMemberApproveAvailable { get; set; }
 
         [Display(Name = "ФИО члена правления")]

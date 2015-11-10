@@ -969,6 +969,26 @@
                         </tr>
                         <tr>
                             <td>
+                                @Html.LabelFor(m => m.IsCuratorApprove)
+                                @Html.HiddenFor(m => m.IsCuratorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.CuratorApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 @Html.LabelFor(m => m.IsTopManagerApprove)
                                 @Html.HiddenFor(m => m.IsTopManagerApprove)
                             </td>
