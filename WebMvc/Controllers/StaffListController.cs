@@ -153,7 +153,7 @@ namespace WebMvc.Controllers
                     if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
                     {
                         StaffListBl.LoadDictionaries(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
+                        ModelState.AddModelError("MessageStr", error);
                     }
                     else
                     {
@@ -299,6 +299,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
+            ViewBag.Title = model.RequestTypeId == 1 ? "Заявка на создание ШЕ" : (model.RequestTypeId == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
             ModelState.Clear();
             string error = string.Empty;
             bool IsComplete = false;
@@ -330,7 +331,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! Штатная единица утверждена!");
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
                     }
                 }
                 else
