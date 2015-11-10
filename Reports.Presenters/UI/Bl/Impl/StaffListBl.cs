@@ -2041,8 +2041,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         case 1:
                             model.IsInitiatorApprove = true;
                             model.IsInitiatorApproveAvailable = false;
-                            model.InitiatorApproveName = item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Автор заявки: " + item.AssistantUser.Name + " ; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name;
+                            model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                : "Автор заявки: " + item.AssistantUser.Name + " ; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
 
                             //открываем согласование для следующего участника процесса
@@ -2052,8 +2052,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         case 2:
                             model.IsTopManagerApprove = true;
                             model.IsTopManagerApproveAvailable = false;
-                            model.TopManagerApproveName = item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Согласовал: " + item.AssistantUser.Name + " ; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name;
+                            model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                : "Согласовал: " + item.AssistantUser.Name + " ; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
 
                             //открываем согласование для следующего участника процесса
@@ -2063,8 +2063,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         case 3:
                             model.IsBoardMemberApprove = true;
                             model.IsBoardMemberApproveAvailable = false;
-                            model.BoardMemberApproveName = item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
-                                : "Утвердил: " + item.AssistantUser.Name + " ; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка";
+                            model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
+                                : "Утвердил: " + item.AssistantUser.Name + " ; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
                             model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
                             model.IsAgreeButtonAvailable = false;
                             break;
