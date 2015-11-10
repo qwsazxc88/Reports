@@ -42,7 +42,7 @@ namespace WebMvc.Controllers
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
         public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
         {
             StaffListModel model = new StaffListModel();
@@ -56,7 +56,7 @@ namespace WebMvc.Controllers
         /// <param name="DepId">Id родительского подразделения</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
         public ActionResult StaffListGetNodes(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
@@ -72,7 +72,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
         public ActionResult StaffDepartmentRequestList()
         {
             StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
@@ -85,7 +85,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
         public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
             if (ValidateModel(model))
@@ -99,7 +99,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
         public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId, int? Id)
         {
             ModelState.Clear();
@@ -116,7 +116,6 @@ namespace WebMvc.Controllers
             //для комментариев
             ViewBag.PlaceId = model.Id;
             ViewBag.PlaceTypeId = 2; 
-
            
             return View(model);
         }
@@ -125,12 +124,14 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
             ModelState.Clear();
             string error = string.Empty;
             bool IsComplete = false;
+            ViewBag.Title = model.RequestTypeId == 1 ? "Заявка на создание нового подразделения" : (model.RequestTypeId == 2 ? "Заявка на изменение подразделения" : "Заявка на удаление продразделения");
+
             if (ValidateModel(model))//проверки
             {
                 if (model.IsDraft)  //сохранение черновика
@@ -152,12 +153,12 @@ namespace WebMvc.Controllers
                     if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
                     {
                         StaffListBl.LoadDictionaries(model);
-                        ModelState.AddModelError("MessageStr", error);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
                     }
                     else
                     {
                         model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! Заявка утверждена!");
+                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
                     }
                 }
             }
@@ -238,7 +239,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequestList()
         {
             StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
@@ -251,7 +252,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
@@ -273,7 +274,7 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
             ModelState.Clear();
@@ -295,7 +296,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ModelState.Clear();
@@ -366,7 +367,7 @@ namespace WebMvc.Controllers
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
@@ -378,7 +379,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffListArrangement(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
@@ -397,7 +398,7 @@ namespace WebMvc.Controllers
         /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentSoftReference(int? TabIndex, bool? IsModal)
         {
             StaffDepartmentSoftReferenceModel model = new StaffDepartmentSoftReferenceModel();
@@ -415,7 +416,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentSoftGroup()
         {
             StaffDepartmentSoftGroupModel model = StaffListBl.GetStaffDepartmentSoftGroup(new StaffDepartmentSoftGroupModel());
@@ -428,7 +429,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentSoftGroup(StaffDepartmentSoftGroupDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -455,7 +456,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentInstallSoft()
         {
             StaffDepartmentInstallSoftModel model = StaffListBl.GetStaffDepartmentInstallSoft(new StaffDepartmentInstallSoftModel());
@@ -468,7 +469,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentInstallSoft(StaffDepartmentInstallSoftDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -495,7 +496,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentSoftGroupLinks()
         {
             StaffDepartmentSoftGroupLinksModel model = StaffListBl.GetStaffDepartmentSoftGroupLinks(new StaffDepartmentSoftGroupLinksModel(), 0);
@@ -507,7 +508,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentSoftGroupLinks(int SoftGroupId)
         {
             StaffDepartmentSoftGroupLinksModel model = StaffListBl.GetStaffDepartmentSoftGroupLinks(new StaffDepartmentSoftGroupLinksModel(), SoftGroupId);
@@ -522,7 +523,7 @@ namespace WebMvc.Controllers
         /// <param name="OperGroupId">Id группы операций</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentSoftGroupLinks(IList<StaffDepartmentSoftGroupLinksDto> SoftGroupLink, int SoftGroupId)
         {
             string error = String.Empty;
@@ -546,7 +547,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentEncoding(int? TabIndex)
         {
             StaffDepartmentEncodingModel model = new StaffDepartmentEncodingModel();
@@ -560,7 +561,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentBranch()
         {
             StaffDepartmentBranchModel model = StaffListBl.GetStaffDepartmentBranch(new StaffDepartmentBranchModel());
@@ -573,7 +574,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentBranch(StaffDepartmentBranchDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -598,7 +599,7 @@ namespace WebMvc.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult DeleteStaffDepartmentBranch(int Id)
         {
             string error = String.Empty;
@@ -620,7 +621,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentManagement()
         {
             StaffDepartmentManagementModel model = StaffListBl.GetStaffDepartmentManagement(new StaffDepartmentManagementModel());
@@ -633,7 +634,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentMenegment(StaffDepartmentManagementDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -658,7 +659,7 @@ namespace WebMvc.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult DeleteStaffDepartmentMenegment(int Id)
         {
             string error = String.Empty;
@@ -680,7 +681,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentAdministration()
         {
             StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), 0, 0);
@@ -694,7 +695,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentAdministration(int ManagementFilterId, int BranchFilterId)
         {
             StaffDepartmentAdministrationModel model = StaffListBl.GetStaffDepartmentAdministration(new StaffDepartmentAdministrationModel(), ManagementFilterId, BranchFilterId);
@@ -709,7 +710,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentAdministration(StaffDepartmentAdministrationDto itemToAddEdit, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -735,7 +736,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult DeleteStaffDepartmentAdministration(int Id, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -757,7 +758,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentBusinessGroup()
         {
             StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), 0, 0, 0);
@@ -772,7 +773,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentBusinessGroup(int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             StaffDepartmentBusinessGroupModel model = StaffListBl.GetStaffDepartmentBusinessGroup(new StaffDepartmentBusinessGroupModel(), AdminFilterId, ManagementFilterId, BranchFilterId);
@@ -790,7 +791,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupDto itemToAddEdit, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -818,7 +819,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult DeleteStaffDepartmentBusinessGroup(int Id, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -840,7 +841,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentRPLink()
         {
             StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), 0, 0, 0, 0);
@@ -856,7 +857,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentRPLink(int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             StaffDepartmentRPLinkModel model = StaffListBl.GetStaffDepartmentRPLink(new StaffDepartmentRPLinkModel(), BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
@@ -873,7 +874,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentRPLink(StaffDepartmentRPLinkDto itemToAddEdit, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -901,7 +902,7 @@ namespace WebMvc.Controllers
         /// <param name="BranchFilterId">Id филиала</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult DeleteStaffDepartmentRPLink(int Id, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
             string error = String.Empty;
@@ -926,7 +927,7 @@ namespace WebMvc.Controllers
         /// <param name="IsModal">Признак модального режима</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentOperationReference(int? TabIndex, bool? IsModal)
         {
             StaffDepartmentOperationReferenceModel model = new StaffDepartmentOperationReferenceModel();
@@ -944,7 +945,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentOperationGroups()
         {
             StaffDepartmentOperationGroupsModel model = StaffListBl.GetStaffDepartmentOperationGroups(new StaffDepartmentOperationGroupsModel());
@@ -957,7 +958,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentOperationGroups(StaffDepartmentOperationGroupsDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -983,7 +984,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentOperations()
         {
             StaffDepartmentOperationsModel model = StaffListBl.GetStaffDepartmentOperations(new StaffDepartmentOperationsModel());
@@ -996,7 +997,7 @@ namespace WebMvc.Controllers
         /// <param name="itemToAdd"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentOperations(StaffDepartmentOperationsDto itemToAddEdit)
         {
             string error = String.Empty;
@@ -1022,7 +1023,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentOperationLinks()
         {
             StaffDepartmentOperationLinksModel model = StaffListBl.GetStaffDepartmentOperationLinks(new StaffDepartmentOperationLinksModel(), 0);
@@ -1034,7 +1035,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffDepartmentOperationLinks(int OperationGroupId)
         {
             StaffDepartmentOperationLinksModel model = StaffListBl.GetStaffDepartmentOperationLinks(new StaffDepartmentOperationLinksModel(), OperationGroupId);
@@ -1049,7 +1050,7 @@ namespace WebMvc.Controllers
         /// <param name="OperGroupId">Id группы операций</param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult AddEditStaffDepartmentOperationLinks(IList<StaffDepartmentOperationLinksDto> OperationList, int OperationGroupId)
         {
             string error = String.Empty;

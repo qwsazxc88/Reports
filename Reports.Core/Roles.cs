@@ -84,7 +84,7 @@ namespace Reports.Core
          /// </summary>
         ConsultantOutsourcing = 131072,
          /// <summary>
-         /// Консультант Банк
+         /// Кадровик Банк
          /// </summary>
         ConsultantPersonnel = 262144,
          /// <summary>

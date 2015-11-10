@@ -3548,6 +3548,7 @@ LEFT JOIN StaffDepartmentAccessory as I ON I.id = A.BFGId
 --налоговые реквизиты
 LEFT JOIN StaffDepartmentTaxDetails as J ON J.DepartmentId = A.Id
 LEFT JOIN Department as K ON K.Id = B.DepNextId
+WHERE A.IsUsed = 1
 GO
 
 

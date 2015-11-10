@@ -1116,11 +1116,11 @@ INSERT INTO StaffDepartmentRequest ([Version]
 					,null
 					,getdate()
 					,getdate()
-					,C.UserId
+					,(SELECT top 1 UserId FROM #TMP5 WHERE Id = A.Id)--C.UserId
 	FROM (SELECT * FROM Department as A
 				WHERE isnull(A.BFGId, 1) not in (3, 4, 5) and A.FingradCode is null) as A
 	LEFT JOIN Department as B ON B.Code1C = A.ParentId
-	LEFT JOIN #TMP5 as C ON C.Id = A.Id
+	--LEFT JOIN #TMP5 as C ON C.Id = A.Id
 	ORDER BY A.ItemLevel
 
 

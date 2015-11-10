@@ -30,7 +30,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<DocumentApproval> GetDocumentApproval(int DocId, int ApprovalType)
         {
-            return Session.Query<DocumentApproval>().Where(x => x.DocId == DocId && x.ApprovalType == ApprovalType).ToList();
+            return Session.Query<DocumentApproval>().Where(x => x.DocId == DocId && x.ApprovalType == ApprovalType && !x.IsArchive).ToList();
         }
     }
 }
