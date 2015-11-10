@@ -273,6 +273,55 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<IdNameDto> SKB_GE { get; set; }
         #endregion
 
+        #region Согласование
+        [Display(Name = "Инициатор")]
+        public bool IsInitiatorApprove { get; set; }    //1
+        public bool IsInitiatorApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО инициатора")]
+        public string InitiatorApproveName { get; set; }
+
+        [Display(Name = "За")]
+        public int InitiatorId { get; set; }
+        public IList<IdNameDto> Initiators { get; set; }    //список инициаторов для куратора/кадровика банка
+
+
+        //кураторы и кадровки банка имеют одинаковые права
+        [Display(Name = "Куратор")]
+        public bool IsCurator { get; set; }  //
+        [Display(Name = "Кадровик банка")]
+        public bool IsPersonnelBank { get; set; }  //
+        [Display(Name = "Консультант РК")]
+        public bool IsConsultant { get; set; }  //
+
+
+
+        [Display(Name = "Вышестоящий руководитель 3 ур.")]
+        public bool IsTopManagerApprove { get; set; }   //2
+        public bool IsTopManagerApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО вышестоящего руководителя")]
+        public string TopManagerApproveName { get; set; }
+
+        [Display(Name = "За")]
+        public int TopManagerId { get; set; }
+        public IList<IdNameDto> TopManagers { get; set; }    //список вышестоящих руководителей 3 уровня для куратора/кадровика банка
+
+
+
+        [Display(Name = "Член правления")]
+        public bool IsBoardMemberApprove { get; set; }   //3
+        public bool IsBoardMemberApproveAvailable { get; set; }
+
+        [Display(Name = "ФИО члена правления")]
+        public string BoardMemberApproveName { get; set; }
+
+        [Display(Name = "За")]
+        public int BoardMemberId { get; set; }
+        public IList<IdNameDto> BoardMembers { get; set; }    //список членов правления для куратора/кадровика банка
+
+        #endregion
+
         #region Служебные поля
         [Display(Name = "Признак черновика.")]
         public bool IsDraft { get; set; }

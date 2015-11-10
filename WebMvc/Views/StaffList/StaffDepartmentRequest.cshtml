@@ -942,16 +942,79 @@
         </div>
             
         }
+        
+        @if (Model.Id != 0)
+        {
+            <div id="MainDiv5">
+                <h3>Согласование</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsInitiatorApprove)
+                                @Html.HiddenFor(m => m.IsInitiatorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsInitiatorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.InitiatorApproveName)
+                                @if (Model.IsInitiatorApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.InitiatorId, new SelectList(Model.Initiators, "ID", "Name"), !Model.IsInitiatorApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.InitiatorId)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTopManagerApprove)
+                                @Html.HiddenFor(m => m.IsTopManagerApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTopManagerApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TopManagerApproveName)
+                                @*@Html.HiddenFor(m => m.TopManagerId)*@
+                                @if (Model.IsTopManagerApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsBoardMemberApprove)
+                                @Html.HiddenFor(m => m.IsBoardMemberApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.BoardMemberApproveName)
+                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
+                                @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>  
+        }
         <br />
-        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
-                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
-                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
+        @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+        @*@Html.HiddenFor(m => m.IsAgreeButtonAvailable)*@
+        <button id="btnSave" type="button" title=@(Model.Id == 0 ? "Сохранить заявку" : "Редактировать заявку") @if (!Model.IsDraftButtonAvailable)
+                                                                                                                {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
+        <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                        {<text>disabled="disabled"</text>}>Согласовать</button>
     </div>
-                                                                                     if (Model.Id != 0)
-                                                                                     {
+    
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-                                                                                     }
+                                                                                                        }
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -982,7 +1045,7 @@
 
         $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
         $("#btnAgree").click(function(){ 
-            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
                 return;
             }
 
@@ -1023,6 +1086,13 @@
         $("#MainDiv4").accordion({
             header: "h3",
             active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv5").accordion({
+            header: "h3",
+            //active: true,
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"

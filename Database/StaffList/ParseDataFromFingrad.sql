@@ -428,7 +428,7 @@ FROM Users as A WHERE A.RoleId = 4 and A.IsMainManager = 1 and A.IsActive = 1
 --отключаем беременных
 and not exists (SELECT * FROM ChildVacation WHERE getdate() between BeginDate and EndDate and UserId in (SELECT id FROM Users WHERE RoleId = 2 and IsActive = 1 and Email = A.Email)) 
 
-SELECT Id, UserId
+SELECT distinct Id, UserId
 INTO #TMP5
 FROM(--по дирекциям
 			SELECT A.Id, A.ParentId, A.ItemLevel ,isnull(C.Id, isnull(E.id, isnull(G.id, isnull(I.id, K.Id)))) as UserId
@@ -694,7 +694,7 @@ BEGIN
 					,0
 					,null
 					,getdate()
-					,null
+					,getdate()
 					,@CreatorId
 	FROM #TMP as A
 	INNER JOIN Department as B ON B.Id = A.Id
@@ -1115,12 +1115,12 @@ INSERT INTO StaffDepartmentRequest ([Version]
 					,0
 					,null
 					,getdate()
-					,null
-					,C.UserId
+					,getdate()
+					,(SELECT top 1 UserId FROM #TMP5 WHERE Id = A.Id)--C.UserId
 	FROM (SELECT * FROM Department as A
 				WHERE isnull(A.BFGId, 1) not in (3, 4, 5) and A.FingradCode is null) as A
 	LEFT JOIN Department as B ON B.Code1C = A.ParentId
-	LEFT JOIN #TMP5 as C ON C.Id = A.Id
+	--LEFT JOIN #TMP5 as C ON C.Id = A.Id
 	ORDER BY A.ItemLevel
 
 
