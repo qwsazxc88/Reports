@@ -31,7 +31,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         [Display(Name = "Подразделение")]
         public string DepartmentName { get; set; }
-        [SearchField(Comparer = ComparerEnum.Like, ModelParam = "User.Name")]
+        
         public IList<DocumentMovementsDto> Documents { get; set; }
     }
 }

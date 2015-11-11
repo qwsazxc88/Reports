@@ -1,4 +1,29 @@
-﻿.toolbar 
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.page-wrapper 
+{    
+    position:relative;
+    padding-left:5px;
+    padding-right:5px;
+    min-height: 100%;
+    margin-bottom: -50px;
+}
+.block-wrap
+{
+    padding-left:5px;
+    padding-right:5px;
+}
+* html .page-wrapper {
+    height: 100%;
+}
+.page-buffer 
+{    
+    height: 50px;
+}
+.toolbar 
 {
     padding:10px;
 }
@@ -10,9 +35,10 @@ label
 { 
     font-size:1.1em; 
 }
-.UI-grid
+.ui-grid-container
 {
+    position:relative;
     width:100%;
-    min-height:400px;
-    height:100%;
+    min-height:100%;
+    
 }

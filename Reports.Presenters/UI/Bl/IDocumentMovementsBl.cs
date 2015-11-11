@@ -13,6 +13,6 @@ namespace Reports.Presenters.UI.Bl
         List<DocumentMovementsDto> GetDocuments(DocumentMovementsListModel model);
         DocumentMovementsEditModel GetEditModel(int Id);
         DocumentMovementsEditModel SaveModel(DocumentMovementsEditModel model);
-        List<IdNameDto> GetUsers(string query);
+        List<IdNameDto> GetRuscountUsers(string query);
     }
 }

@@ -3,10 +3,11 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
-
+using Newtonsoft.Json;
 
 namespace WebMvc.Controllers
 {
+    [Authorize]
     public class AutoCompleteController : BaseController
     {
         protected IAutoComplete autoComplete;
@@ -25,6 +26,13 @@ namespace WebMvc.Controllers
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             var jsonString = jsonSerializer.Serialize(result);
             return Content(jsonString);
+        }
+        public ContentResult GetUsers(string name)
+        {
+            if (name.Length < 3) return Content("[]");
+            var result = AutoComplete.SearchUsers(name);
+            return Content
+                (JsonConvert.SerializeObject(result));
         }
         /*public ContentResult Vendors(string searchText)
         {

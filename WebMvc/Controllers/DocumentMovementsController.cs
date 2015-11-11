@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Reports.Presenters.UI.Bl;
 using Reports.Core;
 using Reports.Presenters.UI.ViewModel;
+using Newtonsoft.Json;
 namespace WebMvc.Controllers
 {
     [Authorize]
@@ -43,7 +44,7 @@ namespace WebMvc.Controllers
         public ContentResult DocumentMovementsListJson(DocumentMovementsListModel model)
         {
             model.Documents = DocumentMovementsBl.GetDocuments(model);            
-            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(model.Documents));
+            return Content(Newtonsoft.Json.JsonConvert.SerializeObject( model.Documents));
         }
         [HttpGet]
         public ActionResult DocumentMovementsEdit(int id)
@@ -57,11 +58,10 @@ namespace WebMvc.Controllers
             model = DocumentMovementsBl.SaveModel(model);
             return View(model);
         }
-        public ContentResult GetUsers(string query)
+        [HttpPost]
+        public ContentResult GetRuscountUsers(string name)
         {
-            var result = DocumentMovementsBl.GetUsers(query);
-            return Content
-                (Newtonsoft.Json.JsonConvert.SerializeObject(result));
+            return Content(JsonConvert.SerializeObject(DocumentMovementsBl.GetRuscountUsers(name)));
         }
     }
 }

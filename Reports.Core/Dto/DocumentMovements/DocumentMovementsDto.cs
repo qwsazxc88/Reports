@@ -7,7 +7,24 @@ using Reports.Core;
 namespace Reports.Core.Dto
 {
     public class DocumentMovementsDto
-    {     
+    {
+        public DocumentMovementsDto()
+        {
+            Id = 0;
+            User = "";
+            UserDep3 = "";
+            UserDep7 = "";
+            Direction = "";
+            Sender = "";
+            Receiver = "";
+            CreateDate = new DateTime();
+            SendDate = new DateTime?();
+            Descript = "";
+            DocumentName = "";
+            DocumentSended = false;
+            DocumentReceived = false;
+            Status = "";
+        }
         [ngGrid(ColumnName="Номер", FilterEnabled = true, IsEditable= false, SortEnabled = true, Type = ngType.Number)]
         public int Id { get; set; }
         [ngGrid(ColumnName = "ФИО сотрудника", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]

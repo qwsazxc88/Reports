@@ -40,5 +40,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool SenderAccept { get; set; }
         [Display(Name = "Согласовано получателем")]
         public bool ReceiverAccept { get; set; }
+        public bool IsUserFromBank { get; set; }
     }
 }

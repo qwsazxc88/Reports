@@ -5,14 +5,14 @@
     </id>
     <property name="CreateDate" not-null="true"/>
     <property name="SendDate" not-null="false"/>
+    <property name="Descript" not-null="false"/>
     <property name ="ReceiverCheckDate" not-null="false"/>
     <many-to-one name="Sender" class="User" column="Sender" foreign-key="FK_DocumentMovements_Sender" not-null="true"/>
     <many-to-one name="Receiver" class="User" column="Receiver" foreign-key="FK_DocumentMovements_Receiver" not-null="false"/>
-    
-    <bag name="Docs" lazy="true" table="DocumentMovements_SelectedDocs" cascade="all">
-      <key column="MovementId" />
-      <many-to-many class="DocumentMovements_SelectedDocs" column="Id" />
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_DocumentMovements_User" not-null="false"/>
+    <bag name="Docs" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="MovementId" foreign-key="FK_DocumentMovements_SelectedDocs"/>
+      <one-to-many class="DocumentMovements_SelectedDocs"/>
     </bag>
-
   </class>
 </hibernate-mapping>

@@ -17,30 +17,36 @@
             @Html.CreateDisplay(model => model.Id)
             @Html.CreateDisplay(model => model.CreateDate)
             @Html.Partial("EditorTemplates/UserInfo", Model.Sender)
-                                                 if (Model.SendDate.HasValue)
-                                                 {
-                @Html.Partial("EditorTemplates/UserInfo", Model.User)                
-                @Html.Partial("EditorTemplates/UserInfo", Model.Receiver)
-                                                 }
-                                                 else
-                                                 {
-                                                     using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
-                                                     {
-                                                        @Html.CreateField(model => model.User.Name, new Dictionary<string, object> { { "ng-model", "Model.User.Name" } })
-                                                        @Html.HiddenFor(model => model.User.Id, new Dictionary<string, object> { { "ng-model", "Model.User.Id" } })
-                                                     }
-                                                     using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
-                                                     {
-                                                         @Html.ngAutoComplete("Model.Receiver.Name","SearchUsers($query)","user","user.Name")
-                                                        @Html.CreateField(model => model.Receiver.Name, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Name" } })
-                                                        @Html.HiddenFor(model => model.Receiver.Id, new Dictionary<string, object> { { "ng-model", "Model.Receiver.Id" } })
-                                                     }
-                                                 }
+            if (Model.SendDate.HasValue)
+            {
+            @Html.Partial("EditorTemplates/UserInfo", Model.User)                
+            @Html.Partial("EditorTemplates/UserInfo", Model.Receiver)
+            }
+            else
+            {
+                using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
+                {
+                @Html.ngAutoComplete("Model.User", "SearchUsers($query)", "user", "user.Name")                                                        
+                @Html.HiddenFor(model => model.User.Id)
+                }
+                using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
+                {
+                    if (Model.IsUserFromBank)
+                    { 
+                        @Html.ngAutoComplete("Model.Receiver", "SearchReceiverRuscount($query)", "user", "user.Name")                                                                             
+                    }
+                    else
+                    {
+                        @Html.ngAutoComplete("Model.Receiver", "SearchReceiverBank($query)", "user", "user.Name")                                                                             
+                    }
+                    @Html.HiddenFor(model => model.Receiver.Id)
+                }
+            }
         }
         using (Html.BeginBlock("filter-wrap"))
         {   
                     
-            @Html.CreateTextArea(model => model.Descript,(!Model.SenderAccept && Model.IsUserSender))
+            @Html.CreateTextArea(model => model.Descript, (!Model.SenderAccept && Model.IsUserSender))
             using (Html.BeginTable("grid"))
             {
                 using (Html.BeginRow(""))
@@ -58,8 +64,8 @@
                             @Html.HiddenFor(model => model.SelectedDocs[i].Type)
                             @Html.DisplayFor(model => model.SelectedDocs[i].TypeName)
                         }
-                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].SenderCheck, Model.IsUserSender, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs[i].SenderCheck" } }), "")
-                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].RecieverCheck, Model.IsUserReceiver, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs[i].ReceiverCheck" } }), "")                                
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].SenderCheck, Model.IsUserSender, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs["+i+"].SenderCheck" } }), "")
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].RecieverCheck, Model.IsUserReceiver, false, new Dictionary<string, object> { { "ng-model", "Model.SelectedDocs["+i+"].ReceiverCheck" } }), "")                                
                     }
                 }
             }
@@ -71,7 +77,7 @@
         }
         using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
         {
-           @Html.CreateButton(false, (!Model.SenderAccept && Model.IsUserSender) || (!Model.ReceiverAccept && Model.IsUserReceiver), "Сохранить", new Dictionary<string, object> { { "ng-click", "SaveModel" } })
+           @Html.CreateButton(true, (!Model.SenderAccept && Model.IsUserSender) || (!Model.ReceiverAccept && Model.IsUserReceiver), "Сохранить", new Dictionary<string, object> {  { "ng-disabled","IsWorking" } })
            @Html.CreateButton(false, true, "Печать", "window.print();");
         }
     }
