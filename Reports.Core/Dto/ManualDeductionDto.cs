@@ -13,6 +13,8 @@ namespace Reports.Core.Dto
         public string Position { get; set; }
         public decimal AllSum { get; set; }
         public DateTime DeductionDate { get; set; }
+        public DateTime? DeductionUploadingDate { get; set; }
+        public DateTime CreateDate { get; set; }
         public string SendTo1C { get; set; }
         public string DeleteDate { get; set; }
         public string Dep3Name { get; set; }
