@@ -1665,6 +1665,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
             DocumentApproval da = new DocumentApproval();
 
+            da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
+            da.DocId = entity.Id;
+            da.IsArchive = false;
+            da.CreateDate = DateTime.Now;
 
             switch (DocApproval.Count)
             {
@@ -1672,59 +1676,39 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //если иницатор не выбран, это значит, что инициатор действует сам
                     User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = Initiator;
                     da.AssistantUser = Assistant;
                     da.Number = 1;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка создана!";
                     break;
                 case 1:
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
                     da.Number = 2;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка проверена куратором!";
                     break;
                 case 2:
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
                     da.Number = 3;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка проверена кадровиком банка!";
                     break;
                 case 3:
                     //если согласовант не выбран, это значит, что он действует сам
                     User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = TopManager;
                     da.AssistantUser = Assistant;
                     da.Number = 4;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка согласована!";
                     break;
                 case 4:
                     //если утверждающий не выбран, это значит, что он действует сам
                     User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = BoardMember;
                     da.AssistantUser = Assistant;
                     da.Number = 5;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка утверждена!";
                     break;
             }
@@ -2602,6 +2586,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffEstablishedPostRequest);
             DocumentApproval da = new DocumentApproval();
 
+            da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
+            da.DocId = entity.Id;
+            da.IsArchive = false;
+            da.CreateDate = DateTime.Now;
 
             switch (DocApproval.Count)
             {
@@ -2609,59 +2597,39 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //если иницатор не выбран, это значит, что инициатор действует сам
                     User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = Initiator;
                     da.AssistantUser = Assistant;
                     da.Number = 1;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка создана!";
                     break;
                 case 1:
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
                     da.Number = 2;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка проверена куратором!";
                     break;
                 case 2:
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
                     da.Number = 3;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка проверена кадровиком банка!";
                     break;
                 case 3:
                     //если согласовант не выбран, это значит, что он действует сам
                     User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = TopManager;
                     da.AssistantUser = Assistant;
                     da.Number = 4;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка согласована!";
                     break;
                 case 4:
                     //если утверждающий не выбран, это значит, что он действует сам
                     User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
 
-                    da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
-                    da.DocId = entity.Id;
                     da.ApproveUser = BoardMember;
                     da.AssistantUser = Assistant;
                     da.Number = 5;
-                    da.IsArchive = false;
-                    da.CreateDate = DateTime.Now;
                     error = "Заявка утверждена!";
                     break;
             }
