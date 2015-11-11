@@ -2131,6 +2131,30 @@ namespace WebMvc.Controllers
         {
             
             ValidateFileLength(model.InternalPassportScanFile, "InternalPassportScanFile", 20);
+
+            //проверка для номера паспорта
+            if (string.IsNullOrEmpty(model.InternalPassportNumber) || string.IsNullOrWhiteSpace(model.InternalPassportNumber))
+            {
+                ModelState.AddModelError("InternalPassportNumber", "Обязательное поле");
+            }
+            else
+            {
+                try
+                {
+                    Convert.ToInt32(model.InternalPassportNumber);
+                }
+                catch
+                {
+                    ModelState.AddModelError("InternalPassportNumber", "Числовое поле");
+                }
+
+                //Российский паспорт
+                if (model.DocumentTypeId == 1 && model.InternalPassportNumber.Length != 6)
+                {
+                    ModelState.AddModelError("InternalPassportNumber", "Требуется 6 цифр");
+                }
+            }
+
             if (!model.IsPassportDraft)
             {
                 //PassportModel mt = EmploymentBl.GetPassportModel(model.UserId);    
@@ -2138,7 +2162,7 @@ namespace WebMvc.Controllers
                 //{
                 //    ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 //}
-                   
+
 
                 if (!model.IsValidate)
                 {

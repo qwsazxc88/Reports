@@ -20,8 +20,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSeries { get; set; }
 
-        [Display(Name = "Номер", Prompt = "6 цифр"),
-            RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
+        //закомментарил в связи с вводом паспортных данных другого государства, проверки в контроллере
+        [Display(Name = "Номер"/*, Prompt = "6 цифр"*/),
+            //RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportNumber { get; set; }
 
