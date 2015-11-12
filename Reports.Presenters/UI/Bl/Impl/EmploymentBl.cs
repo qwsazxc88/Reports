@@ -3848,23 +3848,42 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Удаляем скан с вкладки документы.
         /// </summary>
         /// <param name="model">Модель страницы</param>
-        public void DeleteCandidateDocument(CandidateDocumentsModel model)
+        /// <param name="error">Сообщение об ошибке</param>
+        public void DeleteCandidateDocument(CandidateDocumentsModel model, out string error)
         {
+            error = string.Empty;
+            EmploymentCandidate candidate = GetCandidate(model.UserId);
+
+            //если удаляет файл кандидат, когда он уже этого делать не должен
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
+            {
+                if (candidate.Status == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE && EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+                {
+                    error = "Загружен весь перечень документов, удаление файлов кандидатом запрещено! Если Вами был загружен файл/ы с некорректной информацией, то перешлите его/их кадровику!";
+                    return;
+                }
+            }
+
             DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
             if (DeleteAttachment(modelDel))
             {
                 //при удалении скана кадровиком до выгрузки меняется статус анкеты
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
                 {
-                    EmploymentCandidate candidate = GetCandidate(model.UserId);
                     if (!EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
                     {
                         //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
                         if (!candidate.SendTo1C.HasValue && candidate.Status == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE)
+                        {
                             candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+                            error = "Файл удален! Теперь кандидат при необходимости может сам загрузить его повторно!";
+                            return;
+                        }
                     }
                 }
             }
+
+            error = "Файл удален!";
         }
 
         public void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error)

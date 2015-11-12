@@ -1935,9 +1935,9 @@ namespace WebMvc.Controllers
                 {
                     //DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
                     //EmploymentBl.DeleteAttachment(modelDel);
-                    EmploymentBl.DeleteCandidateDocument(model);
+                    EmploymentBl.DeleteCandidateDocument(model, out error);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                    ModelState.AddModelError("SendTo1C", "Файл удален!");
+                    ModelState.AddModelError("SendTo1C", error);
                 }
 
                 if (Session["CandidateDocumentsMS" + SPPath] != null)
