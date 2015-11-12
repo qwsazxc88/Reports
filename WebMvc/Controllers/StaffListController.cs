@@ -1087,9 +1087,10 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "Введите название подразделения!");
             }
 
+            //для налоговиков при согласовании
             if (!model.IsDraft)
             {
-                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7))
+                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7) && AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
                 {
                     ModelState.AddModelError("DepNextId", "Укажите подразделение с налоговыми рекизитами!");
                     ModelState.AddModelError("MessageStr", "Укажите подразделение с налоговыми рекизитами!");
