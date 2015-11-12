@@ -32,7 +32,17 @@ namespace Reports.Core.Domain
         public virtual DateTime? CreateDate { get; set; } 
         public virtual User Editor { get; set; } 
         public virtual DateTime? EditDate { get; set; }
+        /// <summary>
+        /// ЦБ реквизиты подразделения
+        /// </summary>
         public virtual IList<StaffDepartmentCBDetails> DepartmentCBDetails { get; set; }
+        /// <summary>
+        /// Управленческие реквизиты
+        /// </summary>
         public virtual IList<StaffDepartmentManagerDetails> DepartmentManagerDetails { get; set; }
+        /// <summary>
+        /// Задачи в Пайрусе
+        /// </summary>
+        public virtual IList<StaffRequestPyrusTasks> StaffRequestPyrusTasks { get; set; }
     }
 }

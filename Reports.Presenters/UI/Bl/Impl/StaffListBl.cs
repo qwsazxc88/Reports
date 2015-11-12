@@ -287,7 +287,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(documentapprovalDao); }
             set { documentapprovalDao = value; }
         }
-        
+
+        protected IStaffRequestPyrusTasksDao staffrequestPyrusTasksDao;
+        public IStaffRequestPyrusTasksDao StaffRequestPyrusTasksDao
+        {
+            get { return Validate.Dependency(staffrequestPyrusTasksDao); }
+            set { staffrequestPyrusTasksDao = value; }
+        }
+
         #endregion
 
         #region Штатное расписание.

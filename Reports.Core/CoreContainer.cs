@@ -773,6 +773,9 @@ namespace Reports.Core
             Register(Component.For<IStaffWorkingConditionsDao>()
                 .ImplementedBy<StaffWorkingConditionsDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffRequestPyrusTasksDao>()
+                .ImplementedBy<StaffRequestPyrusTasksDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             

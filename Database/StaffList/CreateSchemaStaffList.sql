@@ -34,6 +34,24 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Creators]
 GO
 
+
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_StaffDepartmentRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_DocumentApproval', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser]
+GO
+
 IF OBJECT_ID ('FK_StaffDepartmentOperations_EditorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentOperations] DROP CONSTRAINT [FK_StaffDepartmentOperations_EditorUser]
 GO
@@ -1326,8 +1344,60 @@ CREATE TABLE [dbo].[StaffWorkingConditions](
 GO
 
 
+if OBJECT_ID (N'StaffRequestPyrusTasks', 'U') is not null
+	DROP TABLE [dbo].[StaffRequestPyrusTasks]
+GO
+CREATE TABLE [dbo].[StaffRequestPyrusTasks](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[DepRequestId] [int] NULL,
+	[SEPRequestId] [int] NULL,
+	[ApproveId] [int] NULL,
+	[NumberTask] [nvarchar](20) NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffRequestPyrusTasks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] ADD  CONSTRAINT [DF_StaffRequestPyrusTasks_DateCreate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval] FOREIGN KEY([ApproveId])
+REFERENCES [dbo].[DocumentApproval] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest] FOREIGN KEY([DepRequestId])
+REFERENCES [dbo].[StaffDepartmentRequest] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest] FOREIGN KEY([SEPRequestId])
+REFERENCES [dbo].[StaffEstablishedPostRequest] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest]
+GO
+
 ALTER TABLE [dbo].[Department]  WITH CHECK ADD  CONSTRAINT [FK_Department_StaffDepartmentAccessory] FOREIGN KEY([BFGId])
 REFERENCES [dbo].[StaffDepartmentAccessory] ([Id])
 GO
@@ -2211,6 +2281,30 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'DepRequestId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки для штатной единицы единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'SEPRequestId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'ApproveId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер задачи в Пайрусе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'NumberTask'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Задачи в Пайрусе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
