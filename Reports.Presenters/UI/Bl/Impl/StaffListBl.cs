@@ -1660,8 +1660,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //текущим пользователем может быть куратор ии кадровик, которые могут действовать за согласовантов
             User Assistant = AuthenticationService.CurrentUser.UserRole == UserRole.Inspector
                 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
-                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing 
-                || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector 
+                || AuthenticationService.CurrentUser.UserRole == UserRole.Secretary  ? curUser : null;//куратор/кадровик банка/консультант РК
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -1718,6 +1719,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     da.AssistantUser = Assistant;
                     da.Number = 6;
                     error = "Заявка утверждена!";
+                    break;
+                case 6:
+                    da.ApproveUser = curUser;
+                    da.AssistantUser = null;
+                    da.Number = 7;
+                    error = "Приказ составлен!";
                     break;
             }
 
@@ -2052,69 +2059,85 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 //потом проводим слесарную обработку по состоянию согласования 
+                //обязательные согласованты
                 foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
                 {
-                    switch (item.Number)
+                    if (item.IsImportance)
                     {
-                        case 1://инициатор
-                            model.IsInitiatorApprove = true;
-                            model.IsInitiatorApproveAvailable = false;
-                            model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
-                            model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                        switch (item.Number)
+                        {
+                            case 1://инициатор
+                                model.IsInitiatorApprove = true;
+                                model.IsInitiatorApproveAvailable = false;
+                                model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
-                            break;
-                        case 2://куратор
-                            model.IsCuratorApprove = true;
-                            model.IsCuratorApproveAvailable = false;
-                            model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                break;
+                            case 2://куратор
+                                model.IsCuratorApprove = true;
+                                model.IsCuratorApproveAvailable = false;
+                                model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
-                            break;
-                        case 3://кадровик
-                            model.IsPersonnelBankApprove = true;
-                            model.IsPersonnelBankApproveAvailable = false;
-                            model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                break;
+                            case 3://кадровик
+                                model.IsPersonnelBankApprove = true;
+                                model.IsPersonnelBankApproveAvailable = false;
+                                model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
-                            break;
-                        case 4://налоговик
-                            model.IsTaxCollectorApprove = true;
-                            model.IsTaxCollectorApproveAvailable = false;
-                            model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                break;
+                            case 5://вышестоящий руководитель
+                                model.IsTopManagerApprove = true;
+                                model.IsTopManagerApproveAvailable = false;
+                                model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
-                            break;
-                        case 5://вышестоящий руководитель
-                            model.IsTopManagerApprove = true;
-                            model.IsTopManagerApproveAvailable = false;
-                            model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
-                            model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
-
-                            //открываем согласование для следующего участника процесса
-                            model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
-                            break;
-                        case 6://член правления
-                            model.IsBoardMemberApprove = true;
-                            model.IsBoardMemberApproveAvailable = false;
-                            model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
-                                : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
-                            model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
-                            model.IsAgreeButtonAvailable = false;
-                            break;
+                                //открываем согласование для следующего участника процесса
+                                model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
+                                break;
+                            case 6://член правления
+                                model.IsBoardMemberApprove = true;
+                                model.IsBoardMemberApproveAvailable = false;
+                                model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
+                                    : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
+                                model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                model.IsAgreeButtonAvailable = false;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (item.Number)
+                        {
+                            case 4://налоговик
+                                model.IsTaxCollectorApprove = true;
+                                model.IsTaxCollectorApproveAvailable = false;
+                                model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                break;
+                            case 7://ответственный по приказам (секретарь)
+                                model.IsSecretaryApprove = true;
+                                model.IsSecretaryApproveAvailable = false;
+                                model.SecretaryApproveName = "Приказ составлен " + item.CreateDate.Value.ToShortDateString() + " " + "Ответственный: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsSecretaryApproveAvailable;
+                                break;
+                        }
                     }
                 }
+
             }
 
 

@@ -277,10 +277,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Инициатор")]
         public bool IsInitiatorApprove { get; set; }    //1
         public bool IsInitiatorApproveAvailable { get; set; }
-
         [Display(Name = "ФИО инициатора")]
         public string InitiatorApproveName { get; set; }
-
         [Display(Name = "За")]
         public int InitiatorId { get; set; }
         public IList<IdNameDto> Initiators { get; set; }    //список инициаторов для куратора/кадровика банка
@@ -291,7 +289,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsCuratorApprove { get; set; }    //2
         public bool IsCurator { get; set; }  //2
         public bool IsCuratorApproveAvailable { get; set; }
-
         [Display(Name = "ФИО куратора")]
         public string CuratorApproveName { get; set; }
 
@@ -300,9 +297,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsPersonnelBankApprove { get; set; }  //3
         public bool IsPersonnelBank { get; set; }  //3
         public bool IsPersonnelBankApproveAvailable { get; set; }
-
         [Display(Name = "ФИО кадровика")]
         public string PersonnelBankApproveName { get; set; }
+
 
         [Display(Name = "Консультант РК")]
         public bool IsConsultant { get; set; }  //
@@ -311,10 +308,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Налоговик")]
         public bool IsTaxCollectorApprove { get; set; }   //4
         public bool IsTaxCollectorApproveAvailable { get; set; }    //кроме согласования налоговик должен указать подразделение с реквизитами
-
-        [Display(Name = "ФИО вышестоящего руководителя")]
+        [Display(Name = "ФИО налоговика")]
         public string TaxCollectorApproveName { get; set; }
-
         public bool IsTaxCollector { get; set; }            //налоговик, для него делаем доступ к выбору подразделения с налоговыми реквизитами и делаем проверку н наличие такового при согласовании
 
         
@@ -322,26 +317,29 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Вышестоящий руководитель 3 ур.")]
         public bool IsTopManagerApprove { get; set; }   //5
         public bool IsTopManagerApproveAvailable { get; set; }
-
         [Display(Name = "ФИО вышестоящего руководителя")]
         public string TopManagerApproveName { get; set; }
-
         [Display(Name = "За")]
         public int TopManagerId { get; set; }
         public IList<IdNameDto> TopManagers { get; set; }    //список вышестоящих руководителей 3 уровня для куратора/кадровика банка
 
 
-
         [Display(Name = "Член правления")]
         public bool IsBoardMemberApprove { get; set; }   //6
         public bool IsBoardMemberApproveAvailable { get; set; }
-
         [Display(Name = "ФИО члена правления")]
         public string BoardMemberApproveName { get; set; }
-
         [Display(Name = "За")]
         public int BoardMemberId { get; set; }
         public IList<IdNameDto> BoardMembers { get; set; }    //список членов правления для куратора/кадровика банка
+
+
+        [Display(Name = "Ответственный по приказам")]
+        public bool IsSecretaryApprove { get; set; }   //7
+        public bool IsSecretaryApproveAvailable { get; set; }
+        [Display(Name = "ФИО ответственного по приказам")]
+        public string SecretaryApproveName { get; set; }
+        public bool IsSecretary { get; set; }            
 
         #endregion
 

@@ -28,6 +28,10 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual int Number { get; set; }
         /// <summary>
+        /// Признак важности согласованта.
+        /// </summary>
+        public virtual bool IsImportance { get; set; }
+        /// <summary>
         /// Признак архива. Если в процессе согласования предусмотрена отмена согласования или что-то в этом роде, то уже согласованные позиции отправляются в архив.
         /// </summary>
         public virtual bool IsArchive { get; set; }
