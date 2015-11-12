@@ -153,7 +153,8 @@ namespace Reports.Presenters.UI.Bl
         /// Удаляем скан с вкладки документы.
         /// </summary>
         /// <param name="model">Модель страницы</param>
-        void DeleteCandidateDocument(CandidateDocumentsModel model);
+        /// <param name="error">Сообщение об ошибке</param>
+        void DeleteCandidateDocument(CandidateDocumentsModel model, out string error);
         void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error);
 
         /// <summary>
