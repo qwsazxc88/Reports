@@ -156,18 +156,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.DepNextId)<br />
-                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);"/>
-                            </td>
-                            <td>
-                                <label id="DepNextNameLabel">@Model.DepNextName</label>
-                                @Html.HiddenFor(m => m.DepNextId)
-                                @Html.HiddenFor(m => m.DepNextName)
-                                @Html.ValidationMessageFor(model => model.DepNextId)
-                            </td>
-                        </tr>
                     }
                     
 
@@ -251,6 +239,20 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.PostAddress)</td>
                         <td>@Model.PostAddress</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DepNextId)<br />
+                            @Html.HiddenFor(m => m.IsTaxCollectorApproveAvailable)
+                            <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);" style=@if (!Model.IsTaxCollectorApproveAvailable)
+                                                                                                                                    {<text>"display:none;"</text>}/>
+                        </td>
+                        <td>
+                            <label id="DepNextNameLabel">@Model.DepNextName</label>
+                            @Html.HiddenFor(m => m.DepNextId)
+                            @Html.HiddenFor(m => m.DepNextName)
+                            @Html.ValidationMessageFor(model => model.DepNextId)
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -950,6 +952,10 @@
                 <div>
                     <table>
                         <tr>
+                            <td rowspan="6">
+                                <button id="btnPyrus" type="button" title="Создать задачу для дополнительного обсуждения в Пайрус">Пайрус</button>
+                            </td>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsInitiatorApprove)
                                 @Html.HiddenFor(m => m.IsInitiatorApprove)
@@ -968,6 +974,7 @@
                             </td>
                         </tr>
                         <tr>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsCuratorApprove)
                                 @Html.HiddenFor(m => m.IsCuratorApprove)
@@ -978,6 +985,7 @@
                             </td>
                         </tr>
                         <tr>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsPersonnelBankApprove)
                                 @Html.HiddenFor(m => m.IsPersonnelBankApprove)
@@ -988,6 +996,18 @@
                             </td>
                         </tr>
                         <tr>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsTaxCollectorApprove)
+                                @Html.HiddenFor(m => m.IsTaxCollectorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTaxCollectorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TaxCollectorApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsTopManagerApprove)
                                 @Html.HiddenFor(m => m.IsTopManagerApprove)
@@ -1003,6 +1023,7 @@
                             </td>
                         </tr>
                         <tr>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsBoardMemberApprove)
                                 @Html.HiddenFor(m => m.IsBoardMemberApprove)
@@ -1074,6 +1095,10 @@
             $("#StaffDepartmentRequestForm").submit(); 
         });
 
+        $("#btnPyrus").click(function(){
+            window.open("https://pyrus.com");
+        });
+        
 
         $("#MainDiv").accordion({
             header: "h3",
@@ -1500,6 +1525,5 @@
 
     }
 
-    
 </script>
 

@@ -650,16 +650,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDraftButtonAvailable = true;
                 else
                     model.IsDraftButtonAvailable = false;
-
-                //сохранение/согласование
-                //if (UserRole.Manager != AuthenticationService.CurrentUser.UserRole && UserRole.Inspector != AuthenticationService.CurrentUser.UserRole
-                //    && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole)
-                //{
-                //    model.IsAgreeButtonAvailable = false;
-                //}
                 
             }
-            
+
+            model.IsTaxCollector = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector;
            
             return model;
         }
@@ -1658,8 +1652,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //в каждой ветке определяемся с участниками групповухи под кодовым названием согласование/утверждение заявки для подразделения
             //текущим пользователем может быть куратор ии кадровик, которые могут действовать за согласовантов
             User Assistant = AuthenticationService.CurrentUser.UserRole == UserRole.Inspector
-                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel 
-                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? curUser : null;//куратор/кадровик банка/консультант РК
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing 
+                || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -1694,21 +1689,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка проверена кадровиком банка!";
                     break;
                 case 3:
+                    da.ApproveUser = curUser;
+                    da.AssistantUser = null;
+                    da.Number = 4;
+                    error = "Заявка согласована налоговиком!";
+                    break;
+                case 4:
                     //если согласовант не выбран, это значит, что он действует сам
                     User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
 
                     da.ApproveUser = TopManager;
                     da.AssistantUser = Assistant;
-                    da.Number = 4;
+                    da.Number = 5;
                     error = "Заявка согласована!";
                     break;
-                case 4:
+                case 5:
                     //если утверждающий не выбран, это значит, что он действует сам
                     User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
 
                     da.ApproveUser = BoardMember;
                     da.AssistantUser = Assistant;
-                    da.Number = 5;
+                    da.Number = 6;
                     error = "Заявка утверждена!";
                     break;
             }
@@ -2027,6 +2028,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
             model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+            model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
 
             //разбираемся с состоянием птиц
             //выбираем из согласования не архивные записи.
@@ -2073,10 +2075,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
 
                             //открываем согласование для следующего участника процесса
+                            model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
+                            model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                            break;
+                        case 4://налоговик
+                            model.IsTaxCollectorApprove = true;
+                            model.IsTaxCollectorApproveAvailable = false;
+                            model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+
+                            //открываем согласование для следующего участника процесса
                             model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
                             model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
                             break;
-                        case 4://вышестоящий руководитель
+                        case 5://вышестоящий руководитель
                             model.IsTopManagerApprove = true;
                             model.IsTopManagerApproveAvailable = false;
                             model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
@@ -2087,7 +2098,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
                             model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
                             break;
-                        case 5://член правления
+                        case 6://член правления
                             model.IsBoardMemberApprove = true;
                             model.IsBoardMemberApproveAvailable = false;
                             model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name

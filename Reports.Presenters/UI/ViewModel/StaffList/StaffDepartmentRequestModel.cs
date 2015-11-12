@@ -80,7 +80,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Осуществлять прием сотрудников в подразделение")]
         public bool IsEmployeAvailable { get; set; }
 
-        [Display(Name = "Указать подразделение с налоговыми реквизитами")]
+        [Display(Name = "Подразделение с налоговыми реквизитами:")]
         public int DepNextId { get; set; }
         public string DepNextName { get; set; }
 
@@ -308,9 +308,19 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsConsultant { get; set; }  //
 
 
+        [Display(Name = "Налоговик")]
+        public bool IsTaxCollectorApprove { get; set; }   //4
+        public bool IsTaxCollectorApproveAvailable { get; set; }    //кроме согласования налоговик должен указать подразделение с реквизитами
+
+        [Display(Name = "ФИО вышестоящего руководителя")]
+        public string TaxCollectorApproveName { get; set; }
+
+        public bool IsTaxCollector { get; set; }            //налоговик, для него делаем доступ к выбору подразделения с налоговыми реквизитами и делаем проверку н наличие такового при согласовании
+
+        
 
         [Display(Name = "Вышестоящий руководитель 3 ур.")]
-        public bool IsTopManagerApprove { get; set; }   //4
+        public bool IsTopManagerApprove { get; set; }   //5
         public bool IsTopManagerApproveAvailable { get; set; }
 
         [Display(Name = "ФИО вышестоящего руководителя")]
@@ -323,7 +333,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
 
         [Display(Name = "Член правления")]
-        public bool IsBoardMemberApprove { get; set; }   //5
+        public bool IsBoardMemberApprove { get; set; }   //6
         public bool IsBoardMemberApproveAvailable { get; set; }
 
         [Display(Name = "ФИО члена правления")]
@@ -342,6 +352,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string MessageStr { get; set; }
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
+
+        
         #endregion
     }
 }
