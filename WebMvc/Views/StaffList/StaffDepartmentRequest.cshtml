@@ -952,9 +952,10 @@
                 <div>
                     <table>
                         <tr>
-                            <td>
+                            <td rowspan="6">
                                 <button id="btnPyrus" type="button" title="Создать задачу для дополнительного обсуждения в Пайрус">Пайрус</button>
                             </td>
+                            <td></td>
                             <td>
                                 @Html.LabelFor(m => m.IsInitiatorApprove)
                                 @Html.HiddenFor(m => m.IsInitiatorApprove)
@@ -1094,6 +1095,10 @@
             $("#StaffDepartmentRequestForm").submit(); 
         });
 
+        $("#btnPyrus").click(function(){
+            window.open("https://pyrus.com");
+        });
+        
 
         $("#MainDiv").accordion({
             header: "h3",
@@ -1520,6 +1525,5 @@
 
     }
 
-    
 </script>
 
