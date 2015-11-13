@@ -50,6 +50,13 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="error">Сообщенио об ошибке.</param>
         /// <returns></returns>
         bool SaveEditDepartmentRequest(StaffDepartmentRequestModel model, out string error);
+        /// <summary>
+        /// Сохраняем админами по банка коды.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        bool SaveProgramCodes(StaffDepartmentRequestModel model, out string error);
         #endregion
 
         #region Заявки для штатных единиц

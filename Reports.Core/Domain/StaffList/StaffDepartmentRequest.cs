@@ -21,6 +21,9 @@ namespace Reports.Core.Domain
         public virtual RefAddresses LegalAddress { get; set; } 
         public virtual bool IsTaxAdminAccount { get; set; } 
         public virtual bool IsEmployeAvailable { get; set; }
+        /// <summary>
+        /// Подразделение с налоговыми реквизитами (сосед)
+        /// </summary>
         public virtual Department DepNext { get; set; }
         public virtual bool IsPlan { get; set; } 
         public virtual bool IsUsed { get; set; } 

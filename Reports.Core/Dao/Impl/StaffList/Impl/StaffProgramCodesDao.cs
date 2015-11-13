@@ -24,13 +24,15 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<ProgramCodeDto> GetProgramCodes(int DMDetailId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ProgramId, A.Name as ProgramName, B.Code
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ProgramId, A.Name as ProgramName, B.Code, C.Name as UserName
                                                     FROM StaffProgramReference as A
-                                                    LEFT JOIN StaffProgramCodes as B ON B.ProgramId = A.id and " + (DMDetailId == 0 ? " B.DMDetailId is null " : " B.DMDetailId = " + DMDetailId.ToString()))
+                                                    LEFT JOIN StaffProgramCodes as B ON B.ProgramId = A.id and " + (DMDetailId == 0 ? " B.DMDetailId is null " : " B.DMDetailId = " + DMDetailId.ToString()) + @"
+                                                    LEFT JOIN Users as C ON C.Id = isnull(B.EditorId, B.CreatorId)")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ProgramId", NHibernateUtil.Int32)
                 .AddScalar("ProgramName", NHibernateUtil.String)
-                .AddScalar("Code", NHibernateUtil.String);
+                .AddScalar("Code", NHibernateUtil.String)
+                .AddScalar("UserName", NHibernateUtil.String);
 
             return query.SetResultTransformer(Transformers.AliasToBean<ProgramCodeDto>()).List<ProgramCodeDto>();
         }

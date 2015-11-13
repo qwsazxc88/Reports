@@ -31,5 +31,9 @@
       <one-to-many class="DepartmentArchive"/>
     </bag>
 
+    <bag name="DepartmentTaxDetails" lazy="true" cascade="all-delete-orphan">
+      <key column="DepartmentId" foreign-key="FK_StaffDepartmentTaxDetails_Department"/>
+      <one-to-many class="StaffDepartmentTaxDetails"/>
+    </bag>
   </class>
 </hibernate-mapping>

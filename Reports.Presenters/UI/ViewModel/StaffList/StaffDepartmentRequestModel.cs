@@ -231,7 +231,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Номер телефона")]
         public string Phone { get; set; }
 
-        [Display(Name = "Коды совместимости программ")]
+        [Display(Name = "Коды совместимых программ")]
         public IList<ProgramCodeDto> ProgramCodes { get; set; }
 
         [Display(Name = "Установленное ПО")]
@@ -274,6 +274,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Согласование
+        [Display(Name = "№ задачи")]
+        public string PyrusNumber { get; set; }
+
         [Display(Name = "Инициатор")]
         public bool IsInitiatorApprove { get; set; }    //1
         public bool IsInitiatorApproveAvailable { get; set; }
@@ -282,6 +285,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "За")]
         public int InitiatorId { get; set; }
         public IList<IdNameDto> Initiators { get; set; }    //список инициаторов для куратора/кадровика банка
+        public string InitiatorPyrusRef { get; set; }
+        public string InitiatorPyrusName { get; set; }
 
 
         //кураторы и кадровки банка имеют одинаковые права
@@ -291,6 +296,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsCuratorApproveAvailable { get; set; }
         [Display(Name = "ФИО куратора")]
         public string CuratorApproveName { get; set; }
+        public string CuratorPyrusRef { get; set; }
+        public string CuratorPyrusName { get; set; }
 
 
         [Display(Name = "Кадровик банка")]
@@ -299,6 +306,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsPersonnelBankApproveAvailable { get; set; }
         [Display(Name = "ФИО кадровика")]
         public string PersonnelBankApproveName { get; set; }
+        public string PersonnelBankPyrusRef { get; set; }
+        public string PersonnelBankPyrusName { get; set; }
 
 
         [Display(Name = "Консультант РК")]
@@ -322,6 +331,8 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "За")]
         public int TopManagerId { get; set; }
         public IList<IdNameDto> TopManagers { get; set; }    //список вышестоящих руководителей 3 уровня для куратора/кадровика банка
+        public string TopManagerPyrusRef { get; set; }
+        public string TopManagerPyrusName { get; set; }
 
 
         [Display(Name = "Член правления")]
@@ -332,14 +343,22 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "За")]
         public int BoardMemberId { get; set; }
         public IList<IdNameDto> BoardMembers { get; set; }    //список членов правления для куратора/кадровика банка
+        public string BoardMemberPyrusRef { get; set; }
+        public string BoardMemberPyrusName { get; set; }
 
-
+        //не участвует в согласовании, показывем только отметку
         [Display(Name = "Ответственный по приказам")]
-        public bool IsSecretaryApprove { get; set; }   //7
+        public bool IsSecretaryApprove { get; set; }   //
         public bool IsSecretaryApproveAvailable { get; set; }
         [Display(Name = "ФИО ответственного по приказам")]
         public string SecretaryApproveName { get; set; }
-        public bool IsSecretary { get; set; }            
+        public bool IsSecretary { get; set; }
+
+        //не участвует в согласовании, сохраняет тольк коды
+        [Display(Name = "Администратор ПО банка")]
+        public bool IsSoftAdminApprove { get; set; }   //
+        public bool IsSoftAdminApproveAvailable { get; set; }
+        public bool IsSoftAdmin { get; set; }            
 
         #endregion
 
@@ -350,6 +369,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string MessageStr { get; set; }
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
+        public bool IsImportance { get; set; }  //признак важности согласования
 
         
         #endregion

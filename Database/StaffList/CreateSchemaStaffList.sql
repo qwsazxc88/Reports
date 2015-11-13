@@ -1,7 +1,7 @@
 --яйпхор янгдюер ярпсйрспс аюгш дюммшу дкъ пюгдекю ьрюрмнцн пюяохяюмхъ, янгдюер назейрш аюгш х гюонкмъер мнбше яопюбнвмхйх мювюкэмшлх дюммшлх
 --яйпхор ме лемъер ярпсйрспс сфе ясыеярбсчыху яопюбнвмхйнб, рнкэйн оепеянгдюер мнбше рюакхжш менаундхлше дкъ ьрюрмнцн пюяохяюмхъ
 --RETURN
-use WebAppTest
+use WebAppTest2
 go
 
 --1. сдюкемхе яяшкнй
@@ -3981,7 +3981,7 @@ UPDATE Department SET BFGId = 3	WHERE Name like '%ЦОД%'
 --UPDATE Department SET BFGId = 5	WHERE Name like '%КХЙБХДХПНБ%' or Name like '%ГЮЙПШР%' or Name like '%МЕ ХЯО%' or Name like '%ЙНПГХМЮ%' 
 --UPDATE Department SET BFGId = null	WHERE BFGId = 5
 
-IF DB_NAME() = 'WebAppTest'
+IF DB_NAME() = 'WebAppTest' or DB_NAME() = 'WebAppTest2'
 BEGIN
 	INSERT INTO Kladr 
 	SELECT * FROM WebAppSKB.dbo.Kladr
