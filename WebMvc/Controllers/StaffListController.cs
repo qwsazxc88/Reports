@@ -42,7 +42,7 @@ namespace WebMvc.Controllers
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
         public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
         {
             StaffListModel model = new StaffListModel();
@@ -72,7 +72,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
         public ActionResult StaffDepartmentRequestList()
         {
             StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
@@ -85,7 +85,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
         public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
             if (ValidateModel(model))
@@ -99,7 +99,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
         public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId, int? Id)
         {
             ModelState.Clear();
@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.SoftAdmin)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
             ModelState.Clear();
@@ -150,7 +150,9 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    if (!StaffListBl.SaveEditDepartmentRequest(model, out error))
+                    IsComplete = model.IsSoftAdminApprove ? StaffListBl.SaveProgramCodes(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+
+                    if (!IsComplete)
                     {
                         StaffListBl.LoadDictionaries(model);
                         ModelState.AddModelError("MessageStr", error);
@@ -322,7 +324,6 @@ namespace WebMvc.Controllers
             {
                 if (ValidateModel(model))//проверки
                 {
-                    //отправка на согласование НЕ СДЕЛАНО, пока сразу сохраняем изменения в справочнике
                     if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
                     {
                         StaffListBl.LoadDictionaries(model);

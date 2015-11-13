@@ -287,7 +287,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(documentapprovalDao); }
             set { documentapprovalDao = value; }
         }
-        
+
+        protected IStaffRequestPyrusTasksDao staffrequestPyrusTasksDao;
+        public IStaffRequestPyrusTasksDao StaffRequestPyrusTasksDao
+        {
+            get { return Validate.Dependency(staffrequestPyrusTasksDao); }
+            set { staffrequestPyrusTasksDao = value; }
+        }
+
         #endregion
 
         #region Штатное расписание.
@@ -639,7 +646,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 }
 
-
                 //заполнение справочников
                 LoadDictionaries(model);
 
@@ -653,7 +659,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
 
-            model.IsTaxCollector = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector;
+            //model.IsTaxCollector = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector;
            
             return model;
         }
@@ -886,19 +892,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //}
 
                 //коды программ
-                dmd.ProgramCodes = new List<StaffProgramCodes>();
-                if (model.ProgramCodes != null)
+                //могут редактировать только администраторы ПО банка (переменная определяется в процедуре определения состояния согласования)
+                if (model.IsSoftAdminApproveAvailable)
                 {
-                    foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                    dmd.ProgramCodes = new List<StaffProgramCodes>();
+                    if (model.ProgramCodes != null)
                     {
-                        dmd.ProgramCodes.Add(new StaffProgramCodes
+                        foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
                         {
-                            DepartmentManagerDetail = dmd,
-                            Program = StaffProgramReferenceDao.Load(item.ProgramId),
-                            Code = item.Code,
-                            Creator = curUser,
-                            CreateDate = DateTime.Now
-                        });
+                            dmd.ProgramCodes.Add(new StaffProgramCodes
+                            {
+                                DepartmentManagerDetail = dmd,
+                                Program = StaffProgramReferenceDao.Load(item.ProgramId),
+                                Code = item.Code,
+                                Creator = curUser,
+                                CreateDate = DateTime.Now
+                            });
+                        }
                     }
                 }
 
@@ -1361,43 +1371,48 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
 
                 //коды программ
-                if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
-                    entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
-
-                if (model.ProgramCodes != null)
+                //могут редактировать только администраторы ПО банка (переменная определяется в процедуре определения состояния согласования)
+                if (model.IsSoftAdminApproveAvailable)
                 {
-                    foreach (var item in model.ProgramCodes)
+                    if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                        entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+                    if (model.ProgramCodes != null)
                     {
-                        StaffProgramCodes pc = new StaffProgramCodes();
-
-                        //если была запись и убрали значение кода, то удаляем
-                        if (item.Id != 0 && item.Code == null)
+                        foreach (var item in model.ProgramCodes)
                         {
-                            pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
-                        }
+                            StaffProgramCodes pc = new StaffProgramCodes();
 
-                        //если не было записи и ввели код, то добавляем
-                        if (item.Id == 0 && item.Code != null)
-                        {
-                            pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                            pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
-                            pc.Code = item.Code;
-                            pc.Creator = curUser;
-                            pc.CreateDate = DateTime.Now;
+                            //если была запись и убрали значение кода, то удаляем
+                            if (item.Id != 0 && item.Code == null)
+                            {
+                                pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                            }
 
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
-                        }
+                            //если не было записи и ввели код, то добавляем
+                            if (item.Id == 0 && item.Code != null)
+                            {
+                                pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                                pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                                pc.Code = item.Code;
+                                pc.Creator = curUser;
+                                pc.CreateDate = DateTime.Now;
 
-                        //запись была и есть код, то предпологаем, что это редактирование
-                        if (item.Id != 0 && item.Code != null)
-                        {
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                            }
+
+                            //запись была и есть код, то предпологаем, что это редактирование
+                            if (item.Id != 0 && item.Code != null)
+                            {
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                            }
                         }
                     }
                 }
+                
 
 
                 //ориентиры
@@ -1653,8 +1668,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             //текущим пользователем может быть куратор ии кадровик, которые могут действовать за согласовантов
             User Assistant = AuthenticationService.CurrentUser.UserRole == UserRole.Inspector
                 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
-                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing 
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
                 || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
+
+            model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+            model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -1665,58 +1683,85 @@ namespace Reports.Presenters.UI.Bl.Impl
             da.IsArchive = false;
             da.CreateDate = DateTime.Now;
 
-            switch (DocApproval.Count)
+            if (model.IsImportance)//обязательное согласование
             {
-                case 0:
-                    //если иницатор не выбран, это значит, что инициатор действует сам
-                    User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
+                switch (DocApproval.Count)
+                {
+                    case 0:
+                        //если иницатор не выбран, это значит, что инициатор действует сам
+                        User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
 
-                    da.ApproveUser = Initiator;
-                    da.AssistantUser = Assistant;
-                    da.Number = 1;
-                    error = "Заявка создана!";
-                    break;
-                case 1:
-                    da.ApproveUser = curUser;
-                    da.AssistantUser = null;
-                    da.Number = 2;
-                    error = "Заявка проверена куратором!";
-                    break;
-                case 2:
-                    da.ApproveUser = curUser;
-                    da.AssistantUser = null;
-                    da.Number = 3;
-                    error = "Заявка проверена кадровиком банка!";
-                    break;
-                case 3:
+                        da.ApproveUser = Initiator;
+                        da.AssistantUser = Assistant;
+                        da.Number = 1;
+                        error = "Заявка создана!";
+                        break;
+                    case 1:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 2;
+                        error = "Заявка проверена куратором!";
+                        break;
+                    case 2:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 3;
+                        error = "Заявка проверена кадровиком банка!";
+                        break;
+                    case 4:
+                        //если согласовант не выбран, это значит, что он действует сам
+                        User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
+
+                        da.ApproveUser = TopManager;
+                        da.AssistantUser = Assistant;
+                        da.Number = 5;
+                        error = "Заявка согласована!";
+                        break;
+                    case 5:
+                        //если утверждающий не выбран, это значит, что он действует сам
+                        User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
+
+                        da.ApproveUser = BoardMember;
+                        da.AssistantUser = Assistant;
+                        da.Number = 6;
+                        error = "Заявка утверждена!";
+                        break;
+                    case 6:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 7;
+                        error = "Приказ составлен!";
+                        break;
+                }
+            }
+            else   //согласование специалистами
+            {
+                if (model.IsTaxCollector || model.IsConsultant)
+                {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
                     da.Number = 4;
                     error = "Заявка согласована налоговиком!";
-                    break;
-                case 4:
-                    //если согласовант не выбран, это значит, что он действует сам
-                    User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
+                }
 
-                    da.ApproveUser = TopManager;
-                    da.AssistantUser = Assistant;
-                    da.Number = 5;
-                    error = "Заявка согласована!";
-                    break;
-                case 5:
-                    //если утверждающий не выбран, это значит, что он действует сам
-                    User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
-
-                    da.ApproveUser = BoardMember;
-                    da.AssistantUser = Assistant;
-                    da.Number = 6;
-                    error = "Заявка утверждена!";
-                    break;
             }
 
             try
             {
                 DocumentApprovalDao.SaveAndFlush(da);
+
+                //сохраняем здачу пайруса
+                if (!string.IsNullOrEmpty(model.PyrusNumber))
+                {
+                    entity.StaffRequestPyrusTasks.Add(new StaffRequestPyrusTasks()
+                    {
+                        DepRequest = entity,
+                        DocumentApproval = da,
+                        NumberTask = model.PyrusNumber,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
 
                 if (da.Number == 1)
                 {
@@ -1741,6 +1786,73 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return 0;
+        }
+        /// <summary>
+        /// Сохраняем админами по банка коды.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        public bool SaveProgramCodes(StaffDepartmentRequestModel model, out string error)
+        {
+            //этот кусок есть в общем сохранении, но когда решили дать админам отдельную кнопку, то вынес его сюда.
+            error = string.Empty;
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+
+            if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+            if (model.ProgramCodes != null)
+            {
+                foreach (var item in model.ProgramCodes)
+                {
+                    StaffProgramCodes pc = new StaffProgramCodes();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Code == null)
+                    {
+                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Code != null)
+                    {
+                        pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                        pc.Code = item.Code;
+                        pc.Creator = curUser;
+                        pc.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Code != null)
+                    {
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
+
+                try
+                {
+                    StaffDepartmentRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    error = "Данные сохранены!";
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentRequestDao.RollbackTran();
+                    RefAddressesDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+            }
+            return true;
         }
         /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
@@ -2024,11 +2136,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             //заполняем списки согласовантов
             GetApprovalLists(model, entity);
 
+            model.IsImportance = false;
             //за согласовантов могут отработать кураторы и кадровики банка.
             model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
             model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
+            model.IsSecretary = (AuthenticationService.CurrentUser.UserRole == UserRole.Secretary);
+            model.IsSoftAdmin = (AuthenticationService.CurrentUser.UserRole == UserRole.SoftAdmin);
 
             //разбираемся с состоянием птиц
             //выбираем из согласования не архивные записи.
@@ -2045,75 +2160,125 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 //потом проводим слесарную обработку по состоянию согласования 
+                //обязательные согласованты
                 foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
                 {
-                    switch (item.Number)
+                    string PyrusNumber = entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Count() != 0 ? entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Single().NumberTask : string.Empty;
+                    if (item.IsImportance)
                     {
-                        case 1://инициатор
-                            model.IsInitiatorApprove = true;
-                            model.IsInitiatorApproveAvailable = false;
-                            model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
-                            model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                        switch (item.Number)
+                        {
+                            case 1://инициатор
+                                model.IsInitiatorApprove = true;
+                                model.IsInitiatorApproveAvailable = false;
+                                model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                //entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == 1)
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.InitiatorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.InitiatorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
-                            break;
-                        case 2://куратор
-                            model.IsCuratorApprove = true;
-                            model.IsCuratorApproveAvailable = false;
-                            model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                break;
+                            case 2://куратор
+                                model.IsCuratorApprove = true;
+                                model.IsCuratorApproveAvailable = false;
+                                model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.CuratorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.CuratorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
-                            break;
-                        case 3://кадровик
-                            model.IsPersonnelBankApprove = true;
-                            model.IsPersonnelBankApproveAvailable = false;
-                            model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                break;
+                            case 3://кадровик
+                                model.IsPersonnelBankApprove = true;
+                                model.IsPersonnelBankApproveAvailable = false;
+                                model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.PersonnelBankPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.PersonnelBankPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
-                            break;
-                        case 4://налоговик
-                            model.IsTaxCollectorApprove = true;
-                            model.IsTaxCollectorApproveAvailable = false;
-                            model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+                                //открываем согласование для следующего участника процесса
+                                model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                break;
+                            case 5://вышестоящий руководитель
+                                model.IsTopManagerApprove = true;
+                                model.IsTopManagerApproveAvailable = false;
+                                model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.TopManagerPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.TopManagerPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
-                            break;
-                        case 5://вышестоящий руководитель
-                            model.IsTopManagerApprove = true;
-                            model.IsTopManagerApproveAvailable = false;
-                            model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
-                                : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
-                            model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                //открываем согласование для следующего участника процесса
+                                model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
+                                break;
+                            case 6://член правления
+                                model.IsBoardMemberApprove = true;
+                                model.IsBoardMemberApproveAvailable = false;
+                                model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
+                                    : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
+                                model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                model.IsAgreeButtonAvailable = false;
 
-                            //открываем согласование для следующего участника процесса
-                            model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
-                            model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
-                            break;
-                        case 6://член правления
-                            model.IsBoardMemberApprove = true;
-                            model.IsBoardMemberApproveAvailable = false;
-                            model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
-                                : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
-                            model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
-                            model.IsAgreeButtonAvailable = false;
-                            break;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.BoardMemberPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.BoardMemberPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
+                        model.IsSecretaryApproveAvailable = model.IsSecretary || model.IsConsultant ? true : false;
+
+                        switch (item.Number)
+                        {
+                            case 4://налоговик
+                                model.IsTaxCollectorApprove = true;
+                                model.IsTaxCollectorApproveAvailable = false;
+                                model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                break;
+                        }
                     }
                 }
+
+            }
+
+
+            //для администратора ПО банка
+            if (model.IsSoftAdmin)
+            {
+                model.IsSoftAdminApprove = true;
+                model.IsSoftAdminApproveAvailable = true;
+                model.IsDraftButtonAvailable = false;
+                model.IsAgreeButtonAvailable = false;
             }
 
 
             if (UserRole.Manager != AuthenticationService.CurrentUser.UserRole && UserRole.Inspector != AuthenticationService.CurrentUser.UserRole
-                    && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole 
-                    && UserRole.Director != AuthenticationService.CurrentUser.UserRole)
+                    && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole
+                    && UserRole.Director != AuthenticationService.CurrentUser.UserRole && UserRole.TaxCollector != AuthenticationService.CurrentUser.UserRole)
             {
                 model.IsAgreeButtonAvailable = false;
             }
@@ -2363,6 +2528,41 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 error = "Заявка не найдена! Обратитесь к разработчикам!";
                 return false;
+            }
+            else
+            {
+                if (!model.IsDraft)
+                {
+                    bool IsEnabled = false;
+                    //для подразделений уже давно существующих, смотрим наличие налоговых реквизитов
+                    if (entity.Department.DepartmentTaxDetails.Count != 0)
+                    {
+                        if (!string.IsNullOrEmpty(entity.Department.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(entity.Department.DepartmentTaxDetails[0].TaxAdminCode))
+                            IsEnabled = true;
+                    }
+
+                    //для совсем свежих подразделений находим заявку и смотрим там соседа с налоговыми реквизитами
+                    if (!IsEnabled)
+                    {
+                        StaffDepartmentRequest sdr = StaffDepartmentRequestDao.Get(StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0));
+
+                        if (sdr != null)
+                        {
+                            if (sdr.DepNext.DepartmentTaxDetails.Count != 0)
+                            {
+                                if (!string.IsNullOrEmpty(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
+                                    IsEnabled = true;
+                            }
+                        }
+                    }
+
+                    if (!IsEnabled)
+                    {
+                        error = "Нельзя создать штатную единицу, так как данное подразделение не стоит на налоговом учете!";
+                        return false;
+                    }
+                    
+                }
             }
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 

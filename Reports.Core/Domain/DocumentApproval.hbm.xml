@@ -11,6 +11,7 @@
     <many-to-one name="ApproveUser" class="User" column="UserId" foreign-key="FK_DocumentApproval_Users" index="DocumentApproval_Users" not-null="false"/>
     <many-to-one name="AssistantUser" class="User" column="AssistantId" foreign-key="FK_DocumentApproval_Assistans" index="DocumentApproval_Assistans" not-null="false"/>
     <property name="Number" not-null="false"/>
+    <property name="IsImportance" not-null="false"/>
     <property name="IsArchive" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <property name="ArchiveDate" not-null="false"/>
