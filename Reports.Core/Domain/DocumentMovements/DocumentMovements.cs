@@ -14,6 +14,10 @@ namespace Reports.Core.Domain
         public virtual User Receiver { get; set; }
         public virtual User User { get; set; }
         public virtual string Descript { get; set; }
+        public virtual int Direction { get; set; }
+        public virtual int StatusId { get; set; }
         public virtual IList<DocumentMovements_SelectedDocs> Docs { get; set; }
+        public virtual DocumentMovementsRoleRecords ReceiverRuscount { get; set; }
+        public virtual DocumentMovementsRoleRecords SenderRuscount { get; set; }
     }
 }

@@ -23,7 +23,6 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(documentMovementsBl);
             }
         }
-
         public ActionResult Index()
         {
             return RedirectToAction("DocumentMovementsList");
@@ -33,31 +32,28 @@ namespace WebMvc.Controllers
         {
             var model = DocumentMovementsBl.GetListModel();
             return View(model);
-        }
-        [HttpPost]
-        public ActionResult DocumentMovementsList(DocumentMovementsListModel model)
-        {
-            model.Documents = DocumentMovementsBl.GetDocuments(model);
-            return View(model);
-        }
+        }        
         [HttpPost]
         public ContentResult DocumentMovementsListJson(DocumentMovementsListModel model)
         {
-            model.Documents = DocumentMovementsBl.GetDocuments(model);            
-            return Content(Newtonsoft.Json.JsonConvert.SerializeObject( model.Documents));
+            var docs = DocumentMovementsBl.GetDocuments(model);
+            var settings = new JsonSerializerSettings();
+            settings.NullValueHandling=NullValueHandling.Ignore;
+            var content = JsonConvert.SerializeObject(docs, settings);
+            return Content(content);
         }
         [HttpGet]
         public ActionResult DocumentMovementsEdit(int id)
         {
             var model = DocumentMovementsBl.GetEditModel(id);
             return View(model);
-        }
+        }        
         [HttpPost]
         public ActionResult DocumentMovementsEdit(DocumentMovementsEditModel model)
         {
             model = DocumentMovementsBl.SaveModel(model);
             return View(model);
-        }
+        }        
         [HttpPost]
         public ContentResult GetRuscountUsers(string name)
         {

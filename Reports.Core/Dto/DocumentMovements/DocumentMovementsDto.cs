@@ -6,6 +6,21 @@ using Reports.Core.Domain;
 using Reports.Core;
 namespace Reports.Core.Dto
 {
+    public class DocDto
+    {
+        [ngGridRow(field = "DocumentName", displayName = "Наименование")]
+        public string DocumentName { get; set; }
+        [ngGridRow(field = "DocumentSended", displayName = "Отправлено", cellTemplate = "<input type='checkbox' ng-model='row.entity[col.field]' disabled='disabled'/>")]
+        public bool DocumentSended { get; set; }
+        [ngGridRow(field = "DocumentReceived", displayName = "Получено", enableCellEdit=true, cellTemplate = "<input type='checkbox' ng-model='row.entity[col.field]' disabled='disabled' />", cellEditTemplate = "<input type='checkbox' ng-model='row.entity[col.field]' ng-disable='!grid.appScope.IsGridEditable'/>")]
+        public bool DocumentReceived { get; set; }
+        public DocDto()
+        {                        
+            DocumentName = "";
+            DocumentSended = false;
+            DocumentReceived = false;
+        }
+    }
     public class DocumentMovementsDto
     {
         public DocumentMovementsDto()
@@ -19,40 +34,35 @@ namespace Reports.Core.Dto
             Receiver = "";
             CreateDate = new DateTime();
             SendDate = new DateTime?();
+            ReceiveDate = new DateTime?();
             Descript = "";
-            DocumentName = "";
-            DocumentSended = false;
-            DocumentReceived = false;
             Status = "";
         }
-        [ngGrid(ColumnName="Номер", FilterEnabled = true, IsEditable= false, SortEnabled = true, Type = ngType.Number)]
+        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number",  cellTemplate = "<a href='/DocumentMovements/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a>")]
         public int Id { get; set; }
-        [ngGrid(ColumnName = "ФИО сотрудника", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "User", displayName = "ФИО сотрудника", enableCellEdit = true, enableFiltering = true, enableSorting = true, type = "string")]
         public string User { get; set; }
-        [ngGrid(ColumnName = "Дирекция 3 ур.", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "UserDep3", displayName = "Дирекция 3 ур.", enableFiltering = true, enableSorting = true, type = "string")]
         public string UserDep3 { get; set; }
-        [ngGrid(ColumnName = "Подразделение 7 ур.", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "UserDep7", displayName = "Подразделение 7 ур.", enableFiltering = true, enableSorting = true, type = "string")]
         public string UserDep7 { get; set; }
-        [ngGrid(ColumnName = "Направление", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "Direction", displayName = "Направление", enableFiltering = true, enableSorting = true, type = "string")]
         public string Direction { get; set; }
-        [ngGrid(ColumnName = "Отправитель", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "Sender", displayName = "Отправитель", enableFiltering = true, enableSorting = true, type = "string")]
         public string Sender { get; set; }
-        [ngGrid(ColumnName = "Получатель", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "Receiver", displayName = "Получатель", enableFiltering = true, enableSorting = true, type = "string")]
         public string Receiver { get; set; }
-        [ngGrid(ColumnName = "Дата создания", FilterEnabled = true, Type = ngType.Date, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "CreateDate", displayName = "Дата создания", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
         public DateTime CreateDate { get; set; }
-        [ngGrid(ColumnName = "Дата отправки", FilterEnabled = true, Type = ngType.Date, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "SendDate", displayName = "Дата отправки", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
         public DateTime? SendDate { get; set; }
-        [ngGrid(ColumnName = "Описание", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "ReceiveDate", displayName = "Дата получения", enableFiltering = true, enableSorting = true, type = "string")]
+        public DateTime? ReceiveDate { get; set; }
+        [ngGridRow(field = "Descript", displayName = "Описание", enableFiltering = true, enableSorting = true, type = "string")]
         public string Descript { get; set; }
-        [ngGrid(ColumnName = "Наименование документа", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
-        public string DocumentName { get; set; }
-        [ngGrid(ColumnName = "Документ отправлен", FilterEnabled = true, Type = ngType.Boolean, IsEditable = false, SortEnabled = true)]
-        public bool DocumentSended { get; set; }
-        [ngGrid(ColumnName = "Документ получен", FilterEnabled = true, Type = ngType.Boolean, IsEditable = false, SortEnabled = true)]
-        public bool DocumentReceived { get; set; }
-        [ngGrid(ColumnName = "Статус", FilterEnabled = true, Type = ngType.String, IsEditable = false, SortEnabled = true)]
+        [ngGridRow(field = "Status", displayName = "Статус", enableFiltering = true, enableSorting = true, type = "string")]
         public string Status { get; set; }
-        
+        public object subGridOptions { get; set; }
+
     }
 }

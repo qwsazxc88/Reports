@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ngRowAttribute.cs" />
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
@@ -842,7 +843,6 @@
     <Compile Include="Filters\UserListFilter.cs" />
     <Compile Include="Filters\UserLoginFilter.cs" />
     <Compile Include="Ioc.cs" />
-    <Compile Include="Attributes\ngAtrributes.cs" />
     <Compile Include="NHibernateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">

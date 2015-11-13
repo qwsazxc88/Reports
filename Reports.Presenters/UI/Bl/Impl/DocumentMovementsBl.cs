@@ -7,6 +7,7 @@ using Reports.Core.Dto;
 using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Presenters.UI.ViewModel;
+using Newtonsoft.Json;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class DocumentMovementsBl: BaseBl, IDocumentMovementsBl
@@ -37,17 +38,34 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { documentMovementsRoleRecordsDao = value; }
         }
         #endregion
-        public List<Core.Dto.DocumentMovementsDto> GetDocuments(ViewModel.DocumentMovementsListModel model)
+        public GridDefinition GetDocuments(ViewModel.DocumentMovementsListModel model)
         {            
             User user = UserDao.Load(CurrentUser.Id);            
             var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole);
             var docs = DocumentMovementsDao.Find(query.Compile()).ToList();
-            List<DocumentMovementsDto> result = new List<DocumentMovementsDto>();
+            string[] statuses=new string[]{"","Черновик","Отправлено", "Получено"};
+            string[] directions = new string[] { "","От банка", "В банк" };
+            List<DocumentMovementsDto> docDtos = new List<DocumentMovementsDto>();
             foreach (var doc in docs)
             {
-                foreach (var el in doc.Docs.Where(x => x.SenderCheck || x.RecieverCheck))
-                    result.Add(new DocumentMovementsDto { Id = doc.Id, CreateDate=doc.CreateDate, Descript = doc.Descript, DocumentName= el.DocType.Name, DocumentReceived= el.RecieverCheck, DocumentSended = el.SenderCheck, Receiver = doc.Receiver.Name, SendDate=doc.SendDate, Sender = doc.Sender.Name, User= doc.User.Name, UserDep3 = doc.User.Department.Dep3.First().Name, UserDep7 = doc.User.Department.Name});
+                docDtos.Add(new DocumentMovementsDto
+                {
+                    Id = doc.Id,
+                    CreateDate= doc.CreateDate,
+                    Descript = doc.Descript,
+                    Direction = directions[doc.Direction],
+                    Receiver = doc.ReceiverRuscount!=null?doc.ReceiverRuscount.Name:doc.Receiver.Name,
+                    SendDate = doc.SendDate,
+                    Sender= (doc.SenderRuscount!=null)?doc.SenderRuscount.Name : doc.Sender.Name,
+                    Status=statuses[doc.StatusId],
+                    User = doc.User!=null?doc.User.Name:"",
+                    UserDep3 = doc.User!=null?(doc.User.Department!=null?(doc.User.Department.Dep3!=null?doc.User.Department.Dep3.First().Name:""):""):"",
+                    UserDep7 = doc.User!=null?(doc.User.Department!=null?doc.User.Department.Name:""):"",
+                    subGridOptions = UIGrid_Helper.GetGridDefinition(doc.Docs.Select(x=>new DocDto{ DocumentName=x.DocType.Name, DocumentReceived=x.RecieverCheck, DocumentSended=x.SenderCheck}).ToList())
+                });
             }
+            var result = UIGrid_Helper.GetGridDefinition(docDtos);
+            if (CurrentUser.Id == 5 || CurrentUser.Id == 10) result.IsGridEditable = true;
             return result;
         }
 
@@ -76,7 +94,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             DocumentMovements entity = null;
             var doctypes = documentMovements_DocTypesDao.LoadAll();
             model.SelectedDocs = new List<DocumentMovementsSelectedDocsDto>();
-
+            model.RuscountUsers = DocumentMovementsRoleRecordsDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             if (model.Id > 0)
             {
                 entity = DocumentMovementsDao.Load(model.Id);
@@ -101,11 +119,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.Id = entity.Id;
             model.Sender.Id = entity.Sender.Id;
+            if (entity.SenderRuscount!=null)
+            {
+                model.User.Name = entity.SenderRuscount.Name;
+            }
+            else
+            {
+                LoadUserData(model.Sender);
+            }
             if (CurrentUser.Id == model.Sender.Id) model.IsUserSender = true;
             if (entity.Receiver != null)
             {
-                model.Receiver.Id = entity.Receiver.Id;
-                LoadUserData(model.Receiver);
+                if (entity.ReceiverRuscount != null)
+                {
+                    model.Receiver.Id = entity.Receiver.Id;
+                    model.Receiver.Name = entity.ReceiverRuscount.Name;
+                }
+                else
+                {
+                    model.Receiver.Id = entity.Receiver.Id;
+                    LoadUserData(model.Receiver);
+                }
                 if (CurrentUser.Id == model.Receiver.Id) model.IsUserReceiver = true;
             }
             if (entity.User != null)
@@ -125,6 +159,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     doc.SenderCheckDate = x.SenderCheckDate;
                 });
             }
+            model.SenderAccept = entity.SendDate.HasValue;
+            model.ReceiverAccept = entity.ReceiverCheckDate.HasValue;
             model.SendDate = entity.SendDate;
             model.CreateDate = entity.CreateDate;
             model.Descript = entity.Descript;
@@ -149,8 +185,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (!entity.SendDate.HasValue)
                 {
-                    entity.User = UserDao.Load(model.User.Id);
-                    entity.Receiver = UserDao.Load(model.Receiver.Id);
+                    if (entity.Id == 0)
+                    {
+                        entity.User = UserDao.Load(model.User.Id);
+                        if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+                        {
+                            entity.Direction = 1;
+                            var sender = DocumentMovementsRoleRecordsDao.Load(model.SenderRuscount);
+                            entity.SenderRuscount = sender;
+                            entity.Receiver = UserDao.Load(model.Receiver.Id);
+                        }
+                        else
+                        {
+                            entity.Direction = 2;
+                            var receiver = DocumentMovementsRoleRecordsDao.Load(model.Receiver.Id);
+                            entity.Receiver = receiver.User;
+                            entity.ReceiverRuscount = receiver;                            
+                        }
+                    }
                     entity.Descript = model.Descript;
                 }
                 if (model.SenderAccept && !entity.SendDate.HasValue)
@@ -179,6 +231,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     doc.RecieverCheck = editeddoc.RecieverCheck;
                 }
             }
+            entity.StatusId = 1;
+            if (entity.SendDate.HasValue) entity.StatusId = 2;
+            if (entity.ReceiverCheckDate.HasValue) entity.StatusId = 3;
             DocumentMovementsDao.SaveAndFlush(entity);
             DocumentMovementsEditModel newmodel = new DocumentMovementsEditModel();
             newmodel.Id = entity.Id;
@@ -189,7 +244,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var usrs = DocumentMovementsRoleRecordsDao.Find(x => x.User.Name.Contains(query));
             if (usrs != null && usrs.Any())
-                return usrs.Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name }).ToList();
+                return usrs.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             else return new List<IdNameDto>();
         }
     }

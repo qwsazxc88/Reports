@@ -209,6 +209,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\angular-modules\DataService.js" />
     <Content Include="Scripts\angular-modules\select-tpls.min.js" />
+    <Content Include="Scripts\angular-modules\UserInfo.js" />
     <Content Include="Scripts\angular-sanitize.min.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\Common.js" />

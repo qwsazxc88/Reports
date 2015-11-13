@@ -16,12 +16,7 @@ ServiceModule.factory('dataService', function ($http, $q) {
         Get: function (url, query, success, fail) {
             $http.get(url, query).
                   success(function (data, status, headers, config) {
-                      if (data.Success == 'Success') {
-                          success(data.Result);
-                      }
-                      else {
-                          fail(data.Message);
-                      }
+                      success(data);                      
                   }).
                   error(function (data, status, headers, config) {
                       fail('Ошибка при передачи данных.');
@@ -30,12 +25,7 @@ ServiceModule.factory('dataService', function ($http, $q) {
         Post: function (url, query, success, fail) {
             $http.post(url, query).
                   success(function (data, status, headers, config) {
-                      if (data.Success == 'Success') {
-                          success(data.Result);
-                      }
-                      else {
-                          fail(data.Message);
-                      }
+                      success(data);                      
                   }).
                   error(function (data, status, headers, config) {
                       fail('Ошибка при передачи данных.');

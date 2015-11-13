@@ -3,6 +3,7 @@
     <id name="Id">
       <generator class="native" />
     </id>
+    <property name="Name" not-null="false"/>
    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_DocumentMovementsRoleRecords_Users" not-null="false"/>
   </class>
 </hibernate-mapping>

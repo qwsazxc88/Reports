@@ -22,10 +22,11 @@ namespace Reports.Presenters.UI.ViewModel
         }
         [Display(Name="Номер заявки")]
         public int Id { get; set; }
+        public int SenderRuscount { get; set; }
         public StandartUserDto User { get; set; }
         public StandartUserDto Sender { get; set; }
         public StandartUserDto Receiver { get; set; }
-        
+        public List<IdNameDto> RuscountUsers { get; set; }
         public List<DocumentMovementsSelectedDocsDto> SelectedDocs { get; set; }
         [Display(Name="Описание")]
         public string Descript { get; set; }

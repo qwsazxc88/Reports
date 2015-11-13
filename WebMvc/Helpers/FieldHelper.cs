@@ -198,30 +198,7 @@ namespace WebMvc.Helpers
             string template = "<oi-select oi-options='{0} for {1} in {2}' ng-model='{3}' ></oi-select>";
             return new MvcHtmlString(String.Format(template,selectOption,element,Collection,ngModel));
 
-        }
-        public static MvcHtmlString ngGrid<T>(this HtmlHelper html, string DataSource)
-        {
-            string template = "<div class='UI-grid bordered' ui-grid=\"{ data: {DataSource}, enableSorting: 'true', columnDefs:{columnDefs} }\"></div>";
-            string columns = "";
-            string[] types = new string[] {"","string","boolean","date","number","object"};
-            var props = typeof(T).GetProperties();
-            foreach (var prop in props)
-            {
-                var attrs = prop.GetCustomAttributes(typeof(ngGridAttribute), false);
-                if (attrs != null && attrs.Any())
-                {
-                    var attr = (ngGridAttribute)attrs.First();
-                    if (columns.Length > 0) columns += ", ";
-                    columns += "{field:'{field}', displayName:'{displayName}', enableFiltering:{enableFiltering}, enableSorting:{enableSorting}, type :'{Type}' }"
-                        .Replace("{field}", prop.Name)
-                        .Replace("{displayName}", attr.ColumnName)
-                        .Replace("{enableFiltering}", attr.FilterEnabled ? "true" : "false")
-                        .Replace("{enableSorting}", attr.SortEnabled ? "true" : "false")
-                        .Replace("{Type}",types[(int)attr.Type]);
-                }
-            }
-            return new MvcHtmlString(template.Replace("{DataSource}", DataSource).Replace("{columnDefs}", "[" + columns + "]"));
-        }
+        }        
         #endregion
     }
 }

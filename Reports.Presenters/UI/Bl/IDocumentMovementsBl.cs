@@ -10,7 +10,7 @@ namespace Reports.Presenters.UI.Bl
     public interface IDocumentMovementsBl: IBaseBl
     {
         DocumentMovementsListModel GetListModel();
-        List<DocumentMovementsDto> GetDocuments(DocumentMovementsListModel model);
+        GridDefinition GetDocuments(DocumentMovementsListModel model);
         DocumentMovementsEditModel GetEditModel(int Id);
         DocumentMovementsEditModel SaveModel(DocumentMovementsEditModel model);
         List<IdNameDto> GetRuscountUsers(string query);
