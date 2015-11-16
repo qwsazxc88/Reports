@@ -1088,6 +1088,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                         dto2.Error);
                         }
+                        if(IsManagerChiefForCreator(currUser,entity.Creator))
+                            if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
+                            && model.IsChiefApproved)
+                            {
+                                entity.ChiefDateAccept = DateTime.Now;
+                                entity.AcceptChief = currUser;
+                                EmailDto dto = SendEmailForAppointmentChiefAccept(currUser, entity);
+                                if (!string.IsNullOrEmpty(dto.Error))
+                                    error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                            dto.Error);
+                                if (entity.Recruter == 2)
+                                {
+                                    entity.AcceptStaff = entity.Creator;
+                                    CreateAppointmentReport(entity);
+                                }
+                            }
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
                     {
