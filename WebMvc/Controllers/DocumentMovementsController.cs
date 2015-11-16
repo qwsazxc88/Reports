@@ -59,5 +59,11 @@ namespace WebMvc.Controllers
         {
             return Content(JsonConvert.SerializeObject(DocumentMovementsBl.GetRuscountUsers(name)));
         }
+        [HttpPost]        
+        public ContentResult SaveModelsFromList(DocumentMovementsEditModel[] models)
+        {
+            DocumentMovementsBl.SaveModelsFromList(models);
+            return Content("Ok");
+        }
     }
 }

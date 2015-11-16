@@ -8,6 +8,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Presenters.UI.ViewModel;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class DocumentMovementsBl: BaseBl, IDocumentMovementsBl
@@ -41,34 +42,66 @@ namespace Reports.Presenters.UI.Bl.Impl
         public GridDefinition GetDocuments(ViewModel.DocumentMovementsListModel model)
         {            
             User user = UserDao.Load(CurrentUser.Id);            
-            var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole);
+            var domain = Expression.Parameter(typeof(DocumentMovements), "domain");
+            //var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole);
+            var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole,domain,QueryCreator.GetUserRightsForDocumentMovements(user,CurrentUser.UserRole,domain));
             var docs = DocumentMovementsDao.Find(query.Compile()).ToList();
             string[] statuses=new string[]{"","Черновик","Отправлено", "Получено"};
-            string[] directions = new string[] { "","От банка", "В банк" };
+            string[] directions = new string[] { "","В Банк", "От Банка" };
             List<DocumentMovementsDto> docDtos = new List<DocumentMovementsDto>();
             foreach (var doc in docs)
             {
-                docDtos.Add(new DocumentMovementsDto
+                var newelement = new DocumentMovementsDto
                 {
                     Id = doc.Id,
-                    CreateDate= doc.CreateDate,
+                    CreateDate = doc.CreateDate,
                     Descript = doc.Descript,
                     Direction = directions[doc.Direction],
-                    Receiver = doc.ReceiverRuscount!=null?doc.ReceiverRuscount.Name:doc.Receiver.Name,
+                    Receiver = doc.ReceiverRuscount != null ? doc.ReceiverRuscount.Name : doc.Receiver.Name,
+                    ReceiverAccept = doc.ReceiverCheckDate.HasValue,
                     SendDate = doc.SendDate,
-                    Sender= (doc.SenderRuscount!=null)?doc.SenderRuscount.Name : doc.Sender.Name,
-                    Status=statuses[doc.StatusId],
-                    User = doc.User!=null?doc.User.Name:"",
-                    UserDep3 = doc.User!=null?(doc.User.Department!=null?(doc.User.Department.Dep3!=null?doc.User.Department.Dep3.First().Name:""):""):"",
-                    UserDep7 = doc.User!=null?(doc.User.Department!=null?doc.User.Department.Name:""):"",
-                    subGridOptions = UIGrid_Helper.GetGridDefinition(doc.Docs.Select(x=>new DocDto{ DocumentName=x.DocType.Name, DocumentReceived=x.RecieverCheck, DocumentSended=x.SenderCheck}).ToList())
-                });
+                    Sender = (doc.SenderRuscount != null) ? doc.SenderRuscount.Name : doc.Sender.Name,
+                    Status = statuses[doc.StatusId],
+                    User = doc.User != null ? doc.User.Name : "",
+                    UserDep3 = doc.User != null ? (doc.User.Department != null ? (doc.User.Department.Dep3 != null ? doc.User.Department.Dep3.First().Name : "") : "") : "",
+                    UserDep7 = doc.User != null ? (doc.User.Department != null ? doc.User.Department.Name : "") : "",
+                    subGridOptions = UIGrid_Helper.GetGridDefinition(doc.Docs.Select(x => new DocDto { DocType=x.DocType.Id, DocumentName = x.DocType.Name, DocumentReceived = x.RecieverCheck, DocumentSended = x.SenderCheck }).ToList())
+                };
+                ((GridDefinition)newelement.subGridOptions).enableVerticalScrollbar = 1;
+                ((GridDefinition)newelement.subGridOptions).IsGridEditable = (CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && doc.ReceiverRuscount != null;
+                docDtos.Add(newelement);
             }
             var result = UIGrid_Helper.GetGridDefinition(docDtos);
             if (CurrentUser.Id == 5 || CurrentUser.Id == 10) result.IsGridEditable = true;
             return result;
         }
-
+        public void SaveModelsFromList(DocumentMovementsEditModel[] models)
+        {
+            if (models == null || models.Length==0) return;
+            for (int i = 0; i < models.Length; i++)
+            {
+                var tmp = models[i];
+                var movement = DocumentMovementsDao.Load(tmp.Id);
+                foreach (var doc in tmp.SelectedDocs)
+                {
+                    var current=movement.Docs.Where(x => x.DocType.Id == doc.Type);
+                    if (current != null && current.Any()) 
+                    { 
+                        var d = current.First(); 
+                        if (d.RecieverCheck != doc.RecieverCheck) 
+                        { 
+                            d.RecieverCheck = doc.RecieverCheck; 
+                            d.RecieverCheckDate = DateTime.Now; 
+                        } 
+                    }
+                }
+                if (!movement.ReceiverCheckDate.HasValue && tmp.ReceiverAccept)
+                {
+                    movement.ReceiverCheckDate = DateTime.Now;
+                }
+                DocumentMovementsDao.SaveAndFlush(movement);
+            }
+        }
         public DocumentMovementsEditModel GetEditModel(int Id)
         {
             DocumentMovementsEditModel model = new DocumentMovementsEditModel();
@@ -76,10 +109,45 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetModel(model);            
             return model;
         }
-
+        public void SetDocumentReceived(int UserId, int TypeId)
+        {
+            DocumentMovements doc;
+            var docs = DocumentMovementsDao.Find(x => x.User.Id == UserId && x.Direction==2 && x.Docs.Any(y => y.DocType.Id == TypeId && y.SenderCheck==true && y.RecieverCheck==false));
+            if (docs != null && docs.Any())
+            {
+                doc = docs.OrderByDescending(x => x.CreateDate).First();
+                var element = doc.Docs.First(x => x.DocType.Id == TypeId);
+                DocumentMovements_SelectedDocs.SaveAndFlush(element);
+                DocumentMovementsDao.SaveAndFlush(doc);
+            }
+            else
+            {
+                doc = CreateNewEntity();
+                doc.User = UserDao.Load(UserId);
+                doc.Sender = doc.User;
+                doc.Receiver = UserDao.Load(CurrentUser.Id);
+                doc.SendDate = DateTime.Now;
+                doc.ReceiverCheckDate = DateTime.Now;
+                doc.Direction = 2;
+                doc.Descript = "Авто";
+                doc.Docs.Add(new DocumentMovements_SelectedDocs
+                {
+                    DocType = DocumentMovements_DocTypesDao.Load(TypeId),
+                    SenderCheck = true,
+                    RecieverCheck = true,
+                    SenderCheckDate = DateTime.Now,
+                    Movement = doc,
+                    RecieverCheckDate = DateTime.Now
+                });
+                DocumentMovementsDao.SaveAndFlush(doc);
+            }
+        }
         public DocumentMovementsListModel GetListModel()
         {
-            return new DocumentMovementsListModel();
+            var model =  new DocumentMovementsListModel();
+            model.IsSaveAvailable = (CurrentUser.UserRole & (UserRole.PersonnelManager)) > 0;
+            model.IsAddAvailable = (CurrentUser.UserRole &(UserRole.Manager | UserRole.PersonnelManager))>0;
+            return model;
         }
         private DocumentMovements CreateNewEntity()
         {
@@ -178,7 +246,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity = CreateNewEntity();
             }
-            var newdocs = model.SelectedDocs.Where(x => !entity.Docs.Any(y => y.DocType.Id == x.Type));
+            var newdocs = model.SelectedDocs.Where(x =>x.SenderCheck && !entity.Docs.Any(y => y.DocType.Id == x.Type));
             foreach (var newdoc in newdocs)
                 entity.Docs.Add(new DocumentMovements_SelectedDocs { DocType = DocumentMovements_DocTypesDao.Load(newdoc.Type), Movement = entity });
             if (entity.Sender.Id == CurrentUser.Id)

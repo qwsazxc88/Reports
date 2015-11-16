@@ -19,6 +19,8 @@ namespace Reports.Presenters.UI.ViewModel
             Statuses.Add(new IdNameDto { Id = 2, Name = "Отправлено" });
             Statuses.Add(new IdNameDto { Id = 3, Name = "Получено" });
         }
+        public bool IsSaveAvailable { get; set; }
+        public bool IsAddAvailable { get; set; }
         public IList<IdNameDto> Statuses { get; set; }
         [SearchField(Comparer = ComparerEnum.Equals, ModelParam = "StatusId", IgnoreValue = 0)]
         [Display(Name = "Статус")]

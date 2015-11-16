@@ -9,10 +9,12 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IDocumentMovementsBl: IBaseBl
     {
+        void SaveModelsFromList(DocumentMovementsEditModel[] models);
         DocumentMovementsListModel GetListModel();
         GridDefinition GetDocuments(DocumentMovementsListModel model);
         DocumentMovementsEditModel GetEditModel(int Id);
         DocumentMovementsEditModel SaveModel(DocumentMovementsEditModel model);
         List<IdNameDto> GetRuscountUsers(string query);
+        void SetDocumentReceived(int UserId, int TypeId);
     }
 }

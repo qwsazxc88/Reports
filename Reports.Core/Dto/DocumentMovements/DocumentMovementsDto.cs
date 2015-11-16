@@ -8,6 +8,7 @@ namespace Reports.Core.Dto
 {
     public class DocDto
     {
+        public int DocType { get; set; }
         [ngGridRow(field = "DocumentName", displayName = "Наименование")]
         public string DocumentName { get; set; }
         [ngGridRow(field = "DocumentSended", displayName = "Отправлено", cellTemplate = "<input type='checkbox' ng-model='row.entity[col.field]' disabled='disabled'/>")]
@@ -38,7 +39,7 @@ namespace Reports.Core.Dto
             Descript = "";
             Status = "";
         }
-        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number",  cellTemplate = "<a href='/DocumentMovements/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a>")]
+        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number", cellTemplate = "<div class='ui-grid-cell-contents'><i ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click='grid.appScope.toggleRow(row.entity)'></i><a href='/DocumentMovements/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int Id { get; set; }
         [ngGridRow(field = "User", displayName = "ФИО сотрудника", enableCellEdit = true, enableFiltering = true, enableSorting = true, type = "string")]
         public string User { get; set; }
@@ -52,9 +53,9 @@ namespace Reports.Core.Dto
         public string Sender { get; set; }
         [ngGridRow(field = "Receiver", displayName = "Получатель", enableFiltering = true, enableSorting = true, type = "string")]
         public string Receiver { get; set; }
-        [ngGridRow(field = "CreateDate", displayName = "Дата создания", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
+        [ngGridRow(field = "CreateDate", displayName = "Дата создания", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div class='ui-grid-cell-contents'>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
         public DateTime CreateDate { get; set; }
-        [ngGridRow(field = "SendDate", displayName = "Дата отправки", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
+        [ngGridRow(field = "SendDate", displayName = "Дата отправки", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div class='ui-grid-cell-contents'>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
         public DateTime? SendDate { get; set; }
         [ngGridRow(field = "ReceiveDate", displayName = "Дата получения", enableFiltering = true, enableSorting = true, type = "string")]
         public DateTime? ReceiveDate { get; set; }
@@ -63,6 +64,6 @@ namespace Reports.Core.Dto
         [ngGridRow(field = "Status", displayName = "Статус", enableFiltering = true, enableSorting = true, type = "string")]
         public string Status { get; set; }
         public object subGridOptions { get; set; }
-
+        public bool ReceiverAccept { get; set; }
     }
 }
