@@ -39,8 +39,15 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.RequestTypeId)
-                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
+                            {
+                                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.RequestTypeId)
+                                @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            }
                         </td>
                     </tr>
                     <tr>
@@ -351,14 +358,14 @@
         
         <br />
         <button id="btnSave" type="button" title=@(Model.Id == 0 ? "Сохранить заявку" : "Редактировать заявку") @if (!Model.IsDraftButtonAvailable)
-                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
+                                                                                                                {<text>disabled=disabled</text>}>Сохранить</button>
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
-                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
+                                                                                                        {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    if (Model.Id != 0)
-    {
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-    }
+                                                                                                        }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>

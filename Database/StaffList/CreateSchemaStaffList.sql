@@ -1,7 +1,7 @@
 --СКРИПТ СОЗДАЕТ СТРУКТУРУ БАЗЫ ДАННЫХ ДЛЯ РАЗДЕЛА ШТАТНОГО РАСПИСАНИЯ, СОЗДАЕТ ОБЪЕКТЫ БАЗЫ И ЗАПОЛНЯЕТ НОВЫЕ СПРАВОЧНИКИ НАЧАЛЬНЫМИ ДАННЫМИ
 --СКРИПТ НЕ МЕНЯЕТ СТРУКТУРУ УЖЕ СУЩЕСТВУЮЩИХ СПРАВОЧНИКОВ, ТОЛЬКО ПЕРЕСОЗДАЕТ НОВЫЕ ТАБЛИЦЫ НЕОБХОДИМЫЕ ДЛЯ ШТАТНОГО РАСПИСАНИЯ
 --RETURN
-use WebAppTest2
+use WebAppTest
 go
 
 --1. УДАЛЕНИЕ ССЫЛОК
@@ -3907,11 +3907,13 @@ INSERT INTO StaffProgramReference(Name) VALUES(N'РБС')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Изменение параметров СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Закрытие СП')
+INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Ввод начальных данных')
 
 --StaffEstablishedPostRequestTypes
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
+INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Ввод начальных данных')
 
 --DepartmentArchive
 INSERT INTO DepartmentArchive(DepartmentId, Code, Name, Code1C, ParentId, Path, ItemLevel, IsUsed)
