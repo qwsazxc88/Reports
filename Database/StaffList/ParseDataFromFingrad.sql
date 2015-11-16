@@ -1,7 +1,7 @@
 --СКРИПТ ОБРАБОТКИ И ЗАКАЧКИ ДАННЫХ ИЗ ФИНГРАДА В БАЗУ ДАННЫХ 
 --ЕСЛИ ОБНОВИЛАСЬ БАЗА ИЛИ СПРАВОЧНИК ТОЧЕК ДЛЯ ГРАФИКОВ, СПРАВОЧНИК ПОДРАЗДЕЛЕНИЙ, ТО ИЗ СПРАВОЧНИКА ПОДРАЗДЕЛЕНИЙ ВОЗМОЖНО НУЖНО УДАЛИТЬ ЗАПИСИ С ЗНАЧЕНИЕМ 4 В ПОЛЕ BFGId
 
-use WebAppTest2
+use WebAppTest
 go
 
 SET NOCOUNT ON
@@ -678,7 +678,7 @@ BEGIN
 																			,CreatorId)
 	SELECT 1
 					,getdate()--A.[Дата_процедуры]
-					,1--case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
+					,4--ввод начальных данных
 					,@Id
 					,B.ItemLevel
 					,C.Id
@@ -1099,7 +1099,7 @@ INSERT INTO StaffDepartmentRequest ([Version]
 																			,CreatorId)
 	SELECT 1
 					,getdate()--A.[Дата_процедуры]
-					,1--case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
+					,4--ввод начальных данных
 					,A.Id
 					,A.ItemLevel
 					,B.Id

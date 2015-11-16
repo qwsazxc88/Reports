@@ -52,8 +52,15 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.RequestTypeId)
-                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
+                            {
+                                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.RequestTypeId)
+                                @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            }
                         </td>
                     </tr>
                     <tr>
@@ -911,7 +918,7 @@
                         <tr>
                             <td rowspan="6">
                                 <button id="btnPyrus" type="button" title="Создать задачу для дополнительного обсуждения в Пайрус" @if (!Model.IsAgreeButtonAvailable)
-                                                                                                        {<text>disabled="disabled"</text>}>Пайрус</button> <br /><br />
+                                                                                                                                   {<text>disabled="disabled"</text>}>Пайрус</button> <br /><br />
                                 @Html.LabelFor(m => m.PyrusNumber)
                                 @Html.TextBoxFor(m => m.PyrusNumber, Model.IsAgreeButtonAvailable ? (object)new { style = "width:100px;" } : (object)new { style = "width:100px;", disabled = "disabled" })
                             </td>
@@ -1078,7 +1085,7 @@
                                         }
                                     </table>
                                     <button id="btnSoftAdmin" type="button" title="Сохранить изменения" style="float:right;@if (!Model.IsSoftAdminApproveAvailable)
-                                                                                                                                        {<text>display:none;</text>}" >Сохранить</button>
+                                                                                                                           {<text>display:none;</text>}" >Сохранить</button>
                                 </div>
                             </div>
                         </td>
@@ -1090,8 +1097,12 @@
         <br />
         @*@Html.HiddenFor(m => m.IsDraftButtonAvailable)*@
         @*@Html.HiddenFor(m => m.IsAgreeButtonAvailable)*@
-        <button id="btnSave" type="button" title=@if(Model.Id == 0) {<text>"Сохранить заявку"</text>} else {<text>"Редактировать заявку"</text>}) 
-                                                @if (!Model.IsDraftButtonAvailable) {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
+        <button id="btnSave" type="button" title=@if (Model.Id == 0)
+                                                 {<text>"Сохранить заявку"</text>}
+                                                 else
+                                                 {<text>"Редактировать заявку"</text>}) 
+                                                @if (!Model.IsDraftButtonAvailable)
+                                                {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
 
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled="disabled"</text>}>Согласовать</button>
@@ -1199,7 +1210,7 @@
         });
         $("#MainDiv6").accordion({
             header: "h3",
-            //active: true,
+            active: false,
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"

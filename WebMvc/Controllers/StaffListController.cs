@@ -241,7 +241,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequestList()
         {
             StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
@@ -254,7 +254,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
@@ -276,7 +276,7 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
             ModelState.Clear();
@@ -298,7 +298,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ViewBag.Title = model.RequestTypeId == 1 ? "Заявка на создание ШЕ" : (model.RequestTypeId == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");

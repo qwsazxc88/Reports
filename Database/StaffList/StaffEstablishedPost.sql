@@ -1,4 +1,4 @@
-use WebAppTest2
+use WebAppTest
 go
 
 --СКРИПТ ФОРМИРУЕТ ШТАТНЫЕ ЕДИНИЦЫ И ЗАЯВКИ НА ИХ СОЗДАНИЕ
@@ -51,7 +51,7 @@ INSERT INTO StaffEstablishedPostRequest([Version]
 																				,CreatorID)
 
 SELECT 1
-			 ,1 
+			 ,4	--ввод начальных данных 
 			 ,Id
 			 ,PositionId
 			 ,DepartmentId

@@ -1471,10 +1471,19 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //только после утверждения заявки можно редактировать справочник подразделений.
                 //ветка срабатывает только после последней фазы согласования (на данный момент это утверждение заявки)
-                int Result = SaveDepartmentApprovals(model, entity, curUser, out error);
+                //пока данные корректируются после начальной загрузки, то для таких заявок согласования не нужно
+                int Result = entity.RequestType.Id == 4 ? 0 : SaveDepartmentApprovals(model, entity, curUser, out error);
                 if (Result == -1) return false;
                 if (Result == 0)
                 {
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.BeginAccountDate = DateTime.Now;
+                        entity.DateState = DateTime.Now;
+                        entity.DateSendToApprove = DateTime.Now;
+                    }
+
                     //занесение данных по подразделению в справочник подазделений и создание кодов для подразделений
                     if (!SaveDepartmentReference(entity, curUser, out error))
                     {
@@ -1486,7 +1495,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
 
                     //если заявка на изменение/удаление подразделения
-                    if (entity.RequestType.Id != 1)
+                    if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
                     {
 
                         if (OldEntity != null)
@@ -1552,7 +1561,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //родительское подразделение
             Department ParentDep = entity.ParentDepartment != null ? DepartmentDao.Get(entity.ParentDepartment.Id) : new Department();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
-            if (entity.RequestType.Id == 1)
+            if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
             {
                 dep.Code = null;
                 dep.Name = entity.Name;
@@ -1570,7 +1579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            if (entity.RequestType.Id != 1)
+            if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
             {
                 if (entity.RequestType.Id == 2)
                 {
@@ -1600,7 +1609,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
 
                 //только при добавлении надо заполнить эти поля, так как в структуре на поле Code1C ссылается поле ParentId, то есть значения в поле Code1C должны быть уникальными
-                if (entity.RequestType.Id == 1)
+                if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
                 {
                     dep.Code = dep.Id.ToString();
                     dep.Code1C = dep.Id;
@@ -1749,7 +1758,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 DocumentApprovalDao.SaveAndFlush(da);
-
+                
                 //сохраняем здачу пайруса
                 if (!string.IsNullOrEmpty(model.PyrusNumber))
                 {
@@ -2586,18 +2595,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.BeginAccountDate = DateTime.Now;
 
-                int Result = SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
+                int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
                 if (Result == -1) return false;
 
                 if (Result == 0)
                 {
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+                    }
+
                     if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                     {
                         return false;
                     }
 
                     //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
-                    if (entity.RequestType.Id != 1)
+                    if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
                     {
                         int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
                         if (OldRequestId != 0)
@@ -2703,7 +2720,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             StaffEstablishedPost sep = entity.StaffEstablishedPost != null ? StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id) : new StaffEstablishedPost();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
-            if (entity.RequestType.Id == 1)
+            if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
             {
                 sep.Position = entity.Position;
                 sep.Department = entity.Department;
@@ -2716,7 +2733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            if (entity.RequestType.Id != 1)
+            if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
             {
                 if (entity.RequestType.Id == 2)
                 {
@@ -2848,7 +2865,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 DocumentApprovalDao.SaveAndFlush(da);
-
+                
                 if (da.Number == 1)
                 {
                     entity.DateSendToApprove = DateTime.Now;
