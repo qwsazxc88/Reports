@@ -184,7 +184,9 @@
     <Content Include="Content\themes\base\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\uigrid\ui-grid.min.css" />
-    <Content Include="Content\uigrid\ui-grid.svg" />
+    <Content Include="Content\uigrid\ui-grid.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\vis.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="FileSizeTooLarge.htm" />
@@ -865,9 +867,15 @@
     <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
     <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
     <Content Include="Views\StaffList\TreeViewAjax.cshtml" />
-    <None Include="Content\uigrid\ui-grid.eot" />
-    <None Include="Content\uigrid\ui-grid.ttf" />
-    <None Include="Content\uigrid\ui-grid.woff" />
+    <None Include="Content\uigrid\ui-grid.eot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\uigrid\ui-grid.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\uigrid\ui-grid.woff">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Files\doc\word\_rels\document.xml.rels" />
     <None Include="Files\doc\_rels\.rels" />
     <None Include="Files\StaffMovements\Dogovor.docx">

@@ -17,7 +17,7 @@ namespace WebMvc.Helpers
         {
             string block = "div";
             if (inline) block = "span";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label=Html.LabelFor(expression);
             var editor = Html.TextBoxFor(expression, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
@@ -27,7 +27,7 @@ namespace WebMvc.Helpers
         {
             string block="div";
             if (inline) block = "span";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.TextBoxFor(expression, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
@@ -50,7 +50,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateField<TModel, TValue>(this HtmlHelper<TModel> Html, string format, Expression<Func<TModel, TValue>> expression, object HtmlAttributes = null, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.TextBoxNewFor( expression, format, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
@@ -59,7 +59,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateField<TModel, TValue>(this HtmlHelper<TModel> Html, string format, Expression<Func<TModel, TValue>> expression, Dictionary<string,object> HtmlAttributes = null, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.TextBoxNewFor(expression, format, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
@@ -68,7 +68,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateDropdown<TModel, TValue>(this HtmlHelper<TModel> Html, Expression<Func<TModel, TValue>> expression, SelectList Items,object HtmlAttributes = null, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.DropDownListFor(expression, Items, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
@@ -84,7 +84,7 @@ namespace WebMvc.Helpers
             if (HtmlAttributes == null) HtmlAttributes = new Dictionary<string, object>();
             if (!Enabled)
                 HtmlAttributes.Add("disabled", "disabled");
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}</span>{2}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}</{0}>";
             string label = hasLabel ? Html.LabelFor(expression) + ":" : "";             
             var editor = Html.CheckBoxFor(expression,HtmlAttributes);            
             return new MvcHtmlString(String.Format(template,block, label, editor));
@@ -93,7 +93,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateDisplay<TModel, TValue>(this HtmlHelper<TModel> Html, Expression<Func<TModel, TValue>> expression, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.DisplayFor(expression);
             return new MvcHtmlString(String.Format(template,block, label, editor));
@@ -102,7 +102,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateFileInput<TModel, TValue>(this HtmlHelper<TModel> Html, Expression<Func<TModel, TValue>> expression, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.TextBoxFor(expression, new { type = "file" });
             var validation = Html.ValidationMessageFor(expression);
@@ -112,7 +112,7 @@ namespace WebMvc.Helpers
         public static MvcHtmlString CreateApprove<TModel>(this HtmlHelper<TModel> Html, Expression<Func<TModel,ApprovalViewModel>> element, Dictionary<string,object> HtmlAttributes = null, bool inline=false)
         {
             string block = inline ? "span" : "div";
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
 
             var e = (element.Body as MemberExpression);            
             var param = element.Parameters;
@@ -185,7 +185,7 @@ namespace WebMvc.Helpers
             if (HtmlAttributes == null) HtmlAttributes = new Dictionary<string, object>();
             if (!Enabled)
                 HtmlAttributes.Add("disabled", "disabled");
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:</span>{2}{3}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}{3}</{0}>";
             var label = Html.LabelFor(expression);
             var editor = Html.TextAreaFor(expression, HtmlAttributes);
             var validation = Html.ValidationMessageFor(expression);
