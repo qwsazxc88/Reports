@@ -32,12 +32,12 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name="ФИО отправителя")]
         public string SenderName { get; set; }
         [SearchField(Comparer = ComparerEnum.Like, ModelParam = "Receiver.Name")]
-        [Display(Name = "ФИО отправителя")]
+        [Display(Name = "ФИО получателя")]
         public string ReceiverName { get; set; }
         [SearchField(Comparer = ComparerEnum.Equals, ModelParam = "Id",IsNullable=true)]
         [Display(Name = "Номер заявки")]
         public int? Number { get; set; }
-        [Display(Name = "Период с")]
+        [Display(Name = "С")]
         public DateTime? BeginDate { get; set; }
         [SearchField(Comparer = ComparerEnum.EqualsOrLess, ModelParam = "ContinueDate")]
         [Display(Name = "по")]

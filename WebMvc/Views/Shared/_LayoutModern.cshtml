@@ -24,14 +24,14 @@
                 @Html.Partial("_LogOnPartial")
             </div>
         </div>
+        <div class="page">
             <div class="menu">
                 @Html.Partial("_MenuPartial")
-            </div>
-
-      
+            </div>      
+            <div style="height:5px;"></div>
                 @RenderBody()
-
-<div class="page-footer">
-</div> 
+            <div class="page-footer">
+            </div> 
+        </div>
 </body>
 </html>
