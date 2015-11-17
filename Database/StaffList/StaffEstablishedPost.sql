@@ -2,12 +2,10 @@ use WebAppTest
 go
 
 --СКРИПТ ФОРМИРУЕТ ШТАТНЫЕ ЕДИНИЦЫ И ЗАЯВКИ НА ИХ СОЗДАНИЕ
-
-/*
-возможно нужно обращать внимание на беременных при формировании штатных единиц
-то есть на одну ШЕ может быть несколько человек, но один работающий, а остальные больные, отпуск и т.д.
-*/
-
+SET NOCOUNT ON
+DECLARE @UserId int, @ReplacedId int, @IsPregnant bit, @DepartmentId int, @PositionId int, @Salary numeric(18, 2), @SEPId int, @SPCount int, @UserCount int
+/*																	
+--старый вариант формирования штатных единиц
 --заполняем справочник штатных единиц на основе сформированных заявок
 INSERT INTO StaffEstablishedPost([Version]
 																	,PositionId
@@ -18,7 +16,7 @@ INSERT INTO StaffEstablishedPost([Version]
 																	,BeginAccountDate
 																	,[Priority]
 																	,CreatorID)
-/*																	
+
 SELECT 1
 			 ,B.PositionId
 			 ,A.Id
@@ -34,43 +32,128 @@ INNER JOIN Users as B ON B.DepartmentId = A.Id and B.IsActive = 1 and (RoleId & 
 INNER JOIN Position as C ON C.id = B.PositionId
 GROUP BY A.Id, B.PositionId, C.Name, B.Salary
 */
-SELECT 1
-			 ,A.PositionId
-			 ,A.DepartmentId
-			 ,count(A.PositionId) as Quantity
-			 ,isnull(A.Salary, 0)
-			 ,1 as IsUsed
-			 ,getdate() as BeginAccountDate
-			 ,null	--пока не заполняю
-			 ,null --ввод начальных данных
-FROM (
-			--вакансии
-			SELECT B.Id as DepartmentId, C.Id as PositionId, cast(isnull(A.[Тарифная ставка (оклад) и пр#, руб#], 0) as numeric(18, 2)) as Salary --[Код подр# 7], [Код Должности], [Тарифная ставка (оклад) и пр#, руб#] 
+
+--новый вариант формирования штатных единиц с учетом беременных и их замещения 
+
+--выбираем активные учетные записи с ролью сотрудника в временую структуру и идем по ним в цикле с сортировкой по признаку беременности (в начале не беременные)
+SELECT * INTO #Users FROM Users WHERE RoleId & 2 > 0 and IsActive = 1
+
+WHILE EXISTS(SELECT * FROM #Users)
+BEGIN
+	SET @ReplacedId = null
+
+	SELECT top 1 @UserId = A.Id, @IsPregnant = isnull(A.IsPregnant, 0), @DepartmentId = A.DepartmentId, @PositionId = A.PositionId, 
+				 @Salary = case when isnull(A.Salary, 0) = 0 then isnull(B.[Тарифная ставка (оклад) и пр#, руб#], 0) else isnull(A.Salary, 0) end,
+				 @ReplacedId = C.Id
+	FROM #Users as A
+	LEFT JOIN StaffEstablishedPostTemp as B ON B.[Табельный номер] = A.Code
+	LEFT JOIN #Users as C ON C.Code = B.[таб# номер первичной беременной/вторичной]
+	ORDER BY isnull(A.IsPregnant, 0)
+	--если нет признака беременности, то 
+	IF @IsPregnant = 0
+	BEGIN
+		--если нет штатной единицы с такими подразделением, должностью и окладом
+		IF NOT EXISTS (SELECT * FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary)
+		BEGIN
+			--формируем строку штатной единицы с количеством 1 (если оклад в учетке равен 0, то надо его взять из выгрузки)
+			INSERT INTO StaffEstablishedPost([Version], PositionId, DepartmentId, Quantity, Salary, IsUsed, BeginAccountDate)
+			VALUES(1, @PositionId, @DepartmentId, 1, @Salary, 1, getdate())
+
+			SET @SEPId = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			--если уже есть такая штатная единица, то увеличиваем ее количество на 1
+			SELECT @SEPId = Id FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary
+
+			UPDATE StaffEstablishedPost SET Quantity = Quantity + 1 WHERE Id = @SEPId
+		END
+
+		--проставляем полученный Id штатной единицы в учетку
+		UPDATE Users SET SEPId = @SEPId WHERE Id = @UserId
+
+		--смотрим в данные выгрузки, заменяет ли этот сотрудник кого нибудь
+		--если да
+		IF @ReplacedId is not null
+		BEGIN
+				--то проставляем Id штатной единицы в учетку заменяемого сотрудника
+				UPDATE Users SET SEPId = @SEPId WHERE Id = @ReplacedId
+
+				--заносим в таблицу замещения соответствующие данные
+				INSERT INTO StaffPostReplacement(UserId, ReplacedId, SEPId, IsUsed)
+				VALUES(@UserId, @ReplacedId, @SEPId, 1)
+
+				--удаляем из временной структуры учетку заменяемого
+				DELETE FROM #Users WHERE Id = @ReplacedId
+		END
+	END
+	ELSE
+	BEGIN
+		--к этому моменту должны остаться учетки беременных которых никто не заменяет или нет по ним данных в файле выгрузки
+		--если нет штатной единицы с такими подразделением, должностью и окладом
+		IF NOT EXISTS (SELECT * FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary)
+		BEGIN
+			--формируем строку штатной единицы с количеством 1 (если оклад в учетке равен 0, то надо его взять из выгрузки)
+			INSERT INTO StaffEstablishedPost([Version], PositionId, DepartmentId, Quantity, Salary, IsUsed, BeginAccountDate)
+			VALUES(1, @PositionId, @DepartmentId, 1, @Salary, 1, getdate())
+
+			SET @SEPId = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			--если уже есть такая штатная единица, то увеличиваем ее количество на 1
+			SELECT @SEPId = Id FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary
+
+			UPDATE StaffEstablishedPost SET Quantity = Quantity + 1 WHERE Id = @SEPId
+		END
+
+		--проставляем полученный Id штатной единицы в учетку
+		UPDATE Users SET SEPId = @SEPId WHERE Id = @UserId
+	END
+
+	--удаляем учетку сотрудника
+	DELETE FROM #Users WHERE Id = @UserId
+
+	SET @UserCount = (SELECT count(*) FROM #Users)
+	print 'осталось обработать ' + cast(@UserCount as varchar) + ' учетных записей'
+END
+
+print 'СФОРМИРОВАНЫ ШТАТНЫЕ ЕДИНИЦЫ'
+
+--из файла выгрузки выбираем вакансии, цикл
+SELECT DepartmentId, PositionId, Salary, sum(SPCount) as SPCount
+INTO #Vacation
+FROM (SELECT B.Id as DepartmentId, C.Id as PositionId, isnull(A.[Тарифная ставка (оклад) и пр#, руб#], 0) as Salary, 1 as SPCount 
 			FROM StaffEstablishedPostTemp as A
 			INNER JOIN Department as B ON B.Code1COld = A.[Код подр# 7]
-			INNER JOIN Position as C ON C.Code = A.[Код Должности]
-			WHERE [ФИО (краткое)] = 'вакансия' and [Код подр# 7] is not null and [Код Должности] is not null
-			--358
-			UNION ALL
-			--занятые/замещенные должности
-			SELECT A.DepartmentId, A.PositionId, A.Salary--, a.IsPregnant, case when A.Salary = 0 then b.[Тарифная ставка (оклад) и пр#, руб#] else b.[Тарифная ставка (оклад) и пр#, руб#] end as Salary, 
-						 --b.[Тарифная ставка (оклад) и пр#, руб#], A.name, b.[ФИО (полные)], 
-			--			 ,b.[Занимает ставку первичной беременной/ вторичной беременной], b.[таб# номер первичной беременной/вторичной]
-			FROM Users as A
-			inner join StaffEstablishedPostTemp as b on b.[Табельный номер] = a.Code
-			WHERE A.IsActive = 1 and (A.RoleId & 2) > 0 and isnull(a.IsPregnant, 0) = 0 
-			--and b.[Занимает ставку первичной беременной/ вторичной беременной] is not null b.[таб# номер первичной беременной/вторичной]
-			UNION ALL
-			--беременные, но не замещенные
-			SELECT A.DepartmentId, A.PositionId, A.Salary--, a.IsPregnant, case when A.Salary = 0 then b.[Тарифная ставка (оклад) и пр#, руб#] else b.[Тарифная ставка (оклад) и пр#, руб#] end as Salary, 
-						 --b.[Тарифная ставка (оклад) и пр#, руб#], A.name, b.[ФИО (полные)], b.[Занимает ставку первичной беременной/ вторичной беременной], b.[таб# номер первичной беременной/вторичной]
-			FROM Users as A
-			inner join StaffEstablishedPostTemp as b on b.[Табельный номер] = a.Code
-			WHERE A.IsActive = 1 and (A.RoleId & 2) > 0 --and A.IsPregnant = 1
-			--and a.DepartmentId = 105 and a.PositionId = 233 
-			and isnull(a.IsPregnant, 0) = 1
-			and not exists (select * from StaffEstablishedPostTemp where [таб# номер первичной беременной/вторичной] = a.code)) as A
-GROUP BY A.PositionId, A.DepartmentId, isnull(A.Salary, 0)
+			INNER JOIN Position as c ON C.Code = A.[Код Должности]
+			WHERE [ФИО (краткое)] = 'вакансия' and [Код подр# 7] is not null and [Код Должности] is not null) as A
+			GROUP BY DepartmentId, PositionId, Salary
+
+WHILE EXISTS(SELECT * FROM #Vacation)
+BEGIN
+	SELECT top 1 @DepartmentId = DepartmentId, @PositionId = PositionId, @Salary = Salary, @SPCount = SPCount FROM #Vacation
+
+	--если нет штатной единицы с такими подразделением, должностью и окладом
+	IF NOT EXISTS (SELECT * FROM StaffEstablishedPost WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary)
+	BEGIN
+		--формируем строку штатной единицы с количеством 1 (если оклад в учетке равен 0, то надо его взять из выгрузки)
+		INSERT INTO StaffEstablishedPost([Version], PositionId, DepartmentId, Quantity, Salary, IsUsed, BeginAccountDate)
+		VALUES(1, @PositionId, @DepartmentId, @SPCount, @Salary, 1, getdate())
+
+		SET @SEPId = @@IDENTITY
+	END
+	ELSE
+	BEGIN
+		--если уже есть такая штатная единица, то увеличиваем ее количество 
+		UPDATE StaffEstablishedPost SET Quantity = Quantity + @SPCount
+		WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary
+	END
+
+	DELETE FROM #Vacation WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary and SPCount = @SPCount
+END
+
+print 'ВАКАНСИИ ДОБАВЛЕНЫ'
 
 
 
@@ -133,12 +216,16 @@ FROM StaffEstablishedPost
 
 
 --проставляем Id штатной единицы для пользователей по текущим данным
-UPDATE Users SET SEPId = B.Id
-FROM Users as A
-INNER JOIN StaffEstablishedPost as B ON B.PositionId = A.PositionId and B.DepartmentId = A.DepartmentId and B.Salary = A.Salary
+--UPDATE Users SET SEPId = B.Id
+--FROM Users as A
+--INNER JOIN StaffEstablishedPost as B ON B.PositionId = A.PositionId and B.DepartmentId = A.DepartmentId and B.Salary = A.Salary
 --where a.DepartmentId = 11356
 
 --обнуляем оклады сотрудников, пока штатное расписание доступно всем
 --UPDATE StaffEstablishedPost SET Salary = 0
 --UPDATE StaffEstablishedPostRequest SET Salary = 0
 --UPDATE StaffEstablishedPostArchive SET Salary = 0
+
+
+drop table #Users
+drop table #Vacation

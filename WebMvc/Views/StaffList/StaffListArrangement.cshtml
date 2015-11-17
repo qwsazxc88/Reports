@@ -17,7 +17,9 @@
                     <th>Должность</th>
                     <th>Количество<br />штатных<br />единиц</th>
                     <th>Оклад</th>
+                    <th>Ставка</th>
                     <th>ФИО<br />сотрудника</th>
+                    <th>ОЖ</th>
                     <th>Название в<br />Финграде</th>
                     <th>Комментарий</th>
                     <th>Код в<br />Финграде</th>
@@ -177,6 +179,8 @@
                                         "<td>" + result.Departments[i].SEPCount + "</td>" +
                                         "<td></td>" +
                                         "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
                                         "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
                                         "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
                                         "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
@@ -210,29 +214,32 @@
                         }
                     }
                     
+                    if(result.EstablishedPosts != null)
+                    {
+                        for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                        {   
+                            tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-u-" + (result.EstablishedPosts[i].UserId != 0 ? result.EstablishedPosts[i].UserId : result.EstablishedPosts[i].ReplacedId) + "-" + i + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td>" +
+                                        "<span>" +
+                                            "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                            "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "</tr>";
 
-                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
-                    {   
-                        tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-u-" + result.EstablishedPosts[i].UserId +"' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "<td>" +
-                                    "<span>" +
-                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
-                                    "</span>" +
-                                    "</td>" + 
-                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
-                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
-                                    "<td>" + result.EstablishedPosts[i].Surname + "</td>" +
-                                    "<td></td>" +
-                                    //"<td></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "</tr>";
-
-                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                            $(ParentRowName).after(tblStr);//вставляем новую строку
+                        }
                     }
                     
 

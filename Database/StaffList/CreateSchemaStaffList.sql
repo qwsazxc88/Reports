@@ -35,6 +35,25 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 GO
 
 
+IF OBJECT_ID ('FK_StaffPostReplacement_User', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_User]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_StaffEstablishedPost', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPost]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_Replaced', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_Replaced]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_CreatorUser]
+GO
 
 IF OBJECT_ID ('FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest]
@@ -1365,8 +1384,68 @@ GO
 
 
 
+if OBJECT_ID (N'StaffPostReplacement', 'U') is not null
+	DROP TABLE [dbo].[StaffPostReplacement]
+GO
+CREATE TABLE [dbo].[StaffPostReplacement](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[ReplacedId] [int] NULL,
+	[SEPId] [int] NOT NULL,
+	[IsUsed] [bit] NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffPostReplacement] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffPostReplacement] ADD  CONSTRAINT [DF_StaffPostReplacement_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_Replaced] FOREIGN KEY([ReplacedId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_Replaced]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPost] FOREIGN KEY([SEPId])
+REFERENCES [dbo].[StaffEstablishedPost] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPost]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_User]
+GO
+
 ALTER TABLE [dbo].[StaffRequestPyrusTasks] ADD  CONSTRAINT [DF_StaffRequestPyrusTasks_DateCreate]  DEFAULT (getdate()) FOR [CreateDate]
 GO
 
@@ -2281,6 +2360,36 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'UserId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id замещенного сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'ReplacedId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id штатной единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'SEPId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Журнал замещения сотрудников' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -4164,6 +4273,146 @@ BEGIN
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
 END
 GO
+
+
+IF OBJECT_ID ('fnGetReplacedName', 'FN') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetReplacedName]
+GO
+
+
+--функция возвращает строку с замещенными сотрудниками в штатной единице для данного сотрудника
+CREATE FUNCTION dbo.fnGetReplacedName
+(
+	@UserId int	--Id сотрудника
+	,@SEPId int	--Id штатной единицы
+	,@ReplacedId int	--Id сотрудника который в отпуске, но его никто не замещает
+)
+RETURNS nvarchar(500)
+AS
+BEGIN
+DECLARE 
+	@ReplacedName nvarchar(500)
+
+	IF @ReplacedId is null	
+		SELECT @ReplacedName = B.Name + N' - (' + convert(nvarchar, C.BeginDate, 103) + N' - ' + convert(nvarchar, C.EndDate, 103) + ')'
+		FROM StaffPostReplacement as A
+		INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
+		--пока цепляемся отпускам по уходу за ребенком
+		LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
+		WHERE A.SEPId = @SEPId and A.UserId = @UserId
+	ELSE
+		SELECT @ReplacedName = A.Name + N' - (' + convert(nvarchar, B.BeginDate, 103) + N' - ' + convert(nvarchar, B.EndDate, 103) + N')'
+		FROM Users as A 
+		--пока цепляемся отпускам по уходу за ребенком
+		LEFT JOIN ChildVacation as B ON B.UserId = A.Id and B.SendTo1C is not null and B.DeleteDate is null and getdate() between B.BeginDate and B.EndDate 
+		WHERE A.Id = @ReplacedId and A.IsActive = 1 and A.RoleId & 2 > 0
+
+	
+	
+	
+	RETURN @ReplacedName
+--SELECT dbo.fnGetReplacedName(18010, 981, 6761)
+
+END
+GO
+
+
+
+
+IF OBJECT_ID ('fnGetStaffEstablishedArrangements', 'TF') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
+GO
+
+--функция достает штатную расстановку по выбранному подразделению
+CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
+(
+	@DepartmentId int
+)
+RETURNS 
+@ReturnTable TABLE 
+(
+	 Id int 
+	,PositionId int
+	,PositionName nvarchar(250)
+	,DepartmentId int
+	,Quantity int
+	,Salary numeric(18, 2)
+	,Path nvarchar(250)
+	,RequestId int
+	,Rate decimal(18, 2)
+	,UserId int
+	,Surname nvarchar(250)
+	,ReplacedId int
+	,ReplacedName nvarchar(500)
+	,IsPregnant bit
+)
+AS
+BEGIN
+DECLARE 
+	@Tmp TABLE (SEPId int, PositionId int, PositionName nvarchar(250), Quantity int, Salary numeric(18, 2), VacationCount int, Path nvarchar(250))
+DECLARE @SEPId int, @i int, @VacationCount int
+	--
+	INSERT INTO @ReturnTable
+	SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity, A.Salary, C.Path, D.Id as RequestId, 
+				 E.Rate,	--ставка
+				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
+				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
+				 case when E.IsPregnant = 1 then null else E.Name end as Surname, 
+				 case when E.IsPregnant = 1 then E.Id else F.ReplacedId end as ReplacedId, 
+				 case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(E.Id, A.Id, null), G.Name) end as ReplacedName, E.IsPregnant
+	FROM StaffEstablishedPost as A
+	INNER JOIN Position as B ON B.Id = A.PositionId
+	INNER JOIN Department as C ON C.Id = A.DepartmentId
+	INNER JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
+	INNER JOIN Users as E ON E.SEPId = A.Id and E.IsActive = 1 and E.RoleId & 2 > 0
+	LEFT JOIN StaffPostReplacement as F ON F.SEPId = A.Id and F.UserId = E.Id and F.IsUsed = 1
+	LEFT JOIN Users as G ON G.Id = F.ReplacedId
+	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
+				--замещенных убираем из списка этим условием
+				and not exists (SELECT * FROM StaffPostReplacement WHERE SEPId = A.Id and ReplacedId = E.Id)
+	ORDER BY A.Priority
+	
+	--определяем вакансии
+	INSERT INTO @Tmp(SEPId, PositionId, PositionName, Quantity, Salary, VacationCount, Path)
+	SELECT A.Id, A.PositionId, B.PositionName, A.Quantity, B.Salary, case when A.Quantity > count(B.PositionId) then A.Quantity - count(B.PositionId) else 0 end as VacationCount, B.Path
+	FROM StaffEstablishedPost as a
+	INNER JOIN @ReturnTable as B ON B.Id = A.Id and B.PositionId = A.PositionId
+	WHERE A.DepartmentId = @DepartmentId	
+	GROUP BY A.Id, A.PositionId, B.PositionName, A.Quantity, B.Salary, B.Path
+
+	DELETE FROM @Tmp WHERE VacationCount = 0
+
+	--добавляем вакансии
+	IF EXISTS (SELECT * FROM @Tmp)
+	BEGIN
+		SELECT top 1 @SEPId = SEPId, @VacationCount = VacationCount FROM @Tmp
+		SET @i = 0
+
+		WHILE @i < @VacationCount
+		BEGIN
+			INSERT INTO @ReturnTable (Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName,	IsPregnant)
+			SELECT top 1 SEPId, PositionId, PositionName, @DepartmentId, 1, Salary, Path, null, null, null, N'Вакансия', null, null, null FROM @Tmp WHERE SEPId = @SEPId
+
+			SET @i += 1
+		END
+
+		DELETE FROM @Tmp WHERE SEPId = @SEPId
+	END
+	
+
+--select * from dbo.fnGetStaffEstablishedArrangements(7924) 
+
+	RETURN 
+END
+
+GO
+
+
+
+
+
+
+
 
 
 
