@@ -8,7 +8,8 @@ namespace Reports.Core.Dto
     /// </summary>
     public class StaffEstablishedPostDto
     {
-        public int Id { get; set; }
+        public int Id { get; set; }     //Id строки связи шаттной единицы и пользователя
+        public int SEPId { get; set; }  //Id штатной единицы
         public int PositionId { get; set; }
         public string PositionName { get; set; }
         public int DepartmentId { get; set; }

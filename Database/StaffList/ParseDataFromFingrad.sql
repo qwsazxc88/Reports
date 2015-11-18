@@ -677,7 +677,7 @@ BEGIN
 																			,DateState
 																			,CreatorId)
 	SELECT 1
-					,getdate()--A.[Дата_процедуры]
+					,'20151031'--A.[Дата_процедуры]
 					,4--ввод начальных данных
 					,@Id
 					,B.ItemLevel
@@ -1098,7 +1098,7 @@ INSERT INTO StaffDepartmentRequest ([Version]
 																			,DateState
 																			,CreatorId)
 	SELECT 1
-					,getdate()--A.[Дата_процедуры]
+					,'20151031'--A.[Дата_процедуры]
 					,4--ввод начальных данных
 					,A.Id
 					,A.ItemLevel
