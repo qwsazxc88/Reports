@@ -22,5 +22,7 @@ namespace Reports.Core.Dto
         public int ReplacedId { get; set; }     //Id заменяемого сотрудника
         public string ReplacedName { get; set; } //ФИО заменяемого сотрудника + период отпуска
         public bool? IsPregnant { get; set; }     //признак беременности
+        public bool IsVacation { get; set; }    //признак вакансии
+        public bool IsSTD { get; set; }     //признак срочного договора
     }
 }
