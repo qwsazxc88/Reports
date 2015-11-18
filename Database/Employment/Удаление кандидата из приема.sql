@@ -1,51 +1,59 @@
-
 --”даление кандидата из приема
+--сканы, если были не удал€ютс€
+declare @userid int, @Candidateid int, @id int
+
+set @userid = 25579
+set @Candidateid = 3037
+set @id = 3033
+
 begin transaction
-select * from EmploymentCandidate where id in (3088)
+select * from EmploymentCandidate where id in (@Candidateid)
 
 update EmploymentCandidate set GeneralInfoId = null, PassportId = null, EducationId = null, FamilyId = null,  MilitaryServiceId = null, ExperienceId = null, ContactsId = null, 
 			 BackgroundCheckId = null, OnsiteTrainingId = null, ManagersId = null, PersonnelManagersId = null, AppointmentId = null, AppointmentReportId = null,
 			 UserId = null
-where id in (3088)
+where id in (@Candidateid)
 
-update GeneralInfo set CandidateId = null where id = 3084
-delete from GeneralInfo where id = 3084
+update GeneralInfo set CandidateId = null where id = @id
+delete from GeneralInfo where id = @id
 
-update Passport set CandidateId = null where id = 3084
-delete from Passport where id = 3084
+update Passport set CandidateId = null where id = @id
+delete from Passport where id = @id
 
-update Education set CandidateId = null where id = 3084
-delete from Education where id = 3084
+update Education set CandidateId = null where id = @id
+delete from Education where id = @id
 
-update Family set CandidateId = null where id = 3084
-delete from Family where id = 3084
+update Family set CandidateId = null where id = @id
+delete from Family where id = @id
 
-update MilitaryService set CandidateId = null where id = 3084
-delete from MilitaryService where id = 3084
+update MilitaryService set CandidateId = null where id = @id
+delete from MilitaryService where id = @id
 
-update Experience set CandidateId = null where id = 3084
-delete from Experience where id = 3084
+update Experience set CandidateId = null where id = @id
+delete from Experience where id = @id
 
-update Contacts set CandidateId = null where id = 3084
-delete from Contacts where id = 3084
+update Contacts set CandidateId = null where id = @id
+delete from Contacts where id = @id
 
-update BackgroundCheck set CandidateId = null where id = 3084
-delete from BackgroundCheck where id = 3084
+update BackgroundCheck set CandidateId = null where id = @id
+delete from BackgroundCheck where id = @id
 
-update OnsiteTraining set CandidateId = null where id = 3084
-delete from OnsiteTraining where id = 3084
+update OnsiteTraining set CandidateId = null where id = @id
+delete from OnsiteTraining where id = @id
 
-update Managers set CandidateId = null where id = 3084
-delete from Managers where id = 3084
+update Managers set CandidateId = null where id = @id
+delete from Managers where id = @id
 
-update PersonnelManagers set CandidateId = null where id = 3084
-delete from PersonnelManagers where id = 3084
+update PersonnelManagers set CandidateId = null where id = @id
+delete from PersonnelManagers where id = @id
 
 
-delete from EmploymentCandidate where id in (3088)
+delete from EmploymentCandidate where id in (@Candidateid)
 
-delete from EmploymentCandidateComments where CandidateId = 25632
+delete from EmploymentCandidateComments where CandidateId = @userid
 
-delete from users where id = 25632
+delete from UserLogin where UserId = @userid
+
+delete from users where id = @userid
 --rollback transaction
 --commit transaction

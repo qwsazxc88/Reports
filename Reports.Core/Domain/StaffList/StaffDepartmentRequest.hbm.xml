@@ -40,6 +40,12 @@
       <key column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest"/>
       <one-to-many class="StaffDepartmentManagerDetails"/>
     </bag>
+
+    <bag name="StaffRequestPyrusTasks" lazy="true" cascade="all-delete-orphan">
+      <key column="DepRequestId" foreign-key="FK_StaffRequestPyrusTasks_StaffDepartmentRequest"/>
+      <one-to-many class="StaffRequestPyrusTasks"/>
+    </bag>
+    
     <!--
     <many-to-one name="DepartmentCBDetails" class="StaffDepartmentCBDetails" column="DepRequestId" foreign-key="FK_StaffDepartmentCBDetails_StaffDepartmentRequest" index="StaffDepartmentCBDetails_StaffDepartmentRequest" not-null="false"/>
     <many-to-one name="DepartmentManagerDetails" class="StaffDepartmentManagerDetails" column="DepRequestId" foreign-key="FK_StaffDepartmentManagerDetails_StaffDepartmentRequest" index="StaffDepartmentManagerDetails_StaffDepartmentRequest" not-null="false"/>

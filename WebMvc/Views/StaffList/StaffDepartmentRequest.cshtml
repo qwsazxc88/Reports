@@ -11,7 +11,7 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
-    @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+    @*@Html.HiddenFor(m => m.IsDraftButtonAvailable)*@
     @Html.HiddenFor(m => m.ItemLevel)
     @Html.HiddenFor(m => m.IsUsed)
     @Html.HiddenFor(m => m.DepartmentId)
@@ -25,7 +25,7 @@
             <div>
                 @Html.Partial("DepRequestInfoView", Model.DepRequestInfo)
             </div>
-        </div>
+        </div>  
 
 
         <div id="MainDiv1">
@@ -52,8 +52,15 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.RequestTypeId)
-                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
+                            {
+                                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.RequestTypeId)
+                                @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            }
                         </td>
                     </tr>
                     <tr>
@@ -154,18 +161,6 @@
                                                                                                                                                                                                         else
                                                                                                                                                                                                         {<text> style="border-color:none;"</text>}>Нет</label>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.DepNextId)<br />
-                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);"/>
-                            </td>
-                            <td>
-                                <label id="DepNextNameLabel">@Model.DepNextName</label>
-                                @Html.HiddenFor(m => m.DepNextId)
-                                @Html.HiddenFor(m => m.DepNextName)
-                                @Html.ValidationMessageFor(model => model.DepNextId)
                             </td>
                         </tr>
                     }
@@ -785,37 +780,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
-                            <div class="portlet">
-                                <div class="portlet-header">@Html.LabelFor(m => m.ProgramCodes)</div>
-                                <div class="portlet-content">
-                                    <table class="grid">
-                                        <thead>
-                                            <tr>
-                                                <th>Название программы</th>
-                                                <th style="width:30%;">Код</th>
-                                            </tr>
-                                        <//thead>
-                                        @{ i = 1; }
-                                        @foreach (var item in Model.ProgramCodes)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].Id)
-                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramId)
-                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramName)
-                                                    @item.ProgramName
-                                                </td>
-                                                <td>@Html.TextBoxFor(m => m.ProgramCodes[i - 1].Code)</td>
-                                            </tr>
-                                            { i++; }
-                                        }
-                                    </table>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
                         <td>@Html.LabelFor(m => m.SoftGroupId)</td>
                         <td>
                             @Html.DropDownListFor(model => model.SoftGroupId, new SelectList(Model.SoftGroups, "gId", "gName")) 
@@ -942,16 +906,213 @@
         </div>
             
         }
+        
+        @if (Model.Id != 0)
+        {
+            @Html.HiddenFor(m => m.IsImportance)
+
+            <div id="MainDiv5">
+                <h3>Согласование</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td rowspan="6">
+                                <button id="btnPyrus" type="button" title="Создать задачу для дополнительного обсуждения в Пайрус" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                                                   {<text>disabled="disabled"</text>}>Пайрус</button> <br /><br />
+                                @Html.LabelFor(m => m.PyrusNumber)
+                                @Html.TextBoxFor(m => m.PyrusNumber, Model.IsAgreeButtonAvailable ? (object)new { style = "width:100px;" } : (object)new { style = "width:100px;", disabled = "disabled" })
+                            </td>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsInitiatorApprove)
+                                @Html.HiddenFor(m => m.IsInitiatorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsInitiatorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.InitiatorApproveName)
+                                @if (Model.IsInitiatorApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.InitiatorId, new SelectList(Model.Initiators, "ID", "Name"), !Model.IsInitiatorApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.InitiatorId)
+                                }
+                                <br />
+                                <a href='@Model.InitiatorPyrusRef' target="_blank">@Model.InitiatorPyrusName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsCuratorApprove)
+                                @Html.HiddenFor(m => m.IsCuratorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.CuratorApproveName)
+                                <br />
+                                <a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                                <br />
+                                <a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsTopManagerApprove)
+                                @Html.HiddenFor(m => m.IsTopManagerApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTopManagerApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TopManagerApproveName)
+                                @*@Html.HiddenFor(m => m.TopManagerId)*@
+                                @if (Model.IsTopManagerApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                <br />
+                                <a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                @Html.LabelFor(m => m.IsBoardMemberApprove)
+                                @Html.HiddenFor(m => m.IsBoardMemberApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.BoardMemberApproveName)
+                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
+                                @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                <br />
+                                <a href='@Model.BoardMemberPyrusRef' target="_blank">@Model.BoardMemberPyrusName</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div> 
+            
+            <div id="MainDiv6">
+                <h3>Специалисты</h3>
+                <div>
+                    <table>
+                        <tr><td colspan="3" style="font-weight:bold;">Налоговики</td></tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepNextId)<br />
+                                @Html.HiddenFor(m => m.IsTaxCollectorApproveAvailable)
+                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(1);" style=@if (!Model.IsTaxCollectorApproveAvailable)
+                                                                                                                                        {<text>"display:none;"</text>}/>
+                            </td>
+                            <td colspan="2">
+                                <label id="DepNextNameLabel">@Model.DepNextName</label>
+                                @Html.HiddenFor(m => m.DepNextId)
+                                @Html.HiddenFor(m => m.DepNextName)
+                                @Html.ValidationMessageFor(model => model.DepNextId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTaxCollectorApprove)
+                                @Html.HiddenFor(m => m.IsTaxCollectorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTaxCollectorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TaxCollectorApproveName)
+                            </td>
+                        </tr>
+                        <tr><td colspan="3"><br /></td></tr>
+                        <tr><td colspan="3" style="font-weight:bold;">Ответственные по приказам</td></tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsSecretaryApprove)
+                                @Html.HiddenFor(m => m.IsSecretaryApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsSecretaryApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.SecretaryApproveName)
+                            </td>
+                        </tr>
+                        <tr><td colspan="3"><br /></td></tr>
+                        <tr><td colspan="3" style="font-weight:bold;">Администраторы ПО банка</td></tr>
+
+                        <tr>
+                        <td colspan="3">
+                            <div  class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.ProgramCodes)</div>
+                                <div id="ProgramPortlet" class="portlet-content">
+                                    @Html.HiddenFor(m => m.IsSoftAdminApprove)
+                                    <table >
+                                    @*
+                                        <thead>
+                                            <tr>
+                                                <th>Название программы</th>
+                                                <th>Код</th>
+                                                <th>Автор</th>
+                                            </tr>
+                                        </thead>
+                                        *@
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.ProgramCodes)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramId)
+                                                    @Html.HiddenFor(m => m.ProgramCodes[i - 1].ProgramName)
+                                                    @item.ProgramName
+                                                </td>
+                                                <td>@Html.TextBoxFor(m => m.ProgramCodes[i - 1].Code, !Model.IsSoftAdminApproveAvailable ? (object)new { disabled = "disabled" } : null)</td>
+                                                <td>@item.UserName</td>
+                                            </tr>
+                                            { i++; }
+                                        }
+                                    </table>
+                                    <button id="btnSoftAdmin" type="button" title="Сохранить изменения" style="float:right;@if (!Model.IsSoftAdminApproveAvailable)
+                                                                                                                           {<text>display:none;</text>}" >Сохранить</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </table>
+                </div>
+            </div> 
+        }
         <br />
-        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
-                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
-                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
+        @*@Html.HiddenFor(m => m.IsDraftButtonAvailable)*@
+        @*@Html.HiddenFor(m => m.IsAgreeButtonAvailable)*@
+        <button id="btnSave" type="button" title=@if (Model.Id == 0)
+                                                 {<text>"Сохранить заявку"</text>}
+                                                 else
+                                                 {<text>"Редактировать заявку"</text>}) 
+                                                @if (!Model.IsDraftButtonAvailable)
+                                                {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
+
+        <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                        {<text>disabled="disabled"</text>}>Согласовать</button>
     </div>
-                                                                                     if (Model.Id != 0)
-                                                                                     {
+    
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-                                                                                     }
+                                                                                                        }
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -982,15 +1143,28 @@
 
         $("#btnSave").click(function(){ $("#IsDraft").val(true); ShowFlash(true); $("#StaffDepartmentRequestForm").submit();});
         $("#btnAgree").click(function(){ 
-            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике подразделений! Продолжить выполнение?")) {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
                 return;
             }
 
             $("#IsDraft").val(false); 
+            $("#IsImportance").val(true);
             ShowFlash(true); 
             $("#StaffDepartmentRequestForm").submit(); 
         });
 
+        $("#btnSoftAdmin").click(function(){
+            $("#IsSoftAdminApprove").val(true);
+            ShowFlash(true); 
+            $("#StaffDepartmentRequestForm").submit(); 
+        });
+        
+
+
+        $("#btnPyrus").click(function(){
+            window.open("https://pyrus.com");
+        });
+        
 
         $("#MainDiv").accordion({
             header: "h3",
@@ -1027,6 +1201,20 @@
             autoHeight: false,
             heightStyle: "content"
         });
+        $("#MainDiv5").accordion({
+            header: "h3",
+            //active: true,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+        $("#MainDiv6").accordion({
+            header: "h3",
+            active: false,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
         
 
         $( ".portlet" )
@@ -1042,6 +1230,7 @@
         });
 
         $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
+        $("#ProgramPortlet").toggle();//раскрываем список совместимых программ
 
         $("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
         $("#CashInStartedDate").datepicker({ changeYear: true, changeMonth: true });
@@ -1410,6 +1599,5 @@
 
     }
 
-    
 </script>
 

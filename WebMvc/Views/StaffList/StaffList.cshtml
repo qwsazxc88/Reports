@@ -9,7 +9,21 @@
 {
     @Html.HiddenFor(m => m.DepId)
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
-        
+        @*
+        <div id="DivTooltip">
+            <table style="border: 1px solid black;">
+                <tr style="background:#D1FFE0;"><td>ПАО "Совкомбанк"</td></tr>
+                <tr style="background:#E9FFE9;"><td>Филиал</td></tr>
+                <tr style="background:#FBFFFA;"><td>Дирекция</td></tr>
+                <tr style="background:#EDFFFC;"><td>Управление</td></tr>
+                <tr style="background:#D1FFF7;"><td>Бизнес-группа</td></tr>
+                <tr style="background:#E0F5FF;"><td>Подразделение 6 уровня</td></tr>
+                <tr style="background:#FAFBFF;"><td>Подразделение 7 уровня</td></tr>
+                <tr><td>Штатные единицы</td></tr>
+            </table>
+        </div>
+        *@
+
         <table id="tbl" class="grid">
             <thead>
                 <tr>
@@ -30,27 +44,55 @@
                     <th class="tdBtn">Закрыть</th>
                     <th class="tdBtn">Создать</th>
                     <th class="tdBtn">Изменить</th>
-                    <th class="tdBtn">Удалить</th>
+                    <th class="tdBtn">Сократить</th>
                 </tr>
             </thead>
             
-            @{ int i = 0; }
+            @{ int i = 0;}
             @foreach (var item in Model.Departments.OrderBy(x => x.Priority))
             {
-                <tr id="tr-@item.Code1C" accessKey="@item.Path" style="background-color: #E9FFE9;">
-                    <td class="tdBtn">@item.ItemLevel</td>
+                @*background-color: #E9FFE9;*@
+                <tr id="tr-@item.Code1C" accessKey="@item.Path" style="@switch(item.ItemLevel){
+                                                                            case 1:
+                                                                               <text>background-color: #D1FFE0;</text>
+                                                                               break;
+                                                                            case 2:
+                                                                               <text>background-color: #E9FFE9;</text>
+                                                                               break;
+                                                                            case 3:
+                                                                                <text>background-color: #FBFFFA;</text>
+                                                                               break;
+                                                                            case 4:
+                                                                               <text>background-color: #EDFFFC;</text>
+                                                                               break;
+                                                                            case 5:
+                                                                                <text>background-color: #D1FFF7;</text>
+                                                                               break;
+                                                                            case 6:
+                                                                                <text>background-color: #E0F5FF;</text>
+                                                                               break;
+                                                                            case 7:
+                                                                                <text>background-color: #FAFBFF;</text>
+                                                                               break;
+                                                                            default:
+                                                                                <text>background-color: #E9FFE9;</text>
+                                                                                break;
+                                                                       }">
+                    <td class="tdBtn" DepToolTip="">@item.ItemLevel</td>
                     <td>
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span id=@("span-tr" + item.Id.ToString()) class="collapse collapsible">&nbsp;</span> @item.Name</a>
                         </span>
-                        @*<a class="ui-notify-close" href='@Url.Action("StaffList", "StaffList", new { Depid = @item.Code1C })' style="cursor:hand">test</a>*@
-                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="$('#span-tr' + @item.Id.ToString()).toggleClass('collapse expand'); GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
-                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="$('#span-tr' + @item.Id.ToString()).toggleClass('collapse expand'); GetNodes(@item.Code1C, true);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                                                                                             {<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                                      {<text>display:none;</text>}"></button>
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
                     <td></td>
-                    <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if(item.ItemLevel == 7){<text>display:none;</text>}"></button></td>
+                    <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if (item.ItemLevel == 7)
+                                                                                                                                                                                          {<text>display:none;</text>}"></button></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы" onclick="GetEstablishedPostRequest(1, @item.Id);"></button></td>
@@ -81,7 +123,30 @@
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
 
-         $(document).tooltip({track: false});
+         $(document).tooltip({
+            track: false,
+            items: "[DepToolTip], [title]",
+            content: function() {
+                var element = $( this );
+                if ( element.is( "[DepToolTip]" ) ) {
+                    return "<div id='DivTooltip'>Легенда<br/>" +
+                                "<table style='border: 1px solid black;'>" +
+                                    "<tr style='background:#D1FFE0;border: 1px solid black;'><td>ПАО Совкомбанк</td></tr>" +
+                                    "<tr style='background:#E9FFE9;border: 1px solid black;'><td>Филиал</td></tr>" +
+                                    "<tr style='background:#FBFFFA;border: 1px solid black;'><td>Дирекция</td></tr>" +
+                                    "<tr style='background:#EDFFFC;border: 1px solid black;'><td>Управление</td></tr>" +
+                                    "<tr style='background:#D1FFF7;border: 1px solid black;'><td>Бизнес-группа</td></tr>" +
+                                    "<tr style='background:#E0F5FF;border: 1px solid black;'><td>Подразделение 6 уровня</td></tr>" +
+                                    "<tr style='background:#FAFBFF;border: 1px solid black;'><td>Подразделение 7 уровня</td></tr>" +
+                                    "<tr style='border: 1px solid black;'><td>Штатные единицы</td></tr>" +
+                                "</table>" +
+                            "</div>";
+                }
+                else {
+                  return element.attr( "title" );
+                }
+            }
+         });
 
         ShowFlash(true);
         ShowFlash(false);
@@ -157,7 +222,7 @@
                 type: 'POST',
                 dataType: 'json',
                 data: dataToSend,
-                async: false,
+                async: true,
                 success: function(result){
                     // $liParent = $("#li-" + Id.toString());
                     var ResultStr = "";
@@ -174,8 +239,8 @@
                                 DepTable[i] = result.Departments[i].Code1C;
                             }
 
-                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
-                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
+                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: " + GetBackgroundColor(result.Departments[i].ItemLevel) + ";'>" +
+                                        "<td class='tdBtn' DepToolTip=''>" + result.Departments[i].ItemLevel + "</td>" +
                                         "<td>" +
                                         "<span>";
                                             var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
@@ -237,7 +302,7 @@
                         for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
                         {   
                             tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
-                                        "<td></td>" +
+                                        "<td DepToolTip=''></td>" +
                                         "<td></td>" +
                                         "<td>" +
                                         "<span>" +
@@ -343,6 +408,45 @@
         var actionUrl="@Url.Action("StaffList", "StaffList")";
         actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
         location.href = actionUrl;
+    }
+
+    function GetBackgroundColor(ItemLevel){
+        var BgColor = "";
+        switch(ItemLevel){
+            case 1:
+            BgColor = "#D1FFE0";
+            //BgColor = "#E9FFE9";
+            break;
+            case 2:
+            BgColor = "#E9FFE9";
+            //BgColor = "#D1FFF7";
+            break;
+            case 3:
+            BgColor = "#FBFFFA";
+            //BgColor = "#D1FFE0";
+            break;
+            case 4:
+            BgColor = "#EDFFFC";
+            //BgColor = "#E0F5FF";
+            break;
+            case 5:
+            BgColor = "#D1FFF7";
+            //BgColor = "#FAFBFF";
+            break;
+            case 6:
+            BgColor = "#E0F5FF";
+            //BgColor = "#EDFFFC";
+            break;
+            case 7:
+            BgColor = "#FAFBFF";
+            //BgColor = "#FBFFFA";
+            break;
+            default:
+            BgColor = "#E9FFE9";
+            break;
+        }
+
+        return BgColor;
     }
 </script>
 
