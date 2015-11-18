@@ -3,7 +3,7 @@ go
 
 --СКРИПТ ФОРМИРУЕТ ШТАТНЫЕ ЕДИНИЦЫ И ЗАЯВКИ НА ИХ СОЗДАНИЕ
 SET NOCOUNT ON
-DECLARE @UserId int, @ReplacedId int, @IsPregnant bit, @DepartmentId int, @PositionId int, @Salary numeric(18, 2), @SEPId int, @SPCount int, @UserCount int
+DECLARE @UserId int, @ReplacedId int, @IsPregnant bit, @DepartmentId int, @PositionId int, @Salary numeric(18, 2), @SEPId int, @SPCount int, @UserCount int, @LinkId int
 /*																	
 --старый вариант формирования штатных единиц
 --заполняем справочник штатных единиц на основе сформированных заявок
@@ -60,6 +60,8 @@ BEGIN
 			VALUES(1, @PositionId, @DepartmentId, 1, @Salary, 1, getdate())
 
 			SET @SEPId = @@IDENTITY
+
+		
 		END
 		ELSE
 		BEGIN
@@ -71,6 +73,11 @@ BEGIN
 
 		--проставляем полученный Id штатной единицы в учетку
 		UPDATE Users SET SEPId = @SEPId WHERE Id = @UserId
+		--формируем строку с линковкой штатной единицы и сотрудника
+		INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed)
+		VALUES(1, @SEPId, @UserId, 1)
+
+		SET @LinkId = @@IDENTITY
 
 		--смотрим в данные выгрузки, заменяет ли этот сотрудник кого нибудь
 		--если да
@@ -80,8 +87,8 @@ BEGIN
 				UPDATE Users SET SEPId = @SEPId WHERE Id = @ReplacedId
 
 				--заносим в таблицу замещения соответствующие данные
-				INSERT INTO StaffPostReplacement(UserId, ReplacedId, SEPId, IsUsed)
-				VALUES(@UserId, @ReplacedId, @SEPId, 1)
+				INSERT INTO StaffPostReplacement(UserId, ReplacedId, IsUsed, UserLinkId)
+				VALUES(@UserId, @ReplacedId, 1, @LinkId)
 
 				--удаляем из временной структуры учетку заменяемого
 				DELETE FROM #Users WHERE Id = @ReplacedId
@@ -109,6 +116,12 @@ BEGIN
 
 		--проставляем полученный Id штатной единицы в учетку
 		UPDATE Users SET SEPId = @SEPId WHERE Id = @UserId
+
+		--формируем строку с линковкой штатной единицы и сотрудника
+		INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed)
+		VALUES(1, @SEPId, @UserId, 1)
+
+		SET @LinkId = @@IDENTITY
 	END
 
 	--удаляем учетку сотрудника
@@ -121,6 +134,7 @@ END
 print 'СФОРМИРОВАНЫ ШТАТНЫЕ ЕДИНИЦЫ'
 
 --из файла выгрузки выбираем вакансии, цикл
+/*
 SELECT DepartmentId, PositionId, Salary, sum(SPCount) as SPCount
 INTO #Vacation
 FROM (SELECT B.Id as DepartmentId, C.Id as PositionId, isnull(A.[Тарифная ставка (оклад) и пр#, руб#], 0) as Salary, 1 as SPCount 
@@ -129,6 +143,15 @@ FROM (SELECT B.Id as DepartmentId, C.Id as PositionId, isnull(A.[Тарифная ставка
 			INNER JOIN Position as c ON C.Code = A.[Код Должности]
 			WHERE [ФИО (краткое)] = 'вакансия' and [Код подр# 7] is not null and [Код Должности] is not null) as A
 			GROUP BY DepartmentId, PositionId, Salary
+*/
+
+
+SELECT B.Id as DepartmentId, C.Id as PositionId, isnull(A.[Тарифная ставка (оклад) и пр#, руб#], 0) as Salary, 1 as SPCount 
+INTO #Vacation
+FROM StaffEstablishedPostTemp as A
+INNER JOIN Department as B ON B.Code1COld = A.[Код подр# 7]
+INNER JOIN Position as c ON C.Code = A.[Код Должности]
+WHERE [ФИО (краткое)] = 'вакансия' and [Код подр# 7] is not null and [Код Должности] is not null
 
 WHILE EXISTS(SELECT * FROM #Vacation)
 BEGIN
@@ -142,13 +165,25 @@ BEGIN
 		VALUES(1, @PositionId, @DepartmentId, @SPCount, @Salary, 1, getdate())
 
 		SET @SEPId = @@IDENTITY
+
+		--формируем строку с линковкой штатной единицы и сотрудника
+		INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed)
+		VALUES(1, @SEPId, null, 1)
 	END
 	ELSE
 	BEGIN
 		--если уже есть такая штатная единица, то увеличиваем ее количество 
 		UPDATE StaffEstablishedPost SET Quantity = Quantity + @SPCount
 		WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary
+
+		--формируем строку с линковкой штатной единицы и сотрудника
+		INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed)
+		SELECT 1, Id, null, 1 FROM StaffEstablishedPost 
+		WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary
+		--VALUES(1, @SEPId, null, 1)
 	END
+
+	
 
 	DELETE FROM #Vacation WHERE DepartmentId = @DepartmentId and PositionId = @PositionId and Salary = @Salary and SPCount = @SPCount
 END
@@ -160,6 +195,7 @@ print 'ВАКАНСИИ ДОБАВЛЕНЫ'
 --формируем заявки на основе штатных единиц
 INSERT INTO StaffEstablishedPostRequest([Version]
 																				,RequestTypeId
+																				,DateRequest
 																				,SEPId
 																				,PositionId
 																				,DepartmentId
@@ -175,6 +211,7 @@ INSERT INTO StaffEstablishedPostRequest([Version]
 
 SELECT 1
 			 ,4	--ввод начальных данных 
+			 ,'20151031'
 			 ,Id
 			 ,PositionId
 			 ,DepartmentId

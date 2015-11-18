@@ -776,6 +776,9 @@ namespace Reports.Core
             Register(Component.For<IStaffRequestPyrusTasksDao>()
                 .ImplementedBy<StaffRequestPyrusTasksDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffEstablishedPostUserLinksDao>()
+                .ImplementedBy<StaffEstablishedPostUserLinksDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             
