@@ -301,9 +301,11 @@
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentAccessoryDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentAccessoryDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsRejectReasonDao.cs" />
@@ -504,6 +506,7 @@
     <Compile Include="Domain\PartialTypes.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
+    <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
     <Compile Include="Domain\StaffList\StaffRequestPyrusTasks.cs" />
     <Compile Include="Domain\StaffList\StaffWorkingConditions.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
@@ -1394,6 +1397,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostUserLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffRequestPyrusTasks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffWorkingConditions.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentAccessory.hbm.xml" />
