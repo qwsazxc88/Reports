@@ -24,6 +24,8 @@ RETURNS
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
 	,IsPregnant bit
+	,IsVacation bit	--вакансия
+	,IsSTD bit			--вакансия по срочному договору
 )
 AS
 BEGIN
@@ -39,6 +41,8 @@ DECLARE @SEPId int, @i int, @VacationCount int
 				 case when E.IsPregnant = 1 then null else E.Name end as Surname, 
 				 case when E.IsPregnant = 1 then E.Id else F.ReplacedId end as ReplacedId, 
 				 case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(E.Id, A.Id, null), G.Name) end as ReplacedName, E.IsPregnant
+				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null then 1 else 0 end as IsVacation
+				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or G.Id is not null then 1 else 0 end as IsSTD
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -69,8 +73,8 @@ DECLARE @SEPId int, @i int, @VacationCount int
 
 		WHILE @i < @VacationCount
 		BEGIN
-			INSERT INTO @ReturnTable (Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName,	IsPregnant)
-			SELECT top 1 SEPId, PositionId, PositionName, @DepartmentId, 1, Salary, Path, null, null, null, N'Вакансия', null, null, null FROM @Tmp WHERE SEPId = @SEPId
+			INSERT INTO @ReturnTable (Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName,	IsPregnant, IsVacation, IsSTD)
+			SELECT top 1 SEPId, PositionId, PositionName, @DepartmentId, 1, Salary, Path, null, null, null, N'Вакансия', null, null, null, 1, 0 FROM @Tmp WHERE SEPId = @SEPId
 
 			SET @i += 1
 		END

@@ -53,7 +53,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, IsPregnant
+            const string sqlQuery = (@"SELECT Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, IsPregnant, IsVacation, IsSTD
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -70,6 +70,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ReplacedId", NHibernateUtil.Int32)
                 .AddScalar("ReplacedName", NHibernateUtil.String)
                 .AddScalar("IsPregnant", NHibernateUtil.Boolean)
+                .AddScalar("IsVacation", NHibernateUtil.Boolean)
+                .AddScalar("IsSTD", NHibernateUtil.Boolean)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
