@@ -53,13 +53,8 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity, A.Salary, C.Path, D.Id as RequestId, E.Id as UserId, E.Name as Surname
-                                       FROM StaffEstablishedPost as A
-                                       INNER JOIN Position as B ON B.Id = A.PositionId
-                                       INNER JOIN Department as C ON C.Id = A.DepartmentId
-                                       LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
-                                       LEFT JOIN Users as E ON E.SEPId = A.Id
-                                       WHERE A.DepartmentId = :DepartmentId and A.IsUsed = 1 ORDER BY A.Priority");
+            const string sqlQuery = (@"SELECT Id, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, IsPregnant, IsVacation, IsSTD
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("PositionId", NHibernateUtil.Int32)
@@ -71,9 +66,24 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("RequestId", NHibernateUtil.Int32)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Surname", NHibernateUtil.String)
+                .AddScalar("Rate", NHibernateUtil.Decimal)
+                .AddScalar("ReplacedId", NHibernateUtil.Int32)
+                .AddScalar("ReplacedName", NHibernateUtil.String)
+                .AddScalar("IsPregnant", NHibernateUtil.Boolean)
+                .AddScalar("IsVacation", NHibernateUtil.Boolean)
+                .AddScalar("IsSTD", NHibernateUtil.Boolean)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
+        }
+        /// <summary>
+        /// Достаем список сотрудников, закрепленных за данной штатной единицей.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public IList<User> GetEstablishedPostUsed(int SEPId)
+        {
+            return Session.Query<User>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.IsActive == true).ToList();
         }
     }
 }

@@ -214,7 +214,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))
                 roles.Add(UserRole.Estimator);
             if ((user.UserRole & UserRole.TaxCollector) > 0 && !roles.Contains(UserRole.TaxCollector))
-                roles.Add(UserRole.TaxCollector); 
+                roles.Add(UserRole.TaxCollector);
+            if ((user.UserRole & UserRole.SoftAdmin) > 0 && !roles.Contains(UserRole.SoftAdmin))
+                roles.Add(UserRole.SoftAdmin); 
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

@@ -623,6 +623,18 @@ namespace Reports.Core
             Register(Component.For<IMessagesDao>()
                 .ImplementedBy<MessagesDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IPartialTypesDao>()
+                .ImplementedBy<PartialTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IAssistansDao>()
+                .ImplementedBy<AssistansDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IAssistantPartialLinksDao>()
+                .ImplementedBy<AssistantPartialLinksDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IDocumentApprovalDao>()
+                .ImplementedBy<DocumentApprovalDao>()
+                .LifeStyle.Is(type));
 
 
             #region StaffMovements
@@ -757,6 +769,12 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For<IStaffDepartmentAccessoryDao>()
                 .ImplementedBy<StaffDepartmentAccessoryDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffWorkingConditionsDao>()
+                .ImplementedBy<StaffWorkingConditionsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffRequestPyrusTasksDao>()
+                .ImplementedBy<StaffRequestPyrusTasksDao>()
                 .LifeStyle.Is(type));
             #endregion
             

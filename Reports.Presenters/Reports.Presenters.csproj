@@ -292,7 +292,6 @@
     <Compile Include="UI\ViewModel\StandartEditModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\AddressModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\DepRequestInfoModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\DepStructureFingradPointsModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentAdministrationModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentBranchModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentBusinessGroupModel.cs" />
@@ -306,13 +305,6 @@
     <Compile Include="UI\ViewModel\StaffList\StaffEstablishedPostRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffListArrangementModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffListModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\TreeGridAjaxModel.cs" />
-    <Compile Include="UI\ViewModel\StaffList\TreeViewAjaxModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ViewModel\StaffList\TreeViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="UI\ViewModel\SurchargeNoteEditModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeNoteListModel.cs" />
     <Compile Include="UI\ViewModel\SurchargeViewModel.cs" />

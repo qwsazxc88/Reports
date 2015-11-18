@@ -18,5 +18,11 @@ namespace Reports.Core.Dto
         public int RequestId { get; set; }  //Id действующей заявки
         public int UserId { get; set; }     //Id сотрудника
         public string Surname { get; set; } //ФИО сотрудника (данный класс используется для штатных единиц и расстановки)
+        public decimal? Rate { get; set; }  //ставка
+        public int ReplacedId { get; set; }     //Id заменяемого сотрудника
+        public string ReplacedName { get; set; } //ФИО заменяемого сотрудника + период отпуска
+        public bool? IsPregnant { get; set; }     //признак беременности
+        public bool IsVacation { get; set; }    //признак вакансии
+        public bool IsSTD { get; set; }     //признак срочного договора
     }
 }
