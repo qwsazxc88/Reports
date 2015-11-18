@@ -22,10 +22,16 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId);
         /// <summary>
-        /// Достаем список сотрудников, закрепленных за данной штатной единицей.
+        /// Достаем количество сотрудников, закрепленных за данной штатной единицей.
         /// </summary>
         /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
-        IList<User> GetEstablishedPostUsed(int SEPId);
+        int GetEstablishedPostUsed(int SEPId);
+        /// <summary>
+        /// Достаем связи штатной единицы и сотрудников.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        IList<StaffEstablishedPostUserLinks> GetEstablishedPostUserLinks(int SEPId);
     }
 }
