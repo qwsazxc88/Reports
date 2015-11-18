@@ -187,7 +187,15 @@ namespace Reports.Presenters.Services.Impl
         }
         public static bool IsStaffDepartmentAvailable(IUser dto)
         {
-            return (dto.UserRole & (UserRole.Manager | UserRole.Director | UserRole.PersonnelManager | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)) > 0;
+            return (dto.UserRole & (UserRole.Manager | 
+                UserRole.Director | 
+                UserRole.PersonnelManager | 
+                UserRole.Inspector | 
+                UserRole.OutsourcingManager | 
+                UserRole.ConsultantOutsourcing | 
+                UserRole.ConsultantPersonnel |
+                UserRole.TaxCollector |
+                UserRole.SoftAdmin)) > 0;
         }
     }
 }

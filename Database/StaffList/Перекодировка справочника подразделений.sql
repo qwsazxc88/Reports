@@ -2,7 +2,12 @@
 --update Department set code = codeold, Code1C = Code1Cold, ParentId = ParentIdold, path = pathold
 --FK_Department_Department
 
+ALTER TABLE [dbo].[Department] DROP CONSTRAINT [FK_Department_Department]
+GO
+
 set nocount on
+
+
 
 declare @id int, @code1c int
 select * into #tmp from Department order by ItemLevel
@@ -25,6 +30,14 @@ end
 
 
 drop table #tmp 
+
+
+ALTER TABLE [dbo].[Department]  WITH CHECK ADD  CONSTRAINT [FK_Department_Department] FOREIGN KEY([ParentId])
+REFERENCES [dbo].[Department] ([Code1C])
+GO
+
+ALTER TABLE [dbo].[Department] CHECK CONSTRAINT [FK_Department_Department]
+GO
 
 
 select * from Department order by ItemLevel

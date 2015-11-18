@@ -5,7 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Contacts_Candidate" index="Contacts_Candidate" not-null="true"/>
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Contacts_Candidate" index="Contacts_Candidate" not-null="false"/>
     <property name="Country" length="50" not-null="false"/>
     <property name="ZipCode" length="6" not-null="false"/>
     <property name="Republic" length="50" not-null="false"/>

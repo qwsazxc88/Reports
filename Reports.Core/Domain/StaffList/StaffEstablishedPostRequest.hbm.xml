@@ -11,11 +11,14 @@
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPost" index="StaffEstablishedPostRequest_StaffEstablishedPost" not-null="false"/>
     <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_StaffEstablishedPostRequest_Position" index="StaffEstablishedPostRequest_Position" not-null="false"/>
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffEstablishedPostRequest_Department" index="StaffEstablishedPostRequest_Department" not-null="false"/>
+    <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_StaffEstablishedPostRequest_Department" index="StaffEstablishedPostRequest_Department" not-null="false"/>
+    <many-to-one name="WorkingCondition" class="StaffWorkingConditions" column="WCId" foreign-key="FK_StaffEstablishedPostRequest_StaffWorkingConditions" index="StaffEstablishedPostRequest_StaffWorkingConditions" not-null="false"/>
     <property name="Quantity" not-null="false"/>
     <property name="Salary" precision="19" scale="2" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
     <property name="IsDraft" not-null="false"/>
     <property name="DateSendToApprove" not-null="false"/>
+    <property name="DateAccept" not-null="false"/>
     <property name="BeginAccountDate" not-null="false"/>
     <many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_StaffEstablishedPostRequest_AppointmentReason" index="StaffEstablishedPostRequest_AppointmentReason" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentRequest_CreatorUser" index="StaffDepartmentRequest_CreatorUser" not-null="false"/>

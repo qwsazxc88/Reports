@@ -39,6 +39,7 @@ namespace Reports.Core.Dao.Impl
                                        B.Name as RequestTypeName, 
                                        A.RequestTypeId,
                                        A.DepartmentId,
+                                       C.ParentId,
                                        Dep2.Name as Dep2Name, 
                                        Dep3.Name as Dep3Name, 
                                        Dep4.Name as Dep4Name, 
@@ -53,12 +54,12 @@ namespace Reports.Core.Dao.Impl
                                        D.Id as PersonId, 
                                        D.Name as Surname, 
                                        E.Name as PositionName,
-                                       case when A.DateSendToApprove is null and A.BeginAccountDate is null then 'Черновик'
-						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 'На согласовании'
-						                    when A.BeginAccountDate is not null then 'Утверждено' end as Status,
-			                           case when A.DateSendToApprove is null and A.BeginAccountDate is null then 1
-						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 2
-						                    when A.BeginAccountDate is not null then 3 end as StatusId
+                                       case when A.DateSendToApprove is null then 'Черновик'
+						                    when A.DateSendToApprove is not null and A.DateAccept is null then 'На согласовании'
+						                    when A.DateAccept is not null then 'Утверждено' end as Status,
+			                           case when A.DateSendToApprove is null then 1
+						                    when A.DateSendToApprove is not null and A.DateAccept is null then 2
+						                    when A.DateAccept is not null then 3 end as StatusId
                                 FROM StaffEstablishedPostRequest as A
                                 INNER JOIN StaffEstablishedPostRequestTypes as B ON B.Id = A.RequestTypeId
                                 INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -116,14 +117,11 @@ namespace Reports.Core.Dao.Impl
             {
                 case UserRole.Manager:
                     sqlWhere = @"
-                                 INNER JOIN (SELECT A.Id as UserId, A.Level, A.DepartmentId, B.Path
-						                     FROM Users as A
-						                     INNER JOIN Department as B ON B.Id = A.DepartmentId
-						                     WHERE A.Id = :userId) as F ON case F.Level when 2 then Dep2Path
-											  							                when 3 then Dep3Path
-																		                when 4 then Dep4Path
-																		                when 5 then Dep5Path
-																		                when 6 then Dep6Path end like F.Path + N'%'";
+                                 INNER JOIN (SELECT C.*
+                                             FROM Users as A
+                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
+                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
+						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
                     break;
             }
             return sqlWhere;
@@ -178,7 +176,7 @@ namespace Reports.Core.Dao.Impl
             switch (SortBy)
             {
                 case 1:
-                    SqlOrderBy += "Id";
+                    SqlOrderBy += "A.Id";
                     break;
                 case 2:
                     SqlOrderBy += "DateRequest";
@@ -214,7 +212,7 @@ namespace Reports.Core.Dao.Impl
                     SqlOrderBy += "Status";
                     break;
                 default:
-                    SqlOrderBy += "Id";
+                    SqlOrderBy += "A.Id";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");

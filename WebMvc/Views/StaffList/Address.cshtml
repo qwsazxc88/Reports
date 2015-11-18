@@ -132,6 +132,12 @@
         }
         //загружаем города
         if (AddressType == 3){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#AreaCode").val() == null || $("#AreaCode").val() == ""){
+                CodeChange(2);
+                return;
+            }
+
             //города
             GetArea(actionUrl, "CityCode", $("#AreaCode").val(), "GET", AddressType);
             //населенные пункты
@@ -141,6 +147,12 @@
         }
         //загружаем населенные пункты
         if (AddressType == 4){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#CityCode").val() == null || $("#CityCode").val() == ""){
+                CodeChange(3);
+                return;
+            }
+
             //населенные пункты
             GetArea(actionUrl, "SettlementCode", $("#CityCode").val(), "GET", AddressType);
             //улицы
@@ -148,11 +160,46 @@
         }
         //загружаем улицы
         if (AddressType == 5){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#SettlementCode").val() == null || $("#SettlementCode").val() == ""){
+                CodeChange(4);
+                return;
+            }
+
             //улицы
             GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
         }
         //узнаем индекс для выбранной улицы
         if (AddressType == 6){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#StreetCode").val() == null || $("#StreetCode").val() == ""){
+                //так как не всегда индекс есть в строке для улицы, то в зависимости от вариантов заполнения формы пересобираем форму и адрес
+                if(($("#AreaCode").val() == null || $("#AreaCode").val() == "")
+                    && ($("#CityCode").val() == null || $("#CityCode").val() == "")
+                    && ($("#SettlementCode").val() == null && $("#SettlementCode").val() == "")){
+                    CodeChange(2);
+                    return;
+                }
+
+                if(($("#CityCode").val() == null || $("#CityCode").val() == "")
+                    && ($("#SettlementCode").val() == null && $("#SettlementCode").val() == "")){
+                    CodeChange(3);
+                    return;
+                }
+
+                if($("#SettlementCode").val() == null && $("#SettlementCode").val() == ""){
+                    CodeChange(4);
+                    return;
+                }
+                else{
+                    CodeChange(5);
+                    return;
+                }
+                CreateAddress();
+                return;
+            }
+
+
             GetArea(actionUrl, "StreetCode", $("#StreetCode").val(), "GET", AddressType);
         }
 
@@ -182,20 +229,20 @@
         }
 
         
-        if($("#AreaCode").val() != null && $("#AreaCode").val() != "null"){
+        if($("#AreaCode").val() != null && $("#AreaCode").val() != ""){
             StrAddress += ", " + $("#AreaCode option:selected").text();
         }
 
-        if($("#CityCode").val() != null && $("#CityCode").val() != "null"){
+        if($("#CityCode").val() != null && $("#CityCode").val() != ""){
             StrAddress += ", " + $("#CityCode option:selected").text();
         }
 
-        if($("#SettlementCode").val() != null && $("#SettlementCode").val() != "null"){
+        if($("#SettlementCode").val() != null && $("#SettlementCode").val() != ""){
             StrAddress += ", " + $("#SettlementCode option:selected").text();
         }
 
 
-        if($("#StreetCode").val() != null && $("#StreetCode").val() != "null"){
+        if($("#StreetCode").val() != null && $("#StreetCode").val() != ""){
             StrAddress += ", " + $("#StreetCode option:selected").text();
         }
 
@@ -234,6 +281,7 @@
                 type: RequestType,
                 dataType: 'json',
                 data: dataToSend,
+                //async: false,
                 success: function(KladrResult){
                     setKladrValuesToDropdown(controlName, KladrResult, AddressType);
                     //ShowKladrFlash(false);
@@ -257,10 +305,10 @@
 
             for (var i = 0; i < data.Kladr.length; i++)
             {
-                optionsValues += '<option value="' + data.Kladr[i].Code + '">' + data.Kladr[i].Name + '</option>';
+                optionsValues += "<option value=" + (data.Kladr[i].Code != null ? data.Kladr[i].Code : "") + ">" + (data.Kladr[i].Name != null ? data.Kladr[i].Name : "") + "</option>";
             }
 
-            optionsValues += '</select>';
+            optionsValues += "</select>";
 
             var options = $("#" + controlName );
             options.replaceWith(optionsValues);

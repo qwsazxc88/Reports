@@ -85,7 +85,9 @@ namespace Reports.Core.Dao.Impl
         // Фильтры, специфичные для обходных листов
         private string GetSpecialFiltersWhere(string whereString)
         {
-            whereString += @" and v.DeleteDate is null
+            if (whereString.Length > 0)
+                whereString += @" and ";
+            whereString += @" v.DeleteDate is null
                               and v.UserDateAccept is not null
                               and v.ManagerDateAccept is not null
                               and v.PersonnelManagerDateAccept is not null ";

@@ -13,11 +13,14 @@ namespace Reports.Core.Domain
         public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
+        public virtual Schedule Schedule { get; set; }//график работы
+        public virtual StaffWorkingConditions WorkingCondition { get; set; }
         public virtual int Quantity { get; set; }
         public virtual Decimal Salary { get; set; }
         public virtual bool IsUsed { get; set; }
         public virtual bool IsDraft { get; set; }
         public virtual DateTime? DateSendToApprove { get; set; }
+        public virtual DateTime? DateAccept { get; set; }
         public virtual DateTime? BeginAccountDate { get; set; }
         public virtual AppointmentReason Reason { get; set; }
         public virtual User Creator { get; set; }

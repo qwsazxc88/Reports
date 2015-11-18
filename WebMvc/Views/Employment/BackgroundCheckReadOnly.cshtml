@@ -327,7 +327,10 @@
                 }
                 else
                 {
-                    <a href="@Model.PyrusRef">@Html.LabelFor(m => m.PyrusRef)</a><br />
+                    if (!string.IsNullOrEmpty(Model.PyrusRef) && !string.IsNullOrWhiteSpace(Model.PyrusRef))
+                    {
+                        <a href="@("https://pyrus.com/t#id" + Model.PyrusRef)">@Html.LabelFor(m => m.PyrusRef)</a><br />
+                    }
                 }
                 
                 <br />            

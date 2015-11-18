@@ -28,6 +28,11 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateEnd { get; set; }
 
+        [Display(Name = "Месяц")]
+        public int ChargingDateMonth { get; set; }
+        public List<IdNameDto> Monthes { get; set; }
+        [Display(Name = "Год")]        
+        public int? ChargingDateYear { get; set; }
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
 
