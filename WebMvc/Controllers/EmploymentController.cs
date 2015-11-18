@@ -2645,9 +2645,12 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
                 }
 
-                if (model.WorkBookScanFile == null && string.IsNullOrEmpty(mt.WorkBookScanAttachmentFilename))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("WorkBookScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                    if (model.WorkBookScanFile == null && string.IsNullOrEmpty(mt.WorkBookScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("WorkBookScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                    }
                 }
 
                 if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))

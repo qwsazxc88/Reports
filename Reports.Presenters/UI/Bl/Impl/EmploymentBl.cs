@@ -1764,6 +1764,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsCancelApproveAvailale = true;
                 }
 
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps!=  null && volgadeps.Where(x => x.Id == entity.User.Department.Id).Count() != 0 ? true : false;
+
 
                 if (attach != null && attach.Count != 0)
                 {
