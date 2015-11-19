@@ -32,5 +32,10 @@
       <key column="SEPId" foreign-key="FK_StaffEstablishedPostRequest_StaffEstablishedPost"/>
       <one-to-many class="StaffEstablishedPostRequest"/>
     </bag>
+
+    <bag name="EstablishedPostUserLinks" lazy="true" cascade="all-delete-orphan">
+      <key column="SEPId" foreign-key="FK_StaffEstablishedPostUserLinks_StaffEstablishedPost"/>
+      <one-to-many class="StaffEstablishedPostUserLinks"/>
+    </bag>
   </class>
 </hibernate-mapping>

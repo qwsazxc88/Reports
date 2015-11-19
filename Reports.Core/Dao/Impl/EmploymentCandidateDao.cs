@@ -397,7 +397,7 @@ namespace Reports.Core.Dao.Impl
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                whereString = string.Format(@"{0} (generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic) like N'%' + :userName + N'%'",
+                whereString = string.Format(@"{0} isnull((generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic), candidateUser.Name) like N'%' + :userName + N'%'",
                     (whereString.Length > 0 ? whereString + @" and" : string.Empty));
             }
 

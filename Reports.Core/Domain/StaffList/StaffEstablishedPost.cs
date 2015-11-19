@@ -22,5 +22,9 @@ namespace Reports.Core.Domain
         public virtual IList<StaffEstablishedPostChargeLinks> PostChargeLinks { get; set; }
         public virtual IList<StaffEstablishedPostArchive> EstablishedPostArchive { get; set; }
         public virtual IList<StaffEstablishedPostRequest> EstablishedPostRequest { get; set; }
+        /// <summary>
+        /// Связи штатной единицы с сотрудниками
+        /// </summary>
+        public virtual IList<StaffEstablishedPostUserLinks> EstablishedPostUserLinks { get; set; }
     }
 }

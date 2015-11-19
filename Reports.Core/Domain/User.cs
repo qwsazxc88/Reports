@@ -175,6 +175,7 @@ namespace Reports.Core.Domain
         public virtual bool? ExperienceIn1C { get; set; }
         public virtual bool? IsFixedTermContract { get; set; }
         public virtual string AccessGroupCode { get; set; }
+        public virtual bool? IsPregnant { get; set; }
         /// <summary>
         /// Надбавки
         /// </summary>
@@ -182,7 +183,7 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Штатная единица.
         /// </summary>
-        public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
+        //public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         #endregion
 
         #region Constructors
