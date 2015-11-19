@@ -15,8 +15,16 @@
                 @if ((dto.UserRole & UserRole.DismissedEmployee) == 0)
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)</div>   
-                    <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)</div>  
+                    
+                    @*<div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                </div>*@ 
                 }
+                
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
+                {
+                    @*<div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>*@
+                }
+
                 
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
@@ -67,15 +75,15 @@
                 </div> *@
                     
                 @if ((dto.UserRole &
-                                    ( UserRole.OutsourcingManager|
+                                    (UserRole.OutsourcingManager |
                                     UserRole.ConsultantPersonnel |
-                                    UserRole.Estimator|
-                                    UserRole.Manager| 
-                                    UserRole.PersonnelManager|
-                                    UserRole.Candidate|
-                                    UserRole.Security| 
-                                    UserRole.Trainer|
-                                    UserRole.StaffManager|
+                                    UserRole.Estimator |
+                                    UserRole.Manager |
+                                    UserRole.PersonnelManager |
+                                    UserRole.Candidate |
+                                    UserRole.Security |
+                                    UserRole.Trainer |
+                                    UserRole.StaffManager |
                                     UserRole.ConsultantOutsourcing)) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
@@ -119,7 +127,7 @@
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
-                 @if ((dto.UserRole & UserRole.Manager) > 0 )
+                 @if ((dto.UserRole & UserRole.Manager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
                  }
@@ -142,10 +150,11 @@
                 }
                 else if ((dto.UserRole & UserRole.Employee) > 0 || (dto.UserRole & UserRole.Manager) > 0
                         || (dto.UserRole & UserRole.PersonnelManager) > 0
-                        || (dto.UserRole & UserRole.ConsultantPersonnel)>0
+                        || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                         || (dto.UserRole & UserRole.Inspector) > 0
                         || (dto.UserRole & UserRole.Estimator) > 0
-                        || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                        || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                        || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                 {
                     if ((dto.UserRole & UserRole.Employee) == 0)
                     {
@@ -158,6 +167,7 @@
                         <div class="menuitem" id="userAbsence">@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</div>
                         <div class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</div>
                         <div class="menuitem" id="userChildVacation">@Html.ActionLink("Отпуска по уходу за ребенком", "ChildVacationList", "UserRequest")</div>
+                        @*<div class="menuitem" id="VacationReturn">@Html.ActionLink("Отзыв из отпуска", "VacationReturnList", "UserRequest")</div>*@
                         <div class="menuitem" id="userDismissal">@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</div>
                         <div class="menuitem" id="userClearanceChecklistList">@Html.ActionLink("Обходные листы", "ClearanceChecklistList", "UserRequest")</div>
                     

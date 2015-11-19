@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Reflection;
 using log4net;
 using Reports.Core;
+using Reports.Core.Utils;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -12,7 +13,7 @@ using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Linq;
-
+using Reports.Presenters.UI.ViewModel;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl
@@ -31,14 +32,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             "копейки",
                                             "копеек",
                                         };
+       
         protected static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #region Fields
         protected IAuthenticationService authenticationService;
         protected IUserDao userDao;
+        protected IMailConfirmDao mailConfirmDao;
         protected ISettingsDao settingsDao;
         protected IDepartmentDao departmentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
         #endregion
+        public IMailConfirmDao MailConfirmDao
+        {
+            get { return Validate.Dependency(mailConfirmDao); }
+            set { mailConfirmDao = value; }
+        }
         public IAuthenticationService AuthenticationService
         {
             get { return Validate.Dependency(authenticationService); }
@@ -59,6 +67,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
         }
+        /*protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
+        public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostChargeLinksDao); }
+            set { staffEstablishedPostChargeLinksDao = value; }
+        }
+
+        protected IStaffEstablishedPostDao staffEstablishedPostDao;
+        public IStaffEstablishedPostDao StaffEstablishedPostDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostDao); }
+            set { staffEstablishedPostDao = value; }
+        }
+        protected IStaffEstablishedPostRequestDao staffEstablishedPostRequestDao;
+        public IStaffEstablishedPostRequestDao StaffEstablishedPostRequestDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostRequestDao); }
+            set { staffEstablishedPostRequestDao = value; }
+        }*/
         public IRequestNextNumberDao RequestNextNumberDao
         {
             get { return Validate.Dependency(requestNextNumberDao); }
@@ -90,6 +117,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateRelease = user.DateRelease;
             model.FullName = user.FullName;
             return user;
+        }
+        public Result ConfirmMail(Guid key)
+        {
+            var confirm = MailConfirmDao.Load(key);
+            if (confirm != null )
+            {
+
+                confirm.User.AlternativeMail = confirm.Mail;
+                UserDao.SaveAndFlush(confirm.User);
+                return new Result(true, "E-mail успешно подтвержден.");
+            }
+            return new Result(false, "При подтверждении адреса возникла ошибка.");
+        }
+        public string AddAlternativeMail(string Email)
+        {
+            return AddAlternativeMail(CurrentUser.Id, Email);
+        }
+        public string AddAlternativeMail(int UserId, string Email)
+        {
+            var user = UserDao.Load(UserId);
+            MailConfirm confirm = new MailConfirm { Mail = Email, User = user };
+            MailConfirmDao.SaveAndFlush(confirm);
+            string confirmation = String.Format("Кто-то указал ваш адрес почты на Кадровом портале. Для подтверждения адреса почты пройдите по ссылке https://ruscount.com:8002/Account/Confirm?key={0}", confirm.Id.ToString());
+            SendEmail(Email, "Подтверждение адреса почты", confirmation);
+            return String.Format("https://ruscount.com:8002/Account/Confirm?key={0}",confirm.Id.ToString());
         }
         protected EmailDto SendEmailForManagerAcceptRequests(User user,DateTime acceptDate)
         {
@@ -748,8 +800,80 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return date.ToShortDateString();
         }
+        
+        public void LoadUserData(StandartUserDto model)
+        {
+            if (model.Id <= 0) return;
+            var user = UserDao.Load(model.Id);
+            if (user == null) return;
+            model.Name = user.Name;
+            if (user.Organization != null)
+            {
+                model.Organization = user.Organization.Name;
+            }
+            if (user.Position != null)
+            {
+                model.PositionId = user.Position.Id;
+                model.PositionName = user.Position.Name;
+            }
+            if(user.Personnels!=null && user.Personnels.Any())
+            {
+                var personnels=user.Personnels;
+                model.Personnels = new List<string>();
+                foreach(var el in personnels)
+                {
+                    model.Personnels.Add(el.Name);
+                }
+            }
+            var chiefs=GetChiefsForManager(user.Id);
+            if (user.Department != null)
+            {
+                var managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true);
+                if (managers == null) managers = new List<User>();
+                if (managers.Any())
+                {
+                    int maxlvlv = managers.Max(x => x.Level.HasValue ? x.Level.Value : 0);
+                    managers = managers.Where(x => x.Level == maxlvlv).ToList();
+                }
 
+                model.Managers = new List<string>();
+                foreach (var el in managers.OrderByDescending(x => x.Level))
+                {
+                    model.Managers.Add(String.Format("{0} ({1})", el.Name, el.Position != null ? el.Position.Name : ""));
+                }
+
+                if (chiefs != null && chiefs.Any())
+                {
+                    model.Chiefs = new List<string>();
+                    foreach (var el in chiefs.OrderByDescending(x => x.Level))
+                    {
+                        if (managers.Any(x => x.Id == el.Id)) continue;
+                        model.Chiefs.Add(String.Format("{0} ({1})", el.Name, el.Position != null ? el.Position.Name : ""));
+                    }
+                }
+            }
+            var Dep7=user.Department;
+            if(Dep7!=null)
+            {
+                model.Dep7Id=Dep7.Id;
+                model.Dep7Name=Dep7.Name;
+                var Dep3= Dep7.Dep3;
+                if(Dep3!=null && Dep3.Any())
+                {
+                    model.Dep3Id=Dep3.First().Id;
+                    model.Dep3Name=Dep3.First().Name;
+                }
+            }
+            /*var staffEstablishedPost = StaffEstablishedPostDao.Find(x => x.Department.Id == model.Dep7Id && x.Position.Id == model.PositionId);
+            if (staffEstablishedPost != null && staffEstablishedPost.Any())
+            {
+                var post = staffEstablishedPost.First();
+                model.Charges = StaffEstablishedPostChargeLinksDao.GetChargesForEstablishedPosts(post.Id);
+                model.StaffEstablishedPostId = post.Id;
+            }*/
+        }
     }
+    
     public class BlockGSSAPINTLMCredential : ICredentialsByHost
     {
         private readonly NetworkCredential wrappedNetworkCredential;

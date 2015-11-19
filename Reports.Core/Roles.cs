@@ -36,7 +36,7 @@ namespace Reports.Core
          /// </summary>
         OutsourcingManager = 32,
          /// <summary>
-         /// Контролер
+         /// Куратор
          /// </summary>
         Inspector = 64,
          /// <summary>
@@ -84,13 +84,13 @@ namespace Reports.Core
          /// </summary>
         ConsultantOutsourcing = 131072,
          /// <summary>
-         /// Консультант Банк
+         /// Кадровик Банк
          /// </summary>
         ConsultantPersonnel = 262144,
          /// <summary>
-         /// Консультант Бухгалтер Банк
+        /// Администратор ПО банка
          /// </summary>
-        //ConsultantAccountant = 524288,
+        SoftAdmin = 524288,
          /// <summary>
          /// Консультант ОК
          /// </summary>
@@ -139,7 +139,7 @@ namespace Reports.Core
         public const string Trainer = "65536";
         public const string ConsultantOutsourcing = "131072";
         public const string ConsultantPersonnel = "262144";
-        public const string ConsultantAccountant = "524288";
+        public const string SoftAdmin = "524288";
         //public const string ConsultantOutsorsingManager = "1048576";
         public const string DismissedEmployee = "2097152";
         public const string Estimator = "4194304";
@@ -172,7 +172,7 @@ namespace Reports.Core
                              {UserRole.Trainer, Trainer},
                              {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
                              {UserRole.ConsultantPersonnel, ConsultantPersonnel},
-                             //{UserRole.ConsultantAccountant, ConsultantAccountant},
+                             {UserRole.SoftAdmin, SoftAdmin},
                              //{UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager}, DEPRECATED
                              {UserRole.DismissedEmployee, DismissedEmployee},
                              {UserRole.Estimator, Estimator},

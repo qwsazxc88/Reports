@@ -19,7 +19,7 @@ BEGIN
 		SELECT @IsExists = cast(case when count(*) = 0 then 1 else 0 end as bit) --as DocExists
 		FROM EmploymentCandidateDocNeeded as A
 		LEFT JOIN RequestAttachment as B ON B.RequestId = A.CandidateId and B.RequestType = A.DocTypeId
-		WHERE A.CandidateId = -1 and A.IsNeeded = 1 and B.Id is null
+		WHERE A.CandidateId = @CandidateId and A.IsNeeded = 1 and B.Id is null
 	
 	RETURN @IsExists
 --SELECT dbo.fnCheckCandidateSignDocExists(1922) as DocExists

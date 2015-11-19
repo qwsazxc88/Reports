@@ -1,12 +1,30 @@
-﻿function changeDepartment() {
-    createDepartmentDialog();
+﻿function changeDepartment(SelType) {
+    //пришлось ввести переменную, так как понадобилось вызывать окно из нескольких мест на одной странице, чтобы разделить выбранные подразделения
+    createDepartmentDialog(SelType);
 }
-function createDepartmentDialog() 
+function createDepartmentDialog(SelType) 
 {
     var elem = document.createElement('div');
     elem.id = "divDepartmentDialog";
     var newDiv = $(elem);
-    var departmentId = $("#DepartmentId").val();
+    //var departmentId = $("#DepartmentId").val();
+
+
+    var departmentId = 0;
+    if (SelType == null) { SelType = 0; ; }
+    //для всего остального
+    if (SelType == 0) { departmentId = $("#DepartmentId").val(); }
+        
+    //для штатного расписания
+    if (SelType == 1) { departmentId = $("#DepNextId").val(); }
+    if (SelType == 2) { departmentId = $("#DepCachinId").val(); }
+    if (SelType == 3) { departmentId = $("#DepATMId").val(); }
+    if (SelType == 6) { departmentId = $("#ParentId").val(); }
+
+
+    //Кадровые перемещения
+    if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
+    if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
     //var typeId = $("#RequestTypeId").val();
 
     var title =  "Выбор структурного подразделения";
@@ -40,7 +58,7 @@ function createDepartmentDialog()
             "Выбрать": function () {
                 if (!ValidateDepartment())
                     return;
-                SaveDepartment();
+                SaveDepartment(SelType);
                 $(this).dialog("close");
                 if (typeof ChangeMonth == 'function') {
                     ChangeMonth(); //call function
@@ -71,40 +89,126 @@ function ValidateDepartment() {
     }
     return true;
 }
-function SaveDepartment() {
+function SaveDepartment(SelType) {
     if ($('#Level7ID').val() != 0) {
-        setDepartmentValues('Level7ID');
+        setDepartmentValues('Level7ID', SelType);
         return;
     }
     if ($('#Level6ID').val() != 0) {
-        setDepartmentValues('Level6ID');
+        setDepartmentValues('Level6ID', SelType);
         return;
     }
     if ($('#Level5ID').val() != 0) {
-        setDepartmentValues('Level5ID');
+        setDepartmentValues('Level5ID', SelType);
         return;
     }
     if ($('#Level4ID').val() != 0) {
-        setDepartmentValues('Level4ID');
+        setDepartmentValues('Level4ID', SelType);
         return;
     }
     if ($('#Level3ID').val() != 0) {
-        setDepartmentValues('Level3ID');
+        setDepartmentValues('Level3ID', SelType);
         return;
     }
     if ($('#Level2ID').val() != 0) {
-        setDepartmentValues('Level2ID');
+        setDepartmentValues('Level2ID', SelType);
         return;
     }
-    $('#DepartmentId').val("0");
-    $('#DepartmentName').val("");
-    $('#DepartmentNameLabel').text("");
+
+    if (SelType == 0) {
+        $('#DepartmentId').val("0");
+        $('#DepartmentName').val("");
+        $('#DepartmentNameLabel').text("");
+    }
+
+    //для штатного расписания
+    if (SelType == 1) {
+        $('#DepNextId').val("0");
+        $('#DepNextName').val("");
+        $('#DepNextNameLabel').text("");
+    }
+
+    //для штатного расписания
+    if (SelType == 2) {
+        $('#DepCachinId').val("0");
+        $('#DepCachinName').val("");
+        $('#DepCachinNameLabel').text("");
+    }
+
+    //для штатного расписания
+    if (SelType == 3) {
+        $('#DepATMId').val("0");
+        $('#DepATMName').val("");
+        $('#DepATMNameLabel').text("");
+    }
+
+    //для штатного расписания
+    if (SelType == 6) {
+        $('#ParentId').val("0");
+        $('#DepParentName').val("");
+        $('#DepParentNameLabel').text("");
+    }
+
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val("0");
+        $('#SourceDepartmentName').val("");
+        $('#SourceDepartmentNameLabel').text("");
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val("0");
+        $('#TargetDepartmentName').val("");
+        $('#TargetDepartmentNameLabel').text("");
+    }
     return;
 }
-function setDepartmentValues(control) {
-    $('#DepartmentId').val($('#'+control).val());
-    $('#DepartmentName').val($('#' + control + ' option:selected').text());
-    $('#DepartmentNameLabel').text($('#' + control + ' option:selected').text());
+function setDepartmentValues(control, SelType) {
+    if (SelType == 0) {
+        $('#DepartmentId').val($('#' + control).val());
+        $('#DepartmentName').val($('#' + control + ' option:selected').text());
+        $('#DepartmentNameLabel').text($('#' + control + ' option:selected').text());
+    }
+
+    //для штатного расписания
+    if (SelType == 1) {
+        $('#DepNextId').val($('#' + control).val());
+        $('#DepNextName').val($('#' + control + ' option:selected').text());
+        $('#DepNextNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для штатного расписания
+    if (SelType == 2) {
+        $('#DepCachinId').val($('#' + control).val());
+        $('#DepCachinName').val($('#' + control + ' option:selected').text());
+        $('#DepCachinNameLabel').text($('#' + control + ' option:selected').text());
+    }
+
+    //для штатного расписания
+    if (SelType == 3) {
+        $('#DepATMId').val($('#' + control).val());
+        $('#DepATMName').val($('#' + control + ' option:selected').text());
+        $('#DepATMNameLabel').text($('#' + control + ' option:selected').text());
+    }
+
+    //для штатного расписания
+    if (SelType == 6) {
+        $('#ParentId').val($('#' + control).val());
+        $('#DepParentName').val($('#' + control + ' option:selected').text());
+        $('#DepParentNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для кадровых перемещений
+    if (SelType == 4) {
+        $('#SourceDepartmentId').val($('#' + control).val());
+        $('#SourceDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#SourceDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+    }
+    //для кадровых перемещений
+    if (SelType == 5) {
+        $('#TargetDepartmentId').val($('#' + control).val());
+        $('#TargetDepartmentName').val($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentNameLabel').text($('#' + control + ' option:selected').text());
+        $('#TargetDepartmentId').change();
+    }
 }
 function Level2IDChange() {
     if($('#Level2ID').val() == 0)

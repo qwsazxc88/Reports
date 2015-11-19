@@ -712,10 +712,10 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1:
-                        statusWhere = @"SendTo1C is not null";
+                        statusWhere = @"v.SendTo1C is not null";
                         break;
                     case 2:
-                        statusWhere = @"SendTo1C is null";
+                        statusWhere = @"v.SendTo1C is null";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус отчета");

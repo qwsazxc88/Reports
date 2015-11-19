@@ -60,6 +60,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Номер заявки из подбора персонала")]
         public int? AppointmentNumber { get; set; }
 
+        [Display(Name = "Поиск по кадровику")]
+        public int PersonnelId { get; set; }
+        public IList<CandidatePersonnelDto> Personnels { get; set; }
+
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
 
@@ -68,7 +72,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         // Согласование списком для вышестоящего руководителя
         public bool IsBulkApproveByHigherManagerAvailable { get; set; }
-
+        //Метки для оригиналов документов
+        public bool IsMarkDocOriginal { get; set; }
         
         public RosterModel()
         {

@@ -1768,7 +1768,31 @@ namespace WebMvc.Controllers
             bool result = EmploymentBl.SaveCandidateTechDissmiss(roster);
             return Json(new { ok = result });
         }
-        
+        /// <summary>
+        /// Сохраняем отметки о плучении кадровиком оригинала трудовой книжки (ТК) кандидата.
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
+        public ActionResult CandidateSaveTKRecieved(IList<CandidateDocRecievedDto> roster)
+        {
+            bool result = EmploymentBl.SaveCandidateDocRecieved(roster, true);
+            return Json(new { ok = result, roster });
+        }
+        /// <summary>
+        /// Сохраняем отметки о плучении кадровиком оригинала трудовой договора (ТД) кандидата.
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
+        public ActionResult CandidateSaveTDRecieved(IList<CandidateDocRecievedDto> roster)
+        {
+            bool result = EmploymentBl.SaveCandidateDocRecieved(roster, false);
+            return Json(new { ok = result, roster });
+        }
+
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
@@ -1909,10 +1933,11 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
-                    EmploymentBl.DeleteAttachment(modelDel);
+                    //DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+                    //EmploymentBl.DeleteAttachment(modelDel);
+                    EmploymentBl.DeleteCandidateDocument(model, out error);
                     model = EmploymentBl.GetCandidateDocumentsModel(model.UserId);
-                    ModelState.AddModelError("SendTo1C", "Файл удален!");
+                    ModelState.AddModelError("SendTo1C", error);
                 }
 
                 if (Session["CandidateDocumentsMS" + SPPath] != null)
@@ -2003,7 +2028,7 @@ namespace WebMvc.Controllers
 
             int numberOfFilledFields = 0;            
 
-            numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
+            numberOfFilledFields += /*string.IsNullOrEmpty(model.PassportData) ? 0 :*/ 1;//Номер паспорта больше не нужен, он ушёл в прошлое и про него забыли, пусть вместо него будет 1.
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
@@ -2106,6 +2131,30 @@ namespace WebMvc.Controllers
         {
             
             ValidateFileLength(model.InternalPassportScanFile, "InternalPassportScanFile", 20);
+
+            //проверка для номера паспорта
+            if (string.IsNullOrEmpty(model.InternalPassportNumber) || string.IsNullOrWhiteSpace(model.InternalPassportNumber))
+            {
+                ModelState.AddModelError("InternalPassportNumber", "Обязательное поле");
+            }
+            else
+            {
+                try
+                {
+                    Convert.ToInt32(model.InternalPassportNumber);
+                }
+                catch
+                {
+                    ModelState.AddModelError("InternalPassportNumber", "Числовое поле");
+                }
+
+                //Российский паспорт
+                if (model.DocumentTypeId == 1 && model.InternalPassportNumber.Length != 6)
+                {
+                    ModelState.AddModelError("InternalPassportNumber", "Требуется 6 цифр");
+                }
+            }
+
             if (!model.IsPassportDraft)
             {
                 //PassportModel mt = EmploymentBl.GetPassportModel(model.UserId);    
@@ -2113,7 +2162,7 @@ namespace WebMvc.Controllers
                 //{
                 //    ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 //}
-                   
+
 
                 if (!model.IsValidate)
                 {
@@ -2566,8 +2615,8 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.MobilizationTicketScanFile, "MobilizationTicketScanFile", 2);
             ValidateFileLength(model.WorkBookScanFile, "WorkBookScanFile", 20);
             ValidateFileLength(model.WorkBookSupplementScanFile, "WorkBookSupplementScanFile", 20);
-            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
-            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
+            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 1);
+            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 1);
 
             if (!model.AgreedToPersonalDataProcessing)
                 ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
@@ -2591,14 +2640,20 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 }
 
-                if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                    {
+                        ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    }
                 }
 
-                if (model.WorkBookScanFile == null && string.IsNullOrEmpty(mt.WorkBookScanAttachmentFilename))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("WorkBookScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                    if (model.WorkBookScanFile == null && string.IsNullOrEmpty(mt.WorkBookScanAttachmentFilename))
+                    {
+                        ModelState.AddModelError("WorkBookScanFile", "Не выбран файл скана трудовой книжки/заявления для загрузки!");
+                    }
                 }
 
                 if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))

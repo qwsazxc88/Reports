@@ -1764,6 +1764,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsCancelApproveAvailale = true;
                 }
 
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps!=  null && volgadeps.Where(x => x.Id == entity.User.Department.Id).Count() != 0 ? true : false;
+
 
                 if (attach != null && attach.Count != 0)
                 {
@@ -1942,6 +1947,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
+                    filters != null ? filters.PersonnelId : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -1966,6 +1972,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
             model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Manager || AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+                model.IsMarkDocOriginal = true;
+            else
+                model.IsMarkDocOriginal = false;
                                     
             return model;
         }
@@ -2832,6 +2844,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? (filters.CandidateId.HasValue ? filters.CandidateId.Value : 0) : 0,
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
+                    filters != null ? filters.PersonnelId : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -2911,6 +2924,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(RosterModel model)
         {
             model.Statuses = GetEmploymentStatuses();
+            model.Personnels = EmploymentCandidateDao.GetPersonnels();
         }
         public void LoadDictionaries(SignersModel model)
         {
@@ -3084,7 +3098,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             cpv.Add(new ContractPointDto { PointId = 1, PointTypeId = 1, PointTypeName = "Вариант 1", PointNamePart_1 = "Настоящий Договор заключается временно на срок с даты начала по дату окончания ТД для выполнения работ, непосредственно связанных со стажировкой и профессиональным обучением работников и вступает в силу со дня подписания сторонами." });
             cpv.Add(new ContractPointDto { PointId = 2, PointTypeId = 1, PointTypeName = "Вариант 2", PointNamePart_1 = "Настоящий Договор является срочным и заключается на период отсутствия основного работника ", PointNamePart_2 = ", за которым сохраняется место работы." });
             cpv.Add(new ContractPointDto { PointId = 3, PointTypeId = 1, PointTypeName = "Вариант 3", PointNamePart_1 = "Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами." });
-            //cpv.Add(new ContractPointDto { PointId = 11, PointTypeId = 1, PointTypeName = "Вариант 4", PointNamePart_1 = "Настоящий Договор заключается на срок с даты начала по дату окончания ТД." });
+            cpv.Add(new ContractPointDto { PointId = 13, PointTypeId = 1, PointTypeName = "Вариант 4", PointNamePart_1 = "Настоящий Договор заключается временно для выполнения работ, связанных с временным расширением объема оказываемых услуг, и вступает в силу со дня подписания сторонами. Настоящий Договор заключается на срок с даты начала (проставляется дата начала ТД) по дату окончания ТД (проставляется дата окончания ТД)." });
             cpv.Add(new ContractPointDto { PointId = 4, PointTypeId = 2, PointTypeName = "Вариант 1", PointNamePart_1 = "Фактическое место работы Работника:" });
             cpv.Add(new ContractPointDto { PointId = 5, PointTypeId = 3, PointTypeName = "Вариант 1", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов." });
             cpv.Add(new ContractPointDto { PointId = 6, PointTypeId = 3, PointTypeName = "Вариант 2", PointNamePart_1 = "РАБОТНИКУ устанавливается следующий режим рабочего времени: продолжительность ежедневной работы для совместителей не выше 4 часов." });
@@ -3558,7 +3572,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return;
                 }
             }
-
+            
             //сохраняем отметки документов обязательных для приема и отсылаем сообщение руководителю и замам
             IList<AttachmentNeedListDto> DocNeeded = new List<AttachmentNeedListDto> { };
 
@@ -3834,6 +3848,47 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             }
 
+        }
+        /// <summary>
+        /// Удаляем скан с вкладки документы.
+        /// </summary>
+        /// <param name="model">Модель страницы</param>
+        /// <param name="error">Сообщение об ошибке</param>
+        public void DeleteCandidateDocument(CandidateDocumentsModel model, out string error)
+        {
+            error = string.Empty;
+            EmploymentCandidate candidate = GetCandidate(model.UserId);
+
+            //если удаляет файл кандидат, когда он уже этого делать не должен
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Candidate)
+            {
+                if (candidate.Status == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE && EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+                {
+                    error = "Загружен весь перечень документов, удаление файлов кандидатом запрещено! Если Вами был загружен файл/ы с некорректной информацией, то перешлите его/их кадровику!";
+                    return;
+                }
+            }
+
+            DeleteAttacmentModel modelDel = new DeleteAttacmentModel { Id = model.DeleteAttachmentId };
+            if (DeleteAttachment(modelDel))
+            {
+                //при удалении скана кадровиком до выгрузки меняется статус анкеты
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+                {
+                    if (!EmploymentCandidateDocNeededDao.CheckCandidateSignDocExists(candidate.Id))
+                    {
+                        //если не было выгрузки в 1С меняем статус (кадровики могут подгружать документы после выгрузки)
+                        if (!candidate.SendTo1C.HasValue && candidate.Status == EmploymentStatus.DOCUMENTS_SIGNATURE_CANDIDATE_COMPLETE)
+                        {
+                            candidate.Status = EmploymentStatus.DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE;
+                            error = "Файл удален! Теперь кандидат при необходимости может сам загрузить его повторно!";
+                            return;
+                        }
+                    }
+                }
+            }
+
+            error = "Файл удален!";
         }
 
         public void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error)
@@ -4975,7 +5030,62 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
         }
+        /// <summary>
+        /// Сохраняем признаки получения оригиналов ТК/ТД
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список</param>
+        /// <param name="IsTK">Переключатель типа документов.</param>
+        /// <returns></returns>
+        public bool SaveCandidateDocRecieved(IList<CandidateDocRecievedDto> roster, bool IsTK)
+        {
+            try
+            {
+                User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                foreach (var item in roster)
+                {
+                    EmploymentCandidate entity = EmploymentCommonDao.Load(item.Id);
 
+                    if (IsTK)
+                    {
+                        if (entity.IsTKReceived != item.IsTKReceived)
+                        {
+                            entity.IsTKReceived = item.IsTKReceived;
+
+                            if (entity.IsTKReceived)
+                                entity.TKReceivedDate = DateTime.Now;
+                            else
+                                entity.TKReceivedDate = null;
+
+                            item.ReceivedDate = entity.TKReceivedDate.HasValue ? entity.TKReceivedDate.Value.ToShortDateString() : "";
+                            entity.TKMarkUser = curUser;
+                        }
+                    }
+                    else
+                    {
+                        if (entity.IsTDReceived != item.IsTDReceived)
+                        {
+                            entity.IsTDReceived = item.IsTDReceived;
+                            if (entity.IsTDReceived)
+                                entity.TDReceivedDate = DateTime.Now;
+                            else
+                                entity.TDReceivedDate = null;
+
+                            item.ReceivedDate = entity.TDReceivedDate.HasValue ? entity.TDReceivedDate.Value.ToShortDateString() : "";
+                            entity.TDMarkUser = curUser;
+                        }
+                    }
+
+                    EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(entity);
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
         #endregion
 
         #region SetEntityHelpers

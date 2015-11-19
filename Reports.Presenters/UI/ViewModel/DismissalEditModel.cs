@@ -30,7 +30,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
         public bool IsTypeEditable { get; set; }
-       
+        public bool IsPyrusLinkAvailableForPersonnel { get; set; }
         [Display(Name = "Дата окончания Т. Д.")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "DismissalEditModel_EndDate_Required",
@@ -49,7 +49,9 @@ namespace Reports.Presenters.UI.ViewModel
         [LocalizationDisplayName("DismissalEditModel_Reason_Required", typeof(Resources))]*/
         [Display(Name = "Основание документ")]
         public string Reason { get; set; }
-        
+        public bool IsPyrusLinkAvailable { get; set; }
+        [Display(Name = "Номер задачи в Pyrus")]
+        public string PyrusNumber { get; set; }
         /*[Display(Name = "Заполнение табеля")]
         public int StatusId { get; set; }
         public int StatusIdHidden { get; set; }

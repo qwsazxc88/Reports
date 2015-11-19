@@ -4,6 +4,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Services;
+using Reports.Core.Dto;
 using System.Linq;
 using NHibernate.Linq;
 
@@ -92,12 +93,20 @@ namespace Reports.Core.Dao.Impl
             var querystr = "SELECT * FROM vwTerrapoint_Department";
             var query = Session.CreateSQLQuery(querystr)
                   .AddScalar("TPCode", NHibernateUtil.String)
+                  .AddScalar("TP1Name", NHibernateUtil.String)
+                  .AddScalar("TP2Name", NHibernateUtil.String)
                   .AddScalar("TPName", NHibernateUtil.String)
                   .AddScalar("TPCity", NHibernateUtil.String)
                   .AddScalar("TPStreet", NHibernateUtil.String)
                   .AddScalar("Did", NHibernateUtil.Int32)
                   .AddScalar("Dcode", NHibernateUtil.String)
                   .AddScalar("Dname", NHibernateUtil.String)
+                  .AddScalar("D2name", NHibernateUtil.String)
+                  .AddScalar("D3name", NHibernateUtil.String)
+                  .AddScalar("D4name", NHibernateUtil.String)
+                  .AddScalar("D5name", NHibernateUtil.String)
+                  .AddScalar("D6name", NHibernateUtil.String)
+                  .AddScalar("BFGId", NHibernateUtil.String)
                   .AddScalar("Dcity", NHibernateUtil.String)
                   .AddScalar("Dstreet", NHibernateUtil.String)
                   .AddScalar("Dhouse", NHibernateUtil.String)
@@ -116,11 +125,18 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Did", NHibernateUtil.Int32)
               .AddScalar("Dcode", NHibernateUtil.String)
               .AddScalar("Dname", NHibernateUtil.String)
+              .AddScalar("D2name", NHibernateUtil.String)
               .AddScalar("D3name", NHibernateUtil.String)
+              .AddScalar("D4name", NHibernateUtil.String)
+              .AddScalar("D5name", NHibernateUtil.String)
+              .AddScalar("D6name", NHibernateUtil.String)
+              .AddScalar("BFGId", NHibernateUtil.String)
               .AddScalar("Dcity", NHibernateUtil.String)
               .AddScalar("Dstreet", NHibernateUtil.String)
               .AddScalar("Dhouse", NHibernateUtil.String)
               .AddScalar("TPcode", NHibernateUtil.String)
+              .AddScalar("TP1Name", NHibernateUtil.String)
+              .AddScalar("TP2Name", NHibernateUtil.String)
               .AddScalar("TPName", NHibernateUtil.String)
               .AddScalar("TPcity", NHibernateUtil.String)
               .AddScalar("TPstreet", NHibernateUtil.String);
@@ -153,6 +169,93 @@ namespace Reports.Core.Dao.Impl
                     .ToList<User>();
             }
             return managers;
+        }
+        /// <summary>
+        /// Достаем подразделение по коду
+        /// </summary>
+        /// <param name="Code">КодС</param>
+        /// <returns></returns>
+        public Department GetByCode(string Code)
+        {
+            return (Department)Session.CreateCriteria(typeof(Department))
+                   .Add(Restrictions.Eq("Code", Code)).UniqueResult();
+        }
+        /// <summary>
+        /// Достаем уровень подразделений из СКД с привязкой к точкам из Финграда по заданному родителю.
+        /// </summary>
+        /// <param name="DepId">Код родительского подразделения.</param>
+        /// <returns></returns>
+        public IList<DepartmentWithFigradPointsDto> GetDepartmentWithFingradPoint(string DepId)
+        {
+            const string sqlQuery = (@"SELECT A.Id, A.Version, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority,
+                                              B.AvailableEmployees, B.FinDepNameShort, B.FinDepPointCode, B.FinDepName, B.FinDepCode, B.FinAdminCode, B.FinBGCode, B.RPLinkCode, B.ComplianceSign
+                                       FROM Department as A
+                                       LEFT JOIN FingradDepCodes as B ON B.CodeSKD = A.CodeSKD
+                                       WHERE ParentId = :DepId");
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Version", NHibernateUtil.Int32).
+                AddScalar("Code", NHibernateUtil.String).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Code1C", NHibernateUtil.Int32).
+                AddScalar("ParentId", NHibernateUtil.Int32).
+                AddScalar("Path", NHibernateUtil.String).
+                AddScalar("ItemLevel", NHibernateUtil.Int32).
+                AddScalar("CodeSKD", NHibernateUtil.String).
+                AddScalar("Priority", NHibernateUtil.Int32).
+                AddScalar("AvailableEmployees", NHibernateUtil.String).
+                AddScalar("FinDepNameShort", NHibernateUtil.String).
+                AddScalar("FinDepPointCode", NHibernateUtil.String).
+                AddScalar("FinDepName", NHibernateUtil.String).
+                AddScalar("FinDepCode", NHibernateUtil.String).
+                AddScalar("FinAdminCode", NHibernateUtil.String).
+                AddScalar("FinBGCode", NHibernateUtil.String).
+                AddScalar("RPLinkCode", NHibernateUtil.String).
+                AddScalar("ComplianceSign", NHibernateUtil.String).
+                SetString("DepId", DepId).
+                SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentWithFigradPointsDto))).
+                List<DepartmentWithFigradPointsDto>();
+        }
+        /// <summary>
+        /// Подсчет количества штатных единиц в пределах указанного подразделения.
+        /// </summary>
+        /// <param name="Id">Id подразделения</param>
+        /// <returns></returns>
+        public int DepPositionCount(int Id)
+        {
+            return Session.CreateSQLQuery(@"SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(:Id) as SEPCount")
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetInt32("Id", Id)
+                .UniqueResult<int>();
+        }
+
+        /// <summary>
+        /// Достаем уровень подразделений с полями из финграда.
+        /// </summary>
+        /// <param name="Id">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
+        /// <returns></returns>
+        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly)
+        {
+            string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
+            SqlWhere += " and isnull(BFGId, 0) not in (3, 5)";
+            return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
+                                            FROM vwStaffListDepartment as A
+                                            WHERE {0} ORDER BY Priority, Name", SqlWhere))
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("Code", NHibernateUtil.String)
+                .AddScalar("Name", NHibernateUtil.String)
+                .AddScalar("Code1C", NHibernateUtil.Int32)
+                .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("Path", NHibernateUtil.String)
+                .AddScalar("ItemLevel", NHibernateUtil.Int32)
+                .AddScalar("CodeSKD", NHibernateUtil.String)
+                .AddScalar("Priority", NHibernateUtil.Int32)
+                .AddScalar("DepFingradName", NHibernateUtil.String)
+                .AddScalar("DepFingradNameComment", NHibernateUtil.String)
+                .AddScalar("FinDepPointCode", NHibernateUtil.String)
+                .AddScalar("SEPCount", NHibernateUtil.Int32)
+                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffListDepartmentDto))).List<StaffListDepartmentDto>();
         }
     }
 }

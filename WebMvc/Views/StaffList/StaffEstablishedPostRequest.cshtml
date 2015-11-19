@@ -1,0 +1,480 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffEstablishedPostRequestModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+}
+
+@using (Html.BeginForm("StaffEstablishedPostRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffEstablishedPostRequestForm" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IsDraft)
+    @Html.HiddenFor(m => m.SEPId)
+    @Html.HiddenFor(m => m.DepartmentId)
+    @Html.HiddenFor(m => m.PositionId)
+    @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
+    @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+   
+    
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    <legend style="text-align:left;font-size:medium;">Заявка</legend>
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv1">
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.DateRequest)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(m => m.DateRequest)
+                            @(Model.DateRequest.HasValue ? Model.DateRequest.Value.ToShortDateString() : string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Id)</td>
+                        <td>
+                            @(Model.Id != 0 ? Model.Id.ToString() : "")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestTypeId)</td>
+                        <td>
+                            @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
+                            {
+                                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.RequestTypeId)
+                                @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestInitiator)</td>
+                        <td>
+                            @Model.RequestInitiator
+                        </td>
+                    </tr>                    
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv2">
+            <h3>Подразделение</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                        <td>
+                            @Model.DepartmentName
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.AccessoryName)
+                        </td>
+                        <td>
+                            @(string.IsNullOrEmpty(Model.AccessoryName) ? "" : Model.AccessoryName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.LegalAddress)
+                            @Html.LabelFor(m => m.LegalAddress)
+                        </td>
+                        <td>
+                            @Model.LegalAddress
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsTaxAdminAccount)
+                        </td>
+                        <td>
+                            <div id="IsTaxAdminAccountContainer">
+                                @Html.HiddenFor(m => m.IsTaxAdminAccount)
+                                @if (Model.IsTaxAdminAccount)
+                                {
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
+                                                                                                                                                                                                {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                else
+                                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse", disabled = "disabled" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
+                                                                                                                                                                                                                           {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                                           else
+                                                                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Нет</label>
+                                }
+                                else
+                                {
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, true, new { @id = "IsTaxAdminAccountTrue", disabled = "disabled" })<label id="lblIsTaxAdminAccountTrue" for="IsTaxAdminAccountTrue" @if (Model.IsTaxAdminAccount)
+                                                                                                                                                                                                                       {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                                       else
+                                                                                                                                                                                                                       {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsTaxAdminAccount, false, new { @id = "IsTaxAdminAccountFalse" })<label id="lblIsTaxAdminAccountFalse" for="IsTaxAdminAccountFalse" @if (!Model.IsTaxAdminAccount)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Нет</label>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.IsEmployeAvailable)
+                        </td>
+                        <td>
+                            <div id="IsEmployeAvailableContainer">
+                                @Html.HiddenFor(m => m.IsEmployeAvailable)
+                                @if (Model.IsEmployeAvailable)
+                                {
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+                                                                                                                                                                                                    {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse", disabled = "disabled" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                                                                                                                                                                                                               {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                                               else
+                                                                                                                                                                                                                               {<text> style="border-color:none;"</text>}>Нет</label>
+                                }
+                                else
+                                {
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, true, new { @id = "IsEmployeAvailableTrue", disabled = "disabled" })<label id="lblIsEmployeAvailableTrue" for="IsEmployeAvailableTrue" @if (Model.IsEmployeAvailable)
+                                                                                                                                                                                                                           {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                                           else
+                                                                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Да</label>
+                                    @Html.RadioButtonFor(m => m.IsEmployeAvailable, false, new { @id = "IsEmployeAvailableFalse" })<label id="lblIsEmployeAvailableFalse" for="IsEmployeAvailableFalse" @if (!Model.IsEmployeAvailable)
+                                                                                                                                                                                                        {<text>style="border-color:red;"</text>}
+                                                                                                                                                                                                        else
+                                                                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Налоговые реквизиты</b></td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.KPP)</td>
+                        <td>@Model.KPP</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKTMO)</td>
+                        <td>@Model.OKTMO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKATO)</td>
+                        <td>@Model.OKATO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RegionCode)</td>
+                        <td>@Model.RegionCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminCode)</td>
+                        <td>@Model.TaxAdminCode</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.TaxAdminName)</td>
+                        <td>@Model.TaxAdminName</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PostAddress)</td>
+                        <td>@Model.PostAddress</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv3">
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PositionId)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.PositionName, Model.RequestTypeId != 1 ? (object)new { style = "width:600px;", @readonly = "readonly" } : (object)new { style = "width:600px;" })
+                            @Html.ValidationMessageFor(model => model.PositionId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Quantity)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Quantity, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.Quantity)
+                            @Html.DisplayFor(m => m.EPInfo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Salary)</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Salary, (object)new { style = "width:70px;" })
+                            @Html.ValidationMessageFor(model => model.Salary)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="portlet">
+                                <div class="portlet-header">@Html.LabelFor(m => m.PostChargeLinks)</div>
+                                <div class="portlet-content">
+                                    <table class="grid">
+                                        <thead>
+                                            <tr>
+                                                <th>Надбавка</th>
+                                                <th>Сумма</th>
+                                                <th>%</th>
+                                            </tr>
+                                        <//thead>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.PostChargeLinks)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].Id)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeId)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPRequestId)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPId)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeName)
+                                                    @item.ChargeName
+                                                    
+                                                </td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].AmountProc)</td>
+                                            </tr>
+                                            { i++; }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ReasonId)</td>
+                        <td>
+                            @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ScheduleId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.WCId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.WCId, Model.WorkConditions, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
+                        <td>
+                            @Html.EditorFor(m => m.BeginAccountDate)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        @if (Model.Id != 0)
+        {
+            <div id="MainDiv4">
+                <h3>Согласование</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsInitiatorApprove)
+                                @Html.HiddenFor(m => m.IsInitiatorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsInitiatorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.InitiatorApproveName)
+                                @if (Model.IsInitiatorApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.InitiatorId, new SelectList(Model.Initiators, "ID", "Name"), !Model.IsInitiatorApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.InitiatorId)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsCuratorApprove)
+                                @Html.HiddenFor(m => m.IsCuratorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.CuratorApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTopManagerApprove)
+                                @Html.HiddenFor(m => m.IsTopManagerApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTopManagerApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TopManagerApproveName)
+                                @*@Html.HiddenFor(m => m.TopManagerId)*@
+                                @if (Model.IsTopManagerApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsBoardMemberApprove)
+                                @Html.HiddenFor(m => m.IsBoardMemberApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.BoardMemberApproveName)
+                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
+                                @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>  
+        }
+        
+        <br />
+        <button id="btnSave" type="button" title=@(Model.Id == 0 ? "Сохранить заявку" : "Редактировать заявку") @if (!Model.IsDraftButtonAvailable)
+                                                                                                                {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                        {<text>disabled=disabled</text>}>Согласовать</button>
+    </div>
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
+        @Html.Partial("~/Views/Info/Comments.cshtml")
+                                                                                                        }
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moSEPRequest");
+
+        $("#PositionName").autocomplete({
+            source: "@Url.Action("AutocompletePositionSearch", "StaffList")",
+            minLength: 1,
+            select: function (event, ui) {
+                $("#PositionName").val(ui.item.label);
+                $("#PositionId").val(ui.item.PositionId);
+            }
+        });
+
+
+        //ShowFlash(true);
+        //ShowFlash(false);
+
+        $(document).tooltip({ track: true });
+        $(":button").button();
+        $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("85px");
+
+        $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
+        $("#btnAgree").click(function () {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
+                return;
+            }
+            $("#IsDraft").val(false);
+            ShowFlash(true);
+            $("#StaffEstablishedPostRequestForm").submit();
+        });
+
+
+        $("#MainDiv2").accordion({
+            header: "h3",
+            active: false, //эта строка делает данный раздел закрытым по молчанию
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+
+        $("#MainDiv4").accordion({
+            header: "h3",
+            //active: true,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
+
+        $(".portlet")
+            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".portlet-header")
+            .addClass("ui-state-default ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+        $(".portlet-toggle").click(function () {
+            var icon = $(this);
+            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+            icon.closest(".portlet").find(".portlet-content").toggle();
+        });
+
+        //        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
+
+
+
+        $('#IsTaxAdminAccountContainer').buttonset();
+        $('#IsEmployeAvailableContainer').buttonset();
+
+
+    });
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+</script>

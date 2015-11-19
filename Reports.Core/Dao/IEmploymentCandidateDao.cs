@@ -41,6 +41,7 @@ namespace Reports.Core.Dao
                 int CandidateId,
                 string AppointmentReportNumber,
                 int AppointmentNumber,
+                int PersonnelId,
                 int sortBy,
                 bool? sortDescending);
         void CancelCandidatesByAppointmentId(int Id);

@@ -40,7 +40,7 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual string Name { get; set; }
         public virtual string Email { get; set; }
-
+        public virtual string AlternativeMail { get; set; }
         #region Deleted
         //public const string FirstNameFieldName = "FirstName";
         //public virtual string FirstName { get; set; }
@@ -175,6 +175,14 @@ namespace Reports.Core.Domain
         public virtual bool? ExperienceIn1C { get; set; }
         public virtual bool? IsFixedTermContract { get; set; }
         public virtual string AccessGroupCode { get; set; }
+        /// <summary>
+        /// Надбавки
+        /// </summary>
+        public virtual IList<StaffPostChargeLinks> StaffPostCharges { get; set; }
+        /// <summary>
+        /// Штатная единица.
+        /// </summary>
+        public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         #endregion
 
         #region Constructors

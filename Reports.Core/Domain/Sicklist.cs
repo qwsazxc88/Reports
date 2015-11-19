@@ -16,7 +16,7 @@ namespace Reports.Core.Domain
         public virtual DateTime BeginDate { get; set; }
         public virtual DateTime EndDate { get; set; }
         public virtual int DaysCount { get; set; }
-
+        public virtual string PirusNumber { get; set; }
         public virtual int Number { get; set; }
        
         

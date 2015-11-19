@@ -32,7 +32,9 @@ namespace Reports.Presenters.UI.ViewModel
         [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
         public bool IsVacationDatesEditable { get; set; }
-
+        public bool IsPyrusLinkAvailable { get; set; }
+        [Display(Name = "Номер задачи в Pyrus")]
+        public string PyrusNumber { get; set; }
         public bool IsPersonnelFieldsEditable { get; set; }
 
         [Display(Name = "Освободить на период отпуска ставку в штатном расписании")]
@@ -116,5 +118,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsApprovedForAll { get; set; }
         public bool IsApprovedForAllEnable { get; set; }
+
+        public bool IsApproveForAllByConsultant { get; set; }//для консультанта, чтобы мог согласовать за всех
+        public bool IsApproveForAllByConsultantEnable { get; set; }//для консультанта, чтобы мог согласовать за всех
     }
 }

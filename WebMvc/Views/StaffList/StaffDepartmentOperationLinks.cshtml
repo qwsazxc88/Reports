@@ -1,0 +1,188 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationLinksModel
+@{
+    ViewBag.Title = "Связи групп с операциями";
+}
+
+@using (Html.BeginForm("StaffDepartmentOperationLinks", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationLinksForm", target = "tab3" }))
+{
+    <label id="MessageStr" style="color:Red;font-size:medium;"></label>
+    <div>
+        @Html.LabelFor(m => m.OperationGroupId) &nbsp;&nbsp;
+        @Html.DropDownListFor(model => model.OperationGroupId, new SelectList(Model.OperationGroups, "gId", "gName"), (object)new { onchange = "SelectOperGroup();" }) 
+        @Html.HiddenFor(m => m.OperationGroupId)
+        <button type="button" id="btnSaveLink" title="Сохранить изменения" style="float:right;">Сохранить</button>
+    </div>
+    <br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblOL" class="grid">
+            <thead>
+                <tr>
+                    <th>Операция</th>
+                    <th class="tdBtn">Связано</th>
+                </tr>    
+            </thead>
+            <tbody class="tblOLRows">
+                @{ int i = 0; }
+
+                @foreach (var item in Model.OperationList)
+                {
+                    <tr class="tblOLRow">
+                        <td>
+                            @Html.HiddenFor(m => m.OperationList[i].Id)
+                            @Html.HiddenFor(m => m.OperationList[i].OperationId)
+                            @Html.DisplayFor(m => m.OperationList[i].OperationName)
+                        </td>
+                        <td class="tdBtn">
+                            @Html.CheckBoxFor(m => m.OperationList[i].IsLink, (object)new {  onchange = "CheckUncheckRow(" + i + ")", value = Model.OperationList[i].IsLink ? "true" : "false" })
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="DivIndicatorOL" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepOperRef");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        //сохраняем данные
+        $("#btnSaveLink").click(function(){
+            processAddEditOperationGroupRow(true);
+        });
+
+    });
+
+    //тычем с трочку ...., мышкой
+    function CheckUncheckRow(IndexRow){
+
+        if($("#OperationList_" + IndexRow + "__IsLink").val() == "true"){
+            $("#OperationList_" + IndexRow + "__IsLink").val(false);
+            $("#OperationList_" + IndexRow + "__IsLink").prop("checked", false);
+            $("#OperationList_" + IndexRow + "__IsLink").attr("checked", "");
+        }
+        else{
+            $("#OperationList_" + IndexRow + "__IsLink").val(true);
+            $("#OperationList_" + IndexRow + "__IsLink").prop("checked", true);
+            $("#OperationList_" + IndexRow + "__IsLink").attr("checked", "checked");
+        }
+
+    }
+
+    //переключаем группы операций
+    function SelectOperGroup(){
+        processAddEditOperationGroupRow(false);
+    }
+
+
+    function processAddEditOperationGroupRow(IsSave)
+    {
+
+        var url = "";    
+        if (IsSave){
+            url = "@Url.Action("AddEditStaffDepartmentOperationLinks", "StaffList")";
+        }
+        else{
+            url = "@Url.Action("StaffDepartmentOperationLinks", "StaffList")";
+        }
+
+        var dataToSend = $("#StaffDepartmentOperationLinksForm").serialize();
+        ShowFlashOL(true);    //это диалоговое окно находится на родительской странице
+
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $("#MessageStr").text(data.msg);
+                var $table = $("#tblOL");
+                var $rows = $("#tblOL .tblOLRow");
+                $rows.remove();
+                FillOperationListTableData(data);
+                
+                ShowFlashOL(false);
+            }
+            else{
+                ShowFlashOL(false);
+                $("#MessageStr").text(data.msg);
+            }
+        }, "json")
+        .fail(function(data){
+            ShowFlashOL(false);
+            $("#MessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
+    };
+
+    function FillOperationListTableData(data){
+        for (var i = 0; i < data.OperationList.length; i++)
+        {
+            $("#tblOL").append(
+                
+                "<tr class=\"tblOLRow\">" +
+                    "<td><input id='OperationList_" + i + "__Id' name='OperationList[" + i + "].Id' value='" + data.OperationList[i].Id + "' type='hidden'>" +
+                        "<input id='OperationList_" + i + "__OperationId' name='OperationList[" + i + "].OperationId' value='" + data.OperationList[i].OperationId + "' type='hidden'>" +
+                        "<input id='OperationList_" + i + "__OperationName' name='OperationList[" + i + "].OperationName' value='" + data.OperationList[i].OperationName + "' type='hidden'>" + (data.OperationList[i].OperationName ? data.OperationList[i].OperationName : "") + "</td>" +
+                    "<td class='tdBtn'>" + //<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'True' : 'False') + "' type='hidden'>" + 
+                        "<input id='OperationList_" + i + "__IsLink' name='OperationList[" + i + "].IsLink' value='" + (data.OperationList[i].IsLink ? 'true' : 'false') + "' type='checkbox' " + 
+                        (data.OperationList[i].IsLink ? "checked='checked'" : "''") + " onchange='CheckUncheckRow(" + i + ")' >" +
+                        //"<input name='OperationList[" + i + "].IsLink' value='" + data.OperationList[i].IsLink + "' type='hidden'>" +
+                        "</td>" +
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+
+    function ShowFlashOL(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorOL").dialog("close");
+            $("#DivIndicatorOL").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOL").show();
+            $("#DivIndicatorOL").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorOL").dialog("open");
+        }
+    }
+</script>
+

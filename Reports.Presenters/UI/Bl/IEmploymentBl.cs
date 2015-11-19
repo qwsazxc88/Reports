@@ -118,6 +118,13 @@ namespace Reports.Presenters.UI.Bl
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
         bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
         /// <summary>
+        /// Сохраняем признаки получения оригиналов ТК/ТД
+        /// </summary>
+        /// <param name="roster">Обрабатываемый список</param>
+        /// <param name="IsTK">Переключатель типа документов.</param>
+        /// <returns></returns>
+        bool SaveCandidateDocRecieved(IList<CandidateDocRecievedDto> roster, bool IsTK);
+        /// <summary>
         /// Добавляем комментарий
         /// </summary>
         /// <param name="CandidateId">Id кандидата</param>
@@ -142,6 +149,12 @@ namespace Reports.Presenters.UI.Bl
         void DeleteBackgroundRow(BackgroundCheckModel model);
         void DeleteFamilyMember(FamilyModel model);
         void SaveCandidateDocumentsAttachments(CandidateDocumentsModel model, out string error);
+        /// <summary>
+        /// Удаляем скан с вкладки документы.
+        /// </summary>
+        /// <param name="model">Модель страницы</param>
+        /// <param name="error">Сообщение об ошибке</param>
+        void DeleteCandidateDocument(CandidateDocumentsModel model, out string error);
         void SaveScanOriginalDocumentsModelAttachments(ScanOriginalDocumentsModel model, out string error);
 
         /// <summary>

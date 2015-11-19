@@ -1,0 +1,126 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentEncodingModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Справочник кодирования";
+}
+
+@using (Html.BeginForm("StaffDepartmentEncoding", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentEncodingForm" }))
+{
+    @Html.HiddenFor(m => m.TabIndex)
+    <div id="tabs">
+        <ul>
+            <li><a href="/StaffList/StaffDepartmentBranch">Филиалы</a></li>
+            <li><a href="/StaffList/StaffDepartmentManagement">Дирекции</a></li>
+            <li><a href="/StaffList/StaffDepartmentAdministration">Управления</a></li>
+            <li><a href="/StaffList/StaffDepartmentBusinessGroup">Бизнес-группы</a></li>
+            <li><a href="/StaffList/StaffDepartmentRPLink">РП-привязки</a></li>
+        </ul>
+
+        <div id="tab1"></div>
+        <div id="tab2"></div>
+        <div id="tab3"></div>
+        <div id="tab4"></div>
+        <div id="tab5"></div>
+    </div>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+    
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepEncoding");
+        ShowFlash(true);
+        //ShowFlash(false);
+
+        $.ajaxSetup({ cache: false });
+        //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
+        $("#tabs").tabs({
+            spinner: "<em>Загрузка...</em>",
+            beforeLoad: function (event, ui) {
+                ui.jqXHR.fail(function () {
+                    ui.panel.html("Возникла ошибка при загрузке страницы!");
+                    ShowFlash(false);
+                });
+            },
+            collapsible: true,
+            cache: false,
+            ajaxOptions: { cache: false },
+            load: function (event, ui) { /*ShowFlash(true);ui.panel.html("Загрузка данных...!");*/
+                //ui.jqXHR.done(function () { ShowFlash(false); })
+                ShowFlash(false);
+            },
+            active: $("#TabIndex").val(),
+            activate: function () { ShowFlash(true); }
+        });
+
+
+        $(document).tooltip({ track: false });
+
+
+        $(":button").button();
+
+
+    });
+
+
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicator").dialog("open");
+        }
+    }
+
+    //функция отправки и получения ajax-запроса
+    function AjaxFormRequest(result_id, form_id, url, TypePost) {
+        jQuery.ajax({
+            url: url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#" + form_id).serialize(),
+            success: function (response) { //Если все нормально
+                //document.getElementById(result_id).remove();
+                document.getElementById(result_id).innerHTML = response;
+            },
+            error: function (response) { //Если ошибка
+                document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+            }
+        });
+    }
+</script>

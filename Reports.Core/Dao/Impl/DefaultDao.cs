@@ -14,7 +14,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Core.Services;
-
+using System.Linq.Expressions;
 namespace Reports.Core.Dao.Impl
 {
     //[Transient]
@@ -231,6 +231,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								select top(1) manager.name 
+								from Users manager 
+								inner JOIN Department userd on userd.Id=u.DepartmentId
+								INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -258,6 +265,13 @@ namespace Reports.Core.Dao.Impl
                                 {5} as BeginDate,  
                                 {6} as EndDate,  
                                 v.Number as Number,
+                                (
+								    select top(1) manager.name 
+								    from Users manager 
+								    inner JOIN Department userd on userd.Id=u.DepartmentId
+								    INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 v.SicklistNumber,
                                 u.Name as UserName,
                                 t.Name as RequestType," + 
@@ -296,6 +310,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForListChildVacation =
                                @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								select top(1) manager.name 
+								from Users manager 
+								inner JOIN Department userd on userd.Id=u.DepartmentId
+								INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 N'{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -318,6 +339,13 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForListVacation =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
+                                (
+								    select top(1) manager.name 
+								    from Users manager 
+								    inner JOIN Department userd on userd.Id=u.DepartmentId
+								    INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
+								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
                                 {5} as BeginDate,  
@@ -366,12 +394,17 @@ namespace Reports.Core.Dao.Impl
         {
         }
         public IList<TEntity> Find(Func<TEntity, bool> predicate)
-        {
+        {            
             var result= Session.Query<TEntity>().Where(predicate);
             return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
         }
+        public IList<TEntity> QueryExpression(Expression<Func<TEntity, bool>> predicate)
+        {           
+            var result = Session.Query<TEntity>().Where(predicate);
+            return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
+        }
         public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
-        {
+        {            
             var result = Session.Query<TEntity>().Where(predicate);
             if (result != null )
             {
@@ -664,6 +697,9 @@ namespace Reports.Core.Dao.Impl
                     return string.Empty;
                 #endregion
 
+                case UserRole.ConsultantOutsourcing:
+                    return string.Empty;
+
                 #region ConsultantOutsorsingManager
                 /*case UserRole.ConsultantOutsorsingManager:
                     return string.Empty;*/
@@ -942,6 +978,9 @@ namespace Reports.Core.Dao.Impl
                 case 15:
                     sqlQuery += @"order by Dep7Name";
                     break;
+                case 16:
+                    sqlQuery += @" order by ManagerName ";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
@@ -965,7 +1004,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
-                AddScalar("Position",NHibernateUtil.String);
+                AddScalar("Position",NHibernateUtil.String).
+                AddScalar("ManagerName", NHibernateUtil.String);
         }
 
         public virtual IList<VacationDto> GetDefaultDocuments(

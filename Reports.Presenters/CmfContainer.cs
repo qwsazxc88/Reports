@@ -16,7 +16,9 @@ namespace Reports.Presenters
         {
 
             base.AddComponents();
-            
+            Register(Component.For(typeof(IBaseBl))
+                        .ImplementedBy(typeof(BaseBl))
+                        .LifeStyle.Is(type));
             //AddComponent<ILoginBl, LoginBl>();
             Register(Component.For(typeof(ILoginBl))
                         .ImplementedBy(typeof(LoginBl))
@@ -58,7 +60,13 @@ namespace Reports.Presenters
             Register(Component.For(typeof(ISurchargeBL))
                 .ImplementedBy(typeof(SurchargeBl))
                 .LifeStyle.Is(type));
+            Register(Component.For(typeof(IStaffListBl))
+                        .ImplementedBy(typeof(StaffListBl))
+                        .LifeStyle.Is(type));
             
+            Register(Component.For(typeof(IStaffMovementsBl))
+                       .ImplementedBy(typeof(StaffMovementsBl))
+                       .LifeStyle.Is(type));
             Register(Component.For(typeof(IAuthenticationService)).ImplementedBy(typeof(AuthenticationService)).
                     Named("IAuthenticationService").LifeStyle.Is(type));
             //AddComponent("IAuthenticationService", typeof(IAuthenticationService), typeof(AuthenticationService));

@@ -1,0 +1,238 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationsModel
+@{
+    ViewBag.Title = "Справочник операций";
+}
+
+@using (Html.BeginForm("StaffDepartmentOperations", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationsForm", target = "tab2" }))
+{
+
+    <label id="oMessageStr" style="color:Red;font-size:medium;"></label>
+    <br /><br />
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <table id="tblOperation" class="grid">
+            <thead>
+                <tr>
+                    <th>Название операции</th>
+                    <th class="tdBtn">Признак<br />использования</th>
+                    <th colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditOperationGroupRow(-1);">Создать</button></th>
+                </tr>    
+            </thead>
+            <tbody class="tblOperationRows">
+                @{ int i = 1; }
+
+                @foreach (var item in Model.Operations)
+                {
+                    <tr class="tblOperationRow">
+                        <td>
+                            @Html.HiddenFor(m => m.Operations[i - 1].oId)
+                            @Html.HiddenFor(m => m.Operations[i - 1].oName)
+                            @Html.DisplayFor(m => m.Operations[i - 1].oName)
+                        </td>
+                        <td class="tdBtn">
+                            @Html.HiddenFor(m => m.Operations[i - 1].oIsUsed)
+                            @Html.CheckBoxFor(m => m.Operations[i - 1].oIsUsed, (object)new { value = Convert.ToString(Model.Operations[i - 1].oIsUsed), disabled = "disabled" })
+                        </td>
+                        <td class="tdBtn">
+                            <a class="CallModal" onclick="AddEditOperationGroupRow(@i-1);" href="#" >Изменить</a>
+                        </td>
+                        @{ i++; }
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+ 
+    <div id="DivIndicatorOp" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>   
+}
+
+<div id="AddEditOperationRowDialog" style="display:none;">
+    @using (Html.BeginForm("StaffDepartmentOperationsDialog", "StaffList", FormMethod.Post))
+    {
+        <label id="olblMsg" style="color:Red;font-size:medium;"></label>
+        <table>
+            <tr>
+                @Html.HiddenFor(m => m.oId)
+                <td>@Html.LabelFor(m => m.oName)</td>
+                <td>@Html.TextAreaFor(m => m.oName, new { style = "width:600px", maxlength = "250" }) </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.oIsUsed)</td>
+                <td>
+                    @Html.CheckBoxFor(m => m.oIsUsed) 
+                    @Html.HiddenFor(m => m.oIsUsed)
+                </td>
+            </tr>
+        </table>
+    }
+        
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepOperRef");
+
+        $.ajaxSetup({ cache: false });
+        
+        $(document).tooltip({ track: false });
+
+        $(":button").button();
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#oIsUsed").change(function(){
+            if($("#oIsUsed").val() == 'true'){
+                $("#oIsUsed").val(false);
+            }
+            else{
+                $("#oIsUsed").val(true);
+            }
+        });
+
+        //ShowFlashOp(false);
+    });
+
+    //вкл/выкл режима редактирования
+    function AddEditOperationGroupRow(IndexRow) {
+        if(IndexRow >= 0){
+            $("#oId").val($("#Operations_" + IndexRow + "__oId").val());
+            $("#oName").val($("#Operations_" + IndexRow + "__oName").val());
+            $("#oIsUsed").val($("#Operations_" + IndexRow + "__oIsUsed").val() == "True" ? true : false);
+            $("#oIsUsed").prop("checked", ($("#Operations_" + IndexRow + "__oIsUsed").val() == "True" ? true : false));
+            $("#oIsUsed").attr("checked", ($("#Operations_" + IndexRow + "__oIsUsed").val() == "True" ? "checked" : ""));
+        }
+        else{
+            $("#oId").val(0);
+            $("#oName").val("");
+            $("#oIsUsed").val(true);
+            $("#oIsUsed").prop("checked", true);
+        }
+
+        
+
+        $("#olblMsg").text("");
+        $("#oMessageStr").text("");
+
+        CreateBranchEdtRowDialog(IndexRow >= 0 ? true : false);
+    }
+
+
+    function CreateBranchEdtRowDialog(flgEdit) {
+        var Title = (flgEdit ? "Редактирование строки" : "Создание новой строки");
+        $('#AddEditOperationRowDialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            title: Title,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    processAddEditOperationGroupRow();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+
+        $('#AddEditOperationRowDialog').dialog("open");
+    }
+
+    function processAddEditOperationGroupRow()
+    {
+    
+        var url = "@Url.Action("AddEditStaffDepartmentOperations", "StaffList")";
+        var dataToSend = $("#AddEditOperationRowDialog form").serialize();
+        ShowFlashOp(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                $('#AddEditOperationRowDialog').dialog("close");
+                $("#oMessageStr").text(data.msg);
+                var $table = $("#tblOperation");
+                var $rows = $("#tblOperation .tblOperationRow");
+                $rows.remove();
+                FillOperationsTableData(data);
+                
+                ShowFlashOp(false);
+            }
+            else{
+                ShowFlashOp(false);
+                $("#olblMsg").text(data.msg);
+            }
+        }, "json")
+        .fail(function(data){
+            ShowFlashOp(false);
+            $('#AddEditOperationRowDialog').dialog("close");
+            $("#oMessageStr").text("У вас нет прав для выполнения данной операции!");
+        });
+    };
+
+    function FillOperationsTableData(data){
+        for (var i = 0; i < data.Operations.length; i++)
+        {
+            $("#tblOperation").append(
+                
+                "<tr class=\"tblOperationRow\">" +
+                    "<td><input id='Operations_" + i + "__oId' name='Operations[" + i + "].oId' value='" + data.Operations[i].oId + "' type='hidden'>" +
+                        "<input id='Operations_" + i + "__oName' name='Operations[" + i + "].oName' value='" + data.Operations[i].oName + "' type='hidden'>" + (data.Operations[i].oName ? data.Operations[i].oName : "") + "</td>" +
+                    "<td class='tdBtn'><input id='Operations_" + i + "__oIsUsed' name='Operations[" + i + "].oIsUsed' value='" + (data.Operations[i].oIsUsed ? 'True' : 'False') + "' type='hidden'>" + 
+                        "<input id='Operations_" + i + "__oIsUsed' name='Operations[" + i + "].oIsUsed' value='" + (data.Operations[i].oIsUsed ? 'True' : 'False') + "' type='checkbox' disabled='disabled' " + (data.Operations[i].oIsUsed ? "checked='checked'" : "''") + ">" +
+                        "<input name='Operations[" + i + "].IsUsed' value='" + data.Operations[i].IsUsed + "' type='hidden'></td>" +
+                    "<td class='tdBtn'><a id='AddEdit" + i + "' class='CallModal' onclick='AddEditOperationGroupRow(" + i + ");' href='#' >Изменить</a></td>" + 
+                "</tr>"
+            );
+
+            $("#AddEdit" + i).addClass("CallModal");
+            $("#AddEdit" + i).click(function(e){ e.preventDefault(); })
+        }
+    }
+
+
+    function ShowFlashOp(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicatorOp").dialog("close");
+            $("#DivIndicatorOp").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOp").show();
+            $("#DivIndicatorOp").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicatorOp").dialog("open");
+        }
+    }
+</script>
+

@@ -25,6 +25,7 @@
     <property name="Address" length="256" not-null="false"/>
 	  <!--<property name="CanAnswer" not-null="true"/>
 	  <property name="Birthday" not-null="false"/>-->
+    <property name ="AlternativeMail" not-null="false"/>
 	  <property name="RoleId" not-null="true"/>
     <property name="ContractType" not-null="false"/>
     <bag name="ClearanceChecklistRoleRecords" table="UserClearanceChecklistRoleRecord" lazy="true" cascade="save-update">
@@ -73,6 +74,12 @@
     <bag name="Dismissals" table="Dismissal" lazy="true" >
       <key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>
       <one-to-many class="Dismissal"/>
-    </bag>  
+    </bag>
+
+    <bag name="StaffPostCharges" table="StaffPostChargeLinks" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_StaffPostChargeLinks_Staff"/>
+      <one-to-many class="StaffPostChargeLinks" />
+    </bag>
+    <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_Users_StaffEstablishedPost" index="Users_StaffEstablishedPost"  not-null="false"/>
   </class>
 </hibernate-mapping>

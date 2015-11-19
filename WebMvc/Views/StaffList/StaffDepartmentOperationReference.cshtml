@@ -1,0 +1,124 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffDepartmentOperationReferenceModel
+@{
+    if (!Model.IsModal)
+    {
+        Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+        ViewBag.Title = "Справочник операций подразделений";
+    }
+}
+
+@using (Html.BeginForm("StaffDepartmentOperationReference", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffDepartmentOperationReferenceForm" }))
+{
+    @Html.HiddenFor(m => m.TabIndex)
+    @Html.HiddenFor(m => m.IsModal)
+    <div id="tabs">
+        <ul>
+            <li><a href="/StaffList/StaffDepartmentOperationGroups">Группы операций</a></li>
+            <li><a href="/StaffList/StaffDepartmentOperations">Операции</a></li>
+            <li><a href="/StaffList/StaffDepartmentOperationLinks">Связи групп и операций</a></li>
+        </ul>
+
+        <div id="tab1"></div>
+        <div id="tab2"></div>
+        <div id="tab3"></div>
+    </div>
+    
+    <div id="DivIndicatorOR" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+    
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moDepOperRef");
+
+        if (!$("#IsModal").val()) {
+            ShowFlashOR(true);
+        }
+
+        $.ajaxSetup({ cache: false });
+        //вкладки обрабатываются не так как в приеме, потому что разные версии JQuery (в приеме старая версия)
+        $("#tabs").tabs({
+            spinner: "<em>Загрузка...</em>",
+            beforeLoad: function (event, ui) {
+                ui.jqXHR.fail(function () {
+                    ui.panel.html("Возникла ошибка при загрузке страницы!");
+                    if (!$("#IsModal").val()) {
+                        ShowFlashOR(false);
+                    }
+                });
+            },
+            collapsible: true,
+            cache: false,
+            ajaxOptions: { cache: false },
+            load: function (event, ui) { 
+                if (!$("#IsModal").val()) {
+                    ShowFlashOR(false);
+                }
+            },
+            active: $("#TabIndex").val(),
+            activate: function () {
+                if (!$("#IsModal").val()) {
+                    ShowFlashOR(true);
+                }
+            }
+        });
+
+
+        $(document).tooltip({ track: false });
+
+
+        $(":button").button();
+
+
+    });
+
+
+
+
+    function ShowFlashOR(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $(".ui-dialog-titlebar").show();
+            $(".ui-dialog-titlebar-close").show();
+            $("#LoadingIndicator2").removeClass("loading2");
+            if (!$("#IsModal").val()) {
+                $("#DivIndicatorOR").dialog("close");
+            }
+            $("#DivIndicatorOR").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicatorOR").show();
+            $("#DivIndicatorOR").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+            if (!$("#IsModal").val()) {
+                $("#DivIndicatorOR").dialog("open");
+            }
+        }
+    }
+
+</script>
+

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System;
+
 namespace Reports.Core.Domain
 {
     /// <summary>
@@ -20,7 +22,22 @@ namespace Reports.Core.Domain
         //public virtual Department Parent { get; set; }
         public virtual string Path { get; set; }
         public virtual int? ItemLevel { get; set; }
+        public virtual string CodeSKD { get; set; }
         public virtual IList<Department> Dep3 { get; set; }
+        public virtual int? Priority { get; set; }
+        public virtual bool IsUsed { get; set; }
+        public virtual string FingradCode { get; set; }
+        public virtual StaffDepartmentAccessory DepartmentAccessory { get; set; }
+        public virtual User Creator { get; set; }
+        public virtual DateTime? CreateDate { get; set; }
+        public virtual User Editor { get; set; }
+        public virtual DateTime? EditDate { get; set; }
+        public virtual IList<DepartmentArchive> DepartmentArchives { get; set; }
+        /// <summary>
+        /// Налоговые реквизиты.
+        /// </summary>
+        public virtual IList<StaffDepartmentTaxDetails> DepartmentTaxDetails { get; set; }
+
         #endregion
 
         #region Constructors

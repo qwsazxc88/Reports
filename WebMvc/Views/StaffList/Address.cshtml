@@ -1,0 +1,357 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.AddressModel
+@{
+    @*Layout = "~/Views/Shared/_LayoutStaffList.cshtml";*@
+    ViewBag.Title = "Address";
+}
+
+@*<b>Адрес AJAX</b>*@
+
+@using (Html.BeginForm("Address", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "Address-form" }))
+{
+    @Html.HiddenFor(m => m.Code)
+    @Html.HiddenFor(m => m.AddressType)
+    
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <div style="background-color:#FAFAFA;">
+                    <table >
+                        <tr>
+                            <td colspan="2">
+                                <b>Российский адрес</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.RegionCode):
+                            </td>
+                            <td style="width:400px">
+                                @Html.DropDownListFor(model => model.RegionCode, new SelectList(Model.Regions, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(2);" }) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AreaCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.AreaCode, new SelectList(Model.Areas, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(3);" }) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CityCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.CityCode, new SelectList(Model.Cityes, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(4);" }) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.SettlementCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.SettlementCode, new SelectList(Model.Settlements, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(5);" }) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.StreetCode):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StreetCode, new SelectList(Model.Streets, "Code", "Name"), new { style = "width:95%", onchange = "CodeChange(6);" }) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table>
+                                    <tr>
+                                        <td>@Html.LabelFor(m => m.PostIndex)</td>
+                                        <td>@Html.TextBoxFor(m => m.PostIndex, new { style = "width:60px", maxlength = 6, onkeyup = "CreateAddress();" }) </td>
+                                        <td>@Html.DropDownListFor(model => model.HouseType, new SelectList(Model.HouseTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.HouseNumber, new { style = "width:50px", maxlength = 10, onkeyup = "CreateAddress();" })</td>
+                                        <td>@Html.DropDownListFor(model => model.BuildType, new SelectList(Model.BuildTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.BuildNumber, new { style = "width:50px", maxlength = 10, onkeyup = "CreateAddress();" })</td>
+                                        <td>@Html.DropDownListFor(model => model.FlatType, new SelectList(Model.FlatTypes, "Id", "Name"), new { onchange = "CreateAddress();" })</td>
+                                        <td>@Html.TextBoxFor(m => m.FlatNumber, new { style = "width:40px", maxlength = 5, onkeyup = "CreateAddress();" })</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                               @Html.LabelFor(m => m.Address) 
+                            </td>
+                            <td>
+                                @Html.TextAreaFor(m => m.Address, new { @readonly = "read-only", style = "width:95%; resize:none;" })
+                            </td>
+                            <td></td>
+                        </tr>
+                        @*
+                        <tr>
+                            <td colspan="2" style="text-align:right;">
+                                <button id="btnSave" type="button" title="Сохранить адрес" style="font-size:small;">Сохранить</button>
+                            </td>
+                        </tr>
+                        *@
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div id="KladrDivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    var actionUrl = "@Url.Action("GetKladr", "StaffList")";    
+
+    $(document).ready(function () {
+        //setActiveMenuItem("moAddress");
+        $.ajaxSetup({cache: false});
+        //$("#btnSave").button();
+    });
+
+
+    function CodeChange(AddressType) {
+        //загружаем районы
+        if (AddressType == 2){
+            //районы
+            GetArea(actionUrl, "AreaCode", $("#RegionCode").val(), "GET", AddressType);
+            //города
+            GetArea(actionUrl, "CityCode", $("#RegionCode").val(), "GET", AddressType + 1);
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#RegionCode").val(), "GET", AddressType + 2);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#RegionCode").val(), "GET", AddressType + 3);
+        }
+        //загружаем города
+        if (AddressType == 3){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#AreaCode").val() == null || $("#AreaCode").val() == ""){
+                CodeChange(2);
+                return;
+            }
+
+            //города
+            GetArea(actionUrl, "CityCode", $("#AreaCode").val(), "GET", AddressType);
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#AreaCode").val(), "GET", AddressType + 1);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#AreaCode").val(), "GET", AddressType + 2);
+        }
+        //загружаем населенные пункты
+        if (AddressType == 4){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#CityCode").val() == null || $("#CityCode").val() == ""){
+                CodeChange(3);
+                return;
+            }
+
+            //населенные пункты
+            GetArea(actionUrl, "SettlementCode", $("#CityCode").val(), "GET", AddressType);
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#CityCode").val(), "GET", AddressType + 1);
+        }
+        //загружаем улицы
+        if (AddressType == 5){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#SettlementCode").val() == null || $("#SettlementCode").val() == ""){
+                CodeChange(4);
+                return;
+            }
+
+            //улицы
+            GetArea(actionUrl, "StreetCode", $("#SettlementCode").val(), "GET", AddressType);
+        }
+        //узнаем индекс для выбранной улицы
+        if (AddressType == 6){
+            //если выбрали пустую строку, надо перезагрузить все, что ниже
+            if($("#StreetCode").val() == null || $("#StreetCode").val() == ""){
+                //так как не всегда индекс есть в строке для улицы, то в зависимости от вариантов заполнения формы пересобираем форму и адрес
+                if(($("#AreaCode").val() == null || $("#AreaCode").val() == "")
+                    && ($("#CityCode").val() == null || $("#CityCode").val() == "")
+                    && ($("#SettlementCode").val() == null && $("#SettlementCode").val() == "")){
+                    CodeChange(2);
+                    return;
+                }
+
+                if(($("#CityCode").val() == null || $("#CityCode").val() == "")
+                    && ($("#SettlementCode").val() == null && $("#SettlementCode").val() == "")){
+                    CodeChange(3);
+                    return;
+                }
+
+                if($("#SettlementCode").val() == null && $("#SettlementCode").val() == ""){
+                    CodeChange(4);
+                    return;
+                }
+                else{
+                    CodeChange(5);
+                    return;
+                }
+                CreateAddress();
+                return;
+            }
+
+
+            GetArea(actionUrl, "StreetCode", $("#StreetCode").val(), "GET", AddressType);
+        }
+
+        //CreateAddress();
+    }
+
+    //создаем адрес
+    function CreateAddress(){
+        var StrAddress = "";
+
+        $("#Address").val(StrAddress);
+
+
+        if($("#PostIndex").val() != ""){
+            //проверим, чтобы были одни цифры
+            if (!Number($("#PostIndex").val()))
+            {
+                alert("Почтовый индекс должен содержать цифры!");
+                $("#PostIndex").focus();
+                return;
+            }
+            StrAddress = $("#PostIndex").val() + ", ";    
+        }
+
+        if($("#RegionCode").val() != null && $("#RegionCode").val() != ""){
+            StrAddress += $("#RegionCode option:selected").text();
+        }
+
+        
+        if($("#AreaCode").val() != null && $("#AreaCode").val() != ""){
+            StrAddress += ", " + $("#AreaCode option:selected").text();
+        }
+
+        if($("#CityCode").val() != null && $("#CityCode").val() != ""){
+            StrAddress += ", " + $("#CityCode option:selected").text();
+        }
+
+        if($("#SettlementCode").val() != null && $("#SettlementCode").val() != ""){
+            StrAddress += ", " + $("#SettlementCode option:selected").text();
+        }
+
+
+        if($("#StreetCode").val() != null && $("#StreetCode").val() != ""){
+            StrAddress += ", " + $("#StreetCode option:selected").text();
+        }
+
+            
+        if($("#HouseNumber").val() != ""){
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#HouseType option:selected").text();
+            StrAddress += (StrAddress == "" ? "" :  " №") + $("#HouseNumber").val();
+        }
+
+
+        if($("#BuildNumber").val() != ""){
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#BuildType option:selected").text();
+            StrAddress += (StrAddress == "" ? "" :  " ") + $("#BuildNumber").val();
+        }        
+
+
+        if($("#FlatNumber").val() != ""){
+            StrAddress += (StrAddress == "" ? "" :  ", ") + $("#FlatType option:selected").text();
+            StrAddress += (StrAddress == "" ? "" :  " ") + $("#FlatNumber").val();    
+        }
+
+        $("#Address").val(StrAddress);
+
+    }
+
+    function GetArea(actionUrl, controlName, code, RequestType, AddressType) {
+        //ShowKladrFlash(true);
+        $("#Code").val(code);
+        $("#AddressType").val(AddressType);
+        var url = actionUrl;
+
+        var dataToSend = $("#Address-form").serialize();
+        
+        jQuery.ajax({
+                url: url,
+                type: RequestType,
+                dataType: 'json',
+                data: dataToSend,
+                //async: false,
+                success: function(KladrResult){
+                    setKladrValuesToDropdown(controlName, KladrResult, AddressType);
+                    //ShowKladrFlash(false);
+                },
+                error: function(){
+                    //ShowKladrFlash(false);
+                    alert("При загрузке данных произошла ошибка.");
+                    console.log(KladrResult.Error);
+                }
+            });
+    }
+
+
+    //заполняем данными комбобокс
+    function setKladrValuesToDropdown(controlName,data, AddressType)
+    {
+        if (data.Kladr != null)
+        {
+            var optionsValues = '<select style = "width:95%" onchange = "CodeChange(' + (AddressType + 1) + ');" id="' + controlName + '" name="' + controlName + '">';
+            //optionsValues += '<option value=""></option>';
+
+            for (var i = 0; i < data.Kladr.length; i++)
+            {
+                optionsValues += "<option value=" + (data.Kladr[i].Code != null ? data.Kladr[i].Code : "") + ">" + (data.Kladr[i].Name != null ? data.Kladr[i].Name : "") + "</option>";
+            }
+
+            optionsValues += "</select>";
+
+            var options = $("#" + controlName );
+            options.replaceWith(optionsValues);
+        }
+        
+        $("#PostIndex").val(data.PostIndex);
+
+        CreateAddress();
+    }
+
+
+    function ShowKladrFlash(IsShow)  //показываем индикатор загрузки
+    {
+        //пока отключил, так как запросы отрабатываются с разной скоростью и заставка не всегда корректно закрывается
+        if (!IsShow)
+        {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#KladrDivIndicator").hide();
+            $("#KladrDivIndicator").dialog("close");
+        }
+        else
+        {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#KladrDivIndicator").show();
+            $("#KladrDivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                //title: title,
+                // fix IE6  
+                bgiframe: true, 
+                draggable: false,
+                resizable: false,
+                width: 300,
+	            height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+
+</script>

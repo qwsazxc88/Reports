@@ -5,7 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Family_Candidate" index="Family_Candidate" not-null="true"/>
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Family_Candidate" index="Family_Candidate" not-null="false"/>
     <bag name="FamilyMembers" lazy="true" cascade="all-delete-orphan">
       <key column="FamilyId" foreign-key="FK_FamilyMember_Family"/>
       <one-to-many class="FamilyMember"/>

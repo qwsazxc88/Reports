@@ -55,12 +55,12 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 {
     <label>1.5. Настоящий Договор заключается на неопределенный срок и вступает в силу со дня подписания сторонами.</label><br />
 }
-@*
-@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 11)
+
+@if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value == 13)
 {
-    <label>1.5. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
+    <label>1.5. Договор заключается временно для выполнения работ, связанных с временным расширением объема оказываемых услуг, и вступает в силу со дня подписания сторонами. Настоящий Договор заключается на срок с @(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___") по @(Model.ContractEndDate.HasValue ? Model.ContractEndDate.Value.ToShortDateString() : "___ _______________ 20___").</label><br />
 }
-*@
+
 @if (Model.ContractPoint_1_Id.HasValue && Model.ContractPoint_1_Id.Value != 2)
 {
     <text>Дата начала работы - </text><b>@(Model.ContractDate.HasValue ? Model.ContractDate.Value.ToShortDateString() : "___ _______________ 20___")</b><br />
@@ -70,9 +70,18 @@ Model.ContractDate.Value.ToLongDateString() : "___ _______________ 20___")&nbsp;
 &nbsp;
 @*1.6. Фактическое место работы РАБОТНИКА: @Model.WorkCity<BR>&nbsp;*@
 1.6. Фактическое место работы РАБОТНИКА: @Model.ContractPointsAddress<BR>&nbsp;
-1.7. РАБОТНИКУ устанавливается испытательный срок продолжительностью @Model.ProbationaryPeriod с момента заключения настоящего Договора.<BR>
-При неудовлетворительном результате во время испытательного срока РАБОТОДАТЕЛЬ имеет право до истечения испытательного срока расторгнуть настоящий Договор с РАБОТНИКОМ, 
-письменно уведомив его и указав причины не позднее, чем за 3 (три) дня до срока расторжения.<br />&nbsp;
+@if(!string.IsNullOrEmpty(Model.ProbationaryPeriod)){
+    <text>
+    1.7. РАБОТНИКУ устанавливается испытательный срок продолжительностью @Model.ProbationaryPeriod с момента заключения настоящего Договора.<BR>
+    При неудовлетворительном результате во время испытательного срока РАБОТОДАТЕЛЬ имеет право до истечения испытательного срока расторгнуть настоящий Договор с РАБОТНИКОМ, 
+    письменно уведомив его и указав причины не позднее, чем за 3 (три) дня до срока расторжения.<br />&nbsp;
+    </text>
+}
+else
+{
+    <text>1.7. РАБОТНИКУ  испытательный срок не устанавливается.<br />&nbsp;</text>
+}
+
 @*
 1.8. Взаимодействие РАБОТНИКА и РАБОТОДАТЕЛЯ (в т.ч. непосредственного руководителя), происходит в том числе посредством электронного документооборота и переписки,
 обеспечиваемых соответствующей программой (Приложение №____ к настоящему Договору).<BR>&nbsp;

@@ -38,7 +38,9 @@
             {<text> style = "display:none;" </text>} >
             <td>Заявление о приеме</td>
             <td style="width:5%">
-                <button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                @*<button  type="button" onclick="window.location.href='@Url.Action("ApplicationLetter", "Employment", new { userId = Model.UserId })';" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>*@
+                <button  type="button" onclick="window.location.href='@Url.Content("~/Templates/zayavlenie_o_prieme_na_rabotu.doc")'" @if(!Model.IsPrintButtonAvailable){<text>style="display:none;"</text>}>Печать</button>
+                @*<a href="@Url.Content("~/Templates/zayavlenie_o_prieme_na_rabotu.doc")" target="_blank">Заявление о приеме на работу</a>*@
             </td>
             <td>
                 <input type="hidden" id="ApplicationLetterScanAttachmentId" name="ApplicationLetterScanAttachmentId" value="@Model.ApplicationLetterScanAttachmentId" />

@@ -1,0 +1,17 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffDepartmentTaxDetails" dynamic-update="true" table="StaffDepartmentTaxDetails">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+
+    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_StaffDepartmentTaxDetails_Department" index="StaffDepartmentTaxDetails_Department" not-null="false"/>
+    <property name="KPP" length="9" not-null="false"/>
+    <property name="OKTMO" length="11" not-null="false"/>
+    <property name="OKATO" length="11" not-null="false"/>
+    <property name="RegionCode" length="2" not-null="false"/>
+    <property name="TaxAdminCode" length="10" not-null="false"/>
+    <property name="TaxAdminName" length="100" not-null="false"/>
+    <property name="PostAddress" length="250" not-null="false"/>
+  </class>
+</hibernate-mapping>

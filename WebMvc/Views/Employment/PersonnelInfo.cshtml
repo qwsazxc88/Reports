@@ -214,11 +214,8 @@
             $("#Variant11").hide();
             $("#Variant12").hide();
             $("#Variant13").hide();
-            if ($("#ContractPoint_1_Id").val() == 3)
-                $("#Variant111").hide();
+            $("#Variant113").hide();
             $("#Variant1" + $("#ContractPoint_1_Id").val().toString()).show();
-            if ($("#ContractPoint_1_Id").val() != 3)
-                $("#Variant111").show();
         }
         else if (TypeId == 2){
         }
@@ -495,8 +492,8 @@
                     $("#tabs2").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
                         jQuery(function ($) {
-                            $.mask.definitions['~'] = '[+-]';
-                            $('#InternalPassportSeries').mask('99 99');
+                            //$.mask.definitions['~'] = '[+-]';
+                            //$('#InternalPassportSeries').mask('** **');
                         });
 
                         $("#btnPassportDraft").click(function(){

@@ -1,0 +1,15 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffPostChargeLinks" dynamic-update="true" table="StaffPostChargeLinks">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <many-to-one name="Staff" class="User" column="UserId" foreign-key="FK_StaffPostChargeLinks_Staff" index="StaffPostChargeLinks_Staff" not-null="false"/>
+    <many-to-one name="ExtraCharges" class="StaffExtraCharges" column="StaffExtraChargeId" foreign-key="FK_StaffPostChargeLinks_StaffExtraCharges" index="StaffPostChargeLinks_StaffExtraCharges" not-null="false"/>
+    <property name="Salary" precision="19" scale="2" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffPostChargeLinks_CreatorUser" index="StaffPostChargeLinks_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffPostChargeLinks_EditorUser" index="StaffPostChargeLinks_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+  </class>
+</hibernate-mapping>
