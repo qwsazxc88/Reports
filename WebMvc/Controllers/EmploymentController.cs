@@ -2615,8 +2615,8 @@ namespace WebMvc.Controllers
             ValidateFileLength(model.MobilizationTicketScanFile, "MobilizationTicketScanFile", 2);
             ValidateFileLength(model.WorkBookScanFile, "WorkBookScanFile", 20);
             ValidateFileLength(model.WorkBookSupplementScanFile, "WorkBookSupplementScanFile", 20);
-            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
-            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
+            ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 1);
+            ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 1);
 
             if (!model.AgreedToPersonalDataProcessing)
                 ModelState.AddModelError("AgreedToPersonalDataProcessing", "Подтвердите правильность предоставленных данных! Подтвердив правильность предоставленных данных, Вы не сможете больше вносить изменения в данную часть анкеты!");
