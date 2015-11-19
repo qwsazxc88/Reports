@@ -19,6 +19,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffEstablishedPostUserLinksDao staffEstablishedPostUserLinksDao;
+        public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostUserLinksDao); }
+            set { staffEstablishedPostUserLinksDao = value; }
+        }
+        protected IStaffEstablishedPostDao staffEstablishedPostDao;
+        public IStaffEstablishedPostDao StaffEstablishedPostDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostDao); }
+            set { staffEstablishedPostDao = value; }
+        }
         protected IExtraChargesDao extraChargesDao;
         public IExtraChargesDao ExtraChargesDao
         {
@@ -159,6 +171,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 var entity = StaffMovementsDao.Load(model.Id);
                 #region Стандартные поля заявки
+
+                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;
+                model.UserLinks.Add(new IdNameDto { Id = entity.TargetStaffEstablishedPostRequest.Id, Name = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position.Name });
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
@@ -324,6 +339,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
+            var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            
             //Заполняем справочники
             LoadDictionaries(model);
             //Подгружаем данные о создателе заявки
@@ -335,6 +352,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetDepartmentName = model.User.Dep7Name;
                     model.TargetPositionId = model.User.PositionId;
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
+                    model.UserLinkId = userlinks.First().Id;
+                    model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
@@ -751,6 +770,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Статус // сначала черновик
                 entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Temp);
                 //Данные исходной позиции
+                var sourcelink = StaffEstablishedPostUserLinksDao.QueryExpression(x => x.User.Id == entity.User.Id && x.IsUsed);
+                entity.SourceStaffEstablishedPostRequest = sourcelink.First();
                 entity.SourcePosition = entity.User.Position;
                 entity.SourceDepartment = entity.User.Department;
                 entity.SourceManager = GetManagerForDepartment(entity.SourceDepartment);
@@ -763,6 +784,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!model.IsPositionEditable)
                 {
                     entity.TargetPosition = entity.SourcePosition;
+                    entity.TargetStaffEstablishedPostRequest = entity.SourceStaffEstablishedPostRequest;
                 } 
                 //Тип заявки
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
@@ -793,8 +815,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             }
             if (model.IsPositionEditable)
-            {
-                entity.TargetPosition = PositionDao.Load(model.TargetPositionId);
+            {                
+                entity.TargetStaffEstablishedPostRequest = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                entity.TargetPosition = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position;
             }       
             #endregion
             #region Общее
@@ -1089,13 +1112,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns>список должностей</returns>
         public IList<IdNameDto> GetPositionsForDepartment(int id)
         {
-            var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
+            var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
+            if (positions != null && positions.Any())
+            {
+                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+            }
+            else return new List<IdNameDto>();
+            #region depricated
+            /*var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
             if (users != null && users.Any())
             {
                 var positions = users.Select(x => x.Position).Distinct();
                 return (positions!=null && positions.Any())?positions.Select(x=>new IdNameDto { Id=x.Id, Name = x.Name}).ToList():new List<IdNameDto>();
             }
-            else return new List<IdNameDto>();
+            else return new List<IdNameDto>();*/
+            #endregion
             #region Оставлено до лучших времен(появление штатного рассписания), если не наступят - удалить.
             //var positions=StaffEstablishedPostRequestDao.Find(x => x.Department.Id == id);
             //if (positions != null && positions.Any())
@@ -1172,18 +1203,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 "Работник переводится, с его согласия,  с временной должности {{SourcePosition}} {{Field}} {{SourceDepartment}} на постоянную должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г.",
                 "Не выбран"
             };
+            Entries.Add("1_2", entry1_2);
             //Пункт 1.6
             string[] entry1_6 = new string[] 
             {
                 "Фактическое место работы Работника: {{Field}}",
                 "Не выбран"
             };
+            Entries.Add("1_6", entry1_6);
             //Пункт 2.2.1
             string[] entry2_2_1 = new string[] 
             {
                 "Должностные обязанности изменяются согласно должностной инструкции {{TargetPosition}} {{TargetDepartment}}",
                 "Не выбран"
             };
+            Entries.Add("2_2_1", entry2_2_1);
             //Пункт 4_2
             string[] entry4_2 = new string[] 
             {
@@ -1191,6 +1225,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}"+Environment.NewLine+"Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет {{Field}} рублей в месяц",
                 "Не выбран"
             };
+            Entries.Add("4_2", entry4_2);
             //Пункт 5.1
             string[] entry5_1 = new string[] 
             {
@@ -1201,6 +1236,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 "{{Field}}",
                 "Не выбран"
             };
+            Entries.Add("5_1", entry5_1);
             return Entries[entry];
         }
         public IList<IdNameDto> GetNorthExperienceTypes()
@@ -1232,10 +1268,139 @@ namespace Reports.Presenters.UI.Bl.Impl
             return null;
         }
         #endregion
+        public StaffMovementsPrintModel GetPrintModel(int id)
+        {
+            var entity = StaffMovementsDao.Load(id);
+            StaffMovementsPrintModel model = new StaffMovementsPrintModel();
+            #region Money
+            var bablo = entity.Data.TargetCasing;
+            model.TargetCasing = String.Format("{0}({1}) рублей в месяц", bablo, RequestBl.GetSummString(bablo));
+            model.Additions = new List<string>();
+            if (entity.Data.AdditionPersonnelAction != 4 && entity.Data.AdditionPersonnel > 0)
+            {
+                var sum =entity.Data.AdditionPersonnel;
+                model.Additions.Add(String.Format(" - Надбавка персональная в размере {0}({1}) рублей в месяц;",sum, RequestBl.GetSummString(sum)));
+            }
+            if (entity.Data.AdditionFrontAction != 4 && entity.Data.AdditionFront > 0)
+            {
+                var sum = entity.Data.AdditionFront;
+                model.Additions.Add(String.Format(" - Надбавка за работу специалистом фронт-офиса в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
+            }
+            if (entity.Data.AdditionQualityAction != 4 && entity.Data.AdditionQuality > 0)
+            {
+                var sum = entity.Data.AdditionQuality;
+                model.Additions.Add(String.Format(" - Надбавка квалификационная в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
+            }
+            if (entity.Data.AdditionTerritoryAction != 4 && entity.Data.AdditionTerritory > 0)
+            {
+                var sum = entity.Data.AdditionTerritory;
+                model.Additions.Add(String.Format(" - Надбавка территориальная в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
+            }
+            if (entity.Data.AdditionTravelingAction != 4 && entity.Data.AdditionTraveling > 0)
+            {
+                var sum = entity.Data.AdditionTraveling;
+                model.Additions.Add(String.Format(" - Надбавка за разъездной характер работы в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
+            }
+            if (entity.Data.NorthFactorAdditionAction!=4)
+            {
+                var sum = entity.Data.AdditionTraveling;
+                model.Additions.Add(String.Format(" - Надбавка за северный стаж;"));
+            }
+#endregion
+            #region Персонажи
+            model.UserName = entity.User.Name;
+            model.TargetPosition = entity.TargetPosition.Name;
+            model.SourcePosition = entity.SourcePosition.Name;
+            model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
+            model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
+            model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
+            model.TargetManager = entity.TargetManager.Name;
+            model.SourceManager = entity.SourceManager.Name;
+            model.SignerName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
+            model.SignerPosition = entity.Data.Signatory!=null?entity.Data.Signatory.Position:"";
+            model.SignerAdditionData= entity.Data.Signatory!=null?entity.Data.Signatory.PreamblePartyTemplate:"";
+            model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
+            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
+            #endregion
+            #region Numbers 
+            model.MaterialDocNumber = entity.Data.AdditionalAgreementNumber;
+            
+            #endregion
+            #region Dates
+            model.MovementDate = entity.MovementDate.HasValue?entity.MovementDate.Value.ToString("dd.MM.yyyy") :"";
+            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerAccept.HasValue ? entity.PersonnelManagerAccept.Value.ToString("dd.MM.yyyy") : "";            
+            model.CreateDate = entity.CreateDate.ToString("dd.MM.yyyy");
+            #endregion
+            #region Depts
+            var dep7 = entity.SourceDepartment;
+            model.SourceDepartment = dep7.Name;            
+            model.Dep7 = dep7.Name;
+            var dep6 = DepartmentDao.GetParentDepartmentWithLevel(dep7, 6);
+            model.Dep6 = dep6 != null ? dep6.Name : "";
+            var dep5 = DepartmentDao.GetParentDepartmentWithLevel(dep7, 5);
+            model.Dep5 = dep5 != null ? dep5.Name : "";
+            var dep4 = DepartmentDao.GetParentDepartmentWithLevel(dep7, 4);
+            model.Dep4 = dep4 != null ? dep4.Name : "";
+            var dep3 = DepartmentDao.GetParentDepartmentWithLevel(dep7, 3);
+            model.Dep3 = dep3 != null ? dep3.Name : "";
+            var dep2 = DepartmentDao.GetParentDepartmentWithLevel(dep7, 2);
+            model.Dep2 = dep2 != null ? dep2.Name : "";
+            var Targetdep7 = entity.TargetDepartment;
+            model.TargetDep7 = Targetdep7.Name;
+            model.TargetDepartment = Targetdep7.Name;
+            var Targetdep6 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 6);
+            model.TargetDep6 = Targetdep6 != null ? Targetdep6.Name : "";
+            var Targetdep5 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 5);
+            model.TargetDep5 = Targetdep5 != null ? Targetdep5.Name : "";
+            var Targetdep4 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 4);
+            model.TargetDep4 = Targetdep4 != null ? Targetdep4.Name : "";
+            var Targetdep3 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 3);
+            model.TargetDep3 = Targetdep3 != null ? Targetdep3.Name : "";
+            var Targetdep2 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 2);
+            model.TargetDep2 = Targetdep2 != null ? Targetdep2.Name : "";
+            #endregion
+            #region fields
+            var e1_2 = entity.Data.AgreementEntry1_2;
+            model.AgreementEntry1_2 = GetAgreementEntriesTemplate("1_2")[e1_2-1]
+                .Replace("{{SourcePosition}}", model.SourcePosition)
+                .Replace("{{SourceDepartment}}", model.SourceDepartment)
+                .Replace("{{TargetPosition}}", model.TargetDepartment)
+                .Replace("{{TargetDepartment}}", model.TargetDepartment)
+                .Replace("{{MovementDate}}", model.MovementDate);
+            if (e1_2 >= 2)
+            {
+                model.AgreementEntry1_2 = model.AgreementEntry1_2.Replace("{{Field}}", entity.Data.AgreementField1_2);
+            }
 
+            var e1_6 = entity.Data.AgreementEntry1_6;
+            model.AgreementEntry1_6 = GetAgreementEntriesTemplate("1_6")[e1_6-1];
+            if (e1_6 == 1)
+            {
+                model.AgreementEntry1_6 = model.AgreementEntry1_6.Replace("{{Field}}", entity.Data.AgreementField1_6);
+            }
+
+            var e2_2_1 = entity.Data.AgreementEntry2_2_1;
+            model.AgreementEntry2_2_1 = GetAgreementEntriesTemplate("2_2_1")[e2_2_1 - 1]
+                .Replace("{{TargetPosition}}", model.TargetDepartment)
+                .Replace("{{TargetDepartment}}", model.TargetDepartment);
+
+            var e4_2 = entity.Data.AgreementEntry4_2;
+            var e5_1 = entity.Data.AgreementEntry5_1;
+            
+            
+            if (e1_6 == 1) model.AgreementField1_6[0] = entity.Data.AgreementField1_6;
+            if (e4_2 == 2) model.AgreementField4_2[0] = entity.Data.AgreementField4_2;
+            if (e5_1 == 5) model.AgreementField5_1[0] = entity.Data.AgreementField5_1;
+            
+            
+
+            #endregion
+            model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
+            return model;
+        }
         public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
+            var res= StaffMovementsDao.QueryExpression(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
             if (res != null && res.Any())
                 return true;
             else return false;
