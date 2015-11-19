@@ -201,7 +201,7 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.Quantity, (object)new { style = "width:70px;" })
+                            @Html.TextBoxFor(m => m.Quantity, Model.RequestTypeId == 1 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Quantity)
                             @Html.DisplayFor(m => m.EPInfo)
                         </td>

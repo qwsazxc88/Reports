@@ -2751,13 +2751,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //изменилось количество изменяем количество связей
-            //if (entity.Quantity != sep.Quantity)
-            //{
-            //    if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
-            //    {
-            //        return false;
-            //    }
-            //}
+            if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
+            {
+                return false;
+            }
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
             if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
@@ -2765,7 +2762,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.RequestType.Id == 2)
                 {
                     sep.Position = entity.Position;
-                    sep.Quantity = entity.Quantity;
+                    //пока решили не менять количество в заявках наизменение
+                    //sep.Quantity = entity.Quantity;
                     sep.Salary = entity.Salary;
                 }
                 else if (entity.RequestType.Id == 3)
@@ -2848,10 +2846,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            //если количество штатных единиц уменьшилось
-            if (entity.Quantity < sep.Quantity)
+            ////если количество штатных единиц уменьшилось
+            //if (entity.Quantity < sep.Quantity)
+            //пока решили, что в заявках на изменение количество не меняется
+            if (entity.RequestType.Id == 3)
             {
-                CountLinks = sep.Quantity - entity.Quantity;
+                //CountLinks = sep.Quantity - entity.Quantity;
 
                 foreach (var item in sep.EstablishedPostUserLinks
                     .Where(x => x.IsUsed))
@@ -2862,7 +2862,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     item.Editor = curUser;
                     item.EditDate = DateTime.Now;
 
-                    CountLinks -= 1;
+                    //CountLinks -= 1;
                 }
             }
             return true;
