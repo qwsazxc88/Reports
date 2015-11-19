@@ -330,7 +330,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                IList<User> alter = UserDao.Find(x => x.AlternativeMail == model.Email);
+                IList<User> alter = UserDao.QueryExpression(x => x.AlternativeMail == model.Email);
                 IList<User> users = UserDao.FindByEmail(model.Email);
                 if (users.Count == 0 && !alter.Any())
                 {

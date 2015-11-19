@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status)
         {
-            var CurrentUser = UserDao.Load(UserId);
+            var CurrentUser = UserDao.Load(UserId);            
             var mandepts=Session.Query<ManualRoleRecord>()
                 .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == UserId )
                 .Select(x => x.TargetDepartment).Distinct()

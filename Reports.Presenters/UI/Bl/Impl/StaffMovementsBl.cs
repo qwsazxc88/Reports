@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffEstablishedPostUserLinksDao staffEstablishedPostUserLinksDao;
+        public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostUserLinksDao); }
+            set { staffEstablishedPostUserLinksDao = value; }
+        }
         protected IStaffEstablishedPostDao staffEstablishedPostDao;
         public IStaffEstablishedPostDao StaffEstablishedPostDao
         {
@@ -165,6 +171,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 var entity = StaffMovementsDao.Load(model.Id);
                 #region Стандартные поля заявки
+
+                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;
+                model.UserLinks.Add(new IdNameDto { Id = entity.TargetStaffEstablishedPostRequest.Id, Name = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position.Name });
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
@@ -330,6 +339,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
+            var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            
             //Заполняем справочники
             LoadDictionaries(model);
             //Подгружаем данные о создателе заявки
@@ -341,6 +352,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetDepartmentName = model.User.Dep7Name;
                     model.TargetPositionId = model.User.PositionId;
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
+                    model.UserLinkId = userlinks.First().Id;
+                    model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
@@ -757,6 +770,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Статус // сначала черновик
                 entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Temp);
                 //Данные исходной позиции
+                var sourcelink = StaffEstablishedPostUserLinksDao.QueryExpression(x => x.User.Id == entity.User.Id && x.IsUsed);
+                entity.SourceStaffEstablishedPostRequest = sourcelink.First();
                 entity.SourcePosition = entity.User.Position;
                 entity.SourceDepartment = entity.User.Department;
                 entity.SourceManager = GetManagerForDepartment(entity.SourceDepartment);
@@ -799,8 +814,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             }
             if (model.IsPositionEditable)
-            {
-                entity.TargetPosition = PositionDao.Load(model.TargetPositionId);
+            {                
+                entity.TargetStaffEstablishedPostRequest = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                entity.TargetPosition = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position;
             }       
             #endregion
             #region Общее
@@ -1095,13 +1111,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns>список должностей</returns>
         public IList<IdNameDto> GetPositionsForDepartment(int id)
         {
-            var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
+            var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
+            if (positions != null && positions.Any())
+            {
+                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+            }
+            else return new List<IdNameDto>();
+            #region depricated
+            /*var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
             if (users != null && users.Any())
             {
                 var positions = users.Select(x => x.Position).Distinct();
                 return (positions!=null && positions.Any())?positions.Select(x=>new IdNameDto { Id=x.Id, Name = x.Name}).ToList():new List<IdNameDto>();
             }
-            else return new List<IdNameDto>();
+            else return new List<IdNameDto>();*/
+            #endregion
             #region Оставлено до лучших времен(появление штатного рассписания), если не наступят - удалить.
             //var positions=StaffEstablishedPostRequestDao.Find(x => x.Department.Id == id);
             //if (positions != null && positions.Any())
@@ -1375,7 +1399,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
+            var res= StaffMovementsDao.QueryExpression(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
             if (res != null && res.Any())
                 return true;
             else return false;

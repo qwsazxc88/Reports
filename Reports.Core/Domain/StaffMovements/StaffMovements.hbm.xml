@@ -28,6 +28,8 @@
     <property name="PersonnelManagerAccept" not-null="false"/>
     <property name="PersonnelManagerBankAccept" not-null="false"/>
     <property name="MovementTempTo" not-null="false"/>
+    <many-to-one name="SourceStaffEstablishedPostRequest" class="StaffEstablishedPostUserLinks" column="SourceStaffEstablishedPostRequest" foreign-key="FK_StaffMovements_SourceUserLink" not-null="false"/>
+    <many-to-one name="TargetStaffEstablishedPostRequest" class="StaffEstablishedPostUserLinks" column="TargetStaffEstablishedPostRequest" foreign-key="FK_StaffMovements_TargetUserLink" not-null="false"/>
     <many-to-one name="SourcePosition" class="Position" column="SourcePosition" foreign-key="FK_StaffMovements_SourcePosition" not-null="true"/>
     <many-to-one name="TargetPosition" class="Position" column="TargetPosition" foreign-key="FK_StaffMovements_TargetPosition" not-null="true"/>
     <many-to-one name="SourceManager" class="User" column="SourceManagerId" foreign-key="FK_StaffMovements_SourceManager" not-null="false"/>

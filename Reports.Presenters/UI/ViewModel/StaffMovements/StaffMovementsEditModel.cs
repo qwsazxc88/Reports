@@ -22,7 +22,8 @@ namespace Reports.Presenters.UI.ViewModel
         #region Служебное
         public bool IsDepartmentEditable { get; set; }
         public bool IsPositionEditable { get; set; }
-
+        public int UserLinkId { get; set; }
+        public IList<IdNameDto> UserLinks { get; set; }
         public bool IsManagerEditable { get; set; }
         public bool IsPersonnelManagerEditable { get; set; }
         public bool IsSourceManagerAcceptAvailable { get; set; }
