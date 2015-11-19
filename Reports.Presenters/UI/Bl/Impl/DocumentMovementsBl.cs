@@ -59,6 +59,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Direction = directions[doc.Direction],
                     Receiver = doc.ReceiverRuscount != null ? doc.ReceiverRuscount.Name : doc.Receiver.Name,
                     ReceiverAccept = doc.ReceiverCheckDate.HasValue,
+                    ReceiveDate = doc.ReceiverCheckDate,
                     SendDate = doc.SendDate,
                     Sender = (doc.SenderRuscount != null) ? doc.SenderRuscount.Name : doc.Sender.Name,
                     Status = statuses[doc.StatusId],
@@ -99,6 +100,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     movement.ReceiverCheckDate = DateTime.Now;
                 }
+                if (movement.ReceiverCheckDate.HasValue) movement.StatusId = 3;
                 DocumentMovementsDao.SaveAndFlush(movement);
             }
         }
