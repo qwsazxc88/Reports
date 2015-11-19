@@ -69,7 +69,8 @@
     $(document).ready(function () {
         setActiveMenuItem("moStaffArrangement");
 
-         $(document).tooltip({track: false});
+         $(document).tooltip({track: false,
+            show: { effect: "blind", duration: 300 }});
 
         ShowFlash(true);
         ShowFlash(false);
