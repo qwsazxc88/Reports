@@ -2640,9 +2640,12 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 }
 
-                if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                    {
+                        ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    }
                 }
 
                 if (!model.IsVolga)
