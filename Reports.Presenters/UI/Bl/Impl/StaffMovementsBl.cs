@@ -784,6 +784,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!model.IsPositionEditable)
                 {
                     entity.TargetPosition = entity.SourcePosition;
+                    entity.TargetStaffEstablishedPostRequest = entity.SourceStaffEstablishedPostRequest;
                 } 
                 //Тип заявки
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
