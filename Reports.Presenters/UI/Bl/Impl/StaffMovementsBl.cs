@@ -172,8 +172,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 var entity = StaffMovementsDao.Load(model.Id);
                 #region Стандартные поля заявки
 
-                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;
-                model.UserLinks.Add(new IdNameDto { Id = entity.TargetStaffEstablishedPostRequest.Id, Name = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position.Name });
+                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;                
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
@@ -429,6 +428,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
             model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
             model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
+            if (model.TargetDepartmentId > 0)
+            {
+                model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                if (model.UserLinks == null) model.UserLinks = new List<IdNameDto>();
+                if ( model.UserLinkId>0 && !model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                {
+                    var link = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                    model.UserLinks.Add(new IdNameDto { Name= link.StaffEstablishedPost.Position.Name, Id=link.Id});
+                }
+            }
+            else model.UserLinks = new List<IdNameDto>();
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
