@@ -1092,8 +1092,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.ApprovalDate = entity.ApprovalDate;
+
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
+                        && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.BackgroundCheck);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Security) > 0 ||
@@ -1116,6 +1117,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Candidate.Status == EmploymentStatus.REJECTED && entity.ApprovalStatus.HasValue && !entity.ApprovalStatus.Value)
                         model.IsCancelApproveAvailale = true;
                 }
+
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1169,8 +1175,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.ApprovalDate = entity.ApprovalDate;
+
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
+                        && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
 
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
@@ -1178,6 +1185,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Candidate.Status == EmploymentStatus.REJECTED && entity.ApprovalStatus.HasValue && !entity.ApprovalStatus.Value)
                         model.IsCancelApproveAvailale = true;
                 }
+
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
             }
             LoadDictionaries(model);
             //состояние кандидата
@@ -1763,6 +1775,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Status == EmploymentStatus.REJECTED && entity.BackgroundCheck.PrevApprovalStatus.HasValue && !entity.BackgroundCheck.PrevApprovalStatus.Value)
                         model.IsCancelApproveAvailale = true;
                 }
+
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps!=  null && volgadeps.Where(x => x.Id == entity.User.Department.Id).Count() != 0 ? true : false;
 
 
                 if (attach != null && attach.Count != 0)
@@ -4203,8 +4220,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
+                            && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                            entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4258,8 +4275,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                    && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
-                    entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
+                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.Candidate.BackgroundCheck.IsFinal &&
+                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -4788,13 +4805,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Sports = viewModel.Sports;
             entity.IsValidate = viewModel.IsValidate;
 
-            
+
             // все вкладки кандидата заполнены и сообщения в ДП не было, то проставляем статус для ДП
             if (entity.Candidate.IsScanFinal)
             {
                 if (entity.Candidate.IsScanFinal && entity.Candidate.GeneralInfo.IsFinal && entity.Candidate.Passport.IsFinal && entity.Candidate.Education.IsFinal && entity.Candidate.Family.IsFinal
-                        && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal &&
-                        entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
+                            && entity.Candidate.MilitaryService.IsFinal && entity.Candidate.Experience.IsFinal && entity.Candidate.Contacts.IsFinal && entity.IsFinal &&
+                            entity.Candidate.BackgroundCheck.PrevApprovalDate.HasValue && !entity.Candidate.BackgroundCheck.ApprovalDate.HasValue)
                 {
                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                 }
@@ -5322,6 +5339,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                             return true;
                         }
                     }
+
+
+                    ////определяем признак кандидата из Экспресс-Волги
+                    //Department ParentDep = DepartmentDao.Get(11923);
+                    //IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                    //model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.User.Department.Id).Count() != 0 ? true : false;
+
 
                     //сохраняем файл личного дела
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)

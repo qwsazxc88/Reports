@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace Reports.Core.Enum
 {
     public enum ApprovalTypeEnum

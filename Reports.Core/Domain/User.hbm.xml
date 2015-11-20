@@ -50,6 +50,7 @@
     <property name="ExperienceIn1C" not-null="false" />
     <property name="IsFixedTermContract" not-null="false" />
     <property name="AccessGroupCode" not-null="false" />
+    <property name="IsPregnant" not-null="false" />
 
     <property name="IsMainManager" not-null="true" />
     
@@ -80,6 +81,8 @@
       <key column="UserId" foreign-key="FK_StaffPostChargeLinks_Staff"/>
       <one-to-many class="StaffPostChargeLinks" />
     </bag>
+    <!--
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_Users_StaffEstablishedPost" index="Users_StaffEstablishedPost"  not-null="false"/>
+    -->
   </class>
 </hibernate-mapping>
