@@ -13,10 +13,6 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Должностная надбавка
         /// </summary>
-        public virtual bool IsPost { get; set; }
-        /// <summary>
-        /// Персональная надбавка
-        /// </summary>
-        public virtual bool IsPersonnel { get; set; }
+        public virtual bool IsPostOnly { get; set; }
     }
 }
