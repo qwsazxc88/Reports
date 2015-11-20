@@ -6,5 +6,7 @@
     </id>
     <property name="GUID" length="40" not-null="false"/>
     <property name="Name" length="100" not-null="false"/>
+    <property name="IsPost" length="100" not-null="false"/>
+    <property name="IsPersonnel" length="100" not-null="false"/>
   </class>
 </hibernate-mapping>
