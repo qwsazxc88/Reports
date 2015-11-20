@@ -195,7 +195,8 @@ namespace Reports.Presenters.Services.Impl
                 UserRole.ConsultantOutsourcing | 
                 UserRole.ConsultantPersonnel |
                 UserRole.TaxCollector |
-                UserRole.SoftAdmin)) > 0;
+                UserRole.SoftAdmin |
+                UserRole.StaffListOrder)) > 0;
         }
     }
 }
