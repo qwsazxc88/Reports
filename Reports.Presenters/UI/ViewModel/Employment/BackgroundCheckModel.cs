@@ -136,6 +136,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsPrintButtonAvailable { get; set; }
         public bool IsDeleteScanButtonAvailable { get; set; }
 
+        public bool IsVolga { get; set; }   //признак принадлежности кандидата к экспресс-волге
+
         //личный листок по учету кадров
         public HttpPostedFileBase EmploymentFile { get; set; }
         public string EmploymentFileName { get; set; }
