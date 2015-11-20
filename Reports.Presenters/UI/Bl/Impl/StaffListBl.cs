@@ -295,6 +295,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { staffrequestPyrusTasksDao = value; }
         }
 
+        protected IStaffEstablishedPostUserLinksDao staffestablishedPostUserLinksDao;
+        public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
+        {
+            get { return Validate.Dependency(staffestablishedPostUserLinksDao); }
+            set { staffestablishedPostUserLinksDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -2438,7 +2445,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
                 model.BeginAccountDate = entity.BeginAccountDate;
 
-                int UsersCount = StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0).Count;
+                int UsersCount = StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0);
                 model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
 
                 //кнопки
@@ -2567,10 +2574,21 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     if (!IsEnabled)
                     {
-                        error = "Нельзя создать штатную единицу, так как данное подразделение не стоит на налоговом учете!";
+                        error = "Нельзя создать/изменить/сократить штатную единицу, так как данное подразделение не стоит на налоговом учете!";
                         return false;
                     }
-                    
+
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
+                        return false;
+                    }
+
+                    if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников больше, чем указанное количество в заявке!";
+                        return false;
+                    }
                 }
             }
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -2724,12 +2742,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 sep.Position = entity.Position;
                 sep.Department = entity.Department;
-                sep.Quantity = entity.Quantity;
+                sep.Quantity = 0;// entity.Quantity;
                 sep.Salary = entity.Salary;
                 sep.IsUsed = true;
                 sep.BeginAccountDate = entity.BeginAccountDate;
                 sep.Creator = curUser;
                 sep.CreateDate = DateTime.Now;
+            }
+
+            //изменилось количество изменяем количество связей
+            if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
+            {
+                return false;
             }
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
@@ -2738,7 +2762,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.RequestType.Id == 2)
                 {
                     sep.Position = entity.Position;
-                    sep.Quantity = entity.Quantity;
+                    //пока решили не менять количество в заявках наизменение
+                    //sep.Quantity = entity.Quantity;
                     sep.Salary = entity.Salary;
                 }
                 else if (entity.RequestType.Id == 3)
@@ -2786,6 +2811,60 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
 
+            return true;
+        }
+        /// <summary>
+        /// Меняем количество связей татной единицы с сотрудниками.
+        /// </summary>
+        /// <param name="entity">Заявка</param>
+        /// <param name="sep">Штатная единица</param>
+        /// <param name="curUser">Текущий пользователь</param>
+        /// <param name="error">Для сообщений</param>
+        /// <returns></returns>
+        protected bool SaveStaffEstablishedPostChangeLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
+        {
+            error = string.Empty;
+            int CountLinks = 0;
+            //если количество штатных единиц увеличилось, то нужно добавить необходимое количество записей для связей
+            if (entity.Quantity > sep.Quantity)
+            {
+                CountLinks = entity.Quantity - sep.Quantity;
+
+                if(sep.EstablishedPostUserLinks == null)
+                    sep.EstablishedPostUserLinks = new List<StaffEstablishedPostUserLinks>();
+
+                for (int i = 0; i < CountLinks; i++)
+                {
+                    sep.EstablishedPostUserLinks.Add(new StaffEstablishedPostUserLinks()
+                    {
+                        StaffEstablishedPost = sep,
+                        User = null,
+                        IsUsed = true,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+            }
+
+            ////если количество штатных единиц уменьшилось
+            //if (entity.Quantity < sep.Quantity)
+            //пока решили, что в заявках на изменение количество не меняется
+            if (entity.RequestType.Id == 3)
+            {
+                //CountLinks = sep.Quantity - entity.Quantity;
+
+                foreach (var item in sep.EstablishedPostUserLinks
+                    .Where(x => x.IsUsed))
+                {
+                    if (CountLinks == 0) break;
+
+                    item.IsUsed = false;
+                    item.Editor = curUser;
+                    item.EditDate = DateTime.Now;
+
+                    //CountLinks -= 1;
+                }
+            }
             return true;
         }
         /// <summary>

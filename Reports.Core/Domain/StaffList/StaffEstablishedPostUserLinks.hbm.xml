@@ -14,5 +14,10 @@
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentAdministration_EditorUser" index="StaffDepartmentAdministration_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
 
+    <bag name="StaffPostReplacements" lazy="true" cascade="all-delete-orphan">
+      <key column="UserLinkId" foreign-key="FK_StaffPostReplacement_StaffEstablishedPostUserLinks"/>
+      <one-to-many class="StaffPostReplacement"/>
+    </bag>
+    
   </class>
 </hibernate-mapping>
