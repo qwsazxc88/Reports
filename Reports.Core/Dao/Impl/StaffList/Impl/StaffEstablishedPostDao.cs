@@ -53,7 +53,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, IsPregnant, IsVacation, IsSTD
+            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, DocId, IsReserve, IsPregnant, IsVacation, IsSTD
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -70,6 +70,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Rate", NHibernateUtil.Decimal)
                 .AddScalar("ReplacedId", NHibernateUtil.Int32)
                 .AddScalar("ReplacedName", NHibernateUtil.String)
+                .AddScalar("ReserveType", NHibernateUtil.Int32)
+                .AddScalar("DocId", NHibernateUtil.Int32)
+                .AddScalar("IsReserve", NHibernateUtil.Boolean)
                 .AddScalar("IsPregnant", NHibernateUtil.Boolean)
                 .AddScalar("IsVacation", NHibernateUtil.Boolean)
                 .AddScalar("IsSTD", NHibernateUtil.Boolean)

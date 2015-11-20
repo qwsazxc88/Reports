@@ -6,12 +6,15 @@ go
 
 --1. УДАЛЕНИЕ ССЫЛОК
 --так как многократно приходится пересоздавать структуру, удаляю связи для других таблиц 
-IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPostRequest', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPostRequest]
+IF OBJECT_ID ('FK_StaffMovements_SourceUserLink', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_SourceUserLink]
 GO
-IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPost', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPost]
+IF OBJECT_ID ('FK_StaffMovements_TargetUserLink', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_TargetUserLink]
 GO
+
+UPDATE StaffMovements SET SourceStaffEstablishedPostRequest = null, TargetStaffEstablishedPostRequest = null
+
 
 
 --для таблицы пользоателей
@@ -1436,6 +1439,8 @@ CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
 	[SEPId] [int] NULL,
 	[UserId] [int] NULL,
 	[IsUsed] [bit] NULL,
+	[ReserveType] [int] NULL,
+	[DocId] [int] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -2426,6 +2431,21 @@ GO
 ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_StaffEstablishedPost]
 GO
 
+--ссылки для штатной расстановки
+ALTER TABLE [dbo].[StaffMovements]  WITH CHECK ADD  CONSTRAINT [FK_StaffMovements_SourceUserLink] FOREIGN KEY([SourceStaffEstablishedPostRequest])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffMovements] CHECK CONSTRAINT [FK_StaffMovements_SourceUserLink]
+GO
+
+ALTER TABLE [dbo].[StaffMovements]  WITH CHECK ADD  CONSTRAINT [FK_StaffMovements_TargetUserLink] FOREIGN KEY([TargetStaffEstablishedPostRequest])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffMovements] CHECK CONSTRAINT [FK_StaffMovements_TargetUserLink]
+GO
+
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'Id'
@@ -2441,6 +2461,12 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип бронирования вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'ReserveType'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа/заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DocId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
@@ -4398,7 +4424,7 @@ DECLARE
 		INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
 		--пока цепляемся отпускам по уходу за ребенком
 		LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
-		WHERE A.UserLinkId = @LinkId
+		WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
 	ELSE	--определяем сотрудника, который ушел в отпуск по уходу за ребенком, но должность его свободна
 		SELECT @ReplacedName = A.Name + N' - (' + convert(nvarchar, B.BeginDate, 103) + N' - ' + convert(nvarchar, B.EndDate, 103) + N')'
 		FROM Users as A 
@@ -4446,6 +4472,9 @@ RETURNS
 	,Surname nvarchar(250)
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
+	,ReserveType int
+	,DocId int
+	,IsReserve bit	--признак бронирования вакансии
 	,IsPregnant bit
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
@@ -4458,8 +4487,12 @@ BEGIN
 				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
 				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
 				 case when E.IsPregnant = 1 then null else E.Name end as Surname, 
-				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId, 
-				 case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName, E.IsPregnant
+				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
+				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
+				 ,F.ReserveType
+				 ,F.DocId
+				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
@@ -4483,6 +4516,8 @@ BEGIN
 END
 
 GO
+
+
 
 
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Связи штатных единиц с сотрудниками.
+    /// Связи штатных единиц с сотрудниками (штатная расстановка)
     /// </summary>
     public class StaffEstablishedPostUserLinks : AbstractEntityWithVersion
     {
@@ -21,6 +21,14 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual bool IsUsed { get; set; }
         /// <summary>
+        /// Тип бронирования вакансии (StaffReserveTypeEnum).
+        /// </summary>
+        public virtual int ReserveType { get; set; }
+        /// <summary>
+        /// Id документа/заявки
+        /// </summary>
+        public virtual int DocId { get; set; }
+        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }
@@ -36,5 +44,9 @@ namespace Reports.Core.Domain
         /// Дата последнего редактирования
         /// </summary>
         public virtual DateTime? EditDate { get; set; }
+        /// <summary>
+        /// Замещения.
+        /// </summary>
+        public virtual IList<StaffPostReplacement> StaffPostReplacements { get; set; }
     }
 }
