@@ -2339,13 +2339,15 @@ namespace WebMvc.Controllers
 
             if (!model.IsBGDraft)
             {
-                BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
-                if (model.EmploymentFile == null && string.IsNullOrEmpty(mt.EmploymentFileName))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("IsValidate", "Не выбран файл скана анкеты для загрузки!");
-                    ModelState.AddModelError("EmploymentFile", "Не выбран файл скана анкеты для загрузки!");
+                    BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                    if (model.EmploymentFile == null && string.IsNullOrEmpty(mt.EmploymentFileName))
+                    {
+                        ModelState.AddModelError("IsValidate", "Не выбран файл скана анкеты для загрузки!");
+                        ModelState.AddModelError("EmploymentFile", "Не выбран файл скана анкеты для загрузки!");
+                    }
                 }
-
                 //if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))
                 //{
                 //    ModelState.AddModelError("PersonalDataProcessingScanFile", "Не выбран файл скана для загрузки!");
