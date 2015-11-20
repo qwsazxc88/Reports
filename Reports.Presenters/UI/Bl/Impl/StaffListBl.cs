@@ -320,19 +320,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = DepartmentDao.GetByCode(DepId);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
-            
+            bool SalaryEnabel = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false :  true;
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
             }
 
             return model;
