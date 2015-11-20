@@ -29,7 +29,7 @@ namespace Reports.Core.Dao.Impl
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
                                                     LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId
-                                                    WHERE A.IsPost = 1")
+                                                    WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)
@@ -53,7 +53,7 @@ namespace Reports.Core.Dao.Impl
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
                                                     LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id
-                                                    WHERE A.IsPost = 1")
+                                                    WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)

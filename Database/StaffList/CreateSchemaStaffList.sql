@@ -618,8 +618,7 @@ CREATE TABLE [dbo].[StaffExtraCharges](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[GUID] [nvarchar](40) NULL,
 	[Name] [nvarchar](100) NULL,
-	[IsPost] [bit] NULL,
-	[IsPersonnel] [bit] NULL,
+	[IsPostOnly] [bit] NULL,
  CONSTRAINT [PK_StaffExtraCharges] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -3554,10 +3553,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Должностная надбавка' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'IsPost'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Персональная надбавка' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'IsPersonnel'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Должностная надбавка' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'IsPostOnly'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник надбавок' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges'
@@ -4118,14 +4114,14 @@ INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'только касса пересче
 
 
 --StaffExtraCharges
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'4f4a4697-cc10-11dd-87ea-00304861d218', N'Надбавка за выслугу лет рабочим и служащим#1114', 0, 1)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'4f4a4696-cc10-11dd-87ea-00304861d218', N'Надбавка за квалификацию#1115', 0, 1)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'd9cd6dfe-b4b0-11de-b733-003048359abd', N'Надбавка за разъездной характер работы#1116', 1, 1)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'784efe28-3634-11dd-b8e4-00304861d218', N'Надбавка Персональная#1117', 0, 1)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123', 1, 0)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1, 0)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302', 1, 0)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPost, IsPersonnel) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302', 1, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'4f4a4697-cc10-11dd-87ea-00304861d218', N'Надбавка за выслугу лет рабочим и служащим#1114', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'4f4a4696-cc10-11dd-87ea-00304861d218', N'Надбавка за квалификацию#1115', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'd9cd6dfe-b4b0-11de-b733-003048359abd', N'Надбавка за разъездной характер работы#1116', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'784efe28-3634-11dd-b8e4-00304861d218', N'Надбавка Персональная#1117', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302', 1)
 
 
 --StaffLandmarkTypes
