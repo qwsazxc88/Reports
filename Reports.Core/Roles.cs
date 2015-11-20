@@ -92,9 +92,9 @@ namespace Reports.Core
          /// </summary>
         SoftAdmin = 524288,
          /// <summary>
-         /// Консультант ОК
+         /// Ответственный за приказы штатного расписания
          /// </summary>
-        //ConsultantOutsorsingManager = 1048576,
+        StaffListOrder = 1048576,
          /// <summary>
          /// Уволеный сотрудник
          /// </summary>
