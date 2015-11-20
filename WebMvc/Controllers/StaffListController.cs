@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.SoftAdmin | UserRole.StaffListOrder)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
             ModelState.Clear();
