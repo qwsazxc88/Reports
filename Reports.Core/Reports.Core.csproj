@@ -852,6 +852,7 @@
     <Compile Include="Enum\StaffMovementsDocsTypes.cs" />
     <Compile Include="Enum\StaffMovementsRejectReasonEnum.cs" />
     <Compile Include="Enum\StaffMovementsStatus.cs" />
+    <Compile Include="Enum\StaffReserveTypeEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />
