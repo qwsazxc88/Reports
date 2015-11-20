@@ -15,10 +15,10 @@ AS
 BEGIN
 DECLARE 
 	@ReplacedName nvarchar(500)
-
 	--определяем кого замещает сотрудник
 	IF @ReplacedId is null	
-		SELECT @ReplacedName = B.Name + N' - (' + convert(nvarchar, C.BeginDate, 103) + N' - ' + convert(nvarchar, C.EndDate, 103) + ')'
+		SELECT @ReplacedName = case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
+														B.Name + N' - (' + convert(nvarchar, C.BeginDate, 103) + N' - ' + convert(nvarchar, C.EndDate, 103) + ')'
 		FROM StaffPostReplacement as A
 		INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
 		--пока цепляемся отпускам по уходу за ребенком
