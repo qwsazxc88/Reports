@@ -5,6 +5,6 @@ xcopy /e /s /y C:\inetpub\wwwroot\DocAppNew "C:\Users\baranov\Documents\Visual S
 set now=%DATE: =0% %TIME: =0%
 @echo %now% >"C:\Users\baranov\Documents\Visual Studio 2010\Projects\test\Content\lastpublish.txt"
 cd "C:\Users\baranov\Documents\Visual Studio 2010\Projects\test\"
-for /d %%B in (*) do ( xcopy /e /s /y %%B "C:\inetpub\wwwroot\DocApp_New\%%B\" )
+for /d %%B in (*) do ( xcopy /e /s /y %%B "C:\inetpub\wwwroot\DocAppNew\%%B\" )
 cd "C:\Users\baranov\Desktop\WebApp_GitRepo"
 
