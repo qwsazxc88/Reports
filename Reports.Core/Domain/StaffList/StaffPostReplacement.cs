@@ -4,18 +4,22 @@ using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Связи штатных единиц с сотрудниками (штатная расстановка)
+    /// Журнал замещения сотрудников
     /// </summary>
-    public class StaffEstablishedPostUserLinks : AbstractEntityWithVersion
+    public class StaffPostReplacement : AbstractEntity
     {
         /// <summary>
-        /// Штатная единица.
+        /// Штатная расстановка.
         /// </summary>
-        public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
+        public virtual StaffEstablishedPostUserLinks EstablishedPostUserLinks { get; set; }
         /// <summary>
-        /// Сотрудник занимающий штатную единицу.
+        /// Сотрудник занимающий должность.
         /// </summary>
         public virtual User User { get; set; }
+        /// <summary>
+        /// Замещенный сотрудник.
+        /// </summary>
+        public virtual User ReplacedUser { get; set; }
         /// <summary>
         /// Признак использования данной связи.
         /// </summary>
@@ -36,9 +40,5 @@ namespace Reports.Core.Domain
         /// Дата последнего редактирования
         /// </summary>
         public virtual DateTime? EditDate { get; set; }
-        /// <summary>
-        /// Замещения.
-        /// </summary>
-        public virtual IList<StaffPostReplacement> StaffPostReplacements { get; set; }
     }
 }

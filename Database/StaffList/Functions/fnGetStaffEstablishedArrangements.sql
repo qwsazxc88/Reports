@@ -24,6 +24,9 @@ RETURNS
 	,Surname nvarchar(250)
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
+	,ReserveType int
+	,DocId int
+	,IsReserve bit	--признак бронирования вакансии
 	,IsPregnant bit
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
@@ -36,8 +39,12 @@ BEGIN
 				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
 				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
 				 case when E.IsPregnant = 1 then null else E.Name end as Surname, 
-				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId, 
-				 case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName, E.IsPregnant
+				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
+				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
+				 ,F.ReserveType
+				 ,F.DocId
+				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
