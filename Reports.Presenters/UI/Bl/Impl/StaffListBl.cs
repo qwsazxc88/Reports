@@ -2158,7 +2158,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
-            model.IsSecretary = (AuthenticationService.CurrentUser.UserRole == UserRole.Secretary);
+            model.IsOrder = (AuthenticationService.CurrentUser.UserRole == UserRole.StaffListOrder);
             model.IsSoftAdmin = (AuthenticationService.CurrentUser.UserRole == UserRole.SoftAdmin);
 
             //разбираемся с состоянием птиц
@@ -2264,7 +2264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                     {
                         model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
-                        model.IsSecretaryApproveAvailable = model.IsSecretary || model.IsConsultant ? true : false;
+                        model.IsOrderApproveAvailable = model.IsOrder || model.IsConsultant ? true : false;
 
                         switch (item.Number)
                         {
@@ -2274,6 +2274,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
                                 //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
                                 model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                break;
+                            case 7://налоговик
+                                model.IsOrderApprove = true;
+                                model.IsOrderApproveAvailable = false;
+                                model.OrderApproveName = "Приказы составлены " + item.CreateDate.Value.ToShortDateString() + " " + "Ответственный за составление приказов: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
                                 break;
                         }
                     }
