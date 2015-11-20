@@ -21,6 +21,14 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual bool IsUsed { get; set; }
         /// <summary>
+        /// Тип бронирования вакансии (StaffReserveTypeEnum).
+        /// </summary>
+        public virtual int ReserveType { get; set; }
+        /// <summary>
+        /// Id документа/заявки
+        /// </summary>
+        public virtual int DocId { get; set; }
+        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }
