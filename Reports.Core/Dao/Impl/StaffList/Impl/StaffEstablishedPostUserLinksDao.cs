@@ -7,7 +7,7 @@ using Reports.Core.Services;
 namespace Reports.Core.Dao.Impl
 {
     /// <summary>
-    /// Связи штатных единиц с сотрудниками.
+    /// Связи штатных единиц с сотрудниками (штатная расстановка)
     /// </summary>
     public class StaffEstablishedPostUserLinksDao : DefaultDao<StaffEstablishedPostUserLinks>, IStaffEstablishedPostUserLinksDao
     {

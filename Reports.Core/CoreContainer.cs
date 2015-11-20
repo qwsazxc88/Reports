@@ -779,6 +779,9 @@ namespace Reports.Core
             Register(Component.For<IStaffEstablishedPostUserLinksDao>()
                 .ImplementedBy<StaffEstablishedPostUserLinksDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffPostReplacementDao>()
+                .ImplementedBy<StaffPostReplacementDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             
