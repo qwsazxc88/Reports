@@ -340,6 +340,10 @@
             $("#isExternalWorkContainer").hide();
         });
 
+        if($("#IsSecondaryJobTrue").val() == "True")
+            $("#IsSecondaryJobTrue").click();
+        
+
         //подкрашиваем вид совместительства
         $("#IsExternalWorkTrue").click(function(){
             $("#lblEWTrue").css("border-color", "red");
