@@ -5578,6 +5578,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.WorkCity = viewModel.WorkCity;
                         entity.MentorName = viewModel.MentorName;
+                        entity.IsSecondaryJob = viewModel.IsSecondaryJob;
+                        entity.IsExternalPTWorker = viewModel.IsExternalPTWorker;
+
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
                             entity.RegistrationDate = viewModel.RegistrationDate;
