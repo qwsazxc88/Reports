@@ -3196,7 +3196,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Department = department,
                 GivesCredit = false,
                 IsMainManager = false,
-                IsFixedTermContract = model.IsFixedTermContract
+                IsFixedTermContract = model.IsFixedTermContract,
+                Cnilc = model.SNILS
             };
 
             EmploymentCandidate candidate = new EmploymentCandidate
@@ -3222,7 +3223,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 AgreedToPersonalDataProcessing = false,
                 Candidate = candidate,
                 IsPatronymicAbsent = false,
-                IsFinal = false
+                IsFinal = false,
+                SNILS = model.SNILS
             };
             candidate.Passport = new Passport
             {
