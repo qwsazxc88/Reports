@@ -3196,7 +3196,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Department = department,
                 GivesCredit = false,
                 IsMainManager = false,
-                IsFixedTermContract = model.IsFixedTermContract
+                IsFixedTermContract = model.IsFixedTermContract,
+                Cnilc = model.SNILS
             };
 
             EmploymentCandidate candidate = new EmploymentCandidate
@@ -3222,7 +3223,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 AgreedToPersonalDataProcessing = false,
                 Candidate = candidate,
                 IsPatronymicAbsent = false,
-                IsFinal = false
+                IsFinal = false,
+                SNILS = model.SNILS
             };
             candidate.Passport = new Passport
             {
@@ -5244,6 +5246,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                                 }
+                                else
+                                    entity.Candidate.Status = 0;
                             }
                             else
                                 entity.Candidate.Status = 0;
@@ -5578,6 +5582,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.WorkCity = viewModel.WorkCity;
                         entity.MentorName = viewModel.MentorName;
+                        entity.IsSecondaryJob = viewModel.IsSecondaryJob;
+                        entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker; 
+
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
                             entity.RegistrationDate = viewModel.RegistrationDate;
