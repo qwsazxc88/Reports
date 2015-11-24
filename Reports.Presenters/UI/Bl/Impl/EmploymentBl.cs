@@ -5246,6 +5246,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
                                 }
+                                else
+                                    entity.Candidate.Status = 0;
                             }
                             else
                                 entity.Candidate.Status = 0;
@@ -5581,7 +5583,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.WorkCity = viewModel.WorkCity;
                         entity.MentorName = viewModel.MentorName;
                         entity.IsSecondaryJob = viewModel.IsSecondaryJob;
-                        entity.IsExternalPTWorker = viewModel.IsExternalPTWorker;
+                        entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker; 
 
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
