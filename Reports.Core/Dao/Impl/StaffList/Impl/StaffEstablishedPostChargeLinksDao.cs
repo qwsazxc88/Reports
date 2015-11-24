@@ -28,7 +28,8 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, B.AmountProc
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
-                                                    LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId")
+                                                    LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId
+                                                    WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)
@@ -51,7 +52,8 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, B.AmountProc
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
-                                                    LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id")
+                                                    LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id
+                                                    WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)
