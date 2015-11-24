@@ -2,7 +2,7 @@
 --берем из приема кандидатов, которых предварительно согласовали ДБ, но не согласовали вторично
 --и доводим анкету до стадии, когда требуется второе согласование ДБ согласование
 
-
+BEGIN TRANSACTION
 --разбираем адрес
 SELECT A.[Адрес прописки], A.СНИЛС
 			 ,substring(A.[Адрес прописки], 1, 6) as zipcode
@@ -105,11 +105,11 @@ SELECT
 			,D.District --район (при наличии)
 			,isnull(D.City, D.City1) as City--город/населенный пункт
 			,case when substring(A.[Адрес прописки], 1, 6) = '307715' then null else isnull(D.Street, D.Street1) end as Street--улица
-			,case when D.StreetNumber not like 'д.%' then null 
+			,replace(REPLACE(case when D.StreetNumber not like 'д.%' then null 
 						else (case when D.StreetNumber like '%корп.%' then substring(D.StreetNumber, 1, charindex('корп.', D.StreetNumber) - 1)  else D.StreetNumber end)
-						end as StreetNumber--дом
-			,D.Building	--корпус
-			,D.Apartment	--квартира
+						end, 'д.', '' ), ',', '') as StreetNumber--дом
+			,replace(replace(D.Building, 'корп.', ''), ',', '') as Building	--корпус
+			,replace(D.Apartment, 'кв.', '') as Apartment	--квартира
 			--воинский учет
 			,A.[Серия в/б] + ' ' + A.[Номер в/б] as MilitaryCardNumber--номер в/б (серия+номер)
 			,A.[Дата выдачи в/б] as MilitaryCardDate--дата выдачи
@@ -141,8 +141,8 @@ LEFT JOIN MilitaryRanks as E ON E.Name = A.[Воинское звание]
 	--кадры
 		--стаж на дату приема
 
-select * from #Anketa
-
+--select * from #Anketa
+/*
 select c.Status, c.ID, b.ID as UserId, B.Cnilc
 INTO #candidate
 from ExpressVolga as a
@@ -151,12 +151,22 @@ inner join EmploymentCandidate as c on c.UserId = b.Id
 inner join GeneralInfo as d on d.CandidateId = c.Id
 inner join BackgroundCheck as E on e.CandidateId = C.id
 WHERE E.PrevApproverId is not null and E.PrevApprovalStatus = 1 and E.ApproverId is null --and C.Status = 0
+*/
+SELECT D.Status, D.Id, A.Id as UserId, A.Cnilc
+INTO #candidate
+FROM Users as A
+INNER JOIN Department as B ON B.Id = A.DepartmentId
+INNER JOIN (SELECT * FROM Department WHERE Id = 11923) as C ON B.Path like C.Path + N'%'
+INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id
+INNER JOIN BackgroundCheck as E ON E.CandidateId = D.Id and E.PrevApproverId is not null and E.PrevApprovalStatus = 1 and E.ApproverId is null
+INNER JOIN ExpressVolga as F ON F.снилс = A.Cnilc
+WHERE a.RoleId & 16384 > 0 and A.IsActive = 1
 
 --select * from #candidate
 
 --общая информация
 
-UPDATE GeneralInfo set FirstName = C.LastName	--фамилия
+UPDATE GeneralInfo set LastName = C.LastName	--фамилия
 											 ,FirstName = C.FirstName	--имя
 											 ,Patronymic = C.Patronymic --отчество
 											 ,IsMale = C.IsMale --пол
@@ -262,6 +272,23 @@ INNER JOIN EmploymentCandidate as B ON B.Id = A.Id
 INNER JOIN #Anketa as C ON C.СНИЛС = A.Cnilc
 
 
+
+SELECT D.Status, D.Id, A.Id as UserId, A.Cnilc
+--INTO #candidate
+FROM Users as A
+INNER JOIN Department as B ON B.Id = A.DepartmentId
+INNER JOIN (SELECT * FROM Department WHERE Id = 11923) as C ON B.Path like C.Path + N'%'
+INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id 
+INNER JOIN BackgroundCheck as E ON E.CandidateId = D.Id and E.PrevApproverId is not null and E.PrevApprovalStatus = 1 and E.ApproverId is null
+INNER JOIN ExpressVolga as F ON F.снилс = A.Cnilc
+WHERE a.RoleId & 16384 > 0 and A.IsActive = 1
+
+--ROLLBACK TRANSACTION
+--COMMIT TRANSACTION
+
+
+/*
 drop table #Adress
 drop table #candidate
 drop table #Anketa
+*/
