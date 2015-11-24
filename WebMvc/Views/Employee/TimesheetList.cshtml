@@ -52,6 +52,7 @@
                   <input type="submit" value="Применить"/>
                    @* <input type="button" value="Применить" onclick="OnPageClick(0);"/>*@
                     <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                    <input type="button" value="Выгрузить в Excel" onclick="GetExcelList();"/>
                   </td>
                 </tr>
          </table>
@@ -227,6 +228,16 @@
            return value.replace('.', ',');
 
     }
-
+    function GetExcelList()
+    {
+        var currentform=document.forms[0];
+        var oldaction=currentform.action;
+        var oldtarget=currentform.target;
+        currentform.action="/Employee/TimesheetListExcel";
+        currentform.target='_blank';
+        currentform.submit();
+        currentform.target=oldtarget;
+        currentform.action=oldaction;
+    }
 </script>                          
 
