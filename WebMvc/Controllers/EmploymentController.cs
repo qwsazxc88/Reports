@@ -2339,13 +2339,15 @@ namespace WebMvc.Controllers
 
             if (!model.IsBGDraft)
             {
-                BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
-                if (model.EmploymentFile == null && string.IsNullOrEmpty(mt.EmploymentFileName))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("IsValidate", "Не выбран файл скана анкеты для загрузки!");
-                    ModelState.AddModelError("EmploymentFile", "Не выбран файл скана анкеты для загрузки!");
+                    BackgroundCheckModel mt = EmploymentBl.GetBackgroundCheckModel(model.UserId);
+                    if (model.EmploymentFile == null && string.IsNullOrEmpty(mt.EmploymentFileName))
+                    {
+                        ModelState.AddModelError("IsValidate", "Не выбран файл скана анкеты для загрузки!");
+                        ModelState.AddModelError("EmploymentFile", "Не выбран файл скана анкеты для загрузки!");
+                    }
                 }
-
                 //if (model.PersonalDataProcessingScanFile == null && string.IsNullOrEmpty(mt.PersonalDataProcessingScanAttachmentFilename))
                 //{
                 //    ModelState.AddModelError("PersonalDataProcessingScanFile", "Не выбран файл скана для загрузки!");
@@ -2640,9 +2642,12 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("InternalPassportScanFile", "Не выбран файл скана документа для загрузки!");
                 }
 
-                if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                if (!model.IsVolga)
                 {
-                    ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    if (model.HigherEducationDiplomaScanFile == null && string.IsNullOrEmpty(mt.HigherEducationDiplomaScanFileName))
+                    {
+                        ModelState.AddModelError("HigherEducationDiplomaScanFile", "Не выбран файл скана документа об образовании для загрузки!");
+                    }
                 }
 
                 if (!model.IsVolga)

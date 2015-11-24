@@ -9,6 +9,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class BackgroundCheckModel : AbstractEmploymentModel
     {
+        //флажок для сотрудников Экспресс-Волги
+        public bool IsVolga { get; set; }
+
         [Display(Name = "Размер Вашей среднемесячной заработной платы по последнему месту работы")]
         public decimal? AverageSalary { get; set; } //ok
 
