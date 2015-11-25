@@ -99,6 +99,18 @@ namespace Reports.Core
 
         public virtual void AddComponents()
         {
+            Register(Component.For<IDocumentMovementsDao>().
+                    ImplementedBy<DocumentMovementsDao>().
+                    LifeStyle.Is(type));
+            Register(Component.For<IDocumentMovements_SelectedDocsDao>().
+                    ImplementedBy<DocumentMovements_SelectedDocsDao>().
+                    LifeStyle.Is(type));
+            Register(Component.For<IDocumentMovements_DocTypesDao>().
+                    ImplementedBy<DocumentMovements_DocTypesDao>().
+                    LifeStyle.Is(type));
+            Register(Component.For<IDocumentMovementsRoleRecordsDao>().
+                    ImplementedBy<DocumentMovementsRoleRecordsDao>().
+                    LifeStyle.Is(type));
             Register(Component.For(typeof(IMailConfirmDao)).
                      ImplementedBy(typeof(MailConfirmDao)).
                      LifeStyle.Is(type));
