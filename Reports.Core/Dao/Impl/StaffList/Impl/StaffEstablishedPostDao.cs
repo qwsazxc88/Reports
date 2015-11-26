@@ -22,11 +22,12 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Список штатных единиц к подразделению.
         /// </summary>
-        /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="IsSalaryEnable">Признак показа окладов.</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, C.Path, D.Id as RequestId
+            string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, " + (!IsSalaryEnable ? "0 as Salary" : "A.Salary") + @", C.Path, D.Id as RequestId
                                        FROM StaffEstablishedPost as A
                                        INNER JOIN Position as B ON B.Id = A.PositionId
                                        INNER JOIN Department as C ON C.Id = A.DepartmentId
