@@ -306,11 +306,13 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffRequestPyrusTasksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffUnitReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentAccessoryDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffRequestPyrusTasksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffUnitReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsRejectReasonDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsStatusDao.cs" />
@@ -518,6 +520,7 @@
     <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
     <Compile Include="Domain\StaffList\StaffPostReplacement.cs" />
     <Compile Include="Domain\StaffList\StaffRequestPyrusTasks.cs" />
+    <Compile Include="Domain\StaffList\StaffUnitReference.cs" />
     <Compile Include="Domain\StaffList\StaffWorkingConditions.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
     <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsRejectReasonDao.cs" />
@@ -1411,6 +1414,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffUnitReference.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffPostReplacement.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostUserLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffRequestPyrusTasks.hbm.xml" />

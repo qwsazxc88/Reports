@@ -348,11 +348,11 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         //не участвует в согласовании, показывем только отметку
         [Display(Name = "Ответственный по приказам")]
-        public bool IsSecretaryApprove { get; set; }   //
-        public bool IsSecretaryApproveAvailable { get; set; }
+        public bool IsOrderApprove { get; set; }   //7
+        public bool IsOrderApproveAvailable { get; set; }
         [Display(Name = "ФИО ответственного по приказам")]
-        public string SecretaryApproveName { get; set; }
-        public bool IsSecretary { get; set; }
+        public string OrderApproveName { get; set; }
+        public bool IsOrder { get; set; }
 
         //не участвует в согласовании, сохраняет тольк коды
         [Display(Name = "Администратор ПО банка")]

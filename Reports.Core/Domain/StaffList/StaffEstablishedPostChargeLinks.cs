@@ -12,7 +12,7 @@ namespace Reports.Core.Domain
         public virtual StaffEstablishedPost EstablishedPost { get; set; }
         public virtual StaffExtraCharges ExtraCharges { get; set; }
         public virtual decimal? Amount { get; set; }
-        public virtual decimal? AmountProc { get; set; }
+        public virtual bool IsUsed { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }

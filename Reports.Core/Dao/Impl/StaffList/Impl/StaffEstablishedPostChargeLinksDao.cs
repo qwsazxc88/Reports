@@ -25,10 +25,11 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForRequests(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, B.AmountProc
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
                                                     LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId
+                                                    LEFT JOIN StaffUnitReference as D ON D.Id = A.UnitId
                                                     WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
@@ -36,7 +37,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SEPRequestId", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
                 .AddScalar("Amount", NHibernateUtil.Decimal)
-                .AddScalar("AmountProc", NHibernateUtil.Decimal)
+                .AddScalar("UnitName", NHibernateUtil.String)
+                .AddScalar("IsUsed", NHibernateUtil.Boolean)
+                .AddScalar("IsNeeded", NHibernateUtil.Boolean)
                 .SetInt32("SEPRequestId", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();
@@ -49,16 +52,21 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForEstablishedPosts(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, B.AmountProc
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
                                                     LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id
+                                                    LEFT JOIN StaffUnitReference as D ON D.Id = A.UnitId
                                                     WHERE A.IsPostOnly = 1")
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("ChargeId", NHibernateUtil.Int32)
                 .AddScalar("ChargeName", NHibernateUtil.String)
                 .AddScalar("SEPRequestId", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
+                .AddScalar("Amount", NHibernateUtil.Decimal)
+                .AddScalar("UnitName", NHibernateUtil.String)
+                .AddScalar("IsUsed", NHibernateUtil.Boolean)
+                .AddScalar("IsNeeded", NHibernateUtil.Boolean)
                 .SetInt32("Id", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();
