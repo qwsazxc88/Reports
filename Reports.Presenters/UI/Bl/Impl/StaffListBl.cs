@@ -2505,7 +2505,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //надбавки
                 entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
-                foreach (var item in model.PostChargeLinks.Where(x => x.Amount != 0 || x.AmountProc != 0))
+                foreach (var item in model.PostChargeLinks.Where(x => x.Amount != 0 || x.IsUsed))
                 {
                     entity.PostChargeLinks.Add(new StaffEstablishedPostChargeLinks
                     {
@@ -2513,7 +2513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EstablishedPost = entity.StaffEstablishedPost,
                         ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId),
                         Amount = item.Amount,
-                        AmountProc = item.AmountProc,
+                        IsUsed = item.IsUsed,
                         Creator = curUser,
                         CreateDate = DateTime.Now
                     });
@@ -2571,7 +2571,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                         if (sdr != null)
                         {
-                            if (sdr.DepNext.DepartmentTaxDetails.Count != 0)
+                            if (sdr.DepNext != null && sdr.DepNext.DepartmentTaxDetails.Count != 0)
                             {
                                 if (!string.IsNullOrEmpty(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
                                     IsEnabled = true;
@@ -2614,11 +2614,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
+            entity.BeginAccountDate = model.BeginAccountDate;
 
             //создаем запись в справочнике штатных единиц.
             if (!model.IsDraft)
             {
-                entity.BeginAccountDate = DateTime.Now;
 
                 int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
                 if (Result == -1) return false;
@@ -2679,32 +2679,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                     StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
 
                     //если была запись и убрали значения, то удаляем
-                    if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                    if ((item.Id != 0 && item.Amount == 0) || (item.Id != 0 && item.IsNeeded && !item.IsUsed))
                     {
                         pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
                         entity.PostChargeLinks.Remove(pcl);
                     }
 
                     //если не было записи и ввели значение, то добавляем
-                    if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    if ((item.Id == 0 && item.Amount != 0) || (item.Id == 0 && item.IsNeeded && item.IsUsed))
                     {
                         pcl.EstablishedPostRequest = entity;
                         pcl.EstablishedPost = entity.StaffEstablishedPost;
                         pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
                         pcl.Amount = item.Amount;
-                        pcl.AmountProc = item.AmountProc;
+                        pcl.IsUsed = item.IsUsed;
                         pcl.Creator = curUser;
                         pcl.CreateDate = DateTime.Now;
 
                         entity.PostChargeLinks.Add(pcl);
                     }
 
-                    //запись была и есть код, то предпологаем, что это редактирование
-                    if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    //запись была и есть код, то предпологаем, что это редактирование (только для надбавок с значением)
+                    if (item.Id != 0 && item.Amount != 0)
                     {
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
-                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                     }
@@ -2762,6 +2761,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return false;
             }
+            else
+                sep.Quantity = entity.Quantity;
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
             if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)

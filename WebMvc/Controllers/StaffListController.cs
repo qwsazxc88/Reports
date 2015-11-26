@@ -241,7 +241,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequestList()
         {
             StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
@@ -254,7 +254,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
@@ -276,7 +276,7 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
             ModelState.Clear();
@@ -298,7 +298,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ViewBag.Title = model.RequestTypeId == 1 ? "Заявка на создание ШЕ" : (model.RequestTypeId == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
@@ -1131,19 +1131,6 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("Quantity", "Укажите количество!");
             if (model.Salary <= 0)
                 ModelState.AddModelError("Salary", "Укажите оклад!");
-            if (model.PostChargeLinks.Where(x => x.Amount != 0 && x.AmountProc != 0).Count() != 0)
-            {
-                ModelState.AddModelError("MessageStr", "Надбавка должна указываться только в одной единице измерения!");
-
-                for (int i = 0; i < model.PostChargeLinks.Count; i++)
-                {
-                    if (model.PostChargeLinks[i].Amount != 0 && model.PostChargeLinks[i].AmountProc != 0)
-                    {
-                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].Amount", "*");
-                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].AmountProc", "*");
-                    }
-                }
-            }
 
             return ModelState.IsValid;
         }
