@@ -39,6 +39,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { documentMovementsRoleRecordsDao = value; }
         }
         #endregion
+        public DocumentMovementsEditModel GetCreateWithoutSendModel()
+        {
+            var model = new DocumentMovementsEditModel();
+            var doctypes = documentMovements_DocTypesDao.LoadAll();
+            model.SelectedDocs = new List<DocumentMovementsSelectedDocsDto>();
+            model.RuscountUsers = DocumentMovementsRoleRecordsDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            foreach (var doctype in doctypes)
+            {
+                model.SelectedDocs.Add(new DocumentMovementsSelectedDocsDto { Type = doctype.Id, TypeName = doctype.Name });
+            }
+            return model;
+        }
+        public int SaveCreateWithoutSendModel(DocumentMovementsEditModel model)
+        {
+            DocumentMovements entity = new DocumentMovements();
+            entity.SendDate = DateTime.Now;
+            entity.ReceiverCheckDate = DateTime.Now;
+            entity.CreateDate = DateTime.Now;
+            entity.Direction = 2;
+            entity.StatusId = 3;
+            entity.Receiver = UserDao.Load(10);
+            entity.ReceiverRuscount = DocumentMovementsRoleRecordsDao.Load(model.SenderRuscount);
+            entity.Sender = UserDao.Load(model.User.Id);
+            entity.Descript = model.Descript;
+            entity.User = entity.Sender;
+            entity.Docs = new List<DocumentMovements_SelectedDocs>();
+            var newdocs = model.SelectedDocs.Where(x => x.RecieverCheck).ToList();
+            foreach (var newdoc in newdocs)
+                entity.Docs.Add(new DocumentMovements_SelectedDocs { DocType = DocumentMovements_DocTypesDao.Load(newdoc.Type), Movement = entity, RecieverCheck= true, SenderCheck = true, RecieverCheckDate=DateTime.Now, SenderCheckDate = DateTime.Now });
+            DocumentMovementsDao.SaveAndFlush(entity);
+            return entity.Id;
+        }
         public GridDefinition GetDocuments(ViewModel.DocumentMovementsListModel model)
         {            
             User user = UserDao.Load(CurrentUser.Id);            
