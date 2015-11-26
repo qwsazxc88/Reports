@@ -7,6 +7,7 @@ using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Core.Dao;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -266,6 +267,41 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { departmentarchiveDao = value; }
         }
 
+        protected IStaffWorkingConditionsDao staffworkingConditionsDao;
+        public IStaffWorkingConditionsDao StaffWorkingConditionsDao
+        {
+            get { return Validate.Dependency(staffworkingConditionsDao); }
+            set { staffworkingConditionsDao = value; }
+        }
+
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
+        {
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
+        }
+
+        protected IDocumentApprovalDao documentapprovalDao;
+        public IDocumentApprovalDao DocumentApprovalDao
+        {
+            get { return Validate.Dependency(documentapprovalDao); }
+            set { documentapprovalDao = value; }
+        }
+
+        protected IStaffRequestPyrusTasksDao staffrequestPyrusTasksDao;
+        public IStaffRequestPyrusTasksDao StaffRequestPyrusTasksDao
+        {
+            get { return Validate.Dependency(staffrequestPyrusTasksDao); }
+            set { staffrequestPyrusTasksDao = value; }
+        }
+
+        protected IStaffEstablishedPostUserLinksDao staffestablishedPostUserLinksDao;
+        public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
+        {
+            get { return Validate.Dependency(staffestablishedPostUserLinksDao); }
+            set { staffestablishedPostUserLinksDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -288,8 +324,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-
-            //все закомментаренное работало когда не было штатных единиц
             if (itemLevel != 7)
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
@@ -303,6 +337,57 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return model;
         }
+
+        #region Построение дерева
+        /// <summary>
+        /// Подгружаем только подчиненые ветки на один уровень ниже. Процедура работает для построения дерева штатного расписания и штатной расстановки.
+        /// </summary>
+        /// <param name="DepId">Id родительского подразделения</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <returns></returns>
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
+        {
+            //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
+            if (string.IsNullOrEmpty(DepId))
+            {
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.Inspector || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel || AuthenticationService.CurrentUser.UserRole == UserRole.Director
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector
+                    || AuthenticationService.CurrentUser.Id == 6638 //|| AuthenticationService.CurrentUser.Id == 22821
+                    || AuthenticationService.CurrentUser.Id == 664
+                    || AuthenticationService.CurrentUser.Id == 24926 || AuthenticationService.CurrentUser.Id == 513)//временно открыт доступ 4 сотрудникам к всей структуре
+                {
+                    //DepId = "9900424";
+                    //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
+                }
+                else
+                {
+                    User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                    if (string.IsNullOrEmpty(DepId))
+                        IsParentDepOnly = true;
+
+                    DepId = (cur == null || cur.Department == null ? null : cur.Department.Code1C.ToString());
+                    
+                }
+
+                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+            }
+
+            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+        }
+        /// <summary>
+        /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
+        /// </summary>
+        /// <param name="DepId">Id родительского подразделения.</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <returns></returns>
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
+        {
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
+            return Sdeps;
+        }
+        #endregion
 
         #region Заявки для подразделений
         /// <summary>
@@ -426,7 +511,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;
+                //сохранение/черновик
+                if (UserRole.Manager == AuthenticationService.CurrentUser.UserRole || UserRole.Inspector == AuthenticationService.CurrentUser.UserRole
+                    || UserRole.ConsultantOutsourcing == AuthenticationService.CurrentUser.UserRole || UserRole.ConsultantPersonnel == AuthenticationService.CurrentUser.UserRole)
+                    model.IsDraftButtonAvailable = true;
+
                 model.IsAgreeButtonAvailable = false;
             }
             else
@@ -564,13 +653,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.OperGroupId = dmd.DepartmentOperationGroup != null ? dmd.DepartmentOperationGroup.Id : 0;
                 }
 
+                //заполнение справочников
                 LoadDictionaries(model);
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;//(!entity.BeginAccountDate.HasValue || model.Id == 0) ? true : false;
-                model.IsAgreeButtonAvailable = !entity.BeginAccountDate.HasValue;
+                //сохранение/черновик
+                if (UserRole.Manager == AuthenticationService.CurrentUser.UserRole || UserRole.Inspector == AuthenticationService.CurrentUser.UserRole
+                    || UserRole.ConsultantOutsourcing == AuthenticationService.CurrentUser.UserRole || UserRole.ConsultantPersonnel == AuthenticationService.CurrentUser.UserRole)
+                    model.IsDraftButtonAvailable = true;
+                else
+                    model.IsDraftButtonAvailable = false;
+                
             }
-            
+
+            //model.IsTaxCollector = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector;
            
             return model;
         }
@@ -803,19 +899,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //}
 
                 //коды программ
-                dmd.ProgramCodes = new List<StaffProgramCodes>();
-                if (model.ProgramCodes != null)
+                //могут редактировать только администраторы ПО банка (переменная определяется в процедуре определения состояния согласования)
+                if (model.IsSoftAdminApproveAvailable)
                 {
-                    foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
+                    dmd.ProgramCodes = new List<StaffProgramCodes>();
+                    if (model.ProgramCodes != null)
                     {
-                        dmd.ProgramCodes.Add(new StaffProgramCodes
+                        foreach (var item in model.ProgramCodes.Where(x => x.Code != null))
                         {
-                            DepartmentManagerDetail = dmd,
-                            Program = StaffProgramReferenceDao.Load(item.ProgramId),
-                            Code = item.Code,
-                            Creator = curUser,
-                            CreateDate = DateTime.Now
-                        });
+                            dmd.ProgramCodes.Add(new StaffProgramCodes
+                            {
+                                DepartmentManagerDetail = dmd,
+                                Program = StaffProgramReferenceDao.Load(item.ProgramId),
+                                Code = item.Code,
+                                Creator = curUser,
+                                CreateDate = DateTime.Now
+                            });
+                        }
                     }
                 }
 
@@ -882,7 +982,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
             entity.IsEmployeAvailable = model.IsEmployeAvailable;
             entity.IsPlan = model.IsPlan;
-            entity.IsDraft = model.IsDraft;
+            entity.IsDraft = entity.IsUsed ? false : model.IsDraft;
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
@@ -959,9 +1059,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //поля ЦБ реквизитов
-            if (entity.DepartmentCBDetails == null)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
+            if (entity.DepartmentCBDetails == null || entity.DepartmentCBDetails.Count == 0)//если в виду какого нить сбоя при первичном сохранении не добавлиась запись, то создаем ее
             {
-                entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+                if (entity.DepartmentCBDetails == null)
+                    entity.DepartmentCBDetails = new List<StaffDepartmentCBDetails>();
+
                 entity.DepartmentCBDetails.Add(new StaffDepartmentCBDetails
                 {
                     DepRequest = entity,
@@ -994,9 +1096,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //поля управленческих реквизитов
-            if (entity.DepartmentManagerDetails == null) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
+            if (entity.DepartmentManagerDetails == null || entity.DepartmentManagerDetails.Count == 0) //если в виду какого нить сбоя при первичном сохранении не добавлиась управленческие реквизиты, то создаем их
             {
-                entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
+                if (entity.DepartmentManagerDetails == null)
+                    entity.DepartmentManagerDetails = new List<StaffDepartmentManagerDetails>();
 
                 StaffDepartmentManagerDetails dmd = new StaffDepartmentManagerDetails();
                 dmd.DepRequest = entity;
@@ -1275,43 +1378,48 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DepartmentManagerDetails[0].DepartmentOperationGroup = model.OperGroupId == 0 ? null : StaffDepartmentOperationGroupsDao.Get(model.OperGroupId);
 
                 //коды программ
-                if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
-                    entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
-
-                if (model.ProgramCodes != null)
+                //могут редактировать только администраторы ПО банка (переменная определяется в процедуре определения состояния согласования)
+                if (model.IsSoftAdminApproveAvailable)
                 {
-                    foreach (var item in model.ProgramCodes)
+                    if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                        entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+                    if (model.ProgramCodes != null)
                     {
-                        StaffProgramCodes pc = new StaffProgramCodes();
-
-                        //если была запись и убрали значение кода, то удаляем
-                        if (item.Id != 0 && item.Code == null)
+                        foreach (var item in model.ProgramCodes)
                         {
-                            pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
-                        }
+                            StaffProgramCodes pc = new StaffProgramCodes();
 
-                        //если не было записи и ввели код, то добавляем
-                        if (item.Id == 0 && item.Code != null)
-                        {
-                            pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
-                            pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
-                            pc.Code = item.Code;
-                            pc.Creator = curUser;
-                            pc.CreateDate = DateTime.Now;
+                            //если была запись и убрали значение кода, то удаляем
+                            if (item.Id != 0 && item.Code == null)
+                            {
+                                pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                            }
 
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
-                        }
+                            //если не было записи и ввели код, то добавляем
+                            if (item.Id == 0 && item.Code != null)
+                            {
+                                pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                                pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                                pc.Code = item.Code;
+                                pc.Creator = curUser;
+                                pc.CreateDate = DateTime.Now;
 
-                        //запись была и есть код, то предпологаем, что это редактирование
-                        if (item.Id != 0 && item.Code != null)
-                        {
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                            entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                            }
+
+                            //запись была и есть код, то предпологаем, что это редактирование
+                            if (item.Id != 0 && item.Code != null)
+                            {
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                                entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                            }
                         }
                     }
                 }
+                
 
 
                 //ориентиры
@@ -1355,44 +1463,67 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //находим действующую заявку и убираем у нее признак использования
-            int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
-            StaffDepartmentRequest OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
+            //int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+            StaffDepartmentRequest OldEntity = null;
 
             //Утверждение
             if (!model.IsDraft)
             {
+
                 //проверки для текущей заявки 
                 if (!ValidateDepartmentRequest(entity, out error))
                 {
                     return false;
                 }
 
-
-                //занесение данных по подразделению в справочник подазделений и создание кодов для подразделений
-                if (!SaveDepartmentReference(entity, curUser, out error))
+                //только после утверждения заявки можно редактировать справочник подразделений.
+                //ветка срабатывает только после последней фазы согласования (на данный момент это утверждение заявки)
+                //пока данные корректируются после начальной загрузки, то для таких заявок согласования не нужно
+                int Result = entity.RequestType.Id == 4 ? 0 : SaveDepartmentApprovals(model, entity, curUser, out error);
+                if (Result == -1) return false;
+                if (Result == 0)
                 {
-                    return false;
-                }
-
-                //если заявка на изменение/удаление подразделения
-                if (entity.RequestType.Id != 1)
-                {
-                    
-                    if (OldEntity != null)
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
                     {
-                        //если переезд, то у старой заявки ставим дату закрытия автоматически
-                        OldEntity.DepartmentManagerDetails[0].CloseDate = DateTime.Now;
-                        OldEntity.IsUsed = false;
-                        OldEntity.Editor = curUser;
-                        OldEntity.EditDate = DateTime.Now;
-                        //записываем предыдущий код
-                        entity.DepartmentManagerDetails[0].PrevDepCode = OldEntity.DepartmentManagerDetails[0].DepCode;
+                        entity.BeginAccountDate = DateTime.Now;
+                        entity.DateState = DateTime.Now;
+                        entity.DateSendToApprove = DateTime.Now;
                     }
+
+                    //занесение данных по подразделению в справочник подазделений и создание кодов для подразделений
+                    if (!SaveDepartmentReference(entity, curUser, out error))
+                    {
+                        return false;
+                    }
+
+                    //находим действующую заявку и убираем у нее признак использования
+                    int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
+                    OldEntity = StaffDepartmentRequestDao.Get(OldRequestId);
+
+                    //если заявка на изменение/удаление подразделения
+                    if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
+                    {
+
+                        if (OldEntity != null)
+                        {
+                            //если переезд, то у старой заявки ставим дату закрытия автоматически
+                            OldEntity.DepartmentManagerDetails[0].CloseDate = DateTime.Now;
+                            OldEntity.IsUsed = false;
+                            OldEntity.Editor = curUser;
+                            OldEntity.EditDate = DateTime.Now;
+                            //записываем предыдущий код
+                            entity.DepartmentManagerDetails[0].PrevDepCode = OldEntity.DepartmentManagerDetails[0].DepCode;
+                        }
+                    }
+
+                    //у текущей заявки ставим признак использования
+                    entity.IsUsed = true;
+                    error = "Заявка утверждена!";
+                    //entity.BeginAccountDate = DateTime.Now;
                 }
 
-                //у текущей заявки ставим признак использования
-                entity.IsUsed = true;
-                entity.BeginAccountDate = DateTime.Now;
+                
             }
 
 
@@ -1437,7 +1568,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //родительское подразделение
             Department ParentDep = entity.ParentDepartment != null ? DepartmentDao.Get(entity.ParentDepartment.Id) : new Department();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
-            if (entity.RequestType.Id == 1)
+            if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
             {
                 dep.Code = null;
                 dep.Name = entity.Name;
@@ -1455,14 +1586,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            if (entity.RequestType.Id != 1)
+            if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
             {
                 if (entity.RequestType.Id == 2)
                 {
+                    dep.Name = entity.Name;
                     dep.ParentId = ParentDep.Code1C;
                     dep.Path = ParentDep.ItemLevel != entity.ItemLevel ? ParentDep.Path + "__new" : dep.Path;
                     dep.ItemLevel = (ParentDep.ItemLevel + 1) != entity.ItemLevel ? ParentDep.ItemLevel + 1 : entity.ItemLevel;
-                    dep.IsUsed = entity.IsUsed;
+                    dep.IsUsed = true;
                 }
                 else if (entity.RequestType.Id == 3)
                 {
@@ -1484,7 +1616,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
 
                 //только при добавлении надо заполнить эти поля, так как в структуре на поле Code1C ссылается поле ParentId, то есть значения в поле Code1C должны быть уникальными
-                if (entity.RequestType.Id == 1)
+                if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
                 {
                     dep.Code = dep.Id.ToString();
                     dep.Code1C = dep.Id;
@@ -1530,6 +1662,212 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
 
+            return true;
+        }
+        /// <summary>
+        /// Сохраняем согласования.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Текущая заявка.</param>
+        /// <param name="curUser">текущий пользователь.</param>
+        /// <param name="error">Сообщение об ошибке.</param>
+        /// <returns></returns>
+        protected int SaveDepartmentApprovals(StaffDepartmentRequestModel model, StaffDepartmentRequest entity, User curUser, out string error)
+        {
+            //возвращает значения от 1 до 4 - этап согласования прошел успешно, 0 - согласование завершено, заявка утверждена, -1 - ошибка при сохранении данных
+
+            //только после утверждения заявки можно редактировать справочник подразделений.
+            error = string.Empty;
+
+
+            //в каждой ветке определяемся с участниками групповухи под кодовым названием согласование/утверждение заявки для подразделения
+            //текущим пользователем может быть куратор ии кадровик, которые могут действовать за согласовантов
+            User Assistant = AuthenticationService.CurrentUser.UserRole == UserRole.Inspector
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
+                || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
+
+            model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+            model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
+            
+            //выбираем из согласования не архивные записи.
+            IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
+            DocumentApproval da = new DocumentApproval();
+
+            da.ApprovalType = (int)ApprovalTypeEnum.StaffDepartmentRequest;
+            da.DocId = entity.Id;
+            da.IsArchive = false;
+            da.CreateDate = DateTime.Now;
+
+            if (model.IsImportance)//обязательное согласование
+            {
+                switch (DocApproval.Count)
+                {
+                    case 0:
+                        //если иницатор не выбран, это значит, что инициатор действует сам
+                        User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
+
+                        da.ApproveUser = Initiator;
+                        da.AssistantUser = Assistant;
+                        da.Number = 1;
+                        error = "Заявка создана!";
+                        break;
+                    case 1:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 2;
+                        error = "Заявка проверена куратором!";
+                        break;
+                    case 2:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 3;
+                        error = "Заявка проверена кадровиком банка!";
+                        break;
+                    case 4:
+                        //если согласовант не выбран, это значит, что он действует сам
+                        User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
+
+                        da.ApproveUser = TopManager;
+                        da.AssistantUser = Assistant;
+                        da.Number = 5;
+                        error = "Заявка согласована!";
+                        break;
+                    case 5:
+                        //если утверждающий не выбран, это значит, что он действует сам
+                        User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
+
+                        da.ApproveUser = BoardMember;
+                        da.AssistantUser = Assistant;
+                        da.Number = 6;
+                        error = "Заявка утверждена!";
+                        break;
+                    case 6:
+                        da.ApproveUser = curUser;
+                        da.AssistantUser = null;
+                        da.Number = 7;
+                        error = "Приказ составлен!";
+                        break;
+                }
+            }
+            else   //согласование специалистами
+            {
+                if (model.IsTaxCollector || model.IsConsultant)
+                {
+                    da.ApproveUser = curUser;
+                    da.AssistantUser = null;
+                    da.Number = 4;
+                    error = "Заявка согласована налоговиком!";
+                }
+
+            }
+
+            try
+            {
+                DocumentApprovalDao.SaveAndFlush(da);
+                
+                //сохраняем здачу пайруса
+                if (!string.IsNullOrEmpty(model.PyrusNumber))
+                {
+                    entity.StaffRequestPyrusTasks.Add(new StaffRequestPyrusTasks()
+                    {
+                        DepRequest = entity,
+                        DocumentApproval = da,
+                        NumberTask = model.PyrusNumber,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                if (da.Number == 1)
+                {
+                    entity.DateSendToApprove = DateTime.Now;
+                    return da.Number;
+                }
+
+                if (da.Number > 1 && da.Number < 5)
+                    return da.Number;
+
+                if (da.Number == 5)
+                {
+                    entity.BeginAccountDate = DateTime.Now;
+                    entity.DateState = DateTime.Now;
+                }
+            }
+            catch (Exception ex)
+            {
+                DocumentApprovalDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return -1;
+            }
+
+            return 0;
+        }
+        /// <summary>
+        /// Сохраняем админами по банка коды.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        public bool SaveProgramCodes(StaffDepartmentRequestModel model, out string error)
+        {
+            //этот кусок есть в общем сохранении, но когда решили дать админам отдельную кнопку, то вынес его сюда.
+            error = string.Empty;
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+
+            if (entity.DepartmentManagerDetails[0].ProgramCodes == null)
+                entity.DepartmentManagerDetails[0].ProgramCodes = new List<StaffProgramCodes>();
+
+            if (model.ProgramCodes != null)
+            {
+                foreach (var item in model.ProgramCodes)
+                {
+                    StaffProgramCodes pc = new StaffProgramCodes();
+
+                    //если была запись и убрали значение кода, то удаляем
+                    if (item.Id != 0 && item.Code == null)
+                    {
+                        pc = entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id && x.Code != null).Single();
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Remove(pc);
+                    }
+
+                    //если не было записи и ввели код, то добавляем
+                    if (item.Id == 0 && item.Code != null)
+                    {
+                        pc.DepartmentManagerDetail = entity.DepartmentManagerDetails[0];
+                        pc.Program = StaffProgramReferenceDao.Load(item.ProgramId);
+                        pc.Code = item.Code;
+                        pc.Creator = curUser;
+                        pc.CreateDate = DateTime.Now;
+
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Add(pc);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && item.Code != null)
+                    {
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Code = item.Code;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.DepartmentManagerDetails[0].ProgramCodes.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
+                    }
+                }
+
+                try
+                {
+                    StaffDepartmentRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    error = "Данные сохранены!";
+                }
+                catch (Exception ex)
+                {
+                    StaffDepartmentRequestDao.RollbackTran();
+                    RefAddressesDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+            }
             return true;
         }
         /// <summary>
@@ -1802,6 +2140,212 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             return true;
         }
+        /// <summary>
+        /// Определяем состояние согласования заявки.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Данные заявки</param>
+        protected void SetApprovalFlags(StaffDepartmentRequestModel model, StaffDepartmentRequest entity)
+        {
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);//текущий пользователь
+
+            //заполняем списки согласовантов
+            GetApprovalLists(model, entity);
+
+            model.IsImportance = false;
+            //за согласовантов могут отработать кураторы и кадровики банка.
+            model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
+            model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
+            model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+            model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
+            model.IsSecretary = (AuthenticationService.CurrentUser.UserRole == UserRole.Secretary);
+            model.IsSoftAdmin = (AuthenticationService.CurrentUser.UserRole == UserRole.SoftAdmin);
+
+            //разбираемся с состоянием птиц
+            //выбираем из согласования не архивные записи.
+            IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
+
+            //для новых/автоматически сформированных заявок
+            if (DocApproval == null || DocApproval.Count == 0)
+            {
+                model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false);
+                model.IsTopManagerApproveAvailable = false;
+                model.IsBoardMemberApproveAvailable = false;
+                model.IsAgreeButtonAvailable = model.IsInitiatorApproveAvailable;
+            }
+            else
+            {
+                //потом проводим слесарную обработку по состоянию согласования 
+                //обязательные согласованты
+                foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
+                {
+                    string PyrusNumber = entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Count() != 0 ? entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Single().NumberTask : string.Empty;
+                    if (item.IsImportance)
+                    {
+                        switch (item.Number)
+                        {
+                            case 1://инициатор
+                                model.IsInitiatorApprove = true;
+                                model.IsInitiatorApproveAvailable = false;
+                                model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                //entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == 1)
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.InitiatorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.InitiatorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+
+                                //открываем согласование для следующего участника процесса
+                                model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                break;
+                            case 2://куратор
+                                model.IsCuratorApprove = true;
+                                model.IsCuratorApproveAvailable = false;
+                                model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.CuratorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.CuratorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+
+                                //открываем согласование для следующего участника процесса
+                                model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                break;
+                            case 3://кадровик
+                                model.IsPersonnelBankApprove = true;
+                                model.IsPersonnelBankApproveAvailable = false;
+                                model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.PersonnelBankPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.PersonnelBankPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+
+                                //открываем согласование для следующего участника процесса
+                                model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                break;
+                            case 5://вышестоящий руководитель
+                                model.IsTopManagerApprove = true;
+                                model.IsTopManagerApproveAvailable = false;
+                                model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                    : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                                model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.TopManagerPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.TopManagerPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+
+                                //открываем согласование для следующего участника процесса
+                                model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
+                                break;
+                            case 6://член правления
+                                model.IsBoardMemberApprove = true;
+                                model.IsBoardMemberApproveAvailable = false;
+                                model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
+                                    : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
+                                model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                                model.IsAgreeButtonAvailable = false;
+
+                                if (!string.IsNullOrEmpty(PyrusNumber))
+                                {
+                                    model.BoardMemberPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                    model.BoardMemberPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
+                        model.IsSecretaryApproveAvailable = model.IsSecretary || model.IsConsultant ? true : false;
+
+                        switch (item.Number)
+                        {
+                            case 4://налоговик
+                                model.IsTaxCollectorApprove = true;
+                                model.IsTaxCollectorApproveAvailable = false;
+                                model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                break;
+                        }
+                    }
+                }
+
+            }
+
+
+            //для администратора ПО банка
+            if (model.IsSoftAdmin)
+            {
+                model.IsSoftAdminApprove = true;
+                model.IsSoftAdminApproveAvailable = true;
+                model.IsDraftButtonAvailable = false;
+                model.IsAgreeButtonAvailable = false;
+            }
+
+
+            if (UserRole.Manager != AuthenticationService.CurrentUser.UserRole && UserRole.Inspector != AuthenticationService.CurrentUser.UserRole
+                    && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole
+                    && UserRole.Director != AuthenticationService.CurrentUser.UserRole && UserRole.TaxCollector != AuthenticationService.CurrentUser.UserRole)
+            {
+                model.IsAgreeButtonAvailable = false;
+            }
+        }
+        /// <summary>
+        /// Процедура заполняет списки согласовантов, на случай, если за них согласовывают кураторы или кадровики банка.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Данные заявки.</param>
+        protected void GetApprovalLists(StaffDepartmentRequestModel model, StaffDepartmentRequest entity)
+        {
+            //если заявка на создание, то подразделения еще нет, есть только родительское
+            Department Parentdep = null;
+            if (entity.RequestType.Id != 1)
+                Parentdep = DepartmentDao.GetByCode(entity.Department.ParentId.ToString());//родительское подразделение
+            else
+                Parentdep = DepartmentDao.Get(entity.ParentDepartment.Id);
+            
+
+            //относительно родительского ищем руководителей
+            //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+
+            ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
+            if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            {
+                model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            }
+            else
+            {
+                model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                //если создатель заявки руководитель, то позиционируемся на нем
+                if (entity.Creator.UserRole == UserRole.Manager)
+                    model.InitiatorId = entity.Creator.Id;
+            }
+
+            
+            //вышестоящее руководство
+            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+
+
+            //члены правления
+            model.BoardMembers = UserDao.GetUsersWithRole(UserRole.Director)
+                .Where(x => x.IsActive)
+                .ToList()
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
+
+        }
         #endregion
 
         #region Заявки для штатных единиц
@@ -1859,28 +2403,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Id == 0)
             {
                 model.DateRequest = null;
-                //model.DepartmentId = model.RequestTypeId == 1 ? 0 : model.DepartmentId.Value;
-                //model.ItemLevel = model.RequestTypeId == 1 ? DepartmentDao.Load(model.ParentId.Value).ItemLevel + 1 : DepartmentDao.Load(model.DepartmentId.Value).ItemLevel;
-                //model.Name = model.RequestTypeId == 1 ? string.Empty : DepartmentDao.Load(model.DepartmentId.Value).Name;//string.Empty;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
-                model.IsBack = false;
-                model.LegalAddress = string.Empty;
-                model.IsTaxAdminAccount = false;
-                model.IsEmployeAvailable = false;
+                model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
                 model.PositionName = string.Empty;
                 model.Quantity = 0;
                 model.Salary = 0;
                 model.ReasonId = 0;
-
-                //налоговые реквизиты
-                model.KPP = string.Empty;
-                model.OKTMO = string.Empty;
-                model.OKATO = string.Empty;
-                model.RegionCode = string.Empty;
-                model.TaxAdminCode = string.Empty;
-                model.TaxAdminName = string.Empty;
-                model.PostAddress = string.Empty;
+                model.ScheduleId = 0;
+                model.WCId = 0;
+                model.BeginAccountDate = DateTime.Now;
+                model.EPInfo = string.Empty;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -1904,43 +2436,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.DepartmentName = model.DepartmentId != 0 ? DepartmentDao.Load(model.DepartmentId.Value).Name : string.Empty;
-                model.PositionId = entity.Position.Id;
-                model.PositionName = entity.Position.Name;
+                model.PositionId = entity.Position != null ? entity.Position.Id : 0;
+                model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
+                model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
+                model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
+                model.BeginAccountDate = entity.BeginAccountDate;
 
-                //кусок для подразделения
-                if (entity.Department != null)
-                {
-                    int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
-                    if (DepId != 0)
-                    {
-                        StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
-                        //model.IsBack = DepEntity.IsBack;
-                        if (DepEntity.LegalAddress != null)
-                        {
-                            model.LegalAddress = DepEntity.LegalAddress.Address;
-                        }
-                        model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
-                        model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
-                    }
-
-                    //налоговые реквизиты
-                    StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(entity.Department.Id);
-                    model.KPP = dt != null ? dt.KPP : string.Empty;
-                    model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
-                    model.OKATO = dt != null ? dt.OKATO : string.Empty;
-                    model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
-                    model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
-                    model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
-                    model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
-                }
+                int UsersCount = StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0);
+                model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
 
                 //кнопки
-                model.IsDraftButtonAvailable = !entity.BeginAccountDate.HasValue;
-                model.IsAgreeButtonAvailable = entity.IsDraft;
+                model.IsDraftButtonAvailable = true;
+                model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
 
             }
 
@@ -1972,9 +2482,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DateRequest = DateTime.Now,
                     StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId),
                     Position = PositionDao.Get(model.PositionId),
-                    Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null,
+                    Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null,
+                    Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null,
+                    WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null,
                     Quantity = model.Quantity,
                     Salary = model.Salary,
+                    BeginAccountDate = model.BeginAccountDate,
                     IsUsed = false,
                     IsDraft = true,
                     Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null,
@@ -2032,16 +2545,66 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Заявка не найдена! Обратитесь к разработчикам!";
                 return false;
             }
+            else
+            {
+                if (!model.IsDraft)
+                {
+                    bool IsEnabled = false;
+                    //для подразделений уже давно существующих, смотрим наличие налоговых реквизитов
+                    if (entity.Department.DepartmentTaxDetails.Count != 0)
+                    {
+                        if (!string.IsNullOrEmpty(entity.Department.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(entity.Department.DepartmentTaxDetails[0].TaxAdminCode))
+                            IsEnabled = true;
+                    }
+
+                    //для совсем свежих подразделений находим заявку и смотрим там соседа с налоговыми реквизитами
+                    if (!IsEnabled)
+                    {
+                        StaffDepartmentRequest sdr = StaffDepartmentRequestDao.Get(StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0));
+
+                        if (sdr != null)
+                        {
+                            if (sdr.DepNext.DepartmentTaxDetails.Count != 0)
+                            {
+                                if (!string.IsNullOrEmpty(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
+                                    IsEnabled = true;
+                            }
+                        }
+                    }
+
+                    if (!IsEnabled)
+                    {
+                        error = "Нельзя создать/изменить/сократить штатную единицу, так как данное подразделение не стоит на налоговом учете!";
+                        return false;
+                    }
+
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
+                        return false;
+                    }
+
+                    if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников больше, чем указанное количество в заявке!";
+                        return false;
+                    }
+                }
+            }
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
             entity.RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId);
             entity.DateRequest = DateTime.Now;
             entity.StaffEstablishedPost = model.RequestTypeId == 1 ? null : StaffEstablishedPostDao.Get(model.SEPId);
             entity.Position = PositionDao.Get(model.PositionId);
-            entity.Department = model.DepartmentId.HasValue ? DepartmentDao.Get(model.DepartmentId.Value) : null;
+            entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
+            entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
+            entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
             entity.Quantity = model.Quantity;
             entity.Salary = model.Salary;
+            entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
+            entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
 
@@ -2049,82 +2612,103 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!model.IsDraft)
             {
                 entity.BeginAccountDate = DateTime.Now;
-                if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
-                {
-                    return false;
-                }
 
-                //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
-                if (entity.RequestType.Id != 1)
+                int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
+                if (Result == -1) return false;
+
+                if (Result == 0)
                 {
-                    int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
-                    if (OldRequestId != 0)
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
                     {
-                        StaffEstablishedPostRequest OldEntity = StaffEstablishedPostRequestDao.Get(OldRequestId);
-                        OldEntity.IsUsed = false;
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+                    }
 
-                        try
+                    if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
+                    {
+                        return false;
+                    }
+
+                    //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
+                    if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
+                    {
+                        int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
+                        if (OldRequestId != 0)
                         {
-                            StaffEstablishedPostRequestDao.SaveAndFlush(OldEntity);
+                            StaffEstablishedPostRequest OldEntity = StaffEstablishedPostRequestDao.Get(OldRequestId);
+                            OldEntity.IsUsed = false;
+
+                            try
+                            {
+                                StaffEstablishedPostRequestDao.SaveAndFlush(OldEntity);
+                            }
+                            catch (Exception ex)
+                            {
+                                StaffEstablishedPostRequestDao.RollbackTran();
+                                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                                return false;
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            StaffEstablishedPostRequestDao.RollbackTran();
-                            error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                            return false;
-                        }
+                    }
+
+                    entity.IsUsed = true;
+                    error = "Заявка утверждена!";
+                }
+                
+            }
+
+
+            //надбавки 
+            //сохраняем только при открытии и изменении до отправки на согласование
+            if (model.RequestTypeId != 3 && !entity.DateSendToApprove.HasValue)
+            {
+                if (entity.PostChargeLinks == null)
+                    entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
+
+                foreach (var item in model.PostChargeLinks)
+                {
+                    StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
+
+                    //если была запись и убрали значения, то удаляем
+                    if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                    {
+                        pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
+                        entity.PostChargeLinks.Remove(pcl);
+                    }
+
+                    //если не было записи и ввели значение, то добавляем
+                    if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    {
+                        pcl.EstablishedPostRequest = entity;
+                        pcl.EstablishedPost = entity.StaffEstablishedPost;
+                        pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
+                        pcl.Amount = item.Amount;
+                        pcl.AmountProc = item.AmountProc;
+                        pcl.Creator = curUser;
+                        pcl.CreateDate = DateTime.Now;
+
+                        entity.PostChargeLinks.Add(pcl);
+                    }
+
+                    //запись была и есть код, то предпологаем, что это редактирование
+                    if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    {
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                     }
                 }
             }
-
-
-            //надбавки
-            if (entity.PostChargeLinks == null)
-                entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
-
-            foreach (var item in model.PostChargeLinks)
-            {
-                StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
-
-                //если была запись и убрали значения, то удаляем
-                if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
-                {
-                    pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
-                    entity.PostChargeLinks.Remove(pcl);
-                }
-
-                //если не было записи и ввели значение, то добавляем
-                if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
-                {
-                    pcl.EstablishedPostRequest = entity;
-                    pcl.EstablishedPost = entity.StaffEstablishedPost;
-                    pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
-                    pcl.Amount = item.Amount;
-                    pcl.AmountProc = item.AmountProc;
-                    pcl.Creator = curUser;
-                    pcl.CreateDate = DateTime.Now;
-
-                    entity.PostChargeLinks.Add(pcl);
-                }
-
-                //запись была и есть код, то предпологаем, что это редактирование
-                if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
-                {
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
-                    entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
-                }
-            }
+            
 
             if (model.Id != 0)
             {
                 try
                 {
-                    entity.IsUsed = !model.IsDraft;
-                    entity.IsDraft = model.IsDraft;
-
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
                 }
@@ -2154,11 +2738,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             StaffEstablishedPost sep = entity.StaffEstablishedPost != null ? StaffEstablishedPostDao.Get(entity.StaffEstablishedPost.Id) : new StaffEstablishedPost();
             //если заявка на создание, создаем новую запись и делаем в заявке на нее ссылку
-            if (entity.RequestType.Id == 1)
+            if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
             {
                 sep.Position = entity.Position;
                 sep.Department = entity.Department;
-                sep.Quantity = entity.Quantity;
+                sep.Quantity = 0;// entity.Quantity;
                 sep.Salary = entity.Salary;
                 sep.IsUsed = true;
                 sep.BeginAccountDate = entity.BeginAccountDate;
@@ -2166,13 +2750,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 sep.CreateDate = DateTime.Now;
             }
 
+            //изменилось количество изменяем количество связей
+            if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
+            {
+                return false;
+            }
+
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
-            if (entity.RequestType.Id != 1)
+            if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
             {
                 if (entity.RequestType.Id == 2)
                 {
                     sep.Position = entity.Position;
-                    sep.Quantity = entity.Quantity;
+                    //пока решили не менять количество в заявках наизменение
+                    //sep.Quantity = entity.Quantity;
                     sep.Salary = entity.Salary;
                 }
                 else if (entity.RequestType.Id == 3)
@@ -2210,6 +2801,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.StaffEstablishedPost = new StaffEstablishedPost();
 
                 entity.StaffEstablishedPost = sep;
+                entity.DateSendToApprove = DateTime.Now;//отправлено на согласование
+                entity.DateAccept = DateTime.Now;//согласовано
             }
             catch (Exception ex)
             {
@@ -2219,6 +2812,342 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             return true;
+        }
+        /// <summary>
+        /// Меняем количество связей татной единицы с сотрудниками.
+        /// </summary>
+        /// <param name="entity">Заявка</param>
+        /// <param name="sep">Штатная единица</param>
+        /// <param name="curUser">Текущий пользователь</param>
+        /// <param name="error">Для сообщений</param>
+        /// <returns></returns>
+        protected bool SaveStaffEstablishedPostChangeLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
+        {
+            error = string.Empty;
+            int CountLinks = 0;
+            //если количество штатных единиц увеличилось, то нужно добавить необходимое количество записей для связей
+            if (entity.Quantity > sep.Quantity)
+            {
+                CountLinks = entity.Quantity - sep.Quantity;
+
+                if(sep.EstablishedPostUserLinks == null)
+                    sep.EstablishedPostUserLinks = new List<StaffEstablishedPostUserLinks>();
+
+                for (int i = 0; i < CountLinks; i++)
+                {
+                    sep.EstablishedPostUserLinks.Add(new StaffEstablishedPostUserLinks()
+                    {
+                        StaffEstablishedPost = sep,
+                        User = null,
+                        IsUsed = true,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
+            }
+
+            ////если количество штатных единиц уменьшилось
+            //if (entity.Quantity < sep.Quantity)
+            //пока решили, что в заявках на изменение количество не меняется
+            if (entity.RequestType.Id == 3)
+            {
+                //CountLinks = sep.Quantity - entity.Quantity;
+
+                foreach (var item in sep.EstablishedPostUserLinks
+                    .Where(x => x.IsUsed))
+                {
+                    if (CountLinks == 0) break;
+
+                    item.IsUsed = false;
+                    item.Editor = curUser;
+                    item.EditDate = DateTime.Now;
+
+                    //CountLinks -= 1;
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// Сохраняем согласования.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Текущая заявка.</param>
+        /// <param name="curUser">текущий пользователь.</param>
+        /// <param name="error">Сообщение об ошибке.</param>
+        /// <returns></returns>
+        protected int SaveStaffEstablishedPostApprovals(StaffEstablishedPostRequestModel model, StaffEstablishedPostRequest entity, User curUser, out string error)
+        {
+            //возвращает значения от 1 до 4 - этап согласования прошел успешно, 0 - согласование завершено, заявка утверждена, -1 - ошибка при сохранении данных
+
+            //только после утверждения заявки можно редактировать справочник подразделений.
+            error = string.Empty;
+
+
+            //в каждой ветке определяемся с участниками групповухи под кодовым названием согласование/утверждение заявки для подразделения
+            //текущим пользователем может быть куратор ии кадровик, которые могут действовать за согласовантов
+            User Assistant = AuthenticationService.CurrentUser.UserRole == UserRole.Inspector
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel
+                || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? curUser : null;//куратор/кадровик банка/консультант РК
+
+            //выбираем из согласования не архивные записи.
+            IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffEstablishedPostRequest);
+            DocumentApproval da = new DocumentApproval();
+
+            da.ApprovalType = (int)ApprovalTypeEnum.StaffEstablishedPostRequest;
+            da.DocId = entity.Id;
+            da.IsArchive = false;
+            da.CreateDate = DateTime.Now;
+
+            switch (DocApproval.Count)
+            {
+                case 0:
+                    //если иницатор не выбран, это значит, что инициатор действует сам
+                    User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
+
+                    da.ApproveUser = Initiator;
+                    da.AssistantUser = Assistant;
+                    da.Number = 1;
+                    error = "Заявка создана!";
+                    break;
+                case 1:
+                    da.ApproveUser = curUser;
+                    da.AssistantUser = null;
+                    da.Number = 2;
+                    error = "Заявка проверена куратором!";
+                    break;
+                case 2:
+                    da.ApproveUser = curUser;
+                    da.AssistantUser = null;
+                    da.Number = 3;
+                    error = "Заявка проверена кадровиком банка!";
+                    break;
+                case 3:
+                    //если согласовант не выбран, это значит, что он действует сам
+                    User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
+
+                    da.ApproveUser = TopManager;
+                    da.AssistantUser = Assistant;
+                    da.Number = 4;
+                    error = "Заявка согласована!";
+                    break;
+                case 4:
+                    //если утверждающий не выбран, это значит, что он действует сам
+                    User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
+
+                    da.ApproveUser = BoardMember;
+                    da.AssistantUser = Assistant;
+                    da.Number = 5;
+                    error = "Заявка утверждена!";
+                    break;
+            }
+
+            try
+            {
+                DocumentApprovalDao.SaveAndFlush(da);
+                
+                if (da.Number == 1)
+                {
+                    entity.DateSendToApprove = DateTime.Now;
+                    return da.Number;
+                }
+
+                if (da.Number > 1 && da.Number < 5)
+                    return da.Number;
+
+                if (da.Number == 5)
+                {
+                    entity.BeginAccountDate = DateTime.Now;
+                    entity.DateAccept = DateTime.Now;
+                }
+            }
+            catch (Exception ex)
+            {
+                DocumentApprovalDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return -1;
+            }
+
+            return 0;
+        }
+        /// <summary>
+        /// Загрузка реквизитов инициатора и подразделения к заявкам для штатных единиц
+        /// </summary>
+        /// <param name="model">Заполняемая модель заявки.</param>
+        /// <returns></returns>
+        protected void GetDepRequestInfo(StaffEstablishedPostRequestModel model)
+        {
+            User curUser = UserDao.Load(model.UserId != 0 ? model.UserId : AuthenticationService.CurrentUser.Id);
+            model.DepartmentName = curUser.Department != null ? curUser.Department.Name : string.Empty;
+            model.RequestInitiator = curUser.Name + " - " + (curUser.Position != null ? curUser.Position.Name : string.Empty);
+
+            if (model.DepartmentId != 0)
+            {
+                Department dep = DepartmentDao.Get(model.DepartmentId);
+                model.DepartmentName = dep.Name;
+                int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(dep != null ? dep.Id : 0);
+                if (DepId != 0)
+                {
+                    StaffDepartmentRequest DepEntity = StaffDepartmentRequestDao.Get(DepId);
+                    //model.IsBack = DepEntity.IsBack;
+                    if (DepEntity.LegalAddress != null)
+                    {
+                        model.LegalAddress = DepEntity.LegalAddress.Address;
+                    }
+                    model.IsTaxAdminAccount = DepEntity.IsTaxAdminAccount;
+                    model.IsEmployeAvailable = DepEntity.IsEmployeAvailable;
+                    model.AccessoryName = DepEntity.DepartmentAccessory != null ? DepEntity.DepartmentAccessory.Name : string.Empty;
+                }
+
+                //налоговые реквизиты
+                StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
+                model.KPP = dt != null ? dt.KPP : string.Empty;
+                model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
+                model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
+                model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
+                model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
+                model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+            }
+
+        }
+        /// <summary>
+        /// Определяем состояние согласования заявки.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Данные заявки</param>
+        protected void SetApprovalFlags(StaffEstablishedPostRequestModel model, StaffEstablishedPostRequest entity)
+        {
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);//текущий пользователь
+
+            //заполняем списки согласовантов
+            if (entity.Creator != null)
+                GetApprovalLists(model, entity);
+
+            //за согласовантов могут отработать кураторы и кадровики банка.
+            model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
+            model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
+            model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+
+            //разбираемся с состоянием птиц
+            //выбираем из согласования не архивные записи.
+            IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffEstablishedPostRequest);
+
+            //для новых/автоматически сформированных заявок
+            if (DocApproval == null || DocApproval.Count == 0)
+            {
+                model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false);
+                model.IsTopManagerApproveAvailable = false;
+                model.IsBoardMemberApproveAvailable = false;
+                model.IsAgreeButtonAvailable = model.IsInitiatorApproveAvailable;
+            }
+            else
+            {
+                //потом проводим слесарную обработку по состоянию согласования 
+                foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
+                {
+                    switch (item.Number)
+                    {
+                        case 1://инициатор
+                            model.IsInitiatorApprove = true;
+                            model.IsInitiatorApproveAvailable = false;
+                            model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                            model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+
+                            //открываем согласование для следующего участника процесса
+                            model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                            model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                            break;
+                        case 2://куратор
+                            model.IsCuratorApprove = true;
+                            model.IsCuratorApproveAvailable = false;
+                            model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+
+                            //открываем согласование для следующего участника процесса
+                            model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                            model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                            break;
+                        case 3://кадровик
+                            model.IsPersonnelBankApprove = true;
+                            model.IsPersonnelBankApproveAvailable = false;
+                            model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+
+                            //открываем согласование для следующего участника процесса
+                            model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                            model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                            break;
+                        case 4://вышестоящий руководитель
+                            model.IsTopManagerApprove = true;
+                            model.IsTopManagerApproveAvailable = false;
+                            model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
+                                : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
+                            model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+
+                            //открываем согласование для следующего участника процесса
+                            model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                            model.IsAgreeButtonAvailable = model.IsBoardMemberApproveAvailable;
+                            break;
+                        case 5://член правления
+                            model.IsBoardMemberApprove = true;
+                            model.IsBoardMemberApproveAvailable = false;
+                            model.BoardMemberApproveName = "Заявка утверждена " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Утвердил: " + item.ApproveUser.Name + " - Член правления банка"// + item.ApproveUser.Position.Name
+                                : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
+                            model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                            model.IsAgreeButtonAvailable = false;
+                            break;
+                    }
+                }
+            }
+
+
+            if (UserRole.Manager != AuthenticationService.CurrentUser.UserRole && UserRole.Inspector != AuthenticationService.CurrentUser.UserRole
+                    && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole
+                    && UserRole.Director != AuthenticationService.CurrentUser.UserRole)
+            {
+                model.IsAgreeButtonAvailable = false;
+            }
+        }
+        /// <summary>
+        /// Процедура заполняет списки согласовантов, на случай, если за них согласовывают кураторы или кадровики банка.
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <param name="entity">Данные заявки.</param>
+        protected void GetApprovalLists(StaffEstablishedPostRequestModel model, StaffEstablishedPostRequest entity)
+        {
+            //определяем родительское подразделение
+            Department Parentdep = DepartmentDao.GetByCode(entity.Department.ParentId.ToString());
+
+            //относительно родительского ищем руководителей
+            //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+
+            ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
+            if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            {
+                model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            }
+            else
+            {
+                model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                //если создатель заявки руководитель, то позиционируемся на нем
+                if (entity.Creator.UserRole == UserRole.Manager)
+                    model.InitiatorId = entity.Creator.Id;
+            }
+
+
+            //вышестоящее руководство
+            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+
+
+            //члены правления
+            model.BoardMembers = UserDao.GetUsersWithRole(UserRole.Director)
+                .Where(x => x.IsActive)
+                .ToList()
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
+
         }
         #endregion
 
@@ -3766,8 +4695,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-
-            //все закомментаренное работало когда не было штатных единиц
             if (itemLevel != 7)
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
@@ -3813,6 +4740,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Accessoryes = StaffDepartmentAccessoryDao.GetAccessoryes();
             model.Accessoryes.Insert(0, new IdNameDto { Id = 0, Name = "" });
+
+            //согласование - расстановка флажков и т.д.
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+            if (entity != null)
+                SetApprovalFlags(model, entity);
+
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.
@@ -3823,10 +4756,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             //реквизиты инициатора
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.Reasons = AppointmentReasonDao.LoadAll();
-            //добавил пустую первую строку
             model.Reasons.Insert(0, new AppointmentReason { Code = "", Id = 0, Name = "" });
-            ////для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
-            //model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id);
+
+            model.Schedules = ScheduleDao.LoadAll().Where(x => x.Id == 37 || x.Id == 45 || x.Id == 48).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
+            model.WorkConditions = StaffWorkingConditionsDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
+
+            GetDepRequestInfo(model);
+
+
+            //согласование - расстановка флажков и т.д.
+            StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+            if (entity != null)
+                SetApprovalFlags(model, entity);
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
@@ -4056,183 +4997,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             return ht;
-        }
-        #endregion
-
-        #region Для тестов
-        /// <summary>
-        /// собираем полное дерево
-        /// </summary>
-        /// <returns></returns>
-        public TreeViewModel GetDepartmentList()
-        {
-            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            TreeViewModel model = new TreeViewModel();
-            //model.Departments = DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(currentUser.Department.Path)).ToList();
-            //model.Departments = DepartmentDao.LoadAll().Where(x => x.Id == currentUser.Department.Id).ToList();
-            //model.ParentId = currentUser.Department.ParentId.ToString();
-            //model.DepId = currentUser.Department.Code;
-            model.Departments = DepartmentDao.LoadAll();
-            return model;
-        }
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        public TreeGridAjaxModel GetDepartmentStructure(string DepId)
-        {
-            TreeGridAjaxModel model = new TreeGridAjaxModel();
-            Department dep =DepartmentDao.GetByCode(DepId);
-            int DepartmentId = dep.Id;
-            int itemLevel = dep.ItemLevel.Value;
-            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
-            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
-            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
-            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            if (itemLevel != 7)
-            {
-                //руководство
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-                //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
-            }
-            else
-            {
-                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)
-                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-            }
-
-
-            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
-            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
-            //    model.Departments = GetDepartmentListByParent(DepId);
-            //else
-            //{
-            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
-            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-            //    foreach (var item in Users)
-            //    {
-            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-            //    }
-            //    model.UserPositions = ul;
-            //}
-            return model;
-        }
-        /// <summary>
-        /// подгружаем только подчиненые ветки на один уровень ниже
-        /// </summary>
-        /// <param name="DepId">Id родительского подразделения</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
-        /// <returns></returns>
-        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
-        {
-            //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
-            if (string.IsNullOrEmpty(DepId))
-            {
-                if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || UserDao.Load(AuthenticationService.CurrentUser.Id).Level <= 2
-                    || AuthenticationService.CurrentUser.Id == 6638 || AuthenticationService.CurrentUser.Id == 22821)//временно открыт доступ 2 сотрудникам к всей структуре
-                {
-                    //DepId = "9900424";
-                    //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
-                }
-                else
-                {
-                    User cur = UserDao.Load(AuthenticationService.CurrentUser.Id);
-                    DepId = (cur == null || cur.Department == null ? null : UserDao.Load(AuthenticationService.CurrentUser.Id).Department.Code1C.ToString());
-                }
-
-                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
-            }
-
-            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
-        }
-        /// <summary>
-        /// Загружаем структуру по заданному коду подразделения с привязками к точкам Финграда
-        /// </summary>
-        /// <param name="DepId">Код родительского подразделения</param>
-        /// <returns></returns>
-        public DepStructureFingradPointsModel GetDepartmentStructureWithFingradPoins(string DepId)
-        {
-            DepStructureFingradPointsModel model = new DepStructureFingradPointsModel();
-            Department dep = DepartmentDao.GetByCode(DepId);
-            int DepartmentId = dep.Id;
-            int itemLevel = dep.ItemLevel.Value;
-            //этот вариант для выбранного подразделения достает с начала руководителей и замов, а уже потом подгружает уровень подчиненных подразделений
-            //сотрудники с ролью руководителей есть во всех уровнях, кроме 7
-            //сортировка сотрудников построена задом наперед, так как при построении дерева новые строки ставятся сразу после родительской
-            //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            if (itemLevel != 7)
-            {
-                //руководство
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 4) > 0).OrderBy(x => x.IsMainManager)
-                    .ThenByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-                //уровень подразделений
-                model.Departments = DepartmentDao.GetDepartmentWithFingradPoint(DepId).OrderBy(x => x.Priority).ToList();
-            }
-            else
-            {
-                //нужно показать простых сотрудников, а показывать руководителей-сотрудников не нужно
-                IList<User> Users = UserDao.GetUsersForDepartment(DepartmentId).Where(x => x.IsActive == true && (x.RoleId & 2) > 0).OrderByDescending(x => x.Position.Name).ThenByDescending(x => x.Name).ToList();
-                IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-                foreach (var item in Users)
-                {
-                    if (UserDao.FindByLogin(item.Login + "R") == null)
-                        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-                }
-                model.UserPositions = ul;
-            }
-
-
-            //кусок строит дерево структуры подразделений и подгружает сотрудников только в подразделения 7 уровня
-            ////если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
-            //if (DepartmentDao.LoadAll().Where(x => x.Code1C == Convert.ToInt32(DepId)).Single().ItemLevel != 7)
-            //    model.Departments = GetDepartmentListByParent(DepId);
-            //else
-            //{
-            //    //таким способом сотрудники загружаются долго, если сделать функцию или представление, то скорость загрузки увеличится в разы
-            //    IList<User> Users = UserDao.LoadAll().Where(x => x.Department != null && x.Department.Code1C == Convert.ToInt32(DepId) && x.IsActive == true && (x.RoleId & 2) > 0).ToList();
-            //    IList<UsersListItemDto> ul = new List<UsersListItemDto>();
-            //    foreach (var item in Users)
-            //    {
-            //        ul.Add(new UsersListItemDto(item.Id, item.Name, item.Department.Path, item.Department.Name, item.Position.Name, item.Login));
-            //    }
-            //    model.UserPositions = ul;
-            //}
-            return model;
-        }
-        /// <summary>
-        /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
-        /// </summary>
-        /// <param name="DepId">Id родительского подразделения.</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
-        /// <returns></returns>
-        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
-        {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
-            return Sdeps;
         }
         #endregion
     }

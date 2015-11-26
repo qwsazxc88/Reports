@@ -19,6 +19,7 @@
     using (Html.BeginBlock("filter-wrap"))
     {
     @Html.CreateHeader((string)ViewBag.Title);
+    <a href="../../Templates/DocumentMovementsInstriction.doc">Инструкция</a>
     @Html.CreateField(m => m.Number, new Dictionary<string, object> { { "ng-model", "Model.Number" } })
     @Html.CreateField(m => m.UserName, new Dictionary<string, object> { { "ng-model", "Model.UserName" } })
     @Html.CreateField(m => m.SenderName, new Dictionary<string, object> { { "ng-model", "Model.SenderName" } })

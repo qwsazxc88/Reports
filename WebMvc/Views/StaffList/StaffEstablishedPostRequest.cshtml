@@ -10,6 +10,7 @@
     @Html.HiddenFor(m => m.SEPId)
     @Html.HiddenFor(m => m.DepartmentId)
     @Html.HiddenFor(m => m.PositionId)
+    @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
    
@@ -38,11 +39,23 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
                         <td>
-                            @Html.HiddenFor(m => m.RequestTypeId)
-                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
+                            {
+                                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.RequestTypeId)
+                                @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
+                            }
                         </td>
                     </tr>
-                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestInitiator)</td>
+                        <td>
+                            @Model.RequestInitiator
+                        </td>
+                    </tr>                    
                 </table>
             </div>
         </div>
@@ -60,34 +73,10 @@
                     </tr>
                     <tr>
                         <td>
-                            @Html.LabelFor(m => m.IsBack)
+                            @Html.LabelFor(m => m.AccessoryName)
                         </td>
                         <td>
-                            <div id="IsBackContainer">
-                                @Html.HiddenFor(m => m.IsBack)
-                                @if (Model.IsBack)
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                    {<text>style="border-color:red;"</text>}
-                                                                                                                                                    else
-                                                                                                                                                    {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse", disabled = "disabled" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                                               {<text>style="border-color:red;"</text>}
-                                                                                                                                                                               else
-                                                                                                                                                                               {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                                else
-                                {
-                                    @Html.RadioButtonFor(m => m.IsBack, true, new { @id = "IsBackTrue", disabled = "disabled" })<label id="lblIsBackTrue" for="IsBackTrue" @if (Model.IsBack)
-                                                                                                                                                                           {<text>style="border-color:red;"</text>}
-                                                                                                                                                                           else
-                                                                                                                                                                           {<text> style="border-color:none;"</text>}>Да</label>
-                                    @Html.RadioButtonFor(m => m.IsBack, false, new { @id = "IsBackFalse" })<label id="lblIsBackFalse" for="IsBackFalse" @if (!Model.IsBack)
-                                                                                                                                                        {<text>style="border-color:red;"</text>}
-                                                                                                                                                        else
-                                                                                                                                                        {<text> style="border-color:none;"</text>}>Нет</label>
-                                }
-                            </div>
+                            @(string.IsNullOrEmpty(Model.AccessoryName) ? "" : Model.AccessoryName)
                         </td>
                     </tr>
                     <tr>
@@ -205,15 +194,16 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.PositionId)</td>
                         <td>
-                            <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "StaffList")" />
+                            @Html.TextBoxFor(m => m.PositionName, Model.RequestTypeId != 1 ? (object)new { style = "width:600px;", @readonly = "readonly" } : (object)new { style = "width:600px;" })
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.Quantity, (object)new { style = "width:70px;" })
+                            @Html.TextBoxFor(m => m.Quantity, Model.RequestTypeId == 1 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Quantity)
+                            @Html.DisplayFor(m => m.EPInfo)
                         </td>
                     </tr>
                     <tr>
@@ -265,21 +255,117 @@
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>
                     </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ScheduleId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.WCId)</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.WCId, Model.WorkConditions, string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
+                        <td>
+                            @Html.EditorFor(m => m.BeginAccountDate)
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
 
-
+        @if (Model.Id != 0)
+        {
+            <div id="MainDiv4">
+                <h3>Согласование</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsInitiatorApprove)
+                                @Html.HiddenFor(m => m.IsInitiatorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsInitiatorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.InitiatorApproveName)
+                                @if (Model.IsInitiatorApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.InitiatorId, new SelectList(Model.Initiators, "ID", "Name"), !Model.IsInitiatorApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.InitiatorId)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsCuratorApprove)
+                                @Html.HiddenFor(m => m.IsCuratorApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.CuratorApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsTopManagerApprove)
+                                @Html.HiddenFor(m => m.IsTopManagerApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsTopManagerApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.TopManagerApproveName)
+                                @*@Html.HiddenFor(m => m.TopManagerId)*@
+                                @if (Model.IsTopManagerApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.IsBoardMemberApprove)
+                                @Html.HiddenFor(m => m.IsBoardMemberApprove)
+                            </td>
+                            <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
+                            <td>
+                                @Html.DisplayFor(m => m.BoardMemberApproveName)
+                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
+                                @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
+                                {
+                                    @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>  
+        }
+        
         <br />
-        <button id="btnSave" type="button" title="Сохранить заявку" @if (!Model.IsDraftButtonAvailable)
-                                                                    {<text>disabled=disabled</text>}>Сохранить</button>
-        <button id="btnAgree" type="button" title="Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
-                                                                                     {<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnSave" type="button" title=@(Model.Id == 0 ? "Сохранить заявку" : "Редактировать заявку") @if (!Model.IsDraftButtonAvailable)
+                                                                                                                {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                        {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
-    if (Model.Id != 0)
-    {
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-    }
+                                                                                                        }
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -294,15 +380,27 @@
     $(document).ready(function () {
         setActiveMenuItem("moSEPRequest");
 
-        ShowFlash(true);
-        ShowFlash(false);
+        $("#PositionName").autocomplete({
+            source: "@Url.Action("AutocompletePositionSearch", "StaffList")",
+            minLength: 1,
+            select: function (event, ui) {
+                $("#PositionName").val(ui.item.label);
+                $("#PositionId").val(ui.item.PositionId);
+            }
+        });
+
+
+        //ShowFlash(true);
+        //ShowFlash(false);
 
         $(document).tooltip({ track: true });
         $(":button").button();
+        $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("85px");
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
         $("#btnAgree").click(function () {
-            if (!confirm("Эта операция добавит/заменит существующую запись в справочнике штатных единиц! Продолжить выполнение?")) {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
                 return;
             }
             $("#IsDraft").val(false);
@@ -313,12 +411,19 @@
 
         $("#MainDiv2").accordion({
             header: "h3",
-            active: false,//эта строка делает данный раздел закрытым по молчанию
+            active: false, //эта строка делает данный раздел закрытым по молчанию
             collapsible: true,
             autoHeight: false,
             heightStyle: "content"
         });
 
+        $("#MainDiv4").accordion({
+            header: "h3",
+            //active: true,
+            collapsible: true,
+            autoHeight: false,
+            heightStyle: "content"
+        });
 
         $(".portlet")
             .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
@@ -334,32 +439,11 @@
 
         //        $( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
 
-        //$("#OrderDate").datepicker({ changeYear: true, changeMonth: true });
-        //$(".hasDatepicker").width("85px");
 
 
-        $('#IsBackContainer').buttonset();
         $('#IsTaxAdminAccountContainer').buttonset();
         $('#IsEmployeAvailableContainer').buttonset();
 
-
-        //автозаполнение должностей
-        $(function () {
-            $("[data-autocomplete-source]").each(
-                function () {
-                    var target = $(this);
-                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
-                        select: function (event, ui) {
-                            //для физиков
-                            if (ui.item.PositionId != null) {
-                                $("#PositionName").val(ui.item.label);
-                                $("#PositionId").val(ui.item.PositionId);
-                            }
-                            return true;
-                        }
-                    });
-                });
-        });
 
     });
 
@@ -383,7 +467,7 @@
                 draggable: false,
                 resizable: false,
                 width: 300,
-                height: 60,
+                height: 100,
                 closeOnEscape: false,
                 close: function (event, ui) {
                     //$(this).dialog("destroy").remove();

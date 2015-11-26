@@ -1,0 +1,25 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="StaffEstablishedPostUserLinks" dynamic-update="true" table="StaffEstablishedPostUserLinks">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_StaffEstablishedPostUserLinks_StaffEstablishedPost" index="StaffEstablishedPostUserLinks_StaffEstablishedPost" not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffEstablishedPostUserLinks_Users" index="StaffEstablishedPostUserLinks_Users" not-null="false"/>
+    <property name="IsUsed" not-null="false"/>
+    <property name="ReserveType" not-null="false"/>
+    <property name="DocId" not-null="false"/>
+    <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentAdministration_CreatorUser" index="StaffDepartmentAdministration_CreatorUser" not-null="false"/>
+    <property name="CreateDate" not-null="false"/>
+    <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentAdministration_EditorUser" index="StaffDepartmentAdministration_EditorUser" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+
+    <bag name="StaffPostReplacements" lazy="true" cascade="all-delete-orphan">
+      <key column="UserLinkId" foreign-key="FK_StaffPostReplacement_StaffEstablishedPostUserLinks"/>
+      <one-to-many class="StaffPostReplacement"/>
+    </bag>
+    
+  </class>
+</hibernate-mapping>

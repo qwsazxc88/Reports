@@ -27,6 +27,7 @@ begin
 
 	drop table #checkpoint
 	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
+	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499, 227)
 	return
 end
 else
@@ -45,6 +46,7 @@ FROM DepartmentArchive as A
 INNER JOIN Department as B on B.Id = A.DepartmentId and B.BFGId = 4
 
 DELETE Department WHERE BFGId = 4	
+
 --убираем у всех записей 7 уровня коды из Финграда, чтобы при обработке проставить их заново
 UPDATE Department SET FingradCode = null
 
@@ -298,9 +300,9 @@ UPDATE #TMP SET --[Дата_процедуры] = case when year([Дата_процедуры]) = 1900 the
 --								,[ОКТМО] = case when len([ОКТМО]) = 0 or [ОКТМО] = N'-' then null else [ОКТМО] end
 
 
-UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
-UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
+--UPDATE #TMP SET [Индекс] = REPLACE([Индекс], char(160), '')
+--UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, case when charindex('.', [Индекс]) = 0 then 0 else (charindex('.', [Индекс]) - 1) end) WHERE [Индекс] is not null --[Код_подразделения] = '04-07-24-011'
+--UPDATE #TMP SET [Индекс] = SUBSTRING([Индекс], 1, 6) 
 --UPDATE #TMP SET [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = null where [Кол_во_запущенных_банкоматов_с_функцией_кэшин] = '06.08.2014'
 UPDATE #TMP SET [Дни_работы_точки] = '1111110' WHERE [Дни_работы_точки] = '111110'
 
@@ -427,7 +429,7 @@ FROM Users as A WHERE A.RoleId = 4 and A.IsMainManager = 1 and A.IsActive = 1
 --отключаем беременных
 and not exists (SELECT * FROM ChildVacation WHERE getdate() between BeginDate and EndDate and UserId in (SELECT id FROM Users WHERE RoleId = 2 and IsActive = 1 and Email = A.Email)) 
 
-SELECT Id, UserId
+SELECT distinct Id, UserId
 INTO #TMP5
 FROM(--по дирекциям
 			SELECT A.Id, A.ParentId, A.ItemLevel ,isnull(C.Id, isnull(E.id, isnull(G.id, isnull(I.id, K.Id)))) as UserId
@@ -613,13 +615,41 @@ BEGIN
 
 	--оба адреса делаем одинаковыми
 	--заносим адрес
-	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version]
+													,[Address]
+													,PostIndex
+													,RegionName
+													,CityName
+													,SettlementName
+													,StreetName
+													,CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when len(isnull([Индекс], '')) = 0 then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом]
+				,[Индекс]
+				,[Субъект_федерации]
+				,case when [Населенный_пункт] like 'г. %' then [Населенный_пункт] else null end
+				,case when [Населенный_пункт] not like 'г. %' then [Населенный_пункт] else null end
+				,substring([Улица_дом], 1, 50)
+				,@CreatorId 
+	FROM #TMP WHERE Id = @Id
 
 	SET @LegalAddressId = @@IDENTITY
 
-	INSERT INTO RefAddresses([Version], [Address], PostIndex, CreatorId)
-	SELECT 1, isnull([Индекс], '') + case when [Индекс] is null then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом], [Индекс], @CreatorId FROM #TMP WHERE Id = @Id
+	INSERT INTO RefAddresses([Version]
+													,[Address]
+													,PostIndex
+													,RegionName
+													,CityName
+													,SettlementName
+													,StreetName
+													,CreatorId)
+	SELECT 1, isnull([Индекс], '') + case when len(isnull([Индекс], '')) = 0 then '' else ', ' end + [Субъект_федерации] + ', ' + [Населенный_пункт] + ', ' + [Улица_дом]
+				,[Индекс]
+				,[Субъект_федерации]
+				,case when [Населенный_пункт] like 'г. %' then [Населенный_пункт] else null end
+				,case when [Населенный_пункт] not like 'г. %' then [Населенный_пункт] else null end
+				,substring([Улица_дом], 1, 50)
+				,@CreatorId 
+	FROM #TMP WHERE Id = @Id
 
 	SET @FactAddressId = @@IDENTITY
 
@@ -647,13 +677,13 @@ BEGIN
 																			,DateState
 																			,CreatorId)
 	SELECT 1
-					,getdate()--A.[Дата_процедуры]
-					,1--case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
+					,'20151031'--A.[Дата_процедуры]
+					,4--ввод начальных данных
 					,@Id
 					,B.ItemLevel
 					,C.Id
 					,B.Name
-					,case when A.[Front_Back1] = 'Front' then 2 when A.[Front_Back1] = 'Back' then 1 else null end
+					,B.BFGId
 					,[Приказы]
 					,null
 					,@LegalAddressId	--адрес
@@ -665,7 +695,7 @@ BEGIN
 					,0
 					,null
 					,getdate()
-					,null
+					,getdate()
 					,@CreatorId
 	FROM #TMP as A
 	INNER JOIN Department as B ON B.Id = A.Id
@@ -992,7 +1022,7 @@ BEGIN
 	--красим родителей
 	UPDATE Department SET BFGId = 5
 	WHERE (Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%') 
-	and isnull(BFGId, 0) <> 5 and ItemLevel = @i
+	and isnull(BFGId, 0) not in (4, 5) and ItemLevel = @i
 
 	--стараемся прокрасить от родителя до самого низа
 	UPDATE Department SET BFGId = 5
@@ -1020,6 +1050,7 @@ FROM Department as A
 WHERE --A.BFGId = 5 
 			(A.Name like '%ликвидиров%' or A.Name like '%закрыт%' or A.Name like '%не исп%' or A.Name like '%корзина%' )
 			and A.ItemLevel = 7
+			and isnull(A.BFGId, 0) <> 4	--то что из финграда оставляем
 
 
 --для 7
@@ -1067,8 +1098,8 @@ INSERT INTO StaffDepartmentRequest ([Version]
 																			,DateState
 																			,CreatorId)
 	SELECT 1
-					,getdate()--A.[Дата_процедуры]
-					,1--case when A.[Вид_процедуры] = 'Занесение в справочник' then 1 else 2 end
+					,'20151031'--A.[Дата_процедуры]
+					,4--ввод начальных данных
 					,A.Id
 					,A.ItemLevel
 					,B.Id
@@ -1085,14 +1116,24 @@ INSERT INTO StaffDepartmentRequest ([Version]
 					,0
 					,null
 					,getdate()
-					,null
-					,C.UserId
+					,getdate()
+					,(SELECT top 1 UserId FROM #TMP5 WHERE Id = A.Id)--C.UserId
 	FROM (SELECT * FROM Department as A
 				WHERE isnull(A.BFGId, 1) not in (3, 4, 5) and A.FingradCode is null) as A
 	LEFT JOIN Department as B ON B.Code1C = A.ParentId
-	LEFT JOIN #TMP5 as C ON C.Id = A.Id
+	--LEFT JOIN #TMP5 as C ON C.Id = A.Id
 	ORDER BY A.ItemLevel
 
+
+
+--проставляем инкассирующие подразделения в заявки (ВАЖНО ПРИ НАЛИЧИИ ЗАЯВОК КУСОК МОЖНО ИСПОЛЬЗОВАТЬ ОТДЕЛЬНО)
+UPDATE StaffDepartmentCBDetails SET DepCachinId = E.DepartmentId, DepATMId = F.DepartmentId
+FROM StaffDepartmentCBDetails as A
+INNER JOIN StaffDepartmentRequest as B ON B.Id = A.DepRequestId and B.IsDraft = 0
+INNER JOIN Department as C ON C.id = B.DepartmentId and C.FingradCode is not null
+INNER JOIN Fingrad_csv as D ON D.[Код_подразделения] = C.FingradCode and (D.[Инкассирующее_подразделение_кэшина] is not null or D.[Инкассирующее_подразделение_банкомата] is not null)
+LEFT JOIN StaffDepartmentRPLink as E ON E.Code = D.[Инкассирующее_подразделение_кэшина_Код_РП_в_финград]
+LEFT JOIN StaffDepartmentRPLink as F ON F.Code = D.[Инкассирующее_подразделение_банкомата_Код_РП_в_финград]
 
 
 drop table #TMP

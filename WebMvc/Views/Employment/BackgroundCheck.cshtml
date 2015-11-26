@@ -22,6 +22,7 @@
     @Html.HiddenFor(m => m.DeleteAttachmentId)
     @Html.HiddenFor(m => m.IsPrintButtonAvailable)
     @Html.HiddenFor(m => m.IsDeleteScanButtonAvailable)
+    @Html.HiddenFor(m => m.IsVolga)
 
     
     <div onselectstart="return false" style="-moz-user-select: none;-khtml-user-select: none;user-select: none;float:left;">
@@ -362,7 +363,7 @@
             </div>
         }
     </div>
-    <div>
+    <div class="formfield clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         @Html.HiddenFor(m => m.IsBGDraft)

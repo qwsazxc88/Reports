@@ -80,7 +80,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Осуществлять прием сотрудников в подразделение")]
         public bool IsEmployeAvailable { get; set; }
 
-        [Display(Name = "Указать подразделение с налоговыми реквизитами")]
+        [Display(Name = "Подразделение с налоговыми реквизитами:")]
         public int DepNextId { get; set; }
         public string DepNextName { get; set; }
 
@@ -231,7 +231,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Номер телефона")]
         public string Phone { get; set; }
 
-        [Display(Name = "Коды совместимости программ")]
+        [Display(Name = "Коды совместимых программ")]
         public IList<ProgramCodeDto> ProgramCodes { get; set; }
 
         [Display(Name = "Установленное ПО")]
@@ -273,6 +273,95 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<IdNameDto> SKB_GE { get; set; }
         #endregion
 
+        #region Согласование
+        [Display(Name = "№ задачи")]
+        public string PyrusNumber { get; set; }
+
+        [Display(Name = "Инициатор")]
+        public bool IsInitiatorApprove { get; set; }    //1
+        public bool IsInitiatorApproveAvailable { get; set; }
+        [Display(Name = "ФИО инициатора")]
+        public string InitiatorApproveName { get; set; }
+        [Display(Name = "За")]
+        public int InitiatorId { get; set; }
+        public IList<IdNameDto> Initiators { get; set; }    //список инициаторов для куратора/кадровика банка
+        public string InitiatorPyrusRef { get; set; }
+        public string InitiatorPyrusName { get; set; }
+
+
+        //кураторы и кадровки банка имеют одинаковые права
+        [Display(Name = "Куратор")]
+        public bool IsCuratorApprove { get; set; }    //2
+        public bool IsCurator { get; set; }  //2
+        public bool IsCuratorApproveAvailable { get; set; }
+        [Display(Name = "ФИО куратора")]
+        public string CuratorApproveName { get; set; }
+        public string CuratorPyrusRef { get; set; }
+        public string CuratorPyrusName { get; set; }
+
+
+        [Display(Name = "Кадровик банка")]
+        public bool IsPersonnelBankApprove { get; set; }  //3
+        public bool IsPersonnelBank { get; set; }  //3
+        public bool IsPersonnelBankApproveAvailable { get; set; }
+        [Display(Name = "ФИО кадровика")]
+        public string PersonnelBankApproveName { get; set; }
+        public string PersonnelBankPyrusRef { get; set; }
+        public string PersonnelBankPyrusName { get; set; }
+
+
+        [Display(Name = "Консультант РК")]
+        public bool IsConsultant { get; set; }  //
+
+
+        [Display(Name = "Налоговик")]
+        public bool IsTaxCollectorApprove { get; set; }   //4
+        public bool IsTaxCollectorApproveAvailable { get; set; }    //кроме согласования налоговик должен указать подразделение с реквизитами
+        [Display(Name = "ФИО налоговика")]
+        public string TaxCollectorApproveName { get; set; }
+        public bool IsTaxCollector { get; set; }            //налоговик, для него делаем доступ к выбору подразделения с налоговыми реквизитами и делаем проверку н наличие такового при согласовании
+
+        
+
+        [Display(Name = "Вышестоящий руководитель 3 ур.")]
+        public bool IsTopManagerApprove { get; set; }   //5
+        public bool IsTopManagerApproveAvailable { get; set; }
+        [Display(Name = "ФИО вышестоящего руководителя")]
+        public string TopManagerApproveName { get; set; }
+        [Display(Name = "За")]
+        public int TopManagerId { get; set; }
+        public IList<IdNameDto> TopManagers { get; set; }    //список вышестоящих руководителей 3 уровня для куратора/кадровика банка
+        public string TopManagerPyrusRef { get; set; }
+        public string TopManagerPyrusName { get; set; }
+
+
+        [Display(Name = "Член правления")]
+        public bool IsBoardMemberApprove { get; set; }   //6
+        public bool IsBoardMemberApproveAvailable { get; set; }
+        [Display(Name = "ФИО члена правления")]
+        public string BoardMemberApproveName { get; set; }
+        [Display(Name = "За")]
+        public int BoardMemberId { get; set; }
+        public IList<IdNameDto> BoardMembers { get; set; }    //список членов правления для куратора/кадровика банка
+        public string BoardMemberPyrusRef { get; set; }
+        public string BoardMemberPyrusName { get; set; }
+
+        //не участвует в согласовании, показывем только отметку
+        [Display(Name = "Ответственный по приказам")]
+        public bool IsSecretaryApprove { get; set; }   //
+        public bool IsSecretaryApproveAvailable { get; set; }
+        [Display(Name = "ФИО ответственного по приказам")]
+        public string SecretaryApproveName { get; set; }
+        public bool IsSecretary { get; set; }
+
+        //не участвует в согласовании, сохраняет тольк коды
+        [Display(Name = "Администратор ПО банка")]
+        public bool IsSoftAdminApprove { get; set; }   //
+        public bool IsSoftAdminApproveAvailable { get; set; }
+        public bool IsSoftAdmin { get; set; }            
+
+        #endregion
+
         #region Служебные поля
         [Display(Name = "Признак черновика.")]
         public bool IsDraft { get; set; }
@@ -280,6 +369,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string MessageStr { get; set; }
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
+        public bool IsImportance { get; set; }  //признак важности согласования
+
+        
         #endregion
     }
 }

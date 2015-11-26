@@ -33,6 +33,10 @@ namespace Reports.Core.Domain
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
         public virtual IList<DepartmentArchive> DepartmentArchives { get; set; }
+        /// <summary>
+        /// Налоговые реквизиты.
+        /// </summary>
+        public virtual IList<StaffDepartmentTaxDetails> DepartmentTaxDetails { get; set; }
 
         #endregion
 

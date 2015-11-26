@@ -38,7 +38,7 @@ namespace Reports.Core.Dao
         /// Достаем уровень подразделений с полями из финграда.
         /// </summary>
         /// <param name="Id">Id родительского подразделения</param>
-        /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
         /// <returns></returns>
         IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly);
     }

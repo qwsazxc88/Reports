@@ -8,7 +8,8 @@ namespace Reports.Core.Dto
     /// </summary>
     public class StaffEstablishedPostDto
     {
-        public int Id { get; set; }
+        public int Id { get; set; }     //Id строки связи шаттной единицы и пользователя
+        public int SEPId { get; set; }  //Id штатной единицы
         public int PositionId { get; set; }
         public string PositionName { get; set; }
         public int DepartmentId { get; set; }
@@ -18,5 +19,14 @@ namespace Reports.Core.Dto
         public int RequestId { get; set; }  //Id действующей заявки
         public int UserId { get; set; }     //Id сотрудника
         public string Surname { get; set; } //ФИО сотрудника (данный класс используется для штатных единиц и расстановки)
+        public decimal? Rate { get; set; }  //ставка
+        public int ReplacedId { get; set; }     //Id заменяемого сотрудника
+        public string ReplacedName { get; set; } //ФИО заменяемого сотрудника + период отпуска
+        public int ReserveType { get; set; }        //Тип бронирования вакансии
+        public int DocId { get; set; }      //Id документа/заявки
+        public bool IsReserve { get; set; } //Признак бронирования 
+        public bool? IsPregnant { get; set; }     //признак беременности
+        public bool IsVacation { get; set; }    //признак вакансии
+        public bool IsSTD { get; set; }     //признак срочного договора
     }
 }

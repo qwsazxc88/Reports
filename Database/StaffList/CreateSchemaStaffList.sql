@@ -6,12 +6,15 @@ go
 
 --1. УДАЛЕНИЕ ССЫЛОК
 --так как многократно приходится пересоздавать структуру, удаляю связи для других таблиц 
-IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPostRequest', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPostRequest]
+IF OBJECT_ID ('FK_StaffMovements_SourceUserLink', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_SourceUserLink]
 GO
-IF OBJECT_ID ('FK_StaffMovements_StaffEstablishedPost', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_StaffEstablishedPost]
+IF OBJECT_ID ('FK_StaffMovements_TargetUserLink', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_TargetUserLink]
 GO
+
+UPDATE StaffMovements SET SourceStaffEstablishedPostRequest = null, TargetStaffEstablishedPostRequest = null
+
 
 
 --для таблицы пользоателей
@@ -32,6 +35,63 @@ GO
 
 IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[RefAddresses] DROP CONSTRAINT [FK_RefAddresses_Creators]
+GO
+
+
+IF OBJECT_ID ('FK_StaffEstablishedPostUserLinks_Users', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] DROP CONSTRAINT [FK_StaffEstablishedPostUserLinks_Users]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostUserLinks_StaffEstablishedPost', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] DROP CONSTRAINT [FK_StaffEstablishedPostUserLinks_StaffEstablishedPost]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostUserLinks_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] DROP CONSTRAINT [FK_StaffEstablishedPostUserLinks_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostUserLinks_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] DROP CONSTRAINT [FK_StaffEstablishedPostUserLinks_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_User', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_User]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_StaffEstablishedPostUserLinks', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPostUserLinks]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_StaffEstablishedPost', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPost]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_Replaced', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_Replaced]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffPostReplacement_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_StaffDepartmentRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_DocumentApproval', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval]
+GO
+
+IF OBJECT_ID ('FK_StaffRequestPyrusTasks_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffRequestPyrusTasks] DROP CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentOperations_EditorUser', 'F') IS NOT NULL
@@ -140,6 +200,14 @@ GO
 
 IF OBJECT_ID ('FK_StaffProgramCodes_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffProgramCodes] DROP CONSTRAINT [FK_StaffProgramCodes_CreatorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffWorkingConditions', 'F') IS NOT NULL	
+	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions]
+GO
+
+IF OBJECT_ID ('FK_StaffEstablishedPostRequest_Schedule', 'F') IS NOT NULL	
+	ALTER TABLE [dbo].[StaffEstablishedPostRequest] DROP CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule]
 GO
 
 IF OBJECT_ID ('FK_StaffEstablishedPostRequest_StaffEstablishedPostRequestTypes', 'F') IS NOT NULL	
@@ -550,6 +618,7 @@ CREATE TABLE [dbo].[StaffExtraCharges](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[GUID] [nvarchar](40) NULL,
 	[Name] [nvarchar](100) NULL,
+	[IsPostOnly] [bit] NULL,
  CONSTRAINT [PK_StaffExtraCharges] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -570,11 +639,14 @@ CREATE TABLE [dbo].[StaffEstablishedPostRequest](
 	[SEPId] [int] NULL,
 	[PositionId] [int] NULL,
 	[DepartmentId] [int] NULL,
+	[ScheduleId] [int] NULL,
+	[WCId] [int] NULL,
 	[Quantity] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
 	[IsUsed] [bit] NULL,
 	[IsDraft] [bit] NULL,
 	[DateSendToApprove] [datetime] NULL,
+	[DateAccept] [datetime] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[ReasonId] [int] NULL,
 	[CreatorID] [int] NULL,
@@ -1298,7 +1370,187 @@ INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Управленческое'
 INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Удалено/закрыто')
 
 
+
+if OBJECT_ID (N'StaffWorkingConditions', 'U') is not null
+	DROP TABLE [dbo].[StaffWorkingConditions]
+GO
+CREATE TABLE [dbo].[StaffWorkingConditions](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[Name] [nvarchar](50) NULL,
+ CONSTRAINT [PK_StaffWorkingConditions] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+if OBJECT_ID (N'StaffRequestPyrusTasks', 'U') is not null
+	DROP TABLE [dbo].[StaffRequestPyrusTasks]
+GO
+CREATE TABLE [dbo].[StaffRequestPyrusTasks](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[DepRequestId] [int] NULL,
+	[SEPRequestId] [int] NULL,
+	[ApproveId] [int] NULL,
+	[NumberTask] [nvarchar](20) NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffRequestPyrusTasks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+if OBJECT_ID (N'StaffPostReplacement', 'U') is not null
+	DROP TABLE [dbo].[StaffPostReplacement]
+GO
+CREATE TABLE [dbo].[StaffPostReplacement](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserLinkId] [int] NULL,
+	[UserId] [int] NULL,
+	[ReplacedId] [int] NULL,
+	[IsUsed] [bit] NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffPostReplacement] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+if OBJECT_ID (N'StaffEstablishedPostUserLinks', 'U') is not null
+	DROP TABLE [dbo].[StaffEstablishedPostUserLinks]
+GO
+CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[SEPId] [int] NULL,
+	[UserId] [int] NULL,
+	[IsUsed] [bit] NULL,
+	[ReserveType] [int] NULL,
+	[DocId] [int] NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffEstablishedPostUserLinks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostUserLinks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostUserLinks_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostUserLinks_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostUserLinks_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostUserLinks_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostUserLinks_StaffEstablishedPost] FOREIGN KEY([SEPId])
+REFERENCES [dbo].[StaffEstablishedPost] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostUserLinks_StaffEstablishedPost]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostUserLinks_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostUserLinks_Users]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] ADD  CONSTRAINT [DF_StaffPostReplacement_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_Replaced] FOREIGN KEY([ReplacedId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_Replaced]
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_User]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] ADD  CONSTRAINT [DF_StaffRequestPyrusTasks_DateCreate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval] FOREIGN KEY([ApproveId])
+REFERENCES [dbo].[DocumentApproval] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_DocumentApproval]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest] FOREIGN KEY([DepRequestId])
+REFERENCES [dbo].[StaffDepartmentRequest] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest]
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest] FOREIGN KEY([SEPRequestId])
+REFERENCES [dbo].[StaffEstablishedPostRequest] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest]
+GO
+
 ALTER TABLE [dbo].[Department]  WITH CHECK ADD  CONSTRAINT [FK_Department_StaffDepartmentAccessory] FOREIGN KEY([BFGId])
 REFERENCES [dbo].[StaffDepartmentAccessory] ([Id])
 GO
@@ -1631,6 +1883,20 @@ REFERENCES [dbo].[StaffEstablishedPost] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks] CHECK CONSTRAINT [FK_StaffEstablishedPostChargeLinks_StaffEstablishedPost]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule] FOREIGN KEY([ScheduleId])
+REFERENCES [dbo].[Schedule] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_Schedule]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions] FOREIGN KEY([WCId])
+REFERENCES [dbo].[StaffWorkingConditions] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostRequest] CHECK CONSTRAINT [FK_StaffEstablishedPostRequest_StaffWorkingConditions]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostChargeLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffEstablishedPostChargeLinks_StaffEstablishedPostRequest] FOREIGN KEY([SEPRequestId])
@@ -2166,8 +2432,125 @@ GO
 ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_StaffEstablishedPost]
 GO
 
+--ссылки для штатной расстановки
+ALTER TABLE [dbo].[StaffMovements]  WITH CHECK ADD  CONSTRAINT [FK_StaffMovements_SourceUserLink] FOREIGN KEY([SourceStaffEstablishedPostRequest])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffMovements] CHECK CONSTRAINT [FK_StaffMovements_SourceUserLink]
+GO
+
+ALTER TABLE [dbo].[StaffMovements]  WITH CHECK ADD  CONSTRAINT [FK_StaffMovements_TargetUserLink] FOREIGN KEY([TargetStaffEstablishedPostRequest])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffMovements] CHECK CONSTRAINT [FK_StaffMovements_TargetUserLink]
+GO
+
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id штатной единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'SEPId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'UserId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип бронирования вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'ReserveType'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа/заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DocId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Связи штатных единиц с сотрудниками' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id связи сотрудника с штатной единицей' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'UserLinkId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'UserId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id замещенного сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'ReplacedId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Журнал замещения сотрудников' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id Записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'DepRequestId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки для штатной единицы единицы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'SEPRequestId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'ApproveId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Номер задачи в Пайрусе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'NumberTask'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id автора записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Задачи в Пайрусе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffRequestPyrusTasks'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Наименование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов условий труда' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffWorkingConditions'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentAccessory', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -3116,6 +3499,12 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DepartmentId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'График работы' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'ScheduleId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id условия труда' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'WCId'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'Quantity'
 GO
 
@@ -3129,6 +3518,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак чернов
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата отправки на согласование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DateSendToApprove'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата согласования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'DateAccept'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала учета в системе' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostRequest', @level2type=N'COLUMN',@level2name=N'BeginAccountDate'
@@ -3159,6 +3551,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Идентификатор 
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Должностная надбавка' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges', @level2type=N'COLUMN',@level2name=N'IsPostOnly'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник надбавок' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraCharges'
@@ -3456,10 +3851,12 @@ IF OBJECT_ID ('vwStaffListDepartment', 'V') IS NOT NULL
 	DROP VIEW [dbo].[vwStaffListDepartment]
 GO
 
---состояние заполнения анкет
 CREATE VIEW [dbo].[vwStaffListDepartment]
 AS
-SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, 
+SELECT A.Id, A.Code
+				--если есть сосед есть, но нет реквизитов, показываем составное название точки
+			 ,case when B.DepNextId is not null and isnull(TaxAdminCode, '') = '' then K.Name + N' (' + A.Name + N')' else A.Name end as Name
+			 ,A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSKD, A.Priority, 
 			 case when A.ItemLevel = 2 then D.Name 
 						when A.ItemLevel = 3 then E.Name 
 						when A.ItemLevel = 4 then F.Name 
@@ -3467,10 +3864,7 @@ SELECT A.Id, A.Code, A.Name, A.Code1C, A.ParentId, A.Path, A.ItemLevel, A.CodeSK
 						when A.ItemLevel = 6 then H.Name
 						else C.NameShort end as DepFingradName, 
 			 --C.NameComment as DepFingradNameComment, 
-			 case A.BFGId when 1 then 'Бэк'
-										when 2 then 'Фронт'
-										when 3 then 'ГПД'
-										when 4 then 'Управленческое' end as DepFingradNameComment,
+			 I.Name as DepFingradNameComment,
 			 C.DepCode as FinDepPointCode, A.BFGId
 FROM Department as A
 LEFT JOIN StaffDepartmentRequest as B ON B.DepartmentId = A.Id and B.IsUsed = 1 
@@ -3481,10 +3875,23 @@ LEFT JOIN StaffDepartmentManagement as E ON E.DepartmentId = A.Id
 LEFT JOIN StaffDepartmentAdministration as F ON F.DepartmentId = A.Id 
 LEFT JOIN StaffDepartmentBusinessGroup as G ON G.DepartmentId = A.Id 
 LEFT JOIN StaffDepartmentRPLink as H ON H.DepartmentId = A.Id 
+LEFT JOIN StaffDepartmentAccessory as I ON I.id = A.BFGId
+--налоговые реквизиты
+LEFT JOIN StaffDepartmentTaxDetails as J ON J.DepartmentId = A.Id
+LEFT JOIN Department as K ON K.Id = B.DepNextId
+WHERE A.IsUsed = 1
 GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffWorkingConditions
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'на время отсутствия основного работника')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'совместительство')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'основное место работы')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'срочный трудовой договор')
+INSERT INTO StaffWorkingConditions(Version, Name) VALUES(1, N'не полный рабочий день')
+
+
 --StaffDepartmentOperationGroups
 INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 1', 1)	--1
 INSERT INTO StaffDepartmentOperationGroups(Version, Name, IsUsed) VALUES(1, N'Группа опеаций 2', 1)	--2
@@ -3707,14 +4114,14 @@ INSERT INTO StaffDepartmentCashDeskAvailable(Name) VALUES(N'только касса пересче
 
 
 --StaffExtraCharges
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'4f4a4697-cc10-11dd-87ea-00304861d218', N'Надбавка за выслугу лет рабочим и служащим#1114')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'4f4a4696-cc10-11dd-87ea-00304861d218', N'Надбавка за квалификацию#1115')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'd9cd6dfe-b4b0-11de-b733-003048359abd', N'Надбавка за разъездной характер работы#1116')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'784efe28-3634-11dd-b8e4-00304861d218', N'Надбавка Персональная#1117')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302')
-INSERT INTO StaffExtraCharges([GUID], Name) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302')
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'4f4a4697-cc10-11dd-87ea-00304861d218', N'Надбавка за выслугу лет рабочим и служащим#1114', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'4f4a4696-cc10-11dd-87ea-00304861d218', N'Надбавка за квалификацию#1115', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'd9cd6dfe-b4b0-11de-b733-003048359abd', N'Надбавка за разъездной характер работы#1116', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'784efe28-3634-11dd-b8e4-00304861d218', N'Надбавка Персональная#1117', 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302', 1)
 
 
 --StaffLandmarkTypes
@@ -3737,11 +4144,13 @@ INSERT INTO StaffProgramReference(Name) VALUES(N'РБС')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Открытие СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Изменение параметров СП')
 INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Закрытие СП')
+INSERT INTO StaffDepartmentRequestTypes(Version, Name) VALUES(1, N'Ввод начальных данных')
 
 --StaffEstablishedPostRequestTypes
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Создание ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Изменение ШЕ')
 INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Сокращение ШЕ')
+INSERT INTO StaffEstablishedPostRequestTypes(Version, Name) VALUES(1, N'Ввод начальных данных')
 
 --DepartmentArchive
 INSERT INTO DepartmentArchive(DepartmentId, Code, Name, Code1C, ParentId, Path, ItemLevel, IsUsed)
@@ -3811,7 +4220,7 @@ UPDATE Department SET BFGId = 3	WHERE Name like '%гпд%'
 --UPDATE Department SET BFGId = 5	WHERE Name like '%ликвидиров%' or Name like '%закрыт%' or Name like '%не исп%' or Name like '%корзина%' 
 --UPDATE Department SET BFGId = null	WHERE BFGId = 5
 
-IF DB_NAME() = 'WebAppTest'
+IF DB_NAME() = 'WebAppTest' or DB_NAME() = 'WebAppTest2'
 BEGIN
 	INSERT INTO Kladr 
 	SELECT * FROM WebAppSKB.dbo.Kladr
@@ -3992,6 +4401,140 @@ BEGIN
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
 END
 GO
+
+
+IF OBJECT_ID ('fnGetReplacedName', 'FN') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetReplacedName]
+GO
+
+
+--функция возвращает строку с замещенными сотрудниками в штатной единице для данного сотрудника
+CREATE FUNCTION dbo.fnGetReplacedName
+(
+	--для запуска функции нужно указать один из параметров
+	@LinkId int	--Id связи штатной единицы и сотрудника
+	,@ReplacedId int	--Id сотрудника который в отпуске, но его никто не замещает
+)
+RETURNS nvarchar(500)
+AS
+BEGIN
+DECLARE 
+	@ReplacedName nvarchar(500)
+	--определяем кого замещает сотрудник
+	IF @ReplacedId is null	
+		SELECT @ReplacedName = case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
+														B.Name + N' - (' + convert(nvarchar, C.BeginDate, 103) + N' - ' + convert(nvarchar, C.EndDate, 103) + ')'
+		FROM StaffPostReplacement as A
+		INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
+		--пока цепляемся отпускам по уходу за ребенком
+		LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
+		WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
+	ELSE	--определяем сотрудника, который ушел в отпуск по уходу за ребенком, но должность его свободна
+		SELECT @ReplacedName = A.Name + N' - (' + convert(nvarchar, B.BeginDate, 103) + N' - ' + convert(nvarchar, B.EndDate, 103) + N')'
+		FROM Users as A 
+		--пока цепляемся отпускам по уходу за ребенком
+		LEFT JOIN ChildVacation as B ON B.UserId = A.Id and B.SendTo1C is not null and B.DeleteDate is null and getdate() between B.BeginDate and B.EndDate 
+		WHERE A.Id = @ReplacedId and A.IsActive = 1 and A.RoleId & 2 > 0
+
+	
+	
+	
+	RETURN @ReplacedName
+END
+GO
+
+
+
+
+
+
+
+
+IF OBJECT_ID ('fnGetStaffEstablishedArrangements', 'TF') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
+GO
+
+--функция достает штатную расстановку по выбранному подразделению
+CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
+(
+	@DepartmentId int
+)
+RETURNS 
+@ReturnTable TABLE 
+(
+	 Id int 
+	,SEPId int
+	,PositionId int
+	,PositionName nvarchar(250)
+	,DepartmentId int
+	,Quantity int
+	,Salary numeric(18, 2)
+	,Path nvarchar(250)
+	,RequestId int
+	,Rate decimal(18, 2)
+	,UserId int
+	,Surname nvarchar(250)
+	,ReplacedId int
+	,ReplacedName nvarchar(500)
+	,ReserveType int
+	,DocId int
+	,IsReserve bit	--признак бронирования вакансии
+	,IsPregnant bit
+	,IsVacation bit	--вакансия
+	,IsSTD bit			--вакансия по срочному договору
+)
+AS
+BEGIN
+	INSERT INTO @ReturnTable
+	SELECT F.Id, A.Id as SEPId, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity, A.Salary, C.Path, D.Id as RequestId, 
+				 E.Rate,	--ставка
+				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
+				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
+				 case when E.IsPregnant = 1 then null else E.Name end as Surname, 
+				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
+				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
+				 ,F.ReserveType
+				 ,F.DocId
+				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,E.IsPregnant
+				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
+				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
+				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
+	FROM StaffEstablishedPost as A
+	INNER JOIN Position as B ON B.Id = A.PositionId
+	INNER JOIN Department as C ON C.Id = A.DepartmentId
+	INNER JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
+	--INNER JOIN Users as E ON E.SEPId = A.Id and E.IsActive = 1 and E.RoleId & 2 > 0
+	INNER JOIN StaffEstablishedPostUserLinks as F ON F.SEPId = A.Id and F.IsUsed = 1
+	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and E.RoleId & 2 > 0 --and E.IsPregnant = 0
+	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
+	LEFT JOIN Users as H ON H.Id = G.ReplacedId
+	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
+				--замещенных убираем из списка этим условием
+				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
+	ORDER BY A.Priority
+
+--select * from dbo.fnGetStaffEstablishedArrangements(7924) 
+
+	RETURN 
+END
+
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

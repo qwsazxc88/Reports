@@ -53,15 +53,11 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity, A.Salary, C.Path, D.Id as RequestId, E.Id as UserId, E.Name as Surname
-                                       FROM StaffEstablishedPost as A
-                                       INNER JOIN Position as B ON B.Id = A.PositionId
-                                       INNER JOIN Department as C ON C.Id = A.DepartmentId
-                                       LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
-                                       LEFT JOIN Users as E ON E.SEPId = A.Id
-                                       WHERE A.DepartmentId = :DepartmentId and A.IsUsed = 1 ORDER BY A.Priority");
+            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, DocId, IsReserve, IsPregnant, IsVacation, IsSTD
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("SEPId", NHibernateUtil.Int32)
                 .AddScalar("PositionId", NHibernateUtil.Int32)
                 .AddScalar("PositionName", NHibernateUtil.String)
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
@@ -71,9 +67,36 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("RequestId", NHibernateUtil.Int32)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Surname", NHibernateUtil.String)
+                .AddScalar("Rate", NHibernateUtil.Decimal)
+                .AddScalar("ReplacedId", NHibernateUtil.Int32)
+                .AddScalar("ReplacedName", NHibernateUtil.String)
+                .AddScalar("ReserveType", NHibernateUtil.Int32)
+                .AddScalar("DocId", NHibernateUtil.Int32)
+                .AddScalar("IsReserve", NHibernateUtil.Boolean)
+                .AddScalar("IsPregnant", NHibernateUtil.Boolean)
+                .AddScalar("IsVacation", NHibernateUtil.Boolean)
+                .AddScalar("IsSTD", NHibernateUtil.Boolean)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
+        }
+        /// <summary>
+        /// Достаем количество сотрудников, закрепленных за данной штатной единицей.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public int GetEstablishedPostUsed(int SEPId)
+        {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue).ToList().Count;
+        }
+        /// <summary>
+        /// Достаем связи штатной единицы и сотрудников.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public IList<StaffEstablishedPostUserLinks> GetEstablishedPostUserLinks(int SEPId)
+        {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId).ToList();
         }
     }
 }

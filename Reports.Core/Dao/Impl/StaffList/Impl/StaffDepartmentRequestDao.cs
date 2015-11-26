@@ -122,14 +122,11 @@ namespace Reports.Core.Dao.Impl
             {
                 case UserRole.Manager:
                     sqlWhere = @"
-                                 INNER JOIN (SELECT A.Id as UserId, A.Level, A.DepartmentId, B.Path
-						                     FROM Users as A
-						                     INNER JOIN Department as B ON B.Id = A.DepartmentId
-						                     WHERE A.Id = :userId) as F ON case F.Level when 2 then Dep2Path
-											  							                when 3 then Dep3Path
-																		                when 4 then Dep4Path
-																		                when 5 then Dep5Path
-																		                when 6 then Dep6Path end like F.Path + N'%'";
+                                 INNER JOIN (SELECT C.*
+                                             FROM Users as A
+                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
+                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
+						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
                     break;
             }
             return sqlWhere;
@@ -184,7 +181,7 @@ namespace Reports.Core.Dao.Impl
             switch (SortBy)
             {
                 case 1:
-                    SqlOrderBy += "Id";
+                    SqlOrderBy += "A.Id";
                     break;
                 case 2:
                     SqlOrderBy += "DateRequest";
@@ -226,7 +223,7 @@ namespace Reports.Core.Dao.Impl
                     SqlOrderBy += "Status";
                     break;
                 default:
-                    SqlOrderBy += "Id";
+                    SqlOrderBy += "A.Id";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");

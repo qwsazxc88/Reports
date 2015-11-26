@@ -20,7 +20,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Вид оплаты/доплаты")]
         public int TypeId { get; set; }
         public IList<IdNameDto> Types;
-
+        public string ManagerName { get; set; }
         [Display(Name = "Дата создания заявки с")]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "по")]
