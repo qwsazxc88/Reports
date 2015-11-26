@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="QueryCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SearchFieldAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Reports.Core\Reports.Core.csproj">

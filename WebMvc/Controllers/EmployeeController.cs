@@ -309,10 +309,10 @@ namespace WebMvc.Controllers
             bool RowFirst = true;
             foreach (var dto in model.TimesheetDtos)
             {
-                string row1 = "<tr><td></td><td></td>";
-                string row2 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Заполняется сотрудником</td>";
-                string row3 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Заполняется руководителем</td>";
-                string row4 = "<tr><td>" + dto.UserNameAndCode + "</td><td>-</td>";
+                string row1 = "<tr><td>ФИО сотрудника</td><td>Календарные дни месяца</td>";
+                string row2 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Рабочие дни</td>";
+                string row3 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Рабочие часы</td>";
+                string row4 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Фактические часы</td>";
                 foreach (var day in dto.Days)
                 {
                     row1 += "<td>" + (day.isStatRecord ? day.StatCode : day.Number.ToString()) + "</td>";
