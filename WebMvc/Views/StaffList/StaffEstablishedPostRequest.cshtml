@@ -222,8 +222,8 @@
                                         <thead>
                                             <tr>
                                                 <th>Надбавка</th>
-                                                <th>Сумма</th>
-                                                <th>%</th>
+                                                <th>Ед. изм.</th>
+                                                <th>Значение</th>
                                             </tr>
                                         <//thead>
                                         @{ int i = 1; }
@@ -236,11 +236,21 @@
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPRequestId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].SEPId)
                                                     @Html.HiddenFor(m => m.PostChargeLinks[i - 1].ChargeName)
+                                                    @Html.HiddenFor(m => m.PostChargeLinks[i - 1].IsNeeded)
                                                     @item.ChargeName
                                                     
                                                 </td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.PostChargeLinks[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].AmountProc)</td>
+                                                <td>@Html.DisplayFor(m => m.PostChargeLinks[i - 1].UnitName)</td>
+                                                <td style="text-align:center;">
+                                                    @if (item.IsNeeded)
+                                                    {
+                                                        @Html.CheckBoxFor(m => m.PostChargeLinks[i - 1].IsUsed) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].IsUsed)
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)
+                                                    }
+                                                </td>
                                             </tr>
                                             { i++; }
                                         }
