@@ -395,7 +395,7 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<TEntity> Find(Func<TEntity, bool> predicate)
         {            
-            var result= Session.Query<TEntity>().Where(predicate);
+            var result= Session.Query<TEntity>().Where(predicate).ToList();
             return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
         }
         public IList<TEntity> QueryExpression(Expression<Func<TEntity, bool>> predicate)

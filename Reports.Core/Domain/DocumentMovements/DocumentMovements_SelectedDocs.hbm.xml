@@ -1,0 +1,13 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="DocumentMovements_SelectedDocs">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="SenderCheck" not-null="false"/>
+    <property name="SenderCheckDate" not-null="false"/>
+    <property name="RecieverCheck" not-null="false"/>
+    <property name="RecieverCheckDate" not-null="false"/>
+    <many-to-one name="Movement" class="DocumentMovements" column="MovementId" foreign-key="FK_DocumentMovements_SelectedDocs" not-null="false"/>
+    <many-to-one name="DocType" class="DocumentMovements_DocTypes" column="DocType" foreign-key="FK_DocumentMovements_SelectedDocs_Type" not-null="false"/>
+  </class>
+</hibernate-mapping>
