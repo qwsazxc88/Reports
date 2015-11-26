@@ -985,9 +985,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
                     {
-                        //Если согласовано принимающим руководителем
+                        //Если согласовано принимающим руководителем, в таком случае нужну забронировать вакансию
                         entity.TargetManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
+                        entity.TargetStaffEstablishedPostRequest.ReserveType =(int) StaffReserveTypeEnum.StaffMovements;                        
                     }
                     break;
                 case 4:                    
