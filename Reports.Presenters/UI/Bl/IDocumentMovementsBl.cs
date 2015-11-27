@@ -9,6 +9,8 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IDocumentMovementsBl: IBaseBl
     {
+        DocumentMovementsEditModel GetCreateWithoutSendModel();
+        int SaveCreateWithoutSendModel(DocumentMovementsEditModel model);
         void SaveModelsFromList(DocumentMovementsEditModel[] models);
         DocumentMovementsListModel GetListModel();
         GridDefinition GetDocuments(DocumentMovementsListModel model);
