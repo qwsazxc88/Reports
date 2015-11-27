@@ -1,4 +1,8 @@
-﻿<HTML><HEAD><TITLE></TITLE>
+﻿@model Reports.Presenters.UI.ViewModel.StaffMovementsPrintModel
+@{
+    Layout = null;
+}
+<HTML><HEAD><TITLE></TITLE>
 <META content="text/html; CHARSET=utf-8" http-equiv=Content-Type>
 <STYLE type=text/css>BODY {
 	FONT-SIZE: 8pt; FONT-FAMILY: Arial; BACKGROUND: #ffffff; FONT-STYLE: normal; MARGIN: 0px
@@ -12,7 +16,10 @@ TR.R0 TD.R0C0 {
 TR.R1 {
 	HEIGHT: 17px
 }
-TR.R1 TD.R11C0 {
+TR.R1 TD.R12C0 {
+	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal; TEXT-ALIGN: justify
+}
+TR.R1 TD.R13C0 {
 	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal
 }
 TR.R1 TD.R1C0 {
@@ -30,9 +37,6 @@ TR.R1 TD.R3C1 {
 TR.R1 TD.R6C0 {
 	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal
 }
-TR.R1 TD.R9C0 {
-	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal; TEXT-ALIGN: justify
-}
 TR.R5 {
 	HEIGHT: 49px
 }
@@ -42,10 +46,10 @@ TR.R5 TD.R5C0 {
 TR.R7 {
 	HEIGHT: 33px
 }
-TR.R7 TD.R19C0 {
+TR.R7 TD.R21C0 {
 	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal
 }
-TR.R7 TD.R19C6 {
+TR.R7 TD.R21C6 {
 	FONT-SIZE: 10pt; FONT-FAMILY: Arial; FONT-STYLE: normal
 }
 TR.R7 TD.R7C0 {
@@ -82,7 +86,7 @@ TD {
 <DIV style="OVERFLOW: hidden; HEIGHT: 101px; WIDTH: 100%"><SPAN></SPAN></DIV></TD>
 <TD class=R0C0 style="BORDER-TOP-STYLE: none">
 <DIV style="OVERFLOW: hidden; HEIGHT: 101px; WIDTH: 100%"><SPAN></SPAN></DIV></TD>
-<TD class=R0C0 style="PADDING-LEFT: 0px" vAlign=top colSpan=8 align=left><IMG style="MARGIN-LEFT: 24pt; MARGIN-TOP: 9pt" alt="" src="доп согл2_files\image000.png" width=366 height=76></TD>
+<TD class=R0C0 style="PADDING-LEFT: 0px" vAlign=top colSpan=8 align=left><IMG style="MARGIN-LEFT: -52pt; MARGIN-TOP: 11pt" alt="" src="../../../Content/SKB_logo.png" ></TD>
 <TD class=R0C0 style="BORDER-TOP-STYLE: none">
 <DIV style="OVERFLOW: hidden; HEIGHT: 101px; WIDTH: 100%"><SPAN></SPAN></DIV></TD>
 <TD class=R0C0 style="BORDER-TOP-STYLE: none">
@@ -92,15 +96,15 @@ TD {
 <TD>
 <DIV style="OVERFLOW: hidden; HEIGHT: 101px; WIDTH: 100%"></DIV></TD></TR>
 <TR class=R1>
-<TD class=R1C0 style="BORDER-LEFT-STYLE: none" colSpan=13><SPAN style="WHITE-SPACE: nowrap">ДОПОЛНИТЕЛЬНОЕ&nbsp;СОГЛАШЕНИЕ</SPAN></TD>
+<TD class=R1C0 style="BORDER-LEFT-STYLE: none" colSpan=13><SPAN style="WHITE-SPACE: nowrap">ДОПОЛНИТЕЛЬНОЕ&nbsp;СОГЛАШЕНИЕ&nbsp;</SPAN></TD>
 <TD></TD></TR>
 <TR class=R1>
-<TD class=R2C0 style="BORDER-LEFT-STYLE: none" colSpan=13><SPAN style="WHITE-SPACE: nowrap">К&nbsp;ТРУДОВОМУ&nbsp;&nbsp;ДОГОВОРУ&nbsp;№&nbsp;от&nbsp;&nbsp;20&nbsp;г.</SPAN></TD>
+<TD class=R2C0 style="BORDER-LEFT-STYLE: none" colSpan=13><SPAN style="WHITE-SPACE: nowrap">К&nbsp;ТРУДОВОМУ&nbsp;&nbsp;ДОГОВОРУ&nbsp;№@Model.AdditionNumber&nbsp;от&nbsp;&nbsp;20&nbsp;г.</SPAN></TD>
 <TD></TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
 <TD class=R3C1 colSpan=9><SPAN style="WHITE-SPACE: nowrap">г.&nbsp;Кострома</SPAN></TD>
-<TD class=R3C1 colSpan=4><SPAN style="WHITE-SPACE: nowrap">20&nbsp;г.</SPAN></TD></TR>
+<TD class=R3C1 colSpan=4><SPAN style="WHITE-SPACE: nowrap">&nbsp;20&nbsp;г.</SPAN></TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
 <TD class=R3C0><SPAN></SPAN></TD>
@@ -117,7 +121,7 @@ TD {
 <TD><SPAN></SPAN></TD>
 <TD>&nbsp;</TD></TR>
 <TR class=R5>
-<TD class=R5C0 style="BORDER-LEFT-STYLE: none" colSpan=13>Публичное акционерное общество «СОВКОМБАНК», именуемый в дальнейшем «РАБОТОДАТЕЛЬ», в лице , действующей на основании Доверенности № от 20 г., с одной стороны, </TD>
+<TD class=R5C0 style="BORDER-LEFT-STYLE: none" colSpan=13>Публичное акционерное общество «СОВКОМБАНК», именуемый в дальнейшем «РАБОТОДАТЕЛЬ», в лице&nbsp; , действующей на основании Доверенности № от 20 г. с одной стороны,</TD>
 <TD></TD></TR>
 <TR class=R1>
 <TD class=R6C0 style="BORDER-LEFT-STYLE: none" colSpan=2><SPAN style="WHITE-SPACE: nowrap">гражданин(ка)</SPAN></TD>
@@ -141,35 +145,43 @@ TD {
 <TD><SPAN></SPAN></TD>
 <TD><SPAN></SPAN></TD>
 <TD>&nbsp;</TD></TR>
+<TR class=R7>
+<TD class=R7C0 style="BORDER-LEFT-STYLE: none" colSpan=13>Изменить пункт 1.2., 2.2.1, 4.2. Трудового договора от&nbsp;20&nbsp;г., и изложить его в следующей редакции: </TD>
+<TD></TD></TR>
+<TR class=R5>
+<TD class=R5C0 style="BORDER-LEFT-STYLE: none" colSpan=13>«1.2. Работник переводится, с его согласия, с должности&nbsp;&nbsp;&nbsp; &nbsp;на должность&nbsp;&nbsp; &nbsp;с 20&nbsp;г.».</TD>
+<TD></TD></TR>
+<TR class=R7>
+<TD class=R7C0 style="BORDER-LEFT-STYLE: none" colSpan=13>
+<DIV style="OVERFLOW: hidden; HEIGHT: 33px; WIDTH: 100%">«2.2.1. Должностные обязанности изменяются согласно должностной инструкции&nbsp; ».</DIV></TD>
+<TD>
+<DIV style="OVERFLOW: hidden; HEIGHT: 33px; WIDTH: 100%"></DIV></TD></TR>
 <TR class=R1>
-<TD class=R9C0 style="BORDER-LEFT-STYLE: none" colSpan=13>Изменить пункт 4.2. Трудового договора от&nbsp;20&nbsp;г., и изложить его в следующей редакции: </TD>
+<TD class=R12C0 style="BORDER-LEFT-STYLE: none" colSpan=13>4.2. РАБОТНИКУ устанавливается:</TD>
 <TD></TD></TR>
 <TR class=R1>
-<TD class=R9C0 style="BORDER-LEFT-STYLE: none" colSpan=13>4.2. РАБОТНИКУ устанавливается c&nbsp; 20&nbsp;г.:</TD>
+<TD class=R13C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- базовый должностной оклад в размере&nbsp; ( ) рублей в месяц;</TD>
 <TD></TD></TR>
 <TR class=R1>
-<TD class=R11C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- базовый должностной оклад в размере &nbsp;( ) рублей в месяц;</TD>
+<TD class=R13C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- надбавка персональная в размере&nbsp; ( ) рублей в месяц;</TD>
 <TD></TD></TR>
 <TR class=R1>
-<TD class=R11C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- надбавка персональная в размере &nbsp;( ) рублей в месяц;</TD>
+<TD class=R13C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- надбавка за квалификацию в размере&nbsp; ( ) рублей в месяц;</TD>
 <TD></TD></TR>
 <TR class=R1>
-<TD class=R11C0 style="BORDER-LEFT-STYLE: none" colSpan=13>- надбавка за квалификацию в размере &nbsp;( ) рублей в месяц;</TD>
-<TD></TD></TR>
-<TR class=R1>
-<TD class=R9C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
-<TD class=R9C0><SPAN></SPAN></TD>
+<TD class=R12C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
+<TD class=R12C0><SPAN></SPAN></TD>
 <TD>&nbsp;</TD></TR>
 <TR class=R7>
 <TD class=R7C0 style="BORDER-LEFT-STYLE: none" colSpan=13>Настоящее соглашение является неотъемлемой частью Трудового договора. Условия трудового договора, неизмененные настоящим соглашением, сохраняют силу.</TD>
@@ -196,14 +208,14 @@ TD {
 <TD class=R3C1 style="BORDER-LEFT-STYLE: none" colSpan=7><SPAN style="WHITE-SPACE: nowrap">БАНК:</SPAN></TD>
 <TD class=R3C1 colSpan=7><SPAN style="WHITE-SPACE: nowrap">РАБОТНИК:</SPAN></TD></TR>
 <TR class=R7>
-<TD class=R19C0 style="BORDER-LEFT-STYLE: none" colSpan=6></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
-<TD class=R19C6><SPAN></SPAN></TD>
+<TD class=R21C0 style="BORDER-LEFT-STYLE: none" colSpan=6>Заместитель начальника Управления кадрового делопроизводства ПАО «СОВКОМБАНК»</TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
+<TD class=R21C6><SPAN></SPAN></TD>
 <TD></TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
@@ -222,10 +234,13 @@ TD {
 <TD>&nbsp;</TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none" colSpan=7><SPAN style="WHITE-SPACE: nowrap">___________________/ /</SPAN></TD>
-<TD class=R3C0 colSpan=7><SPAN style="WHITE-SPACE: nowrap">___________________/&nbsp;/</SPAN></TD></TR>
+<TD class=R3C0 colSpan=7><SPAN style="WHITE-SPACE: nowrap">___________________/ /</SPAN></TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none"><SPAN></SPAN></TD>
 <TD colSpan=7><SPAN style="WHITE-SPACE: nowrap">подпись</SPAN></TD>
 <TD colSpan=6><SPAN style="WHITE-SPACE: nowrap">подпись</SPAN></TD></TR>
 <TR class=R1>
 <TD class=R3C0 style="BORDER-LEFT-STYLE: none" colSpan=14><SPAN style="WHITE-SPACE: nowrap">М.П.</SPAN></TD></TR></TBODY></TABLE></BODY></HTML>
+<script>
+    window.print();
+</script>

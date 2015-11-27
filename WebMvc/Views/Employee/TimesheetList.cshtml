@@ -1,5 +1,7 @@
-﻿@model Reports.Presenters.UI.ViewModel.TimesheetListModel
+﻿@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.TimesheetListModel
 @{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Табель";
 }
 @using (Html.BeginForm())
@@ -52,6 +54,10 @@
                   <input type="submit" value="Применить"/>
                    @* <input type="button" value="Применить" onclick="OnPageClick(0);"/>*@
                     <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                    @if ((dto.UserRole & Reports.Core.UserRole.Manager) > 0)
+                    {
+                    <input type="button" value="Выгрузить в Excel" onclick="GetExcelList();"/>
+                    }
                   </td>
                 </tr>
          </table>
@@ -227,6 +233,16 @@
            return value.replace('.', ',');
 
     }
-
+    function GetExcelList()
+    {
+        var currentform=document.forms[0];
+        var oldaction=currentform.action;
+        var oldtarget=currentform.target;
+        currentform.action="/Employee/TimesheetListExcel";
+        currentform.target='_blank';
+        currentform.submit();
+        currentform.target=oldtarget;
+        currentform.action=oldaction;
+    }
 </script>                          
 

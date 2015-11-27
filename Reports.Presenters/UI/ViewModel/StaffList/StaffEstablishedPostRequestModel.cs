@@ -70,6 +70,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Надбавки")]
         public IList<StaffEstablishedPostChargeLinksDto> PostChargeLinks { get; set; }
 
+        [Display(Name = "Действия к надбавкам")]
+        public IList<IdNameDto> PostChargeActions { get; set; }
+
         [Display(Name = "Дата начала учета в системе")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BeginAccountDate { get; set; }

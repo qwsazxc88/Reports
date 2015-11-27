@@ -1,0 +1,61 @@
+﻿@using Reports.Presenters.UI.ViewModel
+@using WebMvc.Helpers
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model DocumentMovementsListModel
+@{    
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    Layout = "~/Views/Shared/_LayoutModern.cshtml";
+    ViewBag.Title = "Документооборот";
+ }
+@Html.AddStyles("../../Content/artem.css",
+                "../../Content/uigrid/ui-grid.min.css")          
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js", 
+                "../../Scripts/angular.min.js", 
+                "../../Scripts/uigrid/ui-grid.min.js", 
+                "../../Scripts/angular-modules/DataService.js",
+                "../../Scripts/DocumentMovements/DocumentMovementsList.js")
+                <style>table{height:100%;}#grid{height:100%;}form{height:100%;}</style>
+@using (Html.BeginBlock("block-wrap", "ng-app='DocumentMovementsList'", "ng-controller='DocumentMovementsListController'"))
+{
+    using (Html.BeginBlock("filter-wrap"))
+    {
+    @Html.CreateHeader((string)ViewBag.Title);
+    <a href="../../Templates/DocumentMovementsInstriction.doc">Инструкция</a>
+    @Html.CreateField(m => m.Number, new Dictionary<string, object> { { "ng-model", "Model.Number" } })
+    @Html.CreateField(m => m.UserName, new Dictionary<string, object> { { "ng-model", "Model.UserName" } })
+    @Html.CreateField(m => m.SenderName, new Dictionary<string, object> { { "ng-model", "Model.SenderName" } })
+     
+    @Html.CreateField(m => m.ReceiverName, new Dictionary<string, object> { { "ng-model", "Model.ReceiverName" } })
+    <div class="field-wrap"><span style="width:200px; display:inline-block;">Тип документа:</span><input type="text" ng-model="RowFilter.DocumentName"/></div>
+   
+                                             using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Период"))
+                                             {
+                @Html.CreateField("{0:dd.MM.yyyy}", m => m.BeginDate, new Dictionary<string, object> { { "class", "DatePicker" }, { "ng-model", "Model.BeginDate" } }, true)
+                @Html.CreateField("{0:dd.MM.yyyy}", m => m.EndDate, new Dictionary<string, object> { { "class", "DatePicker" }, { "ng-model", "Model.EndDate" } }, true)
+                                             }
+
+    }
+
+    using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+    {
+    @Html.CreateButton(false, true, "Выбрать", new Dictionary<string, object> { { "ng-click", "'GetData()'" } }, "")
+    @Html.CreateButton(false, true, "Очистить", new Dictionary<string, object> { { "ng-click", "'ClearForm()'" } }, "")
+        if (Model.IsSaveAvailable)
+        {
+        @Html.CreateButton(false, true, "Сохранить", new Dictionary<string, object> { { "ng-click", "'SaveEdited()'" } }, "")
+        }
+        if (Model.IsAddAvailable)
+        {
+        @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
+            if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+            {
+            <input type="button" value="Создать новую заявку о получении" onclick="location.href='@Url.Action("CreateWithoutSend", "DocumentMovements")'"/>  
+            }
+        }
+    }
+    
+    <div  ui-grid="GridOptions"  ui-grid-expandable ui-grid-resize-columns ></div>
+    
+    <div class="page-buffer"></div>   
+}

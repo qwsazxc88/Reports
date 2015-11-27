@@ -1041,12 +1041,12 @@
                         <tr><td colspan="3" style="font-weight:bold;">Ответственные по приказам</td></tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.IsSecretaryApprove)
-                                @Html.HiddenFor(m => m.IsSecretaryApprove)
+                                @Html.LabelFor(m => m.IsOrderApprove)
+                                @Html.HiddenFor(m => m.IsOrderApprove)
                             </td>
-                            <td>@Html.CheckBoxFor(m => m.IsSecretaryApprove, (object)new { disabled = "disabled" })</td>
+                            <td>@Html.CheckBoxFor(m => m.IsOrderApprove, (object)new { disabled = "disabled" })</td>
                             <td>
-                                @Html.DisplayFor(m => m.SecretaryApproveName)
+                                @Html.DisplayFor(m => m.OrderApproveName)
                             </td>
                         </tr>
                         <tr><td colspan="3"><br /></td></tr>

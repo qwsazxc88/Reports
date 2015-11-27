@@ -7,6 +7,7 @@
     <many-to-one name="Staff" class="User" column="UserId" foreign-key="FK_StaffPostChargeLinks_Staff" index="StaffPostChargeLinks_Staff" not-null="false"/>
     <many-to-one name="ExtraCharges" class="StaffExtraCharges" column="StaffExtraChargeId" foreign-key="FK_StaffPostChargeLinks_StaffExtraCharges" index="StaffPostChargeLinks_StaffExtraCharges" not-null="false"/>
     <property name="Salary" precision="19" scale="2" not-null="false"/>
+    <many-to-one name="ExtraChargeActions" class="StaffExtraChargeActions" column="ActionId" foreign-key="FK_StaffPostChargeLinks_StaffExtraChargeActions" index="StaffPostChargeLinks_StaffExtraChargeActions" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffPostChargeLinks_CreatorUser" index="StaffPostChargeLinks_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffPostChargeLinks_EditorUser" index="StaffPostChargeLinks_EditorUser" not-null="false"/>
