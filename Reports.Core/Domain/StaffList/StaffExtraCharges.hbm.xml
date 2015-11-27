@@ -6,5 +6,8 @@
     </id>
     <property name="GUID" length="40" not-null="false"/>
     <property name="Name" length="100" not-null="false"/>
+    <property name="IsPostOnly" not-null="false"/>
+    <many-to-one name="UnitReference" class="StaffUnitReference" column="UnitId" foreign-key="FK_StaffExtraCharges_StaffUnitReference" index="StaffExtraCharges_StaffUnitReference" not-null="false"/>
+    <property name="IsNeeded" not-null="false"/>
   </class>
 </hibernate-mapping>

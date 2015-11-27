@@ -88,7 +88,7 @@ namespace Reports.Presenters.UI
         /// <param name="modelMetaData">A ModelMetaData instance.</param>
         public abstract void Process(ModelMetadata modelMetaData);
     }
-
+    
     public class AutoCompleteAttribute : MetadataAttribute
     {
         public RouteValueDictionary RouteValueDictionary;
@@ -108,6 +108,6 @@ namespace Reports.Presenters.UI
             modelMetaData.AdditionalValues.Add("AutoCompleteUrlData", RouteValueDictionary);
             modelMetaData.TemplateHint = "AutoComplete";
         }
-    }
-
+    }   
+    
 }

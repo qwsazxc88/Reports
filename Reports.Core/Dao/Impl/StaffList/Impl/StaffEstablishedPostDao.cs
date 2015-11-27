@@ -22,11 +22,12 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Список штатных единиц к подразделению.
         /// </summary>
-        /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="IsSalaryEnable">Признак показа окладов.</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable)
         {
-            const string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, A.Salary, C.Path, D.Id as RequestId
+            string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, " + (!IsSalaryEnable ? "0 as Salary" : "A.Salary") + @", C.Path, D.Id as RequestId
                                        FROM StaffEstablishedPost as A
                                        INNER JOIN Position as B ON B.Id = A.PositionId
                                        INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -53,7 +54,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, IsPregnant, IsVacation, IsSTD
+            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, DocId, IsReserve, IsPregnant, IsVacation, IsSTD
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -70,6 +71,9 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Rate", NHibernateUtil.Decimal)
                 .AddScalar("ReplacedId", NHibernateUtil.Int32)
                 .AddScalar("ReplacedName", NHibernateUtil.String)
+                .AddScalar("ReserveType", NHibernateUtil.Int32)
+                .AddScalar("DocId", NHibernateUtil.Int32)
+                .AddScalar("IsReserve", NHibernateUtil.Boolean)
                 .AddScalar("IsPregnant", NHibernateUtil.Boolean)
                 .AddScalar("IsVacation", NHibernateUtil.Boolean)
                 .AddScalar("IsSTD", NHibernateUtil.Boolean)
@@ -78,13 +82,22 @@ namespace Reports.Core.Dao.Impl
                 List<StaffEstablishedPostDto>();
         }
         /// <summary>
-        /// Достаем список сотрудников, закрепленных за данной штатной единицей.
+        /// Достаем количество сотрудников, закрепленных за данной штатной единицей.
         /// </summary>
         /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
-        public IList<User> GetEstablishedPostUsed(int SEPId)
+        public int GetEstablishedPostUsed(int SEPId)
         {
-            return Session.Query<User>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.IsActive == true).ToList();
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue).ToList().Count;
+        }
+        /// <summary>
+        /// Достаем связи штатной единицы и сотрудников.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public IList<StaffEstablishedPostUserLinks> GetEstablishedPostUserLinks(int SEPId)
+        {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId).ToList();
         }
     }
 }

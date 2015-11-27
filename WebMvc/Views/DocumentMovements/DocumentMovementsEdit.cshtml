@@ -1,0 +1,102 @@
+﻿@using WebMvc.Helpers
+@using Reports.Presenters.UI.ViewModel
+@model DocumentMovementsEditModel
+@{
+    ViewBag.Title = "Документооборот - Редактирование заявки";
+}
+@Html.AddStyles("../../Content/artem.css", "../../Content/select.min.css")
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js")
+@if (Model.Id > 0)
+{ }
+else
+{
+@Html.AddScripts("../../Scripts/angular.min.js", "../../Scripts/angular-modules/select-tpls.min.js", "../../Scripts/angular-modules/DataService.js", "../../Scripts/DocumentMovements/DocumentMovementsEdit.js")
+}
+@using (Html.BeginBlock("", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
+{
+    
+    using (Html.BeginForm())
+    {
+        @Html.HiddenFor(model => model.Id)
+        using (Html.BeginBlock("filter-wrap"))
+        {
+            @Html.CreateHeader((string)ViewBag.Title);
+            @Html.CreateDisplay(model => model.Id)
+            @Html.CreateDisplay(model => model.CreateDate)
+                                                     if (!Model.IsUserFromBank && Model.Id == 0)
+                                                     {
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Отправитель"))
+                                                         {
+                @Html.DropDownListFor(model => model.SenderRuscount, new SelectList(Model.RuscountUsers, "Id", "Name"))
+                                                         }
+                                                     }
+                                                     else
+                                                     {
+                @Html.Partial("EditorTemplates/UserInfo", Model.Sender)
+                                                     }
+                                                     if (Model.Id > 0)
+                                                     {
+            @Html.Partial("EditorTemplates/UserInfo", Model.User)                
+            @Html.Partial("EditorTemplates/UserInfo", Model.Receiver)
+                                                     }
+                                                     else
+                                                     {
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
+                                                         {
+                @Html.ngAutoComplete("Model.User", "SearchUsers($query)", "user", "user.Name")                                                        
+                @Html.HiddenFor(model => model.User.Id)
+                                                         }
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
+                                                         {
+                                                             if (Model.IsUserFromBank)
+                                                             { 
+                        @*Html.ngAutoComplete("Model.Receiver", "SearchReceiverRuscount($query)", "user", "user.Name")*@
+                        @Html.DropDownListFor(model => model.Receiver.Id, new SelectList(Model.RuscountUsers, "Id", "Name"), new Dictionary<string, object> { { "ng-model", "Model.Receiver" } })
+                                                             }
+                                                             else
+                                                             {
+                        @Html.ngAutoComplete("Model.Receiver", "SearchReceiverBank($query)", "user", "user.Name")                                                                                                     
+                                                             }
+                    @Html.HiddenFor(model => model.Receiver.Id)
+                                                         }
+                                                     }
+        }
+        using (Html.BeginBlock("filter-wrap"))
+        {   
+                    
+            @Html.CreateTextArea(model => model.Descript, (!Model.SenderAccept && Model.IsUserSender))
+            using (Html.BeginTable("grid"))
+            {
+                using (Html.BeginRow(""))
+                {
+                    @Html.TD("Название документа", "")
+                    @Html.TD("Отметка об отправке", "")
+                    @Html.TD("Отметка о получении", "")
+                }
+                for (int i = 0; i < Model.SelectedDocs.Count; i++)
+                {
+                    using (Html.BeginRow(""))
+                    {
+                        using (Html.BeginCell(""))
+                        {
+                            @Html.HiddenFor(model => model.SelectedDocs[i].Type)
+                            @Html.DisplayFor(model => model.SelectedDocs[i].TypeName)
+                        }
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].SenderCheck, Model.IsUserSender, false), "")
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].RecieverCheck, Model.IsUserReceiver, false), "")                              
+                    }
+                }
+            }
+        }
+        using (Html.BeginBlock("filter-wrap"))
+        {
+            @Html.CreateCheckBox(model => model.SenderAccept, (!Model.SenderAccept && Model.IsUserSender), true)
+            @Html.CreateCheckBox(model => model.ReceiverAccept, (!Model.ReceiverAccept && Model.IsUserReceiver), true)
+        }
+        using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+        {
+           @Html.CreateButton(true, (!Model.SenderAccept && Model.IsUserSender) || (!Model.ReceiverAccept && Model.IsUserReceiver), "Сохранить")
+           @Html.CreateButton(false, true, "Печать", "window.print();");
+        }
+    }
+}

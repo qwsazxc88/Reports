@@ -125,6 +125,7 @@
 
          $(document).tooltip({
             track: false,
+            show: { /*effect: "blind",*/ duration: 300 },
             items: "[DepToolTip], [title]",
             content: function() {
                 var element = $( this );
@@ -346,8 +347,12 @@
                     ShowFlash(false);
 
                 },
-                error: function(){
-                    alert("При загрузке данных произошла ошибка.");
+                error: function(e, str1){
+                    if(str1 == "parsererror")
+                        alert("Доступ запрещен!.");
+                    else
+                        alert("При загрузке данных произошла ошибка.");
+
                     ShowFlash(false);
                 }
             });

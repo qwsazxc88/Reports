@@ -19,7 +19,7 @@
     <property name="District" length="50" not-null="false"/>
     <property name="City" length="50" not-null="false"/>
     <property name="Street" length="50" not-null="false"/>
-    <property name="StreetNumber" length="6" not-null="false"/>
+    <property name="StreetNumber" length="10" not-null="false"/>
     <property name="Building" length="3" not-null="false"/>
     <property name="Apartment" length="5" not-null="false"/>
     <property name="InternationalPassportSeries" length="10" not-null="false"/>

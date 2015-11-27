@@ -1,0 +1,51 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.page-wrapper 
+{    
+    position:relative;
+    padding-left:5px;
+    padding-right:5px;
+    min-height: 100%;
+    margin-bottom: -50px;
+}
+.expandable-wrap
+{
+    width:99%;
+    padding:5px;
+    background-color:#F5FCFF;
+    border:1px solid #64798F;
+}
+.block-wrap
+{
+    padding-left:5px;
+    padding-right:5px;
+}
+* html .page-wrapper {
+    height: 100%;
+}
+.page-buffer 
+{    
+    height: 50px;
+}
+.toolbar 
+{
+    padding:10px;
+}
+.field-wrap
+{
+    margin-bottom: 5px;
+}
+label 
+{ 
+    font-size:1.1em; 
+}
+.ui-grid-container
+{
+    position:relative;
+    width:100%;
+    min-height:100%;
+    
+}

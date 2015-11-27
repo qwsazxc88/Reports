@@ -301,7 +301,44 @@ namespace WebMvc.Controllers
             ////EmployeeBl.SetTimesheetsHours(model);
             //return View(model);
         }
-        
+        [HttpPost]
+        public FileResult TimesheetListExcel(TimesheetListModel model)
+        {            
+            EmployeeBl.GetTimesheetListModel(model);
+            string result = "";
+            bool RowFirst = true;
+            foreach (var dto in model.TimesheetDtos)
+            {
+                string row1 = "<tr><td>ФИО сотрудника</td><td>Календарные дни месяца</td>";
+                string row2 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Рабочие дни</td>";
+                string row3 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Рабочие часы</td>";
+                string row4 = "<tr><td>" + dto.UserNameAndCode + "</td><td>Фактические часы</td>";
+                foreach (var day in dto.Days)
+                {
+                    row1 += "<td>" + (day.isStatRecord ? day.StatCode : day.Number.ToString()) + "</td>";
+                    row2 += "<td>" + day.Status + "</td>";
+                    row3 += "<td>" + day.Hours + "</td>";
+                    row4 += "<td>" + day.Graphic + "</td>";
+
+                }
+                row1 += "</tr>";
+                row2 += "</tr>";
+                row3 += "</tr>";
+                row4 += "</tr>";
+                result += RowFirst? row1:"" + row2 + row3 + row4;
+                RowFirst = false;
+            }
+            result += "";
+            return base.Excel(result);
+            //if(!ValidateModel(model))
+            //{
+            //    EmployeeBl.GetTimesheetListModel(model);
+            //    return View(model);
+            //}
+            //CorrectHours(model);
+            ////EmployeeBl.SetTimesheetsHours(model);
+            //return View(model);
+        }
 
         /*protected void CorrectHours(TimesheetListModel model)
         {

@@ -14,6 +14,9 @@ namespace Reports.Core.Dto
         public int SEPRequestId { get; set; }
         public int SEPId { get; set; }
         public decimal Amount { get; set; }
-        public decimal AmountProc { get; set; }
+        public string UnitName { get; set; }
+        public bool IsUsed { get; set; }
+        public bool IsNeeded { get; set; }
+        public int ActionId { get; set; }
     }
 }

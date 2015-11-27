@@ -46,10 +46,10 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.ConsultantOutsourcing;
                 if (IsInRole(ReportRoleConstants.ConsultantPersonnel))
                     return UserRole.ConsultantPersonnel;
-                /*if (IsInRole(ReportRoleConstants.ConsultantAccountant))
-                    return UserRole.ConsultantAccountant;*/
-                //if (IsInRole(ReportRoleConstants.Doctor))
-                //    return SafetyZoneRoles.Doctor;
+                if (IsInRole(ReportRoleConstants.SoftAdmin))
+                    return UserRole.SoftAdmin;
+                if (IsInRole(ReportRoleConstants.StaffListOrder))
+                    return UserRole.StaffListOrder;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))
                 //    return SafetyZoneRoles.RegisterAdminHosp;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterDoctor))
@@ -195,7 +195,8 @@ namespace Reports.Presenters.Services.Impl
                 UserRole.ConsultantOutsourcing | 
                 UserRole.ConsultantPersonnel |
                 UserRole.TaxCollector |
-                UserRole.SoftAdmin)) > 0;
+                UserRole.SoftAdmin |
+                UserRole.StaffListOrder)) > 0;
         }
     }
 }
