@@ -1132,6 +1132,19 @@ namespace WebMvc.Controllers
             if (model.Salary <= 0)
                 ModelState.AddModelError("Salary", "Укажите оклад!");
 
+            if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
+            {
+                int i = 1;
+                foreach (var item in model.PostChargeLinks)
+                {
+                    if (item.ActionId == 0)
+                    {
+                        ModelState.AddModelError("PostChargeLinks[" + (i - 1) + "].ActionId", "Укажите действие!");
+                    }
+                    i += 1;
+                }
+            }
+
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffDepartmentSoftGroupDto EditRow, out string error)

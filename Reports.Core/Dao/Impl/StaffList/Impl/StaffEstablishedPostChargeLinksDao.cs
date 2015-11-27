@@ -25,7 +25,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForRequests(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
                                                     LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId
@@ -40,6 +40,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("UnitName", NHibernateUtil.String)
                 .AddScalar("IsUsed", NHibernateUtil.Boolean)
                 .AddScalar("IsNeeded", NHibernateUtil.Boolean)
+                .AddScalar("ActionId", NHibernateUtil.Int32)
                 .SetInt32("SEPRequestId", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();
@@ -52,7 +53,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForEstablishedPosts(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
                                                     LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id
@@ -67,6 +68,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("UnitName", NHibernateUtil.String)
                 .AddScalar("IsUsed", NHibernateUtil.Boolean)
                 .AddScalar("IsNeeded", NHibernateUtil.Boolean)
+                .AddScalar("ActionId", NHibernateUtil.Int32)
                 .SetInt32("Id", Id);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffEstablishedPostChargeLinksDto>()).List<StaffEstablishedPostChargeLinksDto>();

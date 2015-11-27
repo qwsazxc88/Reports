@@ -301,7 +301,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffestablishedPostUserLinksDao); }
             set { staffestablishedPostUserLinksDao = value; }
         }
-        
+
+        protected IStaffExtraChargeActionsDao staffextraChargeActionsDao;
+        public IStaffExtraChargeActionsDao StaffExtraChargeActionsDao
+        {
+            get { return Validate.Dependency(staffextraChargeActionsDao); }
+            set { staffextraChargeActionsDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -2513,6 +2519,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EstablishedPost = entity.StaffEstablishedPost,
                         ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId),
                         Amount = item.Amount,
+                        ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId),
                         IsUsed = item.IsUsed,
                         Creator = curUser,
                         CreateDate = DateTime.Now
@@ -2693,6 +2700,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
                         pcl.Amount = item.Amount;
                         pcl.IsUsed = item.IsUsed;
+                        pcl.ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId);
                         pcl.Creator = curUser;
                         pcl.CreateDate = DateTime.Now;
 
@@ -2700,10 +2708,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     //запись была и есть код, то предпологаем, что это редактирование (только для надбавок с значением)
-                    if (item.Id != 0 && item.Amount != 0)
+                    if (item.Id != 0 /*&& item.Amount != 0*/)
                     {
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId);
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                     }
@@ -4768,6 +4777,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Schedules = ScheduleDao.LoadAll().Where(x => x.Id == 37 || x.Id == 45 || x.Id == 48).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
             model.WorkConditions = StaffWorkingConditionsDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
+
+
+            model.PostChargeActions = StaffExtraChargeActionsDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.PostChargeActions.Insert(0, new IdNameDto { Id = 0, Name = "" });
 
             GetDepRequestInfo(model);
 
