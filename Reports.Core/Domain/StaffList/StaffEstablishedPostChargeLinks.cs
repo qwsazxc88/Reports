@@ -13,6 +13,10 @@ namespace Reports.Core.Domain
         public virtual StaffExtraCharges ExtraCharges { get; set; }
         public virtual decimal? Amount { get; set; }
         public virtual bool IsUsed { get; set; }
+        /// <summary>
+        /// Действия с надбавкой.
+        /// </summary>
+        public virtual StaffExtraChargeActions ExtraChargeActions { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }

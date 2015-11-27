@@ -12,6 +12,7 @@
     <many-to-one name="ExtraCharges" class="StaffExtraCharges" column="StaffExtraChargeId" foreign-key="FK_StaffEstablishedPostChargeLinks_StaffExtraCharges" index="StaffEstablishedPostChargeLinks_StaffExtraCharges" not-null="false"/>
     <property name="Amount" precision="18" scale="2" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
+    <many-to-one name="ExtraChargeActions" class="StaffExtraChargeActions" column="ActionId" foreign-key="FK_StaffEstablishedPostChargeLinks_StaffExtraChargeActions" index="StaffEstablishedPostChargeLinks_StaffExtraChargeActions" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffEstablishedPostChargeLinks_CreatorUser" index="StaffEstablishedPostChargeLinks_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffEstablishedPostChargeLinks_EditorUser" index="StaffEstablishedPostChargeLinks_EditorUser" not-null="false"/>

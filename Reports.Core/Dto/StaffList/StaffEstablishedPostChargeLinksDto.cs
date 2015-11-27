@@ -17,5 +17,6 @@ namespace Reports.Core.Dto
         public string UnitName { get; set; }
         public bool IsUsed { get; set; }
         public bool IsNeeded { get; set; }
+        public int ActionId { get; set; }
     }
 }

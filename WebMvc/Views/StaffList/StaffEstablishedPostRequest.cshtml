@@ -224,6 +224,7 @@
                                                 <th>Надбавка</th>
                                                 <th>Ед. изм.</th>
                                                 <th>Значение</th>
+                                                <th></th>
                                             </tr>
                                         <//thead>
                                         @{ int i = 1; }
@@ -250,6 +251,10 @@
                                                     {
                                                         @Html.TextBoxFor(m => m.PostChargeLinks[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].Amount)
                                                     }
+                                                </td>
+                                                <td style="text-align:center;">
+                                                    @Html.DropDownListFor(m => m.PostChargeLinks[i - 1].ActionId, new SelectList(Model.PostChargeActions, "ID", "Name")) 
+                                                    @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].ActionId)
                                                 </td>
                                             </tr>
                                             { i++; }

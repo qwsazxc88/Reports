@@ -302,12 +302,14 @@
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffDepartmentAccessoryDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostUserLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffExtraChargeActionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffUnitReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentAccessoryDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostUserLinksDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffExtraChargeActionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffUnitReferenceDao.cs" />
@@ -511,6 +513,7 @@
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
+    <Compile Include="Domain\StaffList\StaffExtraChargeActions.cs" />
     <Compile Include="Domain\StaffList\StaffPostReplacement.cs" />
     <Compile Include="Domain\StaffList\StaffRequestPyrusTasks.cs" />
     <Compile Include="Domain\StaffList\StaffUnitReference.cs" />
@@ -1404,6 +1407,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffExtraChargeActions.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffUnitReference.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffPostReplacement.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffEstablishedPostUserLinks.hbm.xml" />
