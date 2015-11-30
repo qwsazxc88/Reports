@@ -42,7 +42,7 @@ namespace WebMvc.Controllers
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
         {
             StaffListModel model = new StaffListModel();
@@ -72,7 +72,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffDepartmentRequestList()
         {
             StaffDepartmentRequestListModel model = new StaffDepartmentRequestListModel();
@@ -85,7 +85,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
             if (ValidateModel(model))
@@ -99,7 +99,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffDepartmentRequest(int RequestType, int? DepartmentId, int? Id)
         {
             ModelState.Clear();
@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.SoftAdmin)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
         public ActionResult StaffDepartmentRequest(StaffDepartmentRequestModel model)
         {
             ModelState.Clear();
@@ -241,7 +241,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequestList()
         {
             StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
@@ -254,7 +254,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
@@ -276,7 +276,7 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
             ModelState.Clear();
@@ -298,7 +298,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
         public ActionResult StaffEstablishedPostRequest(StaffEstablishedPostRequestModel model)
         {
             ViewBag.Title = model.RequestTypeId == 1 ? "Заявка на создание ШЕ" : (model.RequestTypeId == 2 ? "Заявка на изменение ШЕ" : "Заявка на сокращение ШЕ");
@@ -306,23 +306,23 @@ namespace WebMvc.Controllers
             string error = string.Empty;
             bool IsComplete = false;
 
-            if (model.IsDraft)  //сохранение черновика
+            if (ValidateModel(model))
             {
-                IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
-                if (!IsComplete)
+                if (model.IsDraft)  //сохранение черновика
                 {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", error);
+                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    if (!IsComplete)
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetEstablishedPostRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                    }
                 }
                 else
-                {
-                    model = StaffListBl.GetEstablishedPostRequest(model);
-                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
-                }
-            }
-            else
-            {
-                if (ValidateModel(model))//проверки
                 {
                     if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
                     {
@@ -335,11 +335,9 @@ namespace WebMvc.Controllers
                         ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
                     }
                 }
-                else
-                {
-                    StaffListBl.LoadDictionaries(model);
-                }
             }
+            else
+                StaffListBl.LoadDictionaries(model);
 
             //для комментариев
             ViewBag.PlaceId = model.Id;
@@ -1127,20 +1125,28 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
-            if (model.Quantity <= 0)
-                ModelState.AddModelError("Quantity", "Укажите количество!");
-            if (model.Salary <= 0)
-                ModelState.AddModelError("Salary", "Укажите оклад!");
-            if (model.PostChargeLinks.Where(x => x.Amount != 0 && x.AmountProc != 0).Count() != 0)
+            if (model.IsDraft)
             {
-                ModelState.AddModelError("MessageStr", "Надбавка должна указываться только в одной единице измерения!");
+                if (model.RequestTypeId == 2 && model.QuantityOld > model.Quantity)
+                    ModelState.AddModelError("Quantity", "Изменение количества штатной единицы в меньшую сторону является сокращением! Создайте заявку на сокращение штатной единицы!");
+            }
+            else
+            {
+                if (model.Quantity <= 0)
+                    ModelState.AddModelError("Quantity", "Укажите количество!");
+                if (model.Salary <= 0)
+                    ModelState.AddModelError("Salary", "Укажите оклад!");
 
-                for (int i = 0; i < model.PostChargeLinks.Count; i++)
+                if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
                 {
-                    if (model.PostChargeLinks[i].Amount != 0 && model.PostChargeLinks[i].AmountProc != 0)
+                    int i = 1;
+                    foreach (var item in model.PostChargeLinks)
                     {
-                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].Amount", "*");
-                        ModelState.AddModelError("PostChargeLinks[" + i.ToString() + "].AmountProc", "*");
+                        if (item.ActionId == 0)
+                        {
+                            ModelState.AddModelError("PostChargeLinks[" + (i - 1) + "].ActionId", "Укажите действие!");
+                        }
+                        i += 1;
                     }
                 }
             }

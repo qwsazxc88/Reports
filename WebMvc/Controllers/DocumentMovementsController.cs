@@ -65,5 +65,17 @@ namespace WebMvc.Controllers
             DocumentMovementsBl.SaveModelsFromList(models);
             return Content("Ok");
         }
+        [HttpGet]
+        public ActionResult CreateWithoutSend()
+        {
+            var model = DocumentMovementsBl.GetCreateWithoutSendModel();
+            return View(model);
+        }
+        [HttpPost]
+        public RedirectToRouteResult CreateWithoutSend(DocumentMovementsEditModel model)
+        {
+            int id = DocumentMovementsBl.SaveCreateWithoutSendModel(model);
+            return RedirectToAction("DocumentMovementsEdit", (object) new { id = id });
+        }
     }
 }

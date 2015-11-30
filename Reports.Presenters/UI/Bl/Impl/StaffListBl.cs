@@ -301,7 +301,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffestablishedPostUserLinksDao); }
             set { staffestablishedPostUserLinksDao = value; }
         }
-        
+
+        protected IStaffExtraChargeActionsDao staffextraChargeActionsDao;
+        public IStaffExtraChargeActionsDao StaffExtraChargeActionsDao
+        {
+            get { return Validate.Dependency(staffextraChargeActionsDao); }
+            set { staffextraChargeActionsDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -320,19 +326,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = DepartmentDao.GetByCode(DepId);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
-            
+            bool SalaryEnabel = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false :  true;
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
             }
 
             return model;
@@ -2158,7 +2164,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             model.IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
-            model.IsSecretary = (AuthenticationService.CurrentUser.UserRole == UserRole.Secretary);
+            model.IsOrder = (AuthenticationService.CurrentUser.UserRole == UserRole.StaffListOrder);
             model.IsSoftAdmin = (AuthenticationService.CurrentUser.UserRole == UserRole.SoftAdmin);
 
             //разбираемся с состоянием птиц
@@ -2264,7 +2270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                     {
                         model.IsTaxCollectorApproveAvailable = model.IsTaxCollector || model.IsConsultant ? true : false;
-                        model.IsSecretaryApproveAvailable = model.IsSecretary || model.IsConsultant ? true : false;
+                        model.IsOrderApproveAvailable = model.IsOrder || model.IsConsultant ? true : false;
 
                         switch (item.Number)
                         {
@@ -2274,6 +2280,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
                                 //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
                                 model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                break;
+                            case 7://налоговик
+                                model.IsOrderApprove = true;
+                                model.IsOrderApproveAvailable = false;
+                                model.OrderApproveName = "Приказы составлены " + item.CreateDate.Value.ToShortDateString() + " " + "Ответственный за составление приказов: " + item.ApproveUser.Name;
+                                //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
+                                model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
                                 break;
                         }
                     }
@@ -2433,12 +2446,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = 0;
                 }
 
+                model.IsUsed = entity.IsUsed;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
+                model.QuantityOld = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
                 model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
@@ -2498,7 +2513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //надбавки
                 entity.PostChargeLinks = new List<StaffEstablishedPostChargeLinks>();
-                foreach (var item in model.PostChargeLinks.Where(x => x.Amount != 0 || x.AmountProc != 0))
+                foreach (var item in model.PostChargeLinks.Where(x => x.Amount != 0 || x.IsUsed))
                 {
                     entity.PostChargeLinks.Add(new StaffEstablishedPostChargeLinks
                     {
@@ -2506,7 +2521,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EstablishedPost = entity.StaffEstablishedPost,
                         ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId),
                         Amount = item.Amount,
-                        AmountProc = item.AmountProc,
+                        ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId),
+                        IsUsed = item.IsUsed,
                         Creator = curUser,
                         CreateDate = DateTime.Now
                     });
@@ -2564,7 +2580,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                         if (sdr != null)
                         {
-                            if (sdr.DepNext.DepartmentTaxDetails.Count != 0)
+                            if (sdr.DepNext != null && sdr.DepNext.DepartmentTaxDetails.Count != 0)
                             {
                                 if (!string.IsNullOrEmpty(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode) && !string.IsNullOrWhiteSpace(sdr.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
                                     IsEnabled = true;
@@ -2607,11 +2623,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
+            entity.BeginAccountDate = model.BeginAccountDate;
 
             //создаем запись в справочнике штатных единиц.
             if (!model.IsDraft)
             {
-                entity.BeginAccountDate = DateTime.Now;
 
                 int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
                 if (Result == -1) return false;
@@ -2672,32 +2688,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                     StaffEstablishedPostChargeLinks pcl = new StaffEstablishedPostChargeLinks();
 
                     //если была запись и убрали значения, то удаляем
-                    if (item.Id != 0 && item.Amount == 0 && item.AmountProc == 0)
+                    if ((item.Id != 0 && item.Amount == 0) || (item.Id != 0 && item.IsNeeded && !item.IsUsed))
                     {
                         pcl = entity.PostChargeLinks.Where(x => x.Id == item.Id).Single();
                         entity.PostChargeLinks.Remove(pcl);
                     }
 
                     //если не было записи и ввели значение, то добавляем
-                    if (item.Id == 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    if ((item.Id == 0 && item.Amount != 0) || (item.Id == 0 && item.IsNeeded && item.IsUsed))
                     {
                         pcl.EstablishedPostRequest = entity;
                         pcl.EstablishedPost = entity.StaffEstablishedPost;
                         pcl.ExtraCharges = StaffExtraChargesDao.Get(item.ChargeId);
                         pcl.Amount = item.Amount;
-                        pcl.AmountProc = item.AmountProc;
+                        pcl.IsUsed = item.IsUsed;
+                        pcl.ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId);
                         pcl.Creator = curUser;
                         pcl.CreateDate = DateTime.Now;
 
                         entity.PostChargeLinks.Add(pcl);
                     }
 
-                    //запись была и есть код, то предпологаем, что это редактирование
-                    if (item.Id != 0 && (item.Amount != 0 || item.AmountProc != 0))
+                    //запись была и есть код, то предпологаем, что это редактирование (только для надбавок с значением)
+                    if (item.Id != 0 /*&& item.Amount != 0*/)
                     {
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EstablishedPost = entity.StaffEstablishedPost;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Amount = item.Amount;
-                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().AmountProc = item.AmountProc;
+                        entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().ExtraChargeActions = StaffExtraChargeActionsDao.Get(item.ActionId);
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().Editor = curUser;
                         entity.PostChargeLinks.Where(x => x.Id == item.Id).Single().EditDate = DateTime.Now;
                     }
@@ -2755,6 +2772,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return false;
             }
+            else
+                sep.Quantity = entity.Quantity;
 
             //если заявка на редактирование/удаление, редактируем текущую запись в справочнике
             if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
@@ -4761,6 +4780,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Schedules = ScheduleDao.LoadAll().Where(x => x.Id == 37 || x.Id == 45 || x.Id == 48).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
             model.WorkConditions = StaffWorkingConditionsDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
 
+
+            model.PostChargeActions = StaffExtraChargeActionsDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.PostChargeActions.Insert(0, new IdNameDto { Id = 0, Name = "" });
+
             GetDepRequestInfo(model);
 
 
@@ -4814,7 +4837,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public IList<IdNameDto> GetPositionAutocomplete(string Name)
         {
-            return PositionDao.GetPositions(Name);
+            return PositionDao.GetOperatingPositions(Name);
         }
         #endregion
 

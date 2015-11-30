@@ -59,6 +59,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Количество")]
         public int Quantity { get; set; }
+        public int QuantityOld { get; set; }//для проверки в заявке на изменение
 
         [Display(Name = "Оклад")]
         public decimal Salary { get; set; }
@@ -69,6 +70,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Надбавки")]
         public IList<StaffEstablishedPostChargeLinksDto> PostChargeLinks { get; set; }
+
+        [Display(Name = "Действия к надбавкам")]
+        public IList<IdNameDto> PostChargeActions { get; set; }
 
         [Display(Name = "Дата начала учета в системе")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
@@ -163,7 +167,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Служебные переменные
-        public bool IsNew { get; set; } //признак новой заявки
+        //public bool IsNew { get; set; } //признак новой заявки
         public bool IsUsed { get; set; }    //признак использования
         public bool IsDraft { get; set; }   //черновик
         public string MessageStr { get; set; }  //для сообщений

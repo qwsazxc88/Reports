@@ -207,8 +207,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantPersonnel);
             if ((user.UserRole & UserRole.Accountant) > 0 && !roles.Contains(UserRole.Accountant))
                 roles.Add(UserRole.Accountant);
-            /*if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
-                roles.Add(UserRole.ConsultantOutsorsingManager); DEPRECATED*/
+            if ((user.UserRole & UserRole.StaffListOrder) > 0 && !roles.Contains(UserRole.StaffListOrder))
+                roles.Add(UserRole.StaffListOrder); 
             if ((user.UserRole & UserRole.DismissedEmployee) > 0 && !roles.Contains(UserRole.DismissedEmployee))
                 roles.Add(UserRole.DismissedEmployee);
             if ((user.UserRole & UserRole.Estimator) > 0 && !roles.Contains(UserRole.Estimator))

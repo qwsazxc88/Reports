@@ -1,8 +1,10 @@
 ﻿@using Reports.Presenters.UI.ViewModel
 @using WebMvc.Helpers
-@using Reports.Core.Dto;
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
 @model DocumentMovementsListModel
 @{    
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutModern.cshtml";
     ViewBag.Title = "Документооборот";
  }
@@ -46,6 +48,10 @@
         if (Model.IsAddAvailable)
         {
         @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
+            if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+            {
+            <input type="button" value="Создать новую заявку о получении" onclick="location.href='@Url.Action("CreateWithoutSend", "DocumentMovements")'"/>  
+            }
         }
     }
     
