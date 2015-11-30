@@ -306,23 +306,23 @@ namespace WebMvc.Controllers
             string error = string.Empty;
             bool IsComplete = false;
 
-            if (model.IsDraft)  //сохранение черновика
+            if (ValidateModel(model))
             {
-                IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
-                if (!IsComplete)
+                if (model.IsDraft)  //сохранение черновика
                 {
-                    StaffListBl.LoadDictionaries(model);
-                    ModelState.AddModelError("MessageStr", error);
+                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    if (!IsComplete)
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetEstablishedPostRequest(model);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                    }
                 }
                 else
-                {
-                    model = StaffListBl.GetEstablishedPostRequest(model);
-                    ModelState.AddModelError("MessageStr", "Данные сохранены!");
-                }
-            }
-            else
-            {
-                if (ValidateModel(model))//проверки
                 {
                     if (!StaffListBl.SaveEditEstablishedPostRequest(model, out error))
                     {
@@ -335,11 +335,9 @@ namespace WebMvc.Controllers
                         ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
                     }
                 }
-                else
-                {
-                    StaffListBl.LoadDictionaries(model);
-                }
             }
+            else
+                StaffListBl.LoadDictionaries(model);
 
             //для комментариев
             ViewBag.PlaceId = model.Id;
@@ -1127,21 +1125,29 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
-            if (model.Quantity <= 0)
-                ModelState.AddModelError("Quantity", "Укажите количество!");
-            if (model.Salary <= 0)
-                ModelState.AddModelError("Salary", "Укажите оклад!");
-
-            if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
+            if (model.IsDraft)
             {
-                int i = 1;
-                foreach (var item in model.PostChargeLinks)
+                if (model.RequestTypeId == 2 && model.QuantityOld > model.Quantity)
+                    ModelState.AddModelError("Quantity", "Изменение количества штатной единицы в меньшую сторону является сокращением! Создайте заявку на сокращение штатной единицы!");
+            }
+            else
+            {
+                if (model.Quantity <= 0)
+                    ModelState.AddModelError("Quantity", "Укажите количество!");
+                if (model.Salary <= 0)
+                    ModelState.AddModelError("Salary", "Укажите оклад!");
+
+                if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
                 {
-                    if (item.ActionId == 0)
+                    int i = 1;
+                    foreach (var item in model.PostChargeLinks)
                     {
-                        ModelState.AddModelError("PostChargeLinks[" + (i - 1) + "].ActionId", "Укажите действие!");
+                        if (item.ActionId == 0)
+                        {
+                            ModelState.AddModelError("PostChargeLinks[" + (i - 1) + "].ActionId", "Укажите действие!");
+                        }
+                        i += 1;
                     }
-                    i += 1;
                 }
             }
 
