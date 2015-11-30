@@ -13,6 +13,8 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
+    @Html.HiddenFor(m => m.IsUsed)
+    @Html.HiddenFor(m => m.QuantityOld)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -194,14 +196,14 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.PositionId)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.PositionName, Model.RequestTypeId != 1 ? (object)new { style = "width:600px;", @readonly = "readonly" } : (object)new { style = "width:600px;" })
+                            @Html.TextBoxFor(m => m.PositionName, Model.RequestTypeId != 1 || Model.IsUsed ? (object)new { style = "width:600px;", @readonly = "readonly" } : (object)new { style = "width:600px;" })
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.Quantity, Model.RequestTypeId == 1 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.Quantity, Model.RequestTypeId != 3 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Quantity)
                             @Html.DisplayFor(m => m.EPInfo)
                         </td>
@@ -209,7 +211,7 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.Salary)</td>
                         <td>
-                            @Html.TextBoxFor(m => m.Salary, (object)new { style = "width:70px;" })
+                            @Html.TextBoxFor(m => m.Salary, Model.RequestTypeId != 3 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Salary)
                         </td>
                     </tr>

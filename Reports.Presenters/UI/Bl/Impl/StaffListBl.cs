@@ -2446,12 +2446,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = 0;
                 }
 
+                model.IsUsed = entity.IsUsed;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
+                model.QuantityOld = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
                 model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
@@ -4835,7 +4837,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public IList<IdNameDto> GetPositionAutocomplete(string Name)
         {
-            return PositionDao.GetPositions(Name);
+            return PositionDao.GetOperatingPositions(Name);
         }
         #endregion
 
