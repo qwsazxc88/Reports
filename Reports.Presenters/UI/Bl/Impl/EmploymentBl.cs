@@ -4962,10 +4962,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
             entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
 
-            entity.NorthExperienceYears = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceYears : 0;
-            entity.NorthExperienceMonths = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceMonths : 0;
-            entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
-            entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
+            entity.NorthExperienceYears = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceYears : 0;
+            entity.NorthExperienceMonths = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceMonths : 0;
+            entity.NorthExperienceDays = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceDays : 0;
+            entity.NorthernAreaAddition = viewModel.NorthExperienceType != 2 ? viewModel.NorthernAreaAddition : 0;
             entity.NorthExperienceType = viewModel.NorthExperienceType;
             entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
