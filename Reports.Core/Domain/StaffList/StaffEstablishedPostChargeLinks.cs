@@ -20,8 +20,6 @@ namespace Reports.Core.Domain
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }
-        public virtual DateTime? EditDate { get; set; }
-        public virtual bool IsActive { get; set; }
-        public virtual StaffMovements StaffMovements { get; set; }
+        public virtual DateTime? EditDate { get; set; }        
     }
 }
