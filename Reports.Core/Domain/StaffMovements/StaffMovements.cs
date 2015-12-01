@@ -58,11 +58,7 @@ namespace Reports.Core.Domain
         public virtual User PersonnelManager { get; set; }
 
 	    //Даты
-        /// <summary>
-        /// Дата приказа о переводе
-        /// </summary>
-        public virtual DateTime? OrderDate { get; set; }
-        
+                
         /// <summary>
         /// Дата перевода
         /// </summary>
@@ -97,6 +93,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? PersonnelManagerAccept { get; set; }
 
         public virtual IList<StaffMovementsDocs> Docs { get; set; }
+        public virtual IList<StaffPostChargeLinks> Additions { get; set; }
 
         public virtual bool IsTempMoving { get; set; }
 

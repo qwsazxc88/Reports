@@ -43,6 +43,9 @@
       <key column="RequestId" foreign-key="FK_StaffMovementsDocs_Request"/>
       <one-to-many class="StaffMovementsDocs"/>
     </bag>
-    
+    <bag name="Additions" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="StaffMovementsId" foreign-key="FK_StaffPostChargeLinks_StaffMovements"/>
+      <one-to-many class="StaffPostChargeLinks"/>
+    </bag>
   </class>
 </hibernate-mapping>
