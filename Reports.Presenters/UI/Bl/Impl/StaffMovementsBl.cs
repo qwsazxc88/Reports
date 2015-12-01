@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffPostChargeLinksDao staffPostChargeLinksDao;
+        public IStaffPostChargeLinksDao StaffPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffPostChargeLinksDao); }
+            set { staffPostChargeLinksDao = value; }
+        }
         protected IStaffEstablishedPostUserLinksDao staffEstablishedPostUserLinksDao;
         public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
         {
@@ -280,7 +286,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
-            
+            //Подгружаем надбавки
+            model.ActiveAdditions=StaffPostChargeLinksDao.QueryExpression(x=>x.
+            if (model.Id > 0)
+            {
+
+            }
+            else
+            {
+            }
             //Заполняем справочники
             LoadDictionaries(model);
             //Подгружаем данные о создателе заявки
@@ -705,6 +719,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Данные заявки, создаём и сохраняем
                 entity.Data = new StaffMovementsData();
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
+                
+                
                 //Документы, создаём сразу все.
                 var docs=new List<StaffMovementsDocs>();
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, Request=entity });
