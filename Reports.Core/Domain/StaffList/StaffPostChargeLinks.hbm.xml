@@ -12,5 +12,7 @@
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffPostChargeLinks_EditorUser" index="StaffPostChargeLinks_EditorUser" not-null="false"/>
     <property name="EditDate" not-null="false"/>
+    <many-to-one name="StaffMovements" class="StaffMovements" column="StaffMovementsId" foreign-key="FK_StaffPostChargeLinks_StaffMovements" not-null="false"/>
+    <property name="IsActive" not-null="false"/>
   </class>
 </hibernate-mapping>
