@@ -19,7 +19,7 @@
     <many-to-one name="RejectedBy" class="User" column="RejectedBy" foreign-key="FK_StaffMovements_RejectedBy" not-null="false"/>
     <many-to-one name="RejectReason" class="refStaffMovementsRejectReason" column="RejectReason" foreign-key="FK_StaffMovements_RejectReason" not-null="false"/>
     <!--Поля заявки-->
-    <property name="OrderDate" not-null="false"/>
+    <!--<property name="OrderDate" not-null="false"/>-->
     <property name="MovementDate" not-null="false"/>
     <property name="SourceManagerAccept" not-null="false"/>
     <property name="TargetManagerAccept" not-null="false"/>
