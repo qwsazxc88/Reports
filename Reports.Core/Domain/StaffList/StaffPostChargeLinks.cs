@@ -8,8 +8,17 @@ namespace Reports.Core.Domain
     /// </summary>
     public class StaffPostChargeLinks : AbstractEntity
     {
+        /// <summary>
+        /// Сотрудник
+        /// </summary>
         public virtual User Staff { get; set; }
+        /// <summary>
+        /// Надбавка/начисление
+        /// </summary>
         public virtual StaffExtraCharges ExtraCharges { get; set; }
+        /// <summary>
+        /// Значение надбавки/начисления
+        /// </summary>
         public virtual Decimal Salary { get; set; }
         /// <summary>
         /// Действия с надбавкой.

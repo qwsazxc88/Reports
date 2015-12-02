@@ -255,7 +255,7 @@
                                                     }
                                                 </td>
                                                 <td style="text-align:center;">
-                                                    @Html.DropDownListFor(m => m.PostChargeLinks[i - 1].ActionId, new SelectList(Model.PostChargeActions, "ID", "Name")) 
+                                                    @Html.DropDownListFor(m => m.PostChargeLinks[i - 1].ActionId, new SelectList(Model.PostChargeActions, "Id", "Name")) 
                                                     @Html.ValidationMessageFor(m => m.PostChargeLinks[i - 1].ActionId)
                                                 </td>
                                             </tr>
