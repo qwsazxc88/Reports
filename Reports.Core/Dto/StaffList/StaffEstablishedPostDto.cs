@@ -23,11 +23,13 @@ namespace Reports.Core.Dto
         public int ReplacedId { get; set; }     //Id заменяемого сотрудника
         public string ReplacedName { get; set; } //ФИО заменяемого сотрудника + период отпуска
         public int ReserveType { get; set; }        //Тип бронирования вакансии
+        public string Reserve { get; set; } //расшифровка бронирования
         public int DocId { get; set; }      //Id документа/заявки
         public bool IsReserve { get; set; } //Признак бронирования 
         public bool? IsPregnant { get; set; }     //признак беременности
         public bool IsVacation { get; set; }    //признак вакансии
         public bool IsSTD { get; set; }     //признак срочного договора
+        public bool IsDismiss { get; set; } //есть заявка на увольнение
         public decimal? SalaryPersonnel { get; set; }
         public decimal? Regional { get; set; }
         public decimal? Personnel { get; set; }

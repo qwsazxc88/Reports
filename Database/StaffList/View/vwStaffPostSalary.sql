@@ -37,8 +37,9 @@ FROM (--персональные надбваки
 			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id
 			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
 			INNER JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
+			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
 			WHERE A.IsUsed = 1) as A
 GROUP BY UserId
 
---select * from StaffEstablishedPostUserLinks
+--select * from vwStaffPostSalary
 GO

@@ -25,11 +25,13 @@ RETURNS
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
 	,ReserveType int
+	,Reserve nvarchar(50)
 	,DocId int
 	,IsReserve bit	--признак бронировани€ вакансии
 	,IsPregnant bit
 	,IsVacation bit	--ваканси€
 	,IsSTD bit			--ваканси€ по срочному договору
+	,IsDismiss bit
 	--оклад и надбавки
 	,SalaryPersonnel numeric(18, 2)	--оклад (из представлени€)
 	,Regional numeric(18, 2)
@@ -52,12 +54,14 @@ BEGIN
 				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
+				 ,case when F.ReserveType = 1 then N'ѕеремещение' when F.ReserveType = 2 then N'ѕрием' end as Reserve
 				 ,F.DocId
 				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss
 				 --оклад и надбавки
 				 ,I.Salary as SalaryPersonnel
 				 ,I.Regional
@@ -78,6 +82,9 @@ BEGIN
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
 	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN (SELECT UserId FROM Dismissal 
+						 WHERE UserDateAccept is not null and DeleteDate is null
+						 GROUP BY UserId) as J ON J.UserId = E.Id
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)

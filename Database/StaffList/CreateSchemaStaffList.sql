@@ -418,12 +418,16 @@ IF OBJECT_ID ('FK_DepartmentArchive_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[DepartmentArchive] DROP CONSTRAINT [FK_DepartmentArchive_CreatorUser]
 GO
 
-IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraCharges', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffMovements', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements]
 GO
 
 IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraCharges', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+GO
+
+IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraChargeActions', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraChargeActions]
 GO
 
 IF OBJECT_ID ('FK_StaffPostChargeLinks_Staff', 'F') IS NOT NULL
@@ -982,6 +986,8 @@ CREATE TABLE [dbo].[StaffPostChargeLinks](
 	[StaffExtraChargeId] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
 	[ActionId] [int] NULL,
+	[StaffMovementsId] [int] NULL,
+	[IsActive] [bit] NOT NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorID] [int] NULL,
@@ -2022,6 +2028,13 @@ REFERENCES [dbo].[StaffExtraCharges] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffPostChargeLinks] CHECK CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+GO
+
+ALTER TABLE [dbo].[StaffPostChargeLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements] FOREIGN KEY([StaffMovementsId])
+REFERENCES [dbo].[StaffMovements] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostChargeLinks] CHECK CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements]
 GO
 
 ALTER TABLE [dbo].[DepartmentArchive] ADD  CONSTRAINT [DF_DepartmentArchive_IsUsed]  DEFAULT ((1)) FOR [IsUsed]
@@ -3083,6 +3096,12 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id действия с надбавкой' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'ActionId'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки на кадровое перемещение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'StaffMovementsId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка активна в данный момент' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'IsActive'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'CreatorID'
 GO
 
@@ -4015,8 +4034,11 @@ FROM (--персональные надбваки
 			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id
 			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
 			INNER JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
+			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
 			WHERE A.IsUsed = 1) as A
 GROUP BY UserId
+
+--select * from vwStaffPostSalary
 GO
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
@@ -4626,11 +4648,13 @@ RETURNS
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
 	,ReserveType int
+	,Reserve nvarchar(50)
 	,DocId int
 	,IsReserve bit	--признак бронирования вакансии
 	,IsPregnant bit
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
+	,IsDismiss bit
 	--оклад и надбавки
 	,SalaryPersonnel numeric(18, 2)	--оклад (из представления)
 	,Regional numeric(18, 2)
@@ -4653,12 +4677,14 @@ BEGIN
 				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
+				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
 				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss
 				 --оклад и надбавки
 				 ,I.Salary as SalaryPersonnel
 				 ,I.Regional
@@ -4679,6 +4705,9 @@ BEGIN
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
 	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN (SELECT UserId FROM Dismissal 
+						 WHERE UserDateAccept is not null and DeleteDate is null
+						 GROUP BY UserId) as J ON J.UserId = E.Id
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
