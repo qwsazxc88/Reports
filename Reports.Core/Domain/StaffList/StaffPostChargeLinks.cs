@@ -8,8 +8,17 @@ namespace Reports.Core.Domain
     /// </summary>
     public class StaffPostChargeLinks : AbstractEntity
     {
+        /// <summary>
+        /// Сотрудник
+        /// </summary>
         public virtual User Staff { get; set; }
+        /// <summary>
+        /// Надбавка/начисление
+        /// </summary>
         public virtual StaffExtraCharges ExtraCharges { get; set; }
+        /// <summary>
+        /// Значение надбавки/начисления
+        /// </summary>
         public virtual Decimal Salary { get; set; }
         /// <summary>
         /// Действия с надбавкой.
@@ -19,5 +28,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? CreateDate { get; set; }
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
+        public virtual bool IsActive { get; set; }
+        public virtual StaffMovements StaffMovements { get; set; }
     }
 }

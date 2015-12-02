@@ -14,51 +14,52 @@ else
 }
 @using (Html.BeginBlock("", "ng-app='DocumentMovementsEdit'", "ng-controller='DocumentMovementsEditController'"))
 {
-    @Html.HiddenFor(model => model.Id)
+    
     using (Html.BeginForm())
     {
+        @Html.HiddenFor(model => model.Id)
         using (Html.BeginBlock("filter-wrap"))
         {
             @Html.CreateHeader((string)ViewBag.Title);
             @Html.CreateDisplay(model => model.Id)
             @Html.CreateDisplay(model => model.CreateDate)
-            if (!Model.IsUserFromBank && Model.Id == 0)
-            {
-                using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Отправитель"))
-                {
-                @Html.DropDownListFor(model=>model.SenderRuscount,new SelectList(Model.RuscountUsers,"Id","Name"))
-                }
-            }
-            else
-            {
+                                                     if (!Model.IsUserFromBank && Model.Id == 0)
+                                                     {
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Отправитель"))
+                                                         {
+                @Html.DropDownListFor(model => model.SenderRuscount, new SelectList(Model.RuscountUsers, "Id", "Name"))
+                                                         }
+                                                     }
+                                                     else
+                                                     {
                 @Html.Partial("EditorTemplates/UserInfo", Model.Sender)
-            }
-            if (Model.Id>0)
-            {
+                                                     }
+                                                     if (Model.Id > 0)
+                                                     {
             @Html.Partial("EditorTemplates/UserInfo", Model.User)                
             @Html.Partial("EditorTemplates/UserInfo", Model.Receiver)
-            }
-            else
-            {
-                using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
-                {
+                                                     }
+                                                     else
+                                                     {
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Сотрудник"))
+                                                         {
                 @Html.ngAutoComplete("Model.User", "SearchUsers($query)", "user", "user.Name")                                                        
                 @Html.HiddenFor(model => model.User.Id)
-                }
-                using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
-                {
-                    if (Model.IsUserFromBank)
-                    { 
+                                                         }
+                                                         using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Получатель"))
+                                                         {
+                                                             if (Model.IsUserFromBank)
+                                                             { 
                         @*Html.ngAutoComplete("Model.Receiver", "SearchReceiverRuscount($query)", "user", "user.Name")*@
-                        @Html.DropDownListFor(model=>model.Receiver.Id,new SelectList(Model.RuscountUsers,"Id","Name"),new Dictionary<string,object>{{"ng-model","Model.Receiver"}})
-                    }
-                    else
-                    {
+                        @Html.DropDownListFor(model => model.Receiver.Id, new SelectList(Model.RuscountUsers, "Id", "Name"), new Dictionary<string, object> { { "ng-model", "Model.Receiver" } })
+                                                             }
+                                                             else
+                                                             {
                         @Html.ngAutoComplete("Model.Receiver", "SearchReceiverBank($query)", "user", "user.Name")                                                                                                     
-                    }
+                                                             }
                     @Html.HiddenFor(model => model.Receiver.Id)
-                }
-            }
+                                                         }
+                                                     }
         }
         using (Html.BeginBlock("filter-wrap"))
         {   

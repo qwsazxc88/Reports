@@ -1,8 +1,10 @@
 ﻿@using Reports.Presenters.UI.ViewModel
 @using WebMvc.Helpers
-@using Reports.Core.Dto;
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
 @model DocumentMovementsListModel
 @{    
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     Layout = "~/Views/Shared/_LayoutModern.cshtml";
     ViewBag.Title = "Документооборот";
  }
@@ -19,6 +21,7 @@
     using (Html.BeginBlock("filter-wrap"))
     {
     @Html.CreateHeader((string)ViewBag.Title);
+    <a href="../../Templates/DocumentMovementsInstriction.doc">Инструкция</a>
     @Html.CreateField(m => m.Number, new Dictionary<string, object> { { "ng-model", "Model.Number" } })
     @Html.CreateField(m => m.UserName, new Dictionary<string, object> { { "ng-model", "Model.UserName" } })
     @Html.CreateField(m => m.SenderName, new Dictionary<string, object> { { "ng-model", "Model.SenderName" } })
@@ -45,6 +48,10 @@
         if (Model.IsAddAvailable)
         {
         @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
+            if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+            {
+            <input type="button" value="Создать новую заявку о получении" onclick="location.href='@Url.Action("CreateWithoutSend", "DocumentMovements")'"/>  
+            }
         }
     }
     

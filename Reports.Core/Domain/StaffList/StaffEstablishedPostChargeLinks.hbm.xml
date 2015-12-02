@@ -16,6 +16,8 @@
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffEstablishedPostChargeLinks_CreatorUser" index="StaffEstablishedPostChargeLinks_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffEstablishedPostChargeLinks_EditorUser" index="StaffEstablishedPostChargeLinks_EditorUser" not-null="false"/>
+
     <property name="EditDate" not-null="false"/>
+    
   </class>
 </hibernate-mapping>

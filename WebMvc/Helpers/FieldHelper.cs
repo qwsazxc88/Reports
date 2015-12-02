@@ -84,7 +84,7 @@ namespace WebMvc.Helpers
             if (HtmlAttributes == null) HtmlAttributes = new Dictionary<string, object>();
             if (!Enabled)
                 HtmlAttributes.Add("disabled", "disabled");
-            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}:&nbsp;</span>{2}</{0}>";
+            string template = "<{0} class='field-wrap'><span style='" + (inline ? "" : "width:200px;") + "display:inline-block;'>{1}&nbsp;</span>{2}</{0}>";
             string label = hasLabel ? Html.LabelFor(expression) + ":" : "";             
             var editor = Html.CheckBoxFor(expression,HtmlAttributes);            
             return new MvcHtmlString(String.Format(template,block, label, editor));

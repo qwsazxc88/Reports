@@ -2,7 +2,7 @@ IF OBJECT_ID ('fnGetStaffEstablishedArrangements', 'TF') IS NOT NULL
 	DROP FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 GO
 
---функция достает штатную расстановку по выбранному подразделению
+--функция достает штатную расстановку по выбранному подразделению + текущее состояние надбавок 
 CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 (
 	@DepartmentId int
@@ -25,11 +25,23 @@ RETURNS
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
 	,ReserveType int
+	,Reserve nvarchar(50)
 	,DocId int
 	,IsReserve bit	--признак бронирования вакансии
 	,IsPregnant bit
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
+	,IsDismiss bit
+	--оклад и надбавки
+	,SalaryPersonnel numeric(18, 2)	--оклад (из представления)
+	,Regional numeric(18, 2)
+	,Personnel numeric(18, 2)
+	,Territory numeric(18, 2)
+	,Front numeric(18, 2)
+	,Drive numeric(18, 2)
+	,North numeric(18, 2)
+	,Qualification numeric(18, 2)
+	,TotalSalary numeric(18, 2)
 )
 AS
 BEGIN
@@ -42,12 +54,24 @@ BEGIN
 				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
+				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
 				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss
+				 --оклад и надбавки
+				 ,I.Salary as SalaryPersonnel
+				 ,I.Regional
+				 ,I.Personnel
+				 ,I.Territory
+				 ,I.Front
+				 ,I.Drive
+				 ,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 ,I.Qualification
+				 ,isnull(I.TotalSalary, A.Salary) as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -57,11 +81,16 @@ BEGIN
 	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and E.RoleId & 2 > 0 --and E.IsPregnant = 0
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
+	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN (SELECT UserId FROM Dismissal 
+						 WHERE UserDateAccept is not null and DeleteDate is null
+						 GROUP BY UserId) as J ON J.UserId = E.Id
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
 	ORDER BY A.Priority
 
+		
 --select * from dbo.fnGetStaffEstablishedArrangements(7924) 
 
 	RETURN 
