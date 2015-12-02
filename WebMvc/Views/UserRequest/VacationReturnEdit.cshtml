@@ -4,6 +4,7 @@
 @{
     ViewBag.Title = "Заявка на отзыв из отпуска";
 }
+<link href="../../Content/artem.css" rel="stylesheet" type="text/css" />
 @using(Html.BeginForm("VacationReturnEdit","UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {    
     @Html.HiddenFor(m=>m.Id)
@@ -11,19 +12,19 @@
     @Html.HiddenFor(m=> m.IsRejected)
     using (Html.BeginBlock("filter-wrap"))
     {
-        @Html.Partial("EditorTemplates/UserInfo", Model.User)    
-        @Html.CreateDisplay(m=>m.CreateDate)
-        @Html.CreateDisplay(m=>m.Number) 
-        @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes,"Id","Name"), Model.IsEditable)
+        @Html.CreateDisplay(m => m.CreateDate)
+        @Html.CreateDisplay(m => m.Number) 
+        @Html.Partial("EditorTemplates/UserInfo", Model.User)       
+        @Html.CreateDropdown(m => m.ReturnType, new SelectList(Model.ReturnTypes, "Id", "Name"), Model.IsEditable)
         @Html.CreateField(m => m.ReturnReason, Model.IsEditable)
-        @Html.CreateField(m => m.ReturnDate, Model.IsEditable)
-        @Html.CreateField(m => m.ContinueDate, Model.IsEditable)
+        @Html.CreateField("{0:dd.MM.yyyy}", m => m.ReturnDate, Model.IsEditable)
+        @Html.CreateField("{0:dd.MM.yyyy}", m => m.ContinueDate, Model.IsEditable)
         @Html.CreateDisplay(m => m.DaysCount)
         if (Model.ScanAddAvailable)
         {    
             @Html.CreateFileInput(m => m.File)    
         }
-        if(Model.IsScanVisible)
+        if (Model.IsScanVisible)
         {
             @Html.LabelFor(m => m.File)
             @Html.ActionLink(Model.FileName, "ViewAttachment", new { Id = Model.FileId })
@@ -38,7 +39,7 @@
     using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
     {
         @Html.CreateButton(true, Model.IsSaveAvailable, "Сохранить");
-        @Html.CreateButton(true, Model.IsCancelAvailable, "Отменить","return Reject()");
+        @Html.CreateButton(true, Model.IsCancelAvailable, "Отменить", "return Reject()");
     }
 }
 

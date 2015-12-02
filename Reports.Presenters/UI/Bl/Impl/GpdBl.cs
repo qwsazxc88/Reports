@@ -1115,7 +1115,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (Id == 0)
                 document = GpdActDao.GetNewAct(role, GCID);
             else //редактирование существующего
-                document = GpdActDao.GetAct(role, CurrentUser.Id, Id, false, model.DateBegin, model.DateEnd, 0, 0, null, 0, null,"", 0, false);
+                document = GpdActDao.GetAct(role, CurrentUser.Id, Id, false, model.DateBegin, model.DateEnd, 0, 0, null, 0,null,0, null,"", 0, false);
 
             if (document.Count > 0)
             {
@@ -1409,7 +1409,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="hasError"></param>
         public void SetGpdActFind(GpdActListModel model, bool hasError)
         {
+            string[] Monthes = new string[] { "","Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
             DateTime today = DateTime.Today;
+            model.ChargingDateYear = DateTime.Now.Year;
+            model.Monthes = new List<IdNameDto>();
+            for (int i = 0; i < 13; i++)
+                model.Monthes.Add(new IdNameDto { Id = i, Name = Monthes[i] });
             model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
@@ -1425,6 +1430,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
             model.Statuses = GpdActDao.GetStatuses();//список статусов
+            string[] Monthes = new string[] { "", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" };
+            model.Monthes = new List<IdNameDto>();
+            for (int i = 0; i < 13; i++)
+                model.Monthes.Add(new IdNameDto { Id = i, Name = Monthes[i] });
             if (!model.IsFind)
             {
                 DateTime today = DateTime.Today;
@@ -1432,7 +1441,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd = today;
             }
             GetPermission(model);
-            model.Documents = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype, model.Surname, model.StatusID, model.ActNumber,model.CardNumber, model.SortBy, model.SortDescending);
+            model.Documents = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype, model.Surname, model.StatusID,model.ChargingDateYear,model.ChargingDateMonth, model.ActNumber,model.CardNumber, model.SortBy, model.SortDescending);
             
         }
         public void SetGpdAnalyticalStatementView(GpdActListModel model, bool hasError)
@@ -1440,6 +1449,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.CTTypes = GpdChargingTypeDao.GetAllTypes();//список видов
             model.Statuses = GpdActDao.GetStatuses();//список статусов
+            string[] Monthes = new string[] { "","Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+            model.Monthes = new List<IdNameDto>();
+            for (int i = 0; i < 13; i++)
+                model.Monthes.Add(new IdNameDto { Id = i, Name = Monthes[i] });
             if (!model.IsFind)
             {
                 DateTime today = DateTime.Today;
@@ -1447,7 +1460,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd = today;
             }
             GetPermission(model);
-            var docs = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype,model.Surname, model.StatusID, model.ActNumber, model.CardNumber, model.SortBy, model.SortDescending);
+            var docs = GpdActDao.GetAct(role, CurrentUser.Id, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.CTtype,model.Surname, model.StatusID,model.ChargingDateYear,model.ChargingDateMonth, model.ActNumber, model.CardNumber, model.SortBy, model.SortDescending);
             docs = docs.Distinct(model.GroupAll ? (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonId() : (IEqualityComparer<GpdActDto>)new GpdActEqualityComparerByPersonIdandCTName())
                 .GroupJoin(docs, o => o, i => i, (p, op) => new GpdActDto{ 
                     PersonId=p.PersonId,

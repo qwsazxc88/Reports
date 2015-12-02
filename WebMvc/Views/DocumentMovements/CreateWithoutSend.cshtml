@@ -1,0 +1,102 @@
+﻿@using WebMvc.Helpers
+@using Reports.Presenters.UI.ViewModel
+@model DocumentMovementsEditModel
+@{
+    ViewBag.Title = "Документооборот - Редактирование заявки о получении";
+}
+@Html.AddStyles("../../Content/artem.css", "../../Content/select.min.css")
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js")
+
+@using (Html.BeginBlock(""))
+{
+    @Html.HiddenFor(model => model.Id)
+    using (Html.BeginForm())
+    {
+        using (Html.BeginBlock("filter-wrap"))
+        {
+            @Html.CreateHeader((string)ViewBag.Title);
+            <div><label>Отправитель:</label>
+            @Html.TextBoxFor(m => m.User.Name, new { placeholder = "Введите начальные буквы фио сотрудника", style = "width:600px" })                   
+            @Html.HiddenFor(m => m.User.Id)
+            </div><br />
+            
+            <div><label>Получатель:</label>
+            @Html.DropDownListFor(model => model.SenderRuscount, new SelectList(Model.RuscountUsers, "Id", "Name"))
+            </div><br />
+            <div>
+            <label>Описание:</label>
+             @Html.CreateTextArea(model => model.Descript,true)
+            </div>
+            
+                                                  using (Html.BeginTable("grid"))
+                                                  {
+                                                      using (Html.BeginRow(""))
+                                                      {
+                    @Html.TD("Название документа", "")                    
+                    @Html.TD("Отметка о получении", "")
+                                                      }
+                                                      for (int i = 0; i < Model.SelectedDocs.Count; i++)
+                                                      {
+                                                          using (Html.BeginRow(""))
+                                                          {
+                                                              using (Html.BeginCell(""))
+                                                              {
+                            @Html.HiddenFor(model => model.SelectedDocs[i].Type)
+                            @Html.DisplayFor(model => model.SelectedDocs[i].TypeName)
+                                                              }                       
+                        @Html.TD(Html.CreateCheckBox(model => model.SelectedDocs[i].RecieverCheck, true, false), "")                              
+                                                          }
+                                                      }
+                                                  } <br />
+            <input type="submit"  onclick="return ValidateForm();" value="Сохранить"/>
+        }
+    }
+}
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        setActiveMenuItem("StaffMovements");
+        $(':button, :input[type=button], :input[type=submit]').button();
+        
+        $("#Surname").change(function () {
+            if ($("#User_Name").val() == "") {
+                $("#User_Id").val(0);
+            }
+        });
+
+        //автозаполнение сотруников
+        $(function () {
+            $("#User_Name").each(
+                function () {
+                    var target = $(this);
+                    target.autocomplete({ source: "/Help/AutocompletePersonSearch",
+                        select: function (event, ui) {
+                            //для физиков
+                            if (ui.item.Id != null) {
+                                $("#User_Name").val(ui.item.Name);
+                                $("#User_Id").val(ui.item.Id);
+                            }
+                            return true;
+                        }
+                    });
+                });
+        });
+        
+    });
+    
+    function addUsersSelError(value) {
+        $("#Error").text(value);
+        $("#Error").show();
+    }
+    function clearUsersSelErrors() {
+        $("#Error").text("");
+        $("#Error").hide();
+    }
+    function ValidateForm() {
+        if ($("#User_Id").val() == undefined || $("#User_Id").val() == 0) {
+            addUsersSelError("Не выбран пользователь");
+            return false;
+        }
+        return true;
+    }
+ </script>

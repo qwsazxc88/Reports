@@ -16,13 +16,13 @@
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)</div>   
                     
-                    @*<div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                </div>*@ 
+                   @* <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                </div>*@
                 }
                 
                 @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
-                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                    @*<div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>*@
                 }
 
                 
@@ -194,6 +194,7 @@
                     {
                             <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Организационная страница", "AccessGroupsList", "UserRequest")</div>
                     }
+                    <div class="menuitem" id="documentMovements">@Html.ActionLink("Документооборот", "Index", "DocumentMovements")</div>
 @*                        if (dto.UserRole == UserRole.PersonnelManager)
                         {
                             <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>

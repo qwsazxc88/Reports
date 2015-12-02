@@ -41,8 +41,8 @@ namespace Reports.Core.Dao.Impl
                     }
                     foreach (var dep in mandepts)
                     {
-                        predicate.Or(x => x.SourceDepartment.Path.StartsWith(dep.Path));
-                        predicate.Or(x => x.TargetDepartment.Path.StartsWith(dep.Path));
+                        predicate = predicate.Or(x => x.SourceDepartment.Path.StartsWith(dep.Path));
+                        predicate = predicate.Or(x => x.TargetDepartment.Path.StartsWith(dep.Path));
                     }
                     query = query.Where(predicate);
                     break;

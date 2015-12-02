@@ -69,7 +69,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "Обязательное поле")]
         public string Street { get; set; }
         [Display(Name = "Дом"),
-            StringLength(6, ErrorMessage = "Не более 6 знаков."),
+            StringLength(10, ErrorMessage = "Не более 10 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string StreetNumber { get; set; }
 

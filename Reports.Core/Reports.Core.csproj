@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ngRowAttribute.cs" />
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Dao\Impl\DeductionImportDao.cs" />
     <Compile Include="Dao\Impl\DictionariesDaoImplementations.cs" />
     <Compile Include="Dao\Impl\DocumentApprovalDao.cs" />
+    <Compile Include="Dao\Impl\DocumentMovements\DocumentMovementsDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDocNeededDao.cs" />
     <Compile Include="Dao\Impl\EmploymentEducationTypeDao.cs" />
@@ -442,6 +444,7 @@
     <Compile Include="Dao\INewsDao.cs" />
     <Compile Include="Dao\INoteTypeDao.cs" />
     <Compile Include="Dao\IPartialTypesDao.cs" />
+    <Compile Include="Dao\IDocumentMovementsDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IrefVacationReturnStatusDao.cs" />
@@ -510,6 +513,10 @@
     <Compile Include="Domain\AssistantPartialLinks.cs" />
     <Compile Include="Domain\DocumentApproval.cs" />
     <Compile Include="Domain\PartialTypes.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements_DocTypes.cs" />
+    <Compile Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
@@ -763,6 +770,8 @@
     <Compile Include="Dto\Department_TerrapointDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
+    <Compile Include="Dto\DocumentMovements\DocumentMovementsDto.cs" />
+    <Compile Include="Dto\DocumentMovements\DocumentMovementsSelectedDocsDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
     <Compile Include="Dto\Employment2\AttachmentListDto.cs" />
     <Compile Include="Dto\Employment2\CandidateTechDissmissDto.cs" />
@@ -874,6 +883,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Roles.cs" />
+    <Compile Include="Utils\SearchFieldAttribute.cs" />
     <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\IHttpContextService.cs" />
     <Compile Include="Services\Impl\StartupService.cs" />
@@ -1478,6 +1488,12 @@
     <EmbeddedResource Include="Domain\Assistans.hbm.xml" />
     <EmbeddedResource Include="Domain\AssistantPartialLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\DocumentApproval.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.hbm.xml" />
+    <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

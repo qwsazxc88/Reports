@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +9,13 @@ namespace WebMvc.Helpers
 {
     public static class BlockExtension
     {
-        public static ToolbarBlock BeginBlock(this HtmlHelper Html, string Class)
+        public static ToolbarBlock BeginBlock(this HtmlHelper Html, string Class, params string[] htmlAttributes)
         {
+            StringBuilder attributes = new StringBuilder();
+            for (int i = 0; i < htmlAttributes.Length; i++)
+                attributes.Append(htmlAttributes[i] + ' ');
             ToolbarBlock block = new ToolbarBlock(Html.ViewContext);
-            Html.ViewContext.Writer.Write(String.Format("<div class='{0}'>",Class));
+            Html.ViewContext.Writer.Write(String.Format("<div class='{0}' {1}>",Class, attributes.ToString()));
             return block;
         }
         public static void EndBlock(this HtmlHelper htmlHelper)

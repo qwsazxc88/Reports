@@ -1,6 +1,8 @@
 ﻿@using Reports.Core
 @using Reports.Presenters.Services.Impl
 @using Reports.Presenters.UI.Bl.Impl;
+@using System.Collections.Generic;
+@using System.Linq;
 @model Reports.Presenters.UI.ViewModel.GpdActListModel
 @{
     Layout = "~/Views/Shared/_LayoutGPD.cshtml";
@@ -79,9 +81,20 @@
                         </tr>
                         <tr>
                             <td colspan="2">
+                                Период начисление:
+                                @Html.LabelFor(model=>model.ChargingDateMonth)
+                                @Html.DropDownListFor(model=>model.ChargingDateMonth,new SelectList(Model.Monthes,"Id","Name"))
+                                @Html.LabelFor(m => m.ChargingDateYear):
+                                @Html.TextBoxFor(m=>m.ChargingDateYear)
+                             </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
                                 <input type="button" id="btnFind" value="Выбрать" title="Выбрать записи по указанным параметрам" />
                                 <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+                                <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>
+                                <input type="button" value="Excel" style="float:right;" onclick="getExcelTable('.grid');" />
                             </td>
                         </tr>
                         <tr>
@@ -256,6 +269,8 @@
         $("#Surname").val('');
         $("#ActNumber").val('');
         $("#Id").val('');
+        $("#ChargingDateMonth").val(0);
+        $("#ChargingDateYear").val('');
     }
 
     function GetFindAct()

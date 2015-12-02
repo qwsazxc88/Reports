@@ -16,6 +16,9 @@ namespace Reports.Presenters
         {
 
             base.AddComponents();
+            Register(Component.For(typeof(IDocumentMovementsBl))
+                        .ImplementedBy(typeof(DocumentMovementsBl))
+                        .LifeStyle.Is(type));
             Register(Component.For(typeof(IBaseBl))
                         .ImplementedBy(typeof(BaseBl))
                         .LifeStyle.Is(type));

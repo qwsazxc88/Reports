@@ -250,7 +250,9 @@ namespace WebMvc.Helpers
         }
         public static string EvalString(this HtmlHelper html,string key, string format)
         {
-            return Convert.ToString(html.ViewData.Eval(key, format), CultureInfo.CurrentCulture);
+            string evalres=html.ViewData.Eval(key, format);
+            var obj= html.ViewData[key];
+            return Convert.ToString(evalres, CultureInfo.CurrentCulture);
         }
         public static bool EvalBoolean(this HtmlHelper html,string key)
         {

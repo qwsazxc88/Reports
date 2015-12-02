@@ -9,6 +9,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ScanOriginalDocumentsModel : AbstractEmploymentModel
     {
+        //флажок для сотрудников Экспресс-Волги
+        public bool IsVolga { get; set; }
         //состояние кандидата
         //public IList<CandidateStateDto> CandidateState { get; set; }
         public CandidateStateModel CandidateStateModel { get; set; }

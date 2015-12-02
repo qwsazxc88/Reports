@@ -40,6 +40,8 @@ namespace Reports.Core.Dao
                                         int CTType,
                                         string Surname,
                                         int StatusID,
+                                        int? ChargingYear,
+                                        int ChargingMonth,
                                         string ActNumber,
                                         string CardNumber,
                                         int SortBy,

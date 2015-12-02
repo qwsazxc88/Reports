@@ -79,6 +79,8 @@ namespace Reports.Core.Dao.Impl
                                         int CTType,
                                         string Surname, 
                                         int StatusID,
+                                        int? ChargingYear,
+                                        int ChargingMonth,
                                         string ActNumber,
                                         string CardNumber,
                                         int SortBy, 
@@ -151,6 +153,14 @@ namespace Reports.Core.Dao.Impl
             if (!String.IsNullOrWhiteSpace(CardNumber))
             {
                 if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE A.PersonId= " + CardNumber+" "; else sqlWhere += " AND A.PersonId=" + CardNumber+" ";
+            }
+            if (ChargingMonth > 0 && ChargingMonth<13)
+            {
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE MONTH(A.ChargingDate)= " + ChargingMonth + " "; else sqlWhere += " AND MONTH(A.ChargingDate)=" + ChargingMonth + " ";
+            }
+            if (ChargingYear.HasValue)
+            {
+                if (String.IsNullOrWhiteSpace(sqlWhere)) sqlWhere += "WHERE YEAR(A.ChargingDate)= " + ChargingYear + " "; else sqlWhere += " AND YEAR(A.ChargingDate)=" + ChargingYear + " ";
             }
             if(CTType>0)
             {
