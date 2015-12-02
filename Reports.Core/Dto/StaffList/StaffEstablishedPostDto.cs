@@ -28,5 +28,14 @@ namespace Reports.Core.Dto
         public bool? IsPregnant { get; set; }     //признак беременности
         public bool IsVacation { get; set; }    //признак вакансии
         public bool IsSTD { get; set; }     //признак срочного договора
+        public decimal? SalaryPersonnel { get; set; }
+        public decimal? Regional { get; set; }
+        public decimal? Personnel { get; set; }
+        public decimal? Territory { get; set; }
+        public decimal? Front { get; set; }
+        public decimal? Drive { get; set; }
+        public decimal? North { get; set; }
+        public decimal? Qualification { get; set; }
+        public decimal? TotalSalary { get; set; }
     }
 }

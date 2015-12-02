@@ -55,6 +55,7 @@ namespace Reports.Core.Dao.Impl
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
             const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, DocId, IsReserve, IsPregnant, IsVacation, IsSTD
+                                              ,SalaryPersonnel, Regional, Personnel, Territory, Front, Drive, North, Qualification, TotalSalary
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -77,6 +78,15 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsPregnant", NHibernateUtil.Boolean)
                 .AddScalar("IsVacation", NHibernateUtil.Boolean)
                 .AddScalar("IsSTD", NHibernateUtil.Boolean)
+                .AddScalar("SalaryPersonnel", NHibernateUtil.Decimal)
+                .AddScalar("Regional", NHibernateUtil.Decimal)
+                .AddScalar("Personnel", NHibernateUtil.Decimal)
+                .AddScalar("Territory", NHibernateUtil.Decimal)
+                .AddScalar("Front", NHibernateUtil.Decimal)
+                .AddScalar("Drive", NHibernateUtil.Decimal)
+                .AddScalar("North", NHibernateUtil.Decimal)
+                .AddScalar("Qualification", NHibernateUtil.Decimal)
+                .AddScalar("TotalSalary", NHibernateUtil.Decimal)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
