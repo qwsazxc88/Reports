@@ -19,6 +19,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffExtraChargesDao staffExtraChargesDao;
+        public IStaffExtraChargesDao StaffExtraChargesDao
+        {
+            get { return Validate.Dependency(staffExtraChargesDao); }
+            set { staffExtraChargesDao = value; }
+        }
+        protected IStaffExtraChargeActionsDao staffExtraChargeActionsDao;
+        public IStaffExtraChargeActionsDao StaffExtraChargeActionsDao
+        {
+            get { return Validate.Dependency(staffExtraChargeActionsDao); }
+            set { staffExtraChargeActionsDao = value; }
+        }
         protected IStaffPostChargeLinksDao staffPostChargeLinksDao;
         public IStaffPostChargeLinksDao StaffPostChargeLinksDao
         {
@@ -287,13 +299,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadUserData(model.User);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
             //Подгружаем надбавки
-            model.ActiveAdditions=StaffPostChargeLinksDao.QueryExpression(x=>x.
+            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive)
+                .Select(x => 
+                    new AdditionsDto { 
+                        Action = x.ExtraChargeActions.Id, 
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name }, 
+                        Value = x.Salary 
+                    })
+                .ToList();
             if (model.Id > 0)
             {
-
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        Value = x.Salary
+                    })
+                .ToList();
             }
             else
             {
+                model.AdditionsToEdit = model.ActiveAdditions;
             }
             //Заполняем справочники
             LoadDictionaries(model);
@@ -719,7 +747,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Данные заявки, создаём и сохраняем
                 entity.Data = new StaffMovementsData();
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
-                
+                //Сохраняем надбавки
+                SaveAdditions(entity, model);
                 
                 //Документы, создаём сразу все.
                 var docs=new List<StaffMovementsDocs>();
@@ -787,6 +816,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
                 }
+                //Сохраняем надбавки
+                SaveAdditions(entity, model);
             }
             #endregion
             
@@ -978,6 +1009,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             #endregion
+        }
+        private void SaveAdditions(StaffMovements entity, StaffMovementsEditModel model)
+        {
+            foreach (var addition in model.AdditionsToEdit)
+            {
+                if (!entity.Additions.Any(x => x.ExtraCharges.Id == addition.Type.Id))
+                {
+                    entity.Additions.Add(new StaffPostChargeLinks
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(CurrentUser.Id),
+                        EditDate = DateTime.Now,
+                        Editor = UserDao.Load(CurrentUser.Id),
+                        ExtraChargeActions = StaffExtraChargeActionsDao.Load(addition.Action),
+                        ExtraCharges = StaffExtraChargesDao.Load(addition.Type.Id),
+                        IsActive = false,
+                        Salary = addition.Value,
+                        Staff = UserDao.Load(model.User.Id),
+                        StaffMovements = entity
+                    });
+                }
+                else
+                {
+                    var ad = entity.Additions.Where(x => x.ExtraCharges.Id == addition.Type.Id).First();
+                    ad.Salary = addition.Value;
+                    ad.ExtraChargeActions = StaffExtraChargeActionsDao.Load(addition.Action);
+                }
+            }
         }
         /// <summary>
         /// Возвращаем заявку в черновик

@@ -7,7 +7,6 @@ namespace Reports.Core.Dto
 {
     public class AdditionsDto
     {
-        public string Name { get; set; }
         public IdNameDto Type { get; set; }
         public decimal Value { get; set; }
         public int Action { get; set; }
