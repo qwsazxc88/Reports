@@ -12,18 +12,35 @@
         <table id="tbl" class="grid">
             <thead>
                 <tr>
-                    <th>Уровень<br />подразделений</th>
-                    <th>Структура подразделений</th>
-                    <th>Должность</th>
-                    <th>Количество<br />штатных<br />единиц</th>
-                    <th>Оклад</th>
-                    <th>Ставка</th>
-                    <th>ФИО<br />сотрудника</th>
-                    <th>ОЖ</th>
-                    <th>Название в<br />Финграде</th>
-                    <th>Комментарий</th>
-                    <th>Код в<br />Финграде</th>
-                </tr>    
+                    <th rowspan="3">Уровень<br />подразделений</th>
+                    <th rowspan="3">Структура подразделений</th>
+                    <th rowspan="3">Должность</th>
+                    <th rowspan="3">Количество<br />штатных<br />единиц</th>
+                    <th rowspan="3">Оклад</th>
+                    <th rowspan="3">Ставка</th>
+                    <th colspan="7">Надбавки</th>
+                    <th rowspan="3">Итого</th>
+                    <th rowspan="3">ФИО<br />сотрудника</th>
+                    <th rowspan="3">ОЖ</th>
+                    @*
+                    <th rowspan="3">Название в<br />Финграде</th>
+                    <th rowspan="3">Комментарий</th>
+                    <th rowspan="3">Код в<br />Финграде</th>
+                    *@
+                </tr>   
+                <tr>
+                    <th>Должностная</th>
+                    <th colspan="6">Персональные</th>
+                </tr>
+                <tr>
+                    <th>Районный<br />коэффициент</th>
+                    <th>Персональная</th>
+                    <th>Территориальная</th>
+                    <th>Фронт</th>
+                    <th>Разъездной<br />характер<br />работы</th>
+                    <th>Северная</th>
+                    <th>Квалификация</th>
+                </tr>
             </thead>
             
             @{ int i = 0; }
@@ -44,9 +61,17 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>@item.DepFingradName</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @*<td>@item.DepFingradName</td>
                     <td>@item.DepFingradNameComment</td>
-                    <td>@item.FinDepPointCode</td>
+                    <td>@item.FinDepPointCode</td>*@
                 </tr>
             }
             @{ i++; }
@@ -184,9 +209,17 @@
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
-                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
-                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+//                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
+//                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
+//                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
                                         "</tr>";
 
                             var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -233,11 +266,19 @@
                                         "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
                                         "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
                                         "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
+//                                        "<td></td>" +
+//                                        "<td></td>" +
+//                                        "<td></td>" +
                                         "</tr>";
 
                             var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку

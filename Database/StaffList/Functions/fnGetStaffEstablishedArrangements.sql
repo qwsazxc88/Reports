@@ -2,7 +2,7 @@ IF OBJECT_ID ('fnGetStaffEstablishedArrangements', 'TF') IS NOT NULL
 	DROP FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 GO
 
---функция достает штатную расстановку по выбранному подразделению
+--функция достает штатную расстановку по выбранному подразделению + текущее состояние надбавок 
 CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 (
 	@DepartmentId int
@@ -61,6 +61,19 @@ BEGIN
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
 	ORDER BY A.Priority
+
+
+	/*
+	SELECT UserId
+			,sum(case when StaffExtraChargeId = 4 then Salary else 0 end) as Personnel	--персональная надбавка
+			,sum(case when StaffExtraChargeId = 5 then Salary else 0 end) as Territory	--территориальная надбавка
+			,sum(case when StaffExtraChargeId = 10 then Salary else 0 end) as Front	--фронт надбавка
+			,sum(case when StaffExtraChargeId = 3 then Salary else 0 end) as Drive	--разъездная надбавка
+			,sum(case when StaffExtraChargeId = 7 then Salary else 0 end) as NorthAuto	--северная автомат надбавка
+			,sum(case when StaffExtraChargeId = 16 then Salary else 0 end) as North	--северная ручная надбавка
+			,sum(case when StaffExtraChargeId = 2 then Salary else 0 end) as Qualification	--квалификация надбавка
+FROM StaffPostChargeLinks
+	*/
 
 --select * from dbo.fnGetStaffEstablishedArrangements(7924) 
 
