@@ -16,8 +16,8 @@
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)</div>   
                     
-                    <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                </div>
+                   @* <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                </div>*@
                 }
                 
                 @if (UserDto.IsStaffDepartmentAvailable(dto))
@@ -167,7 +167,7 @@
                         <div class="menuitem" id="userAbsence">@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</div>
                         <div class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</div>
                         <div class="menuitem" id="userChildVacation">@Html.ActionLink("Отпуска по уходу за ребенком", "ChildVacationList", "UserRequest")</div>
-                        <div class="menuitem" id="VacationReturn">@Html.ActionLink("Отзыв из отпуска", "VacationReturnList", "UserRequest")</div>
+                        @*<div class="menuitem" id="VacationReturn">@Html.ActionLink("Отзыв из отпуска", "VacationReturnList", "UserRequest")</div>*@
                         <div class="menuitem" id="userDismissal">@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</div>
                         <div class="menuitem" id="userClearanceChecklistList">@Html.ActionLink("Обходные листы", "ClearanceChecklistList", "UserRequest")</div>
                     

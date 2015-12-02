@@ -11,6 +11,10 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual string Code { get; set; }
         public virtual string Name { get; set; }
+        /// <summary>
+        /// Признак удаленной должности.
+        /// </summary>
+        public virtual bool IsDeleted { get; set; }
         #endregion
 
         #region Constructors

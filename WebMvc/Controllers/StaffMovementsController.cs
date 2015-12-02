@@ -64,10 +64,10 @@ namespace WebMvc.Controllers
             }
             else
             {
-                model.AdditionalAgreementDocDto = GetFileContext(Request, ModelState, "AdditionalAgreementDoc");
+                //model.AdditionalAgreementDocDto = GetFileContext(Request, ModelState, "AdditionalAgreementDoc");
                 model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
                 model.MovementNoteDto = GetFileContext(Request, ModelState, "MovementNote");
-                model.MovementOrderDocDto = GetFileContext(Request, ModelState, "MovementOrderDoc");
+                //model.MovementOrderDocDto = GetFileContext(Request, ModelState, "MovementOrderDoc");
                 model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
                 model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
                 StaffMovementsBl.SaveModel(model);
@@ -76,7 +76,7 @@ namespace WebMvc.Controllers
             return View("StaffMovementsEdit", model);
 
         }
-        public ActionResult GetPrintModel(int id, int type)
+        /*public ActionResult GetPrintModel(int id, int type)
         {
             StaffMovementsPrintModel model=StaffMovementsBl.GetPrintModel(id);
             string view = "";
@@ -99,7 +99,7 @@ namespace WebMvc.Controllers
                     break;
             }
             return View(view, model);
-        }
+        }*/
         public ContentResult GetPositionsForDepartment(int id)
         {
             var positions = StaffMovementsBl.GetPositionsForDepartment(id);
