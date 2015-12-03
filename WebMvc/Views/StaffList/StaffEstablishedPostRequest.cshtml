@@ -267,7 +267,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@Html.LabelFor(m => m.ReasonId)</td>
+                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 2 ? "изменения" : "сокращения")) + " ШЕ")</td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>

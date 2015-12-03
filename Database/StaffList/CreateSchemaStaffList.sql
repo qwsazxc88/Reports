@@ -4003,7 +4003,7 @@ GO
 CREATE VIEW [dbo].[vwStaffPostSalary]
 AS
 SELECT UserId
-			,sum(Salary) as Salary
+			,sum(A.Salary) as Salary
 			,sum(Regional) as Regional
 			,sum(Personnel) as Personnel
 			,sum(Territory) as Territory
@@ -4012,9 +4012,9 @@ SELECT UserId
 			,sum(NorthAuto) as NorthAuto
 			,sum(North) as North
 			,sum(Qualification) as Qualification
-			,(sum(Salary) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) +
-			 ((sum(Salary) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (sum(Regional) / 100)) +
-			 ((sum(Salary) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (case when sum(NorthAuto) = 0 then sum(North) else sum(NorthAuto) end / 100))
+			,((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) +
+			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (sum(Regional) / 100)) +
+			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (case when sum(NorthAuto) = 0 then sum(North) else sum(NorthAuto) end / 100))
 			as TotalSalary
 FROM (--персональные надбваки
 			SELECT UserId, 0 as Salary, 0 as Regional
@@ -4036,10 +4036,12 @@ FROM (--персональные надбваки
 			INNER JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
 			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
 			WHERE A.IsUsed = 1) as A
-GROUP BY UserId
+INNER JOIN Users as B ON B.Id = A.UserId
+GROUP BY A.UserId, B.Rate
 
 --select * from vwStaffPostSalary
 GO
+
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
 --StaffExtraChargeActions
