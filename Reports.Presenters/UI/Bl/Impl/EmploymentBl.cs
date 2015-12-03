@@ -4882,6 +4882,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            if (entity.Department.ItemLevel != 7)
+            {
+                error = "Укажите подразделение 7 уровня!";
+                return false;
+            }
+
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
