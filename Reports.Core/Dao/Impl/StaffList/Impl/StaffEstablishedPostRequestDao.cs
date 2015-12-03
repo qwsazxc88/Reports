@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using NHibernate.Transform;
 using NHibernate;
 using NHibernate.Criterion;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -220,7 +222,7 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Достаем Id действующей заявки для данной штатной единицы.
         /// </summary>
-        /// <param name="Id">Id штатной единицы.</param>
+        /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
         public int GetCurrentRequestId(int SEPId)
         {
@@ -230,6 +232,18 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .SetInt32("SEPId", SEPId)
                 .UniqueResult<int>();
+        }
+        /// <summary>
+        /// Достаем предыдущую утвержденную заявку для данной штатной единицы.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <param name="Id">Id заявки, для которой ищем предыдущее состояние.</param>
+        /// <returns></returns>
+        public StaffEstablishedPostRequest GetPrevEstablishedPostRequest(int SEPId, int Id)
+        {
+            return Session.Query<StaffEstablishedPostRequest>()
+                .Where(x => x.StaffEstablishedPost.Id == SEPId && /*x.Id != Id &&*/ x.DateAccept.HasValue).ToList()
+                .OrderByDescending(x => x.DateAccept).FirstOrDefault();
         }
     }
 }

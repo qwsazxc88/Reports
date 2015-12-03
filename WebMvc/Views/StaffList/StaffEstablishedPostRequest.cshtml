@@ -208,8 +208,17 @@
                             @Html.DisplayFor(m => m.EPInfo)
                         </td>
                     </tr>
+                    @if (Model.RequestTypeId == 2)
+                    {
+                        <tr>
+                            <td>@Html.LabelFor(m => m.SalaryPrev)</td>
+                            <td>
+                                @Html.TextBoxFor(m => m.SalaryPrev, (object)new { style = "width:70px;", disabled = "disabled" })
+                            </td>
+                        </tr>
+                    }
                     <tr>
-                        <td>@Html.LabelFor(m => m.Salary)</td>
+                        <td>@(Model.RequestTypeId == 2 ? "Новый оклад" : "Оклад")</td>
                         <td>
                             @Html.TextBoxFor(m => m.Salary, Model.RequestTypeId != 3 ? (object)new { style = "width:70px;" } : (object)new { style = "width:70px;", disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Salary)
@@ -225,8 +234,9 @@
                                             <tr>
                                                 <th>Надбавка</th>
                                                 <th>Ед. изм.</th>
+                                                <th style="@if(Model.RequestTypeId != 2){<text>display:none;</text>}">Текущее значение</th>
                                                 <th>Значение</th>
-                                                <th></th>
+                                                <th>Действие</th>
                                             </tr>
                                         <//thead>
                                         @{ int i = 1; }
@@ -244,6 +254,7 @@
                                                     
                                                 </td>
                                                 <td>@Html.DisplayFor(m => m.PostChargeLinks[i - 1].UnitName)</td>
+                                                <td style="@if(Model.RequestTypeId != 2){<text>display:none;</text>}"></td>
                                                 <td style="text-align:center;">
                                                     @if (item.IsNeeded)
                                                     {
