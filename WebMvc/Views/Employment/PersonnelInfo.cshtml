@@ -16,9 +16,8 @@
     <input type="hidden" id="IsManagersAvailable" name="IsManagersAvailable" value="@Model.IsManagersAvailable" />
     <input type="hidden" id="IsPersonalManagersAvailable" name="IsPersonalManagersAvailable" value="@Model.IsPersonalManagersAvailable" />
     <input type="hidden" id="TabIndex" name="TabIndex" value="@Model.TabIndex" />
-    @*@Html.HiddenFor(m => m.ToUserId)
-    @Html.HiddenFor(m => m.Subject)
-    @Html.HiddenFor(m => m.EmailMessage)*@
+    @Html.HiddenFor(m => m.IsSendAvailable)
+    
     <div id="DivEmal" style="display:none;">
         <table>
             <tr>
@@ -31,13 +30,17 @@
             </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.EmailMessage)</td>
-                <td>@Html.TextAreaFor(m => m.EmailMessage, new { style = "width:600px" })</td>
+                <td>@Html.TextAreaFor(m => m.EmailMessage, new { style = "width:600px", cols = "60", wrap = "soft" })</td>
             </tr>
         </table>
     </div>
 }   
     <b>Кандидат: @Html.DisplayFor(m => m.CandidateName)</b>
-    Отправить сообщение участнику процесса оформления кандидата в приеме: <button type="button" onclick="ShowEmailDiv();">Ок</button>
+    @if (Model.IsSendAvailable)
+    {
+        <button type="button" style="float:right;" onclick="ShowEmailDiv();">Отправить сообщение участнику процесса оформления кандидата</button>
+        <br /><br />
+    }
     <div id="tabs">
         <ul>
             @if (Model.IsCandidateInfoAvailable)

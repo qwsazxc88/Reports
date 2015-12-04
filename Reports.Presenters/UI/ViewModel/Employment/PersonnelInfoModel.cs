@@ -24,5 +24,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Subject { get; set; }
         [Display(Name = "Сообщение")]
         public string EmailMessage { get; set; }
+
+        //показывать кнопку создания сообщения
+        public bool IsSendAvailable { get; set; }
     }
 }

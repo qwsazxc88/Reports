@@ -1900,9 +1900,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         public PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model)
         {
             EmploymentCandidate entity = GetCandidate(model.CandidateID);
+            User currentUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+
             model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
-            model.EmailMessage = @"Заявка на прием №" + entity.Id.ToString() + "\nКандидат: " + entity.User.Name;
-            model.UsersTo = GetCandidateProccedRegistration(model.CandidateID).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.EmailMessage = "Заявка на прием №" + entity.Id.ToString() + "\nКандидат: " + entity.User.Name + " \n";
+            model.UsersTo = GetCandidateProccedRegistration(model.CandidateID).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + (x.Position == null ? "Кадровик РК" : x.Position.Name) });
+            if (currentUser.UserRole == UserRole.ConsultantOutsourcing || currentUser.UserRole == UserRole.Manager || currentUser.UserRole == UserRole.Security || currentUser.UserRole == UserRole.PersonnelManager)
+                model.IsSendAvailable = true;
+            else
+                model.IsSendAvailable = false;
             return model;
         }
 
@@ -6515,17 +6521,40 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="CandidateId">Id заявки на прием</param>
         protected IList<User> GetCandidateProccedRegistration(int CandidateId)
         {
-            //IList<User> managersApproval = DepartmentDao.GetDepartmentManagers(currentUser.Department.Id, false)
-            //            .Where<User>(x => x.Level == currentUser.Level && x.RoleId == (int)UserRole.Manager && x.Id == candidate.AppointmentCreator.Id)
-            //            .ToList<User>();
-            ////автоматическая привязка утверждающего
-            //IList<User> HighManagers = DepartmentDao.GetDepartmentManagers(candidate.AppointmentCreator.Department.Id, true)
-            //    .Where<User>(x => x.Level < candidate.AppointmentCreator.Level /*&& x.Level != candidate.AppointmentCreator.Level*/ && x.Level >= (candidate.AppointmentCreator.Level > 3 ? 3 : 2))
-            //    .OrderByDescending<User, int?>(manager => manager.Level)
-            //    .ToList<User>();
-            ////ручная привязка утверждающего
-            //IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(candidate.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
-            return UserDao.LoadAll().Where(x => x.Id == 1246).ToList();
+            EmploymentCandidate entity = GetCandidate(CandidateId);
+            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            //руководство - инициаторы
+            IList<User> managersApproval = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, false)
+                        //.Where<User>(x => x.Level == currentUser.Level /*&& x.RoleId == (int)UserRole.Manager && x.Id == entity.AppointmentCreator.Id*/)
+                        .ToList<User>();
+            //автоматическая привязка утверждающего
+            IList<User> HighManagers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
+                .Where<User>(x => x.Level < entity.AppointmentCreator.Level /*&& x.Level != candidate.AppointmentCreator.Level*/ && x.Level >= (entity.AppointmentCreator.Level > 3 ? 3 : 2))
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+            
+            //ручная привязка утверждающего
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(entity.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
+
+            //объединяем всех участников в один список
+            IList<User> RegUsersList = new List<User>().Union(managersApproval).Union(HighManagers).Union(manualRoleManagers).ToList();
+
+            //департамент безопасности
+            if (entity.BackgroundCheck.PrevApprover != null)
+                RegUsersList.Add(entity.BackgroundCheck.PrevApprover);
+            if (entity.BackgroundCheck.Approver != null && entity.BackgroundCheck.Approver != entity.BackgroundCheck.PrevApprover)
+                RegUsersList.Add(entity.BackgroundCheck.Approver);
+
+            //кадровики РК
+            RegUsersList.Add(entity.Personnels);
+
+            //исключаем текущего пользователя из списка, чтобы не спамил сам себя
+            if (RegUsersList.Contains(currentUser))
+                RegUsersList.Remove(currentUser);
+
+
+            return RegUsersList;// UserDao.LoadAll().Where(x => x.Id == 1246).ToList();
         }
         /// <summary>
         /// Отправка сообщения участника процесса приема другому участнику.
@@ -6536,7 +6565,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool EmploymentProccedRegistrationSendEmail(PersonnelInfoModel model, out string error)
         {
             error = string.Empty;
-            EmploymentCandidate entity = EmploymentCandidateDao.Get(model.CandidateID);
 
             User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
@@ -6548,9 +6576,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             string Subject = string.Empty;
             string from = string.Empty;
 
-            
-            //Emailaddress = "loseva@ruscount.ru";
-            
 
             if (string.IsNullOrEmpty(UserTo.Email))
             {
@@ -6560,20 +6585,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
                 to = UserTo.Email;
 
-            to = "zagryazkin@ruscount.ru";
-            from = "zagryazkin@ruscount.ru";
+            //to = "zagryazkin@ruscount.ru";
+            //from = "zagryazkin@ruscount.ru";
 
             Subject = model.Subject;
             body = model.EmailMessage;
 
             EmailDto dto = new EmailDto();
             Settings settings = SettingsDao.LoadFirst();
-            //dto.SmtpServer = "mail.ruscount.ru";
             dto.SmtpServer = settings.NotificationSmtp;
+            //dto.SmtpServer = "mail.ruscount.ru";
             dto.SmtpPort = settings.NotificationPort;
             dto.UserName = settings.NotificationLogin;
             dto.Password = settings.NotificationPassword;
-            dto.From = from;//string.IsNullOrEmpty(currentUser.Email) ? settings.NotificationEmail : currentUser.Email;
+            //dto.From = from;
+            dto.From = string.IsNullOrEmpty(currentUser.Email) ? settings.NotificationEmail : currentUser.Email;
             dto.To = to;
             dto.Subject = Subject;
             dto.Body = body;
@@ -6591,13 +6617,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 mailMessage.Subject = dto.Subject;
                 mailMessage.Body = "<html>" + dto.Body + "</html>";
                 mailMessage.IsBodyHtml = true;
+                //mailMessage.Body = dto.Body;
+                //mailMessage.IsBodyHtml = false;
                 var smtpClient = new SmtpClient
                 {
                     Host = dto.SmtpServer,
                     Port = dto.SmtpPort,
                     UseDefaultCredentials = false,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
-                    Credentials = new BlockGSSAPINTLMCredential(dto.UserName, dto.Password)//new NetworkCredential(dto.UserName, dto.Password),
+                    Credentials = new BlockGSSAPINTLMCredential(dto.UserName, dto.Password)
                 };
                 smtpClient.Send(mailMessage);
 
@@ -6605,6 +6633,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 Log.DebugFormat("Отправлено письмо на {0}, тема {1}, текст {2}"
                         , dto.To, dto.Subject, dto.Body);
+
+                error = "Сообщение отправлено!";
                 return true;
             }
             catch (Exception ex)
