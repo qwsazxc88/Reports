@@ -36,13 +36,13 @@ where A.id in (select UserId from EmploymentCandidate where id in (3418, 3496, 3
 --дальше запускать для каждого руководителя отдельно
 declare @UserId int, @DepartmentId int
 
-select @UserId = Id, @DepartmentId = DepartmentId from users where name like 'Пилипчук Ирина Витальевна%' and RoleId = 4 and IsActive = 1
+select @UserId = Id, @DepartmentId = DepartmentId from users where name like 'Барышева Екатерина Сергеевна%' and RoleId = 4 and IsActive = 1
 --select * from users where name like 'Крылова Ольга Викторовна%'
 --select * from users where name like 'Назаркина Татьяна Владимировна%'
 --select * from users where name like 'Барышева Екатерина Сергеевна%'
 
 --проверочный запрос, показывает наличие неоформленных кандидатов для данного руководителя
-select * from EmploymentCandidate 
+select @UserId, * from EmploymentCandidate 
 where UserId in(select id from Users 
 								where DepartmentId in (select b.Id from Department as a
 																			 inner join Department as b on B.Path like A.Path + '%' and b.ItemLevel = 7
