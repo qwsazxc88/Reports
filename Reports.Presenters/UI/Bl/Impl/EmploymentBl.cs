@@ -6614,6 +6614,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string[] toAddresses = dto.To.Split(';');
                 foreach (string address in toAddresses)
                     mailMessage.To.Add(new MailAddress(address, address));
+                //тавим в копию отправителя
+                string[] CCAddresses = dto.From.Split(';');
+                foreach (string address in CCAddresses)
+                    mailMessage.CC.Add(new MailAddress(address, address));
+
                 mailMessage.Subject = dto.Subject;
                 mailMessage.Body = "<html>" + dto.Body + "</html>";
                 mailMessage.IsBodyHtml = true;
