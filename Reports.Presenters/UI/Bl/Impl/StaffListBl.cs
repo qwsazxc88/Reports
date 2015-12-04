@@ -2412,6 +2412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Id == 0)
                 model.Id = StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId);
 
+                        
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
@@ -2433,6 +2434,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
+                StaffEstablishedPostRequest PrevEntity = new StaffEstablishedPostRequest(); //для заявок на изменение нужно показать предыдущий оклад
 
                 StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
                 if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание штатной единицы
@@ -2440,6 +2442,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = 0;
                     return GetEstablishedPostRequest(model);
                 }
+
+                if (model.SEPId != 0)
+                    PrevEntity = StaffEstablishedPostRequestDao.GetPrevEstablishedPostRequest(model.SEPId, entity.Id);
 
                 if (!IsRequestExists)
                 {
@@ -2455,6 +2460,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Quantity = entity.Quantity;
                 model.QuantityOld = entity.Quantity;
                 model.Salary = entity.Salary;
+                model.SalaryPrev = PrevEntity != null ? PrevEntity.Salary : 0;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
                 model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
                 model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;

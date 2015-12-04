@@ -61,8 +61,11 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int Quantity { get; set; }
         public int QuantityOld { get; set; }//для проверки в заявке на изменение
 
-        [Display(Name = "Оклад")]
+        [Display(Name = "Новый оклад")]
         public decimal Salary { get; set; }
+
+        [Display(Name = "Оклад текущий")]
+        public decimal SalaryPrev { get; set; }
 
         [Display(Name = "Причина создания ШЕ")]
         public int? ReasonId { get; set; }
