@@ -25,7 +25,10 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForRequests(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId,
+                                                           isnull((SELECT top 1 AA.Amount FROM StaffEstablishedPostChargeLinks as AA
+																    INNER JOIN StaffEstablishedPostRequest as BB ON BB.Id = AA.SEPRequestId and BB.DateAccept is not null and BB.BeginAccountDate < getdate()
+																    WHERE AA.StaffExtraChargeId = B.StaffExtraChargeId), 0) as AmountPrev
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id and B.SEPRequestId = :SEPRequestId
                                                     LEFT JOIN StaffEstablishedPostRequest as C ON C.Id = B.SEPRequestId
@@ -37,6 +40,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SEPRequestId", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
                 .AddScalar("Amount", NHibernateUtil.Decimal)
+                .AddScalar("AmountPrev", NHibernateUtil.Decimal)
                 .AddScalar("UnitName", NHibernateUtil.String)
                 .AddScalar("IsUsed", NHibernateUtil.Boolean)
                 .AddScalar("IsNeeded", NHibernateUtil.Boolean)
@@ -53,7 +57,10 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostChargeLinksDto> GetChargesForEstablishedPosts(int Id)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId
+            IQuery query = Session.CreateSQLQuery(@"SELECT B.Id, A.Id as ChargeId, A.Name as ChargeName, B.SEPRequestId, B.SEPId, B.Amount, D.Name as UnitName, B.IsUsed, A.IsNeeded, B.ActionId,
+                                                            isnull((SELECT top 1 AA.Amount FROM StaffEstablishedPostChargeLinks as AA
+																    INNER JOIN StaffEstablishedPostRequest as BB ON BB.Id = AA.SEPRequestId and BB.DateAccept is not null and BB.BeginAccountDate < getdate()
+																    WHERE AA.StaffExtraChargeId = B.StaffExtraChargeId), 0) as AmountPrev
                                                     FROM StaffExtraCharges as A
                                                     LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.StaffExtraChargeId = A.Id
                                                     LEFT JOIN StaffEstablishedPost as C ON C.Id = B.SEPId and C.Id = :Id
@@ -65,6 +72,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SEPRequestId", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
                 .AddScalar("Amount", NHibernateUtil.Decimal)
+                .AddScalar("AmountPrev", NHibernateUtil.Decimal)
                 .AddScalar("UnitName", NHibernateUtil.String)
                 .AddScalar("IsUsed", NHibernateUtil.Boolean)
                 .AddScalar("IsNeeded", NHibernateUtil.Boolean)
