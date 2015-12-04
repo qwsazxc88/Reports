@@ -16,11 +16,31 @@
     <input type="hidden" id="IsManagersAvailable" name="IsManagersAvailable" value="@Model.IsManagersAvailable" />
     <input type="hidden" id="IsPersonalManagersAvailable" name="IsPersonalManagersAvailable" value="@Model.IsPersonalManagersAvailable" />
     <input type="hidden" id="TabIndex" name="TabIndex" value="@Model.TabIndex" />
+    @Html.HiddenFor(m => m.IsSendAvailable)
     
-    
+    <div id="DivEmal" style="display:none;">
+        <table>
+            <tr>
+                <td>@Html.LabelFor(m => m.ToUserId)</td>
+                <td>@Html.DropDownListFor(m => m.ToUserId, new SelectList(Model.UsersTo, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Subject)</td>
+                <td>@Html.TextBoxFor(m => m.Subject, new { style = "width:600px" })</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.EmailMessage)</td>
+                <td>@Html.TextAreaFor(m => m.EmailMessage, new { style = "width:600px", cols = "60", wrap = "soft" })</td>
+            </tr>
+        </table>
+    </div>
 }   
     <b>Кандидат: @Html.DisplayFor(m => m.CandidateName)</b>
-    
+    @if (Model.IsSendAvailable)
+    {
+        <button type="button" style="float:right;" onclick="ShowEmailDiv();">Отправить сообщение участнику процесса оформления кандидата</button>
+        <br /><br />
+    }
     <div id="tabs">
         <ul>
             @if (Model.IsCandidateInfoAvailable)
@@ -86,6 +106,8 @@
             </tr>
         </table>
     </div>
+
+    
 
 
 <script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
@@ -286,6 +308,68 @@
         }
     }
 
+    function ShowEmailDiv()  //показываем индикатор загрузки
+    {
+        $("#DivEmal").dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    SendEmail();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+
+
+    function SendEmail(){
+        var actionUrl="@Url.Action("PersonnelInfoSendEmail", "Employment")";
+        //actionUrl += "?ToUserId="+$("#ToUserId").val() + "&Subject="
+        actionUrl += "?CandidateId=" + $("#CandidateId").val() + "&ToUserId=" + $("#ToUserId").val() + "&Subject=" + $("#Subject").val() + "&EmailMessage=" + $("#EmailMessage").val();
+        var dataToSend = $("#PersonnelInfoForm").serialize();
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(data){
+                if (data.ok == true)
+                {
+                    $("#Subject").val("");
+                    $("#EmailMessage").val(data.EmailMessageStr);
+                    alert("Сообщение отправлено!");
+                }
+                else{
+                    alert(data.msg);
+                }
+                    
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
+    }
 
 
     $(document).ready(function () {
