@@ -22,6 +22,9 @@ values(1, 0, 1, 0, N'0000037264R', N'G6QB7xdOR', N'0000037264R', N'Котенко Марин
 ,(1, 0, 1, 0, N'0000037266R', N'7v0Jc7Q2R', N'0000037266R', N'Назаркина Татьяна Владимировна', N'NazarkinaTV@sovcombank.ru', N'Руководитель (5)', 4, 3, 463, 11931, 0, 5, 1, 0)
 --Барышева Екатерина Сергеевна
 ,(1, 0, 1, 0, N'0000037257R', N'QBzPSlj1R', N'0000037257R', N'Барышева Екатерина Сергеевна', N'BaryshevaES@sovcombank.ru', N'Руководитель (5)', 4, 3, 463, 11992, 0, 5, 1, 0)
+--Петрухнов Сергей Анатольевич
+--Белявский Михаил Владимирович
+--Пилипчук Ирина Витальевна
 */
 
 --выявляем для этих руководителей ветку подразделений, в данном случае это ветки начинаются с 5 уровня
@@ -31,6 +34,15 @@ inner join Department as b on b.id = a.DepartmentId
 inner join Department as c on b.Path like c.Path + '%' and c.ItemLevel = 5
 where A.id in (select UserId from EmploymentCandidate where id in (3418, 3496, 3589)) --(3486, 3423, 3421, 3417, 3413))
 
+
+/*
+--запрос показывает РБГ Экспресс-Волги
+SELECT C.*
+FROM Department as A
+INNER JOIN Department as B ON B.Path like A.Path + '%' and B.ItemLevel = 5
+INNER JOIN Users as C ON C.DepartmentId = B.Id
+WHERE A.Id = 11923
+*/
 
 
 --дальше запускать для каждого руководителя отдельно
@@ -42,7 +54,7 @@ select @UserId = Id, @DepartmentId = DepartmentId from users where name like 'Пи
 --select * from users where name like 'Барышева Екатерина Сергеевна%'
 
 --проверочный запрос, показывает наличие неоформленных кандидатов для данного руководителя
-select * from EmploymentCandidate 
+select @UserId, * from EmploymentCandidate 
 where UserId in(select id from Users 
 								where DepartmentId in (select b.Id from Department as a
 																			 inner join Department as b on B.Path like A.Path + '%' and b.ItemLevel = 7

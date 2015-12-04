@@ -1793,21 +1793,6 @@ namespace WebMvc.Controllers
             return Json(new { ok = result, roster });
         }
 
-        [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
-        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
-        {
-            PersonnelInfoModel model = new PersonnelInfoModel();
-            model.CandidateID = ID;
-            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
-            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
-            model.IsManagersAvailable = IsManagersAvailable;
-            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
-            model.TabIndex = TabIndex;
-            model = EmploymentBl.GetPersonnelInfoModel(model);
-            return View(model);
-        }
-
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director)]
         public ActionResult RosterBulkApprove(IList<CandidateApprovalDto> roster)
@@ -1999,6 +1984,41 @@ namespace WebMvc.Controllers
         }
         #endregion 
 
+        #region PersonnelInfo
+        #endregion
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
+        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = ID;
+            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
+            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
+            model.IsManagersAvailable = IsManagersAvailable;
+            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
+            model.TabIndex = TabIndex;
+            model = EmploymentBl.GetPersonnelInfoModel(model);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Security | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        public ActionResult PersonnelInfoSendEmail(int CandidateId, int ToUserId, string Subject, string EmailMessage)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = CandidateId;
+            model.ToUserId = ToUserId;
+            model.Subject = Subject;
+            model.EmailMessage = EmailMessage;
+            
+            string error = String.Empty;
+            bool result = EmploymentBl.EmploymentProccedRegistrationSendEmail(model, out error);
+
+            if (result)
+                model = EmploymentBl.GetPersonnelInfoModel(model);
+            
+            return Json(new { ok = result, msg = error, EmailMessageStr = model.EmailMessage });
+        }
         #endregion
 
         #region Model Validation
