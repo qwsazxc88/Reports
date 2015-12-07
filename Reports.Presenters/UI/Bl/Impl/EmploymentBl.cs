@@ -1317,6 +1317,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
                     (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
 
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
+
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
@@ -1412,6 +1417,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.HigherManagerApprovalStatus.HasValue && !entity.HigherManagerApprovalStatus.Value) && entity.ApprovingHigherManager != null)
                         model.IsCancelApproveHigherAvailale = true;
                 }
+
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
             }
 
             EmploymentCandidate candidate = GetCandidate(model.UserId);
