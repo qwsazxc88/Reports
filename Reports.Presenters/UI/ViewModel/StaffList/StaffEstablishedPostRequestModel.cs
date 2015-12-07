@@ -84,6 +84,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Данные по ШЕ")]
         public string EPInfo { get; set; }
 
+        [Display(Name = "Сотрудники")]
+        public IList<StaffEstablishedPostDto> Personnels { get; set; }
+
         #region Согласование
         [Display(Name = "Инициатор")]
         public bool IsInitiatorApprove { get; set; }    //1

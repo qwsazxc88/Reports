@@ -2473,6 +2473,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsDraftButtonAvailable = true;
                 model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
 
+
             }
 
             LoadDictionaries(model);
@@ -2532,6 +2533,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = curUser,
                         CreateDate = DateTime.Now
                     });
+                }
+
+                //при сокращении ставим метки в расстановке
+                if (entity.RequestType.Id == 3)
+                {
+                    foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
+                    {
+                        if (model.Personnels.Where(x => x.Id == ul.Id).Count() != 0)
+                        {
+                            ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                            ul.Editor = curUser;
+                            ul.EditDate = DateTime.Now;
+                        }
+                    }
                 }
 
 
@@ -2631,6 +2646,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
 
+
             //создаем запись в справочнике штатных единиц.
             if (!model.IsDraft)
             {
@@ -2681,6 +2697,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
 
+            //при сокращении ставим метки в расстановке (до начала согласования)
+            if (entity.RequestType.Id == 3)
+            {
+                foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
+                {
+                    if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
+                    {
+                        ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        ul.Editor = curUser;
+                        ul.EditDate = DateTime.Now;
+                    }
+                }
+            }
 
             //надбавки 
             //сохраняем только при открытии и изменении до отправки на согласование
@@ -2774,7 +2803,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //изменилось количество изменяем количество связей
-            if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
+            if (!SaveStaffEstablishedPostChangeUserLinks(entity, sep, curUser, out error))
             {
                 return false;
             }
@@ -2839,14 +2868,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         /// <summary>
-        /// Меняем количество связей татной единицы с сотрудниками.
+        /// Меняем количество связей штатной единицы с сотрудниками.
         /// </summary>
         /// <param name="entity">Заявка</param>
         /// <param name="sep">Штатная единица</param>
         /// <param name="curUser">Текущий пользователь</param>
         /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        protected bool SaveStaffEstablishedPostChangeLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
+        protected bool SaveStaffEstablishedPostChangeUserLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
         {
             error = string.Empty;
             int CountLinks = 0;
@@ -2871,23 +2900,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            ////если количество штатных единиц уменьшилось
-            //if (entity.Quantity < sep.Quantity)
-            //пока решили, что в заявках на изменение количество не меняется
+
+            //сокращение
             if (entity.RequestType.Id == 3)
             {
-                //CountLinks = sep.Quantity - entity.Quantity;
-
                 foreach (var item in sep.EstablishedPostUserLinks
-                    .Where(x => x.IsUsed))
+                    .Where(x => x.IsUsed && x.IsDismissal))
                 {
-                    if (CountLinks == 0) break;
-
                     item.IsUsed = false;
                     item.Editor = curUser;
                     item.EditDate = DateTime.Now;
-
-                    //CountLinks -= 1;
                 }
             }
             return true;
@@ -4722,13 +4744,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, 0);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, 0);
             }
 
             return model;
@@ -4792,6 +4814,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             GetDepRequestInfo(model);
 
+
+            model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId, model.SEPId).ToList();
 
             //согласование - расстановка флажков и т.д.
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
