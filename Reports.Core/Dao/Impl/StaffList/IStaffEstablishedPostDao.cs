@@ -19,9 +19,10 @@ namespace Reports.Core.Dao
         /// <summary>
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
-        /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
-        IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId);
+        IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int SEPId);
         /// <summary>
         /// Достаем количество сотрудников, закрепленных за данной штатной единицей.
         /// </summary>

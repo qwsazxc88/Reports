@@ -1464,6 +1464,7 @@ CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
 	[IsUsed] [bit] NULL,
 	[ReserveType] [int] NULL,
 	[DocId] [int] NULL,
+	[IsDismissal] [bit] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1515,6 +1516,9 @@ REFERENCES [dbo].[StaffUnitReference] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffExtraCharges] CHECK CONSTRAINT [FK_StaffExtraCharges_StaffUnitReference]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostUserLinks_IsDissmisial]  DEFAULT ((0)) FOR [IsDismissal]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostUserLinks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -2563,6 +2567,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип бронирован
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа/заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DocId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак сокращения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsDismissal'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
@@ -4657,6 +4664,7 @@ RETURNS
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
 	,IsDismiss bit
+	,IsDismissal bit
 	--оклад и надбавки
 	,SalaryPersonnel numeric(18, 2)	--оклад (из представления)
 	,Regional numeric(18, 2)
@@ -4681,12 +4689,13 @@ BEGIN
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
-				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
-				 ,case when J.UserId is null then 0 else 1 end as IsDismiss
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
+				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
 				 ,I.Salary as SalaryPersonnel
 				 ,I.Regional
@@ -4722,6 +4731,9 @@ BEGIN
 END
 
 GO
+
+
+
 
 
 

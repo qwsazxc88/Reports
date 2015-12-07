@@ -32,6 +32,7 @@ RETURNS
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
 	,IsDismiss bit
+	,IsDismissal bit
 	--оклад и надбавки
 	,SalaryPersonnel numeric(18, 2)	--оклад (из представления)
 	,Regional numeric(18, 2)
@@ -56,12 +57,13 @@ BEGIN
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
-				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
 				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
-				 ,case when J.UserId is null then 0 else 1 end as IsDismiss
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
+				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
 				 ,I.Salary as SalaryPersonnel
 				 ,I.Regional

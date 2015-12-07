@@ -303,6 +303,39 @@
                             @Html.EditorFor(m => m.BeginAccountDate)
                         </td>
                     </tr>
+                    @if (Model.RequestTypeId != 1)
+                    {
+                        <tr>
+                            <td colspan="2">
+                                <div class="portlet">
+                                    <div class="portlet-header">@Html.LabelFor(m => m.Personnels)</div>
+                                    <div class="portlet-content">
+                                        <table class="grid">
+                                            <thead>
+                                                <tr>
+                                                    <th>ФИО</th>
+                                                    <th style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}">Сократить</th>
+                                                </tr>
+                                            <//thead>
+                                            @{ i = 1; }
+                                            @foreach (var item in Model.Personnels)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.HiddenFor(m => m.Personnels[i - 1].Id)
+                                                        @(string.IsNullOrEmpty(item.Surname) ? "вакансия" + (item.IsPregnant.HasValue && item.IsPregnant.Value ? " по срочному ТД" : "") : item.Surname)
+                                                    
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}else{<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)</td>
+                                                </tr>
+                                                { i++; }
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </table>
             </div>
         </div>

@@ -50,14 +50,16 @@ namespace Reports.Core.Dao.Impl
         /// <summary>
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
-        /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int SEPId)
         {
-            const string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
-                                              ,IsReserve, IsPregnant, IsVacation, IsSTD, IsDismiss
+            string sqlWhere = SEPId == 0 ? "" : " WHERE SEPId = " + SEPId.ToString();
+            string sqlQuery = (string.Format(@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
+                                              ,IsReserve, IsPregnant, IsVacation, IsSTD, IsDismiss, IsDismissal
                                               ,SalaryPersonnel, Regional, Personnel, Territory, Front, Drive, North, Qualification, TotalSalary
-                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId) {0}",  sqlWhere));
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
@@ -81,6 +83,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsVacation", NHibernateUtil.Boolean)
                 .AddScalar("IsSTD", NHibernateUtil.Boolean)
                 .AddScalar("IsDismiss", NHibernateUtil.Boolean)
+                .AddScalar("IsDismissal", NHibernateUtil.Boolean)
                 .AddScalar("SalaryPersonnel", NHibernateUtil.Decimal)
                 .AddScalar("Regional", NHibernateUtil.Decimal)
                 .AddScalar("Personnel", NHibernateUtil.Decimal)
@@ -110,7 +113,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffEstablishedPostUserLinks> GetEstablishedPostUserLinks(int SEPId)
         {
-            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId).ToList();
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.IsUsed).ToList();
         }
     }
 }

@@ -278,7 +278,7 @@
                                         "<td>" + (result.EstablishedPosts[i].Qualification != null ? result.EstablishedPosts[i].Qualification : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].TotalSalary != null ? result.EstablishedPosts[i].TotalSalary : "") + "</td>" 
                                         //красим увольняющихся
-                                        if(!result.EstablishedPosts[i].IsDismiss)
+                                        if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
                                         {
                                             tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
                                         }

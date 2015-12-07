@@ -29,6 +29,10 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual int DocId { get; set; }
         /// <summary>
+        /// Признак сокращения
+        /// </summary>
+        public virtual bool IsDismissal { get; set; }
+        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }

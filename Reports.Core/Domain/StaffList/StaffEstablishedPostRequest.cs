@@ -10,6 +10,9 @@ namespace Reports.Core.Domain
     {
         public virtual DateTime? DateRequest { get; set; }
         public virtual StaffEstablishedPostRequestTypes RequestType { get; set; }
+        /// <summary>
+        /// Справочник штатных единиц.
+        /// </summary>
         public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }

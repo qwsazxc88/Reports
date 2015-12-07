@@ -30,6 +30,7 @@ namespace Reports.Core.Dto
         public bool IsVacation { get; set; }    //признак вакансии
         public bool IsSTD { get; set; }     //признак срочного договора
         public bool IsDismiss { get; set; } //есть заявка на увольнение
+        public bool IsDismissal { get; set; } //есть признак сокращения в расстановке
         public decimal? SalaryPersonnel { get; set; }
         public decimal? Regional { get; set; }
         public decimal? Personnel { get; set; }
