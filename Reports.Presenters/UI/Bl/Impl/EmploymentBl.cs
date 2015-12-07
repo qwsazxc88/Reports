@@ -1905,7 +1905,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
             model.EmailMessage = "Заявка на прием №" + entity.Id.ToString() + "\nКандидат: " + entity.User.Name + " \n";
             model.UsersTo = GetCandidateProccedRegistration(model.CandidateID).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + (x.Position == null ? "Кадровик РК" : x.Position.Name) });
-            if (currentUser.UserRole == UserRole.ConsultantOutsourcing || currentUser.UserRole == UserRole.Manager || currentUser.UserRole == UserRole.Security || currentUser.UserRole == UserRole.PersonnelManager)
+            if ((currentUser.UserRole & UserRole.ConsultantOutsourcing) > 0 || (currentUser.UserRole & UserRole.Manager) > 0 || (currentUser.UserRole & UserRole.Security) > 0 || (currentUser.UserRole & UserRole.PersonnelManager) > 0)
                 model.IsSendAvailable = true;
             else
                 model.IsSendAvailable = false;
