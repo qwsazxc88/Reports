@@ -2447,8 +2447,8 @@ namespace WebMvc.Controllers
                     {
                         if (model.RegistrationDate.Value.Year != DateTime.Today.Year || model.RegistrationDate.Value.Month != DateTime.Today.Month)
                         {
-                            //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
-                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5)
+                            //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
+                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > (model.IsVolga ? 8 : 5))
                             {
                                 ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
                             }

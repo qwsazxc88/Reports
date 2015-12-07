@@ -9,6 +9,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ManagersModel : AbstractEmploymentModel
     {
+        //флажок для сотрудников Экспресс-Волги
+        public bool IsVolga { get; set; }
+
         [Display(Name = "Должность"),
             Required(ErrorMessage = "Обязательное поле")]
         public int PositionId { get; set; }
