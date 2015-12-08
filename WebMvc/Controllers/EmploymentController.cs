@@ -2354,7 +2354,7 @@ namespace WebMvc.Controllers
         {
             ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
             ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
-            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 2);
+            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 4);
             ValidateFileLength(model.EmploymentFile, "IsValidate", 2);
 
             if (!model.IsBGDraft)
