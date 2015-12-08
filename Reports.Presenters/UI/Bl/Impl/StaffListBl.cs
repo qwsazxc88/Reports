@@ -4744,13 +4744,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, 0);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, 0);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
             }
 
             return model;
@@ -4815,7 +4815,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             GetDepRequestInfo(model);
 
 
-            model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId, model.SEPId).ToList();
+            model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
 
             //согласование - расстановка флажков и т.д.
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
