@@ -4221,7 +4221,13 @@ INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, IsNeeded) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302', 0, 1)
---INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302', 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'91a004fc-d13e-11dd-b086-00308d000000', N'Доплата за совмещение (суммой)#1113', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'521ba992-ef7d-11e2-8985-003048ba0538', N'Надбавка за стаж работы специалистам фронт-офиса#1128', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'9e6ec242-49f2-4320-a5aa-024c5d607aa3', N'Отпуск по уходу за ребенком без оплаты#1802', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'1671e1b6-0281-489c-b191-50e6fb241e75', N'Пособие по уходу за ребёнком до 1.5 лет#1502', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'db5cc88b-4080-4061-8bba-42f22b500bb4', N'Пособие по уходу за ребёнком до 3 лет#1503', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'35c7a5dd-d8e9-4aa0-8378-2a7e501d846a', N'Оклад по дням#1101', 0, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'537ff7ed-5e51-48d1-bf5e-4f680cb3e1b7', N'Оклад по часам#1102', 0, 3, 0)
 
 
 --StaffLandmarkTypes

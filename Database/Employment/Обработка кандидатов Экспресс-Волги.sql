@@ -71,7 +71,8 @@ SELECT A.[Адрес прописки], A.СНИЛС
 						 then substring(A.[Адрес прописки], charindex('д.', A.[Адрес прописки]), charindex('кв.', A.[Адрес прописки]) - charindex('д.', A.[Адрес прописки])) 
 						 else substring(A.[Адрес прописки], charindex('д.', A.[Адрес прописки]), 10)end as StreetNumber
 			 ,case when A.[Адрес прописки] like '%корп.%'
-						 then substring(A.[Адрес прописки], charindex('корп.', A.[Адрес прописки]), charindex('кв.', A.[Адрес прописки]) - charindex('корп.', A.[Адрес прописки])) end as Building
+						 then substring(A.[Адрес прописки], charindex('корп.', A.[Адрес прописки])
+									, case when charindex('кв.', A.[Адрес прописки]) <> 0 then charindex('кв.', A.[Адрес прописки]) - charindex('корп.', A.[Адрес прописки]) else 10 end) end as Building
 			 ,case when charindex('кв.', A.[Адрес прописки]) = 0 then null else substring(A.[Адрес прописки], charindex('кв.', A.[Адрес прописки]), 10) end as Apartment
 INTO #Adress
 FROM ExpressVolga as A
@@ -157,7 +158,7 @@ INTO #candidate
 FROM Users as A
 INNER JOIN Department as B ON B.Id = A.DepartmentId
 INNER JOIN (SELECT * FROM Department WHERE Id = 11923) as C ON B.Path like C.Path + N'%'
-INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id
+INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id and d.Status = 0
 INNER JOIN BackgroundCheck as E ON E.CandidateId = D.Id and E.PrevApproverId is not null and E.PrevApprovalStatus = 1 and E.ApproverId is null
 INNER JOIN ExpressVolga as F ON F.снилс = A.Cnilc
 WHERE a.RoleId & 16384 > 0 and A.IsActive = 1
@@ -278,7 +279,7 @@ SELECT D.Status, D.Id, A.Id as UserId, A.Cnilc
 FROM Users as A
 INNER JOIN Department as B ON B.Id = A.DepartmentId
 INNER JOIN (SELECT * FROM Department WHERE Id = 11923) as C ON B.Path like C.Path + N'%'
-INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id 
+INNER JOIN EmploymentCandidate as D ON D.UserId = A.Id --and d.Status = 0
 INNER JOIN BackgroundCheck as E ON E.CandidateId = D.Id and E.PrevApproverId is not null and E.PrevApprovalStatus = 1 and E.ApproverId is null
 INNER JOIN ExpressVolga as F ON F.снилс = A.Cnilc
 WHERE a.RoleId & 16384 > 0 and A.IsActive = 1

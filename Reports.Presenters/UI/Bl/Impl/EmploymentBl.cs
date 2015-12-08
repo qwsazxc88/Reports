@@ -16,6 +16,7 @@ using Reports.Presenters.UI.ViewModel.Employment2;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.IO;
+using System.Net.Mail;
 
 
 
@@ -1316,6 +1317,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
                     (AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0 ? true : false;
 
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
+
                 //для консультантов даем возможность отменить отклонение
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
                 {
@@ -1411,6 +1417,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Candidate.Status == EmploymentStatus.REJECTED && (entity.HigherManagerApprovalStatus.HasValue && !entity.HigherManagerApprovalStatus.Value) && entity.ApprovingHigherManager != null)
                         model.IsCancelApproveHigherAvailale = true;
                 }
+
+                //определяем признак кандидата из Экспресс-Волги
+                Department ParentDep = DepartmentDao.Get(11923);
+                IList<IdNameDto> volgadeps = ParentDep != null ? DepartmentDao.LoadAll().Where(x => x.Path.StartsWith(ParentDep.Path)).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }) : null;
+                model.IsVolga = volgadeps != null && volgadeps.Where(x => x.Id == entity.Candidate.User.Department.Id).Count() != 0 ? true : false;
             }
 
             EmploymentCandidate candidate = GetCandidate(model.UserId);
@@ -1899,7 +1910,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         public PersonnelInfoModel GetPersonnelInfoModel(PersonnelInfoModel model)
         {
             EmploymentCandidate entity = GetCandidate(model.CandidateID);
+            User currentUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+
             model.CandidateName = entity.User.Name;//.GeneralInfo.LastName + " " + entity.GeneralInfo.FirstName + " " + entity.GeneralInfo.Patronymic;
+            model.EmailMessage = "Заявка на прием №" + entity.Id.ToString() + "\nКандидат: " + entity.User.Name + " \n";
+            model.UsersTo = GetCandidateProccedRegistration(model.CandidateID).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + (x.Position == null ? "Кадровик РК" : x.Position.Name) });
+            if ((currentUser.UserRole & UserRole.ConsultantOutsourcing) > 0 || (currentUser.UserRole & UserRole.Manager) > 0 || (currentUser.UserRole & UserRole.Security) > 0 || (currentUser.UserRole & UserRole.PersonnelManager) > 0)
+                model.IsSendAvailable = true;
+            else
+                model.IsSendAvailable = false;
             return model;
         }
 
@@ -4882,6 +4901,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            if (entity.Department.ItemLevel != 7)
+            {
+                error = "Укажите подразделение 7 уровня!";
+                return false;
+            }
+
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
@@ -4962,10 +4987,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ContractPointsAddress = viewModel.ContractPoint_2_Id == 4 ? viewModel.ContractPointsAddress : null;
             entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
 
-            entity.NorthExperienceYears = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceYears : 0;
-            entity.NorthExperienceMonths = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceMonths : 0;
-            entity.NorthExperienceDays = viewModel.NorthExperienceType == 3 ? viewModel.NorthExperienceDays : 0;
-            entity.NorthernAreaAddition = viewModel.NorthExperienceType == 3 ? viewModel.NorthernAreaAddition : 0;
+            entity.NorthExperienceYears = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceYears : 0;
+            entity.NorthExperienceMonths = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceMonths : 0;
+            entity.NorthExperienceDays = viewModel.NorthExperienceType != 2 ? viewModel.NorthExperienceDays : 0;
+            entity.NorthernAreaAddition = viewModel.NorthExperienceType != 2 ? viewModel.NorthernAreaAddition : 0;
             entity.NorthExperienceType = viewModel.NorthExperienceType;
             entity.ExtraCharges = viewModel.NorthExperienceType == 2 || viewModel.NorthExperienceType == 3 ? ExtraChargesDao.Load(viewModel.ExtraChargesId.Value) : null;
 
@@ -6499,6 +6524,146 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
                 Log.ErrorFormat("Cannot send email to user {0}(email {1}) about deduction {2} : {3}",
                     user.Id, to, 18458, dto.Error);
+        }
+        /// <summary>
+        /// Собираем список участников процесса приема данного кандидата.
+        /// </summary>
+        /// <param name="CandidateId">Id заявки на прием</param>
+        protected IList<User> GetCandidateProccedRegistration(int CandidateId)
+        {
+            EmploymentCandidate entity = GetCandidate(CandidateId);
+            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            //руководство - инициаторы
+            IList<User> managersApproval = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, false)
+                        //.Where<User>(x => x.Level == currentUser.Level /*&& x.RoleId == (int)UserRole.Manager && x.Id == entity.AppointmentCreator.Id*/)
+                        .ToList<User>();
+            //автоматическая привязка утверждающего
+            IList<User> HighManagers = DepartmentDao.GetDepartmentManagers(entity.AppointmentCreator.Department.Id, true)
+                .Where<User>(x => x.Level < entity.AppointmentCreator.Level /*&& x.Level != candidate.AppointmentCreator.Level*/ && x.Level >= (entity.AppointmentCreator.Level > 3 ? 3 : 2))
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+            
+            //ручная привязка утверждающего
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(entity.AppointmentCreator.Id, UserManualRole.ApprovesEmployment);
+
+            //объединяем всех участников в один список
+            IList<User> RegUsersList = new List<User>().Union(managersApproval).Union(HighManagers).Union(manualRoleManagers).ToList();
+
+            //департамент безопасности
+            if (entity.BackgroundCheck.PrevApprover != null)
+                RegUsersList.Add(entity.BackgroundCheck.PrevApprover);
+            if (entity.BackgroundCheck.Approver != null && entity.BackgroundCheck.Approver != entity.BackgroundCheck.PrevApprover)
+                RegUsersList.Add(entity.BackgroundCheck.Approver);
+
+            //кадровики РК
+            RegUsersList.Add(entity.Personnels);
+
+            //исключаем текущего пользователя из списка, чтобы не спамил сам себя
+            if (RegUsersList.Contains(currentUser))
+                RegUsersList.Remove(currentUser);
+
+
+            return RegUsersList;// UserDao.LoadAll().Where(x => x.Id == 1246).ToList();
+        }
+        /// <summary>
+        /// Отправка сообщения участника процесса приема другому участнику.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="error">Сообщение.</param>
+        /// <returns></returns>
+        public bool EmploymentProccedRegistrationSendEmail(PersonnelInfoModel model, out string error)
+        {
+            error = string.Empty;
+
+            User currentUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            User UserTo = UserDao.Get(model.ToUserId);
+
+
+            string to = string.Empty;
+            string body = string.Empty;
+            string Subject = string.Empty;
+            string from = string.Empty;
+
+
+            if (string.IsNullOrEmpty(UserTo.Email))
+            {
+                error = "Отправка сообщения невозможна, так как в базе данных нет данных об почтовом адресе оппонента!";
+                return false;
+            }
+            else
+                to = UserTo.Email;
+
+            //to = "zagryazkin@ruscount.ru";
+            //from = "zagryazkin@ruscount.ru";
+
+            Subject = model.Subject;
+            body = model.EmailMessage;
+
+            EmailDto dto = new EmailDto();
+            Settings settings = SettingsDao.LoadFirst();
+            dto.SmtpServer = settings.NotificationSmtp;
+            //dto.SmtpServer = "mail.ruscount.ru";
+            dto.SmtpPort = settings.NotificationPort;
+            dto.UserName = settings.NotificationLogin;
+            dto.Password = settings.NotificationPassword;
+            //dto.From = from;
+            dto.From = string.IsNullOrEmpty(currentUser.Email) ? settings.NotificationEmail : currentUser.Email;
+            dto.To = to;
+            dto.Subject = Subject;
+            dto.Body = body;
+
+            MailMessage mailMessage = null;
+            try
+            {
+                mailMessage = new MailMessage
+                {
+                    From = new MailAddress(dto.From, currentUser.Name)
+                };
+                string[] toAddresses = dto.To.Split(';');
+                foreach (string address in toAddresses)
+                    mailMessage.To.Add(new MailAddress(address, address));
+                //тавим в копию отправителя
+                string[] CCAddresses = dto.From.Split(';');
+                foreach (string address in CCAddresses)
+                    mailMessage.CC.Add(new MailAddress(address, address));
+
+                mailMessage.Subject = dto.Subject;
+                mailMessage.Body = "<html>" + dto.Body + "</html>";
+                mailMessage.IsBodyHtml = true;
+                //mailMessage.Body = dto.Body;
+                //mailMessage.IsBodyHtml = false;
+                var smtpClient = new SmtpClient
+                {
+                    Host = dto.SmtpServer,
+                    Port = dto.SmtpPort,
+                    UseDefaultCredentials = false,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Credentials = new BlockGSSAPINTLMCredential(dto.UserName, dto.Password)
+                };
+                smtpClient.Send(mailMessage);
+
+                
+
+                Log.DebugFormat("Отправлено письмо на {0}, тема {1}, текст {2}"
+                        , dto.To, dto.Subject, dto.Body);
+
+                error = "Сообщение отправлено!";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception:", ex);
+                dto.Error = "Исключение: " + ex.GetBaseException().Message;
+                error = "По техническим причинам сообщение не отправлено! (Исключение: " + ex.GetBaseException().Message + ")";
+                return false;
+            }
+            finally
+            {
+                if (mailMessage != null)
+                    mailMessage.Dispose();
+            }
         }
     }
 }

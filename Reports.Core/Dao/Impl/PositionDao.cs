@@ -6,6 +6,9 @@ using Reports.Core.Domain;
 using Reports.Core.Services;
 using Reports.Core.Dto.Employment2;
 using Reports.Core.Dto;
+using System;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -19,9 +22,9 @@ namespace Reports.Core.Dao.Impl
         }
 
         /// <summary>
-        /// Годность к военной службе.
+        /// Должности.
         /// </summary>
-        /// <param name="role"></param>
+        /// <param name="Term">фрагмент названия для поиска.</param>
         /// <returns></returns>
         public IList<IdNameDto> GetPositions(string Term)
         {
@@ -35,6 +38,17 @@ namespace Reports.Core.Dao.Impl
             return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
+        }
+
+
+        /// <summary>
+        /// Действующие должности.
+        /// </summary>
+        /// <param name="Term">фрагмент названия для поиска.</param>
+        /// <returns></returns>
+        public IList<IdNameDto> GetOperatingPositions(string Term)
+        {
+            return Session.Query<Position>().Where(x => !x.IsDeleted && x.Name.StartsWith(Term)).OrderBy(x => x.Name).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
 
         #region IPositionDao Members

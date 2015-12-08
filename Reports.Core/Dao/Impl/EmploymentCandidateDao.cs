@@ -737,6 +737,5 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Surname", NHibernateUtil.String);
             return query.SetResultTransformer(Transformers.AliasToBean<EmploymentAttachmentDto>()).List<EmploymentAttachmentDto>();
         }
-
     }
 }
