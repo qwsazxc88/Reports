@@ -82,16 +82,26 @@ namespace WebMvc.Controllers
         {
             string error = string.Empty;
 
-            if (ValidateModel(model))
+            if (model.IsSP)
             {
-                model.UserId = EmploymentBl.CreateCandidate(model, out error);
-                //ViewBag.Error = error;
+                model = EmploymentBl.GetCreateCandidateModel(model);
+                if (model.PostUserLinks.Count == 0)
+                    ModelState.AddModelError("UserLinkId", "Нет доступных вакансий в выбранном подразделении!");
+                model.IsSP = false;
             }
-
-            if (!string.IsNullOrEmpty(error))
+            else
             {
-                ViewBag.Error = error;
-                //ModelState.AddModelError("DepartmentId", error);
+                if (ValidateModel(model))
+                {
+                    model.UserId = EmploymentBl.CreateCandidate(model, out error);
+                    //ViewBag.Error = error;
+                }
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    ViewBag.Error = error;
+                    //ModelState.AddModelError("DepartmentId", error);
+                }
             }
 
             if (ModelState.Count != 0)
@@ -1532,7 +1542,30 @@ namespace WebMvc.Controllers
                 return RedirectToAction("Roster");
             }
         }
+        /// <summary>
+        /// Достаем информацию по штатной единице.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        public ActionResult GetStaffEstablishmentPostDetails(bool IsSP, int DepartmentId, int UserLinkId)
+        {
+            string error = String.Empty;
+            bool result = false;
+            ManagersModel model = new ManagersModel();
+            model.IsSP = IsSP;
+            model.DepartmentId = DepartmentId;
+            model.UserLinkId = UserLinkId;
 
+            EmploymentBl.GetStaffEstablishmentPostDetails(model);
+            result = true;
+
+            if (model.IsSP)
+                return Json(new { ok = result, msg = error, model.PostUserLinks });
+            else
+                return Json(new { ok = result, msg = error, model.SalaryBasis });
+        }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsourcing)]
         public ActionResult ManagersApproveByHigherManager(int userId, bool? higherManagerApprovalStatus, bool IsCancelApproveHigherAvailale)
@@ -1985,7 +2018,6 @@ namespace WebMvc.Controllers
         #endregion 
 
         #region PersonnelInfo
-        #endregion
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
         public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
@@ -2019,6 +2051,7 @@ namespace WebMvc.Controllers
             
             return Json(new { ok = result, msg = error, EmailMessageStr = model.EmailMessage });
         }
+        #endregion
         #endregion
 
         #region Model Validation
@@ -2061,6 +2094,8 @@ namespace WebMvc.Controllers
             }
             
             
+            if(model.UserLinkId == 0)
+                ModelState.AddModelError("UserLinkId", "Выберте штатную единицу!");
 
             if (model.DepartmentId == 0)
                 ModelState.AddModelError("DepartmentId", "Выберите структурное подразделение!");
@@ -2413,18 +2448,23 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
 
-            if (model.PositionId == 0)
-                ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
-
-            if (!model.SalaryBasis.HasValue)
-                ModelState.AddModelError("SalaryBasis", "Укажите должностной оклад!");
-            else
+            if (!model.UserLinkId.HasValue || model.UserLinkId.Value == 0)
             {
-                if (model.SalaryBasis.Value <= 0)
-                {
-                    ModelState.AddModelError("SalaryBasis", "Должностной оклад должен иметь значение больше нуля!");
-                }
+                ModelState.AddModelError("UserLinkId", "Выберите штатную единицу!");
             }
+
+            //if (model.PositionId == 0)
+            //    ModelState.AddModelError("PositionId", "Укажите должность кандидата!");
+
+            //if (!model.SalaryBasis.HasValue)
+            //    ModelState.AddModelError("SalaryBasis", "Укажите должностной оклад!");
+            //else
+            //{
+            //    if (model.SalaryBasis.Value <= 0)
+            //    {
+            //        ModelState.AddModelError("SalaryBasis", "Должностной оклад должен иметь значение больше нуля!");
+            //    }
+            //}
 
             if (!model.SalaryMultiplier.HasValue)
                 ModelState.AddModelError("SalaryMultiplier", "Заполните поле 'Ставка'!");

@@ -115,6 +115,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsCancelApproveHigherAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
         public bool IsPyrusDialogVisible { get; set; }
 
+        public bool IsSP { get; set; }//сабмитимся для заполнения списка штатных единиц
+        [Display(Name = "Штатная единица")]
+        public int? UserLinkId { get; set; }
+        public IList<IdNameDto> PostUserLinks { get; set; }
+
         public ManagersModel()
         {
             this.Version = 0;

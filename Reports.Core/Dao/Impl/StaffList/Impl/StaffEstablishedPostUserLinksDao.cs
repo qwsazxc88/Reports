@@ -2,6 +2,12 @@
 using Reports.Core.Dto;
 using Reports.Core.Domain;
 using Reports.Core.Services;
+using NHibernate.Transform;
+using NHibernate;
+using NHibernate.Criterion;
+using System;
+using System.Linq;
+using NHibernate.Linq;
 
 
 namespace Reports.Core.Dao.Impl
@@ -14,6 +20,16 @@ namespace Reports.Core.Dao.Impl
         public StaffEstablishedPostUserLinksDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
+        }
+        /// <summary>
+        /// Достаем строку штатной расстановки по привязке к документу.
+        /// </summary>
+        /// <param name="DocId">Id документа.</param>
+        /// <param name="ReserveType">Тип резервирования (StaffReserveTypeEnum)</param>
+        /// <returns></returns>
+        public StaffEstablishedPostUserLinks GetPostUserLinkByDocId(int DocId, int ReserveType)
+        {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.DocId == DocId && x.ReserveType == ReserveType).FirstOrDefault();
         }
     }
 }
