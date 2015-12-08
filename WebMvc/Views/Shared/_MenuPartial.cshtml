@@ -16,8 +16,8 @@
                 {
                     <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)</div>   
                     
-                   @* <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
-                </div>*@
+                   <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                </div>
                 }
                 
                 @if (UserDto.IsStaffDepartmentAvailable(dto))

@@ -7,6 +7,10 @@ namespace Reports.Core.Domain
 {
     public class StaffMovements: StandartRequestEntity
     {
+        public StaffMovements()
+        {
+            Additions = new List<StaffPostChargeLinks>();
+        }
         public virtual StaffMovementsData Data { get; set; }
         //Основные данные заявки                
         /// <summary>

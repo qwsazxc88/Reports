@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
+        public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostChargeLinksDao); }
+            set { staffEstablishedPostChargeLinksDao = value; }
+        }
         protected IStaffExtraChargesDao staffExtraChargesDao;
         public IStaffExtraChargesDao StaffExtraChargesDao
         {
@@ -297,9 +303,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
+            var usertomove = UserDao.Load(model.User.Id);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
+            model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
+            model.Salary = usertomove.Rate.HasValue?usertomove.Rate.Value:0;
             //Подгружаем надбавки
-            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive)
+            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
                 .Select(x => 
                     new AdditionsDto { 
                         Action = x.ExtraChargeActions.Id, 
@@ -321,7 +331,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                model.AdditionsToEdit = model.ActiveAdditions;
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        Value = x.Salary
+                    })
+                .ToList();
+                var charges=StaffExtraChargesDao.LoadAll();
+                foreach (var charge in charges)
+                {
+                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
+                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name } });
+                }
             }
             //Заполняем справочники
             LoadDictionaries(model);
@@ -1014,7 +1038,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             foreach (var addition in model.AdditionsToEdit)
             {
-                if (!entity.Additions.Any(x => x.ExtraCharges.Id == addition.Type.Id))
+                if (!entity.Additions.Any(x => x.ExtraCharges!=null && x.ExtraCharges.Id == addition.Type.Id))
                 {
                     entity.Additions.Add(new StaffPostChargeLinks
                     {
